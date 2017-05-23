@@ -23,7 +23,7 @@ import net.minidev.json.JSONArray;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -123,7 +123,7 @@ public class BootCuriesHrefIntegrationTests {
 			}
 
 		});
-		EnvironmentTestUtils.addEnvironment(this.context, properties);
+		TestPropertyValues.of(properties).applyTo(this.context);
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();

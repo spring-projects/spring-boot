@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -147,8 +147,8 @@ public class MessageSourceAutoConfigurationTests {
 			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.messages.basename:test/messages");
+			TestPropertyValues.of(
+					"spring.messages.basename:test/messages").applyTo(this.context);
 			this.context.register(MessageSourceAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
 			this.context.refresh();
@@ -159,7 +159,7 @@ public class MessageSourceAutoConfigurationTests {
 
 	private void load(String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		TestPropertyValues.of(environment).applyTo(this.context);
 		this.context.register(MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

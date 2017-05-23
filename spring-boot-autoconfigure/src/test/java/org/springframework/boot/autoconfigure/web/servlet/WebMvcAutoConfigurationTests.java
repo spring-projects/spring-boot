@@ -45,7 +45,7 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
@@ -415,8 +415,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void overrideIgnoreDefaultModelOnRedirect() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.ignore-default-model-on-redirect:false");
+		TestPropertyValues.of(
+				"spring.mvc.ignore-default-model-on-redirect:false").applyTo(this.context);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -766,7 +766,7 @@ public class WebMvcAutoConfigurationTests {
 
 	private void load(Class<?> config, Class<?>[] exclude, String... environment) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		TestPropertyValues.of(environment).applyTo(this.context);
 		List<Class<?>> configClasses = new ArrayList<>();
 		if (config != null) {
 			configClasses.add(config);

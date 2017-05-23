@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.data.neo4j.empty.EmptyMarker;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -64,8 +64,8 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of(
+				"spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -73,7 +73,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testMixedRepositoryConfiguration() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.initialize:false");
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
@@ -83,8 +83,8 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testJpaRepositoryConfigurationWithNeo4jTemplate() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of(
+				"spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -93,8 +93,8 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Test
 	@Ignore
 	public void testJpaRepositoryConfigurationWithNeo4jOverlap() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of(
+				"spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -103,9 +103,9 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled()
 			throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.initialize:false",
-				"spring.data.neo4j.repositories.enabled:false");
+				"spring.data.neo4j.repositories.enabled:false").applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();

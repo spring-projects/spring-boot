@@ -34,7 +34,7 @@ import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.devtools.tunnel.server.RemoteDebugPortProvider;
 import org.springframework.boot.devtools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.boot.devtools.tunnel.server.TargetServerConnection;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -231,7 +231,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(Config.class, PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, properties);
+		TestPropertyValues.of(properties).applyTo(this.context);
 		this.context.refresh();
 	}
 

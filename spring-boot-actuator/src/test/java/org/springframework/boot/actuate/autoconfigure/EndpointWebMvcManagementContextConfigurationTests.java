@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -68,9 +68,9 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 
 	@Test
 	public void endpointHandlerMapping() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"management.security.enabled=false",
-				"management.security.roles=my-role,your-role");
+				"management.security.roles=my-role,your-role").applyTo(this.context);
 		this.context.refresh();
 		EndpointHandlerMapping mapping = this.context.getBean("endpointHandlerMapping",
 				EndpointHandlerMapping.class);

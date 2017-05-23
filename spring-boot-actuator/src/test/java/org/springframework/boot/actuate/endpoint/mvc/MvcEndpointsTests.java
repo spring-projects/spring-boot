@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,8 +68,8 @@ public class MvcEndpointsTests {
 
 	@Test
 	public void changesPath() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.test.path=/foo/bar/");
+		TestPropertyValues.of(
+				"endpoints.test.path=/foo/bar/").applyTo(this.context);
 		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
 				new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);

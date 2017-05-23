@@ -59,7 +59,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -172,7 +172,7 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testInfoEndpoint() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "info.foo:bar");
+		TestPropertyValues.of("info.foo:bar").applyTo(this.context);
 		this.context.register(ProjectInfoAutoConfiguration.class,
 				InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
@@ -186,8 +186,7 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testInfoEndpointNoGitProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.info.git.location:classpath:nonexistent");
+		TestPropertyValues.of("spring.info.git.location:classpath:nonexistent").applyTo(this.context);
 		this.context.register(InfoContributorAutoConfiguration.class,
 				EndpointAutoConfiguration.class);
 		this.context.refresh();
@@ -199,7 +198,7 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testInfoEndpointOrdering() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "info.name:foo");
+		TestPropertyValues.of("info.name:foo").applyTo(this.context);
 		this.context.register(CustomInfoContributorsConfig.class,
 				ProjectInfoAutoConfiguration.class,
 				InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);

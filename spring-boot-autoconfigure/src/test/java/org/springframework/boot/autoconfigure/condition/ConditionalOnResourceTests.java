@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +44,7 @@ public class ConditionalOnResourceTests {
 
 	@Test
 	public void testResourceExistsWithPlaceholder() {
-		EnvironmentTestUtils.addEnvironment(this.context, "schema=schema.sql");
+		TestPropertyValues.of("schema=schema.sql").applyTo(this.context);
 		this.context.register(PlaceholderConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("foo")).isTrue();

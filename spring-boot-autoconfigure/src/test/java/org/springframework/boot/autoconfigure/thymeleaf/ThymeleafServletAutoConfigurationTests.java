@@ -35,7 +35,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -219,7 +219,7 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	private void load(Class<?> config, String... envVariables) {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, envVariables);
+		TestPropertyValues.of(envVariables).applyTo(this.context);
 		if (config != null) {
 			this.context.register(config);
 		}

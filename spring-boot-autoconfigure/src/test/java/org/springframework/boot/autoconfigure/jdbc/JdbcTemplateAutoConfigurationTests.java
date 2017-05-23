@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,9 +52,9 @@ public class JdbcTemplateAutoConfigurationTests {
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection.override = null;
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt()).applyTo(this.context);
 	}
 
 	@After

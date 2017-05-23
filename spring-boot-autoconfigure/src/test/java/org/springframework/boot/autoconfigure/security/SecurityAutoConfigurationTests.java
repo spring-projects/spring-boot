@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationEvent;
@@ -133,7 +133,7 @@ public class SecurityAutoConfigurationTests {
 	@Test
 	public void testCustomFilterOrder() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "security.filter-order:12345");
+		TestPropertyValues.of("security.filter-order:12345").applyTo(this.context);
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
@@ -149,7 +149,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
+		TestPropertyValues.of("security.ignored:none").applyTo(this.context);
 		this.context.refresh();
 		// Just the application endpoints now
 		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
@@ -162,7 +162,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
+		TestPropertyValues.of("security.basic.enabled:false");
 		this.context.refresh();
 		// Ignores and the "matches-none" filter only
 		assertThat(this.context.getBeanNamesForType(FilterChainProxy.class).length)
@@ -277,9 +277,9 @@ public class SecurityAutoConfigurationTests {
 	public void testJpaCoexistsHappily() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.url:jdbc:hsqldb:mem:testsecdb");
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.initialize:false");
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -370,8 +370,8 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"security.filter-dispatcher-types:INCLUDE,ERROR");
+		TestPropertyValues.of(
+				"security.filter-dispatcher-types:INCLUDE,ERROR").applyTo(this.context);
 		this.context.refresh();
 		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
 				"securityFilterChainRegistration",

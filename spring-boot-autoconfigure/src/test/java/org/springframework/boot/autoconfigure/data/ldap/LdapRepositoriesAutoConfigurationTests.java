@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.ldap.person.Person;
 import org.springframework.boot.autoconfigure.data.ldap.person.PersonRepository;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.ldap.repository.config.EnableLdapRepositories;
@@ -69,8 +69,8 @@ public class LdapRepositoriesAutoConfigurationTests {
 
 	private void load(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ldap.urls:ldap://localhost:389");
+		TestPropertyValues.of(
+				"spring.ldap.urls:ldap://localhost:389").applyTo(this.context);
 		this.context.register(configurationClasses);
 		this.context.register(LdapAutoConfiguration.class,
 				LdapDataAutoConfiguration.class, LdapRepositoriesAutoConfiguration.class,

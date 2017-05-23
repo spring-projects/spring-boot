@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,7 +79,7 @@ public class EmbeddedDataSourceConfigurationTests {
 
 	private AnnotationConfigApplicationContext load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.register(EmbeddedDataSourceConfiguration.class);
 		ctx.refresh();
 		return ctx;

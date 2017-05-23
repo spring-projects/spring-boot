@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,9 +58,9 @@ public class DataSourceAutoConfigurationTests {
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection.override = null;
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt()).applyTo(this.context);
 	}
 
 	@After
@@ -89,8 +89,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testBadUrl() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.url:jdbc:not-going-to-work");
+		TestPropertyValues.of(
+				"spring.datasource.url:jdbc:not-going-to-work").applyTo(this.context);
 		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -100,9 +100,9 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testBadDriverClass() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.driverClassName:org.none.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb").applyTo(this.context);
 		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -152,9 +152,9 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testEmbeddedTypeDefaultsUsername() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb").applyTo(this.context);
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -172,10 +172,10 @@ public class DataSourceAutoConfigurationTests {
 	 */
 	@Test
 	public void explicitTypeNoSupportedDataSource() {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName());
+				"spring.datasource.type:" + SimpleDriverDataSource.class.getName()).applyTo(this.context);
 		this.context.setClassLoader(
 				new HidePackagesClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
 						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"));
@@ -184,10 +184,10 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void explicitTypeSupportedDataSource() {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName());
+				"spring.datasource.type:" + SimpleDriverDataSource.class.getName()).applyTo(this.context);
 		testExplicitType();
 	}
 
@@ -203,11 +203,11 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testExplicitDriverClassClearsUsername() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.driverClassName:"
 						+ "org.springframework.boot.autoconfigure.jdbc."
 						+ "DataSourceAutoConfigurationTests$DatabaseTestDriver",
-				"spring.datasource.url:jdbc:foo://localhost");
+				"spring.datasource.url:jdbc:foo://localhost").applyTo(this.context);
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -232,9 +232,9 @@ public class DataSourceAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	private <T extends DataSource> T autoConfigureDataSource(Class<T> expectedType,
 			final String... hiddenPackages) {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb").applyTo(this.context);
 		this.context.setClassLoader(new HidePackagesClassLoader(hiddenPackages));
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

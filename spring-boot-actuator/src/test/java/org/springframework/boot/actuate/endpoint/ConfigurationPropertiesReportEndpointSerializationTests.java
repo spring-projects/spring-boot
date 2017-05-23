@@ -28,7 +28,7 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +63,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testNaming() throws Exception {
 		this.context.register(FooConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.name:foo");
+		TestPropertyValues.of("foo.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -83,7 +83,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testNestedNaming() throws Exception {
 		this.context.register(FooConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.bar.name:foo");
+		TestPropertyValues.of("foo.bar.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -102,7 +102,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testCycle() throws Exception {
 		this.context.register(CycleConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.name:foo");
+		TestPropertyValues.of("foo.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -122,7 +122,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testMap() throws Exception {
 		this.context.register(MapConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.map.name:foo");
+		TestPropertyValues.of("foo.map.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -162,7 +162,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testList() throws Exception {
 		this.context.register(ListConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.list[0]:foo");
+		TestPropertyValues.of("foo.list[0]:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -182,7 +182,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testInetAddress() throws Exception {
 		this.context.register(AddressedConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.address:192.168.1.10");
+		TestPropertyValues.of("foo.address:192.168.1.10").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -203,8 +203,8 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testInitializedMapAndList() throws Exception {
 		this.context.register(InitializedMapAndListPropertiesConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.map.entryOne:true",
-				"foo.list[0]:abc");
+		TestPropertyValues.of("foo.map.entryOne:true",
+				"foo.list[0]:abc").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);

@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.data.alt.neo4j.CityNeo4jRepository
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
@@ -82,8 +82,8 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.neo4j.uri=http://localhost:9797");
+		TestPropertyValues.of(
+				"spring.data.neo4j.uri=http://localhost:9797").applyTo(this.context);
 		this.context.register(configurationClasses);
 		this.context.register(Neo4jDataAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class,

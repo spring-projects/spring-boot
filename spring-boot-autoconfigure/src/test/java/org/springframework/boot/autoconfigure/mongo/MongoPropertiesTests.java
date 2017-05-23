@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,7 +46,7 @@ public class MongoPropertiesTests {
 	public void canBindCharArrayPassword() {
 		// gh-1572
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.data.mongodb.password:word");
+		TestPropertyValues.of("spring.data.mongodb.password:word").applyTo(context);
 		context.register(Config.class);
 		context.refresh();
 		MongoProperties properties = context.getBean(MongoProperties.class);

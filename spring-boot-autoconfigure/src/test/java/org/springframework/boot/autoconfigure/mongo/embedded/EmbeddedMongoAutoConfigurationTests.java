@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -158,11 +158,11 @@ public class EmbeddedMongoAutoConfigurationTests {
 			String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
 		int mongoPort = SocketUtils.findAvailableTcpPort();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.port=" + mongoPort);
+		TestPropertyValues.of(
+				"spring.data.mongodb.port=" + mongoPort).applyTo(this.context);
 		if (configuredVersion != null) {
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.mongodb.embedded.version=" + configuredVersion);
+			TestPropertyValues.of(
+					"spring.mongodb.embedded.version=" + configuredVersion).applyTo(this.context);
 		}
 		this.context.register(MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, EmbeddedMongoAutoConfiguration.class);
@@ -182,7 +182,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		if (config != null) {
 			ctx.register(config);
 		}
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.register(EmbeddedMongoAutoConfiguration.class, MongoAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();

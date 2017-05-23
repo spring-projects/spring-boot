@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.social;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -35,10 +35,10 @@ public class TwitterAutoConfigurationTests extends AbstractSocialAutoConfigurati
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.social.twitter.appId:12345");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.social.twitter.appSecret:secret");
+		TestPropertyValues.of(
+				"spring.social.twitter.appId:12345").applyTo(this.context);
+		TestPropertyValues.of(
+				"spring.social.twitter.appSecret:secret").applyTo(this.context);
 		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(SocialWebAutoConfiguration.class);

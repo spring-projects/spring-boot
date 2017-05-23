@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -55,9 +55,9 @@ public class MultipleResourceServerConfigurationTests {
 	public void orderIsUnchangedWhenThereAreMultipleResourceServerConfigurations() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DoubleResourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"security.oauth2.resource.tokenInfoUri:http://example.com",
-				"security.oauth2.client.clientId=acme");
+				"security.oauth2.client.clientId=acme").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context
 				.getBean("adminResources", ResourceServerConfiguration.class).getOrder())

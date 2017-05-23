@@ -35,7 +35,7 @@ import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -86,7 +86,7 @@ public class MongoDataAutoConfigurationTests {
 	@Test
 	public void gridFsTemplateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.data.mongodb.gridFsDatabase:grid");
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
@@ -180,8 +180,8 @@ public class MongoDataAutoConfigurationTests {
 			Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
 		if (strategy != null) {
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.data.mongodb.field-naming-strategy:" + strategy);
+			TestPropertyValues.of(
+					"spring.data.mongodb.field-naming-strategy:" + strategy).applyTo(this.context);
 		}
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);

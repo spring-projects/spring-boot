@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.ldap.core.LdapTemplate;
 
@@ -46,8 +46,8 @@ public class LdapDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ldap.urls:ldap://localhost:389");
+		TestPropertyValues.of(
+				"spring.ldap.urls:ldap://localhost:389").applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class);
 		this.context.refresh();

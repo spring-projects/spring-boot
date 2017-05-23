@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.mustache;
 import com.samskivert.mustache.Mustache;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
@@ -83,8 +83,8 @@ public class MustacheAutoConfigurationTests {
 
 	private void loadWithServlet(Class<?> config) {
 		this.webContext = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.webContext,
-				"spring.mustache.prefix=classpath:/mustache-templates/");
+		TestPropertyValues.of(
+				"spring.mustache.prefix=classpath:/mustache-templates/").applyTo(this.webContext);
 		if (config != null) {
 			this.webContext.register(config);
 		}
@@ -94,8 +94,8 @@ public class MustacheAutoConfigurationTests {
 
 	private void loadWithReactive(Class<?> config) {
 		this.reactiveWebContext = new GenericReactiveWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.reactiveWebContext,
-				"spring.mustache.prefix=classpath:/mustache-templates/");
+		TestPropertyValues.of(
+				"spring.mustache.prefix=classpath:/mustache-templates/").applyTo(this.reactiveWebContext);
 		if (config != null) {
 			this.reactiveWebContext.register(config);
 		}

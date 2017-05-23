@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -60,8 +60,8 @@ public class CassandraDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
+		TestPropertyValues.of(
+				"spring.data.cassandra.keyspaceName:boot_test").applyTo(this.context);
 		this.context.register(TestExcludeConfiguration.class, TestConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
@@ -74,7 +74,7 @@ public class CassandraDataAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.data.cassandra.keyspaceName:boot_test");
 		this.context.register(TestConfiguration.class, EntityScanConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -90,8 +90,8 @@ public class CassandraDataAutoConfigurationTests {
 	@Test
 	public void userTypeResolverShouldBeSet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
+		TestPropertyValues.of(
+				"spring.data.cassandra.keyspaceName:boot_test").applyTo(this.context);
 		this.context.register(TestConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);

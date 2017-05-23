@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -79,7 +79,7 @@ public class TestDatabaseAutoConfigurationTests {
 			ctx.register(config);
 		}
 		ctx.register(TestDatabaseAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.refresh();
 		return ctx;
 	}

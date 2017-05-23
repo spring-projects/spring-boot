@@ -39,7 +39,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,9 +68,8 @@ public class JooqAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.name:jooqtest");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.jooq.sql-dialect:H2");
+		TestPropertyValues.of("spring.datasource.name:jooqtest").applyTo(this.context);
+		TestPropertyValues.of("spring.jooq.sql-dialect:H2").applyTo(this.context);
 	}
 
 	@After
@@ -160,8 +159,8 @@ public class JooqAutoConfigurationTests {
 
 	@Test
 	public void relaxedBindingOfSqlDialect() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jooq.sql-dialect:PoSTGrES");
+		TestPropertyValues.of(
+				"spring.jooq.sql-dialect:PoSTGrES").applyTo(this.context);
 		registerAndRefresh(JooqDataSourceConfiguration.class,
 				JooqAutoConfiguration.class);
 		assertThat(this.context.getBean(org.jooq.Configuration.class).dialect())

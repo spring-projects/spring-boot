@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.couchbase;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -75,7 +75,7 @@ public class OnBootstrapHostsConditionTests {
 
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		TestPropertyValues.of(environment).applyTo(this.context);
 		this.context.register(config);
 		this.context.refresh();
 	}

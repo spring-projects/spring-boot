@@ -16,16 +16,14 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.util.TestPropertyValues.Type;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,8 +38,8 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	public void extractOnlyInfoProperty() {
-		EnvironmentTestUtils.addEnvironment(this.environment, "info.app=my app",
-				"info.version=1.0.0", "foo=bar");
+		TestPropertyValues.of("info.app=my app",
+				"info.version=1.0.0", "foo=bar").applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
@@ -50,7 +48,7 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	public void extractNoEntry() {
-		EnvironmentTestUtils.addEnvironment(this.environment, "foo=bar");
+		TestPropertyValues.of("foo=bar").applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.getDetails().size()).isEqualTo(0);
 	}
@@ -58,9 +56,7 @@ public class EnvironmentInfoContributorTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void propertiesFromEnvironmentShouldBindCorrectly() throws Exception {
-		MutablePropertySources propertySources = this.environment.getPropertySources();
-		propertySources.addFirst(new SystemEnvironmentPropertySource("system",
-				Collections.singletonMap("INFO_ENVIRONMENT_FOO", "green")));
+		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment, Type.SYSTEM);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("environment", Map.class)).containsEntry("foo", "green");
 	}

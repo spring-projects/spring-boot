@@ -35,7 +35,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -80,8 +80,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.security.enabled=false");
+		TestPropertyValues.of(
+				"management.security.enabled=false").applyTo(this.context);
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
 				.invoke(null, null);
@@ -96,8 +96,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.security.roles[0]=super");
+		TestPropertyValues.of(
+				"management.security.roles[0]=super").applyTo(this.context);
 		this.context.refresh();
 		HealthMvcEndpoint health = this.context.getBean(HealthMvcEndpoint.class);
 		assertThat(ReflectionTestUtils.getField(health, "roles"))

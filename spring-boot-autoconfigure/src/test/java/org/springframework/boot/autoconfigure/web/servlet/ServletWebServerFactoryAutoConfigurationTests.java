@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -122,9 +122,9 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	@Test
 	public void initParametersAreConfiguredOnTheServletContext() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"server.servlet.context-parameters.a:alpha",
-				"server.servlet.context-parameters.b:bravo");
+				"server.servlet.context-parameters.b:bravo").applyTo(this.context);
 		this.context.register(BaseConfiguration.class);
 		this.context.refresh();
 

@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,8 +56,8 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	@SuppressWarnings("unchecked")
 	public void testNaming() throws Exception {
 		this.context.register(Config.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "other.name:foo",
-				"first.name:bar");
+		TestPropertyValues.of("other.name:foo",
+				"first.name:bar").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -73,7 +73,7 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	@SuppressWarnings("unchecked")
 	public void testOverride() throws Exception {
 		this.context.register(Other.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "other.name:foo");
+		TestPropertyValues.of("other.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);

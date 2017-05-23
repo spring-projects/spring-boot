@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -56,8 +56,8 @@ class OverrideAutoConfigurationContextCustomizerFactory
 		@Override
 		public void customizeContext(ConfigurableApplicationContext context,
 				MergedContextConfiguration mergedConfig) {
-			EnvironmentTestUtils.addEnvironment(context,
-					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false");
+			TestPropertyValues.of(
+					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false").applyTo(context);
 		}
 
 		@Override

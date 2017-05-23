@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jmx.export.MBeanExporter;
@@ -88,8 +88,8 @@ public class JndiDataSourceAutoConfigurationTests {
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.jndi-name:foo");
+		TestPropertyValues.of(
+				"spring.datasource.jndi-name:foo").applyTo(this.context);
 		this.context.register(JndiDataSourceAutoConfiguration.class);
 		this.context.refresh();
 
@@ -104,8 +104,8 @@ public class JndiDataSourceAutoConfigurationTests {
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.jndi-name:foo");
+		TestPropertyValues.of(
+				"spring.datasource.jndi-name:foo").applyTo(this.context);
 		this.context.register(JndiDataSourceAutoConfiguration.class,
 				MBeanExporterConfiguration.class);
 		this.context.refresh();
@@ -125,8 +125,8 @@ public class JndiDataSourceAutoConfigurationTests {
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.jndi-name:foo");
+		TestPropertyValues.of(
+				"spring.datasource.jndi-name:foo").applyTo(this.context);
 		this.context.register(JndiDataSourceAutoConfiguration.class,
 				MBeanExporterConfiguration.class);
 		this.context.refresh();

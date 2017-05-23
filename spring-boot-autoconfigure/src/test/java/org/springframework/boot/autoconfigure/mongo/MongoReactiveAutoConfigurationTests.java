@@ -28,7 +28,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,8 +66,8 @@ public class MongoReactiveAutoConfigurationTests {
 	@Test
 	public void optionsAdded() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.host:localhost");
+		TestPropertyValues.of(
+				"spring.data.mongodb.host:localhost").applyTo(this.context);
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				MongoReactiveAutoConfiguration.class);
@@ -79,7 +79,7 @@ public class MongoReactiveAutoConfigurationTests {
 	@Test
 	public void optionsAddedButNoHost() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.data.mongodb.uri:mongodb://localhost/test");
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -93,8 +93,8 @@ public class MongoReactiveAutoConfigurationTests {
 	@Test
 	public void optionsSslConfig() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.uri:mongodb://localhost/test");
+		TestPropertyValues.of(
+				"spring.data.mongodb.uri:mongodb://localhost/test").applyTo(this.context);
 		this.context.register(SslOptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				MongoReactiveAutoConfiguration.class);

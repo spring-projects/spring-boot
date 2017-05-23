@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -61,9 +61,9 @@ public class HikariDriverConfigurationFailureAnalyzerTests {
 
 	private BeanCreationException createFailure(Class<?> configuration) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
+		TestPropertyValues.of(
 				"spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.data-source-class-name=com.example.Foo");
+				"spring.datasource.hikari.data-source-class-name=com.example.Foo").applyTo(context);
 		context.register(configuration);
 		try {
 			context.refresh();

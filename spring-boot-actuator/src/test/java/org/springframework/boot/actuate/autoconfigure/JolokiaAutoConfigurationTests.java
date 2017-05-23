@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
@@ -68,8 +68,8 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentServletRegisteredWithAppContext() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "jolokia.config[key1]:value1",
-				"jolokia.config[key2]:value2");
+		TestPropertyValues.of("jolokia.config[key1]:value1",
+				"jolokia.config[key2]:value2").applyTo(this.context);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -81,8 +81,8 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentServletWithCustomPath() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.jolokia.path=/foo/bar");
+		TestPropertyValues.of(
+				"endpoints.jolokia.path=/foo/bar").applyTo(this.context);
 		this.context.register(EndpointsConfig.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -113,7 +113,7 @@ public class JolokiaAutoConfigurationTests {
 
 	private void assertEndpointDisabled(String... pairs) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, pairs);
+		TestPropertyValues.of(pairs).applyTo(this.context);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -124,7 +124,7 @@ public class JolokiaAutoConfigurationTests {
 
 	private void assertEndpointEnabled(String... pairs) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, pairs);
+		TestPropertyValues.of(pairs).applyTo(this.context);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,

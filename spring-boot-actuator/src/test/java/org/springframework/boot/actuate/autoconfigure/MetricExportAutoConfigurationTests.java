@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -148,8 +148,8 @@ public class MetricExportAutoConfigurationTests {
 	@Test
 	public void statsdWithHost() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.metrics.export.statsd.host=localhost");
+		TestPropertyValues.of(
+				"spring.metrics.export.statsd.host=localhost").applyTo(this.context);
 		this.context.register(MetricEndpointConfiguration.class,
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.Link;
@@ -126,7 +126,7 @@ public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 			}
 
 		});
-		EnvironmentTestUtils.addEnvironment(this.context, properties);
+		TestPropertyValues.of(properties).applyTo(this.context);
 		this.context.register(TestConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointWebMvcHypermediaManagementContextConfiguration.class);

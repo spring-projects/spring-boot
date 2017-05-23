@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.data.mongo.city.ReactiveCityReposi
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -58,8 +58,8 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	public void shouldCreateInstancesForReactiveAndBlockingRepositories()
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of(
+				"spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(BlockingAndReactiveConfiguration.class,
 				BaseConfiguration.class);
 		this.context.refresh();

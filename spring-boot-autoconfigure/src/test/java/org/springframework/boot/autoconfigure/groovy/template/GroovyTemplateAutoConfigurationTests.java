@@ -30,7 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -101,8 +101,8 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void disableViewResolution() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.groovy.template.enabled:false");
+		TestPropertyValues.of(
+				"spring.groovy.template.enabled:false").applyTo(this.context);
 		registerAndRefreshContext();
 		assertThat(this.context.getBeanNamesForType(ViewResolver.class)).isEmpty();
 	}
@@ -179,7 +179,7 @@ public class GroovyTemplateAutoConfigurationTests {
 	}
 
 	private void registerAndRefreshContext(String... env) {
-		EnvironmentTestUtils.addEnvironment(this.context, env);
+		TestPropertyValues.of(env).applyTo(this.context);
 		this.context.register(GroovyTemplateAutoConfiguration.class);
 		this.context.refresh();
 	}

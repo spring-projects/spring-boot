@@ -24,7 +24,7 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -102,7 +102,7 @@ public class ActiveMQAutoConfigurationTests {
 		applicationContext.register(config);
 		applicationContext.register(ActiveMQAutoConfiguration.class,
 				JmsAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
 		return applicationContext;
 	}

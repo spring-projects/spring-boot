@@ -24,7 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -151,8 +151,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void testKeySanitizationWithCustomKeysByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.env.keys-to-sanitize: key");
+		TestPropertyValues.of(
+				"endpoints.env.keys-to-sanitize: key").applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		System.setProperty("dbPassword", "123456");
@@ -170,8 +170,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void testKeySanitizationWithCustomPatternByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.env.keys-to-sanitize: .*pass.*");
+		TestPropertyValues.of(
+				"endpoints.env.keys-to-sanitize: .*pass.*").applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		System.setProperty("dbPassword", "123456");
@@ -190,8 +190,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment()
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.env.keys-to-sanitize: .*pass.*, key");
+		TestPropertyValues.of(
+				"endpoints.env.keys-to-sanitize: .*pass.*, key").applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		System.setProperty("dbPassword", "123456");
@@ -209,8 +209,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void propertyWithPlaceholderResolved() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "my.foo: ${bar.blah}",
-				"bar.blah: hello");
+		TestPropertyValues.of("my.foo: ${bar.blah}",
+				"bar.blah: hello").applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();
@@ -223,7 +223,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void propertyWithPlaceholderNotResolved() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "my.foo: ${bar.blah}");
+		TestPropertyValues.of("my.foo: ${bar.blah}").applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();
@@ -236,8 +236,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void propertyWithSensitivePlaceholderResolved() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"my.foo: http://${bar.password}://hello", "bar.password: hello");
+		TestPropertyValues.of(
+				"my.foo: http://${bar.password}://hello", "bar.password: hello").applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();
@@ -250,8 +250,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void propertyWithSensitivePlaceholderNotResolved() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"my.foo: http://${bar.password}://hello");
+		TestPropertyValues.of(
+				"my.foo: http://${bar.password}://hello").applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();

@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,9 +61,9 @@ public class HikariDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "jdbcUrl:jdbc:foo//bar/spam");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxLifetime:1234");
+		TestPropertyValues.of(
+				PREFIX + "jdbcUrl:jdbc:foo//bar/spam").applyTo(this.context);
+		TestPropertyValues.of(PREFIX + "maxLifetime:1234").applyTo(this.context);
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
@@ -74,8 +74,8 @@ public class HikariDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceGenericPropertiesOverridden() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource");
+		TestPropertyValues.of(PREFIX
+				+ "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource").applyTo(this.context);
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))

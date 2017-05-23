@@ -41,7 +41,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,8 +76,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.name:flywaytest");
+		TestPropertyValues.of(
+				"spring.datasource.name:flywaytest").applyTo(this.context);
 	}
 
 	@After
@@ -96,8 +96,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void createDataSource() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa");
+		TestPropertyValues.of(
+				"flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -126,8 +126,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideLocations() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:classpath:db/changelog,classpath:db/migration");
+		TestPropertyValues.of(
+				"flyway.locations:classpath:db/changelog,classpath:db/migration").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -138,9 +138,9 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideLocationsList() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"flyway.locations[0]:classpath:db/changelog",
-				"flyway.locations[1]:classpath:db/migration");
+				"flyway.locations[1]:classpath:db/migration").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -151,7 +151,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideSchemas() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "flyway.schemas:public");
+		TestPropertyValues.of("flyway.schemas:public").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -161,8 +161,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void changeLogDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:file:no-such-dir");
+		TestPropertyValues.of(
+				"flyway.locations:file:no-such-dir").applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -171,9 +171,9 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void checkLocationsAllMissing() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"flyway.locations:classpath:db/missing1,classpath:db/migration2",
-				"flyway.check-location:true");
+				"flyway.check-location:true").applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Cannot find migrations location in");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
@@ -183,9 +183,9 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void checkLocationsAllExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"flyway.locations:classpath:db/changelog,classpath:db/migration",
-				"flyway.check-location:true");
+				"flyway.check-location:true").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -220,7 +220,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideBaselineVersionString() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "flyway.baseline-version=0");
+		TestPropertyValues.of("flyway.baseline-version=0").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -245,8 +245,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void useVendorDirectory() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog");
+		TestPropertyValues.of(
+				"flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

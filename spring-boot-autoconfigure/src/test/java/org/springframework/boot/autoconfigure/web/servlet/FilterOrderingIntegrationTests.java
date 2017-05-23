@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
@@ -85,8 +85,8 @@ public class FilterOrderingIntegrationTests {
 
 	private void load() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.session.store-type=hash-map");
+		TestPropertyValues.of(
+				"spring.session.store-type=hash-map").applyTo(this.context);
 		this.context.register(MockWebServerConfiguration.class,
 				TestRedisConfiguration.class, WebMvcAutoConfiguration.class,
 				SecurityAutoConfiguration.class, SessionAutoConfiguration.class,

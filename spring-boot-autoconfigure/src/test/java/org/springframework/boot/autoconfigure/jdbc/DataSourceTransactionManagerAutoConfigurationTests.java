@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -110,9 +110,9 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	@Test
 	public void testCustomizeDataSourceTransactionManagerUsingProperties()
 			throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+				"spring.transaction.rollback-on-commit-failure:true").applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);

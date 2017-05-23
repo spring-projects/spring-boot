@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -71,9 +71,9 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"spring.data.cassandra.schemaAction=recreate_drop_unused",
-				"spring.data.cassandra.keyspaceName=boot_test");
+				"spring.data.cassandra.keyspaceName=boot_test").applyTo(this.context);
 		this.context.register(CassandraAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class);
 		this.context.refresh();

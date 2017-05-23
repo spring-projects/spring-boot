@@ -20,7 +20,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +49,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	public void propertyPlaceholders() throws Exception {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
+		TestPropertyValues.of("foo:two").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
 				.isEqualTo("two");
@@ -59,7 +59,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	public void propertyPlaceholdersOverride() throws Exception {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class, PlaceholdersOverride.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
+		TestPropertyValues.of("foo:two").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
 				.isEqualTo("spam");

@@ -52,7 +52,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
@@ -117,10 +117,10 @@ public class MvcEndpointPathConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(TestConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
-		EnvironmentTestUtils.addEnvironment(this.context,
+		TestPropertyValues.of(
 				"endpoints." + this.endpointName + ".path" + ":/custom/path",
 				"endpoints." + this.endpointName + ".enabled:true",
-				"logging.file:target/test.log");
+				"logging.file:target/test.log").applyTo(this.context);
 		this.context.refresh();
 		assertThat(getConfiguredPath()).isEqualTo("/custom/path");
 	}

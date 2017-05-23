@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
@@ -91,7 +91,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
+		TestPropertyValues.of("security.basic.enabled:false").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
@@ -140,7 +140,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
+		TestPropertyValues.of("security.ignored:none").applyTo(this.context);
 		this.context.refresh();
 		// Just the application and management endpoints now
 		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
@@ -152,7 +152,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(WebConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
+		TestPropertyValues.of("security.basic.enabled:false").applyTo(this.context);
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now plus the backup
 		// filter on app endpoints
@@ -233,7 +233,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(WebConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.sensitive:true");
+		TestPropertyValues.of("endpoints.sensitive:true").applyTo(this.context);
 		this.context.refresh();
 
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context) //

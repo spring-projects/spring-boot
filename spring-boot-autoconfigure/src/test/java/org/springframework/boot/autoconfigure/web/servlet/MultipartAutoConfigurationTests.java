@@ -27,7 +27,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -171,8 +171,8 @@ public class MultipartAutoConfigurationTests {
 	private void testWebServerWithCustomMultipartConfigEnabledSetting(
 			final String propertyValue, int expectedNumberOfMultipartConfigElementBeans) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.servlet.multipart.enabled=" + propertyValue);
+		TestPropertyValues.of(
+				"spring.servlet.multipart.enabled=" + propertyValue).applyTo(this.context);
 		this.context.register(WebServerWithNoMultipartTomcat.class,
 				BaseConfiguration.class);
 		this.context.refresh();
@@ -194,8 +194,8 @@ public class MultipartAutoConfigurationTests {
 	@Test
 	public void configureResolveLazily() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.servlet.multipart.resolve-lazily=true");
+		TestPropertyValues.of(
+				"spring.servlet.multipart.resolve-lazily=true").applyTo(this.context);
 		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
 		this.context.refresh();
 		StandardServletMultipartResolver multipartResolver = this.context
