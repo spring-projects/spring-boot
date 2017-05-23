@@ -805,25 +805,6 @@ public class SpringApplicationTests {
 						TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 	}
 
-	@Test
-	public void failureResultsInSingleStackTrace() throws Exception {
-		ThreadGroup group = new ThreadGroup("main");
-		Thread thread = new Thread(group, "main") {
-			@Override
-			public void run() {
-				SpringApplication application = new SpringApplication(
-						FailingConfig.class);
-				application.setWebEnvironment(false);
-				application.run();
-			};
-		};
-		thread.start();
-		thread.join(6000);
-		int occurrences = StringUtils.countOccurrencesOf(this.output.toString(),
-				"Caused by: java.lang.RuntimeException: ExpectedError");
-		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
-	}
-
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final Class<?> propertySourceClass, final String name) {
 		return new Condition<ConfigurableEnvironment>("has property source") {
@@ -962,16 +943,6 @@ public class SpringApplicationTests {
 		@Bean
 		public TomcatEmbeddedServletContainerFactory container() {
 			return new TomcatEmbeddedServletContainerFactory(0);
-		}
-
-	}
-
-	@Configuration
-	static class FailingConfig {
-
-		@Bean
-		public Object fail() {
-			throw new RuntimeException("ExpectedError");
 		}
 
 	}
