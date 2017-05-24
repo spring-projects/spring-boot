@@ -2,6 +2,14 @@
 org.springframework.boot.test.autoconfigure.core.AutoConfigureCache=\
 org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 
+# AutoConfigureDataCassandra auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.cassandra.AutoConfigureDataCassandra=\
+org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.cassandra.CassandraRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.cassandra.ReactiveCassandraDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.cassandra.ReactiveCassandraRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration
+
 # AutoConfigureDataJpa auto-configuration imports
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa=\
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,\
