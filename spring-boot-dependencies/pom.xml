@@ -138,6 +138,7 @@
 		<neo4j-ogm.version>3.0.0-M01</neo4j-ogm.version>
 		<netty.version>4.1.11.Final</netty.version>
 		<postgresql.version>42.1.1</postgresql.version>
+		<qpid-jms.version>0.23.0</qpid-jms.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor-bom.version>Bismuth-M1</reactor-bom.version>
 		<rxjava.version>1.3.0</rxjava.version>
@@ -316,6 +317,11 @@
 				<artifactId>spring-boot-starter-amqp</artifactId>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-amqp-1.0-jms</artifactId>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
+			</dependency>			
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-aop</artifactId>
@@ -1250,6 +1256,11 @@
 				<version>${log4j2.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.qpid</groupId>
+				<artifactId>qpid-jms-client</artifactId>
+				<version>${qpid-jms.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.solr</groupId>
