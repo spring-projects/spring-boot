@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.assertj.core.matcher.AssertionMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -214,9 +215,30 @@ public class BinderTests {
 		assertThat(result.toString()).isEqualTo("2014-04-01");
 	}
 
+	@Test
+	public void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "hello");
+		source.put("foo.items", "bar,baz");
+		this.sources
+				.add(source);
+		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
+		this.thrown.expect(BindException.class);
+		this.thrown.expect(new AssertionMatcher<BindException>() {
+			@Override
+			public void assertion(BindException ex) throws AssertionError {
+				assertThat(ex.getCause().getMessage()).isEqualTo("No setter found for property: items");
+				assertThat(ex.getProperty()).isNull();
+			}
+		});
+		this.binder.bind("foo", target);
+	}
+
 	public static class JavaBean {
 
 		private String value;
+
+		private List<String> items = Collections.emptyList();
 
 		public String getValue() {
 			return this.value;
@@ -226,6 +248,9 @@ public class BinderTests {
 			this.value = value;
 		}
 
+		public List<String> getItems() {
+			return this.items;
+		}
 	}
 
 	public enum ExampleEnum {

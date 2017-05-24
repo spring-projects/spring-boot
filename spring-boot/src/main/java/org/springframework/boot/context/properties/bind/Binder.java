@@ -189,6 +189,7 @@ public class Binder {
 
 	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context) {
+		context.clearConfigurationProperty();
 		try {
 			if (!handler.onStart(name, target, context)) {
 				return null;
@@ -431,6 +432,10 @@ public class Binder {
 
 		void setConfigurationProperty(ConfigurationProperty configurationProperty) {
 			this.configurationProperty = configurationProperty;
+		}
+
+		void clearConfigurationProperty() {
+			this.configurationProperty = null;
 		}
 
 		@Override
