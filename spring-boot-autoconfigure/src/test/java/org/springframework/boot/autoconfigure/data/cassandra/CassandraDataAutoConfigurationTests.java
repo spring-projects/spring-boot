@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import com.datastax.driver.core.Session;
@@ -32,6 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.cassandra.convert.CustomConversions;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.mapping.SimpleUserTypeResolver;
@@ -102,6 +105,22 @@ public class CassandraDataAutoConfigurationTests {
 				.isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
+	@Test
+	public void customConversions() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.cassandra.keyspaceName:boot_test");
+		this.context.register(CustomConversionConfig.class,
+				TestConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
+		this.context.refresh();
+		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
+		assertThat(template.getConverter().getConversionService().canConvert(Person.class,
+				String.class)).isTrue();
+
+	}
+
 	@Configuration
 	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = {
 			Session.class }, type = FilterType.ASSIGNABLE_TYPE))
@@ -122,6 +141,28 @@ public class CassandraDataAutoConfigurationTests {
 	@Configuration
 	@EntityScan("org.springframework.boot.autoconfigure.data.cassandra.city")
 	static class EntityScanConfig {
+
+	}
+
+	@Configuration
+	static class CustomConversionConfig {
+
+		@Bean
+		public CustomConversions cassandraCustomConversions() {
+			return new CustomConversions(Arrays.asList(new MyConverter()));
+		}
+
+	}
+
+	private static class MyConverter implements Converter<Person, String> {
+
+		@Override
+		public String convert(Person o) {
+			return null;
+		}
+	}
+
+	private static class Person {
 
 	}
 
