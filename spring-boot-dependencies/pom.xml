@@ -49,7 +49,7 @@
 		<activemq.version>5.14.5</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.53</appengine-sdk.version>
-		<artemis.version>1.5.4</artemis.version>
+		<artemis.version>1.5.5</artemis.version>
 		<aspectj.version>1.8.10</aspectj.version>
 		<assertj.version>3.7.0</assertj.version>
 		<atomikos.version>3.9.3</atomikos.version>
@@ -183,7 +183,7 @@
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.15</tomcat.version>
-		<undertow.version>1.4.14.Final</undertow.version>
+		<undertow.version>1.4.15.Final</undertow.version>
 		<unboundid-ldapsdk.version>3.2.1</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator.version>0.32-1</webjars-locator.version>
