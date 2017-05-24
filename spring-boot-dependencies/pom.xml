@@ -179,7 +179,7 @@
 		<thymeleaf.version>3.0.6.RELEASE</thymeleaf.version>
 		<thymeleaf-spring5.version>3.0.6.M4</thymeleaf-spring5.version>
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
-		<thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.15</tomcat.version>
