@@ -16,13 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import java.util.List;
-
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -30,17 +26,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.DispatcherHandler;
-import org.springframework.web.reactive.function.server.HandlerStrategies;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.result.view.ViewResolver;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
-import org.springframework.web.server.session.WebSessionManager;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpHandler}.
@@ -58,7 +46,6 @@ import org.springframework.web.server.session.WebSessionManager;
 public class HttpHandlerAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingBean(RouterFunction.class)
 	public static class AnnotationConfig {
 
 		private ApplicationContext applicationContext;
@@ -69,58 +56,7 @@ public class HttpHandlerAutoConfiguration {
 
 		@Bean
 		public HttpHandler httpHandler() {
-			return WebHttpHandlerBuilder.applicationContext(this.applicationContext)
-					.build();
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnBean(RouterFunction.class)
-	public static class FunctionalConfig {
-
-		private final List<WebFilter> webFilters;
-
-		private final WebSessionManager webSessionManager;
-
-		private HandlerStrategies.Builder handlerStrategiesBuilder;
-
-		private final List<ViewResolver> viewResolvers;
-
-		public FunctionalConfig(ObjectProvider<List<WebFilter>> webFilters,
-				ObjectProvider<WebSessionManager> webSessionManager,
-				ObjectProvider<HandlerStrategies.Builder> handlerStrategiesBuilder,
-				ObjectProvider<List<ViewResolver>> viewResolvers) {
-			this.webFilters = webFilters.getIfAvailable();
-			if (this.webFilters != null) {
-				AnnotationAwareOrderComparator.sort(this.webFilters);
-			}
-			this.webSessionManager = webSessionManager.getIfAvailable();
-			this.handlerStrategiesBuilder = handlerStrategiesBuilder.getIfAvailable();
-			this.viewResolvers = viewResolvers.getIfAvailable();
-		}
-
-		@Bean
-		public HttpHandler httpHandler(List<RouterFunction<?>> routerFunctions) {
-			routerFunctions.sort(new AnnotationAwareOrderComparator());
-			RouterFunction<?> routerFunction = routerFunctions.stream()
-					.reduce(RouterFunction::andOther).get();
-			if (this.handlerStrategiesBuilder == null) {
-				this.handlerStrategiesBuilder = HandlerStrategies.builder();
-			}
-			if (this.webFilters != null) {
-				this.webFilters.forEach(this.handlerStrategiesBuilder::webFilter);
-			}
-			if (this.viewResolvers != null) {
-				this.viewResolvers.forEach(this.handlerStrategiesBuilder::viewResolver);
-			}
-			HttpHandler httpHandler = RouterFunctions.toHttpHandler(routerFunction,
-					this.handlerStrategiesBuilder.build());
-			if (this.webSessionManager != null) {
-				((HttpWebHandlerAdapter) httpHandler)
-						.setSessionManager(this.webSessionManager);
-			}
-			return httpHandler;
+			return WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
 		}
 
 	}
