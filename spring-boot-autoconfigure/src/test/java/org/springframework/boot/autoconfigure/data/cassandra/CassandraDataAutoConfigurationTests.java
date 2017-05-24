@@ -33,8 +33,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.core.CassandraTemplate;
-import org.springframework.data.cassandra.mapping.CassandraMappingContext;
-import org.springframework.data.cassandra.mapping.SimpleUserTypeResolver;
+import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
+import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
