@@ -899,8 +899,8 @@ public class WebMvcAutoConfigurationTests {
 	static class CustomRequestMappingHandlerMapping {
 
 		@Bean
-		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerMapping() {
-			return new WebMvcRegistrationsAdapter() {
+		public WebMvcRegistrations webMvcRegistrationsHandlerMapping() {
+			return new WebMvcRegistrations() {
 
 				@Override
 				public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
@@ -921,8 +921,8 @@ public class WebMvcAutoConfigurationTests {
 	static class CustomRequestMappingHandlerAdapter {
 
 		@Bean
-		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerAdapter() {
-			return new WebMvcRegistrationsAdapter() {
+		public WebMvcRegistrations webMvcRegistrationsHandlerAdapter() {
+			return new WebMvcRegistrations() {
 
 				@Override
 				public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
