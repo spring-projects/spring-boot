@@ -40,20 +40,26 @@ public interface WebMvcRegistrations {
 	 * processed by the MVC configuration.
 	 * @return the custom {@link RequestMappingHandlerMapping} instance
 	 */
-	RequestMappingHandlerMapping getRequestMappingHandlerMapping();
+	default RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+		return null;
+	}
 
 	/**
 	 * Return the custom {@link RequestMappingHandlerAdapter} that should be used and
 	 * processed by the MVC configuration.
 	 * @return the custom {@link RequestMappingHandlerAdapter} instance
 	 */
-	RequestMappingHandlerAdapter getRequestMappingHandlerAdapter();
+	default RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+		return null;
+	}
 
 	/**
 	 * Return the custom {@link ExceptionHandlerExceptionResolver} that should be used and
 	 * processed by the MVC configuration.
 	 * @return the custom {@link ExceptionHandlerExceptionResolver} instance
 	 */
-	ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver();
+	default ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
+		return null;
+	}
 
 }
