@@ -248,7 +248,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void adapShouldStripInvalidChars() throws Exception {
+	public void adaptShouldStripInvalidChars() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("f@@.b%r", '.');
 		assertThat(name.getElement(0, Form.UNIFORM)).isEqualTo("f");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("f");

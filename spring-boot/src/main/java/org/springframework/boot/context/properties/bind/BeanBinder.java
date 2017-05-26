@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.bind;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 
 /**
  * Internal strategy used by {@link Binder} to bind beans.
@@ -31,9 +30,7 @@ interface BeanBinder {
 	 * Return a bound bean instance or {@code null} if the {@link BeanBinder} does not
 	 * support the specified {@link Bindable}.
 	 * @param name the name being bound
-	 * @param target the bindable to bind names from underlying
-	 * {@link ConfigurationPropertySource} cannot be iterated this method can be
-	 * {@code false}, even though binding may ultimately succeed.
+	 * @param target the bindable to bind
 	 * @param context the bind context
 	 * @param propertyBinder property binder
 	 * @param <T> The source type

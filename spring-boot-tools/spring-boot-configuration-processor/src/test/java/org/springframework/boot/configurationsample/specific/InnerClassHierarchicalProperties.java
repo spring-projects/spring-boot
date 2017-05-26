@@ -26,7 +26,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Madhura Bhave
  */
 @ConfigurationProperties(prefix = "config")
-public class InnerClassHierachicalProperties {
+public class InnerClassHierarchicalProperties {
 
 	private Foo foo;
 
