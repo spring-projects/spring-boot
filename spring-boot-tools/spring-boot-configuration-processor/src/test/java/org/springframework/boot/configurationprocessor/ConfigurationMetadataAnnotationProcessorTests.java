@@ -65,7 +65,7 @@ import org.springframework.boot.configurationsample.specific.DoubleRegistrationP
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.GenericConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
-import org.springframework.boot.configurationsample.specific.InnerClassHierachicalProperties;
+import org.springframework.boot.configurationsample.specific.InnerClassHierarchicalProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
@@ -350,14 +350,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void innerClassPropertiesHierachical() throws Exception {
-		ConfigurationMetadata metadata = compile(InnerClassHierachicalProperties.class);
+	public void innerClassPropertiesHierarchical() throws Exception {
+		ConfigurationMetadata metadata = compile(InnerClassHierarchicalProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config.foo")
-				.ofType(InnerClassHierachicalProperties.Foo.class));
+				.ofType(InnerClassHierarchicalProperties.Foo.class));
 		assertThat(metadata).has(Metadata.withGroup("config.foo.bar")
-				.ofType(InnerClassHierachicalProperties.Bar.class));
+				.ofType(InnerClassHierarchicalProperties.Bar.class));
 		assertThat(metadata).has(Metadata.withGroup("config.foo.bar.baz")
-				.ofType(InnerClassHierachicalProperties.Foo.Baz.class));
+				.ofType(InnerClassHierarchicalProperties.Foo.Baz.class));
 		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.baz.blah"));
 		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.bling"));
 	}
