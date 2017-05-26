@@ -401,7 +401,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
 				for (String ext : loader.getFileExtensions()) {
-					loadForFileExtention(loader, profile, location + name, "." + ext);
+					loadForFileExtension(loader, profile, location + name, "." + ext);
 				}
 			}
 		}
@@ -411,7 +411,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 					.anyMatch(name.toLowerCase()::endsWith);
 		}
 
-		private void loadForFileExtention(PropertySourceLoader loader, Profile profile,
+		private void loadForFileExtension(PropertySourceLoader loader, Profile profile,
 				String prefix, String ext) {
 			if (profile != null) {
 				// Try the profile-specific file

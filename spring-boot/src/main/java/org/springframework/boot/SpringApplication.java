@@ -1118,7 +1118,7 @@ public class SpringApplication {
 	 * <p>
 	 * The sources here are added to those that were set in the constructor. Most users
 	 * should consider using {@link #getSources()}/{@link #setSources(Set)} rather than
-	 * this calling method.
+	 * calling this method.
 	 * @param additionalPrimarySources the additional primary sources to add
 	 * @see #SpringApplication(Class...)
 	 * @see #getSources()
