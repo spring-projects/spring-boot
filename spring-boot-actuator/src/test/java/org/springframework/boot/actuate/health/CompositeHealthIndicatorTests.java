@@ -52,11 +52,17 @@ public class CompositeHealthIndicatorTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.one.health())
-				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
+				.willReturn(new Health.Builder().unknown()
+						.withDetail("1", "1")
+						.withDetail("responseTimeMs", 1L).build());
 		given(this.two.health())
-				.willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
+				.willReturn(new Health.Builder().unknown()
+						.withDetail("2", "2")
+						.withDetail("responseTimeMs", 2L).build());
 		given(this.three.health())
-				.willReturn(new Health.Builder().unknown().withDetail("3", "3").build());
+				.willReturn(new Health.Builder().unknown()
+						.withDetail("3", "3")
+						.withDetail("responseTimeMs", 3L).build());
 
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
@@ -69,11 +75,15 @@ public class CompositeHealthIndicatorTests {
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
 				this.healthAggregator, indicators);
 		Health result = composite.health();
-		assertThat(result.getDetails()).hasSize(2);
+		assertThat(result.getDetails()).hasSize(3);
 		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
+				new Health.Builder().unknown()
+						.withDetail("1", "1")
+						.withDetail("responseTimeMs", 1L).build());
 		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
+				new Health.Builder().unknown()
+						.withDetail("2", "2")
+						.withDetail("responseTimeMs", 2L).build());
 	}
 
 	@Test
@@ -85,13 +95,19 @@ public class CompositeHealthIndicatorTests {
 				this.healthAggregator, indicators);
 		composite.addHealthIndicator("three", this.three);
 		Health result = composite.health();
-		assertThat(result.getDetails()).hasSize(3);
+		assertThat(result.getDetails()).hasSize(4);
 		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
+				new Health.Builder().unknown()
+						.withDetail("1", "1")
+						.withDetail("responseTimeMs", 1L).build());
 		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
+				new Health.Builder().unknown()
+						.withDetail("2", "2")
+						.withDetail("responseTimeMs", 2L).build());
 		assertThat(result.getDetails()).containsEntry("three",
-				new Health.Builder().unknown().withDetail("3", "3").build());
+				new Health.Builder().unknown()
+						.withDetail("3", "3")
+						.withDetail("responseTimeMs", 3L).build());
 	}
 
 	@Test
@@ -101,11 +117,15 @@ public class CompositeHealthIndicatorTests {
 		composite.addHealthIndicator("one", this.one);
 		composite.addHealthIndicator("two", this.two);
 		Health result = composite.health();
-		assertThat(result.getDetails().size()).isEqualTo(2);
+		assertThat(result.getDetails().size()).isEqualTo(3);
 		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
+				new Health.Builder().unknown()
+						.withDetail("1", "1")
+						.withDetail("responseTimeMs", 1L).build());
 		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
+				new Health.Builder().unknown()
+						.withDetail("2", "2")
+						.withDetail("responseTimeMs", 2L).build());
 	}
 
 	@Test
@@ -121,9 +141,10 @@ public class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
 		assertThat(mapper.writeValueAsString(result))
-				.isEqualTo("{\"status\":\"UNKNOWN\",\"db\":{\"status\":\"UNKNOWN\""
-						+ ",\"db1\":{\"status\":\"UNKNOWN\",\"1\":\"1\"},"
-						+ "\"db2\":{\"status\":\"UNKNOWN\",\"2\":\"2\"}}}");
+				.containsPattern("\\{\"status\":\"UNKNOWN\",\"db\":\\{\"status\":\"UNKNOWN\"," +
+						"\"db1\":\\{\"status\":\"UNKNOWN\",\"1\":\"1\",\"responseTimeMs\":\\d+\\}," +
+						"\"db2\":\\{\"status\":\"UNKNOWN\",\"2\":\"2\",\"responseTimeMs\":\\d+\\}," +
+						"\"responseTimeMs\":\\d+\\}");
 	}
 
 }
