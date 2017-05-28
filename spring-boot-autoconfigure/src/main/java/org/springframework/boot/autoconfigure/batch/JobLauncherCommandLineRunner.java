@@ -50,6 +50,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 
@@ -81,6 +85,8 @@ public class JobLauncherCommandLineRunner
 
 	private ApplicationEventPublisher publisher;
 
+	private PlatformTransactionManager transactionManager;
+
 	public JobLauncherCommandLineRunner(JobLauncher jobLauncher,
 			JobExplorer jobExplorer) {
 		this.jobLauncher = jobLauncher;
@@ -109,6 +115,11 @@ public class JobLauncherCommandLineRunner
 	@Autowired(required = false)
 	public void setJobs(Collection<Job> jobs) {
 		this.jobs = jobs;
+	}
+
+	@Autowired(required = false)
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	@Override
@@ -204,11 +215,25 @@ public class JobLauncherCommandLineRunner
 		}
 	}
 
-	protected void execute(Job job, JobParameters jobParameters)
+	protected void execute(final Job job, final JobParameters jobParameters)
 			throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException,
 			JobParametersNotFoundException {
-		JobParameters nextParameters = getNextJobParameters(job, jobParameters);
+
+		JobParameters nextParameters;
+		if (this.transactionManager != null) {
+			TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+			nextParameters = transactionTemplate.execute(new TransactionCallback<JobParameters>() {
+				@Override
+				public JobParameters doInTransaction(TransactionStatus transactionStatus) {
+					return getNextJobParameters(job, jobParameters);
+				}
+			});
+		}
+		else {
+			nextParameters = getNextJobParameters(job, jobParameters);
+		}
+
 		if (nextParameters != null) {
 			JobExecution execution = this.jobLauncher.run(job, nextParameters);
 			if (this.publisher != null) {
