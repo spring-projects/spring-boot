@@ -195,7 +195,7 @@ public class WebFluxAutoConfigurationTests {
 		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 		Object defaultValidator = this.context.getBean("defaultValidator");
 		assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
-		// Primary Spring validator is the one use by WebFlux behind the scenes
+		// Primary Spring validator is the one used by WebFlux behind the scenes
 		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
 	}
 
@@ -257,7 +257,7 @@ public class WebFluxAutoConfigurationTests {
 		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 		Object defaultValidator = this.context.getBean("defaultValidator");
 		assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
-		// Primary Spring validator is the one use by WebFlux behind the scenes
+		// Primary Spring validator is the one used by WebFlux behind the scenes
 		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
 	}
 

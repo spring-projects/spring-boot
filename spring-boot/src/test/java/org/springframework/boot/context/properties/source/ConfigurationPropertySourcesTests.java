@@ -79,7 +79,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void environmentProperyExpansionShouldWorkWhenAttached() throws Exception {
+	public void environmentPropertyExpansionShouldWorkWhenAttached() throws Exception {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
@@ -102,7 +102,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void fromPropertySourcseShouldFlattenPropertySources() throws Exception {
+	public void fromPropertySourceShouldFlattenPropertySources() throws Exception {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(new MapPropertySource("foo",
 				Collections.<String, Object>singletonMap("foo", "bar")));
