@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.embedded.netty;
 
-import java.net.BindException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -65,25 +64,11 @@ public class NettyWebServer implements WebServer {
 						.set(this.reactorServer.newHandler(this.handlerAdapter).block());
 			}
 			catch (Exception ex) {
-				if (findBindException(ex) != null) {
-//					throw new PortInUseException();
-				}
 				throw new WebServerException("Unable to start Netty", ex);
 			}
 			NettyWebServer.logger.info("Netty started on port(s): " + getPort());
 			startDaemonAwaitThread();
 		}
-	}
-
-	private BindException findBindException(Exception ex) {
-		Throwable candidate = ex;
-		while (candidate != null) {
-			if (candidate instanceof BindException) {
-				return (BindException) candidate;
-			}
-			candidate = candidate.getCause();
-		}
-		return null;
 	}
 
 	private void startDaemonAwaitThread() {
