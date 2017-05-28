@@ -678,7 +678,7 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(validator).isInstanceOf(WebMvcValidator.class);
 		Object defaultValidator = this.context.getBean("defaultValidator");
 		assertThat(((WebMvcValidator) validator).getTarget()).isSameAs(defaultValidator);
-		// Primary Spring validator is the one use by MVC behind the scenes
+		// Primary Spring validator is the one used by MVC behind the scenes
 		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
 	}
 
@@ -738,7 +738,7 @@ public class WebMvcAutoConfigurationTests {
 		Object defaultValidator = this.context.getBean("defaultValidator");
 		assertThat(((WebMvcValidator) validator).getTarget())
 				.isSameAs(defaultValidator);
-		// Primary Spring validator is the one use by MVC behind the scenes
+		// Primary Spring validator is the one used by MVC behind the scenes
 		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
 	}
 

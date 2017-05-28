@@ -4055,8 +4055,8 @@ production usage, but it's great for getting started and making sure that you un
 the features. When you have made up your mind about the cache provider to use, please make
 sure to read its documentation to figure out how to configure the caches that your
 application uses. Practically all providers require you to explicitly configure every
-cache that you use in the application. Some offers a way to build default caches that you
-need to specify with the `spring.cache.cache-names` property.
+cache that you use in the application. Some offer a way to customize the default caches
+defined by the `spring.cache.cache-names` property.
 
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 {spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
@@ -4346,7 +4346,7 @@ If none of the other providers can be found, a simple implementation using a
 `ConcurrentHashMap` as cache store is configured. This is the default if no caching
 library is present in your application. Caches are created on-the-fly by default but you
 can restrict the list of available caches using the `cache-names` property. For instance,
-if you you want only a `foo` and `bar` caches:
+if you want only `foo` and `bar` caches:
 
 [source,properties,indent=0]
 ----
