@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cli.app;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -77,8 +78,8 @@ public class SpringApplicationLauncherTests {
 		String[] args = new String[0];
 		new SpringApplicationLauncher(getClass().getClassLoader()).launch(sources, args);
 
-		assertThat(sources == TestSpringApplication.sources).isTrue();
-		assertThat(args == TestSpringApplication.args).isTrue();
+		assertThat(Arrays.equals(sources, TestSpringApplication.sources)).isTrue();
+		assertThat(Arrays.equals(args, TestSpringApplication.args)).isTrue();
 
 		Map<String, String> defaultProperties = TestSpringApplication.defaultProperties;
 		assertThat(defaultProperties).hasSize(1)
