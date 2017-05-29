@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,8 @@ public class Neo4jPropertiesTests {
 				"spring.data.neo4j.uri=http://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				"http://user:secret@my-server:7474");
+				"http://my-server:7474");
+		assertCredentials(configuration, "user", "secret");
 		assertCredentials(configuration, "user", "secret");
 	}
 
