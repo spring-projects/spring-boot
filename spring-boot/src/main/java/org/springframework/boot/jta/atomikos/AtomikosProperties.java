@@ -94,33 +94,6 @@ public class AtomikosProperties {
 	private long checkpointInterval = 500;
 
 	/**
-	 * Console log level.
-	 */
-	private AtomikosLoggingLevel consoleLogLevel = AtomikosLoggingLevel.WARN;
-
-	/**
-	 * Directory in which to store the debug log files. Defaults to the current working
-	 * directory.
-	 */
-	private String outputDir;
-
-	/**
-	 * Debug logs file name.
-	 */
-	private String consoleFileName = "tm.out";
-
-	/**
-	 * Number of debug logs files that can be created.
-	 */
-	private int consoleFileCount = 1;
-
-	/**
-	 * How many bytes can be stored at most in debug logs files. Negative values means
-	 * unlimited.
-	 */
-	private int consoleFileLimit = -1;
-
-	/**
 	 * Use different (and concurrent) threads for two-phase commit on the participating
 	 * resources.
 	 */
@@ -292,68 +265,6 @@ public class AtomikosProperties {
 	}
 
 	/**
-	 * Specifies the console log level. Defaults to {@link AtomikosLoggingLevel#WARN}.
-	 * @param consoleLogLevel the console log level
-	 */
-	public void setConsoleLogLevel(AtomikosLoggingLevel consoleLogLevel) {
-		this.consoleLogLevel = consoleLogLevel;
-	}
-
-	public AtomikosLoggingLevel getConsoleLogLevel() {
-		return this.consoleLogLevel;
-	}
-
-	/**
-	 * Specifies the directory in which to store the debug log files. Defaults to the
-	 * current working directory.
-	 * @param outputDir the output dir
-	 */
-	public void setOutputDir(String outputDir) {
-		this.outputDir = outputDir;
-	}
-
-	public String getOutputDir() {
-		return this.outputDir;
-	}
-
-	/**
-	 * Specifies the debug logs file name. Defaults to {@literal tm.out}.
-	 * @param consoleFileName the console file name
-	 */
-	public void setConsoleFileName(String consoleFileName) {
-		this.consoleFileName = consoleFileName;
-	}
-
-	public String getConsoleFileName() {
-		return this.consoleFileName;
-	}
-
-	/**
-	 * Specifies how many debug logs files can be created. Defaults to {@literal 1}.
-	 * @param consoleFileCount the console file count
-	 */
-	public void setConsoleFileCount(int consoleFileCount) {
-		this.consoleFileCount = consoleFileCount;
-	}
-
-	public int getConsoleFileCount() {
-		return this.consoleFileCount;
-	}
-
-	/**
-	 * Specifies how many bytes can be stored at most in debug logs files. Defaults to
-	 * {@literal -1}. Negative values means unlimited.
-	 * @param consoleFileLimit the console file limit
-	 */
-	public void setConsoleFileLimit(int consoleFileLimit) {
-		this.consoleFileLimit = consoleFileLimit;
-	}
-
-	public int getConsoleFileLimit() {
-		return this.consoleFileLimit;
-	}
-
-	/**
 	 * Specifies whether or not to use different (and concurrent) threads for two-phase
 	 * commit on the participating resources. Setting this to {@literal true} implies that
 	 * the commit is more efficient since waiting for acknowledgements is done in
@@ -388,11 +299,6 @@ public class AtomikosProperties {
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());
-		set(properties, "console_log_level", getConsoleLogLevel());
-		set(properties, "output_dir", getOutputDir());
-		set(properties, "console_file_name", getConsoleFileName());
-		set(properties, "console_file_count", getConsoleFileCount());
-		set(properties, "console_file_limit", getConsoleFileLimit());
 		set(properties, "threaded_2pc", isThreadedTwoPhaseCommit());
 		return properties;
 	}
