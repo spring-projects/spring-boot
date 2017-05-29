@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * annotation directly.
  *
  * @author Michael Simons
- * @since 1.5.x
+ * @since 2.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

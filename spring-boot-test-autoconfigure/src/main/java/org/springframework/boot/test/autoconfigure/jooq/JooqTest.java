@@ -50,7 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
  * to override these settings.
  *
  * @author Michael Simons
- * @since 1.5.x
+ * @since 2.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

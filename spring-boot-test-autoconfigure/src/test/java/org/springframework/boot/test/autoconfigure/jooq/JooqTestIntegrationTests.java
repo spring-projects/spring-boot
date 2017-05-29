@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.jooq;
 import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,7 +30,6 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.ExampleComponent;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +41,6 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  */
 @RunWith(SpringRunner.class)
 @JooqTest
-@TestPropertySource(properties = "spring.jooq.sql-dialect = H2")
 public class JooqTestIntegrationTests {
 
 	@Rule
@@ -60,7 +57,6 @@ public class JooqTestIntegrationTests {
 
 	@Test
 	public void testDSLContext() {
-		assertThat(this.dsl.configuration().dialect()).isEqualTo(SQLDialect.H2);
 		assertThat(this.dsl.selectCount().from("INFORMATION_SCHEMA.TABLES").fetchOne(0, Integer.class)).isGreaterThan(0);
 	}
 
