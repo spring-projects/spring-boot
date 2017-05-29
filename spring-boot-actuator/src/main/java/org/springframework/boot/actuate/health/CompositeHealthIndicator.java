@@ -65,38 +65,40 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	@Override
 	public Health health() {
 		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+		stopWatch.setKeepTaskList(false);
 
 		Map<String, Health> healths = new LinkedHashMap<>();
+
 		for (Map.Entry<String, HealthIndicator> entry : this.indicators.entrySet()) {
-			healths.put(entry.getKey(), healthIndicatorWithResponseTime(entry.getValue()));
+			healths.put(entry.getKey(), healthIndicatorWithResponseTime(entry.getValue(), stopWatch));
 		}
+
+		stopWatch.start();
 
 		Health aggregateHealths = this.healthAggregator.aggregate(healths);
 
 		stopWatch.stop();
 
-		return addResponseTimeMsToHealth(aggregateHealths, stopWatch);
+		return addResponseTimeMsToHealth(aggregateHealths, stopWatch.getTotalTimeMillis());
 	}
 
-	private Health healthIndicatorWithResponseTime(HealthIndicator healthIndicator) {
-		StopWatch stopWatch = new StopWatch();
+	private Health healthIndicatorWithResponseTime(HealthIndicator healthIndicator, StopWatch stopWatch) {
 		stopWatch.start();
 
 		Health health = healthIndicator.health();
 
 		stopWatch.stop();
 
-		return addResponseTimeMsToHealth(health, stopWatch);
+		return addResponseTimeMsToHealth(health, stopWatch.getLastTaskTimeMillis());
 	}
 
-	private Health addResponseTimeMsToHealth(Health health, StopWatch stopWatch) {
+	private Health addResponseTimeMsToHealth(Health health, long responseTimeMs) {
 		if (health.getDetails().containsKey("responseTimeMs")) {
 			return health;
 		}
 
 		return new Health.Builder(health.getStatus(), health.getDetails())
-				.withDetail("responseTimeMs", stopWatch.getLastTaskTimeMillis())
+				.withDetail("responseTimeMs", responseTimeMs)
 				.build();
 	}
 }
