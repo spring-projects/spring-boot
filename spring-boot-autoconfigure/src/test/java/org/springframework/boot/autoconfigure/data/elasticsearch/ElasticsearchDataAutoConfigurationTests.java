@@ -66,7 +66,7 @@ public class ElasticsearchDataAutoConfigurationTests {
 		TestPropertyValues.of(
 				"spring.data.elasticsearch.properties.path.data:target/data",
 				"spring.data.elasticsearch.properties.path.logs:target/logs")
-				.applyTo(this.context);;
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
