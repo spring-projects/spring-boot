@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Bean friendly variant of
@@ -310,11 +311,14 @@ public class AtomikosProperties {
 	 * Specifies the console log level. Defaults to {@link AtomikosLoggingLevel#WARN}.
 	 * @param consoleLogLevel the console log level
 	 */
+	@Deprecated
 	public void setConsoleLogLevel(AtomikosLoggingLevel consoleLogLevel) {
 		this.consoleLogLevel = consoleLogLevel;
 		set("console_log_level", consoleLogLevel);
 	}
 
+	@DeprecatedConfigurationProperty(reason = "The proprietary logging framework is no longer supported as of Atomikos 3.8")
+	@Deprecated
 	public AtomikosLoggingLevel getConsoleLogLevel() {
 		return this.consoleLogLevel;
 	}
@@ -324,11 +328,14 @@ public class AtomikosProperties {
 	 * current working directory.
 	 * @param outputDir the output dir
 	 */
+	@Deprecated
 	public void setOutputDir(String outputDir) {
 		this.outputDir = outputDir;
 		set("output_dir", outputDir);
 	}
 
+	@DeprecatedConfigurationProperty(reason = "The proprietary logging framework is no longer supported as of Atomikos 3.8")
+	@Deprecated
 	public String getOutputDir() {
 		return this.outputDir;
 	}
@@ -337,11 +344,14 @@ public class AtomikosProperties {
 	 * Specifies the debug logs file name. Defaults to {@literal tm.out}.
 	 * @param consoleFileName the console file name
 	 */
+	@Deprecated
 	public void setConsoleFileName(String consoleFileName) {
 		this.consoleFileName = consoleFileName;
 		set("console_file_name", consoleFileName);
 	}
 
+	@DeprecatedConfigurationProperty(reason = "The proprietary logging framework is no longer supported as of Atomikos 3.8")
+	@Deprecated
 	public String getConsoleFileName() {
 		return this.consoleFileName;
 	}
@@ -350,11 +360,14 @@ public class AtomikosProperties {
 	 * Specifies how many debug logs files can be created. Defaults to {@literal 1}.
 	 * @param consoleFileCount the console file count
 	 */
+	@Deprecated
 	public void setConsoleFileCount(int consoleFileCount) {
 		this.consoleFileCount = consoleFileCount;
 		set("console_file_count", consoleFileCount);
 	}
 
+	@DeprecatedConfigurationProperty(reason = "The proprietary logging framework is no longer supported as of Atomikos 3.8")
+	@Deprecated
 	public int getConsoleFileCount() {
 		return this.consoleFileCount;
 	}
@@ -364,11 +377,14 @@ public class AtomikosProperties {
 	 * {@literal -1}. Negative values means unlimited.
 	 * @param consoleFileLimit the console file limit
 	 */
+	@Deprecated
 	public void setConsoleFileLimit(int consoleFileLimit) {
 		this.consoleFileLimit = consoleFileLimit;
 		set("console_file_limit", consoleFileLimit);
 	}
 
+	@DeprecatedConfigurationProperty(reason = "The proprietary logging framework is no longer supported as of Atomikos 3.8")
+	@Deprecated
 	public int getConsoleFileLimit() {
 		return this.consoleFileLimit;
 	}

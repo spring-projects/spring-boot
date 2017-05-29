@@ -702,10 +702,6 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.datasource.test-query= # SQL query or statement used to validate a connection before returning it.
 	spring.jta.atomikos.datasource.unique-resource-name=dataSource # The unique name used to identify the resource during recovery.
 	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints.
-	spring.jta.atomikos.properties.console-file-count=1 # Number of debug logs files that can be created.
-	spring.jta.atomikos.properties.console-file-limit=-1 # How many bytes can be stored at most in debug logs files.
-	spring.jta.atomikos.properties.console-file-name=tm.out # Debug logs file name.
-	spring.jta.atomikos.properties.console-log-level= # Console log level.
 	spring.jta.atomikos.properties.default-jta-timeout=10000 # Default timeout for JTA transactions.
 	spring.jta.atomikos.properties.enable-logging=true # Enable disk logging.
 	spring.jta.atomikos.properties.force-shutdown-on-vm-exit=false # Specify if a VM shutdown should trigger forced shutdown of the transaction core.
@@ -713,7 +709,6 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.properties.log-base-name=tmlog # Transactions log file base name.
 	spring.jta.atomikos.properties.max-actives=50 # Maximum number of active transactions.
 	spring.jta.atomikos.properties.max-timeout=300000 # Maximum timeout (in milliseconds) that can be allowed for transactions.
-	spring.jta.atomikos.properties.output-dir= # Directory in which to store the debug log files.
 	spring.jta.atomikos.properties.serial-jta-transactions=true # Specify if sub-transactions should be joined when possible.
 	spring.jta.atomikos.properties.service= # Transaction manager implementation that should be started.
 	spring.jta.atomikos.properties.threaded-two-phase-commit=true # Use different (and concurrent) threads for two-phase commit on the participating resources.
