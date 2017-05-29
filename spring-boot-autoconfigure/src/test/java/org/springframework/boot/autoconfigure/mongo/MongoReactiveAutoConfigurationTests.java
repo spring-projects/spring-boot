@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.async.client.MongoClientSettings;
+import com.mongodb.async.client.MongoClientSettings.Builder;
 import com.mongodb.connection.SocketSettings;
 import com.mongodb.connection.StreamFactory;
 import com.mongodb.connection.StreamFactoryFactory;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MongoReactiveAutoConfiguration}.
@@ -106,6 +108,37 @@ public class MongoReactiveAutoConfigurationTests {
 				.isSameAs(this.context.getBean("myStreamFactoryFactory"));
 	}
 
+	@Test
+	public void customizerGetsInvoked() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(
+				"spring.data.mongodb.uri:mongodb://localhost/test").applyTo(this.context);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MongoReactiveAutoConfiguration.class, MockCustomizerConfig.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
+				.isEqualTo(1);
+		MongoClientSettingsBuilderCustomizer customizer = this.context
+				.getBean(MongoClientSettingsBuilderCustomizer.class);
+		verify(customizer).customize(any(Builder.class));
+	}
+
+	@Test
+	public void customizerOverridesAutoConfig() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues
+				.of("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
+				.applyTo(this.context);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MongoReactiveAutoConfiguration.class, SimpleCustomizerConfig.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
+				.isEqualTo(1);
+		MongoClient client = this.context.getBean(MongoClient.class);
+		assertThat(client.getSettings().getApplicationName())
+				.isEqualTo("overridden-name");
+	}
+
 	@Configuration
 	static class OptionsConfig {
 
@@ -134,6 +167,31 @@ public class MongoReactiveAutoConfigurationTests {
 			given(streamFactoryFactory.create(any(), any()))
 					.willReturn(mock(StreamFactory.class));
 			return streamFactoryFactory;
+		}
+
+	}
+
+	@Configuration
+	static class MockCustomizerConfig {
+
+		@Bean
+		public MongoClientSettingsBuilderCustomizer customizer() {
+			return mock(MongoClientSettingsBuilderCustomizer.class);
+		}
+
+	}
+
+	@Configuration
+	static class SimpleCustomizerConfig {
+
+		@Bean
+		public MongoClientSettingsBuilderCustomizer customizer() {
+			return new MongoClientSettingsBuilderCustomizer() {
+				@Override
+				public void customize(MongoClientSettings.Builder settingsBuilder) {
+					settingsBuilder.applicationName("overridden-name");
+				}
+			};
 		}
 
 	}
