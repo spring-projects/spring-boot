@@ -72,6 +72,11 @@ public class AtomikosProperties {
 	private boolean serialJtaTransactions = true;
 
 	/**
+	 * Specify if sub-transactions are allowed.
+	 */
+	private boolean allowSubTransactions = true;
+
+	/**
 	 * Specify if a VM shutdown should trigger forced shutdown of the transaction core.
 	 */
 	private boolean forceShutdownOnVmExit;
@@ -125,6 +130,8 @@ public class AtomikosProperties {
 	 * resources.
 	 */
 	private boolean threadedTwoPhaseCommit;
+
+	private final Recovery recovery = new Recovery();
 
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
@@ -233,6 +240,14 @@ public class AtomikosProperties {
 
 	public boolean isSerialJtaTransactions() {
 		return this.serialJtaTransactions;
+	}
+
+	public void setAllowSubTransactions(boolean allowSubTransactions) {
+		this.allowSubTransactions = allowSubTransactions;
+	}
+
+	public boolean isAllowSubTransactions() {
+		return this.allowSubTransactions;
 	}
 
 	/**
@@ -370,6 +385,10 @@ public class AtomikosProperties {
 		return this.threadedTwoPhaseCommit;
 	}
 
+	public Recovery getRecovery() {
+		return this.recovery;
+	}
+
 	/**
 	 * Returns the properties as a {@link Properties} object that can be used with
 	 * Atomikos.
@@ -384,6 +403,7 @@ public class AtomikosProperties {
 		set(properties, "enable_logging", isEnableLogging());
 		set(properties, "tm_unique_name", getTransactionManagerUniqueName());
 		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
+		set(properties, "allow_subtransactions", isAllowSubTransactions());
 		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
@@ -394,6 +414,12 @@ public class AtomikosProperties {
 		set(properties, "console_file_count", getConsoleFileCount());
 		set(properties, "console_file_limit", getConsoleFileLimit());
 		set(properties, "threaded_2pc", isThreadedTwoPhaseCommit());
+		Recovery recovery = getRecovery();
+		set(properties, "forget_orphaned_log_entries_delay",
+				recovery.getForgetOrphanedLogEntriesDelay());
+		set(properties, "recovery_delay", recovery.getDelay());
+		set(properties, "oltp_max_retries", recovery.getMaxRetries());
+		set(properties, "oltp_retry_interval", recovery.getRetryInterval());
 		return properties;
 	}
 
@@ -402,6 +428,66 @@ public class AtomikosProperties {
 		if (value != null && !properties.containsKey(id)) {
 			properties.setProperty(id, value.toString());
 		}
+	}
+
+	/**
+	 * Recovery specific settings.
+	 */
+	public static class Recovery {
+
+		/**
+		 * Delay after which recovery can cleanup pending ('orphaned') log entries.
+		 */
+		private long forgetOrphanedLogEntriesDelay = 86400000;
+
+		/**
+		 * Delay between two recovery scans.
+		 */
+		private long delay = 10000;
+
+		/**
+		 * Number of retries attempts to commit the transaction before throwing an
+		 * exception.
+		 */
+		private int maxRetries = 5;
+
+		/**
+		 * Delay between retry attempts.
+		 */
+		private long retryInterval = 10000;
+
+		public long getForgetOrphanedLogEntriesDelay() {
+			return this.forgetOrphanedLogEntriesDelay;
+		}
+
+		public void setForgetOrphanedLogEntriesDelay(long forgetOrphanedLogEntriesDelay) {
+			this.forgetOrphanedLogEntriesDelay = forgetOrphanedLogEntriesDelay;
+		}
+
+		public long getDelay() {
+			return this.delay;
+		}
+
+		public void setDelay(long delay) {
+			this.delay = delay;
+		}
+
+		public int getMaxRetries() {
+			return this.maxRetries;
+		}
+
+		public void setMaxRetries(int maxRetries) {
+			this.maxRetries = maxRetries;
+		}
+
+		public long getRetryInterval() {
+			return this.retryInterval;
+		}
+
+		public void setRetryInterval(long retryInterval) {
+			this.retryInterval = retryInterval;
+		}
+
 	}
 
 }

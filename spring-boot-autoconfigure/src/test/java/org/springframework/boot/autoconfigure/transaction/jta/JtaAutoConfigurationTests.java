@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -166,22 +165,7 @@ public class JtaAutoConfigurationTests {
 				AtomikosJtaConfiguration.class);
 		this.context.refresh();
 
-		File epochFile = new File("target/transaction-logs/"
-				+ InetAddress.getLocalHost().getHostAddress() + ".tm0.epoch");
-		assertThat(epochFile.isFile()).isTrue();
-	}
-
-	@Test
-	public void customAtomikosTransactionManagerName() throws BeansException, Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.jta.transactionManagerId:custom",
-				"spring.jta.logDir:target/transaction-logs").applyTo(this.context);
-		this.context.register(JtaPropertiesConfiguration.class,
-				AtomikosJtaConfiguration.class);
-		this.context.refresh();
-
-		File epochFile = new File("target/transaction-logs/custom0.epoch");
+		File epochFile = new File("target/transaction-logs/tmlog0.log");
 		assertThat(epochFile.isFile()).isTrue();
 	}
 

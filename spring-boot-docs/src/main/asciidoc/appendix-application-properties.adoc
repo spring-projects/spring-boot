@@ -738,6 +738,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.datasource.reap-timeout=0 # The reap timeout, in seconds, for borrowed connections. 0 denotes no limit.
 	spring.jta.atomikos.datasource.test-query= # SQL query or statement used to validate a connection before returning it.
 	spring.jta.atomikos.datasource.unique-resource-name=dataSource # The unique name used to identify the resource during recovery.
+	spring.jta.atomikos.properties.allow-sub-transactions=true # Specify if sub-transactions are allowed.
 	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints.
 	spring.jta.atomikos.properties.console-file-count=1 # Number of debug logs files that can be created.
 	spring.jta.atomikos.properties.console-file-limit=-1 # How many bytes can be stored at most in debug logs files.
@@ -751,6 +752,10 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.properties.max-actives=50 # Maximum number of active transactions.
 	spring.jta.atomikos.properties.max-timeout=300000 # Maximum timeout (in milliseconds) that can be allowed for transactions.
 	spring.jta.atomikos.properties.output-dir= # Directory in which to store the debug log files.
+	spring.jta.atomikos.properties.recovery.delay=10000 # Delay between two recovery scans.
+	spring.jta.atomikos.properties.recovery.forget-orphaned-log-entries-delay=86400000 # Delay after which recovery can cleanup pending ('orphaned') log entries.
+	spring.jta.atomikos.properties.recovery.max-retries=5 # Number of retries attempts to commit the transaction before throwing an exception.
+	spring.jta.atomikos.properties.recovery.retry-interval=10000 # Delay between retry attempts.
 	spring.jta.atomikos.properties.serial-jta-transactions=true # Specify if sub-transactions should be joined when possible.
 	spring.jta.atomikos.properties.service= # Transaction manager implementation that should be started.
 	spring.jta.atomikos.properties.threaded-two-phase-commit=false # Use different (and concurrent) threads for two-phase commit on the participating resources.

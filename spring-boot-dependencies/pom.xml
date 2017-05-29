@@ -52,7 +52,7 @@
 		<artemis.version>1.5.5</artemis.version>
 		<aspectj.version>1.8.10</aspectj.version>
 		<assertj.version>3.8.0</assertj.version>
-		<atomikos.version>3.9.3</atomikos.version>
+		<atomikos.version>4.0.4</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<byte-buddy.version>1.6.14</byte-buddy.version>
 		<caffeine.version>2.5.1</caffeine.version>
