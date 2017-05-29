@@ -24,7 +24,9 @@ import java.util.List;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -38,16 +40,41 @@ abstract class RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
+	private final RedisStandaloneConfiguration standaloneConfiguration;
+
 	private final RedisSentinelConfiguration sentinelConfiguration;
 
 	private final RedisClusterConfiguration clusterConfiguration;
 
 	protected RedisConnectionConfiguration(RedisProperties properties,
+			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
 		this.properties = properties;
+		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
+	}
+
+	protected final RedisStandaloneConfiguration getStandaloneConfig() {
+		if (this.standaloneConfiguration != null) {
+			return this.standaloneConfiguration;
+		}
+		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+
+		if (StringUtils.hasText(this.properties.getUrl())) {
+			ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
+			config.setHostName(connectionInfo.getHostName());
+			config.setPort(connectionInfo.getPort());
+			config.setPassword(RedisPassword.of(connectionInfo.getPassword()));
+		}
+		else {
+			config.setHostName(this.properties.getHost());
+			config.setPort(this.properties.getPort());
+			config.setPassword(RedisPassword.of(this.properties.getPassword()));
+		}
+		config.setDatabase(this.properties.getDatabase());
+		return config;
 	}
 
 	protected final RedisSentinelConfiguration getSentinelConfig() {

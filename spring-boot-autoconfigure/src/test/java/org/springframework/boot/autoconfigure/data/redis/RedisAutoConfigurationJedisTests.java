@@ -28,6 +28,9 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.util.StringUtils;
 
@@ -60,6 +63,17 @@ public class RedisAutoConfigurationJedisTests {
 		assertThat(cf.getDatabase()).isEqualTo(1);
 		assertThat(cf.getPassword()).isNull();
 		assertThat(cf.isUseSsl()).isFalse();
+	}
+
+	@Test
+	public void testCustomizeRedisConfiguration() throws Exception {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(RedisAutoConfiguration.class);
+		ctx.register(CustomConfiguration.class);
+		ctx.refresh();
+
+		JedisConnectionFactory cf = ctx.getBean(JedisConnectionFactory.class);
+		assertThat(cf.isUseSsl()).isTrue();
 	}
 
 	@Test
@@ -170,6 +184,16 @@ public class RedisAutoConfigurationJedisTests {
 				}
 			}
 		}
+	}
+
+	@Configuration
+	static class CustomConfiguration {
+
+		@Bean
+		JedisClientConfigurationBuilderCustomizer customizer() {
+			return JedisClientConfigurationBuilder::useSsl;
+		}
+
 	}
 
 }
