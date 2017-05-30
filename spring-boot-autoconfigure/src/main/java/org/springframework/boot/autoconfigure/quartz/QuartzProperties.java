@@ -25,60 +25,69 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for the Quartz Scheduler integration.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties("spring.quartz")
 public class QuartzProperties {
 
-	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/quartz/impl/"
-			+ "jdbcjobstore/tables_@@platform@@.sql";
-
-	private final Initializer initializer = new Initializer();
+	/**
+	 * Quartz job store type.
+	 */
+	private JobStoreType jobStoreType = JobStoreType.MEMORY;
 
 	/**
 	 * Additional Quartz Scheduler properties.
 	 */
-	private Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new HashMap<>();
 
-	/**
-	 * Path to the SQL file to use to initialize the database schema.
-	 */
-	private String schema = DEFAULT_SCHEMA_LOCATION;
+	private final Jdbc jdbc = new Jdbc();
 
-	public Initializer getInitializer() {
-		return this.initializer;
+	public JobStoreType getJobStoreType() {
+		return this.jobStoreType;
+	}
+
+	public void setJobStoreType(JobStoreType jobStoreType) {
+		this.jobStoreType = jobStoreType;
 	}
 
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
 
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
+	public Jdbc getJdbc() {
+		return this.jdbc;
 	}
 
-	public String getSchema() {
-		return this.schema;
-	}
+	public static class Jdbc {
 
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
-	public class Initializer {
+		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/quartz/impl/"
+				+ "jdbcjobstore/tables_@@platform@@.sql";
 
 		/**
-		 * Create the required Quartz Scheduler tables on startup if necessary. Enabled
-		 * automatically if the schema is configured.
+		 * Path to the SQL file to use to initialize the database schema.
 		 */
-		private boolean enabled = true;
+		private String schema = DEFAULT_SCHEMA_LOCATION;
 
-		public boolean isEnabled() {
-			return this.enabled && QuartzProperties.this.getSchema() != null;
+		/**
+		 * Create the required Quartz Scheduler tables on startup.
+		 */
+		private boolean initializeSchema;
+
+		public String getSchema() {
+			return this.schema;
 		}
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
+		public void setSchema(String schema) {
+			this.schema = schema;
+		}
+
+		public boolean isInitializeSchema() {
+			return this.initializeSchema;
+		}
+
+		public void setInitializeSchema(boolean initializeSchema) {
+			this.initializeSchema = initializeSchema;
 		}
 
 	}

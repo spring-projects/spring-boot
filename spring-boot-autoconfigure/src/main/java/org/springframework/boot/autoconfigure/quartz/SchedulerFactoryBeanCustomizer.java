@@ -28,6 +28,10 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
  */
 public interface SchedulerFactoryBeanCustomizer {
 
+	/**
+	 * Customize the {@link SchedulerFactoryBean}.
+	 * @param schedulerFactoryBean the scheduler to customize
+	 */
 	void customize(SchedulerFactoryBean schedulerFactoryBean);
 
 }

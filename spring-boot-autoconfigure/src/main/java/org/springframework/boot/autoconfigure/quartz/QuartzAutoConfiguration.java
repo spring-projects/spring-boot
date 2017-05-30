@@ -28,21 +28,18 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -51,6 +48,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * {@link EnableAutoConfiguration Auto-configuration} for Quartz Scheduler.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Configuration
@@ -59,7 +57,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableConfigurationProperties(QuartzProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
-public class QuartzAutoConfiguration implements ApplicationContextAware {
+public class QuartzAutoConfiguration {
 
 	private final QuartzProperties properties;
 
@@ -73,23 +71,25 @@ public class QuartzAutoConfiguration implements ApplicationContextAware {
 
 	private final Trigger[] triggers;
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
 			ObjectProvider<List<SchedulerFactoryBeanCustomizer>> customizers,
 			ObjectProvider<Executor> taskExecutor, ObjectProvider<JobDetail[]> jobDetails,
 			ObjectProvider<Map<String, Calendar>> calendars,
-			ObjectProvider<Trigger[]> triggers) {
+			ObjectProvider<Trigger[]> triggers,
+			ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers.getIfAvailable();
 		this.taskExecutor = taskExecutor.getIfAvailable();
 		this.jobDetails = jobDetails.getIfAvailable();
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();
+		this.applicationContext = applicationContext;
 	}
 
 	@Bean
-	@ConditionalOnBean(DataSource.class)
+	@ConditionalOnSingleCandidate(DataSource.class)
 	@ConditionalOnMissingBean
 	public QuartzDatabaseInitializer quartzDatabaseInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader) {
@@ -98,7 +98,7 @@ public class QuartzAutoConfiguration implements ApplicationContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SchedulerFactoryBean schedulerFactoryBean() {
+	public SchedulerFactoryBean quartzScheduler() {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 		schedulerFactoryBean.setJobFactory(new AutowireCapableBeanJobFactory(
 				this.applicationContext.getAutowireCapableBeanFactory()));
@@ -122,12 +122,6 @@ public class QuartzAutoConfiguration implements ApplicationContextAware {
 		return schedulerFactoryBean;
 	}
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-
 	private Properties asProperties(Map<String, String> source) {
 		Properties properties = new Properties();
 		properties.putAll(source);
@@ -136,7 +130,6 @@ public class QuartzAutoConfiguration implements ApplicationContextAware {
 
 	private void customize(SchedulerFactoryBean schedulerFactoryBean) {
 		if (this.customizers != null) {
-			AnnotationAwareOrderComparator.sort(this.customizers);
 			for (SchedulerFactoryBeanCustomizer customizer : this.customizers) {
 				customizer.customize(schedulerFactoryBean);
 			}
@@ -144,15 +137,22 @@ public class QuartzAutoConfiguration implements ApplicationContextAware {
 	}
 
 	@Configuration
-	@ConditionalOnBean(DataSource.class)
-	protected static class QuartzSchedulerDataSourceConfiguration {
+	@ConditionalOnSingleCandidate(DataSource.class)
+	protected static class JdbcStoreTypeConfiguration {
 
 		@Bean
-		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(DataSource dataSource,
-				PlatformTransactionManager transactionManager) {
+		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(
+				QuartzProperties properties, DataSource dataSource,
+				ObjectProvider<PlatformTransactionManager> transactionManager) {
 			return schedulerFactoryBean -> {
-				schedulerFactoryBean.setDataSource(dataSource);
-				schedulerFactoryBean.setTransactionManager(transactionManager);
+				if (properties.getJobStoreType() == JobStoreType.JDBC) {
+					schedulerFactoryBean.setDataSource(dataSource);
+					PlatformTransactionManager txManager =
+							transactionManager.getIfUnique();
+					if (txManager != null) {
+						schedulerFactoryBean.setTransactionManager(txManager);
+					}
+				}
 			};
 		}
 

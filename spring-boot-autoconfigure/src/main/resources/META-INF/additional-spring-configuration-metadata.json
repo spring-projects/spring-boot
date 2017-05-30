@@ -358,6 +358,10 @@
     "defaultValue": "accept-header"
   },
   {
+    "name": "spring.quartz.job-store-type",
+    "defaultValue": "memory"
+  },
+  {
     "name": "spring.rabbitmq.cache.connection.mode",
     "defaultValue": "channel"
   },

@@ -41,12 +41,12 @@ public class QuartzDatabaseInitializer extends AbstractDatabaseInitializer {
 
 	@Override
 	protected boolean isEnabled() {
-		return this.properties.getInitializer().isEnabled();
+		return this.properties.getJdbc().isInitializeSchema();
 	}
 
 	@Override
 	protected String getSchemaLocation() {
-		return this.properties.getSchema();
+		return this.properties.getJdbc().getSchema();
 	}
 
 	@Override
