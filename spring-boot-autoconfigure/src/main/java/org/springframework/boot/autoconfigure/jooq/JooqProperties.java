@@ -34,8 +34,7 @@ public class JooqProperties {
 
 	/**
 	 * SQLDialect JOOQ used when communicating with the configured datasource, for
-	 * instance "POSTGRES". Please note the enum valus differ slightly from the ones
-	 * used by <code>spring.jpa</code>.
+	 * instance "POSTGRES".
 	 */
 	private SQLDialect sqlDialect;
 
