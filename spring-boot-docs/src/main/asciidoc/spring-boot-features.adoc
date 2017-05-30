@@ -3214,13 +3214,23 @@ You can then use the `DSLContext` to construct your queries:
 
 
 ==== Customizing jOOQ
-You can customize the SQL dialect used by jOOQ by setting `spring.jooq.sql-dialect` in
-your `application.properties`. For example, to specify Postgres you would add:
+
+Spring Boot tries to determine the best SQL dialect for your datasource, but you can customize 
+the SQL dialect used by jOOQ by setting `spring.jooq.sql-dialect` in your `application.properties`. 
+
+Spring Boot cannot auto-configure dialects only supported by the commercial version of jOOQ. Those 
+have to be configured manually. For example, to specify Oracle you would add:
 
 [source,properties,indent=0]
 ----
-	spring.jooq.sql-dialect=Postgres
+	spring.jooq.sql-dialect=ORACLE12C
 ----
+
+Spring Boot uses `SQLDialect.DEFAULT` if it cannot determine the type of your database.
+
+NOTE: Be aware that the jOOQ SQL dialect doesn't use the same constants as the JPA
+configuration does. For example, jOOQ uses `POSTGRES` instead of `POSTGRESQL`. 
+If in doubt, have a look at the enum `org.jooq.SQLDialect`.
 
 More advanced customizations can be achieved by defining your own `@Bean` definitions
 which will be used when the jOOQ `Configuration` is created. You can define beans for
