@@ -69,7 +69,6 @@ public class JooqAutoConfigurationTests {
 	@Before
 	public void init() {
 		TestPropertyValues.of("spring.datasource.name:jooqtest").applyTo(this.context);
-		TestPropertyValues.of("spring.jooq.sql-dialect:H2").applyTo(this.context);
 	}
 
 	@After
@@ -121,7 +120,7 @@ public class JooqAutoConfigurationTests {
 				JooqAutoConfiguration.class);
 		this.context.getBean(PlatformTransactionManager.class);
 		DSLContext dsl = this.context.getBean(DSLContext.class);
-		assertThat(dsl.configuration().dialect()).isEqualTo(SQLDialect.H2);
+		assertThat(dsl.configuration().dialect()).isEqualTo(SQLDialect.HSQLDB);
 		dsl.execute("create table jooqtest_tx (name varchar(255) primary key);");
 		dsl.transaction(
 				new AssertFetch(dsl, "select count(*) as total from jooqtest_tx;", "0"));
