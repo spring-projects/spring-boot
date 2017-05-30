@@ -5151,6 +5151,71 @@ caching is enabled.
 
 
 
+[[boot-features-quartz]]
+== Quartz Scheduler
+Spring Boot offers several conveniences for working with the Quartz scheduler, including
+the `spring-boot-starter-quartz` '`Starter`'. If Quartz is available, a `Scheduler` will
+be auto-configured (via the `SchedulerFactoryBean` abstraction).
+
+Beans of the following types will be automatically picked up and associated with the
+the `Scheduler`:
+
+* `JobDetail`: defines a particular Job. `JobDetail` instance can easily be built with
+the `JobBuilder` API
+* `Calendar`
+* `Trigger`: defines when a particular job is triggered
+
+By default, an in-memory `JobStore` will be used. However, it is possible to configure
+a JDBC-based store if a `DataSource` bean is available in your application and if the
+`spring.quartz.job-store-type` property is configured accordingly:
+
+[source,properties,indent=0]
+----
+	spring.quartz.job-store-type=jdbc
+----
+
+When the jdbc store is used, the schema can be initialized on startup:
+
+[source,properties,indent=0]
+----
+	spring.quartz.jdbc.initialize-schema=true
+----
+
+NOTE: The database is detected by default and initialized using the standard scripts
+provided with the Quartz library. It is also possible to provide a custom script using the
+`spring.quartz.jdbc.schema` property.
+
+Quartz Scheduler configuration can be customized using Quartz configuration properties (see
+`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans which allows
+programmatic `SchedulerFactoryBean` customization.
+
+Job can define setters to inject data map properties. Regular beans can also be injected
+in a similar manner:
+
+[source,java,indent=0]
+----
+	public class SampleJob extends QuartzJobBean {
+
+		private MyService myService;
+		private String name;
+
+		// Inject "MyService" bean
+		public void setMyService(MyService myService) { ... }
+
+		// Inject the "name" job data property
+		public void setName(String name) { ... }
+
+		@Override
+		protected void executeInternal(JobExecutionContext context)
+				throws JobExecutionException {
+			...
+		}
+
+	}
+----
+
+
+
 [[boot-features-integration]]
 == Spring Integration
 Spring Boot offers several conveniences for working with Spring Integration, including
