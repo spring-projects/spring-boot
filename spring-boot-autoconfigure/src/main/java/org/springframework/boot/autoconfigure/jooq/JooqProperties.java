@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
+import javax.sql.DataSource;
+
 import org.jooq.SQLDialect;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for the JOOQ database library.
  *
  * @author Andreas Ahlenstorf
+ * @author Michael Simons
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.jooq")
@@ -31,7 +34,8 @@ public class JooqProperties {
 
 	/**
 	 * SQLDialect JOOQ used when communicating with the configured datasource, for
-	 * instance "POSTGRES".
+	 * instance "POSTGRES". Please note the enum valus differ slightly from the ones
+	 * used by <code>spring.jpa</code>.
 	 */
 	private SQLDialect sqlDialect;
 
@@ -41,6 +45,19 @@ public class JooqProperties {
 
 	public void setSqlDialect(SQLDialect sqlDialect) {
 		this.sqlDialect = sqlDialect;
+	}
+
+	/**
+	 * Determine the {@link SQLDialect} to use based on this configuration and the primary
+	 * {@link DataSource}.
+	 * @param dataSource the auto-configured data source
+	 * @return {@code SQLDialect}
+	 */
+	public SQLDialect determineSqlDialect(DataSource dataSource) {
+		if (this.sqlDialect != null) {
+			return this.sqlDialect;
+		}
+		return SQLDialectLookup.getDialect(dataSource);
 	}
 
 }
