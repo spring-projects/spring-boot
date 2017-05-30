@@ -22,7 +22,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -38,10 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
 public class SpringDataWebAutoConfigurationTests {
 
-	private ConfigurableApplicationContext context;
+	private AnnotationConfigWebApplicationContext context;
 
 	@After
 	public void after() {
@@ -52,12 +52,8 @@ public class SpringDataWebAutoConfigurationTests {
 
 	@Test
 	public void webSupportIsAutoConfiguredInWebApplicationContexts() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		((AnnotationConfigWebApplicationContext) this.context)
-				.register(SpringDataWebAutoConfiguration.class);
-		this.context.refresh();
-		((AnnotationConfigWebApplicationContext) this.context)
-				.setServletContext(new MockServletContext());
+		load();
+		this.context.setServletContext(new MockServletContext());
 		Map<String, PageableHandlerMethodArgumentResolver> beans = this.context
 				.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
 		assertThat(beans).hasSize(1);
@@ -65,26 +61,24 @@ public class SpringDataWebAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationBacksOffInNonWebApplicationContexts() {
-		this.context = new AnnotationConfigApplicationContext();
-		((AnnotationConfigApplicationContext) this.context)
-				.register(SpringDataWebAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, PageableHandlerMethodArgumentResolver> beans = this.context
-				.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
-		assertThat(beans).isEmpty();
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(SpringDataWebAutoConfiguration.class);
+		try {
+			ctx.refresh();
+			Map<String, PageableHandlerMethodArgumentResolver> beans = ctx
+					.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
+			assertThat(beans).isEmpty();
+		}
+		finally {
+			ctx.close();
+		}
 	}
 
 	@Test
-	public void pageable() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues
-				.of("spring.data.web.pageable.page-parameter=p",
-						"spring.data.web.pageable.size-parameter=s",
-						"spring.data.web.pageable.default-page-size=10")
-				.applyTo(this.context);
-		((AnnotationConfigWebApplicationContext) this.context)
-				.register(SpringDataWebAutoConfiguration.class);
-		this.context.refresh();
+	public void customizePageable() {
+		load("spring.data.web.pageable.page-parameter=p",
+				"spring.data.web.pageable.size-parameter=s",
+				"spring.data.web.pageable.default-page-size=10");
 		PageableHandlerMethodArgumentResolver argumentResolver = this.context
 				.getBean(PageableHandlerMethodArgumentResolver.class);
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "pageParameterName"))
@@ -96,17 +90,21 @@ public class SpringDataWebAutoConfigurationTests {
 	}
 
 	@Test
-	public void sort() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of("spring.data.web.sort.sort-parameter=s")
-				.applyTo(this.context);
-		((AnnotationConfigWebApplicationContext) this.context)
-				.register(SpringDataWebAutoConfiguration.class);
-		this.context.refresh();
+	public void customizeSort() {
+		load("spring.data.web.sort.sort-parameter=s");
 		SortHandlerMethodArgumentResolver argumentResolver = this.context
 				.getBean(SortHandlerMethodArgumentResolver.class);
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "sortParameter"))
 				.isEqualTo("s");
+	}
+
+	private void load(String... environment) {
+		AnnotationConfigWebApplicationContext ctx =
+				new AnnotationConfigWebApplicationContext();
+		TestPropertyValues.of(environment).applyTo(ctx);
+		ctx.register(SpringDataWebAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 }
