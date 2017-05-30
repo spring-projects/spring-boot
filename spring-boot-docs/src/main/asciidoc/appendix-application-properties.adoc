@@ -652,6 +652,12 @@ content into your application; rather pick only the properties that you need.
 	spring.data.solr.repositories.enabled=true # Enable Solr repositories.
 	spring.data.solr.zk-host= # ZooKeeper host address in the form HOST:PORT.
 
+	# DATA WEB ({sc-spring-boot-autoconfigure}/data/web/SpringDataWebProperties.{sc-ext}[SpringDataWebProperties])
+	spring.data.web.pageable.default-page-size=20 # Default page size.
+	spring.data.web.pageable.page-parameter=page # Page index parameter name.
+	spring.data.web.pageable.size-parameter=size # Page size parameter name.
+	spring.data.web.sort.sort-parameter=sort # Sort parameter name.
+
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
 	spring.datasource.continue-on-error=false # Do not stop if an error occurs while initializing the database.
 	spring.datasource.data= # Data (DML) script resource references.
