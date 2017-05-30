@@ -71,6 +71,7 @@
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-property-validation</module>
+		<module>spring-boot-sample-quartz</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
 		<module>spring-boot-sample-secure-oauth2-actuator</module>

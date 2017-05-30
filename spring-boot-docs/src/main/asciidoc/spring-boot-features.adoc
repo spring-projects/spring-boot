@@ -5151,6 +5151,37 @@ caching is enabled.
 
 
 
+[[boot-features-quartz]]
+== Quartz Scheduler
+
+If Quartz Scheduler and the relevant libraries (as defined by `spring-boot-starter-quartz`)
+are on the classpath, Spring Boot will auto-configure a `SchedulerFactoryBean` which
+provides `Scheduler` instance that you can inject in your application.
+
+Beans of following types will be automatically picked up and added to
+`SchedulerFactoryBean`:
+
+* `JobDetail`
+* `Calendar`
+* `Trigger`
+
+By default, an in-memory `JobStore` will be used. However, if `DataSource` bean is
+available in your application, Quartz Scheduler will be configured with a persistent
+`JobStore`.
+
+When using a persistent `JobStore`, Quartz database schema can be initialized using
+`QuartzDatabaseInitializer` if the location of schema script is configured using
+`spring.quartz.schema` property.
+
+Quartz Scheduler configuration can also be customized using Quartz configuration properties
+(see `spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans which
+allows programmatic `SchedulerFactoryBean` customization.
+
+Spring Boot also configures `JobFactory` that is `@Autowire` capable so you can easily
+inject beans from `applicationContext` and use them in your Quartz jobs.
+
+
+
 [[boot-features-integration]]
 == Spring Integration
 Spring Boot offers several conveniences for working with Spring Integration, including

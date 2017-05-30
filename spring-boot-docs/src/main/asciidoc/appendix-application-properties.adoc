@@ -129,6 +129,11 @@ content into your application; rather pick only the properties that you need.
 	spring.profiles.active= # Comma-separated list (or list if using YAML) of <<howto-set-active-spring-profiles,active profiles>>.
 	spring.profiles.include= # Unconditionally activate the specified comma separated profiles (or list of profiles if using YAML).
 
+	# QUARTZ SCHEDULER ({sc-spring-boot-autoconfigure}/quartz/QuartzProperties.{sc-ext}[QuartzProperties])
+	spring.quartz.initializer.enabled=true # Create the required Quartz Scheduler tables on startup if necessary. Enabled automatically if the schema is configured.
+	spring.quartz.properties.*= # Additional Quartz Scheduler properties.
+	spring.quartz.schema=classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
+
 	# Reactor
 	spring.reactor.stacktrace-mode.enabled=false # Set whether Reactor should collect stacktrace information at runtime.
 
