@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.jooq;
 import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -65,6 +66,7 @@ public class JooqTestIntegrationTests {
 		String product = this.dataSource.getConnection().getMetaData()
 				.getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
+		assertThat(this.dsl.configuration().dialect()).isEqualTo(SQLDialect.H2);
 	}
 
 	@Test
