@@ -886,6 +886,25 @@ public class SpringApplicationTests {
 				.isNotInstanceOfAny(ConfigurableWebEnvironment.class);
 	}
 
+	@Test
+	public void failureResultsInSingleStackTrace() throws Exception {
+		ThreadGroup group = new ThreadGroup("main");
+		Thread thread = new Thread(group, "main") {
+			@Override
+			public void run() {
+				SpringApplication application = new SpringApplication(
+						FailingConfig.class);
+				application.setWebEnvironment(false);
+				application.run();
+			};
+		};
+		thread.start();
+		thread.join(6000);
+		int occurrences = StringUtils.countOccurrencesOf(this.output.toString(),
+				"Caused by: java.lang.RuntimeException: ExpectedError");
+		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final Class<?> propertySourceClass, final String name) {
 		return new Condition<ConfigurableEnvironment>("has property source") {
@@ -1039,6 +1058,16 @@ public class SpringApplicationTests {
 		@Bean
 		public HttpHandler httpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
+		}
+
+	}
+
+	@Configuration
+	static class FailingConfig {
+
+		@Bean
+		public Object fail() {
+			throw new RuntimeException("ExpectedError");
 		}
 
 	}

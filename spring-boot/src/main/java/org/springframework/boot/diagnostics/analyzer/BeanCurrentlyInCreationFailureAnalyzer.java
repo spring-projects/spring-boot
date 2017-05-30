@@ -25,7 +25,6 @@ import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,7 +33,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-@Order(0)
 class BeanCurrentlyInCreationFailureAnalyzer
 		extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
 
