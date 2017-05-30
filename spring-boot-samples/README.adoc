@@ -8,6 +8,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-activemq[spring-boot-sample-activemq]
 | JMS consumer and producer using Apache ActiveMQ
 
+| link:spring-boot-sample-amqp-1.0-jms[spring-boot-sample-amqp-1.0-jms]
+| JMS consumer and producer using an AMQP 1.0 JMS client
+
 | link:spring-boot-sample-actuator[spring-boot-sample-actuator]
 | REST service with production-ready features
 
