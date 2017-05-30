@@ -3,6 +3,10 @@
 :idprefix: spring_boot_actuator_
 :sectanchors:
 :icons: font
+:iconfont-remote!:
+:iconfont-name: css/font-awesome.min
+:webfonts!:
+:stylesheet: css/asciidoctor.css
 :last-update-label!:
 
 Actuator endpoints allow you to monitor and interact with your application. Spring Boot
