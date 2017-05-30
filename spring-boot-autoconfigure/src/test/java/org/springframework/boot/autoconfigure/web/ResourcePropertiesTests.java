@@ -16,9 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,11 +58,11 @@ public class ResourcePropertiesTests {
 	@Test
 	public void staticLocationFixed() throws IOException {
 		String PATH_WITHOUT_TRAILING_SLASH = "file:/test";
-		properties.setStaticLocations(new String[]{PATH_WITHOUT_TRAILING_SLASH});
-		properties.afterPropertiesSet();
+		this.properties.setStaticLocations(new String[]{PATH_WITHOUT_TRAILING_SLASH});
+		this.properties.afterPropertiesSet();
 
 		String PATH_WITH_TRAILING_SLASH = "file:/test/";
-		assertThat(properties.getStaticLocations()).containsOnly(PATH_WITH_TRAILING_SLASH);
+		assertThat(this.properties.getStaticLocations()).containsOnly(PATH_WITH_TRAILING_SLASH);
 
 	}
 
