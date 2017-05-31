@@ -333,7 +333,7 @@ public class RandomAccessDataFileTests {
 			public RandomAccessFile answer(InvocationOnMock invocation) throws Throwable {
 				RandomAccessFile originalFile = (RandomAccessFile) invocation
 						.callRealMethod();
-				if (Mockito.isSpy(originalFile)) {
+				if (Mockito.mockingDetails(originalFile).isSpy()) {
 					return originalFile;
 				}
 				RandomAccessFile spiedFile = spy(originalFile);
