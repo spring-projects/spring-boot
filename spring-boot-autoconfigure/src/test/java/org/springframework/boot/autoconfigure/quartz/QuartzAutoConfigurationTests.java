@@ -105,8 +105,8 @@ public class QuartzAutoConfigurationTests {
 	@Test
 	public void withDataSource() throws Exception {
 		load(new Class<?>[] { QuartzJobsConfiguration.class,
-						EmbeddedDataSourceConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class },
+				EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class },
 				"spring.quartz.job-store-type=jdbc",
 				"spring.quartz.jdbc.initialize-schema=true");
 		testWithDataSource();
@@ -115,7 +115,7 @@ public class QuartzAutoConfigurationTests {
 	@Test
 	public void withDataSourceNoTransactionManager() throws Exception {
 		load(new Class<?>[] { QuartzJobsConfiguration.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.quartz.job-store-type=jdbc",
 				"spring.quartz.jdbc.initialize-schema=true");
 		testWithDataSource();
@@ -130,8 +130,8 @@ public class QuartzAutoConfigurationTests {
 				this.context.getBean(DataSource.class));
 		assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_JOB_DETAILS",
 				Integer.class)).isEqualTo(2);
-		assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_SIMPLE_TRIGGERS",
-				Integer.class)).isEqualTo(0);
+		assertThat(jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM QRTZ_SIMPLE_TRIGGERS", Integer.class)).isEqualTo(0);
 	}
 
 	@Test
@@ -222,8 +222,7 @@ public class QuartzAutoConfigurationTests {
 		@Bean
 		public JobDetail fooJob() {
 			return JobBuilder.newJob().ofType(FooJob.class).withIdentity("fooJob")
-					.usingJobData("jobDataKey", "jobDataValue")
-					.storeDurably().build();
+					.usingJobData("jobDataKey", "jobDataValue").storeDurably().build();
 		}
 
 		@Bean

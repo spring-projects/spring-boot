@@ -80,8 +80,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		TestPropertyValues.of(
-				"management.security.enabled=false").applyTo(this.context);
+		TestPropertyValues.of("management.security.enabled=false").applyTo(this.context);
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
 				.invoke(null, null);
@@ -96,8 +95,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		TestPropertyValues.of(
-				"management.security.roles[0]=super").applyTo(this.context);
+		TestPropertyValues.of("management.security.roles[0]=super").applyTo(this.context);
 		this.context.refresh();
 		HealthMvcEndpoint health = this.context.getBean(HealthMvcEndpoint.class);
 		assertThat(ReflectionTestUtils.getField(health, "roles"))

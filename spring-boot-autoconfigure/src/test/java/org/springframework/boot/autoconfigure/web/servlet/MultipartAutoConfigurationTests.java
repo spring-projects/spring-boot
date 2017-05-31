@@ -171,8 +171,8 @@ public class MultipartAutoConfigurationTests {
 	private void testWebServerWithCustomMultipartConfigEnabledSetting(
 			final String propertyValue, int expectedNumberOfMultipartConfigElementBeans) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"spring.servlet.multipart.enabled=" + propertyValue).applyTo(this.context);
+		TestPropertyValues.of("spring.servlet.multipart.enabled=" + propertyValue)
+				.applyTo(this.context);
 		this.context.register(WebServerWithNoMultipartTomcat.class,
 				BaseConfiguration.class);
 		this.context.refresh();
@@ -194,8 +194,8 @@ public class MultipartAutoConfigurationTests {
 	@Test
 	public void configureResolveLazily() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"spring.servlet.multipart.resolve-lazily=true").applyTo(this.context);
+		TestPropertyValues.of("spring.servlet.multipart.resolve-lazily=true")
+				.applyTo(this.context);
 		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
 		this.context.refresh();
 		StandardServletMultipartResolver multipartResolver = this.context

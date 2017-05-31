@@ -147,8 +147,8 @@ public class MessageSourceAutoConfigurationTests {
 			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
-			TestPropertyValues.of(
-					"spring.messages.basename:test/messages").applyTo(this.context);
+			TestPropertyValues.of("spring.messages.basename:test/messages")
+					.applyTo(this.context);
 			this.context.register(MessageSourceAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
 			this.context.refresh();

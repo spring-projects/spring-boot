@@ -52,9 +52,9 @@ public class JdbcTemplateAutoConfigurationTests {
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection.override = null;
-		TestPropertyValues.of(
-				"spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt()).applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.initialize:false",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
+				.applyTo(this.context);
 	}
 
 	@After

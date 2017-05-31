@@ -76,8 +76,8 @@ public class EnvironmentMvcEndpointTests {
 	public void setUp() {
 		this.context.getBean(EnvironmentEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		TestPropertyValues.of(
-				"foo:bar", "fool:baz").applyTo((ConfigurableApplicationContext) this.context);
+		TestPropertyValues.of("foo:bar", "fool:baz")
+				.applyTo((ConfigurableApplicationContext) this.context);
 	}
 
 	@Test
@@ -89,9 +89,9 @@ public class EnvironmentMvcEndpointTests {
 
 	@Test
 	public void homeContentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(
-				get("/application/env").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk()).andExpect(header().string("Content-Type",
+		this.mvc.perform(get("/application/env").header(HttpHeaders.ACCEPT,
+				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 

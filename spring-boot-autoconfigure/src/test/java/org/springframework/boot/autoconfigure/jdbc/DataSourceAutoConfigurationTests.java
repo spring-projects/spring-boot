@@ -58,9 +58,9 @@ public class DataSourceAutoConfigurationTests {
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection.override = null;
-		TestPropertyValues.of(
-				"spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt()).applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.initialize:false",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
+				.applyTo(this.context);
 	}
 
 	@After
@@ -89,8 +89,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testBadUrl() throws Exception {
-		TestPropertyValues.of(
-				"spring.datasource.url:jdbc:not-going-to-work").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.url:jdbc:not-going-to-work")
+				.applyTo(this.context);
 		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -100,9 +100,10 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testBadDriverClass() throws Exception {
-		TestPropertyValues.of(
-				"spring.datasource.driverClassName:org.none.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.datasource.driverClassName:org.none.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb")
+				.applyTo(this.context);
 		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -152,9 +153,10 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testEmbeddedTypeDefaultsUsername() throws Exception {
-		TestPropertyValues.of(
-				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb")
+				.applyTo(this.context);
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -172,10 +174,12 @@ public class DataSourceAutoConfigurationTests {
 	 */
 	@Test
 	public void explicitTypeNoSupportedDataSource() {
-		TestPropertyValues.of(
-				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName()).applyTo(this.context);
+		TestPropertyValues
+				.of("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+						"spring.datasource.type:"
+								+ SimpleDriverDataSource.class.getName())
+				.applyTo(this.context);
 		this.context.setClassLoader(
 				new HidePackagesClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
 						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"));
@@ -184,10 +188,12 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void explicitTypeSupportedDataSource() {
-		TestPropertyValues.of(
-				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName()).applyTo(this.context);
+		TestPropertyValues
+				.of("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+						"spring.datasource.type:"
+								+ SimpleDriverDataSource.class.getName())
+				.applyTo(this.context);
 		testExplicitType();
 	}
 
@@ -232,9 +238,10 @@ public class DataSourceAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	private <T extends DataSource> T autoConfigureDataSource(Class<T> expectedType,
 			final String... hiddenPackages) {
-		TestPropertyValues.of(
-				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb")
+				.applyTo(this.context);
 		this.context.setClassLoader(new HidePackagesClassLoader(hiddenPackages));
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

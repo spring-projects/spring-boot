@@ -71,9 +71,10 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
-		TestPropertyValues.of(
-				"spring.data.cassandra.schemaAction=recreate_drop_unused",
-				"spring.data.cassandra.keyspaceName=boot_test").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.data.cassandra.schemaAction=recreate_drop_unused",
+						"spring.data.cassandra.keyspaceName=boot_test")
+				.applyTo(this.context);
 		this.context.register(CassandraAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class);
 		this.context.refresh();

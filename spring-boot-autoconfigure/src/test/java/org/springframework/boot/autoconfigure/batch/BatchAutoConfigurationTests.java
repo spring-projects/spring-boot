@@ -132,7 +132,7 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDefinesAndLaunchesNamedJob() throws Exception {
 		load(new Class<?>[] { NamedJobConfigurationWithRegisteredJob.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.batch.job.names:discreteRegisteredJob");
 		JobRepository repository = this.context.getBean(JobRepository.class);
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
@@ -144,19 +144,19 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDefinesAndLaunchesLocalJob() throws Exception {
 		load(new Class<?>[] { NamedJobConfigurationWithLocalJob.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.batch.job.names:discreteLocalJob");
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
 		assertThat(this.context.getBean(JobRepository.class)
 				.getLastJobExecution("discreteLocalJob", new JobParameters()))
-				.isNotNull();
+						.isNotNull();
 	}
 
 	@Test
 	public void testDisableLaunchesJob() throws Exception {
 		load(new Class<?>[] { JobConfiguration.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.batch.job.enabled:false");
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		assertThat(this.context.getBeanNamesForType(CommandLineRunner.class).length)
@@ -166,13 +166,13 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDisableSchemaLoader() throws Exception {
 		load(new Class<?>[] { TestConfiguration.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
 				"spring.batch.initializer.enabled:false");
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		assertThat(
 				this.context.getBean(BatchProperties.class).getInitializer().isEnabled())
-				.isFalse();
+						.isFalse();
 		this.expected.expect(BadSqlGrammarException.class);
 		new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from BATCH_JOB_EXECUTION");
@@ -197,8 +197,8 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testRenamePrefix() throws Exception {
 		load(new Class<?>[] { TestConfiguration.class,
-						EmbeddedDataSourceConfiguration.class,
-						HibernateJpaAutoConfiguration.class },
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
 				"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
 				"spring.batch.tablePrefix:PREFIX_");
@@ -219,14 +219,14 @@ public class BatchAutoConfigurationTests {
 	public void testCustomTablePrefixWithDefaultSchemaDisablesInitializer()
 			throws Exception {
 		load(new Class<?>[] { TestConfiguration.class,
-						EmbeddedDataSourceConfiguration.class,
-						HibernateJpaAutoConfiguration.class },
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
 				"spring.batch.tablePrefix:PREFIX_");
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		assertThat(
 				this.context.getBean(BatchProperties.class).getInitializer().isEnabled())
-				.isFalse();
+						.isFalse();
 		this.expected.expect(BadSqlGrammarException.class);
 		new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from BATCH_JOB_EXECUTION");
@@ -235,8 +235,8 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testCustomizeJpaTransactionManagerUsingProperties() throws Exception {
 		load(new Class<?>[] { TestConfiguration.class,
-						EmbeddedDataSourceConfiguration.class,
-						HibernateJpaAutoConfiguration.class },
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class },
 				"spring.transaction.default-timeout:30",
 				"spring.transaction.rollback-on-commit-failure:true");
 		this.context.getBean(BatchConfigurer.class);
@@ -250,7 +250,7 @@ public class BatchAutoConfigurationTests {
 	public void testCustomizeDataSourceTransactionManagerUsingProperties()
 			throws Exception {
 		load(new Class<?>[] { TestConfiguration.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.transaction.default-timeout:30",
 				"spring.transaction.rollback-on-commit-failure:true");
 		this.context.getBean(BatchConfigurer.class);

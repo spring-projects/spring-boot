@@ -119,8 +119,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void skipSslValidation() throws Exception {
-		TestPropertyValues.of(
-				"management.cloudfoundry.skipSslValidation:true").applyTo(this.context);
+		TestPropertyValues.of("management.cloudfoundry.skipSslValidation:true")
+				.applyTo(this.context);
 		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		CloudFoundryEndpointHandlerMapping handlerMapping = getHandlerMapping();
@@ -137,8 +137,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	public void cloudFoundryPlatformActiveAndCloudControllerUrlNotPresent()
 			throws Exception {
-		TestPropertyValues.of("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id").applyTo(this.context);
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+				.applyTo(this.context);
 		this.context.refresh();
 		CloudFoundryEndpointHandlerMapping handlerMapping = this.context.getBean(
 				"cloudFoundryEndpointHandlerMapping",
@@ -152,8 +153,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryPathsIgnoredBySpringSecurity() throws Exception {
-		TestPropertyValues.of("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id").applyTo(this.context);
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+				.applyTo(this.context);
 		this.context.refresh();
 		IgnoredRequestCustomizer customizer = (IgnoredRequestCustomizer) this.context
 				.getBean("cloudFoundryIgnoredRequestCustomizer");
@@ -179,17 +181,19 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryManagementEndpointsDisabled() throws Exception {
-		TestPropertyValues.of("VCAP_APPLICATION=---",
-				"management.cloudfoundry.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("VCAP_APPLICATION=---", "management.cloudfoundry.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.containsBean("cloudFoundryEndpointHandlerMapping"))
 				.isFalse();
 	}
 
 	private CloudFoundryEndpointHandlerMapping getHandlerMapping() {
-		TestPropertyValues.of("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:http://my-cloud-controller.com").applyTo(this.context);
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:http://my-cloud-controller.com")
+				.applyTo(this.context);
 		this.context.refresh();
 		return this.context.getBean("cloudFoundryEndpointHandlerMapping",
 				CloudFoundryEndpointHandlerMapping.class);

@@ -76,8 +76,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		TestPropertyValues.of(
-				"spring.datasource.name:flywaytest").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.name:flywaytest").applyTo(this.context);
 	}
 
 	@After
@@ -96,8 +95,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void createDataSource() throws Exception {
-		TestPropertyValues.of(
-				"flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa").applyTo(this.context);
+		TestPropertyValues.of("flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -126,8 +125,9 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideLocations() throws Exception {
-		TestPropertyValues.of(
-				"flyway.locations:classpath:db/changelog,classpath:db/migration").applyTo(this.context);
+		TestPropertyValues
+				.of("flyway.locations:classpath:db/changelog,classpath:db/migration")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -138,9 +138,10 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideLocationsList() throws Exception {
-		TestPropertyValues.of(
-				"flyway.locations[0]:classpath:db/changelog",
-				"flyway.locations[1]:classpath:db/migration").applyTo(this.context);
+		TestPropertyValues
+				.of("flyway.locations[0]:classpath:db/changelog",
+						"flyway.locations[1]:classpath:db/migration")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -161,8 +162,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void changeLogDoesNotExist() throws Exception {
-		TestPropertyValues.of(
-				"flyway.locations:file:no-such-dir").applyTo(this.context);
+		TestPropertyValues.of("flyway.locations:file:no-such-dir").applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -171,9 +171,10 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void checkLocationsAllMissing() throws Exception {
-		TestPropertyValues.of(
-				"flyway.locations:classpath:db/missing1,classpath:db/migration2",
-				"flyway.check-location:true").applyTo(this.context);
+		TestPropertyValues
+				.of("flyway.locations:classpath:db/missing1,classpath:db/migration2",
+						"flyway.check-location:true")
+				.applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Cannot find migrations location in");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
@@ -183,9 +184,10 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void checkLocationsAllExist() throws Exception {
-		TestPropertyValues.of(
-				"flyway.locations:classpath:db/changelog,classpath:db/migration",
-				"flyway.check-location:true").applyTo(this.context);
+		TestPropertyValues
+				.of("flyway.locations:classpath:db/changelog,classpath:db/migration",
+						"flyway.check-location:true")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -245,8 +247,9 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void useVendorDirectory() throws Exception {
-		TestPropertyValues.of(
-				"flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog").applyTo(this.context);
+		TestPropertyValues
+				.of("flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

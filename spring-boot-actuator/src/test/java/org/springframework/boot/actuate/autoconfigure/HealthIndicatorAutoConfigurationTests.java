@@ -92,8 +92,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void defaultHealthIndicator() {
 		this.context.register(HealthIndicatorAutoConfiguration.class,
 				ManagementServerProperties.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -106,8 +106,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void defaultHealthIndicatorsDisabled() {
 		this.context.register(HealthIndicatorAutoConfiguration.class,
 				ManagementServerProperties.class);
-		TestPropertyValues.of(
-				"management.health.defaults.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.defaults.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -120,8 +120,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void defaultHealthIndicatorsDisabledWithCustomOne() {
 		this.context.register(CustomHealthIndicator.class,
 				HealthIndicatorAutoConfiguration.class, ManagementServerProperties.class);
-		TestPropertyValues.of(
-				"management.health.defaults.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.defaults.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -134,8 +134,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void defaultHealthIndicatorsDisabledButOne() {
 		this.context.register(HealthIndicatorAutoConfiguration.class,
 				ManagementServerProperties.class);
-		TestPropertyValues.of(
-				"management.health.defaults.enabled:false",
+		TestPropertyValues.of("management.health.defaults.enabled:false",
 				"management.health.diskspace.enabled:true").applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
@@ -149,8 +148,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void redisHealthIndicator() {
 		this.context.register(RedisAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -163,9 +162,10 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notRedisHealthIndicator() {
 		this.context.register(RedisAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.redis.enabled:false",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.redis.enabled:false",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -179,8 +179,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(MongoAutoConfiguration.class,
 				ManagementServerProperties.class, MongoDataAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -194,9 +194,10 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(MongoAutoConfiguration.class,
 				ManagementServerProperties.class, MongoDataAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.mongo.enabled:false",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.mongo.enabled:false",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -220,8 +221,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void dataSourceHealthIndicator() {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -235,8 +236,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceConfig.class, ManagementServerProperties.class,
 				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -252,8 +253,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				RoutingDatasourceConfig.class, ManagementServerProperties.class,
 				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -269,9 +270,10 @@ public class HealthIndicatorAutoConfigurationTests {
 				DataSourceConfig.class,
 				DataSourcePoolMetadataProvidersConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"spring.datasource.test.validation-query:SELECT from FOOBAR",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.datasource.test.validation-query:SELECT from FOOBAR",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -286,9 +288,10 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notDataSourceHealthIndicator() {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.db.enabled:false",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.db.enabled:false",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -301,8 +304,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void rabbitHealthIndicator() {
 		this.context.register(RabbitAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -315,9 +318,10 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notRabbitHealthIndicator() {
 		this.context.register(RabbitAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.rabbit.enabled:false",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.rabbit.enabled:false",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -330,8 +334,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void solrHealthIndicator() {
 		this.context.register(SolrAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -344,9 +348,10 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notSolrHealthIndicator() {
 		this.context.register(SolrAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of(
-				"management.health.solr.enabled:false",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.solr.enabled:false",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -368,9 +373,10 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void mailHealthIndicator() {
-		TestPropertyValues.of(
-				"spring.mail.host:smtp.acme.org",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.mail.host:smtp.acme.org",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(MailSenderAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -384,9 +390,11 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notMailHealthIndicator() {
-		TestPropertyValues.of(
-				"spring.mail.host:smtp.acme.org", "management.health.mail.enabled:false",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.mail.host:smtp.acme.org",
+						"management.health.mail.enabled:false",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(MailSenderAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -400,8 +408,8 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void jmsHealthIndicator() {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(ActiveMQAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -415,9 +423,10 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notJmsHealthIndicator() {
-		TestPropertyValues.of(
-				"management.health.jms.enabled:false",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.jms.enabled:false",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(ActiveMQAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -431,9 +440,10 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void elasticsearchHealthIndicator() {
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.properties.path.home:target",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.path.home:target",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class, ManagementServerProperties.class,
 				HealthIndicatorAutoConfiguration.class);
@@ -448,8 +458,8 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void elasticsearchJestHealthIndicator() {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -463,10 +473,11 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notElasticsearchHealthIndicator() {
-		TestPropertyValues.of(
-				"management.health.elasticsearch.enabled:false",
-				"spring.data.elasticsearch.properties.path.home:target",
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.elasticsearch.enabled:false",
+						"spring.data.elasticsearch.properties.path.home:target",
+						"management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class, ManagementServerProperties.class,
 				HealthIndicatorAutoConfiguration.class);
@@ -481,8 +492,8 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void cassandraHealthIndicator() throws Exception {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(CassandraConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -495,9 +506,10 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notCassandraHealthIndicator() throws Exception {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false",
-				"management.health.cassandra.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.diskspace.enabled:false",
+						"management.health.cassandra.enabled:false")
+				.applyTo(this.context);
 		this.context.register(CassandraConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -510,8 +522,8 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void couchbaseHealthIndicator() throws Exception {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(CouchbaseConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -524,9 +536,10 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notCouchbaseHealthIndicator() throws Exception {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false",
-				"management.health.couchbase.enabled:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.health.diskspace.enabled:false",
+						"management.health.couchbase.enabled:false")
+				.applyTo(this.context);
 		this.context.register(CouchbaseConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -539,8 +552,8 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void ldapHealthIndicator() throws Exception {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
 		this.context.register(LdapConfiguration.class, ManagementServerProperties.class,
 				HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -553,8 +566,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notLdapHealthIndicator() throws Exception {
-		TestPropertyValues.of(
-				"management.health.diskspace.enabled:false",
+		TestPropertyValues.of("management.health.diskspace.enabled:false",
 				"management.health.ldap.enabled:false").applyTo(this.context);
 		this.context.register(LdapConfiguration.class, ManagementServerProperties.class,
 				HealthIndicatorAutoConfiguration.class);

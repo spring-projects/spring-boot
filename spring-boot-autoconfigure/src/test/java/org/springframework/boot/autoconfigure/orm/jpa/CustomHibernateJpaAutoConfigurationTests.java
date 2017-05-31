@@ -63,11 +63,13 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	public void testDefaultDdlAutoForMySql() throws Exception {
 		// Set up environment so we get a MySQL database but don't require server to be
 		// running...
-		TestPropertyValues.of(
-				"spring.datasource.type:" + org.apache.tomcat.jdbc.pool.DataSource.class.getName(),
+		TestPropertyValues
+				.of("spring.datasource.type:"
+						+ org.apache.tomcat.jdbc.pool.DataSource.class.getName(),
 				"spring.datasource.database:mysql",
 				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
-				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL").applyTo(this.context);
+				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL")
+				.applyTo(this.context);
 		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class);
@@ -82,8 +84,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testDefaultDdlAutoForEmbedded() throws Exception {
-		TestPropertyValues.of(
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -98,8 +99,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testNamingStrategyDelegatorTakesPrecedence() {
-		TestPropertyValues.of(
-				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
+		TestPropertyValues
+				.of("spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
 						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator");
 		this.context.register(TestConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
@@ -114,8 +115,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testDefaultDatabaseForH2() throws Exception {
-		TestPropertyValues.of(
-				"spring.datasource.url:jdbc:h2:mem:testdb",
+		TestPropertyValues.of("spring.datasource.url:jdbc:h2:mem:testdb",
 				"spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,

@@ -53,6 +53,7 @@ public class SystemEnvironmentOriginTests {
 	@Test
 	public void toStringShouldReturnStringWithDetails() throws Exception {
 		SystemEnvironmentOrigin origin = new SystemEnvironmentOrigin("FOO_BAR");
-		assertThat(origin.toString()).isEqualTo("System Environment Property \"FOO_BAR\"");
+		assertThat(origin.toString())
+				.isEqualTo("System Environment Property \"FOO_BAR\"");
 	}
 }

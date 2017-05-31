@@ -55,9 +55,10 @@ public class ElasticsearchAutoConfigurationTests {
 	@Test
 	public void createNodeClientWithDefaults() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.home:target").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.foo.bar:baz",
+						"spring.data.elasticsearch.properties.path.home:target")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
@@ -71,12 +72,13 @@ public class ElasticsearchAutoConfigurationTests {
 	@Test
 	public void createNodeClientWithOverrides() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.home:target",
-				"spring.data.elasticsearch.properties.node.local:false",
-				"spring.data.elasticsearch.properties.node.data:true",
-				"spring.data.elasticsearch.properties.http.enabled:true").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.foo.bar:baz",
+						"spring.data.elasticsearch.properties.path.home:target",
+						"spring.data.elasticsearch.properties.node.local:false",
+						"spring.data.elasticsearch.properties.node.data:true",
+						"spring.data.elasticsearch.properties.http.enabled:true")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
@@ -105,9 +107,10 @@ public class ElasticsearchAutoConfigurationTests {
 		// We don't have a local elasticsearch server so use an address that's missing
 		// a port and check the exception
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.cluster-nodes:localhost",
-				"spring.data.elasticsearch.properties.path.home:target").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.data.elasticsearch.cluster-nodes:localhost",
+						"spring.data.elasticsearch.properties.path.home:target")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.thrown.expect(BeanCreationException.class);

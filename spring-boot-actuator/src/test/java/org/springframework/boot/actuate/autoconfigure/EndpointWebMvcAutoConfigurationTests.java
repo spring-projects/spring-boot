@@ -124,9 +124,11 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void setUp() {
 		Ports values = new Ports();
 		ports.set(values);
-		TestPropertyValues.of(
-				"management.context-path=", "management.security.enabled=false",
-				"server.servlet.context-path=", "server.port=" + ports.get().server).applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("management.context-path=", "management.security.enabled=false",
+						"server.servlet.context-path=",
+						"server.port=" + ports.get().server)
+				.applyTo(this.applicationContext);
 	}
 
 	@After
@@ -137,8 +139,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onSamePort() throws Exception {
-		TestPropertyValues.of(
-				"management.security.enabled=false").applyTo(this.applicationContext);
+		TestPropertyValues.of("management.security.enabled=false")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
@@ -154,8 +156,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onSamePortWithHeader() throws Exception {
-		TestPropertyValues.of(
-				"management.add-application-context-header:true").applyTo(this.applicationContext);
+		TestPropertyValues.of("management.add-application-context-header:true")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
@@ -167,8 +169,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPort() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management).applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management)
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -187,8 +189,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortWithSpecificServer() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management).applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management)
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(SpecificWebServerConfig.class, RootConfig.class,
 				DifferentPortConfig.class, EndpointConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -214,9 +216,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortAndContext() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management,
-				"management.context-path=/admin").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("management.port=" + ports.get().management,
+						"management.context-path=/admin")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -228,10 +231,11 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortAndMainContext() throws Exception {
-		TestPropertyValues.of(
-				"server.servlet.context-path=/spring",
-				"management.port=" + ports.get().management,
-				"management.context-path=/admin").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("server.servlet.context-path=/spring",
+						"management.port=" + ports.get().management,
+						"management.context-path=/admin")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -243,8 +247,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortWithoutErrorMvcAutoConfiguration() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management).applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management)
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
@@ -254,8 +258,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortInWebServer() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management).applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management)
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -272,8 +276,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onRandomPort() throws Exception {
-		TestPropertyValues.of("management.port=0",
-				"management.security.enabled=false").applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=0", "management.security.enabled=false")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -291,8 +295,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortWithPrimaryFailure() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management).applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management)
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -320,10 +324,11 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void specificPortsViaProperties() throws Exception {
-		TestPropertyValues.of(
-				"server.port:" + ports.get().server,
-				"management.port:" + ports.get().management,
-				"management.security.enabled:false").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("server.port:" + ports.get().server,
+						"management.port:" + ports.get().management,
+						"management.security.enabled:false")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -339,8 +344,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 		int managementPort = ports.get().management;
 		try (ServerSocket serverSocket = new ServerSocket()) {
 			serverSocket.bind(new InetSocketAddress(managementPort));
-			TestPropertyValues.of("server.port:" + ports.get().server,
-					"management.port:" + ports.get().management).applyTo(this.applicationContext);
+			TestPropertyValues
+					.of("server.port:" + ports.get().server,
+							"management.port:" + ports.get().management)
+					.applyTo(this.applicationContext);
 			this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 					BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 					ErrorMvcAutoConfiguration.class);
@@ -351,7 +358,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void contextPath() throws Exception {
-		TestPropertyValues.of("management.context-path:/test", "management.security.enabled:false").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("management.context-path:/test", "management.security.enabled:false")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				JacksonAutoConfiguration.class,
@@ -366,8 +375,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideServerProperties() throws Exception {
-		TestPropertyValues.of(
-				"server.displayName:foo").applyTo(this.applicationContext);
+		TestPropertyValues.of("server.displayName:foo").applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				JacksonAutoConfiguration.class,
@@ -400,8 +408,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void portPropertiesOnDifferentPort() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management).applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management)
+				.applyTo(this.applicationContext);
 		new ServerPortInfoApplicationContextInitializer()
 				.initialize(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class,
@@ -441,8 +449,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void endpointsAllDisabled() throws Exception {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
-		TestPropertyValues.of(
-				"endpoints.enabled:false").applyTo(this.applicationContext);
+		TestPropertyValues.of("endpoints.enabled:false").applyTo(this.applicationContext);
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).isEmpty();
 	}
@@ -491,8 +498,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void shutdownEndpointEnabled() {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
-		TestPropertyValues.of(
-				"endpoints.shutdown.enabled:true").applyTo(this.applicationContext);
+		TestPropertyValues.of("endpoints.shutdown.enabled:true")
+				.applyTo(this.applicationContext);
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(ShutdownMvcEndpoint.class))
 				.hasSize(1);
@@ -502,7 +509,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void actuatorEndpointEnabledIndividually() {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
-		TestPropertyValues.of("endpoints.enabled:false", "endpoints.actuator.enabled:true").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("endpoints.enabled:false", "endpoints.actuator.enabled:true")
+				.applyTo(this.applicationContext);
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(HalJsonMvcEndpoint.class))
 				.hasSize(1);
@@ -510,10 +519,12 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void managementSpecificSslUsingDifferentPort() throws Exception {
-		TestPropertyValues.of("management.port=" + ports.get().management,
-				"management.ssl.enabled=true",
-				"management.ssl.key-store=classpath:test.jks",
-				"management.ssl.key-password=password").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("management.port=" + ports.get().management,
+						"management.ssl.enabled=true",
+						"management.ssl.key-store=classpath:test.jks",
+						"management.ssl.key-password=password")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -536,10 +547,11 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void managementSpecificSslUsingSamePortFails() throws Exception {
-		TestPropertyValues.of(
-				"management.ssl.enabled=true",
-				"management.ssl.key-store=classpath:test.jks",
-				"management.ssl.key-password=password").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("management.ssl.enabled=true",
+						"management.ssl.key-store=classpath:test.jks",
+						"management.ssl.key-password=password")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -551,10 +563,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void managementServerCanDisableSslWhenUsingADifferentPort() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management, "server.ssl.enabled=true",
-				"server.ssl.key-store=classpath:test.jks",
-				"server.ssl.key-password=password", "management.ssl.enabled=false").applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management,
+				"server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
+				"server.ssl.key-password=password", "management.ssl.enabled=false")
+				.applyTo(this.applicationContext);
 
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
@@ -578,13 +590,13 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void tomcatManagementAccessLogUsesCustomPrefix() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management).applyTo(this.applicationContext);
+		TestPropertyValues.of("management.port=" + ports.get().management)
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(TomcatWebServerConfig.class, RootConfig.class,
 				EndpointConfig.class, DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
-		TestPropertyValues.of(
-				"server.tomcat.accesslog.enabled: true").applyTo(this.applicationContext);
+		TestPropertyValues.of("server.tomcat.accesslog.enabled: true")
+				.applyTo(this.applicationContext);
 		this.applicationContext.refresh();
 		ApplicationContext managementContext = this.applicationContext
 				.getBean(ManagementContextResolver.class).getApplicationContext();
@@ -599,9 +611,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void undertowManagementAccessLogUsesCustomPrefix() throws Exception {
-		TestPropertyValues.of(
-				"management.port=" + ports.get().management,
-				"server.undertow.accesslog.enabled: true").applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("management.port=" + ports.get().management,
+						"server.undertow.accesslog.enabled: true")
+				.applyTo(this.applicationContext);
 		this.applicationContext.register(UndertowWebServerConfig.class, RootConfig.class,
 				EndpointConfig.class, DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
@@ -628,7 +641,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	private void endpointDisabled(String name, Class<? extends MvcEndpoint> type) {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
-		TestPropertyValues.of(String.format("endpoints.%s.enabled:false", name)).applyTo(this.applicationContext);
+		TestPropertyValues.of(String.format("endpoints.%s.enabled:false", name))
+				.applyTo(this.applicationContext);
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(type)).isEmpty();
 	}
@@ -638,9 +652,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(LoggingConfig.class, RootConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		ConfigurationPropertySources.attach(this.applicationContext.getEnvironment());
-		TestPropertyValues.of(
-				"endpoints.enabled:false",
-				String.format("endpoints.%s.enabled:true", name)).applyTo(this.applicationContext);
+		TestPropertyValues
+				.of("endpoints.enabled:false",
+						String.format("endpoints.%s.enabled:true", name))
+				.applyTo(this.applicationContext);
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(type)).hasSize(1);
 	}

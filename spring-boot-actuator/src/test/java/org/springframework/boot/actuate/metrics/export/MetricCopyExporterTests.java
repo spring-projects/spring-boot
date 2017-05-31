@@ -62,7 +62,8 @@ public class MetricCopyExporterTests {
 	@Test
 	public void counterWithGaugeWriter() throws Exception {
 		SimpleGaugeWriter writer = new SimpleGaugeWriter();
-		try (MetricCopyExporter customExporter = new MetricCopyExporter(this.reader, writer)) {
+		try (MetricCopyExporter customExporter = new MetricCopyExporter(this.reader,
+				writer)) {
 			this.reader.increment(new Delta<Number>("counter.foo", 2));
 			customExporter.export();
 			this.reader.increment(new Delta<Number>("counter.foo", 3));

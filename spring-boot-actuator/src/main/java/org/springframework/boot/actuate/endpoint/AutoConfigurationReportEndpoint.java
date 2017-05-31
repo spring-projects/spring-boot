@@ -65,7 +65,8 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	/**
 	 * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
 	 */
-	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions", "unconditionalClasses" })
+	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions",
+			"unconditionalClasses" })
 	@JsonInclude(Include.NON_EMPTY)
 	public static class Report {
 

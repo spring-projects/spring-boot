@@ -153,8 +153,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	public void gsonCanBePreferredWhenBothGsonAndJacksonAreAvailable() {
 		this.context.register(GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class);
-		TestPropertyValues.of(
-				"spring.http.converters.preferred-json-mapper:gson").applyTo(this.context);
+		TestPropertyValues.of("spring.http.converters.preferred-json-mapper:gson")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertConverterBeanExists(GsonHttpMessageConverter.class,
 				"gsonHttpMessageConverter");

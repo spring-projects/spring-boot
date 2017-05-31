@@ -88,8 +88,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EnableHypermediaSupportConfig.class, BaseConfig.class);
-		TestPropertyValues.of(
-				"spring.jackson.serialization.INDENT_OUTPUT:true").applyTo(this.context);
+		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
+				.applyTo(this.context);
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
@@ -102,8 +102,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
-		TestPropertyValues.of(
-				"spring.jackson.serialization.INDENT_OUTPUT:true").applyTo(this.context);
+		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
+				.applyTo(this.context);
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
@@ -132,8 +132,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
-		TestPropertyValues.of(
-				"spring.hateoas.use-hal-as-default-json-media-type:false").applyTo(this.context);
+		TestPropertyValues.of("spring.hateoas.use-hal-as-default-json-media-type:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		RequestMappingHandlerAdapter handlerAdapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);

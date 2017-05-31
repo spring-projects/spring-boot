@@ -148,8 +148,8 @@ public class MetricExportAutoConfigurationTests {
 	@Test
 	public void statsdWithHost() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.metrics.export.statsd.host=localhost").applyTo(this.context);
+		TestPropertyValues.of("spring.metrics.export.statsd.host=localhost")
+				.applyTo(this.context);
 		this.context.register(MetricEndpointConfiguration.class,
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

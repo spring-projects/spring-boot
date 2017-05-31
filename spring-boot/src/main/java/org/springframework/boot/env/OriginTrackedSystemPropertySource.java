@@ -30,7 +30,8 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public class OriginTrackedSystemPropertySource extends SystemEnvironmentPropertySource implements OriginLookup<String> {
+public class OriginTrackedSystemPropertySource extends SystemEnvironmentPropertySource
+		implements OriginLookup<String> {
 
 	/**
 	 * Create a new {@code OriginTrackedSystemPropertySource} with the given name and
@@ -60,4 +61,3 @@ public class OriginTrackedSystemPropertySource extends SystemEnvironmentProperty
 		return null;
 	}
 }
-

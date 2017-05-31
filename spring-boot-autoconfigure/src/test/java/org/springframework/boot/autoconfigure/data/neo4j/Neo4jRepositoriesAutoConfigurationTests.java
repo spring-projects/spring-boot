@@ -82,8 +82,8 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.neo4j.uri=http://localhost:9797").applyTo(this.context);
+		TestPropertyValues.of("spring.data.neo4j.uri=http://localhost:9797")
+				.applyTo(this.context);
 		this.context.register(configurationClasses);
 		this.context.register(Neo4jDataAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class,

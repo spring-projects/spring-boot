@@ -203,8 +203,8 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testInitializedMapAndList() throws Exception {
 		this.context.register(InitializedMapAndListPropertiesConfig.class);
-		TestPropertyValues.of("foo.map.entryOne:true",
-				"foo.list[0]:abc").applyTo(this.context);
+		TestPropertyValues.of("foo.map.entryOne:true", "foo.list[0]:abc")
+				.applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);

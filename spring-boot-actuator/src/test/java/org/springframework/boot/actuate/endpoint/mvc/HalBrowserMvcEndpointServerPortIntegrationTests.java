@@ -90,8 +90,8 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 				"http://localhost:" + this.port + "/application/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation()).isEqualTo(
-				URI.create("http://localhost:" + this.port + "/application/browser.html"));
+		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI
+				.create("http://localhost:" + this.port + "/application/browser.html"));
 	}
 
 	@MinimalActuatorHypermediaApplication

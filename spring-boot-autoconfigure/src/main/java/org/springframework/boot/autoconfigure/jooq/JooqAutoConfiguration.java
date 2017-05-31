@@ -101,8 +101,7 @@ public class JooqAutoConfiguration {
 		private final VisitListenerProvider[] visitListenerProviders;
 
 		public DslContextConfiguration(JooqProperties properties,
-				ConnectionProvider connectionProvider,
-				DataSource dataSource,
+				ConnectionProvider connectionProvider, DataSource dataSource,
 				ObjectProvider<TransactionProvider> transactionProvider,
 				ObjectProvider<RecordMapperProvider> recordMapperProvider,
 				ObjectProvider<Settings> settings,

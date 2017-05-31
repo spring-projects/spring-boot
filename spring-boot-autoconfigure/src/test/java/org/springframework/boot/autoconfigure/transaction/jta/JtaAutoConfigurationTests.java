@@ -148,7 +148,8 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void customBitronixServerId() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.jta.transactionManagerId:custom").applyTo(this.context);
+		TestPropertyValues.of("spring.jta.transactionManagerId:custom")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				BitronixJtaConfiguration.class);
 		this.context.refresh();
@@ -160,7 +161,8 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void defaultAtomikosTransactionManagerName() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.jta.logDir:target/transaction-logs").applyTo(this.context);
+		TestPropertyValues.of("spring.jta.logDir:target/transaction-logs")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				AtomikosJtaConfiguration.class);
 		this.context.refresh();
@@ -172,9 +174,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void atomikosConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.jta.atomikos.connectionfactory.minPoolSize:5",
-				"spring.jta.atomikos.connectionfactory.maxPoolSize:10").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.jta.atomikos.connectionfactory.minPoolSize:5",
+						"spring.jta.atomikos.connectionfactory.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -187,9 +190,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void bitronixConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.jta.bitronix.connectionfactory.minPoolSize:5",
-				"spring.jta.bitronix.connectionfactory.maxPoolSize:10").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.jta.bitronix.connectionfactory.minPoolSize:5",
+						"spring.jta.bitronix.connectionfactory.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -202,9 +206,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void atomikosDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.jta.atomikos.datasource.minPoolSize:5",
-				"spring.jta.atomikos.datasource.maxPoolSize:10").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.jta.atomikos.datasource.minPoolSize:5",
+						"spring.jta.atomikos.datasource.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -217,9 +222,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void bitronixDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.jta.bitronix.datasource.minPoolSize:5",
-				"spring.jta.bitronix.datasource.maxPoolSize:10").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.jta.bitronix.datasource.minPoolSize:5",
+						"spring.jta.bitronix.datasource.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -232,9 +238,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void atomikosCustomizeJtaTransactionManagerUsingProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class,
 				TransactionAutoConfiguration.class);
 		this.context.refresh();
@@ -247,9 +254,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void bitronixCustomizeJtaTransactionManagerUsingProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class,
 				TransactionAutoConfiguration.class);
 		this.context.refresh();

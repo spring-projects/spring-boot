@@ -67,8 +67,7 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test
 	public void sitePreferenceHandlerInterceptorEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of(
-				"spring.mobile.sitepreference.enabled:true");
+		TestPropertyValues.of("spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class))
@@ -78,8 +77,8 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceHandlerInterceptorDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of(
-				"spring.mobile.sitepreference.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("spring.mobile.sitepreference.enabled:false")
+				.applyTo(this.context);
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerInterceptor.class);
@@ -98,8 +97,7 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test
 	public void sitePreferenceMethodArgumentResolverEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of(
-				"spring.mobile.sitepreference.enabled:true");
+		TestPropertyValues.of("spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(
@@ -110,8 +108,8 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceMethodArgumentResolverDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of(
-				"spring.mobile.sitepreference.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("spring.mobile.sitepreference.enabled:false")
+				.applyTo(this.context);
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class);

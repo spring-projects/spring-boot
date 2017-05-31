@@ -66,8 +66,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private Manager getManager(TomcatWebServer webServer) {
-		for (Container container : webServer.getTomcat().getHost()
-				.findChildren()) {
+		for (Container container : webServer.getTomcat().getHost().findChildren()) {
 			if (container instanceof Context) {
 				return ((Context) container).getManager();
 			}

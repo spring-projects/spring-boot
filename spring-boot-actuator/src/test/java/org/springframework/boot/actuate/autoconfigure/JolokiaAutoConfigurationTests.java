@@ -68,8 +68,9 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentServletRegisteredWithAppContext() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of("jolokia.config[key1]:value1",
-				"jolokia.config[key2]:value2").applyTo(this.context);
+		TestPropertyValues
+				.of("jolokia.config[key1]:value1", "jolokia.config[key2]:value2")
+				.applyTo(this.context);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -81,8 +82,7 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentServletWithCustomPath() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"endpoints.jolokia.path=/foo/bar").applyTo(this.context);
+		TestPropertyValues.of("endpoints.jolokia.path=/foo/bar").applyTo(this.context);
 		this.context.register(EndpointsConfig.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,

@@ -140,8 +140,9 @@ public class WebSocketMessagingAutoConfigurationTests {
 	}
 
 	private Object performStompSubscription(final String topic) throws Throwable {
-		TestPropertyValues.of("server.port:0",
-				"spring.jackson.serialization.indent-output:true").applyTo(this.context);
+		TestPropertyValues
+				.of("server.port:0", "spring.jackson.serialization.indent-output:true")
+				.applyTo(this.context);
 		this.context.register(WebSocketMessagingConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
@@ -207,10 +208,10 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@EnableWebSocket
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
-	@ImportAutoConfiguration({JacksonAutoConfiguration.class,
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			ServletWebServerFactoryAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class})
+			DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration
 			extends AbstractWebSocketMessageBrokerConfigurer {
 

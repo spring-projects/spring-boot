@@ -55,8 +55,7 @@ public class MultipleResourceServerConfigurationTests {
 	public void orderIsUnchangedWhenThereAreMultipleResourceServerConfigurations() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DoubleResourceConfiguration.class);
-		TestPropertyValues.of(
-				"security.oauth2.resource.tokenInfoUri:http://example.com",
+		TestPropertyValues.of("security.oauth2.resource.tokenInfoUri:http://example.com",
 				"security.oauth2.client.clientId=acme").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context

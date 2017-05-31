@@ -23,8 +23,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
- * {@link ServletWebServerApplicationContext} which takes its configuration from XML documents,
- * understood by an {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
+ * {@link ServletWebServerApplicationContext} which takes its configuration from XML
+ * documents, understood by an
+ * {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
  * <p>
  * Note: In case of multiple config locations, later bean definitions will override ones
  * defined in earlier loaded files. This can be leveraged to deliberately override certain
@@ -36,7 +37,8 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * @see ServletWebServerApplicationContext
  * @see XmlWebApplicationContext
  */
-public class XmlServletWebServerApplicationContext extends ServletWebServerApplicationContext {
+public class XmlServletWebServerApplicationContext
+		extends ServletWebServerApplicationContext {
 
 	private final XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(this);
 
@@ -49,8 +51,8 @@ public class XmlServletWebServerApplicationContext extends ServletWebServerAppli
 	}
 
 	/**
-	 * Create a new {@link XmlServletWebServerApplicationContext}, loading bean definitions from
-	 * the given resources and automatically refreshing the context.
+	 * Create a new {@link XmlServletWebServerApplicationContext}, loading bean
+	 * definitions from the given resources and automatically refreshing the context.
 	 * @param resources the resources to load from
 	 */
 	public XmlServletWebServerApplicationContext(Resource... resources) {
@@ -59,8 +61,9 @@ public class XmlServletWebServerApplicationContext extends ServletWebServerAppli
 	}
 
 	/**
-	 * Create a new {@link XmlServletWebServerApplicationContext}, loading bean definitions from
-	 * the given resource locations and automatically refreshing the context.
+	 * Create a new {@link XmlServletWebServerApplicationContext}, loading bean
+	 * definitions from the given resource locations and automatically refreshing the
+	 * context.
 	 * @param resourceLocations the resources to load from
 	 */
 	public XmlServletWebServerApplicationContext(String... resourceLocations) {
@@ -69,8 +72,9 @@ public class XmlServletWebServerApplicationContext extends ServletWebServerAppli
 	}
 
 	/**
-	 * Create a new {@link XmlServletWebServerApplicationContext}, loading bean definitions from
-	 * the given resource locations and automatically refreshing the context.
+	 * Create a new {@link XmlServletWebServerApplicationContext}, loading bean
+	 * definitions from the given resource locations and automatically refreshing the
+	 * context.
 	 * @param relativeClass class whose package will be used as a prefix when loading each
 	 * specified resource name
 	 * @param resourceNames relatively-qualified names of resources to load

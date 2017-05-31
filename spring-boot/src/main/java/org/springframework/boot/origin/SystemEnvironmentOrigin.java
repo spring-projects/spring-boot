@@ -64,4 +64,3 @@ public class SystemEnvironmentOrigin implements Origin {
 		return ObjectUtils.nullSafeEquals(this.property, other.property);
 	}
 }
-

@@ -85,8 +85,7 @@ public class FilterOrderingIntegrationTests {
 
 	private void load() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"spring.session.store-type=hash-map").applyTo(this.context);
+		TestPropertyValues.of("spring.session.store-type=hash-map").applyTo(this.context);
 		this.context.register(MockWebServerConfiguration.class,
 				TestRedisConfiguration.class, WebMvcAutoConfiguration.class,
 				SecurityAutoConfiguration.class, SessionAutoConfiguration.class,

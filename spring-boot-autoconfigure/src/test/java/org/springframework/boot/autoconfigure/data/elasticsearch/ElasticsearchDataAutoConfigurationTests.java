@@ -48,9 +48,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs")
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.path.data:target/data",
+						"spring.data.elasticsearch.properties.path.logs:target/logs")
 				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
@@ -63,9 +63,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 	@Test
 	public void mappingContextExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs")
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.path.data:target/data",
+						"spring.data.elasticsearch.properties.path.logs:target/logs")
 				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
@@ -79,9 +79,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 	@Test
 	public void converterExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs")
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.path.data:target/data",
+						"spring.data.elasticsearch.properties.path.logs:target/logs")
 				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class,

@@ -183,12 +183,13 @@ public class OAuth2AutoConfigurationTests {
 	@Test
 	public void testEnvironmentalOverrides() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"security.oauth2.client.clientId:myclientid",
-				"security.oauth2.client.clientSecret:mysecret",
-				"security.oauth2.client.autoApproveScopes:read,write",
-				"security.oauth2.client.accessTokenValiditySeconds:40",
-				"security.oauth2.client.refreshTokenValiditySeconds:80").applyTo(this.context);
+		TestPropertyValues
+				.of("security.oauth2.client.clientId:myclientid",
+						"security.oauth2.client.clientSecret:mysecret",
+						"security.oauth2.client.autoApproveScopes:read,write",
+						"security.oauth2.client.accessTokenValiditySeconds:40",
+						"security.oauth2.client.refreshTokenValiditySeconds:80")
+				.applyTo(this.context);
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -230,9 +231,10 @@ public class OAuth2AutoConfigurationTests {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestSecurityConfiguration.class,
 				MinimalSecureWebApplication.class);
-		TestPropertyValues.of(
-				"security.oauth2.client.clientId=client",
-				"security.oauth2.client.grantType=client_credentials").applyTo(this.context);
+		TestPropertyValues
+				.of("security.oauth2.client.clientId=client",
+						"security.oauth2.client.grantType=client_credentials")
+				.applyTo(this.context);
 		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
@@ -246,9 +248,10 @@ public class OAuth2AutoConfigurationTests {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(ClientConfiguration.class,
 				MinimalSecureWebApplication.class);
-		TestPropertyValues.of(
-				"security.oauth2.client.clientId=client",
-				"security.oauth2.client.grantType=client_credentials").applyTo(this.context);
+		TestPropertyValues
+				.of("security.oauth2.client.clientId=client",
+						"security.oauth2.client.grantType=client_credentials")
+				.applyTo(this.context);
 		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		// The primary context is fine (not session scoped):
@@ -267,8 +270,7 @@ public class OAuth2AutoConfigurationTests {
 	public void testClientIsNotAuthCode() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(MinimalSecureNonWebApplication.class);
-		TestPropertyValues.of(
-				"security.oauth2.client.clientId=client").applyTo(context);
+		TestPropertyValues.of("security.oauth2.client.clientId=client").applyTo(context);
 		context.refresh();
 		assertThat(countBeans(context, ClientCredentialsResourceDetails.class))
 				.isEqualTo(1);
@@ -280,8 +282,8 @@ public class OAuth2AutoConfigurationTests {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(ResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
-		TestPropertyValues.of(
-				"security.oauth2.resource.jwt.keyValue:DEADBEEF").applyTo(this.context);
+		TestPropertyValues.of("security.oauth2.resource.jwt.keyValue:DEADBEEF")
+				.applyTo(this.context);
 		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
@@ -306,8 +308,8 @@ public class OAuth2AutoConfigurationTests {
 	@Test
 	public void testAuthorizationServerOverride() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"security.oauth2.resourceId:resource-id").applyTo(this.context);
+		TestPropertyValues.of("security.oauth2.resourceId:resource-id")
+				.applyTo(this.context);
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				CustomAuthorizationServer.class, MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -396,8 +398,9 @@ public class OAuth2AutoConfigurationTests {
 	public void resourceServerConditionWhenJwkConfigurationPresentShouldMatch()
 			throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"security.oauth2.resource.jwk.key-set-uri:http://my-auth-server/token_keys").applyTo(this.context);
+		TestPropertyValues
+				.of("security.oauth2.resource.jwk.key-set-uri:http://my-auth-server/token_keys")
+				.applyTo(this.context);
 		this.context.register(ResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();

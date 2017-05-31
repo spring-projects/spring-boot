@@ -99,8 +99,7 @@ public class SpringDataWebAutoConfigurationTests {
 	}
 
 	private void load(String... environment) {
-		AnnotationConfigWebApplicationContext ctx =
-				new AnnotationConfigWebApplicationContext();
+		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
 		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.register(SpringDataWebAutoConfiguration.class);
 		ctx.refresh();

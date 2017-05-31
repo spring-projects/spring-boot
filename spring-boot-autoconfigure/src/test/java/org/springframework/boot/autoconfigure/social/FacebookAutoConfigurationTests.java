@@ -35,10 +35,9 @@ public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurat
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of(
-				"spring.social.facebook.appId:12345").applyTo(this.context);
-		TestPropertyValues.of(
-				"spring.social.facebook.appSecret:secret").applyTo(this.context);
+		TestPropertyValues.of("spring.social.facebook.appId:12345").applyTo(this.context);
+		TestPropertyValues.of("spring.social.facebook.appSecret:secret")
+				.applyTo(this.context);
 		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(SocialWebAutoConfiguration.class);

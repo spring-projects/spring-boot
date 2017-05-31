@@ -46,8 +46,8 @@ public class LdapDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.ldap.urls:ldap://localhost:389").applyTo(this.context);
+		TestPropertyValues.of("spring.ldap.urls:ldap://localhost:389")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class);
 		this.context.refresh();

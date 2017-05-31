@@ -78,8 +78,8 @@ public class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	public void testRandomPortWithValueAnnotation() throws LDAPException {
-		TestPropertyValues.of(
-				"spring.ldap.embedded.base-dn:dc=spring,dc=org").applyTo(this.context);
+		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.applyTo(this.context);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
 				LdapClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -119,8 +119,8 @@ public class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	public void testQueryEmbeddedLdap() throws LDAPException {
-		TestPropertyValues.of(
-				"spring.ldap.embedded.base-dn:dc=spring,dc=org").applyTo(this.context);
+		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.applyTo(this.context);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
 				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

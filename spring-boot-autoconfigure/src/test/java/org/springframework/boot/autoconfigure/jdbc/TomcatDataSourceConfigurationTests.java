@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceExists() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		TestPropertyValues.of(
-				PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
+		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		assertThat(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class))
@@ -75,14 +74,11 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		TestPropertyValues.of(
-				PREFIX + "url:jdbc:h2:mem:testdb",
-				PREFIX + "testWhileIdle:true",
-				PREFIX + "testOnBorrow:true",
+		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb",
+				PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
 				PREFIX + "testOnReturn:true",
 				PREFIX + "timeBetweenEvictionRunsMillis:10000",
-				PREFIX + "minEvictableIdleTimeMillis:12345",
-				PREFIX + "maxWait:1234",
+				PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
 				PREFIX + "jdbcInterceptors:SlowQueryReport",
 				PREFIX + "validationInterval:9999").applyTo(this.context);
 		this.context.refresh();
@@ -114,8 +110,7 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceDefaultsPreserved() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		TestPropertyValues.of(
-				PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
+		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);

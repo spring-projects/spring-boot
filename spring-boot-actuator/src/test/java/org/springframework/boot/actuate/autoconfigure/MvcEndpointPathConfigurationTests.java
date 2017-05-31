@@ -117,10 +117,11 @@ public class MvcEndpointPathConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(TestConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
-		TestPropertyValues.of(
-				"endpoints." + this.endpointName + ".path" + ":/custom/path",
-				"endpoints." + this.endpointName + ".enabled:true",
-				"logging.file:target/test.log").applyTo(this.context);
+		TestPropertyValues
+				.of("endpoints." + this.endpointName + ".path" + ":/custom/path",
+						"endpoints." + this.endpointName + ".enabled:true",
+						"logging.file:target/test.log")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(getConfiguredPath()).isEqualTo("/custom/path");
 	}

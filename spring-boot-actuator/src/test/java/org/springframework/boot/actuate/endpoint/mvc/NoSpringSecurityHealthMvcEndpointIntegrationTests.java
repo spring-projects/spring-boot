@@ -84,8 +84,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		TestPropertyValues.of(
-				"management.security.enabled:false").applyTo(this.context);
+		TestPropertyValues.of("management.security.enabled:false").applyTo(this.context);
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		mockMvc.perform(get("/application/health")).andExpect(status().isOk())

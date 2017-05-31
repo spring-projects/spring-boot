@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,7 @@ public class MvcEndpointsTests {
 
 	@Test
 	public void changesPath() throws Exception {
-		TestPropertyValues.of(
-				"endpoints.test.path=/foo/bar/").applyTo(this.context);
+		TestPropertyValues.of("endpoints.test.path=/foo/bar/").applyTo(this.context);
 		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
 				new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);

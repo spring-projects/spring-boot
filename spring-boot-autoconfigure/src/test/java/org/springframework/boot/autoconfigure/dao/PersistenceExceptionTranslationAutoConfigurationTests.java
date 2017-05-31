@@ -66,8 +66,8 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	@Test
 	public void exceptionTranslationPostProcessorCanBeConfiguredToUseJdkProxy() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.aop.proxy-target-class=false").applyTo(this.context);
+		TestPropertyValues.of("spring.aop.proxy-target-class=false")
+				.applyTo(this.context);
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
@@ -79,8 +79,8 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	@Test
 	public void exceptionTranslationPostProcessorCanBeDisabled() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.dao.exceptiontranslation.enabled=false").applyTo(this.context);
+		TestPropertyValues.of("spring.dao.exceptiontranslation.enabled=false")
+				.applyTo(this.context);
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context

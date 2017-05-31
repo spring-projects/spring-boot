@@ -68,9 +68,10 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 
 	@Test
 	public void endpointHandlerMapping() throws Exception {
-		TestPropertyValues.of(
-				"management.security.enabled=false",
-				"management.security.roles=my-role,your-role").applyTo(this.context);
+		TestPropertyValues
+				.of("management.security.enabled=false",
+						"management.security.roles=my-role,your-role")
+				.applyTo(this.context);
 		this.context.refresh();
 		EndpointHandlerMapping mapping = this.context.getBean("endpointHandlerMapping",
 				EndpointHandlerMapping.class);

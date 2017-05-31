@@ -113,7 +113,8 @@ public class SecurityAutoConfigurationTests {
 					SecurityFilterAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
 			customContext.refresh();
-			assertThat(customContext.containsBean("securityFilterChainRegistration")).isFalse();
+			assertThat(customContext.containsBean("securityFilterChainRegistration"))
+					.isFalse();
 		}
 	}
 
@@ -277,10 +278,8 @@ public class SecurityAutoConfigurationTests {
 	public void testJpaCoexistsHappily() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		TestPropertyValues.of(
-				"spring.datasource.url:jdbc:hsqldb:mem:testsecdb");
-		TestPropertyValues.of(
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.url:jdbc:hsqldb:mem:testsecdb");
+		TestPropertyValues.of("spring.datasource.initialize:false");
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
@@ -370,8 +369,8 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestPropertyValues.of(
-				"security.filter-dispatcher-types:INCLUDE,ERROR").applyTo(this.context);
+		TestPropertyValues.of("security.filter-dispatcher-types:INCLUDE,ERROR")
+				.applyTo(this.context);
 		this.context.refresh();
 		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
 				"securityFilterChainRegistration",

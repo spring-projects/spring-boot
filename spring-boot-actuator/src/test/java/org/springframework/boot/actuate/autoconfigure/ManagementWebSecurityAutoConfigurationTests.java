@@ -100,7 +100,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		assertThat(filterChainProxy.getFilters("/application/beans")).isNotEmpty();
 		assertThat(filterChainProxy.getFilters("/application/beans/")).isNotEmpty();
 		assertThat(filterChainProxy.getFilters("/application/beans.foo")).isNotEmpty();
-		assertThat(filterChainProxy.getFilters("/application/beans/foo/bar")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans/foo/bar"))
+				.isNotEmpty();
 	}
 
 	@Test

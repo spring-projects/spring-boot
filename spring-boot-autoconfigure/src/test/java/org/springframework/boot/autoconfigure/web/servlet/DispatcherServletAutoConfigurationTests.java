@@ -174,8 +174,7 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(DispatcherServletAutoConfiguration.class);
-		TestPropertyValues.of(
-				"spring.mvc.throw-exception-if-no-handler-found:true",
+		TestPropertyValues.of("spring.mvc.throw-exception-if-no-handler-found:true",
 				"spring.mvc.dispatch-options-request:false",
 				"spring.mvc.dispatch-trace-request:true",
 				"spring.mvc.servlet.load-on-startup=5").applyTo(this.context);

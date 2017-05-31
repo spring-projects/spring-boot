@@ -186,7 +186,8 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testInfoEndpointNoGitProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.info.git.location:classpath:nonexistent").applyTo(this.context);
+		TestPropertyValues.of("spring.info.git.location:classpath:nonexistent")
+				.applyTo(this.context);
 		this.context.register(InfoContributorAutoConfiguration.class,
 				EndpointAutoConfiguration.class);
 		this.context.refresh();

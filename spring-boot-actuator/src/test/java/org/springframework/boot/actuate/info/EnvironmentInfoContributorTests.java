@@ -38,8 +38,8 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	public void extractOnlyInfoProperty() {
-		TestPropertyValues.of("info.app=my app",
-				"info.version=1.0.0", "foo=bar").applyTo(this.environment);
+		TestPropertyValues.of("info.app=my app", "info.version=1.0.0", "foo=bar")
+				.applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
@@ -56,7 +56,8 @@ public class EnvironmentInfoContributorTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void propertiesFromEnvironmentShouldBindCorrectly() throws Exception {
-		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment, Type.SYSTEM);
+		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment,
+				Type.SYSTEM);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("environment", Map.class)).containsEntry("foo", "green");
 	}

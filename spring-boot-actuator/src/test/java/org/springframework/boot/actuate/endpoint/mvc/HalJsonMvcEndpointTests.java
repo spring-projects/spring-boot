@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -43,14 +42,17 @@ public class HalJsonMvcEndpointTests {
 	@Test
 	public void halJsonEndpointPathWhenManagementContextPathPresent() throws Exception {
 		Mockito.when(this.managementServletContext.getContextPath()).thenReturn("my-app");
-		HalJsonMvcEndpoint endpoint = new HalJsonMvcEndpoint(this.managementServletContext);
+		HalJsonMvcEndpoint endpoint = new HalJsonMvcEndpoint(
+				this.managementServletContext);
 		assertThat(endpoint.getPath()).isEqualTo("");
 	}
 
 	@Test
-	public void halJsonEndpointPathWhenManagementContextPathNotPresent() throws Exception {
+	public void halJsonEndpointPathWhenManagementContextPathNotPresent()
+			throws Exception {
 		Mockito.when(this.managementServletContext.getContextPath()).thenReturn("");
-		HalJsonMvcEndpoint endpoint = new HalJsonMvcEndpoint(this.managementServletContext);
+		HalJsonMvcEndpoint endpoint = new HalJsonMvcEndpoint(
+				this.managementServletContext);
 		assertThat(endpoint.getPath()).isEqualTo("/application");
 	}
 }

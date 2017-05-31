@@ -216,18 +216,19 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty() throws Exception {
+	public void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty()
+			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "hello");
 		source.put("foo.items", "bar,baz");
-		this.sources
-				.add(source);
+		this.sources.add(source);
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		this.thrown.expect(BindException.class);
 		this.thrown.expect(new AssertionMatcher<BindException>() {
 			@Override
 			public void assertion(BindException ex) throws AssertionError {
-				assertThat(ex.getCause().getMessage()).isEqualTo("No setter found for property: items");
+				assertThat(ex.getCause().getMessage())
+						.isEqualTo("No setter found for property: items");
 				assertThat(ex.getProperty()).isNull();
 			}
 		});

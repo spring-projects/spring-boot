@@ -140,8 +140,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void customJpaProperties() throws Exception {
-		TestPropertyValues.of("spring.jpa.properties.a:b",
-				"spring.jpa.properties.a.b:c", "spring.jpa.properties.c:d").applyTo(this.context);
+		TestPropertyValues.of("spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c",
+				"spring.jpa.properties.c:d").applyTo(this.context);
 		setupTestConfiguration();
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
@@ -154,8 +154,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
-		TestPropertyValues.of(
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.initialize:false");
 		setupTestConfiguration(
 				TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
 		this.context.refresh();
@@ -167,8 +166,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedEntityManagerFactoryIfAvailable() {
-		TestPropertyValues.of(
-				"spring.datasource.initialize:false").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
 		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
 		this.context.refresh();
 		EntityManagerFactory factoryBean = this.context

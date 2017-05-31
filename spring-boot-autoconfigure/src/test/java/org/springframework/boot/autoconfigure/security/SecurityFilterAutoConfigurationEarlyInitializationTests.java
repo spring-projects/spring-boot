@@ -59,8 +59,8 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	@Test
 	public void testSecurityFilterDoesNotCauseEarlyInitialization() throws Exception {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
-			TestPropertyValues.of("server.port:0",
-					"security.user.password:password").applyTo(context);
+			TestPropertyValues.of("server.port:0", "security.user.password:password")
+					.applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();

@@ -88,8 +88,8 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	}
 
 	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.properties.path.home:target").applyTo(context);
+		TestPropertyValues.of("spring.data.elasticsearch.properties.path.home:target")
+				.applyTo(context);
 	}
 
 	@Configuration

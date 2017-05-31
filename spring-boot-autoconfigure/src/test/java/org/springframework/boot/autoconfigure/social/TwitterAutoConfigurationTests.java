@@ -35,10 +35,9 @@ public class TwitterAutoConfigurationTests extends AbstractSocialAutoConfigurati
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of(
-				"spring.social.twitter.appId:12345").applyTo(this.context);
-		TestPropertyValues.of(
-				"spring.social.twitter.appSecret:secret").applyTo(this.context);
+		TestPropertyValues.of("spring.social.twitter.appId:12345").applyTo(this.context);
+		TestPropertyValues.of("spring.social.twitter.appSecret:secret")
+				.applyTo(this.context);
 		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(SocialWebAutoConfiguration.class);

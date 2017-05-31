@@ -110,9 +110,10 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	@Test
 	public void testCustomizeDataSourceTransactionManagerUsingProperties()
 			throws Exception {
-		TestPropertyValues.of(
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);

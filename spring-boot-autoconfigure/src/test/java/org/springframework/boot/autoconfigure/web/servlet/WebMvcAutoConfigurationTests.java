@@ -415,8 +415,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void overrideIgnoreDefaultModelOnRedirect() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"spring.mvc.ignore-default-model-on-redirect:false").applyTo(this.context);
+		TestPropertyValues.of("spring.mvc.ignore-default-model-on-redirect:false")
+				.applyTo(this.context);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -675,7 +675,8 @@ public class WebMvcAutoConfigurationTests {
 				.getBeanNamesForType(javax.validation.Validator.class);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
 		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
-		assertThat(springValidatorBeans).containsExactly("defaultValidator", "mvcValidator");
+		assertThat(springValidatorBeans).containsExactly("defaultValidator",
+				"mvcValidator");
 		Validator validator = this.context.getBean("mvcValidator", Validator.class);
 		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 		Object defaultValidator = this.context.getBean("defaultValidator");
@@ -698,7 +699,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithConfigurerDoesNotExposeJsr303() {
-		load(MvcJsr303Validator.class, new Class<?>[] { ValidationAutoConfiguration.class });
+		load(MvcJsr303Validator.class,
+				new Class<?>[] { ValidationAutoConfiguration.class });
 		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
 				.isEmpty();
@@ -717,7 +719,8 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
 				.hasSize(1);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(springValidatorBeans).containsExactly("defaultValidator", "mvcValidator");
+		assertThat(springValidatorBeans).containsExactly("defaultValidator",
+				"mvcValidator");
 		assertThat(this.context.getBean("mvcValidator"))
 				.isSameAs(this.context.getBean(MvcValidator.class).validator);
 		// Primary Spring validator is the auto-configured one as the MVC one has been
@@ -733,13 +736,12 @@ public class WebMvcAutoConfigurationTests {
 				.getBeanNamesForType(javax.validation.Validator.class);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
 		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
-		assertThat(springValidatorBeans).containsExactly(
-				"customSpringValidator", "defaultValidator", "mvcValidator");
+		assertThat(springValidatorBeans).containsExactly("customSpringValidator",
+				"defaultValidator", "mvcValidator");
 		Validator validator = this.context.getBean("mvcValidator", Validator.class);
 		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 		Object defaultValidator = this.context.getBean("defaultValidator");
-		assertThat(((ValidatorAdapter) validator).getTarget())
-				.isSameAs(defaultValidator);
+		assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
 		// Primary Spring validator is the one used by MVC behind the scenes
 		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
 	}

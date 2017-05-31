@@ -79,37 +79,37 @@ public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 	@Test
 	public void curiesEnabledWithDefaultPorts() {
 		load("endpoints.docs.curies.enabled:true");
-		assertThat(getCurieHref())
-				.isEqualTo("http://localhost/application/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref()).isEqualTo(
+				"http://localhost/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesEnabledWithRandomPorts() {
 		load("endpoints.docs.curies.enabled:true", "server.port:0", "management.port:0");
-		assertThat(getCurieHref())
-				.isEqualTo("http://localhost/application/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref()).isEqualTo(
+				"http://localhost/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesEnabledWithSpecificServerPort() {
 		load("endpoints.docs.curies.enabled:true", "server.port:8080");
-		assertThat(getCurieHref())
-				.isEqualTo("http://localhost/application/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref()).isEqualTo(
+				"http://localhost/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesEnabledWithSpecificManagementPort() {
 		load("endpoints.docs.curies.enabled:true", "management.port:8081");
-		assertThat(getCurieHref())
-				.isEqualTo("http://localhost/application/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref()).isEqualTo(
+				"http://localhost/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesEnabledWithSpecificManagementAndServerPorts() {
 		load("endpoints.docs.curies.enabled:true", "server.port:8080",
 				"management.port:8081");
-		assertThat(getCurieHref())
-				.isEqualTo("http://localhost/application/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref()).isEqualTo(
+				"http://localhost/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	private void load(String... properties) {

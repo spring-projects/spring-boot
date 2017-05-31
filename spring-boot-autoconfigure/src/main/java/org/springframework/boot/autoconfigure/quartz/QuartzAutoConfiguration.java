@@ -77,8 +77,7 @@ public class QuartzAutoConfiguration {
 			ObjectProvider<List<SchedulerFactoryBeanCustomizer>> customizers,
 			ObjectProvider<Executor> taskExecutor, ObjectProvider<JobDetail[]> jobDetails,
 			ObjectProvider<Map<String, Calendar>> calendars,
-			ObjectProvider<Trigger[]> triggers,
-			ApplicationContext applicationContext) {
+			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers.getIfAvailable();
 		this.taskExecutor = taskExecutor.getIfAvailable();
@@ -147,8 +146,8 @@ public class QuartzAutoConfiguration {
 			return schedulerFactoryBean -> {
 				if (properties.getJobStoreType() == JobStoreType.JDBC) {
 					schedulerFactoryBean.setDataSource(dataSource);
-					PlatformTransactionManager txManager =
-							transactionManager.getIfUnique();
+					PlatformTransactionManager txManager = transactionManager
+							.getIfUnique();
 					if (txManager != null) {
 						schedulerFactoryBean.setTransactionManager(txManager);
 					}

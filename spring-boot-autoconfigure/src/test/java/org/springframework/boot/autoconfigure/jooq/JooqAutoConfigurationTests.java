@@ -147,7 +147,8 @@ public class JooqAutoConfigurationTests {
 
 	@Test
 	public void relaxedBindingOfSqlDialect() {
-		load(new Class<?>[] { JooqDataSourceConfiguration.class }, "spring.jooq.sql-dialect:PoSTGrES");
+		load(new Class<?>[] { JooqDataSourceConfiguration.class },
+				"spring.jooq.sql-dialect:PoSTGrES");
 		assertThat(this.context.getBean(org.jooq.Configuration.class).dialect())
 				.isEqualTo(SQLDialect.POSTGRES);
 	}

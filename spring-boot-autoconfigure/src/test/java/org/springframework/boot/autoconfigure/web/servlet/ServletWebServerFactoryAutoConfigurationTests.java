@@ -122,9 +122,10 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	@Test
 	public void initParametersAreConfiguredOnTheServletContext() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of(
-				"server.servlet.context-parameters.a:alpha",
-				"server.servlet.context-parameters.b:bravo").applyTo(this.context);
+		TestPropertyValues
+				.of("server.servlet.context-parameters.a:alpha",
+						"server.servlet.context-parameters.b:bravo")
+				.applyTo(this.context);
 		this.context.register(BaseConfiguration.class);
 		this.context.refresh();
 

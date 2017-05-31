@@ -60,8 +60,8 @@ public class CassandraDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.cassandra.keyspaceName:boot_test").applyTo(this.context);
+		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
+				.applyTo(this.context);
 		this.context.register(TestExcludeConfiguration.class, TestConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
@@ -74,8 +74,7 @@ public class CassandraDataAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.cassandra.keyspaceName:boot_test");
+		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test");
 		this.context.register(TestConfiguration.class, EntityScanConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
@@ -90,8 +89,8 @@ public class CassandraDataAutoConfigurationTests {
 	@Test
 	public void userTypeResolverShouldBeSet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.data.cassandra.keyspaceName:boot_test").applyTo(this.context);
+		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
+				.applyTo(this.context);
 		this.context.register(TestConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);

@@ -71,7 +71,8 @@ public class JolokiaMvcEndpointContextPathTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		TestPropertyValues.of("foo:bar").applyTo((ConfigurableApplicationContext) this.context);
+		TestPropertyValues.of("foo:bar")
+				.applyTo((ConfigurableApplicationContext) this.context);
 	}
 
 	@Test

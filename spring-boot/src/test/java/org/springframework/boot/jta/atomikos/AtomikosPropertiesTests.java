@@ -94,9 +94,8 @@ public class AtomikosPropertiesTests {
 				"com.atomikos.icatch.forget_orphaned_log_entries_delay",
 				"com.atomikos.icatch.oltp_max_retries",
 				"com.atomikos.icatch.oltp_retry_interval"));
-		assertThat(properties).contains(
-				entry("com.atomikos.icatch.recovery_delay", defaultSettings.get(
-						"com.atomikos.icatch.default_jta_timeout")));
+		assertThat(properties).contains(entry("com.atomikos.icatch.recovery_delay",
+				defaultSettings.get("com.atomikos.icatch.default_jta_timeout")));
 		assertThat(properties).hasSize(14);
 	}
 

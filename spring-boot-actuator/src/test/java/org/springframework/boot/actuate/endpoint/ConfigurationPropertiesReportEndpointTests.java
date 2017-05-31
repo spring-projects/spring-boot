@@ -130,8 +130,8 @@ public class ConfigurationPropertiesReportEndpointTests
 	@Test
 	public void testKeySanitizationWithCustomKeysByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"endpoints.configprops.keys-to-sanitize:property").applyTo(this.context);
+		TestPropertyValues.of("endpoints.configprops.keys-to-sanitize:property")
+				.applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
@@ -147,8 +147,8 @@ public class ConfigurationPropertiesReportEndpointTests
 	@Test
 	public void testKeySanitizationWithCustomPatternByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"endpoints.configprops.keys-to-sanitize: .*pass.*").applyTo(this.context);
+		TestPropertyValues.of("endpoints.configprops.keys-to-sanitize: .*pass.*")
+				.applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
@@ -165,8 +165,9 @@ public class ConfigurationPropertiesReportEndpointTests
 	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment()
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"endpoints.configprops.keys-to-sanitize: .*pass.*, property").applyTo(this.context);
+		TestPropertyValues
+				.of("endpoints.configprops.keys-to-sanitize: .*pass.*, property")
+				.applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
@@ -184,8 +185,9 @@ public class ConfigurationPropertiesReportEndpointTests
 			throws Exception {
 		// gh-4415
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"endpoints.configprops.keys-to-sanitize: .*\\.secrets\\..*, .*\\.hidden\\..*").applyTo(this.context);
+		TestPropertyValues
+				.of("endpoints.configprops.keys-to-sanitize: .*\\.secrets\\..*, .*\\.hidden\\..*")
+				.applyTo(this.context);
 		this.context.register(Config.class);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();

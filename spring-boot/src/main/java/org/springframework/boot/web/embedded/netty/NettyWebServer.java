@@ -66,7 +66,7 @@ public class NettyWebServer implements WebServer {
 			}
 			catch (Exception ex) {
 				if (findBindException(ex) != null) {
-//					throw new PortInUseException();
+					// throw new PortInUseException();
 				}
 				throw new WebServerException("Unable to start Netty", ex);
 			}

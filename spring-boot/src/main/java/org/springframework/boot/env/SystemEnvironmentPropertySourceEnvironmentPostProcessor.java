@@ -30,40 +30,47 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 /**
- * An {@link EnvironmentPostProcessor} that replaces the systemEnvironment {@link SystemEnvironmentPropertySource}
- * with an {@link OriginTrackedSystemPropertySource} that can track the {@link SystemEnvironmentOrigin} for
- * every system environment property.
+ * An {@link EnvironmentPostProcessor} that replaces the systemEnvironment
+ * {@link SystemEnvironmentPropertySource} with an
+ * {@link OriginTrackedSystemPropertySource} that can track the
+ * {@link SystemEnvironmentOrigin} for every system environment property.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
+public class SystemEnvironmentPropertySourceEnvironmentPostProcessor
+		implements EnvironmentPostProcessor, Ordered {
 
 	/**
 	 * The default order for the processor.
 	 */
-	public static final int DEFAULT_ORDER = SpringApplicationJsonEnvironmentPostProcessor.DEFAULT_ORDER - 1;
+	public static final int DEFAULT_ORDER = SpringApplicationJsonEnvironmentPostProcessor.DEFAULT_ORDER
+			- 1;
 
 	private int order = DEFAULT_ORDER;
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment,
+			SpringApplication application) {
 		String sourceName = StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
-		PropertySource<?> propertySource = environment.getPropertySources().get(sourceName);
+		PropertySource<?> propertySource = environment.getPropertySources()
+				.get(sourceName);
 		if (propertySource != null) {
 			replacePropertySource(environment, sourceName, propertySource);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void replacePropertySource(ConfigurableEnvironment environment, String sourceName, PropertySource<?> propertySource) {
+	private void replacePropertySource(ConfigurableEnvironment environment,
+			String sourceName, PropertySource<?> propertySource) {
 		if (propertySource.getSource() instanceof Map) {
-			Map<String, Object> originalSource = (Map<String, Object>) propertySource.getSource();
+			Map<String, Object> originalSource = (Map<String, Object>) propertySource
+					.getSource();
 			Map<String, Object> originTrackedSource = new LinkedHashMap<>(originalSource);
-			originTrackedSource.entrySet().forEach(e -> e.setValue(OriginTrackedValue.of(e.getValue(),
-					new SystemEnvironmentOrigin(e.getKey()))));
-			OriginTrackedSystemPropertySource source = new OriginTrackedSystemPropertySource(sourceName,
-					Collections.unmodifiableMap(originTrackedSource));
+			originTrackedSource.entrySet().forEach(e -> e.setValue(OriginTrackedValue
+					.of(e.getValue(), new SystemEnvironmentOrigin(e.getKey()))));
+			OriginTrackedSystemPropertySource source = new OriginTrackedSystemPropertySource(
+					sourceName, Collections.unmodifiableMap(originTrackedSource));
 			environment.getPropertySources().replace(sourceName, source);
 		}
 	}
@@ -78,4 +85,3 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	}
 
 }
-

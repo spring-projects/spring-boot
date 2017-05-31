@@ -158,11 +158,11 @@ public class EmbeddedMongoAutoConfigurationTests {
 			String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
 		int mongoPort = SocketUtils.findAvailableTcpPort();
-		TestPropertyValues.of(
-				"spring.data.mongodb.port=" + mongoPort).applyTo(this.context);
+		TestPropertyValues.of("spring.data.mongodb.port=" + mongoPort)
+				.applyTo(this.context);
 		if (configuredVersion != null) {
-			TestPropertyValues.of(
-					"spring.mongodb.embedded.version=" + configuredVersion).applyTo(this.context);
+			TestPropertyValues.of("spring.mongodb.embedded.version=" + configuredVersion)
+					.applyTo(this.context);
 		}
 		this.context.register(MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, EmbeddedMongoAutoConfiguration.class);

@@ -42,7 +42,8 @@ public class SqlDialectLookupTests {
 	}
 
 	@Test
-	public void getSqlDialectWhenDataSourceIsUnknownShouldReturnDefault() throws Exception {
+	public void getSqlDialectWhenDataSourceIsUnknownShouldReturnDefault()
+			throws Exception {
 		testGetSqlDialect("jdbc:idontexist:", SQLDialect.DEFAULT);
 	}
 

@@ -62,7 +62,7 @@ public class BatchAutoConfigurationWithoutJpaTests {
 	@Test
 	public void jdbcWithDefaultSettings() throws Exception {
 		load(new Class<?>[] { DefaultConfiguration.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.datasource.generate-unique-name=true");
 		assertThat(this.context.getBeansOfType(JobLauncher.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(JobExplorer.class)).hasSize(1);
@@ -73,28 +73,30 @@ public class BatchAutoConfigurationWithoutJpaTests {
 				.contains("DataSourceTransactionManager");
 		assertThat(
 				this.context.getBean(BatchProperties.class).getInitializer().isEnabled())
-				.isTrue();
+						.isTrue();
 		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
-		assertThat(this.context.getBean(JobExplorer.class)
-				.findRunningJobExecutions("test")).isEmpty();
-		assertThat(this.context.getBean(JobRepository.class)
-				.getLastJobExecution("test", new JobParameters())).isNull();
+		assertThat(
+				this.context.getBean(JobExplorer.class).findRunningJobExecutions("test"))
+						.isEmpty();
+		assertThat(this.context.getBean(JobRepository.class).getLastJobExecution("test",
+				new JobParameters())).isNull();
 	}
 
 	@Test
 	public void jdbcWithCustomPrefix() throws Exception {
 		load(new Class<?>[] { DefaultConfiguration.class,
-						EmbeddedDataSourceConfiguration.class },
+				EmbeddedDataSourceConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
 				"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
 				"spring.batch.tablePrefix:PREFIX_");
 		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
-		assertThat(this.context.getBean(JobExplorer.class)
-				.findRunningJobExecutions("test")).isEmpty();
-		assertThat(this.context.getBean(JobRepository.class)
-				.getLastJobExecution("test", new JobParameters())).isNull();
+		assertThat(
+				this.context.getBean(JobExplorer.class).findRunningJobExecutions("test"))
+						.isEmpty();
+		assertThat(this.context.getBean(JobRepository.class).getLastJobExecution("test",
+				new JobParameters())).isNull();
 
 	}
 

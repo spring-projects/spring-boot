@@ -44,10 +44,12 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessShouldReplaceSystemEnviromentPropertySource() throws Exception {
+	public void postProcessShouldReplaceSystemEnviromentPropertySource()
+			throws Exception {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(this.environment, null);
-		PropertySource<?> replaced = this.environment.getPropertySources().get("systemEnvironment");
+		PropertySource<?> replaced = this.environment.getPropertySources()
+				.get("systemEnvironment");
 		assertThat(replaced).isInstanceOf(OriginTrackedSystemPropertySource.class);
 	}
 
@@ -55,15 +57,19 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	@SuppressWarnings("unchecked")
 	public void replacedPropertySourceShouldHaveOriginTrackedValues() throws Exception {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
-		PropertySource<?> original = this.environment.getPropertySources().get("systemEnvironment");
+		PropertySource<?> original = this.environment.getPropertySources()
+				.get("systemEnvironment");
 		postProcessor.postProcessEnvironment(this.environment, null);
-		PropertySource<?> replaced = this.environment.getPropertySources().get("systemEnvironment");
+		PropertySource<?> replaced = this.environment.getPropertySources()
+				.get("systemEnvironment");
 		Map<String, Object> originalMap = (Map<String, Object>) original.getSource();
-		Map<String, OriginTrackedValue> replacedMap = (Map<String, OriginTrackedValue>) replaced.getSource();
+		Map<String, OriginTrackedValue> replacedMap = (Map<String, OriginTrackedValue>) replaced
+				.getSource();
 		for (Map.Entry<String, Object> entry : originalMap.entrySet()) {
 			OriginTrackedValue actual = replacedMap.get(entry.getKey());
 			assertThat(actual.getValue()).isEqualTo(entry.getValue());
-			assertThat(actual.getOrigin()).isEqualTo(new SystemEnvironmentOrigin(entry.getKey()));
+			assertThat(actual.getOrigin())
+					.isEqualTo(new SystemEnvironmentOrigin(entry.getKey()));
 		}
 	}
 

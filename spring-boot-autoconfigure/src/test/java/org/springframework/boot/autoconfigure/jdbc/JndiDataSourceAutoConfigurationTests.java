@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.datasource.jndi-name:foo").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
 		this.context.register(JndiDataSourceAutoConfiguration.class);
 		this.context.refresh();
 
@@ -104,8 +103,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.datasource.jndi-name:foo").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
 		this.context.register(JndiDataSourceAutoConfiguration.class,
 				MBeanExporterConfiguration.class);
 		this.context.refresh();
@@ -125,8 +123,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"spring.datasource.jndi-name:foo").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
 		this.context.register(JndiDataSourceAutoConfiguration.class,
 				MBeanExporterConfiguration.class);
 		this.context.refresh();
