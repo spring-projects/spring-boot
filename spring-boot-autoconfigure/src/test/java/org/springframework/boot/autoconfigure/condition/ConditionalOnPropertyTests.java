@@ -46,6 +46,7 @@ import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Michael J. Simons
  */
 public class ConditionalOnPropertyTests {
 
@@ -73,6 +74,20 @@ public class ConditionalOnPropertyTests {
 	@Test
 	public void notAllPropertiesAreDefined() {
 		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1");
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	public void allPropertiesAreDefinedWithExpectedValues() {
+		load(MultiplePropertiesWithExplicitValuesRequiredConfiguration.class, "property1=value1",
+				"property2=value2");
+		assertThat(this.context.containsBean("foo")).isTrue();
+	}
+
+	@Test
+	public void notAllPropertiesAreDefinedWithExpectedValues() {
+		load(MultiplePropertiesWithExplicitValuesRequiredConfiguration.class, "property1=value1",
+				"property2=foo");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
@@ -266,6 +281,18 @@ public class ConditionalOnPropertyTests {
 	@Configuration
 	@ConditionalOnProperty(name = { "property1", "property2" })
 	protected static class MultiplePropertiesRequiredConfiguration {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnProperty(name = "property1", havingValue = "value1")
+	@ConditionalOnProperty(name = "property2", havingValue = "value2")
+	protected static class MultiplePropertiesWithExplicitValuesRequiredConfiguration {
 
 		@Bean
 		public String foo() {
