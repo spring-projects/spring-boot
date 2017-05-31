@@ -54,19 +54,6 @@ public class WarPluginActionIntegrationTests {
 	}
 
 	@Test
-	public void noBootWebSoftwareComponentWithoutJavaPluginApplied() {
-		assertThat(this.gradleBuild.build("componentExists", "-PcomponentName=bootWeb")
-				.getOutput()).contains("bootWeb exists = false");
-	}
-
-	@Test
-	public void applyingJavaPluginCreatesBootWebSoftwareComponent() {
-		assertThat(this.gradleBuild
-				.build("componentExists", "-PcomponentName=bootWeb", "-PapplyWarPlugin")
-				.getOutput()).contains("bootWeb exists = true");
-	}
-
-	@Test
 	public void assembleRunsBootWarAndWarIsSkipped() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

@@ -67,19 +67,6 @@ public class JavaPluginActionIntegrationTests {
 	}
 
 	@Test
-	public void noBootJavaSoftwareComponentWithoutJavaPluginApplied() {
-		assertThat(this.gradleBuild.build("componentExists", "-PcomponentName=bootJava")
-				.getOutput()).contains("bootJava exists = false");
-	}
-
-	@Test
-	public void applyingJavaPluginCreatesBootJavaSoftwareComponent() {
-		assertThat(this.gradleBuild
-				.build("componentExists", "-PcomponentName=bootJava", "-PapplyJavaPlugin")
-				.getOutput()).contains("bootJava exists = true");
-	}
-
-	@Test
 	public void javaCompileTasksUseUtf8Encoding() {
 		assertThat(this.gradleBuild.build("javaCompileEncoding", "-PapplyJavaPlugin")
 				.getOutput()).contains("compileJava = UTF-8")
