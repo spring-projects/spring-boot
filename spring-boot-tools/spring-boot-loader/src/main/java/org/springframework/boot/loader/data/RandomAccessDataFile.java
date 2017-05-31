@@ -170,11 +170,11 @@ public class RandomAccessDataFile implements RandomAccessData {
 				return -1;
 			}
 			RandomAccessFile file = this.file;
-			if (file == null) {
-				file = RandomAccessDataFile.this.filePool.acquire();
-				file.seek(RandomAccessDataFile.this.offset + this.position);
-			}
 			try {
+				if (file == null) {
+					file = RandomAccessDataFile.this.filePool.acquire();
+					file.seek(RandomAccessDataFile.this.offset + this.position);
+				}
 				if (b == null) {
 					int rtn = file.read();
 					moveOn(rtn == -1 ? 0 : 1);
@@ -185,7 +185,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 				}
 			}
 			finally {
-				if (this.file == null) {
+				if (this.file == null && file != null) {
 					RandomAccessDataFile.this.filePool.release(file);
 				}
 			}
@@ -229,7 +229,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 * Manage a pool that can be used to perform concurrent reads on the underlying
 	 * {@link RandomAccessFile}.
 	 */
-	private class FilePool {
+	class FilePool {
 
 		private final int size;
 
