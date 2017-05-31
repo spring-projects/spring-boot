@@ -121,4 +121,7 @@ do as they were designed before this was clarified.
 | http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
+| http://teiid.org/[Teiid]
+| https://github.com/teiid/teiid-spring-boot
+
 |===
