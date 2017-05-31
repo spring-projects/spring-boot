@@ -700,6 +700,10 @@ for Gradle and to `${project.name}` for Maven.
 |`confFolder`
 |The default value for `CONF_FOLDER`. Defaults to the folder containing the jar.
 
+|`javaOpts`
+|The default value for `JAVA_OPTS`. Java options that should always be passed to the JVM regardless of environment.
+ These options will be appended by any set by the environment or the configuration file.  
+
 |`logFolder`
 |The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
 
