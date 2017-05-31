@@ -20,13 +20,11 @@ import java.util.Random;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,96 +41,96 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @since 1.4.0
  */
 public class JdbcTemplateAutoConfigurationTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@Before
-	public void init() {
-		EmbeddedDatabaseConnection.override = null;
-		TestPropertyValues.of("spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
-				.applyTo(this.context);
-	}
+	private ConfigurableApplicationContext context;
 
 	@After
 	public void restore() {
-		EmbeddedDatabaseConnection.override = null;
-		this.context.close();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test
-	public void testJdbcTemplateExists() throws Exception {
-		this.context.register(DataSourceAutoConfiguration.class,
-				JdbcTemplateAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	public void testJdbcTemplateExists() {
+		load();
+		assertThat(this.context.getBeansOfType(JdbcTemplate.class)).hasSize(1);
+		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
+		assertThat(jdbcTemplate.getDataSource()).isEqualTo(
+				this.context.getBean(DataSource.class));
+	}
+
+	@Test
+	public void testJdbcTemplateExistsWithCustomDataSource() {
+		load(TestDataSourceConfiguration.class);
+		assertThat(this.context.getBeansOfType(JdbcTemplate.class)).hasSize(1);
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
 		assertThat(jdbcTemplate).isNotNull();
-		assertThat(jdbcTemplate.getDataSource()).isNotNull();
+		assertThat(jdbcTemplate.getDataSource()).isEqualTo(
+				this.context.getBean("customDataSource"));
 	}
 
 	@Test
-	public void testJdbcTemplateExistsWithCustomDataSource() throws Exception {
-		this.context.register(TestDataSourceConfiguration.class,
-				DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertThat(jdbcTemplate).isNotNull();
-		assertThat(jdbcTemplate.getDataSource() instanceof BasicDataSource).isTrue();
+	public void testNamedParameterJdbcTemplateExists() {
+		load();
+		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
+				.hasSize(1);
 	}
 
 	@Test
-	public void testNamedParameterJdbcTemplateExists() throws Exception {
-		this.context.register(DataSourceAutoConfiguration.class,
-				JdbcTemplateAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(NamedParameterJdbcOperations.class)).isNotNull();
-	}
-
-	@Test
-	public void testMultiDataSource() throws Exception {
-		this.context.register(MultiDataSourceConfiguration.class,
-				DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	public void testMultiDataSource() {
+		load(MultiDataSourceConfiguration.class);
 		assertThat(this.context.getBeansOfType(JdbcOperations.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
 				.isEmpty();
 	}
 
 	@Test
-	public void testMultiDataSourceUsingPrimary() throws Exception {
-		this.context.register(MultiDataSourceUsingPrimaryConfiguration.class,
-				DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(JdbcOperations.class)).isNotNull();
-		assertThat(this.context.getBean(NamedParameterJdbcOperations.class)).isNotNull();
+	public void testMultiDataSourceUsingPrimary() {
+		load(MultiDataSourceUsingPrimaryConfiguration.class);
+		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(JdbcTemplate.class).getDataSource())
+				.isEqualTo(this.context.getBean("test1DataSource"));
 	}
 
 	@Test
-	public void testExistingCustomJdbcTemplate() throws Exception {
-		this.context.register(CustomConfiguration.class,
-				DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	public void testExistingCustomJdbcTemplate() {
+		load(CustomConfiguration.class);
+		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
 		assertThat(this.context.getBean(JdbcOperations.class))
 				.isEqualTo(this.context.getBean("customJdbcOperations"));
 	}
 
 	@Test
-	public void testExistingCustomNamedParameterJdbcTemplate() throws Exception {
-		this.context.register(CustomConfiguration.class,
-				DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	public void testExistingCustomNamedParameterJdbcTemplate() {
+		load(CustomConfiguration.class);
+		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
+				.hasSize(1);
 		assertThat(this.context.getBean(NamedParameterJdbcOperations.class))
 				.isEqualTo(this.context.getBean("customNamedParameterJdbcOperations"));
+	}
+
+	public void load(String... environment) {
+		load(null, environment);
+	}
+
+	public void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.datasource.initialize:false",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
+				.applyTo(ctx);
+		TestPropertyValues.of(environment).applyTo(ctx);
+		if (config != null) {
+			ctx.register(config);
+		}
+		ctx.register(DataSourceAutoConfiguration.class,
+				JdbcTemplateAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 	@Configuration
@@ -155,7 +153,7 @@ public class JdbcTemplateAutoConfigurationTests {
 	static class TestDataSourceConfiguration {
 
 		@Bean
-		public DataSource dataSource() {
+		public DataSource customDataSource() {
 			return new TestDataSource("overridedb");
 		}
 
