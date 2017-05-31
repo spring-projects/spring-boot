@@ -49,14 +49,14 @@ public class JooqProperties {
 	/**
 	 * Determine the {@link SQLDialect} to use based on this configuration and the primary
 	 * {@link DataSource}.
-	 * @param dataSource the auto-configured data source
-	 * @return {@code SQLDialect}
+	 * @param dataSource the data source
+	 * @return the {@code SQLDialect} to use for that {@link DataSource}
 	 */
 	public SQLDialect determineSqlDialect(DataSource dataSource) {
 		if (this.sqlDialect != null) {
 			return this.sqlDialect;
 		}
-		return SQLDialectLookup.getDialect(dataSource);
+		return SqlDialectLookup.getDialect(dataSource);
 	}
 
 }

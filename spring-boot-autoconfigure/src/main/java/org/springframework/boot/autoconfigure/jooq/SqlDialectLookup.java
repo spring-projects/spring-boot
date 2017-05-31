@@ -33,13 +33,11 @@ import org.springframework.jdbc.support.MetaDataAccessException;
 /**
  * Utility to lookup well known {@link SQLDialect SQLDialects} from a {@link DataSource}.
  *
- * Note: This lookup only supports the SQL dialects that the open source edition of jOOQ supports.
- *
  * @author Michael Simons
  */
-final class SQLDialectLookup {
+final class SqlDialectLookup {
 
-	private static final Log logger = LogFactory.getLog(SQLDialectLookup.class);
+	private static final Log logger = LogFactory.getLog(SqlDialectLookup.class);
 
 	private static final Map<DatabaseDriver, SQLDialect> LOOKUP;
 
@@ -55,7 +53,7 @@ final class SQLDialectLookup {
 		LOOKUP = Collections.unmodifiableMap(map);
 	}
 
-	private SQLDialectLookup() {
+	private SqlDialectLookup() {
 	}
 
 	/**
