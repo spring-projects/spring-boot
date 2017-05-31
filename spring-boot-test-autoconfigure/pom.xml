@@ -188,6 +188,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-async</artifactId>
 			<optional>true</optional>

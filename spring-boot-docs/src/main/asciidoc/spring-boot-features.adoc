@@ -5832,6 +5832,43 @@ A list of the auto-configuration that is enabled by `@JdbcTest` can be
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-jooq-test]]
+==== Auto-configured jOOQ tests
+`@JooqTest` can be used in a similar fashion as `@JdbcTest` but for jOOQ related tests. As
+jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the
+existing `DataSource` will be used. If you want to replace it by an in-memory database you
+can use `@AutoconfigureTestDatabase` to override those settings.
+
+`@JooqTest` will configure a `DSLContext`. Regular `@Component` beans will not be loaded
+into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.jooq.DSLContext;
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+	
+	@RunWith(SpringRunner.class)
+	@JooqTest
+	public class ExampleJooqTests {
+
+		@Autowired
+		private DSLContext dslContext;
+	}
+----
+
+JOOQ tests are transactional and rollback at the end of each test by default. If that's
+not what you want, you can disable transaction management for a test or for the whole test
+class as <<boot-features-testing-spring-boot-applications-testing-autoconfigured-jdbc-test,shown
+in the example above>>.
+
+A list of the auto-configuration that is enabled by `@JooqTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-mongo-test]]
 ==== Auto-configured Data MongoDB tests
 `@DataMongoTest` can be used if you want to test MongoDB applications. By default, it will
