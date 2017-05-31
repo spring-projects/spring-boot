@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-tools</artifactId>
-		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-boot-antlib</artifactId>
 	<name>Spring Boot Antlib</name>
 	<description>Spring Boot Antlib</description>
-	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<ant.version>1.9.3</ant.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-loader</artifactId>
-			<scope>provided</scope>
-		</dependency>
+		<!-- Compile -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
 			<scope>compile</scope>
+		</dependency>
+		<!-- Provided -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-loader</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ant</groupId>
@@ -51,6 +49,7 @@
 					<minimizeJar>true</minimizeJar>
 					<shadedArtifactAttached>false</shadedArtifactAttached>
 					<keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
 				</configuration>
 				<executions>
 					<execution>
@@ -76,7 +75,8 @@
 									<fileset dir="${project.basedir}/src/it" />
 								</copy>
 								<path id="taskpath">
-									<fileset dir="${project.build.directory}" includes="${project.build.finalName}.${project.packaging}" />
+									<fileset dir="${project.build.directory}"
+										includes="${project.build.finalName}.${project.packaging}" />
 								</path>
 								<pathconvert refid="taskpath" />
 								<typedef resource="org/springframework/boot/ant/antlib.xml" classpathref="taskpath" uri="antlib:org.springframework.boot.ant" />
@@ -86,7 +86,8 @@
 										<propertyref name="build.compiler" />
 									</propertyset>
 									<plainlistener />
-									<fileset xmlns="antlib:org.apache.tools.ant" dir="${project.build.directory}/it" includes="**/build.xml" />
+									<fileset xmlns="antlib:org.apache.tools.ant" dir="${project.build.directory}/it"
+										includes="**/build.xml" />
 								</antunit>
 							</target>
 							<skip>${skipTests}</skip>

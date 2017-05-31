@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.springframework.boot</groupId>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-build</artifactId>
+		<version>${revision}</version>
+		<relativePath>../..</relativePath>
+	</parent>
 	<artifactId>spring-boot-dependencies</artifactId>
-	<version>2.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Dependencies</name>
 	<description>Spring Boot Dependencies</description>
 	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -22,28 +22,6 @@
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
 	</scm>
-	<developers>
-		<developer>
-			<id>pwebb</id>
-			<name>Phillip Webb</name>
-			<email>pwebb at pivotal.io</email>
-			<organization>Pivotal Software, Inc.</organization>
-			<organizationUrl>http://www.spring.io</organizationUrl>
-			<roles>
-				<role>Project lead</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>dsyer</id>
-			<name>Dave Syer</name>
-			<email>dsyer at pivotal.io</email>
-			<organization>Pivotal Software, Inc.</organization>
-			<organizationUrl>http://www.spring.io</organizationUrl>
-			<roles>
-				<role>Project lead</role>
-			</roles>
-		</developer>
-	</developers>
 	<properties>
 		<!-- Dependency versions -->
 		<activemq.version>5.15.0</activemq.version>
@@ -220,11 +198,13 @@
 		<maven-javadoc-plugin.version>3.0.0-M1</maven-javadoc-plugin.version>
 		<maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
 		<maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
-		<maven-site-plugin.version>3.5.1</maven-site-plugin.version>
+		<maven-site-plugin.version>3.6</maven-site-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.1.0</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.3</versions-maven-plugin.version>
+		<xml-maven-plugin.version>1.0.1</xml-maven-plugin.version>
+		<flatten-maven-plugin.version>1.0.0</flatten-maven-plugin.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -232,67 +212,67 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test-autoconfigure</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-actuator</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-actuator-autoconfigure</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-autoconfigure</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-autoconfigure-processor</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-configuration-metadata</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-configuration-processor</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-devtools</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-loader</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-loader-tools</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -303,207 +283,207 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-activemq</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-actuator</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-amqp</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-aop</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-artemis</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-batch</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-cache</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-cloud-connectors</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-cassandra</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-cassandra-reactive</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-couchbase</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-jpa</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-ldap</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-mongodb</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-redis</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-redis-reactive</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-neo4j</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-rest</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-solr</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-freemarker</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-groovy-templates</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-hateoas</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-integration</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jdbc</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jersey</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jetty</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jooq</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-json</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-atomikos</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-bitronix</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-narayana</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-log4j2</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-logging</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-mail</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-mobile</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-mustache</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-reactor-netty</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-quartz</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-security</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -513,22 +493,22 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-social-facebook</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-social-linkedin</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-social-twitter</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-test</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -539,42 +519,42 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-thymeleaf</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-tomcat</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-undertow</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-validation</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-webflux</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-websocket</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web-services</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
+				<version>${revision}</version>
 			</dependency>
 			<!-- Third Party -->
 			<dependency>
@@ -2888,7 +2868,7 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>2.0.0.BUILD-SNAPSHOT</version>
+					<version>${revision}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -3009,6 +2989,16 @@
 					<version>${versions-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>xml-maven-plugin</artifactId>
+					<version>${xml-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<version>${flatten-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
 					<groupId>org.flywaydb</groupId>
 					<artifactId>flyway-maven-plugin</artifactId>
 					<version>${flyway.version}</version>
@@ -3022,42 +3012,108 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
-				<artifactId>maven-help-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
 				<inherited>false</inherited>
 				<executions>
 					<execution>
-						<id>generate-effective-dependencies-pom</id>
-						<phase>generate-resources</phase>
+						<!-- Create an effective POM (with versions expanded) for the CLI and
+							documentation -->
+						<id>flatten-effective-pom</id>
+						<phase>process-resources</phase>
 						<goals>
-							<goal>effective-pom</goal>
+							<goal>flatten</goal>
 						</goals>
 						<configuration>
-							<output>${project.build.directory}/effective-pom/spring-boot-dependencies.xml</output>
+							<updatePomFile>false</updatePomFile>
+							<outputDirectory>${project.build.directory}/effective-pom</outputDirectory>
+							<flattenedPomFilename>spring-boot-dependencies.xml</flattenedPomFilename>
+							<flattenMode>oss</flattenMode>
+							<pomElements>
+								<dependencyManagement>expand</dependencyManagement>
+								<pluginManagement>expand</pluginManagement>
+								<properties>remove</properties>
+								<repositories>remove</repositories>
+							</pomElements>
 						</configuration>
+					</execution>
+					<execution>
+						<!-- Flatten and simplify our own POM for install/deploy -->
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+						<configuration>
+							<updatePomFile>true</updatePomFile>
+							<flattenMode>bom</flattenMode>
+							<pomElements>
+								<pluginManagement>keep</pluginManagement>
+							</pomElements>
+						</configuration>
+					</execution>
+					<execution>
+						<id>flatten-clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xml-maven-plugin</artifactId>
-				<version>1.0</version>
 				<inherited>false</inherited>
 				<executions>
 					<execution>
+						<!-- Cleanup the effective POM -->
+						<id>post-process-effective-pom</id>
+						<phase>process-resources</phase>
 						<goals>
 							<goal>transform</goal>
 						</goals>
+						<configuration>
+							<transformationSets>
+								<transformationSet>
+									<dir>${project.build.directory}/effective-pom</dir>
+									<outputDir>${project.build.directory}/effective-pom</outputDir>
+									<stylesheet>src/main/xslt/post-process-flattened-pom.xsl</stylesheet>
+									<outputProperties>
+										<outputProperty>
+											<name>indent</name>
+											<value>yes</value>
+										</outputProperty>
+									</outputProperties>
+								</transformationSet>
+							</transformationSets>
+						</configuration>
+					</execution>
+					<execution>
+						<!-- Cleanup the flattened project POM -->
+						<id>post-process-flattened-pom</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+						<configuration>
+							<transformationSets>
+								<transformationSet>
+									<dir>${project.basedir}</dir>
+									<outputDir>${project.basedir}</outputDir>
+									<includes>.flattened-pom.xml</includes>
+									<stylesheet>src/main/xslt/post-process-flattened-pom.xsl</stylesheet>
+									<outputProperties>
+										<outputProperty>
+											<name>indent</name>
+											<value>yes</value>
+										</outputProperty>
+									</outputProperties>
+								</transformationSet>
+							</transformationSets>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<transformationSets>
-						<transformationSet>
-							<dir>${project.build.directory}/effective-pom</dir>
-							<stylesheet>src/main/xslt/single-project.xsl</stylesheet>
-							<outputDir>${project.build.directory}/effective-pom</outputDir>
-						</transformationSet>
-					</transformationSets>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -3065,6 +3121,7 @@
 				<inherited>false</inherited>
 				<executions>
 					<execution>
+						<!-- Attach effective POM -->
 						<id>attach-artifacts</id>
 						<phase>package</phase>
 						<goals>
@@ -3083,43 +3140,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<repositories>
-				<!-- Repositories to allow snapshot and milestone BOM imports during
-					development. This section is stripped out when a full release is prepared. -->
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>rabbit-milestones</id>
-					<name>Rabbit Milestones</name>
-					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
-		</profile>
-		<profile>
-			<id>integration-test</id>
-		</profile>
-	</profiles>
 </project>
