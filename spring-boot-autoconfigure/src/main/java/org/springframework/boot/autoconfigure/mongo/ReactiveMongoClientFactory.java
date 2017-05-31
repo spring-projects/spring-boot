@@ -54,7 +54,8 @@ public class ReactiveMongoClientFactory {
 			List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
 		this.environment = environment;
-		this.builderCustomizers = builderCustomizers;
+		this.builderCustomizers = (builderCustomizers != null ? builderCustomizers
+				: Collections.emptyList());
 	}
 
 	/**
@@ -157,10 +158,8 @@ public class ReactiveMongoClientFactory {
 	}
 
 	private void customize(MongoClientSettings.Builder builder) {
-		if (this.builderCustomizers != null) {
-			for (MongoClientSettingsBuilderCustomizer customizer : this.builderCustomizers) {
-				customizer.customize(builder);
-			}
+		for (MongoClientSettingsBuilderCustomizer customizer : this.builderCustomizers) {
+			customizer.customize(builder);
 		}
 	}
 

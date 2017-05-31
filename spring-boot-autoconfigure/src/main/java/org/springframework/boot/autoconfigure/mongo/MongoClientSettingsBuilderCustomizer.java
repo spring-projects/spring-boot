@@ -31,8 +31,8 @@ public interface MongoClientSettingsBuilderCustomizer {
 
 	/**
 	 * Customize the {@link Builder}.
-	 * @param settingsBuilder the builder to customize
+	 * @param clientSettingsBuilder the builder to customize
 	 */
-	void customize(Builder settingsBuilder);
+	void customize(Builder clientSettingsBuilder);
 
 }
