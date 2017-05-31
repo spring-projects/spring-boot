@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
+ * Integration tests for {@link JooqTest}.
  *
  * @author Michael Simons
  */
@@ -58,15 +59,16 @@ public class JooqTestIntegrationTests {
 
 	@Test
 	public void testDSLContext() {
-		assertThat(this.dsl.selectCount().from("INFORMATION_SCHEMA.TABLES").fetchOne(0, Integer.class)).isGreaterThan(0);
+		assertThat(this.dsl.selectCount().from("INFORMATION_SCHEMA.TABLES")
+				.fetchOne(0, Integer.class)).isGreaterThan(0);
 	}
 
 	@Test
-	public void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
+	public void useDefinedDataSource() throws Exception {
 		String product = this.dataSource.getConnection().getMetaData()
 				.getDatabaseProductName();
-		assertThat(product).isEqualTo("H2");
-		assertThat(this.dsl.configuration().dialect()).isEqualTo(SQLDialect.H2);
+		assertThat(product).startsWith("HSQL");
+		assertThat(this.dsl.configuration().dialect()).isEqualTo(SQLDialect.HSQLDB);
 	}
 
 	@Test
@@ -86,4 +88,5 @@ public class JooqTestIntegrationTests {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
 	}
+
 }

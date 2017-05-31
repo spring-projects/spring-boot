@@ -42,14 +42,13 @@ import org.springframework.transaction.annotation.Transactional;
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to jOOQ tests.
  * <p>
- * By default, tests annotated with {@code @JooqTest} will use an embedded in-memory
- * database (replacing any explicit or usually auto-configured DataSource). Since
- * jOOQ relies heavily on a Java-based schema that corresponds with the database schema,
- * that is propably not what you want. The
- * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used
- * to override these settings.
+ * By default, tests annotated with {@code @JooqTest} use the configured database. If
+ * you want to replace any explicit or usually auto-configured DataSource by an embedded
+ * in-memory database, the {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase}
+ * annotation can be used to override these settings.
  *
  * @author Michael Simons
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Target(ElementType.TYPE)
@@ -61,9 +60,9 @@ import org.springframework.transaction.annotation.Transactional;
 @TypeExcludeFilters(JooqTypeExcludeFilter.class)
 @Transactional
 @AutoConfigureJooq
-@AutoConfigureTestDatabase
 @ImportAutoConfiguration
 public @interface JooqTest {
+
 	/**
 	 * Determines if default filtering should be used with
 	 * {@link SpringBootApplication @SpringBootApplication}. By default no beans are
@@ -94,4 +93,5 @@ public @interface JooqTest {
 	 */
 	@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
 	Class<?>[] excludeAutoConfiguration() default {};
+
 }
