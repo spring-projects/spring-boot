@@ -8,35 +8,13 @@ repositories {
 	mavenCentral()
 }
 
-def addDependency(configurationName, dependency) {
-	def coordinates = [
-		'group': dependency.groupId.text(),
-		'name': dependency.artifactId.text(),
-		'version': dependency.version.text()
-	]
-	dependencies {
-		add configurationName, coordinates
-	}
-}
-
-def effectivePomFile = file('target/effective-pom.xml')
-if (effectivePomFile.file) {
-	def pom = new XmlSlurper().parseText(file('target/effective-pom.xml').text)
-	pom.dependencies.dependency.each { dependency ->
-		def scope = dependency.scope.text()
-		if (scope == 'compile') {
-			addDependency scope, dependency
-		}
-		else if (scope == 'test') {
-			addDependency 'testCompile', dependency
-		}
-	}
-}
-
 dependencies {
 	compile localGroovy()
 	compile gradleApi()
+	compile fileTree(dir: 'target/dependencies/compile', include: '*.jar')
 	testCompile gradleTestKit()
+	testCompile 'org.apache.commons:commons-compress:1.13'
+	testCompile fileTree(dir: 'target/dependencies/test', include: '*.jar')
 }
 
 jar {
