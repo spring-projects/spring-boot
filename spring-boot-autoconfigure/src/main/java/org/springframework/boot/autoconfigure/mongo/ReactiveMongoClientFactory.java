@@ -48,10 +48,13 @@ public class ReactiveMongoClientFactory {
 
 	private final Environment environment;
 
-	public ReactiveMongoClientFactory(MongoProperties properties,
-			Environment environment) {
+	private final List<MongoClientSettingsBuilderCustomizer> builderCustomizers;
+
+	public ReactiveMongoClientFactory(MongoProperties properties, Environment environment,
+			List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
 		this.environment = environment;
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	/**
@@ -149,7 +152,16 @@ public class ReactiveMongoClientFactory {
 		if (connectionString.getApplicationName() != null) {
 			builder.applicationName(connectionString.getApplicationName());
 		}
+		customize(builder);
 		return builder;
+	}
+
+	private void customize(MongoClientSettings.Builder builder) {
+		if (this.builderCustomizers != null) {
+			for (MongoClientSettingsBuilderCustomizer customizer : this.builderCustomizers) {
+				customizer.customize(builder);
+			}
+		}
 	}
 
 	private boolean hasCustomAddress() {

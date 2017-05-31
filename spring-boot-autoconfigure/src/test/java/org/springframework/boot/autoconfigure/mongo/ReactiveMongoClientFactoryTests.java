@@ -154,7 +154,7 @@ public class ReactiveMongoClientFactoryTests {
 
 	private MongoClient createMongoClient(MongoProperties properties,
 			Environment environment) {
-		return new ReactiveMongoClientFactory(properties, environment)
+		return new ReactiveMongoClientFactory(properties, environment, null)
 				.createMongoClient(null);
 	}
 
