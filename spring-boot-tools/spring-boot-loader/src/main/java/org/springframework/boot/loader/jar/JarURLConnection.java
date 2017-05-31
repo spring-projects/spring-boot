@@ -27,9 +27,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
+import java.nio.file.Paths;
 import java.security.Permission;
 
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+import org.springframework.lang.UsesJava7;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -252,6 +254,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return new JarURLConnection(url, jarFile, jarEntryName);
 	}
 
+	@UsesJava7
 	private static String extractFullSpec(URL url, String pathFromRoot) {
 		String file = url.getFile();
 		int separatorIndex = file.indexOf(SEPARATOR);
@@ -259,7 +262,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return "";
 		}
 		int specIndex = separatorIndex + SEPARATOR.length() + pathFromRoot.length();
-		return file.substring(specIndex);
+		return Paths.get(file.substring(specIndex)).normalize().toString();
 	}
 
 	private static JarURLConnection notFound() {
