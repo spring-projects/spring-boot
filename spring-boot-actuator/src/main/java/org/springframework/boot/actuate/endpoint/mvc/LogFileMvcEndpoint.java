@@ -93,7 +93,7 @@ public class LogFileMvcEndpoint extends AbstractNamedMvcEndpoint {
 		}
 		LogFile logFile = LogFile.get(getEnvironment());
 		if (logFile == null) {
-			logger.debug("Missing 'logging.file' or 'logging.path' properties");
+			logger.warn ("Missing 'logging.file' or 'logging.path' properties and 'endpoints.logfile.externalFile' is set");
 			return null;
 		}
 		return new FileSystemResource(logFile.toString());
