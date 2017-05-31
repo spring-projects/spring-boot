@@ -41,7 +41,10 @@ import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
-import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.Layouts.Expanded;
+import org.springframework.boot.loader.tools.Layouts.Jar;
+import org.springframework.boot.loader.tools.Layouts.None;
+import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningListener;
@@ -323,6 +326,17 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
+	private class LoggingMainClassTimeoutWarningListener
+			implements MainClassTimeoutWarningListener {
+
+		@Override
+		public void handleTimeoutWarning(long duration, String mainMethod) {
+			getLog().warn("Searching for the main-class is taking some time, "
+					+ "consider using the mainClass configuration " + "parameter");
+		}
+
+	}
+
 	/**
 	 * Archive layout types.
 	 */
@@ -331,47 +345,36 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		/**
 		 * Jar Layout.
 		 */
-		JAR(new Layouts.Jar()),
+		JAR(new Jar()),
 
 		/**
 		 * War Layout.
 		 */
-		WAR(new Layouts.War()),
+		WAR(new War()),
 
 		/**
 		 * Zip Layout.
 		 */
-		ZIP(new Layouts.Expanded()),
+		ZIP(new Expanded()),
 
 		/**
 		 * Dir Layout.
 		 */
-		DIR(new Layouts.Expanded()),
+		DIR(new Expanded()),
 
 		/**
 		 * No Layout.
 		 */
-		NONE(new Layouts.None());
+		NONE(new None());
 
 		private final Layout layout;
-
-		public Layout layout() {
-			return this.layout;
-		}
 
 		LayoutType(Layout layout) {
 			this.layout = layout;
 		}
 
-	}
-
-	private class LoggingMainClassTimeoutWarningListener
-			implements MainClassTimeoutWarningListener {
-
-		@Override
-		public void handleTimeoutWarning(long duration, String mainMethod) {
-			getLog().warn("Searching for the main-class is taking some time, "
-					+ "consider using the mainClass configuration " + "parameter");
+		public Layout layout() {
+			return this.layout;
 		}
 
 	}
