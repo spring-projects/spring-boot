@@ -67,7 +67,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			throw new IllegalArgumentException("File must exist");
 		}
 		this.file = file;
-		this.filePool = new FilePool(concurrentReads);
+		this.filePool = new FilePool(file, concurrentReads);
 		this.offset = 0L;
 		this.length = file.length();
 	}
@@ -229,7 +229,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 * Manage a pool that can be used to perform concurrent reads on the underlying
 	 * {@link RandomAccessFile}.
 	 */
-	class FilePool {
+	static class FilePool {
+
+		private final File file;
 
 		private final int size;
 
@@ -237,7 +239,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		private final Queue<RandomAccessFile> files;
 
-		FilePool(int size) {
+		FilePool(File file, int size) {
+			this.file = file;
 			this.size = size;
 			this.available = new Semaphore(size);
 			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
@@ -249,7 +252,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (file != null) {
 				return file;
 			}
-			return new RandomAccessFile(RandomAccessDataFile.this.file, "r");
+			return new RandomAccessFile(this.file, "r");
 		}
 
 		public void release(RandomAccessFile file) {
