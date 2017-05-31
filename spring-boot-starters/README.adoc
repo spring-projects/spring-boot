@@ -109,6 +109,9 @@ do as they were designed before this was clarified.
 | https://github.com/oembedler/spring-graphql-common[Spring GraphQL] (GraphQL and GraphiQL)
 | https://github.com/oembedler/graphql-spring-boot
 
+| http://teiid.org/[Teiid]
+| https://github.com/teiid/teiid-spring-boot
+
 | https://vaadin.com/[Vaadin]
 | https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
 
@@ -120,8 +123,5 @@ do as they were designed before this was clarified.
 
 | http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
 | https://github.com/michael-simons/wro4j-spring-boot-starter
-
-| http://teiid.org/[Teiid]
-| https://github.com/teiid/teiid-spring-boot
 
 |===
