@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.plugin;
 import java.util.Collections;
 import java.util.Set;
 
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.artifacts.PublishArtifact;
 import org.gradle.api.attributes.Usage;
@@ -37,9 +38,33 @@ final class SpringBootSoftwareComponent implements SoftwareComponentInternal {
 
 	private final String name;
 
-	SpringBootSoftwareComponent(PublishArtifact artifact, String name) {
+	private final Usage usage;
+
+	SpringBootSoftwareComponent(Project project, PublishArtifact artifact, String name) {
 		this.artifact = artifact;
 		this.name = name;
+		this.usage = createUsage(project);
+	}
+
+	private static Usage createUsage(Project project) {
+		try {
+			return Usages.usage("master");
+		}
+		catch (Throwable ex) {
+			return createUsageUsingObjectFactory(project);
+		}
+	}
+
+	private static Usage createUsageUsingObjectFactory(Project project) {
+		try {
+			Object objects = project.getClass().getMethod("getObjects").invoke(project);
+			return (Usage) objects.getClass()
+					.getMethod("named", Class.class, String.class)
+					.invoke(objects, Usage.class, "master");
+		}
+		catch (Throwable ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override
@@ -49,22 +74,23 @@ final class SpringBootSoftwareComponent implements SoftwareComponentInternal {
 
 	@Override
 	public Set<UsageContext> getUsages() {
-		return Collections.singleton(new BootUsageContext(this.artifact));
+		return Collections.singleton(new BootUsageContext(this.usage, this.artifact));
 	}
 
 	private static final class BootUsageContext implements UsageContext {
 
-		private static final Usage USAGE = Usages.usage("master");
+		private final Usage usage;
 
 		private final PublishArtifact artifact;
 
-		private BootUsageContext(PublishArtifact artifact) {
+		private BootUsageContext(Usage usage, PublishArtifact artifact) {
+			this.usage = usage;
 			this.artifact = artifact;
 		}
 
 		@Override
 		public Usage getUsage() {
-			return USAGE;
+			return this.usage;
 		}
 
 		@Override

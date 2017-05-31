@@ -92,7 +92,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private void configureArtifactPublication(Project project, BootJar bootJar) {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);
-		project.getComponents().add(new SpringBootSoftwareComponent(artifact,
+		project.getComponents().add(new SpringBootSoftwareComponent(project, artifact,
 				SpringBootPlugin.BOOT_JAVA_SOFTWARE_COMPONENT_NAME));
 	}
 
