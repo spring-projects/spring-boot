@@ -169,12 +169,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (cappedLen <= 0) {
 				return -1;
 			}
-			RandomAccessFile file = this.file;
-			if (file == null) {
-				file = RandomAccessDataFile.this.filePool.acquire();
-				file.seek(RandomAccessDataFile.this.offset + this.position);
-			}
-			try {
+
+			if (this.file != null) {
 				if (b == null) {
 					int rtn = file.read();
 					moveOn(rtn == -1 ? 0 : 1);
@@ -183,10 +179,21 @@ public class RandomAccessDataFile implements RandomAccessData {
 				else {
 					return (int) moveOn(file.read(b, off, cappedLen));
 				}
-			}
-			finally {
-				if (this.file == null) {
-					RandomAccessDataFile.this.filePool.release(file);
+			} else {
+				RandomAccessFile poolfile = RandomAccessDataFile.this.filePool.acquire();
+				try {
+					poolfile.seek(RandomAccessDataFile.this.offset + this.position);
+					if (b == null) {
+						int rtn = poolfile.read();
+						moveOn(rtn == -1 ? 0 : 1);
+						return rtn;
+					}
+					else {
+						return (int) moveOn(poolfile.read(b, off, cappedLen));
+					}
+				}
+				finally {
+					RandomAccessDataFile.this.filePool.release(poolfile);
 				}
 			}
 		}
@@ -253,8 +260,11 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		public void release(RandomAccessFile file) {
-			this.files.add(file);
-			this.available.release();
+			try {
+				this.files.add(file);
+			} finally {
+				this.available.release();
+			}
 		}
 
 		public void close() throws IOException {
