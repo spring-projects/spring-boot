@@ -708,7 +708,7 @@ content into your application; rather pick only the properties that you need.
 	spring.h2.console.settings.web-allow-others=false # Enable remote access.
 
 	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
-	spring.jooq.sql-dialect= # SQLDialect JOOQ used when communicating with the configured datasource. For instance `POSTGRES`
+	spring.jooq.sql-dialect= # Sql dialect to use, auto-detected by default.
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.data.jpa.repositories.enabled=true # Enable JPA repositories.

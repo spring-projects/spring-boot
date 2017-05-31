@@ -33,8 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JooqProperties {
 
 	/**
-	 * SQLDialect JOOQ used when communicating with the configured datasource, for
-	 * instance "POSTGRES".
+	 * Sql dialect to use, auto-detected by default.
 	 */
 	private SQLDialect sqlDialect;
 
