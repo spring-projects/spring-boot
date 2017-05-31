@@ -106,6 +106,22 @@ public class MongoReactiveAutoConfigurationTests {
 				.isSameAs(this.context.getBean("myStreamFactoryFactory"));
 	}
 
+	@Test
+	public void customizerOverridesAutoConfig() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues
+				.of("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
+				.applyTo(this.context);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MongoReactiveAutoConfiguration.class, SimpleCustomizerConfig.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
+				.isEqualTo(1);
+		MongoClient client = this.context.getBean(MongoClient.class);
+		assertThat(client.getSettings().getApplicationName())
+				.isEqualTo("overridden-name");
+	}
+
 	@Configuration
 	static class OptionsConfig {
 
@@ -134,6 +150,17 @@ public class MongoReactiveAutoConfigurationTests {
 			given(streamFactoryFactory.create(any(), any()))
 					.willReturn(mock(StreamFactory.class));
 			return streamFactoryFactory;
+		}
+
+	}
+
+	@Configuration
+	static class SimpleCustomizerConfig {
+
+		@Bean
+		public MongoClientSettingsBuilderCustomizer customizer() {
+			return clientSettingsBuilder ->
+					clientSettingsBuilder.applicationName("overridden-name");
 		}
 
 	}
