@@ -31,8 +31,8 @@ public interface MongoClientSettingsBuilderCustomizer {
 
 	/**
 	 * Customize the {@link Builder}.
-	 * @param clusterBuilder the builder to customize
+	 * @param settingsBuilder the builder to customize
 	 */
-	void customize(Builder clusterBuilder);
+	void customize(Builder settingsBuilder);
 
 }
