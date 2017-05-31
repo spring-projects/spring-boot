@@ -43,7 +43,7 @@ public class SpringBootPluginIntegrationTests {
 
 	@Test
 	public void succeedWithVersionOfGradleHigherThanRequired() {
-		this.gradleBuild.gradleVersion("3.5-rc-3").build();
+		this.gradleBuild.gradleVersion("3.5").build();
 	}
 
 	@Test

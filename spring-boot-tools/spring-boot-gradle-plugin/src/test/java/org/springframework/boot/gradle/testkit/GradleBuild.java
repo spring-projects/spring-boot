@@ -88,9 +88,13 @@ public class GradleBuild implements TestRule {
 	}
 
 	private URL getScriptForTestMethod(Description description) {
-		return description.getTestClass()
-				.getResource(description.getTestClass().getSimpleName() + "-"
-						+ description.getMethodName() + ".gradle");
+		String name = description.getTestClass().getSimpleName() + "-"
+				+ removeGradleVersion(description.getMethodName()) + ".gradle";
+		return description.getTestClass().getResource(name);
+	}
+
+	private String removeGradleVersion(String methodName) {
+		return methodName.replaceAll("\\[Gradle .+\\]", "").trim();
 	}
 
 	private URL getScriptForTestClass(Class<?> testClass) {
@@ -157,6 +161,7 @@ public class GradleBuild implements TestRule {
 		List<String> allArguments = new ArrayList<String>();
 		allArguments.add("-PpluginClasspath=" + pluginClasspath());
 		allArguments.add("-PbootVersion=" + getBootVersion());
+		allArguments.add("--stacktrace");
 		allArguments.addAll(Arrays.asList(arguments));
 		return gradleRunner.withArguments(allArguments);
 	}
@@ -172,6 +177,10 @@ public class GradleBuild implements TestRule {
 	public GradleBuild gradleVersion(String version) {
 		this.gradleVersion = version;
 		return this;
+	}
+
+	public String getGradleVersion() {
+		return this.gradleVersion;
 	}
 
 	private static String getBootVersion() {

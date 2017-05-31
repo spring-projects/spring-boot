@@ -22,7 +22,9 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,10 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@RunWith(GradleCompatibilitySuite.class)
 public class JavaPluginActionIntegrationTests {
 
 	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild;
 
 	@Test
 	public void noBootJarTaskWithoutJavaPluginApplied() {
