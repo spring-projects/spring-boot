@@ -1638,6 +1638,16 @@
 				<version>${elasticsearch.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>transport</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.plugin</groupId>
+				<artifactId>transport-netty4-client</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.firebirdsql.jdbc</groupId>
 				<artifactId>jaybird-jdk17</artifactId>
 				<version>${jaybird.version}</version>
