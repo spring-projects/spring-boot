@@ -142,7 +142,7 @@ public class DefaultLaunchScriptTests {
 	public void defaultForJavaOptsIsBlank() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
-		assertThat(content).contains("JAVA_OPTS=\"$JAVA_OPTS \"");
+		assertThat(content).contains("JAVA_OPTS=\" $JAVA_OPTS\"");
 	}
 
 	@Test

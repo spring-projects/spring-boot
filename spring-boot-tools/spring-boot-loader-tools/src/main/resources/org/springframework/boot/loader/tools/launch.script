@@ -50,7 +50,7 @@ configfile="$(basename "${jarfile%.*}.conf")"
 [[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
 
 # Append any JAVA_OPTS if specified
-JAVA_OPTS="$JAVA_OPTS {{javaOpts:}}"
+JAVA_OPTS="{{javaOpts:}} $JAVA_OPTS"
 
 # Initialize PID/LOG locations if they weren't provided by the config file
 [[ -z "$PID_FOLDER" ]] && PID_FOLDER="{{pidFolder:/var/run}}"
