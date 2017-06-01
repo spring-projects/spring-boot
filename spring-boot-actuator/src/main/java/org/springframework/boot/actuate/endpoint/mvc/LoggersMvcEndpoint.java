@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -81,6 +82,20 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 	private LogLevel getLogLevel(Map<String, String> configuration) {
 		String level = configuration.get("configuredLevel");
 		return (level == null ? null : LogLevel.valueOf(level.toUpperCase()));
+	}
+
+	@DeleteMapping("/{name:.*}")
+	@ResponseBody
+	@HypermediaDisabled
+	public Object delete(@PathVariable String name) {
+		if (!this.delegate.isEnabled()) {
+			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
+			// disabled
+			return getDisabledResponse();
+		}
+
+		this.delegate.deleteLoggerConfiguration(name);
+		return HttpEntity.EMPTY;
 	}
 
 }

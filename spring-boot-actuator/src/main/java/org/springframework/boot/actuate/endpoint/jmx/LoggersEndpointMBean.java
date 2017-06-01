@@ -56,6 +56,12 @@ public class LoggersEndpointMBean extends EndpointMBean {
 		getEndpoint().setLogLevel(loggerName, level);
 	}
 
+	@ManagedOperation(description = "Delete Logger Configuration for a given name")
+	public void deleteLoggerConfiguration(String loggerName) {
+		Assert.notNull(loggerName, "loggerName must not be null");
+		getEndpoint().deleteLoggerConfiguration(loggerName);
+	}
+
 	@Override
 	public LoggersEndpoint getEndpoint() {
 		return (LoggersEndpoint) super.getEndpoint();

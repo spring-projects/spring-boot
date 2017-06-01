@@ -128,6 +128,12 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
+	public void deleteLoggerConfiguration(String loggerName) {
+		Logger logger = Logger.getLogger(loggerName);
+		logger.setLevel(null);
+	}
+
+	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
 		List<LoggerConfiguration> result = new ArrayList<>();
 		Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
