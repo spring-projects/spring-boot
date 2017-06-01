@@ -49,7 +49,7 @@ configfile="$(basename "${jarfile%.*}.conf")"
 # shellcheck source=/dev/null
 [[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
 
-# Append any JAVA_OPTS if specified
+# Prepend any JAVA_OPTS if specified
 JAVA_OPTS="{{javaOpts:}} $JAVA_OPTS"
 
 # Initialize PID/LOG locations if they weren't provided by the config file
