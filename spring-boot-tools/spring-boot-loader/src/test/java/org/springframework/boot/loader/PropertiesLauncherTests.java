@@ -61,8 +61,11 @@ public class PropertiesLauncherTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+	private ClassLoader contextClassLoader;
+
 	@Before
 	public void setup() throws IOException {
+		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		MockitoAnnotations.initMocks(this);
 		System.setProperty("loader.home",
 				new File("src/test/resources").getAbsolutePath());
@@ -70,6 +73,7 @@ public class PropertiesLauncherTests {
 
 	@After
 	public void close() {
+		Thread.currentThread().setContextClassLoader(this.contextClassLoader);
 		System.clearProperty("loader.home");
 		System.clearProperty("loader.path");
 		System.clearProperty("loader.main");
