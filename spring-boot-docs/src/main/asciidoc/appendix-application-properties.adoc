@@ -710,6 +710,11 @@ content into your application; rather pick only the properties that you need.
 	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
 	spring.jooq.sql-dialect= # Sql dialect to use, auto-detected by default.
 
+	# JDBC ({sc-spring-boot-autoconfigure}/jdbc/JdbcProperties.{sc-ext}[JdbcProperties])
+	spring.jdbc.template.fetch-size=-1 # Number of rows that should be fetched from the database when more rows are needed.
+	spring.jdbc.template.max-rows=-1 # Maximum number of rows.
+	spring.jdbc.template.query-timeout=-1 # Query timeout in seconds.
+
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.data.jpa.repositories.enabled=true # Enable JPA repositories.
 	spring.jpa.database= # Target database to operate on, auto-detected by default. Can be alternatively set using the "databasePlatform" property.

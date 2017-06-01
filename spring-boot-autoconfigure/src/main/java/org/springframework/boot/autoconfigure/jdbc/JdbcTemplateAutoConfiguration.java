@@ -68,17 +68,10 @@ public class JdbcTemplateAutoConfiguration {
 		public JdbcTemplate jdbcTemplate() {
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
 			JdbcProperties.Template template = this.properties.getTemplate();
-			if (template.getFetchSize() != null) {
-				jdbcTemplate.setFetchSize(template.getFetchSize());
-			}
-			if (template.getQueryTimeout() != null) {
-				jdbcTemplate.setQueryTimeout(template.getQueryTimeout());
-			}
-			if (template.getMaxRows() != null) {
-				jdbcTemplate.setMaxRows(template.getMaxRows());
-			}
+			jdbcTemplate.setFetchSize(template.getFetchSize());
+			jdbcTemplate.setMaxRows(template.getMaxRows());
+			jdbcTemplate.setQueryTimeout(template.getQueryTimeout());
 			return jdbcTemplate;
-
 		}
 
 	}

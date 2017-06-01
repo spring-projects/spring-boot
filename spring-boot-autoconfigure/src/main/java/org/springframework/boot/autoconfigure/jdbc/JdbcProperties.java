@@ -22,14 +22,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for JDBC.
  *
  * @author Kazuki Shimizu
- * @since 1.5.0
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.jdbc")
 public class JdbcProperties {
 
-	/**
-	 * Settings for JdbcTemplate.
-	 */
 	private final Template template = new Template();
 
 	public Template getTemplate() {
@@ -37,51 +35,51 @@ public class JdbcProperties {
 	}
 
 	/**
-	 * {@link org.springframework.jdbc.core.JdbcTemplate} settings.
+	 * {@code JdbcTemplate} settings.
 	 */
 	public static class Template {
 
 		/**
-		 * Fetch size.
-		 * @see org.springframework.jdbc.core.JdbcTemplate#fetchSize
+		 * Number of rows that should be fetched from the database when more rows are
+		 * needed. Use -1 to use the JDBC driver's default configuration.
 		 */
-		private Integer fetchSize;
+		private int fetchSize = -1;
 
 		/**
-		 * Max row count.
-		 * @see org.springframework.jdbc.core.JdbcTemplate#maxRows
+		 * Maximum number of rows. Use -1 to use the JDBC driver's default configuration.
 		 */
-		private Integer maxRows;
+		private int maxRows = -1;
 
 		/**
-		 * Query timeout in seconds.
-		 * @see org.springframework.jdbc.core.JdbcTemplate#queryTimeout
+		 * Query timeout in seconds. Use -1 to use the JDBC driver's default
+		 * configuration.
 		 */
-		private Integer queryTimeout;
+		private int queryTimeout = -1;
 
-		public Integer getFetchSize() {
+		public int getFetchSize() {
 			return this.fetchSize;
 		}
 
-		public void setFetchSize(Integer fetchSize) {
+		public void setFetchSize(int fetchSize) {
 			this.fetchSize = fetchSize;
 		}
 
-		public Integer getMaxRows() {
+		public int getMaxRows() {
 			return this.maxRows;
 		}
 
-		public void setMaxRows(Integer maxRows) {
+		public void setMaxRows(int maxRows) {
 			this.maxRows = maxRows;
 		}
 
-		public Integer getQueryTimeout() {
+		public int getQueryTimeout() {
 			return this.queryTimeout;
 		}
 
-		public void setQueryTimeout(Integer queryTimeout) {
+		public void setQueryTimeout(int queryTimeout) {
 			this.queryTimeout = queryTimeout;
 		}
+
 	}
 
 }
