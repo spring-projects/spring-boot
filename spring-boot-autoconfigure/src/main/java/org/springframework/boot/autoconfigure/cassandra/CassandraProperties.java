@@ -16,7 +16,12 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
@@ -112,6 +117,21 @@ public class CassandraProperties {
 	 * Socket option: read time out.
 	 */
 	private int readTimeoutMillis = SocketOptions.DEFAULT_READ_TIMEOUT_MILLIS;
+
+	/**
+	 * Pooling option: heartbeat interval.
+	 */
+	private int heartbeatIntervalSeconds = PoolingOptions.DEFAULT_HEARTBEAT_INTERVAL_SECONDS;
+
+	/**
+	 * Pooling option: max queue size.
+	 */
+	private int maxQueueSize = PoolingOptions.DEFAULT_MAX_QUEUE_SIZE;
+
+	/**
+	 * Pooling option: max requests per connection.
+	 */
+	private Map<HostDistance, Integer> maxRequestsPerConnection = new HashMap<HostDistance, Integer>();
 
 	/**
 	 * Schema action to take at startup.
@@ -243,6 +263,30 @@ public class CassandraProperties {
 
 	public void setReadTimeoutMillis(int readTimeoutMillis) {
 		this.readTimeoutMillis = readTimeoutMillis;
+	}
+
+	public int getHeartbeatIntervalSeconds() {
+		return this.heartbeatIntervalSeconds;
+	}
+
+	public void setHeartbeatIntervalSeconds(int heartbeatIntervalSeconds) {
+		this.heartbeatIntervalSeconds = heartbeatIntervalSeconds;
+	}
+
+	public int getMaxQueueSize() {
+		return this.maxQueueSize;
+	}
+
+	public void setMaxQueueSize(int maxQueueSize) {
+		this.maxQueueSize = maxQueueSize;
+	}
+
+	public Map<HostDistance, Integer> getMaxRequestsPerConnection() {
+		return this.maxRequestsPerConnection;
+	}
+
+	public void setMaxRequestsPerConnection(Map<HostDistance, Integer> maxRequestsPerConnection) {
+		this.maxRequestsPerConnection = maxRequestsPerConnection;
 	}
 
 	public boolean isSsl() {

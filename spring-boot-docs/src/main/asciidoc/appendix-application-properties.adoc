@@ -588,8 +588,11 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.consistency-level= # Queries consistency level.
 	spring.data.cassandra.contact-points=localhost # Comma-separated list of cluster node addresses.
 	spring.data.cassandra.fetch-size= # Queries default fetch size.
+	spring.data.cassandra.heartbeat-interval-seconds= # Pooling option: heartbeat interval.
 	spring.data.cassandra.keyspace-name= # Keyspace name to use.
 	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
+	spring.data.cassandra.max-requests-per-connection.*= # Pooling option: max requests per connection.
+	spring.data.cassandra.max-queue-size= # Pooling option: max queue size.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
 	spring.data.cassandra.reactive-repositories.enabled=true # Enable Cassandra reactive repositories.
