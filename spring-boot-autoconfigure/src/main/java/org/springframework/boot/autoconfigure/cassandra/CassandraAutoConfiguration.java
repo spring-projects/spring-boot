@@ -17,10 +17,8 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.util.List;
-import java.util.Map;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
@@ -133,12 +131,13 @@ public class CassandraAutoConfiguration {
 	}
 
 	private PoolingOptions getPoolingOptions() {
+		CassandraProperties.Pool pool = this.properties.getPool();
 		PoolingOptions options = new PoolingOptions();
-		options.setHeartbeatIntervalSeconds(this.properties.getHeartbeatIntervalSeconds());
-		options.setMaxQueueSize(this.properties.getMaxQueueSize());
-		for (Map.Entry<HostDistance, Integer> entry : this.properties.getMaxRequestsPerConnection().entrySet()) {
-			options.setMaxRequestsPerConnection(entry.getKey(), entry.getValue());
-		}
+		options.setIdleTimeoutSeconds(pool.getIdleTimeout());
+		options.setPoolTimeoutMillis(pool.getPoolTimeout());
+		options.setHeartbeatIntervalSeconds(pool.getHeartbeatInterval());
+		options.setMaxQueueSize(pool.getMaxQueueSize());
 		return options;
 	}
+
 }

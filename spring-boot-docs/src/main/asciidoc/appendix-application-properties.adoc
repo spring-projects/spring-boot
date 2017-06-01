@@ -595,6 +595,10 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.max-queue-size= # Pooling option: max queue size.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
+	spring.data.cassandra.pool.heartbeat-interval=30 # Heartbeat interval (in seconds) after which a message is sent on an idle connection to make sure it's still alive.
+	spring.data.cassandra.pool.idle-timeout=120 # Idle timeout (in seconds) before an idle connection is removed.
+	spring.data.cassandra.pool.max-queue-size=256 # Maximum number of requests that get enqueued if no connection is available.
+	spring.data.cassandra.pool.pool-timeout=5000 # Pool timeout (in milliseconds) when trying to acquire a connection from a host's pool.
 	spring.data.cassandra.reactive-repositories.enabled=true # Enable Cassandra reactive repositories.
 	spring.data.cassandra.read-timeout-millis= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
