@@ -56,7 +56,7 @@ public class ElasticsearchAutoConfigurationTests {
 	public void createNodeClientWithDefaults() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.data.elasticsearch.properties.foo.bar:baz",
+				.of("spring.data.elasticsearch.properties.monitor.process.refresh_interval:2s",
 						"spring.data.elasticsearch.properties.path.home:target")
 				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
@@ -64,8 +64,9 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
-		assertThat(client.settings().get("node.local")).isEqualTo("true");
+		assertThat(client.settings().get("monitor.process.refresh_interval"))
+				.isEqualTo("2s");
+		assertThat(client.settings().get("transport.type")).isEqualTo("local");
 		assertThat(client.settings().get("http.enabled")).isEqualTo("false");
 	}
 
@@ -73,9 +74,9 @@ public class ElasticsearchAutoConfigurationTests {
 	public void createNodeClientWithOverrides() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.data.elasticsearch.properties.foo.bar:baz",
+				.of("spring.data.elasticsearch.properties.monitor.process.refresh_interval:2s",
 						"spring.data.elasticsearch.properties.path.home:target",
-						"spring.data.elasticsearch.properties.node.local:false",
+						"spring.data.elasticsearch.properties.transport.type:local",
 						"spring.data.elasticsearch.properties.node.data:true",
 						"spring.data.elasticsearch.properties.http.enabled:true")
 				.applyTo(this.context);
@@ -84,8 +85,9 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
-		assertThat(client.settings().get("node.local")).isEqualTo("false");
+		assertThat(client.settings().get("monitor.process.refresh_interval"))
+				.isEqualTo("2s");
+		assertThat(client.settings().get("transport.type")).isEqualTo("local");
 		assertThat(client.settings().get("node.data")).isEqualTo("true");
 		assertThat(client.settings().get("http.enabled")).isEqualTo("true");
 	}
