@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,24 +48,36 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class JdbcTemplateAutoConfiguration {
 
-	private final DataSource dataSource;
+	@Configuration
+	static class JdbcTemplateConfiguration {
 
-	public JdbcTemplateAutoConfiguration(DataSource dataSource) {
-		this.dataSource = dataSource;
+		private final DataSource dataSource;
+
+		JdbcTemplateConfiguration(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean(JdbcOperations.class)
+		public JdbcTemplate jdbcTemplate() {
+			return new JdbcTemplate(this.dataSource);
+		}
+
 	}
 
-	@Bean
-	@Primary
-	@ConditionalOnMissingBean(JdbcOperations.class)
-	public JdbcTemplate jdbcTemplate() {
-		return new JdbcTemplate(this.dataSource);
-	}
+	@Configuration
+	@Import(JdbcTemplateConfiguration.class)
+	static class NamedParameterJdbcTemplateConfiguration {
 
-	@Bean
-	@Primary
-	@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-	public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-		return new NamedParameterJdbcTemplate(this.dataSource);
+		@Bean
+		@Primary
+		@ConditionalOnSingleCandidate(JdbcTemplate.class)
+		@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
+		public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
+			return new NamedParameterJdbcTemplate(jdbcTemplate);
+		}
+
 	}
 
 }

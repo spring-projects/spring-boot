@@ -28,12 +28,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JdbcTemplateAutoConfiguration}.
@@ -56,7 +58,7 @@ public class JdbcTemplateAutoConfigurationTests {
 	@Test
 	public void testJdbcTemplateExists() {
 		load();
-		assertThat(this.context.getBeansOfType(JdbcTemplate.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
 		assertThat(jdbcTemplate.getDataSource()).isEqualTo(
 				this.context.getBean(DataSource.class));
@@ -65,7 +67,7 @@ public class JdbcTemplateAutoConfigurationTests {
 	@Test
 	public void testJdbcTemplateExistsWithCustomDataSource() {
 		load(TestDataSourceConfiguration.class);
-		assertThat(this.context.getBeansOfType(JdbcTemplate.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
 		assertThat(jdbcTemplate).isNotNull();
 		assertThat(jdbcTemplate.getDataSource()).isEqualTo(
@@ -77,12 +79,23 @@ public class JdbcTemplateAutoConfigurationTests {
 		load();
 		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
 				.hasSize(1);
+		NamedParameterJdbcTemplate namedParameterJdbcTemplate = this.context.getBean(
+				NamedParameterJdbcTemplate.class);
+		assertThat(namedParameterJdbcTemplate.getJdbcOperations()).isEqualTo(
+				this.context.getBean(JdbcOperations.class));
 	}
 
 	@Test
 	public void testMultiDataSource() {
 		load(MultiDataSourceConfiguration.class);
 		assertThat(this.context.getBeansOfType(JdbcOperations.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
+				.isEmpty();
+	}
+
+	@Test
+	public void testMultiJdbcTemplate() {
+		load(MultiJdbcTemplateConfiguration.class);
 		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
 				.isEmpty();
 	}
@@ -95,6 +108,15 @@ public class JdbcTemplateAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBean(JdbcTemplate.class).getDataSource())
 				.isEqualTo(this.context.getBean("test1DataSource"));
+	}
+
+	@Test
+	public void testMultiJdbcTemplateUsingPrimary() {
+		load(MultiJdbcTemplateUsingPrimaryConfiguration.class);
+		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(NamedParameterJdbcTemplate.class)
+				.getJdbcOperations()).isEqualTo(this.context.getBean("test1Template"));
 	}
 
 	@Test
@@ -155,6 +177,37 @@ public class JdbcTemplateAutoConfigurationTests {
 		@Bean
 		public DataSource customDataSource() {
 			return new TestDataSource("overridedb");
+		}
+
+	}
+
+	@Configuration
+	static class MultiJdbcTemplateConfiguration {
+
+		@Bean
+		public JdbcTemplate test1Template() {
+			return mock(JdbcTemplate.class);
+		}
+
+		@Bean
+		public JdbcTemplate test2Template() {
+			return mock(JdbcTemplate.class);
+		}
+
+	}
+
+	@Configuration
+	static class MultiJdbcTemplateUsingPrimaryConfiguration {
+
+		@Bean
+		@Primary
+		public JdbcTemplate test1Template() {
+			return mock(JdbcTemplate.class);
+		}
+
+		@Bean
+		public JdbcTemplate test2Template() {
+			return mock(JdbcTemplate.class);
 		}
 
 	}

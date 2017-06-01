@@ -2932,6 +2932,9 @@ you can `@Autowire` them directly into your own beans:
 	}
 ----
 
+TIP: The `NamedParameterJdbcTemplate` reuses the same `JdbcTemplate` instance behind the
+scene. If more than one `JdbcTemplate` is defined and no primary candidate exists, the
+`NamedParameterJdbcTemplate` is not auto-configured.
 
 
 [[boot-features-jpa-and-spring-data]]
