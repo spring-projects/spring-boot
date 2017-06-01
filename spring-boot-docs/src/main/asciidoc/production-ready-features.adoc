@@ -927,6 +927,9 @@ In order to configure a given logger, you `POST` a partial entity to the resourc
 	}
 ----
 
+TIP: You can also pass a `null` `configuredLevel` to "reset" the specific level of the
+logger (and use the default configuration instead).
+
 
 
 [[production-ready-metrics]]

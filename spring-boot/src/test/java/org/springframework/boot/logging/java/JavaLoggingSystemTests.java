@@ -169,6 +169,19 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void setLevelToNull() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.logger.fine("Hello");
+		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
+		this.logger.fine("Hello");
+		this.loggingSystem.setLogLevel("org.springframework.boot", null);
+		this.logger.fine("Hello");
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
+				.isEqualTo(1);
+	}
+
+	@Test
 	public void getLoggingConfigurations() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
