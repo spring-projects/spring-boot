@@ -127,10 +127,22 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void javaOptsCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("javaOpts");
+	}
+
+	@Test
 	public void defaultForUseStartStopDaemonIsTrue() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
 		assertThat(content).contains("USE_START_STOP_DAEMON=\"true\"");
+	}
+
+	@Test
+	public void defaultForJavaOptsIsBlank() throws Exception {
+		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("JAVA_OPTS=\"$JAVA_OPTS \"");
 	}
 
 	@Test
@@ -164,6 +176,15 @@ public class DefaultLaunchScriptTests {
 				createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
 		assertThat(content).isEqualTo("hello");
+	}
+
+	@Test
+	public void expandVariablesDefaultToBlank() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		FileCopyUtils.copy("s{{p:}}{{r:}}ing".getBytes(), file);
+		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).isEqualTo("sing");
 	}
 
 	@Test
