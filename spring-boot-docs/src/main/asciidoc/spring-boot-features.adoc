@@ -2932,9 +2932,18 @@ you can `@Autowire` them directly into your own beans:
 	}
 ----
 
+You can customize some properties of the template using the `spring.jdbc.template.*`
+properties:
+
+[source,properties,indent=0]
+----
+	spring.jdbc.template.max-rows=500
+----
+
 TIP: The `NamedParameterJdbcTemplate` reuses the same `JdbcTemplate` instance behind the
 scene. If more than one `JdbcTemplate` is defined and no primary candidate exists, the
 `NamedParameterJdbcTemplate` is not auto-configured.
+
 
 
 [[boot-features-jpa-and-spring-data]]

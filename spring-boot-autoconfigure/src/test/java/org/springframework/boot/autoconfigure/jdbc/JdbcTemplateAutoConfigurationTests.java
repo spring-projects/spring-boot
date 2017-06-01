@@ -62,6 +62,22 @@ public class JdbcTemplateAutoConfigurationTests {
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
 		assertThat(jdbcTemplate.getDataSource()).isEqualTo(
 				this.context.getBean(DataSource.class));
+		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
+		assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(-1);
+		assertThat(jdbcTemplate.getMaxRows()).isEqualTo(-1);
+	}
+
+	@Test
+	public void testJdbcTemplateWithCustomProperties() throws Exception {
+		load("spring.jdbc.template.fetch-size:100",
+				"spring.jdbc.template.query-timeout:60",
+				"spring.jdbc.template.max-rows:1000");
+		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
+		assertThat(jdbcTemplate).isNotNull();
+		assertThat(jdbcTemplate.getDataSource()).isNotNull();
+		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
+		assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
+		assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
 	}
 
 	@Test
