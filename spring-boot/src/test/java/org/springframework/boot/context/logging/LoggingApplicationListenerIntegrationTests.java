@@ -44,14 +44,10 @@ public class LoggingApplicationListenerIntegrationTests {
 
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				SampleService.class).web(WebApplicationType.NONE).run();
-		try {
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(
+				SampleService.class).web(WebApplicationType.NONE).run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.loggingSystem).isNotNull();
-		}
-		finally {
-			context.close();
 		}
 	}
 

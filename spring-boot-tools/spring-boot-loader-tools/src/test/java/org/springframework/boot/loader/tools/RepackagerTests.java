@@ -455,16 +455,13 @@ public class RepackagerTests {
 				callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 			}
 		});
-		JarFile jarFile = new JarFile(file);
-		try {
+
+		try (JarFile jarFile = new JarFile(file)) {
 			assertThat(
 					jarFile.getEntry("BOOT-INF/lib/" + nestedFile.getName()).getMethod())
 							.isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/classes/test/nested.jar").getMethod())
 					.isEqualTo(ZipEntry.STORED);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -508,14 +505,11 @@ public class RepackagerTests {
 			}
 
 		});
-		JarFile jarFile = new JarFile(file);
-		try {
+
+		try (JarFile jarFile = new JarFile(file)) {
 			assertThat(
 					jarFile.getEntry("BOOT-INF/lib/" + nestedFile.getName()).getComment())
 							.startsWith("UNPACK:");
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -542,13 +536,9 @@ public class RepackagerTests {
 			}
 
 		});
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/" + nestedFile.getName()).getSize())
 					.isEqualTo(sourceLength);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -561,12 +551,8 @@ public class RepackagerTests {
 		File dest = this.temporaryFolder.newFile("dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
-		JarFile jarFile = new JarFile(dest);
-		try {
+		try (JarFile jarFile = new JarFile(dest)) {
 			assertThat(jarFile.getEntry("META-INF/INDEX.LIST")).isNull();
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -603,13 +589,9 @@ public class RepackagerTests {
 		File dest = this.temporaryFolder.newFile("dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
-		JarFile jarFile = new JarFile(dest);
-		try {
+		try (JarFile jarFile = new JarFile(dest)) {
 			assertThat(jarFile.getEntry("META-INF/aop.xml")).isNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/aop.xml")).isNotNull();
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -623,22 +605,14 @@ public class RepackagerTests {
 	}
 
 	private JarEntry getEntry(File file, String name) throws IOException {
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			return jarFile.getJarEntry(name);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
 	private Manifest getManifest(File file) throws IOException {
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			return jarFile.getManifest();
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 

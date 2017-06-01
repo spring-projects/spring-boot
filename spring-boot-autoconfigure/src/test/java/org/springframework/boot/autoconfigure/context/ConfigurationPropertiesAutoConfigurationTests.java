@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -59,7 +59,7 @@ public class ConfigurationPropertiesAutoConfigurationTests {
 	private void load(Class<?>[] configs, String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(configs);
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		TestPropertyValues.of(environment).applyTo(this.context);
 		this.context.refresh();
 	}
 

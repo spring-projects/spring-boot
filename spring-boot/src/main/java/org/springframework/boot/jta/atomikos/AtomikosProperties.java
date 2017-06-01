@@ -72,6 +72,11 @@ public class AtomikosProperties {
 	private boolean serialJtaTransactions = true;
 
 	/**
+	 * Specify if sub-transactions are allowed.
+	 */
+	private boolean allowSubTransactions = true;
+
+	/**
 	 * Specify if a VM shutdown should trigger forced shutdown of the transaction core.
 	 */
 	private boolean forceShutdownOnVmExit;
@@ -94,37 +99,12 @@ public class AtomikosProperties {
 	private long checkpointInterval = 500;
 
 	/**
-	 * Console log level.
-	 */
-	private AtomikosLoggingLevel consoleLogLevel = AtomikosLoggingLevel.WARN;
-
-	/**
-	 * Directory in which to store the debug log files. Defaults to the current working
-	 * directory.
-	 */
-	private String outputDir;
-
-	/**
-	 * Debug logs file name.
-	 */
-	private String consoleFileName = "tm.out";
-
-	/**
-	 * Number of debug logs files that can be created.
-	 */
-	private int consoleFileCount = 1;
-
-	/**
-	 * How many bytes can be stored at most in debug logs files. Negative values means
-	 * unlimited.
-	 */
-	private int consoleFileLimit = -1;
-
-	/**
 	 * Use different (and concurrent) threads for two-phase commit on the participating
 	 * resources.
 	 */
 	private boolean threadedTwoPhaseCommit;
+
+	private final Recovery recovery = new Recovery();
 
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
@@ -235,6 +215,14 @@ public class AtomikosProperties {
 		return this.serialJtaTransactions;
 	}
 
+	public void setAllowSubTransactions(boolean allowSubTransactions) {
+		this.allowSubTransactions = allowSubTransactions;
+	}
+
+	public boolean isAllowSubTransactions() {
+		return this.allowSubTransactions;
+	}
+
 	/**
 	 * Specifies whether VM shutdown should trigger forced shutdown of the transaction
 	 * core. Defaults to false.
@@ -292,68 +280,6 @@ public class AtomikosProperties {
 	}
 
 	/**
-	 * Specifies the console log level. Defaults to {@link AtomikosLoggingLevel#WARN}.
-	 * @param consoleLogLevel the console log level
-	 */
-	public void setConsoleLogLevel(AtomikosLoggingLevel consoleLogLevel) {
-		this.consoleLogLevel = consoleLogLevel;
-	}
-
-	public AtomikosLoggingLevel getConsoleLogLevel() {
-		return this.consoleLogLevel;
-	}
-
-	/**
-	 * Specifies the directory in which to store the debug log files. Defaults to the
-	 * current working directory.
-	 * @param outputDir the output dir
-	 */
-	public void setOutputDir(String outputDir) {
-		this.outputDir = outputDir;
-	}
-
-	public String getOutputDir() {
-		return this.outputDir;
-	}
-
-	/**
-	 * Specifies the debug logs file name. Defaults to {@literal tm.out}.
-	 * @param consoleFileName the console file name
-	 */
-	public void setConsoleFileName(String consoleFileName) {
-		this.consoleFileName = consoleFileName;
-	}
-
-	public String getConsoleFileName() {
-		return this.consoleFileName;
-	}
-
-	/**
-	 * Specifies how many debug logs files can be created. Defaults to {@literal 1}.
-	 * @param consoleFileCount the console file count
-	 */
-	public void setConsoleFileCount(int consoleFileCount) {
-		this.consoleFileCount = consoleFileCount;
-	}
-
-	public int getConsoleFileCount() {
-		return this.consoleFileCount;
-	}
-
-	/**
-	 * Specifies how many bytes can be stored at most in debug logs files. Defaults to
-	 * {@literal -1}. Negative values means unlimited.
-	 * @param consoleFileLimit the console file limit
-	 */
-	public void setConsoleFileLimit(int consoleFileLimit) {
-		this.consoleFileLimit = consoleFileLimit;
-	}
-
-	public int getConsoleFileLimit() {
-		return this.consoleFileLimit;
-	}
-
-	/**
 	 * Specifies whether or not to use different (and concurrent) threads for two-phase
 	 * commit on the participating resources. Setting this to {@literal true} implies that
 	 * the commit is more efficient since waiting for acknowledgements is done in
@@ -370,6 +296,10 @@ public class AtomikosProperties {
 		return this.threadedTwoPhaseCommit;
 	}
 
+	public Recovery getRecovery() {
+		return this.recovery;
+	}
+
 	/**
 	 * Returns the properties as a {@link Properties} object that can be used with
 	 * Atomikos.
@@ -384,16 +314,18 @@ public class AtomikosProperties {
 		set(properties, "enable_logging", isEnableLogging());
 		set(properties, "tm_unique_name", getTransactionManagerUniqueName());
 		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
+		set(properties, "allow_subtransactions", isAllowSubTransactions());
 		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());
-		set(properties, "console_log_level", getConsoleLogLevel());
-		set(properties, "output_dir", getOutputDir());
-		set(properties, "console_file_name", getConsoleFileName());
-		set(properties, "console_file_count", getConsoleFileCount());
-		set(properties, "console_file_limit", getConsoleFileLimit());
 		set(properties, "threaded_2pc", isThreadedTwoPhaseCommit());
+		Recovery recovery = getRecovery();
+		set(properties, "forget_orphaned_log_entries_delay",
+				recovery.getForgetOrphanedLogEntriesDelay());
+		set(properties, "recovery_delay", recovery.getDelay());
+		set(properties, "oltp_max_retries", recovery.getMaxRetries());
+		set(properties, "oltp_retry_interval", recovery.getRetryInterval());
 		return properties;
 	}
 
@@ -402,6 +334,66 @@ public class AtomikosProperties {
 		if (value != null && !properties.containsKey(id)) {
 			properties.setProperty(id, value.toString());
 		}
+	}
+
+	/**
+	 * Recovery specific settings.
+	 */
+	public static class Recovery {
+
+		/**
+		 * Delay after which recovery can cleanup pending ('orphaned') log entries.
+		 */
+		private long forgetOrphanedLogEntriesDelay = 86400000;
+
+		/**
+		 * Delay between two recovery scans.
+		 */
+		private long delay = 10000;
+
+		/**
+		 * Number of retries attempts to commit the transaction before throwing an
+		 * exception.
+		 */
+		private int maxRetries = 5;
+
+		/**
+		 * Delay between retry attempts.
+		 */
+		private long retryInterval = 10000;
+
+		public long getForgetOrphanedLogEntriesDelay() {
+			return this.forgetOrphanedLogEntriesDelay;
+		}
+
+		public void setForgetOrphanedLogEntriesDelay(long forgetOrphanedLogEntriesDelay) {
+			this.forgetOrphanedLogEntriesDelay = forgetOrphanedLogEntriesDelay;
+		}
+
+		public long getDelay() {
+			return this.delay;
+		}
+
+		public void setDelay(long delay) {
+			this.delay = delay;
+		}
+
+		public int getMaxRetries() {
+			return this.maxRetries;
+		}
+
+		public void setMaxRetries(int maxRetries) {
+			this.maxRetries = maxRetries;
+		}
+
+		public long getRetryInterval() {
+			return this.retryInterval;
+		}
+
+		public void setRetryInterval(long retryInterval) {
+			this.retryInterval = retryInterval;
+		}
+
 	}
 
 }

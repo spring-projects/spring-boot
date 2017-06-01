@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- *  Provide a {@link BatchConfigurer} according to the current environment.
+ * Provide a {@link BatchConfigurer} according to the current environment.
  *
  * @author Stephane Nicoll
  */
@@ -68,4 +68,3 @@ class BatchConfigurerConfiguration {
 	}
 
 }
-

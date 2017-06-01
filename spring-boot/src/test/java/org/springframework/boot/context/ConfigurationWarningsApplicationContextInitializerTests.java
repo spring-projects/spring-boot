@@ -112,17 +112,11 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	}
 
 	private void load(Class<?> configClass) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		new TestConfigurationWarningsApplicationContextInitializer().initialize(context);
-		context.register(configClass);
-		try {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			new TestConfigurationWarningsApplicationContextInitializer()
+					.initialize(context);
+			context.register(configClass);
 			context.refresh();
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		finally {
-			context.close();
 		}
 	}
 

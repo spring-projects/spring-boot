@@ -176,6 +176,21 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	public void ofNameWhenMultipleMismatchedBrackets() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("is not valid");
+		ConfigurationPropertyName.of("[a[[[b]ar]");
+	}
+
+	@Test
+	public void ofNameWhenNestedBrackets() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo[a[c][[b]ar]]");
+		assertThat(name.toString()).isEqualTo("foo[a[c][[b]ar]]");
+		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
+		assertThat(name.getElement(1, Form.ORIGINAL)).isEqualTo("a[c][[b]ar]");
+	}
+
+	@Test
 	public void ofNameWithWhitespaceInName() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("is not valid");
@@ -233,7 +248,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void adapShouldStripInvalidChars() throws Exception {
+	public void adaptShouldStripInvalidChars() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("f@@.b%r", '.');
 		assertThat(name.getElement(0, Form.UNIFORM)).isEqualTo("f");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("f");

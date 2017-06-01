@@ -23,7 +23,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.component.SoftwareComponent;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
@@ -45,20 +44,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 * @since 2.0.0
 	 */
 	public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
-
-	/**
-	 * The name of the {@link SoftwareComponent} for a Spring Boot Java application.
-	 *
-	 * @since 2.0.0
-	 */
-	public static final String BOOT_JAVA_SOFTWARE_COMPONENT_NAME = "bootJava";
-
-	/**
-	 * The name of the {@link SoftwareComponent} for a Spring Boot Web application.
-	 *
-	 * @since 2.0.0
-	 */
-	public static final String BOOT_WEB_SOFTWARE_COMPONENT_NAME = "bootWeb";
 
 	/**
 	 * The name of the default {@link BootJar} task.

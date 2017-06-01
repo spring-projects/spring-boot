@@ -28,7 +28,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -153,8 +153,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	public void gsonCanBePreferredWhenBothGsonAndJacksonAreAvailable() {
 		this.context.register(GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.http.converters.preferred-json-mapper:gson");
+		TestPropertyValues.of("spring.http.converters.preferred-json-mapper:gson")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertConverterBeanExists(GsonHttpMessageConverter.class,
 				"gsonHttpMessageConverter");

@@ -12,7 +12,7 @@ apply plugin: 'maven-publish'
 publishing {
 	publications {
 		bootJava(MavenPublication) {
-			from components.bootJava
+			artifact bootJar
 		}
 	}
 	repositories {

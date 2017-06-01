@@ -40,7 +40,7 @@ import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.tunnel.client.TunnelClient;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -154,11 +154,11 @@ public class RemoteClientConfigurationTests {
 		this.context.register(Config.class, RemoteClientConfiguration.class);
 		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":"
 				+ RemoteClientConfigurationTests.remotePort;
-		EnvironmentTestUtils.addEnvironment(this.context, remoteUrlProperty);
-		EnvironmentTestUtils.addEnvironment(this.context, pairs);
+		TestPropertyValues.of(remoteUrlProperty).applyTo(this.context);
+		TestPropertyValues.of(pairs).applyTo(this.context);
 		if (setSecret) {
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.devtools.remote.secret:secret");
+			TestPropertyValues.of(
+					"spring.devtools.remote.secret:secret").applyTo(this.context);
 		}
 		this.context.refresh();
 	}

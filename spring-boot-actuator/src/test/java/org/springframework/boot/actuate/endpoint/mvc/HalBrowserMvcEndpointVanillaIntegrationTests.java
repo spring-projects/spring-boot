@@ -85,8 +85,9 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 	@Test
 	public void browser() throws Exception {
 		this.mockMvc.perform(get("/application/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isFound()).andExpect(header().string(
-						HttpHeaders.LOCATION, "http://localhost/application/browser.html"));
+				.andExpect(status().isFound())
+				.andExpect(header().string(HttpHeaders.LOCATION,
+						"http://localhost/application/browser.html"));
 	}
 
 	@Test
@@ -98,7 +99,9 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 
 	@Test
 	public void envValue() throws Exception {
-		this.mockMvc.perform(get("/application/env/user.home").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(get("/application/env/user.home")
+						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$._links").doesNotExist());
 	}

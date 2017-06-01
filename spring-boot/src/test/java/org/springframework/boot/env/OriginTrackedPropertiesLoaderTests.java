@@ -236,8 +236,7 @@ public class OriginTrackedPropertiesLoaderTests {
 		if (value == null) {
 			return null;
 		}
-		return ((TextResourceOrigin) value.getOrigin()).getLocation()
-				.toString();
+		return ((TextResourceOrigin) value.getOrigin()).getLocation().toString();
 	}
 
 }

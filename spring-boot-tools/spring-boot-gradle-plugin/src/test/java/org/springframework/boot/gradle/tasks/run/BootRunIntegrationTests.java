@@ -23,7 +23,9 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.util.FileSystemUtils;
 
@@ -34,10 +36,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@RunWith(GradleCompatibilitySuite.class)
 public class BootRunIntegrationTests {
 
 	@Rule
-	public final GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild;
 
 	@Test
 	public void basicExecution() throws IOException {
@@ -48,7 +51,7 @@ public class BootRunIntegrationTests {
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("1. " + urlOf("build/classes/main"));
+		assertThat(result.getOutput()).contains("1. " + urlOf(mainJavaOutput()));
 		assertThat(result.getOutput()).contains("2. " + urlOf("build/resources/main"));
 		assertThat(result.getOutput()).doesNotContain(urlOf("src/main/resources"));
 	}
@@ -62,7 +65,7 @@ public class BootRunIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("1. " + urlOf("src/main/resources"));
-		assertThat(result.getOutput()).contains("2. " + urlOf("build/classes/main"));
+		assertThat(result.getOutput()).contains("2. " + urlOf(mainJavaOutput()));
 		assertThat(result.getOutput()).doesNotContain(urlOf("build/resources/main"));
 	}
 
@@ -82,6 +85,13 @@ public class BootRunIntegrationTests {
 				.isEqualTo(TaskOutcome.UP_TO_DATE);
 		assertThat(result.getOutput())
 				.contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
+	}
+
+	private String mainJavaOutput() {
+		String gradleVersion = this.gradleBuild.getGradleVersion();
+		return "build/classes/"
+				+ (gradleVersion != null && gradleVersion.startsWith("4.") ? "java/" : "")
+				+ "main";
 	}
 
 	private String urlOf(String path) throws IOException {

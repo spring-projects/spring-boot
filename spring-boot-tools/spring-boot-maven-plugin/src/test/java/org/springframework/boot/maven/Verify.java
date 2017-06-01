@@ -198,13 +198,9 @@ public final class Verify {
 						.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 }));
 			}
 
-			ZipFile zipFile = new ZipFile(this.file);
-			try {
+			try (ZipFile zipFile = new ZipFile(this.file)) {
 				ArchiveVerifier verifier = new ArchiveVerifier(zipFile);
 				verifyZipEntries(verifier);
-			}
-			finally {
-				zipFile.close();
 			}
 		}
 

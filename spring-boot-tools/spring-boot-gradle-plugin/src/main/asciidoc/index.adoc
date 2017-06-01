@@ -43,6 +43,7 @@ In addition to this user guide, {api-documentation}[API documentation] is also a
 include::getting-started.adoc[]
 include::managing-dependencies.adoc[]
 include::packaging.adoc[]
+include::publishing.adoc[]
 include::running.adoc[]
 include::integrating-with-actuator.adoc[]
 include::reacting.adoc[]

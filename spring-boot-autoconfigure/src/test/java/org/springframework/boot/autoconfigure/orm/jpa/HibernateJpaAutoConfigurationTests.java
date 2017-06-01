@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -64,10 +64,11 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testDataScriptWithMissingDdl() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.data:classpath:/city.sql",
-				// Missing:
-				"spring.datasource.schema:classpath:/ddl.sql");
+		TestPropertyValues
+				.of("spring.datasource.data:classpath:/city.sql",
+						// Missing:
+						"spring.datasource.schema:classpath:/ddl.sql")
+				.applyTo(this.context);
 		setupTestConfiguration();
 		this.thrown.expectMessage("ddl.sql");
 		this.thrown.expectMessage("spring.datasource.schema");
@@ -79,8 +80,8 @@ public class HibernateJpaAutoConfigurationTests
 	// and Hibernate hasn't initialized yet at that point
 	@Test(expected = BeanCreationException.class)
 	public void testDataScript() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.data:classpath:/city.sql");
+		TestPropertyValues.of("spring.datasource.data:classpath:/city.sql")
+				.applyTo(this.context);
 		setupTestConfiguration();
 		this.context.refresh();
 		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
@@ -89,10 +90,9 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testFlywayPlusValidation() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
+		TestPropertyValues.of("spring.datasource.initialize:false",
 				"flyway.locations:classpath:db/city",
-				"spring.jpa.hibernate.ddl-auto:validate");
+				"spring.jpa.hibernate.ddl-auto:validate").applyTo(this.context);
 		setupTestConfiguration();
 		this.context.register(FlywayAutoConfiguration.class);
 		this.context.refresh();
@@ -100,10 +100,9 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testLiquibasePlusValidation() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
+		TestPropertyValues.of("spring.datasource.initialize:false",
 				"liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
-				"spring.jpa.hibernate.ddl-auto:validate");
+				"spring.jpa.hibernate.ddl-auto:validate").applyTo(this.context);
 		setupTestConfiguration();
 		this.context.register(LiquibaseAutoConfiguration.class);
 		this.context.refresh();
@@ -123,9 +122,8 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomJtaPlatform() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.properties.hibernate.transaction.jta.platform:"
-						+ TestJtaPlatform.class.getName());
+		TestPropertyValues.of("spring.jpa.properties.hibernate.transaction.jta.platform:"
+				+ TestJtaPlatform.class.getName()).applyTo(this.context);
 		this.context.register(JtaAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
@@ -138,9 +136,10 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+		TestPropertyValues
+				.of("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.applyTo(this.context);
 		setupTestConfiguration();
 		this.context.refresh();
 		JpaTransactionManager transactionManager = this.context

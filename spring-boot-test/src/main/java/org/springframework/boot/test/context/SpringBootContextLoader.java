@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
@@ -150,8 +150,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private void setActiveProfiles(ConfigurableEnvironment environment,
 			String[] profiles) {
-		EnvironmentTestUtils.addEnvironment(environment, "spring.profiles.active="
-				+ StringUtils.arrayToCommaDelimitedString(profiles));
+		TestPropertyValues.of("spring.profiles.active="
+				+ StringUtils.arrayToCommaDelimitedString(profiles)).applyTo(environment);
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {

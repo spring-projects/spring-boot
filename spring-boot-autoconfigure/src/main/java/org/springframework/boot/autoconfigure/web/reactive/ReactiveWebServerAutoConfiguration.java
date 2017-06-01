@@ -51,7 +51,7 @@ import org.springframework.util.ObjectUtils;
 		ReactiveWebServerConfiguration.TomcatAutoConfiguration.class,
 		ReactiveWebServerConfiguration.JettyAutoConfiguration.class,
 		ReactiveWebServerConfiguration.UndertowAutoConfiguration.class,
-		ReactiveWebServerConfiguration.ReactorNettyAutoConfiguration.class})
+		ReactiveWebServerConfiguration.ReactorNettyAutoConfiguration.class })
 public class ReactiveWebServerAutoConfiguration {
 
 	@ConditionalOnMissingBean

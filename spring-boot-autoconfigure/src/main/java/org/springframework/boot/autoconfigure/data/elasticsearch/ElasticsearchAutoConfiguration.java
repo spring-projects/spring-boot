@@ -16,19 +16,23 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import java.io.Closeable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.lease.Releasable;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.plugins.Plugin;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,7 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.NodeClientFactoryBean;
 import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -61,9 +65,18 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	static {
 		Map<String, String> defaults = new LinkedHashMap<>();
 		defaults.put("http.enabled", String.valueOf(false));
-		defaults.put("node.local", String.valueOf(true));
+		defaults.put("transport.type", "local");
 		defaults.put("path.home", System.getProperty("user.dir"));
 		DEFAULTS = Collections.unmodifiableMap(defaults);
+	}
+
+	private static final Set<String> TRANSPORT_PLUGINS;
+
+	static {
+		Set<String> plugins = new LinkedHashSet<>();
+		plugins.add("org.elasticsearch.transport.Netty4Plugin");
+		plugins.add("org.elasticsearch.transport.Netty3Plugin");
+		TRANSPORT_PLUGINS = Collections.unmodifiableSet(plugins);
 	}
 
 	private static final Log logger = LogFactory
@@ -71,7 +84,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 
 	private final ElasticsearchProperties properties;
 
-	private Releasable releasable;
+	private Closeable closeable;
 
 	public ElasticsearchAutoConfiguration(ElasticsearchProperties properties) {
 		this.properties = properties;
@@ -96,17 +109,38 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	private Client createNodeClient() throws Exception {
-		Settings.Builder settings = Settings.settingsBuilder();
+		Settings.Builder settings = Settings.builder();
 		for (Map.Entry<String, String> entry : DEFAULTS.entrySet()) {
 			if (!this.properties.getProperties().containsKey(entry.getKey())) {
 				settings.put(entry.getKey(), entry.getValue());
 			}
 		}
 		settings.put(this.properties.getProperties());
-		Node node = new NodeBuilder().settings(settings)
-				.clusterName(this.properties.getClusterName()).node();
-		this.releasable = node;
+		settings.put("cluster.name", this.properties.getClusterName());
+		Node node = createNode(settings.build());
+		this.closeable = node;
+		node.start();
 		return node.client();
+	}
+
+	private Node createNode(Settings settings) {
+		Collection<Class<? extends Plugin>> plugins = findPlugins();
+		if (plugins.isEmpty()) {
+			return new Node(settings);
+		}
+		return new PluggableNode(settings, plugins);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Collection<Class<? extends Plugin>> findPlugins() {
+		for (String candidate : TRANSPORT_PLUGINS) {
+			if (ClassUtils.isPresent(candidate, null)) {
+				Class<? extends Plugin> pluginClass = (Class<? extends Plugin>) ClassUtils
+						.resolveClassName(candidate, null);
+				return Collections.singleton(pluginClass);
+			}
+		}
+		return Collections.emptySet();
 	}
 
 	private Client createTransportClient() throws Exception {
@@ -115,7 +149,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		factory.setProperties(createProperties());
 		factory.afterPropertiesSet();
 		TransportClient client = factory.getObject();
-		this.releasable = client;
+		this.closeable = client;
 		return client;
 	}
 
@@ -128,20 +162,12 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 
 	@Override
 	public void destroy() throws Exception {
-		if (this.releasable != null) {
+		if (this.closeable != null) {
 			try {
 				if (logger.isInfoEnabled()) {
 					logger.info("Closing Elasticsearch client");
 				}
-				try {
-					this.releasable.close();
-				}
-				catch (NoSuchMethodError ex) {
-					// Earlier versions of Elasticsearch had a different method name
-					ReflectionUtils.invokeMethod(
-							ReflectionUtils.findMethod(Releasable.class, "release"),
-							this.releasable);
-				}
+				this.closeable.close();
 			}
 			catch (final Exception ex) {
 				if (logger.isErrorEnabled()) {
@@ -149,6 +175,19 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 				}
 			}
 		}
+	}
+
+	/**
+	 * {@link Node} subclass to support {@link Plugin Plugins}.
+	 */
+	private static class PluggableNode extends Node {
+
+		PluggableNode(Settings preparedSettings,
+				Collection<Class<? extends Plugin>> classpathPlugins) {
+			super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, null),
+					classpathPlugins);
+		}
+
 	}
 
 }

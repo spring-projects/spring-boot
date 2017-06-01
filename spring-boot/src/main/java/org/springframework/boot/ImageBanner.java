@@ -44,6 +44,7 @@ import org.springframework.util.Assert;
  * @author Craig Burke
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Raja Kolli
  * @since 1.4.0
  */
 public class ImageBanner implements Banner {
@@ -101,14 +102,11 @@ public class ImageBanner implements Banner {
 	}
 
 	private BufferedImage readImage(int width, int height) throws IOException {
-		InputStream inputStream = this.image.getInputStream();
-		try {
+		try (InputStream inputStream = this.image.getInputStream()) {
 			BufferedImage image = ImageIO.read(inputStream);
 			return resizeImage(image, width, height);
 		}
-		finally {
-			inputStream.close();
-		}
+
 	}
 
 	private BufferedImage resizeImage(BufferedImage image, int width, int height) {

@@ -201,12 +201,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		if (!this.properties.isEmpty()) {
 			FileObject file = this.processingEnv.getFiler()
 					.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
-			OutputStream outputStream = file.openOutputStream();
-			try {
+			try (OutputStream outputStream = file.openOutputStream()) {
 				this.properties.store(outputStream, null);
-			}
-			finally {
-				outputStream.close();
 			}
 		}
 	}

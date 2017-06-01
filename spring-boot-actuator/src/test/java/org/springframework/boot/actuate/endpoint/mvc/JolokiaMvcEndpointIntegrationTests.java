@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -67,8 +67,8 @@ public class JolokiaMvcEndpointIntegrationTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
-				"foo:bar");
+		TestPropertyValues.of("foo:bar")
+				.applyTo((ConfigurableApplicationContext) this.context);
 	}
 
 	@Test
@@ -79,7 +79,8 @@ public class JolokiaMvcEndpointIntegrationTests {
 
 	@Test
 	public void search() throws Exception {
-		this.mvc.perform(get("/application/jolokia/search/java.lang:*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/jolokia/search/java.lang:*"))
+				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("GarbageCollector")));
 	}
 

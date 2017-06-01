@@ -109,7 +109,17 @@ public final class ConfigurationPropertyName
 	 * @return {@code true} if the element is indexed and numeric
 	 */
 	public boolean IsNumericIndex(int elementIndex) {
-		return isIndexed(elementIndex) && isNumeric(getElement(elementIndex, Form.ORIGINAL));
+		return isIndexed(elementIndex)
+				&& isNumeric(getElement(elementIndex, Form.ORIGINAL));
+	}
+
+	private boolean isNumeric(CharSequence element) {
+		for (int i = 0; i < element.length(); i++) {
+			if (!Character.isDigit(element.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -401,16 +411,6 @@ public final class ConfigurationPropertyName
 				&& element.charAt(length - 1) == ']';
 	}
 
-	private static boolean isNumeric(CharSequence element) {
-		int length = element.length();
-		for (int i = 0; i < length; i++) {
-			if (!Character.isDigit(element.charAt(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/**
 	 * Returns if the given name is valid. If this method returns {@code true} then the
 	 * name may be used with {@link #of(CharSequence)} without throwing an exception.
@@ -513,17 +513,24 @@ public final class ConfigurationPropertyName
 		int start = 0;
 		boolean indexed = false;
 		int length = name.length();
+		int openBracketCount = 0;
 		for (int i = 0; i < length; i++) {
 			char ch = name.charAt(i);
-			if (indexed && ch == ']') {
-				processElement(processor, name, start, i + 1, indexed);
-				start = i + 1;
-				indexed = false;
+			if (ch == ']') {
+				openBracketCount--;
+				if (openBracketCount == 0) {
+					processElement(processor, name, start, i + 1, indexed);
+					start = i + 1;
+					indexed = false;
+				}
 			}
-			else if (!indexed && ch == '[') {
-				processElement(processor, name, start, i, indexed);
-				start = i;
-				indexed = true;
+			else if (ch == '[') {
+				openBracketCount++;
+				if (!indexed) {
+					processElement(processor, name, start, i, indexed);
+					start = i;
+					indexed = true;
+				}
 			}
 			else if (!indexed && ch == separator) {
 				processElement(processor, name, start, i, indexed);

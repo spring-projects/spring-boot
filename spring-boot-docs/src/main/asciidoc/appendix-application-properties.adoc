@@ -129,6 +129,12 @@ content into your application; rather pick only the properties that you need.
 	spring.profiles.active= # Comma-separated list (or list if using YAML) of <<howto-set-active-spring-profiles,active profiles>>.
 	spring.profiles.include= # Unconditionally activate the specified comma separated profiles (or list of profiles if using YAML).
 
+	# QUARTZ SCHEDULER ({sc-spring-boot-autoconfigure}/quartz/QuartzProperties.{sc-ext}[QuartzProperties])
+	spring.quartz.job-store-type=memory # Quartz job store type.
+	spring.quartz.properties.*= # Additional Quartz Scheduler properties.
+	spring.quartz.jdbc.initialize-schema=false # Create the required Quartz Scheduler tables on startup.
+	spring.quartz.jdbc.schema=classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
+
 	# Reactor
 	spring.reactor.stacktrace-mode.enabled=false # Set whether Reactor should collect stacktrace information at runtime.
 
@@ -246,6 +252,7 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.buffer-size= # Size of each buffer in bytes.
 	server.undertow.direct-buffers= # Allocate buffers outside the Java heap.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker.
+	server.undertow.eager-filter-init=true # Whether servlet filters should be initialized on startup.
 	server.undertow.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
 	server.undertow.worker-threads= # Number of worker threads.
 
@@ -651,6 +658,12 @@ content into your application; rather pick only the properties that you need.
 	spring.data.solr.repositories.enabled=true # Enable Solr repositories.
 	spring.data.solr.zk-host= # ZooKeeper host address in the form HOST:PORT.
 
+	# DATA WEB ({sc-spring-boot-autoconfigure}/data/web/SpringDataWebProperties.{sc-ext}[SpringDataWebProperties])
+	spring.data.web.pageable.default-page-size=20 # Default page size.
+	spring.data.web.pageable.page-parameter=page # Page index parameter name.
+	spring.data.web.pageable.size-parameter=size # Page size parameter name.
+	spring.data.web.sort.sort-parameter=sort # Sort parameter name.
+
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
 	spring.datasource.continue-on-error=false # Do not stop if an error occurs while initializing the database.
 	spring.datasource.data= # Data (DML) script resource references.
@@ -695,7 +708,7 @@ content into your application; rather pick only the properties that you need.
 	spring.h2.console.settings.web-allow-others=false # Enable remote access.
 
 	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
-	spring.jooq.sql-dialect= # SQLDialect JOOQ used when communicating with the configured datasource. For instance `POSTGRES`
+	spring.jooq.sql-dialect= # Sql dialect to use, auto-detected by default.
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.data.jpa.repositories.enabled=true # Enable JPA repositories.
@@ -737,11 +750,8 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.datasource.reap-timeout=0 # The reap timeout, in seconds, for borrowed connections. 0 denotes no limit.
 	spring.jta.atomikos.datasource.test-query= # SQL query or statement used to validate a connection before returning it.
 	spring.jta.atomikos.datasource.unique-resource-name=dataSource # The unique name used to identify the resource during recovery.
+	spring.jta.atomikos.properties.allow-sub-transactions=true # Specify if sub-transactions are allowed.
 	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints.
-	spring.jta.atomikos.properties.console-file-count=1 # Number of debug logs files that can be created.
-	spring.jta.atomikos.properties.console-file-limit=-1 # How many bytes can be stored at most in debug logs files.
-	spring.jta.atomikos.properties.console-file-name=tm.out # Debug logs file name.
-	spring.jta.atomikos.properties.console-log-level=warn # Console log level.
 	spring.jta.atomikos.properties.default-jta-timeout=10000 # Default timeout for JTA transactions.
 	spring.jta.atomikos.properties.enable-logging=true # Enable disk logging.
 	spring.jta.atomikos.properties.force-shutdown-on-vm-exit=false # Specify if a VM shutdown should trigger forced shutdown of the transaction core.
@@ -749,7 +759,10 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.properties.log-base-name=tmlog # Transactions log file base name.
 	spring.jta.atomikos.properties.max-actives=50 # Maximum number of active transactions.
 	spring.jta.atomikos.properties.max-timeout=300000 # Maximum timeout (in milliseconds) that can be allowed for transactions.
-	spring.jta.atomikos.properties.output-dir= # Directory in which to store the debug log files.
+	spring.jta.atomikos.properties.recovery.delay=10000 # Delay between two recovery scans.
+	spring.jta.atomikos.properties.recovery.forget-orphaned-log-entries-delay=86400000 # Delay after which recovery can cleanup pending ('orphaned') log entries.
+	spring.jta.atomikos.properties.recovery.max-retries=5 # Number of retries attempts to commit the transaction before throwing an exception.
+	spring.jta.atomikos.properties.recovery.retry-interval=10000 # Delay between retry attempts.
 	spring.jta.atomikos.properties.serial-jta-transactions=true # Specify if sub-transactions should be joined when possible.
 	spring.jta.atomikos.properties.service= # Transaction manager implementation that should be started.
 	spring.jta.atomikos.properties.threaded-two-phase-commit=false # Use different (and concurrent) threads for two-phase commit on the participating resources.

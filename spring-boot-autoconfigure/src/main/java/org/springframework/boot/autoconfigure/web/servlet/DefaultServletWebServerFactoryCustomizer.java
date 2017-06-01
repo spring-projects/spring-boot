@@ -472,11 +472,12 @@ public class DefaultServletWebServerFactoryCustomizer
 				customizeMaxHttpPostSize(factory,
 						undertowProperties.getMaxHttpPostSize());
 			}
-
 			if (serverProperties.getConnectionTimeout() != null) {
 				customizeConnectionTimeout(factory,
 						serverProperties.getConnectionTimeout());
 			}
+			factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
+					.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
 		}
 
 		private static void customizeConnectionTimeout(

@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,18 +28,20 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} serialization.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesReportEndpointSerializationTests {
 
@@ -59,7 +63,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testNaming() throws Exception {
 		this.context.register(FooConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.name:foo");
+		TestPropertyValues.of("foo.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -79,7 +83,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testNestedNaming() throws Exception {
 		this.context.register(FooConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.bar.name:foo");
+		TestPropertyValues.of("foo.bar.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -98,7 +102,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testCycle() throws Exception {
 		this.context.register(CycleConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.name:foo");
+		TestPropertyValues.of("foo.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -118,7 +122,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testMap() throws Exception {
 		this.context.register(MapConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.map.name:foo");
+		TestPropertyValues.of("foo.map.name:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -158,7 +162,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testList() throws Exception {
 		this.context.register(ListConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.list[0]:foo");
+		TestPropertyValues.of("foo.list[0]:foo").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -178,7 +182,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testInetAddress() throws Exception {
 		this.context.register(AddressedConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.address:192.168.1.10");
+		TestPropertyValues.of("foo.address:192.168.1.10").applyTo(this.context);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -193,6 +197,30 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
 		assertThat(map.get("address")).isEqualTo("192.168.1.10");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testInitializedMapAndList() throws Exception {
+		this.context.register(InitializedMapAndListPropertiesConfig.class);
+		TestPropertyValues.of("foo.map.entryOne:true", "foo.list[0]:abc")
+				.applyTo(this.context);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint report = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+		Map<String, Object> properties = report.invoke();
+		assertThat(properties).containsKeys("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties
+				.get("foo");
+		assertThat(nestedProperties).containsOnlyKeys("prefix", "properties");
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
+		Map<String, Object> propertiesMap = (Map<String, Object>) nestedProperties
+				.get("properties");
+		assertThat(propertiesMap).containsOnlyKeys("bar", "name", "map", "list");
+		Map<String, Object> map = (Map<String, Object>) propertiesMap.get("map");
+		assertThat(map).containsOnly(entry("entryOne", true));
+		List<String> list = (List<String>) propertiesMap.get("list");
+		assertThat(list).containsExactly("abc");
 	}
 
 	@Configuration
@@ -286,6 +314,18 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		@ConfigurationProperties(prefix = "foo")
 		public Addressed foo() {
 			return new Addressed();
+		}
+
+	}
+
+	@Configuration
+	@Import(Base.class)
+	public static class InitializedMapAndListPropertiesConfig {
+
+		@Bean
+		@ConfigurationProperties(prefix = "foo")
+		public InitializedMapAndListProperties foo() {
+			return new InitializedMapAndListProperties();
 		}
 
 	}
@@ -389,6 +429,22 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		public void setAddress(InetAddress address) {
 			this.address = address;
+		}
+
+	}
+
+	public static class InitializedMapAndListProperties extends Foo {
+
+		private Map<String, Boolean> map = new HashMap<String, Boolean>();
+
+		private List<String> list = new ArrayList<String>();
+
+		public Map<String, Boolean> getMap() {
+			return this.map;
+		}
+
+		public List<String> getList() {
+			return this.list;
 		}
 
 	}

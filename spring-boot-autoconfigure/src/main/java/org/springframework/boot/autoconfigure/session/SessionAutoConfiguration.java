@@ -38,7 +38,6 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
-import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -97,11 +96,17 @@ public class SessionAutoConfiguration {
 		@PostConstruct
 		public void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
-			if (storeType != StoreType.NONE) {
-				Assert.notNull(this.sessionRepositoryProvider.getIfAvailable(),
-						"No session repository could be auto-configured, check your "
-								+ "configuration (session store type is '" + storeType
-								+ "')");
+			if (storeType != StoreType.NONE
+					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
+				if (storeType != null) {
+					throw new IllegalArgumentException("No session repository could be "
+							+ "auto-configured, check your configuration (session store "
+							+ "type is '" + storeType.name().toLowerCase() + "')");
+				}
+				else {
+					throw new IllegalArgumentException("No Spring Session store is "
+							+ "configured: set the 'spring.session.store-type' property");
+				}
 			}
 		}
 

@@ -27,8 +27,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -68,9 +68,8 @@ public abstract class AbstractErrorController implements ErrorController {
 
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request,
 			boolean includeStackTrace) {
-		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-		return this.errorAttributes.getErrorAttributes(requestAttributes,
-				includeStackTrace);
+		WebRequest webRequest = new ServletWebRequest(request);
+		return this.errorAttributes.getErrorAttributes(webRequest, includeStackTrace);
 	}
 
 	protected boolean getTraceParameter(HttpServletRequest request) {

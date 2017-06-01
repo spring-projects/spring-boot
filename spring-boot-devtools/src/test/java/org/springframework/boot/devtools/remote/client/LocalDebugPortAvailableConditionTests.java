@@ -23,7 +23,7 @@ import javax.net.ServerSocketFactory;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.SocketUtils;
@@ -64,8 +64,8 @@ public class LocalDebugPortAvailableConditionTests {
 
 	private ConditionOutcome getOutcome() {
 		MockEnvironment environment = new MockEnvironment();
-		EnvironmentTestUtils.addEnvironment(environment,
-				"spring.devtools.remote.debug.local-port:" + this.port);
+		TestPropertyValues.of(
+				"spring.devtools.remote.debug.local-port:" + this.port).applyTo(environment);
 		ConditionContext context = mock(ConditionContext.class);
 		given(context.getEnvironment()).willReturn(environment);
 		ConditionOutcome outcome = this.condition.getMatchOutcome(context, null);

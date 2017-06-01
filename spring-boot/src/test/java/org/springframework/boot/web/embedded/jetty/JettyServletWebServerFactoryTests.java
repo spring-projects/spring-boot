@@ -23,13 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +36,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -51,14 +46,13 @@ import org.mockito.InOrder;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.WebServerException;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -286,34 +280,19 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void faultyFilterCausesStartFailure() throws Exception {
+	public void startFailsWhenThreadPoolIsTooSmall() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.addInitializers(new ServletContextInitializer() {
+		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.addFilter("faulty", new Filter() {
-
-					@Override
-					public void init(FilterConfig filterConfig) throws ServletException {
-						throw new ServletException("Faulty filter");
-					}
-
-					@Override
-					public void doFilter(ServletRequest request, ServletResponse response,
-							FilterChain chain) throws IOException, ServletException {
-						chain.doFilter(request, response);
-					}
-
-					@Override
-					public void destroy() {
-					}
-
-				});
+			public void customize(Server server) {
+				QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+				threadPool.setMaxThreads(2);
+				threadPool.setMinThreads(2);
 			}
 
 		});
-		this.thrown.expect(WebServerException.class);
+		this.thrown.expectCause(isA(IllegalStateException.class));
 		factory.getWebServer().start();
 	}
 

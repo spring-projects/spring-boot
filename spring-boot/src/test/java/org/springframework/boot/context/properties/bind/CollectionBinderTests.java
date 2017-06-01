@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -277,7 +278,8 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToNonScalarCollectionShouldReturnPopulatedCollection() throws Exception {
+	public void bindToNonScalarCollectionShouldReturnPopulatedCollection()
+			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0].value", "a");
 		source.put("foo[1].value", "b");
@@ -286,7 +288,21 @@ public class CollectionBinderTests {
 		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
 		List<JavaBean> result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(3);
-		List<String> values = result.stream().map(JavaBean::getValue).collect(Collectors.toList());
+		List<String> values = result.stream().map(JavaBean::getValue)
+				.collect(Collectors.toList());
 		assertThat(values).containsExactly("a", "b", "c");
 	}
+
+	@Test
+	public void bindToImmutableCollectionShouldReturnPopulatedCollection()
+			throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.values", "a,b,c");
+		this.sources.add(source);
+		Set<String> result = this.binder
+				.bind("foo.values", STRING_SET.withExistingValue(Collections.emptySet()))
+				.get();
+		assertThat(result).hasSize(3);
+	}
+
 }

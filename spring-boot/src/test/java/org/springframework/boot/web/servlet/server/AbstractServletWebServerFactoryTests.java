@@ -50,6 +50,9 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -88,6 +91,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -118,6 +122,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Greg Turnquist
  * @author Andy Wilkinson
+ * @author Raja Kolli
  */
 public abstract class AbstractServletWebServerFactoryTests {
 
@@ -944,6 +949,38 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(options.getDevelopment()).isEqualTo(false);
 	}
 
+	@Test
+	public void faultyFilterCausesStartFailure() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.addInitializers(new ServletContextInitializer() {
+
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.addFilter("faulty", new Filter() {
+
+					@Override
+					public void init(FilterConfig filterConfig) throws ServletException {
+						throw new ServletException("Faulty filter");
+					}
+
+					@Override
+					public void doFilter(ServletRequest request, ServletResponse response,
+							FilterChain chain) throws IOException, ServletException {
+						chain.doFilter(request, response);
+					}
+
+					@Override
+					public void destroy() {
+					}
+
+				});
+			}
+
+		});
+		this.thrown.expect(WebServerException.class);
+		factory.getWebServer().start();
+	}
+
 	protected abstract void addConnector(int port,
 			AbstractServletWebServerFactory factory);
 
@@ -1022,12 +1059,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected String getResponse(String url, HttpMethod method, String... headers)
 			throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, method, headers);
-		try {
+		try (ClientHttpResponse response = getClientResponse(url, method, headers)) {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
-		}
-		finally {
-			response.close();
 		}
 	}
 
@@ -1040,13 +1073,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected String getResponse(String url, HttpMethod method,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, method, requestFactory,
-				headers);
-		try {
+		try (ClientHttpResponse response = getClientResponse(url, method, requestFactory,
+				headers)) {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
-		}
-		finally {
-			response.close();
 		}
 	}
 
@@ -1160,13 +1189,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 			NoSuchAlgorithmException, CertificateException {
 		KeyStore keyStore = KeyStore.getInstance("JKS");
 		Resource resource = new ClassPathResource("test.jks");
-		InputStream inputStream = resource.getInputStream();
-		try {
+		try (InputStream inputStream = resource.getInputStream()) {
 			keyStore.load(inputStream, "secret".toCharArray());
 			return keyStore;
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

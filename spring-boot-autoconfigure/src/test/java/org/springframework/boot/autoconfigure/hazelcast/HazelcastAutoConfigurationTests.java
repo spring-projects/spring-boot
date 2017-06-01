@@ -22,7 +22,7 @@ import com.hazelcast.core.HazelcastInstance;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
@@ -55,7 +55,7 @@ public class HazelcastAutoConfigurationTests {
 
 	private void load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.register(HazelcastAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

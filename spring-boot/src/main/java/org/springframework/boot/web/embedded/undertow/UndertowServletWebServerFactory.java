@@ -137,6 +137,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private boolean useForwardHeaders;
 
+	private boolean eagerInitFilters = true;
+
 	/**
 	 * Create a new {@link UndertowServletWebServerFactory} instance.
 	 */
@@ -392,6 +394,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		configureErrorPages(deployment);
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
+		deployment.setEagerFilterInit(this.eagerInitFilters);
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
@@ -635,6 +638,25 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 */
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	/**
+	 * Return if filters should be initialized eagerly.
+	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
+	 * @since 2.0.0
+	 */
+	public boolean isEagerInitFilters() {
+		return this.eagerInitFilters;
+	}
+
+	/**
+	 * Set whether filters should be initialized eagerly.
+	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
+	 * {@code false}.
+	 * @since 2.0.0
+	 */
+	public void setEagerInitFilters(boolean eagerInitFilters) {
+		this.eagerInitFilters = eagerInitFilters;
 	}
 
 	/**

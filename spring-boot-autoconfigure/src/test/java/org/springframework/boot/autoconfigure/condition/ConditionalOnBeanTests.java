@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -124,7 +124,7 @@ public class ConditionalOnBeanTests {
 
 	@Test
 	public void withPropertyPlaceholderClassName() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "mybeanclass=java.lang.String");
+		TestPropertyValues.of("mybeanclass=java.lang.String").applyTo(this.context);
 		this.context.register(PropertySourcesPlaceholderConfigurer.class,
 				WithPropertyPlaceholderClassName.class, OnBeanClassConfiguration.class);
 		this.context.refresh();

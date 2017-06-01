@@ -61,6 +61,7 @@ import static org.assertj.core.api.Assertions.offset;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Raja Kolli
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CacheStatisticsAutoConfigurationTests {
@@ -270,12 +271,8 @@ public class CacheStatisticsAutoConfigurationTests {
 		@Bean
 		public EmbeddedCacheManager embeddedCacheManager() throws IOException {
 			Resource resource = new ClassPathResource("cache/test-infinispan.xml");
-			InputStream in = resource.getInputStream();
-			try {
+			try (InputStream in = resource.getInputStream()) {
 				return new DefaultCacheManager(in);
-			}
-			finally {
-				in.close();
 			}
 		}
 

@@ -95,8 +95,9 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	/**
 	 * Return a {@link Validator} that only implements the {@link Validator} interface,
 	 * wrapping it if necessary.
-	 * <p>If the specified {@link Validator} is not {@code null}, it is wrapped. If not,
-	 * a {@link javax.validation.Validator} is retrieved from the context and wrapped.
+	 * <p>
+	 * If the specified {@link Validator} is not {@code null}, it is wrapped. If not, a
+	 * {@link javax.validation.Validator} is retrieved from the context and wrapped.
 	 * Otherwise, a new default validator is created.
 	 * @param applicationContext the application context
 	 * @param validator an existing validator to use or {@code null}

@@ -75,8 +75,9 @@ public class HalBrowserMvcEndpointDisabledIntegrationTests {
 	@Test
 	public void browserRedirect() throws Exception {
 		this.mockMvc.perform(get("/application/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isFound()).andExpect(header().string(
-						HttpHeaders.LOCATION, "http://localhost/application/browser.html"));
+				.andExpect(status().isFound())
+				.andExpect(header().string(HttpHeaders.LOCATION,
+						"http://localhost/application/browser.html"));
 	}
 
 	@Test

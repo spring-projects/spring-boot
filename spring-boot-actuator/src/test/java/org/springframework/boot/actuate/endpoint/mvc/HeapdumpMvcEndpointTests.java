@@ -89,20 +89,22 @@ public class HeapdumpMvcEndpointTests {
 	public void invokeWhenNotAvailableShouldReturnServiceUnavailableStatus()
 			throws Exception {
 		this.endpoint.setAvailable(false);
-		this.mvc.perform(get("/application/heapdump")).andExpect(status().isServiceUnavailable());
+		this.mvc.perform(get("/application/heapdump"))
+				.andExpect(status().isServiceUnavailable());
 	}
 
 	@Test
 	public void invokeWhenLockedShouldReturnTooManyRequestsStatus() throws Exception {
 		this.endpoint.setLocked(true);
-		this.mvc.perform(get("/application/heapdump")).andExpect(status().isTooManyRequests());
+		this.mvc.perform(get("/application/heapdump"))
+				.andExpect(status().isTooManyRequests());
 		assertThat(Thread.interrupted()).isTrue();
 	}
 
 	@Test
 	public void invokeShouldReturnGzipContent() throws Exception {
-		MvcResult result = this.mvc.perform(get("/application/heapdump")).andExpect(status().isOk())
-				.andReturn();
+		MvcResult result = this.mvc.perform(get("/application/heapdump"))
+				.andExpect(status().isOk()).andReturn();
 		byte[] bytes = result.getResponse().getContentAsByteArray();
 		GZIPInputStream stream = new GZIPInputStream(new ByteArrayInputStream(bytes));
 		byte[] uncompressed = FileCopyUtils.copyToByteArray(stream);

@@ -44,16 +44,11 @@ public class SecurityFilterAutoConfigurationTests {
 	@Test
 	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration()
 			throws Exception {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.setServletContext(new MockServletContext());
-		try {
+		try (AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext()) {
+			context.setServletContext(new MockServletContext());
 			context.register(Config.class);
 			context.refresh();
 		}
-		finally {
-			context.close();
-		}
-
 	}
 
 	@Configuration

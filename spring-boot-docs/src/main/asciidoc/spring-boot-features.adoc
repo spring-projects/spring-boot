@@ -3213,15 +3213,17 @@ You can then use the `DSLContext` to construct your queries:
 
 
 
+==== jOOQ SQL dialect
+Spring Boot determines the SQL dialect to use for your datasource unless the
+`spring.jooq.sql-dialect` property has been configured. If the dialect couldn't be
+detected, `DEFAULT` is used.
+
+NOTE: Spring Boot can only auto-configure dialects supported by the open source version of
+jOOQ.
+
+
+
 ==== Customizing jOOQ
-You can customize the SQL dialect used by jOOQ by setting `spring.jooq.sql-dialect` in
-your `application.properties`. For example, to specify Postgres you would add:
-
-[source,properties,indent=0]
-----
-	spring.jooq.sql-dialect=Postgres
-----
-
 More advanced customizations can be achieved by defining your own `@Bean` definitions
 which will be used when the jOOQ `Configuration` is created. You can define beans for
 the following jOOQ Types:
@@ -4050,8 +4052,8 @@ production usage, but it's great for getting started and making sure that you un
 the features. When you have made up your mind about the cache provider to use, please make
 sure to read its documentation to figure out how to configure the caches that your
 application uses. Practically all providers require you to explicitly configure every
-cache that you use in the application. Some offers a way to build default caches that you
-need to specify with the `spring.cache.cache-names` property.
+cache that you use in the application. Some offer a way to customize the default caches
+defined by the `spring.cache.cache-names` property.
 
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 {spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
@@ -4313,7 +4315,7 @@ If none of the other providers can be found, a simple implementation using a
 `ConcurrentHashMap` as cache store is configured. This is the default if no caching
 library is present in your application. Caches are created on-the-fly by default but you
 can restrict the list of available caches using the `cache-names` property. For instance,
-if you you want only a `foo` and `bar` caches:
+if you want only `foo` and `bar` caches:
 
 [source,properties,indent=0]
 ----
@@ -5151,6 +5153,71 @@ caching is enabled.
 
 
 
+[[boot-features-quartz]]
+== Quartz Scheduler
+Spring Boot offers several conveniences for working with the Quartz scheduler, including
+the `spring-boot-starter-quartz` '`Starter`'. If Quartz is available, a `Scheduler` will
+be auto-configured (via the `SchedulerFactoryBean` abstraction).
+
+Beans of the following types will be automatically picked up and associated with the
+the `Scheduler`:
+
+* `JobDetail`: defines a particular Job. `JobDetail` instance can easily be built with
+the `JobBuilder` API
+* `Calendar`
+* `Trigger`: defines when a particular job is triggered
+
+By default, an in-memory `JobStore` will be used. However, it is possible to configure
+a JDBC-based store if a `DataSource` bean is available in your application and if the
+`spring.quartz.job-store-type` property is configured accordingly:
+
+[source,properties,indent=0]
+----
+	spring.quartz.job-store-type=jdbc
+----
+
+When the jdbc store is used, the schema can be initialized on startup:
+
+[source,properties,indent=0]
+----
+	spring.quartz.jdbc.initialize-schema=true
+----
+
+NOTE: The database is detected by default and initialized using the standard scripts
+provided with the Quartz library. It is also possible to provide a custom script using the
+`spring.quartz.jdbc.schema` property.
+
+Quartz Scheduler configuration can be customized using Quartz configuration properties (see
+`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans which allows
+programmatic `SchedulerFactoryBean` customization.
+
+Job can define setters to inject data map properties. Regular beans can also be injected
+in a similar manner:
+
+[source,java,indent=0]
+----
+	public class SampleJob extends QuartzJobBean {
+
+		private MyService myService;
+		private String name;
+
+		// Inject "MyService" bean
+		public void setMyService(MyService myService) { ... }
+
+		// Inject the "name" job data property
+		public void setName(String name) { ... }
+
+		@Override
+		protected void executeInternal(JobExecutionContext context)
+				throws JobExecutionException {
+			...
+		}
+
+	}
+----
+
+
+
 [[boot-features-integration]]
 == Spring Integration
 Spring Boot offers several conveniences for working with Spring Integration, including
@@ -5761,6 +5828,43 @@ If you prefer your test to run against a real database, you can use the
 `@AutoConfigureTestDatabase` annotation the same way as for `DataJpaTest`.
 
 A list of the auto-configuration that is enabled by `@JdbcTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-jooq-test]]
+==== Auto-configured jOOQ tests
+`@JooqTest` can be used in a similar fashion as `@JdbcTest` but for jOOQ related tests. As
+jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the
+existing `DataSource` will be used. If you want to replace it by an in-memory database you
+can use `@AutoconfigureTestDatabase` to override those settings.
+
+`@JooqTest` will configure a `DSLContext`. Regular `@Component` beans will not be loaded
+into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.jooq.DSLContext;
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+	
+	@RunWith(SpringRunner.class)
+	@JooqTest
+	public class ExampleJooqTests {
+
+		@Autowired
+		private DSLContext dslContext;
+	}
+----
+
+JOOQ tests are transactional and rollback at the end of each test by default. If that's
+not what you want, you can disable transaction management for a test or for the whole test
+class as <<boot-features-testing-spring-boot-applications-testing-autoconfigured-jdbc-test,shown
+in the example above>>.
+
+A list of the auto-configuration that is enabled by `@JooqTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
