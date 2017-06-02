@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,8 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
- * already contained in the {@link BeanFactory}.
- * When placed on a {@code @Bean} method, the bean class default to the return type of
- * the factory method:
+ * already contained in the {@link BeanFactory}. When placed on a {@code @Bean} method,
+ * the bean class default to the return type of the factory method:
  *
  * <pre class="code">
  * &#064;Configuration

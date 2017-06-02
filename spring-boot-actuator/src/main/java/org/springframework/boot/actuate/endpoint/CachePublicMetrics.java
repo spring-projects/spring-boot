@@ -105,7 +105,8 @@ public class CachePublicMetrics implements PublicMetrics {
 	}
 
 	private Cache unwrapIfNecessary(Cache cache) {
-		if (ClassUtils.isPresent("org.springframework.cache.transaction.TransactionAwareCacheDecorator",
+		if (ClassUtils.isPresent(
+				"org.springframework.cache.transaction.TransactionAwareCacheDecorator",
 				getClass().getClassLoader())) {
 			return TransactionAwareCacheDecoratorHandler.unwrapIfNecessary(cache);
 		}
@@ -165,6 +166,7 @@ public class CachePublicMetrics implements PublicMetrics {
 			}
 			return cache;
 		}
+
 	}
 
 }
