@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
@@ -114,6 +115,12 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(10)).startsWith("|  three defined in "
 				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
 		assertThat(lines.get(11)).isEqualTo("└─────┘");
+	}
+
+	@Test
+	public void cycleWithAnUnknownStartIsNotAnalyzed() throws IOException {
+		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test")))
+				.isNull();
 	}
 
 	private List<String> readDescriptionLines(FailureAnalysis analysis)
