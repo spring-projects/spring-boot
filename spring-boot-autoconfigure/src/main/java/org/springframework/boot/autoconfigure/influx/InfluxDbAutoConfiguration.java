@@ -23,6 +23,7 @@ import org.influxdb.InfluxDBFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,32 +32,32 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for InfluxDB.
  *
  * @author Sergey Kuptsov
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(InfluxDB.class)
-@EnableConfigurationProperties(InfluxDBProperties.class)
-public class InfluxDBAutoConfiguration {
+@EnableConfigurationProperties(InfluxDbProperties.class)
+public class InfluxDbAutoConfiguration {
 
-	private final InfluxDBProperties properties;
+	private final InfluxDbProperties properties;
 
-	public InfluxDBAutoConfiguration(InfluxDBProperties properties) {
+	public InfluxDbAutoConfiguration(InfluxDbProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfluxDB influxDB() {
-		if (Strings.isNullOrEmpty(this.properties.getUser())) {
-			return InfluxDBFactory.connect(
-					this.properties.getUrl()
-			);
+	@ConditionalOnProperty("spring.influx.client.url")
+	public InfluxDB influxDb() {
+		InfluxDbProperties.Client client = this.properties.getClient();
+		if (Strings.isNullOrEmpty(client.getUser())) {
+			return InfluxDBFactory.connect(client.getUrl());
 		}
 		else {
-			return InfluxDBFactory.connect(
-					this.properties.getUrl(),
-					this.properties.getUser(),
-					this.properties.getPassword()
-			);
+			return InfluxDBFactory.connect(client.getUrl(), client.getUser(),
+					client.getPassword());
 		}
 	}
+
 }

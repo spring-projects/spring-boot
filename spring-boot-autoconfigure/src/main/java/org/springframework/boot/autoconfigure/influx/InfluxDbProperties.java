@@ -22,46 +22,59 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for InfluxDB.
  *
  * @author Sergey Kuptsov
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.data.influx")
-public class InfluxDBProperties {
+@ConfigurationProperties(prefix = "spring.influx")
+public class InfluxDbProperties {
 
-	/**
-	 * The url to connect to.
-	 */
-	private String url;
+	private final Client client = new Client();
 
-	/**
-	 * The username which is used to authorize against the influxDB instance.
-	 */
-	private String user;
-
-	/**
-	 * The password for the username which is used to authorize against the influxDB.
-	 */
-	private String password;
-
-	public String getUrl() {
-		return this.url;
+	public Client getClient() {
+		return this.client;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public static class Client {
+
+		/**
+		 * Url of the InfluxDB instance to connect to.
+		 */
+		private String url;
+
+		/**
+		 * Login user.
+		 */
+		private String user;
+
+		/**
+		 * Login password.
+		 */
+		private String password;
+
+		public String getUrl() {
+			return this.url;
+		}
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+		public String getUser() {
+			return this.user;
+		}
+
+		public void setUser(String user) {
+			this.user = user;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+
 	}
 
-	public String getUser() {
-		return this.user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
-	public String getPassword() {
-		return this.password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 }

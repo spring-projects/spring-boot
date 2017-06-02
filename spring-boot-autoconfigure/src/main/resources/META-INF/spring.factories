@@ -62,6 +62,7 @@ org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
 org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration,\
 org.springframework.boot.autoconfigure.hazelcast.HazelcastJpaDependencyAutoConfiguration,\
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
+org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration,\
 org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration,\
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
@@ -122,8 +123,7 @@ org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.reactive.WebSocketReactiveAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration,\
-org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration,\
-org.springframework.boot.autoconfigure.influx.InfluxDBAutoConfiguration
+org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
 
 # Failure analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\

@@ -93,6 +93,7 @@
 		<httpclient.version>4.5.3</httpclient.version>
 		<httpcore.version>4.4.6</httpcore.version>
 		<infinispan.version>8.2.6.Final</infinispan.version>
+		<influxdb-java.version>2.5</influxdb-java.version>
 		<jackson.version>2.9.0.pr3</jackson.version>
 		<janino.version>3.0.7</janino.version>
 		<javassist.version>3.21.0-GA</javassist.version> <!-- Same as Hibernate -->
@@ -190,7 +191,6 @@
 		<webjars-locator.version>0.32-1</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
-		<influxdb-java.version>2.5</influxdb-java.version>
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>1.10</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
@@ -1858,6 +1858,11 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>org.influxdb</groupId>
+				<artifactId>influxdb-java</artifactId>
+				<version>${influxdb-java.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
 				<version>${javassist.version}</version>
@@ -2472,11 +2477,6 @@
 				<groupId>xml-apis</groupId>
 				<artifactId>xml-apis</artifactId>
 				<version>${xml-apis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.influxdb</groupId>
-				<artifactId>influxdb-java</artifactId>
-				<version>${influxdb-java.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
