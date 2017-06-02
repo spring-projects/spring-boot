@@ -103,10 +103,8 @@ public class SessionAutoConfiguration {
 							+ "auto-configured, check your configuration (session store "
 							+ "type is '" + storeType.name().toLowerCase() + "')");
 				}
-				else {
-					throw new IllegalArgumentException("No Spring Session store is "
-							+ "configured: set the 'spring.session.store-type' property");
-				}
+				throw new IllegalArgumentException("No Spring Session store is "
+						+ "configured: set the 'spring.session.store-type' property");
 			}
 		}
 
