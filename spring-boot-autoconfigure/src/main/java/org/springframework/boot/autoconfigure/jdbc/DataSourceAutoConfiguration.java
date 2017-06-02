@@ -94,6 +94,7 @@ public class DataSourceAutoConfiguration {
 		}
 	}
 
+	@Configuration
 	@Conditional(EmbeddedDatabaseCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
