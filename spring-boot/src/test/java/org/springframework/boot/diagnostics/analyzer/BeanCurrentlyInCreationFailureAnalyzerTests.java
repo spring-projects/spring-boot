@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
@@ -114,6 +115,12 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(10)).startsWith("|  three defined in "
 				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
 		assertThat(lines.get(11)).isEqualTo("└─────┘");
+	}
+
+	@Test
+	public void cycleWithAnUnknownStartIsNotAnalyzed() throws IOException {
+		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test")))
+				.isNull();
 	}
 
 	private List<String> readDescriptionLines(FailureAnalysis analysis)
