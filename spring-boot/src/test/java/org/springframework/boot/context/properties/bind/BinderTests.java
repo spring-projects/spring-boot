@@ -225,12 +225,14 @@ public class BinderTests {
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		this.thrown.expect(BindException.class);
 		this.thrown.expect(new AssertionMatcher<BindException>() {
+
 			@Override
 			public void assertion(BindException ex) throws AssertionError {
 				assertThat(ex.getCause().getMessage())
 						.isEqualTo("No setter found for property: items");
 				assertThat(ex.getProperty()).isNull();
 			}
+
 		});
 		this.binder.bind("foo", target);
 	}
@@ -252,6 +254,7 @@ public class BinderTests {
 		public List<String> getItems() {
 			return this.items;
 		}
+
 	}
 
 	public enum ExampleEnum {

@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,20 +63,19 @@ public class SpringDataWebAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
-		return pageableResolver -> {
-			pageableResolver.setFallbackPageable(PageRequest.of(0,
-					this.properties.getPageable().getDefaultPageSize()));
-			pageableResolver.setPageParameterName(
-					this.properties.getPageable().getPageParameter());
-			pageableResolver.setSizeParameterName(
-					this.properties.getPageable().getSizeParameter());
+		return (resolver) -> {
+			Pageable pageable = this.properties.getPageable();
+			resolver.setFallbackPageable(
+					PageRequest.of(0, pageable.getDefaultPageSize()));
+			resolver.setPageParameterName(pageable.getPageParameter());
+			resolver.setSizeParameterName(pageable.getSizeParameter());
 		};
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
-		return sortResolver -> sortResolver
+		return (resolver) -> resolver
 				.setSortParameter(this.properties.getSort().getSortParameter());
 	}
 

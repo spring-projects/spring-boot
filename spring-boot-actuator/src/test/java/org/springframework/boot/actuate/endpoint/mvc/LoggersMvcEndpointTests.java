@@ -193,8 +193,7 @@ public class LoggersMvcEndpointTests {
 	@Test
 	public void setLoggerWithNoLogLevel() throws Exception {
 		this.mvc.perform(post(PATH + "/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.content("{}"))
-				.andExpect(status().isNoContent());
+				.content("{}")).andExpect(status().isNoContent());
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 

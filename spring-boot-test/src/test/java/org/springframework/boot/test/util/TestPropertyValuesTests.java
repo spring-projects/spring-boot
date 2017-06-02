@@ -36,9 +36,11 @@ public class TestPropertyValuesTests {
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void applyToEnvironmentShouldAttachConfigurationPropertySource() throws Exception {
+	public void applyToEnvironmentShouldAttachConfigurationPropertySource()
+			throws Exception {
 		TestPropertyValues.of("foo.bar=baz").applyTo(this.environment);
-		PropertySource<?> source = this.environment.getPropertySources().get("configurationProperties");
+		PropertySource<?> source = this.environment.getPropertySources()
+				.get("configurationProperties");
 		assertThat(source).isNotNull();
 	}
 
@@ -63,17 +65,22 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne() throws Exception {
-		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment, Type.MAP, "other");
-		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM, "other");
-		assertThat(this.environment.getPropertySources().get("other")).isInstanceOf(SystemEnvironmentPropertySource.class);
+	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne()
+			throws Exception {
+		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
+				Type.MAP, "other");
+		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM,
+				"other");
+		assertThat(this.environment.getPropertySources().get("other"))
+				.isInstanceOf(SystemEnvironmentPropertySource.class);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
 		assertThat(this.environment.getProperty("hello.world")).isNull();
 	}
 
 	@Test
 	public void applyToExistingNameAndSameTypeShouldMerge() throws Exception {
-		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment, Type.MAP);
+		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
+				Type.MAP);
 		TestPropertyValues.of("foo.bar=new").applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("new");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
@@ -81,10 +88,11 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void andShouldChainAndAddSingleKeyValue() throws Exception {
-		TestPropertyValues.of("foo.bar=baz").and("hello.world", "hi").and("bling.blah", "bing")
-				.applyTo(this.environment, Type.MAP);
+		TestPropertyValues.of("foo.bar=baz").and("hello.world", "hi")
+				.and("bling.blah", "bing").applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");
 	}
+
 }

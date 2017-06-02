@@ -30,8 +30,8 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 
 /**
- * Test utilities for adding properties to the environment. The type of {@link PropertySource}
- * to be added can be specified by {@link Type}.
+ * Test utilities for adding properties to the environment. The type of
+ * {@link PropertySource} to be added can be specified by {@link Type}.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -44,14 +44,25 @@ public final class TestPropertyValues {
 		addProperties(pairs);
 	}
 
-	/**
-	 * Return a new {@link TestPropertyValues} with the underlying map populated with the given property pairs.
-	 * Name-value pairs can be specified with colon (":") or equals ("=") separators.
-	 * @param pairs The key value pairs for properties that need to be added to the environment
-	 * @return the new instance
-	 */
-	public static TestPropertyValues of(String... pairs) {
-		return new TestPropertyValues(pairs);
+	private void addProperties(String[] pairs) {
+		for (String pair : pairs) {
+			int index = getSeparatorIndex(pair);
+			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String value = index > 0 ? pair.substring(index + 1) : "";
+			this.properties.put(key.trim(), value.trim());
+		}
+	}
+
+	private int getSeparatorIndex(String pair) {
+		int colonIndex = pair.indexOf(":");
+		int equalIndex = pair.indexOf("=");
+		if (colonIndex == -1) {
+			return equalIndex;
+		}
+		if (equalIndex == -1) {
+			return colonIndex;
+		}
+		return Math.min(colonIndex, equalIndex);
 	}
 
 	/**
@@ -65,17 +76,9 @@ public final class TestPropertyValues {
 		return this;
 	}
 
-	private void addProperties(String[] pairs) {
-		for (String pair : pairs) {
-			int index = getSeparatorIndex(pair);
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
-			this.properties.put(key.trim(), value.trim());
-		}
-	}
-
 	/**
-	 * Add the properties from the underlying map to the environment owned by an {@link ApplicationContext}.
+	 * Add the properties from the underlying map to the environment owned by an
+	 * {@link ApplicationContext}.
 	 * @param context the context with an environment to modify
 	 */
 	public void applyTo(ConfigurableApplicationContext context) {
@@ -83,8 +86,8 @@ public final class TestPropertyValues {
 	}
 
 	/**
-	 * Add the properties from the underlying map to the environment. The default property source used is
-	 * {@link MapPropertySource}.
+	 * Add the properties from the underlying map to the environment. The default property
+	 * source used is {@link MapPropertySource}.
 	 * @param environment the environment that needs to be modified
 	 */
 	public void applyTo(ConfigurableEnvironment environment) {
@@ -92,7 +95,8 @@ public final class TestPropertyValues {
 	}
 
 	/**
-	 * Add the properties from the underlying map to the environment using the specified property source type.
+	 * Add the properties from the underlying map to the environment using the specified
+	 * property source type.
 	 * @param environment the environment that needs to be modified
 	 * @param type the type of {@link PropertySource} to be added. See {@link Type}
 	 */
@@ -101,7 +105,8 @@ public final class TestPropertyValues {
 	}
 
 	/**
-	 * Add the properties from the underlying map to the environment using the specified property source type and name.
+	 * Add the properties from the underlying map to the environment using the specified
+	 * property source type and name.
 	 * @param environment the environment that needs to be modified
 	 * @param type the type of {@link PropertySource} to be added. See {@link Type}
 	 * @param name the name for the property source
@@ -120,26 +125,27 @@ public final class TestPropertyValues {
 		if (sources.contains(name)) {
 			PropertySource<?> propertySource = sources.get(name);
 			if (propertySource.getClass().equals(type.getSourceClass())) {
-				Map<String, Object> source = (Map<String, Object>) propertySource.getSource();
-				source.putAll(this.properties);
+				((Map<String, Object>) propertySource.getSource())
+						.putAll(this.properties);
 				return;
 			}
 		}
-		MapPropertySource source = (type.equals(Type.MAP) ? new MapPropertySource(name, this.properties) :
-				new SystemEnvironmentPropertySource(name, this.properties));
+		MapPropertySource source = (type.equals(Type.MAP)
+				? new MapPropertySource(name, this.properties)
+				: new SystemEnvironmentPropertySource(name, this.properties));
 		sources.addFirst(source);
 	}
 
-	private static int getSeparatorIndex(String pair) {
-		int colonIndex = pair.indexOf(":");
-		int equalIndex = pair.indexOf("=");
-		if (colonIndex == -1) {
-			return equalIndex;
-		}
-		if (equalIndex == -1) {
-			return colonIndex;
-		}
-		return Math.min(colonIndex, equalIndex);
+	/**
+	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
+	 * given property pairs. Name-value pairs can be specified with colon (":") or equals
+	 * ("=") separators.
+	 * @param pairs The key value pairs for properties that need to be added to the
+	 * environment
+	 * @return the new instance
+	 */
+	public static TestPropertyValues of(String... pairs) {
+		return new TestPropertyValues(pairs);
 	}
 
 	/**
@@ -166,7 +172,7 @@ public final class TestPropertyValues {
 		public Class<? extends MapPropertySource> getSourceClass() {
 			return this.sourceClass;
 		}
+
 	}
 
 }
-

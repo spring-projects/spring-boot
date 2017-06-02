@@ -84,7 +84,8 @@ public class JdbcTemplateAutoConfiguration {
 		@Primary
 		@ConditionalOnSingleCandidate(JdbcTemplate.class)
 		@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-		public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		public NamedParameterJdbcTemplate namedParameterJdbcTemplate(
+				JdbcTemplate jdbcTemplate) {
 			return new NamedParameterJdbcTemplate(jdbcTemplate);
 		}
 

@@ -60,8 +60,8 @@ public class JdbcTemplateAutoConfigurationTests {
 		load();
 		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertThat(jdbcTemplate.getDataSource()).isEqualTo(
-				this.context.getBean(DataSource.class));
+		assertThat(jdbcTemplate.getDataSource())
+				.isEqualTo(this.context.getBean(DataSource.class));
 		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
 		assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(-1);
 		assertThat(jdbcTemplate.getMaxRows()).isEqualTo(-1);
@@ -86,8 +86,8 @@ public class JdbcTemplateAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
 		assertThat(jdbcTemplate).isNotNull();
-		assertThat(jdbcTemplate.getDataSource()).isEqualTo(
-				this.context.getBean("customDataSource"));
+		assertThat(jdbcTemplate.getDataSource())
+				.isEqualTo(this.context.getBean("customDataSource"));
 	}
 
 	@Test
@@ -95,10 +95,10 @@ public class JdbcTemplateAutoConfigurationTests {
 		load();
 		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
 				.hasSize(1);
-		NamedParameterJdbcTemplate namedParameterJdbcTemplate = this.context.getBean(
-				NamedParameterJdbcTemplate.class);
-		assertThat(namedParameterJdbcTemplate.getJdbcOperations()).isEqualTo(
-				this.context.getBean(JdbcOperations.class));
+		NamedParameterJdbcTemplate namedParameterJdbcTemplate = this.context
+				.getBean(NamedParameterJdbcTemplate.class);
+		assertThat(namedParameterJdbcTemplate.getJdbcOperations())
+				.isEqualTo(this.context.getBean(JdbcOperations.class));
 	}
 
 	@Test

@@ -54,10 +54,8 @@ public class InfluxDbAutoConfiguration {
 		if (Strings.isNullOrEmpty(client.getUser())) {
 			return InfluxDBFactory.connect(client.getUrl());
 		}
-		else {
-			return InfluxDBFactory.connect(client.getUrl(), client.getUser(),
-					client.getPassword());
-		}
+		return InfluxDBFactory.connect(client.getUrl(), client.getUser(),
+				client.getPassword());
 	}
 
 }

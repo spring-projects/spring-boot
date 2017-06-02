@@ -56,7 +56,6 @@ public class AtomikosPropertiesTests {
 		this.properties.getRecovery().setDelay(3000);
 		this.properties.getRecovery().setMaxRetries(10);
 		this.properties.getRecovery().setRetryInterval(4000);
-
 		assertThat(this.properties.asProperties().size()).isEqualTo(17);
 		assertProperty("com.atomikos.icatch.service", "service");
 		assertProperty("com.atomikos.icatch.max_timeout", "1");

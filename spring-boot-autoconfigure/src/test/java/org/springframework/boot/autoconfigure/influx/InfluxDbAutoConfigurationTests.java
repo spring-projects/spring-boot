@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sergey Kuptsov
  * @author Stephane Nicoll
  */
-public class InfluxDbAutoConfigurationTest {
+public class InfluxDbAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
