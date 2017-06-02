@@ -2829,7 +2829,7 @@ Here's the algorithm for choosing a specific implementation:
   DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
-'`starters`' you will automatically get a dependency to `tomcat-jdbc`.
+'`starters`' you will automatically get a dependency to `HikariCP`.
 
 NOTE: You can bypass that algorithm completely and specify the connection pool to use via
 the `spring.datasource.type` property. This is especially important if you are running

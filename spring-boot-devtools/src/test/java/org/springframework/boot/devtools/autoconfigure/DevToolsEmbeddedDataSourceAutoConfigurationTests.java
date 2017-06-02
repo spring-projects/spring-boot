@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions("tomcat-jdbc-*.jar")
+@ClassPathExclusions("HikariCP-*.jar")
 public class DevToolsEmbeddedDataSourceAutoConfigurationTests
 		extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
