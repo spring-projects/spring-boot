@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,20 +25,18 @@ import org.springframework.util.StringUtils;
 /**
  * Properties to be used in configuring a {@link MultipartConfigElement}.
  * <ul>
- * <li>{@link #getLocation() location} specifies the directory where files will be stored.
- * The default is "". A common value is to use the system's temporary directory, which can
- * be obtained.</li>
+ * <li>{@link #getLocation() location} specifies the directory where uploaded files will
+ * be stored. When not specified, a temporary directory will be used.</li>
  * <li>{@link #getMaxFileSize() max-file-size} specifies the maximum size permitted for
  * uploaded files. The default is 1MB.</li>
  * <li>{@link #getMaxRequestSize() max-request-size} specifies the maximum size allowed
- * for {@literal multipart/form-data} requests. The default is 10MB</li>
+ * for {@literal multipart/form-data} requests. The default is 10MB.</li>
  * <li>{@link #getFileSizeThreshold() file-size-threshold} specifies the size threshold
- * after which files will be written to disk. Default is 0, which means that the file will
- * be written to disk immediately.</li>
+ * after which files will be written to disk. The default is 0.</li>
  * </ul>
  * <p>
- * These properties are ultimately passed through {@link MultipartConfigFactory} which
- * means you may specify the values using {@literal long} values or using more readable
+ * These properties are ultimately passed to {@link MultipartConfigFactory} which means
+ * you may specify numeric values using {@literal long} values or using more readable
  * {@literal String} variants that accept {@literal KB} or {@literal MB} suffixes.
  *
  * @author Josh Long
@@ -49,7 +47,7 @@ import org.springframework.util.StringUtils;
 public class MultipartProperties {
 
 	/**
-	 * Enable support of multi-part uploads.
+	 * Enable support of multipart uploads.
 	 */
 	private boolean enabled = true;
 
@@ -59,20 +57,20 @@ public class MultipartProperties {
 	private String location;
 
 	/**
-	 * Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or
-	 * Kilobyte size.
+	 * Max file size. Values can use the suffixes "MB" or "KB" to indicate megabytes or
+	 * kilobytes respectively.
 	 */
 	private String maxFileSize = "1MB";
 
 	/**
-	 * Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte
-	 * or Kilobyte size.
+	 * Max request size. Values can use the suffixes "MB" or "KB" to indicate megabytes or
+	 * kilobytes respectively.
 	 */
 	private String maxRequestSize = "10MB";
 
 	/**
-	 * Threshold after which files will be written to disk. Values can use the suffixed
-	 * "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	 * Threshold after which files will be written to disk. Values can use the suffixes
+	 * "MB" or "KB" to indicate megabytes or kilobytes respectively.
 	 */
 	private String fileSizeThreshold = "0";
 
