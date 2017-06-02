@@ -164,11 +164,14 @@ Advanced configuration options and examples are available in the
 
 [[build-tool-plugins-gradle-plugin]]
 == Spring Boot Gradle plugin
-The {spring-boot-gradle-plugin}[Spring Boot Gradle Plugin] provides Spring Boot support
-in Gradle, allowing you to package executable jar or war archives, run Spring Boot
-applications and use the dependency management provided by `spring-boot-dependencies`.
-It requires Gradle 3.4 or later. Please refer to the {spring-boot-gradle-plugin}[plugin's
-documentation] to learn more.
+The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, allowing you to
+package executable jar or war archives, run Spring Boot applications and use the
+dependency management provided by `spring-boot-dependencies`. It requires Gradle 3.4 or
+later. Please refer to the plugin's documentation to learn more:
+
+* Reference ({spring-boot-gradle-plugin}/reference/html[HTML] and
+  {spring-boot-gradle-plugin}/reference/pdf/spring-boot-gradle-plugin-reference.pdf[PDF])
+* {spring-boot-gradle-plugin}/api[API]
 
 
 
