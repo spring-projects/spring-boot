@@ -17,6 +17,7 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<jersey.version>2.11</jersey.version>
 	</properties>
 	<dependencies>
 		<dependency>
