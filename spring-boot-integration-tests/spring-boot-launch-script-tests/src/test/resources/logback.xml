@@ -6,6 +6,8 @@
 		</encoder>
 	</appender>
 
+	<logger name="com.github.dockerjava.core.command" level="DEBUG"/>
+
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
