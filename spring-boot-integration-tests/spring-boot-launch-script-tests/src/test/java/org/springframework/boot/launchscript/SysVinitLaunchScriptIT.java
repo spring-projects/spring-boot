@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -32,7 +33,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.DockerClientException;
 import com.github.dockerjava.api.command.DockerCmd;
+import com.github.dockerjava.api.model.BuildResponseItem;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.core.CompressArchiveUtil;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -257,10 +260,58 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private String buildImage(DockerClient docker) {
-		BuildImageResultCallback resultCallback = new BuildImageResultCallback();
 		String dockerfile = "src/test/resources/conf/" + this.os + "/" + this.version
 				+ "/Dockerfile";
 		String tag = "spring-boot-it/" + this.os.toLowerCase() + ":" + this.version;
+		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
+
+			private List<BuildResponseItem> items = new ArrayList<BuildResponseItem>();
+
+			@Override
+			public void onNext(BuildResponseItem item) {
+				super.onNext(item);
+				this.items.add(item);
+			}
+
+			@Override
+			public String awaitImageId() {
+				try {
+					awaitCompletion();
+				}
+				catch (InterruptedException ex) {
+					throw new DockerClientException(
+							"Interrupted while waiting for image id", ex);
+				}
+				return getImageId();
+			}
+
+			@SuppressWarnings("deprecation")
+			private String getImageId() {
+				if (this.items.isEmpty()) {
+					throw new DockerClientException("Could not build image");
+				}
+				String imageId = extractImageId();
+				if (imageId == null) {
+					throw new DockerClientException("Could not build image: "
+							+ this.items.get(this.items.size() - 1).getError());
+				}
+				return imageId;
+			}
+
+			private String extractImageId() {
+				Collections.reverse(this.items);
+				for (BuildResponseItem item : this.items) {
+					if (item.isErrorIndicated() || item.getStream() == null) {
+						return null;
+					}
+					if (item.getStream().contains("Successfully built")) {
+						return item.getStream().replace("Successfully built", "").trim();
+					}
+				}
+				return null;
+			}
+
+		};
 		docker.buildImageCmd(new File(dockerfile)).withTag(tag).exec(resultCallback);
 		String imageId = resultCallback.awaitImageId();
 		return imageId;
