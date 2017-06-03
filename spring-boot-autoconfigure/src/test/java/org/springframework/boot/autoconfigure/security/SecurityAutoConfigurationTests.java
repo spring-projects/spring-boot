@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.lang.reflect.Proxy;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -23,12 +24,16 @@ import javax.servlet.DispatcherType;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -38,6 +43,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,15 +60,24 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.stereotype.Controller;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -69,6 +85,7 @@ import static org.junit.Assert.fail;
  * @author Dave Syer
  * @author Rob Winch
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class SecurityAutoConfigurationTests {
 
@@ -401,6 +418,26 @@ public class SecurityAutoConfigurationTests {
 				DispatcherType.ERROR);
 	}
 
+	@Test
+	public void authenticationPrincipalArgumentWorksWithSpringData() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(ArgumentResolverConfig.class);
+		this.context.setServletContext(new MockServletContext());
+		this.context.refresh();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/principal")).andExpect(status().isOk());
+	}
+
+	@Test
+	public void csrfTokenArgumentWorksWithSpringData() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(ArgumentResolverConfig.class);
+		this.context.setServletContext(new MockServletContext());
+		this.context.refresh();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/csrf")).andExpect(status().isOk());
+	}
+
 	private static final class AuthenticationListener
 			implements ApplicationListener<AbstractAuthenticationEvent> {
 
@@ -509,6 +546,44 @@ public class SecurityAutoConfigurationTests {
 	@Configuration
 	@EnableWebSecurity
 	static class WebSecurity extends WebSecurityConfigurerAdapter {
+
+	}
+
+	@Configuration
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			SecurityArgumentResolversConfiguration.class,
+			SpringDataWebAutoConfiguration.class })
+	protected static class ArgumentResolverConfig {
+
+		@Bean
+		public TestController controller() {
+			return new TestController();
+		}
+
+	}
+
+	@Controller
+	protected static class TestController {
+
+		@RequestMapping("/principal")
+		public ResponseEntity<Void> test(
+				@AuthenticationPrincipal UserDetails principal) {
+			if (principal != null && Proxy.isProxyClass(principal.getClass())) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
+			return ResponseEntity.ok().build();
+		}
+
+		@RequestMapping("/csrf")
+		public ResponseEntity<Void> test(CsrfToken token) {
+			if (token != null && Proxy.isProxyClass(token.getClass())) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
+			return ResponseEntity.ok().build();
+		}
 
 	}
 
