@@ -247,7 +247,12 @@ public class SysVinitLaunchScriptIT {
 			return output.toString();
 		}
 		finally {
-			docker.removeContainerCmd(container).exec();
+			try {
+				docker.removeContainerCmd(container).exec();
+			}
+			catch (Exception ex) {
+				// Continue
+			}
 		}
 	}
 
