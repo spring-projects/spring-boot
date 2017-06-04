@@ -40,8 +40,7 @@ public class PortRangeTests {
 	@Test
 	public void testPortRangeRange() throws Exception {
 		PortsRange portsRange = new PortsRange("9000-9001");
-		assertThat(
-				portsRange.getValidPort(0) != 0 );
+		assertThat(portsRange.getValidPort(0) != 0);
 	}
 
 }
