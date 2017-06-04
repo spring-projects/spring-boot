@@ -4015,6 +4015,37 @@ validation altogether using the `spring.ldap.embedded.validation.enabled` proper
 you have custom attributes, you can use `spring.ldap.embedded.validation.schema` to define
 your custom attribute types or object classes.
 
+[[boot-features-influxdb]]
+=== InfluxDB
+https://www.influxdata.com/[InfluxDB] is an open-source time series database developed by InfluxData.
+It is written in Go and optimized for fast, high-availability storage and retrieval of time series data in fields such
+as operations monitoring, application metrics, Internet of Things sensor data, and real-time analytics.
+It also has support for processing data from Graphite.
+
+[[boot-features-connecting-to-influxdb]]
+==== Connecting to InfluxDB
+You can inject an auto-configured `org.influxdb.InfluxDB` to access InfluxDB databases. You must specify your InfluxDB server url,
+there is no default url.
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		private InfluxDB influxDB;
+
+		@Autowired
+		public MyBean(InfluxDB influxDB) {
+			this.influxDB = influxDB;
+		}
+
+		// ...
+
+	}
+----
+
+You can set `spring.influx.client.url` property to change the URL. If the connection to InfluxDB require user and password,
+you can set `spring.influx.client.user` property and `spring.influx.client.password` property to change them.
 
 [[boot-features-caching]]
 == Caching
