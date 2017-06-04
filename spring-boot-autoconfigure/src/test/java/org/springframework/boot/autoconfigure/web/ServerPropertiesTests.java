@@ -59,6 +59,12 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testPortRangeBinding() throws Exception {
+		bind("server.port-range", "8000-9000");
+		assertThat(this.properties.getPortRange()).isEqualTo("8000-9000");
+	}
+
+	@Test
 	public void testServerHeaderDefault() throws Exception {
 		assertThat(this.properties.getServerHeader()).isNull();
 	}

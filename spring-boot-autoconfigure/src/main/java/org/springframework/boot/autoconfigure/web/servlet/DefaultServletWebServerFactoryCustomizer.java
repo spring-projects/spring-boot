@@ -42,6 +42,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
+import org.springframework.boot.autoconfigure.web.PortsRange;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -98,9 +99,17 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableServletWebServerFactory factory) {
+
 		if (this.serverProperties.getPort() != null) {
 			factory.setPort(this.serverProperties.getPort());
 		}
+
+		if (this.serverProperties.getPortRange() != null
+				&& this.serverProperties.getPort() == 0) {
+			PortsRange portsRange = new PortsRange(this.serverProperties.getPortRange());
+			factory.setPort(portsRange.getValidPort(this.serverProperties.getPort()));
+		}
+
 		if (this.serverProperties.getAddress() != null) {
 			factory.setAddress(this.serverProperties.getAddress());
 		}

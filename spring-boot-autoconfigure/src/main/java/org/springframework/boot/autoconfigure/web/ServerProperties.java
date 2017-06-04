@@ -60,6 +60,12 @@ public class ServerProperties {
 	private Integer port;
 
 	/**
+	 * Server HTTP port range. If port is set to 0 and portRange specified The port is
+	 * assign with port range value.
+	 */
+	private String portRange;
+
+	/**
 	 * Network address to which the server should bind to.
 	 */
 	private InetAddress address;
@@ -116,6 +122,14 @@ public class ServerProperties {
 
 	public void setPort(Integer port) {
 		this.port = port;
+	}
+
+	public String getPortRange() {
+		return this.portRange;
+	}
+
+	public void setPortRange(String portRange) {
+		this.portRange = portRange;
 	}
 
 	public InetAddress getAddress() {
