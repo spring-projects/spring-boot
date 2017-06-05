@@ -4016,6 +4016,31 @@ you have custom attributes, you can use `spring.ldap.embedded.validation.schema`
 your custom attribute types or object classes.
 
 
+
+[[boot-features-influxdb]]
+=== InfluxDB
+https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for
+fast, high-availability storage and retrieval of time series data in fields such as
+operations monitoring, application metrics, Internet of Things sensor data, and real-time
+analytics.
+
+
+
+[[boot-features-connecting-to-influxdb]]
+==== Connecting to InfluxDB
+Spring Boot auto-configures an `InfluxDB` instance as long as the `influxdb-java` client
+is on the classpath and the url of the database is set:
+
+[source,properties,indent=0]
+----
+	spring.influx.url=http://172.0.0.1:8086
+----
+
+If the connection to InfluxDB requires a user and password, you can set the
+`spring.influx.user` and `spring.influx.password` properties accordingly.
+
+
+
 [[boot-features-caching]]
 == Caching
 The Spring Framework provides support for transparently adding caching to an application.
