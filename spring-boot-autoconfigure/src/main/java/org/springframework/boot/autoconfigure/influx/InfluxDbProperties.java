@@ -28,53 +28,43 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.influx")
 public class InfluxDbProperties {
 
-	private final Client client = new Client();
+	/**
+	 * Url of the InfluxDB instance to connect to.
+	 */
+	private String url;
 
-	public Client getClient() {
-		return this.client;
+	/**
+	 * Login user.
+	 */
+	private String user;
+
+	/**
+	 * Login password.
+	 */
+	private String password;
+
+	public String getUrl() {
+		return this.url;
 	}
 
-	public static class Client {
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-		/**
-		 * Url of the InfluxDB instance to connect to.
-		 */
-		private String url;
+	public String getUser() {
+		return this.user;
+	}
 
-		/**
-		 * Login user.
-		 */
-		private String user;
+	public void setUser(String user) {
+		this.user = user;
+	}
 
-		/**
-		 * Login password.
-		 */
-		private String password;
+	public String getPassword() {
+		return this.password;
+	}
 
-		public String getUrl() {
-			return this.url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
-
-		public String getUser() {
-			return this.user;
-		}
-
-		public void setUser(String user) {
-			this.user = user;
-		}
-
-		public String getPassword() {
-			return this.password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

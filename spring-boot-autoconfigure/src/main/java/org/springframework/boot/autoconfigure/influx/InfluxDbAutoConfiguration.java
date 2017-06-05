@@ -48,14 +48,13 @@ public class InfluxDbAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty("spring.influx.client.url")
+	@ConditionalOnProperty("spring.influx.url")
 	public InfluxDB influxDb() {
-		InfluxDbProperties.Client client = this.properties.getClient();
-		if (Strings.isNullOrEmpty(client.getUser())) {
-			return InfluxDBFactory.connect(client.getUrl());
+		if (Strings.isNullOrEmpty(this.properties.getUser())) {
+			return InfluxDBFactory.connect(this.properties.getUrl());
 		}
-		return InfluxDBFactory.connect(client.getUrl(), client.getUser(),
-				client.getPassword());
+		return InfluxDBFactory.connect(this.properties.getUrl(), this.properties.getUser(),
+				this.properties.getPassword());
 	}
 
 }

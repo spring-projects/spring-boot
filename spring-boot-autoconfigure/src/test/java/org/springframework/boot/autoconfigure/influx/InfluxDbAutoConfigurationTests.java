@@ -43,22 +43,22 @@ public class InfluxDbAutoConfigurationTests {
 	}
 
 	@Test
-	public void clientRequiresUrl() {
+	public void influxDbRequiresUrl() {
 		load();
 		assertThat(this.context.getBeansOfType(InfluxDB.class)).isEmpty();
 	}
 
 	@Test
-	public void clientCanBeCustomized() {
-		load("spring.influx.client.url=http://localhost",
-				"spring.influx.client.password:password",
-				"spring.influx.client.user:user");
+	public void influxDbCanBeCustomized() {
+		load("spring.influx.url=http://localhost",
+				"spring.influx.password:password",
+				"spring.influx.user:user");
 		assertThat(this.context.getBeansOfType(InfluxDB.class)).hasSize(1);
 	}
 
 	@Test
-	public void clientCanBeCreatedWithoutCredentials() {
-		load("spring.influx.client.url=http://localhost");
+	public void influxDbCanBeCreatedWithoutCredentials() {
+		load("spring.influx.url=http://localhost");
 		assertThat(this.context.getBeansOfType(InfluxDB.class)).hasSize(1);
 	}
 
