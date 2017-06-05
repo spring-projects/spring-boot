@@ -24,8 +24,6 @@ import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizable
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
-
-
 /**
  * {@link TypeExcludeFilter} for {@link DataRedisTest @DataRedisTest}.
  *
@@ -71,4 +69,5 @@ class DataRedisTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter
 	protected Set<Class<?>> getComponentIncludes() {
 		return Collections.emptySet();
 	}
+
 }

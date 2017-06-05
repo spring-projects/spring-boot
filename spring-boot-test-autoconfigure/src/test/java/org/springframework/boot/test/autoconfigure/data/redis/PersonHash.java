@@ -29,6 +29,7 @@ public class PersonHash {
 
 	@Id
 	private String id;
+
 	private String description;
 
 	public String getId() {
@@ -46,4 +47,5 @@ public class PersonHash {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 }

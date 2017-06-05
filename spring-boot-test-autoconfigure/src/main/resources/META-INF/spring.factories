@@ -39,8 +39,7 @@ org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 # AutoConfigureDataRedis auto-configuration imports
 org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis=\
 org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration,\
-org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
 # AutoConfigureJdbc auto-configuration imports
 org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc=\

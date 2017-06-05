@@ -33,21 +33,18 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.BootstrapWith;
 
-
-
 /**
  * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
  * for a typical Data Redis test. Can be used when a test focuses <strong>only</strong> on
- * RedisDB components.
+ * Redis components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to RedisDB tests.
+ * configuration relevant to Redis tests.
  * <p>
  *
  * @author Jayaram Pradhan
- *
+ * @since 2.0.0
  */
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

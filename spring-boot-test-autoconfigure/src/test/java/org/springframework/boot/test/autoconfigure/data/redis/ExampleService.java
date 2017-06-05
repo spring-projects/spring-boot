@@ -22,7 +22,6 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Service;
 
-
 /**
  * Example service used with {@link DataRedisTest} tests.
  *
@@ -31,16 +30,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExampleService {
 
-	private RedisOperations<Object, Object> operations;
 	private static final Charset CHARSET = Charset.forName("UTF-8");
+
+	private RedisOperations<Object, Object> operations;
 
 	public ExampleService(RedisOperations<Object, Object> operations) {
 		this.operations = operations;
 	}
 
 	public boolean hasRecord(PersonHash personHash) {
-		return this.operations.execute(
-				(RedisConnection connection) -> connection.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
+		return this.operations.execute((RedisConnection connection) ->
+				connection.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
 	}
 
 }

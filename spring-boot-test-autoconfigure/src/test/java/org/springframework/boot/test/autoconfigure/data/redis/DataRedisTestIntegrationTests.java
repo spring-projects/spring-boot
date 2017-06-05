@@ -25,13 +25,13 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testsupport.rule.RedisTestServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Integration test for {@link DataRedisTest}.
@@ -42,11 +42,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataRedisTest
 public class DataRedisTestIntegrationTests {
 
-	@Autowired
-	private RedisOperations<Object, Object> operations;
+	@Rule
+	public RedisTestServer redis = new RedisTestServer();
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Autowired
+	private RedisOperations<Object, Object> operations;
 
 	@Autowired
 	private ExampleRepository exampleRepository;
