@@ -59,6 +59,7 @@ import static org.junit.Assume.assumeThat;
  * Integration tests for Spring Boot's launch script on OSs that use SysVinit.
  *
  * @author Andy Wilkinson
+ * @author Ali Shahbour
  */
 @RunWith(Parameterized.class)
 public class SysVinitLaunchScriptIT {
