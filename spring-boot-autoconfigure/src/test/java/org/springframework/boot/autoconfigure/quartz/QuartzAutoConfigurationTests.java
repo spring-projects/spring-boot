@@ -174,7 +174,7 @@ public class QuartzAutoConfigurationTests {
 
 	@Test
 	public void withCustomizer() throws Exception {
-		load(QuartzCustomConfig.class);
+		load(QuartzCustomConfiguration.class);
 		assertThat(this.context.getBeansOfType(Scheduler.class)).hasSize(1);
 		Scheduler scheduler = this.context.getBean(Scheduler.class);
 		assertThat(scheduler.getSchedulerName()).isEqualTo("fooScheduler");
@@ -199,8 +199,17 @@ public class QuartzAutoConfigurationTests {
 		this.context = ctx;
 	}
 
+	protected static class BaseQuartzConfiguration {
+
+		@Bean
+		public ComponentThatUsesScheduler component() {
+			return new ComponentThatUsesScheduler();
+		}
+
+	}
+
 	@Configuration
-	protected static class QuartzJobsConfiguration {
+	protected static class QuartzJobsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public JobDetail fooJob() {
@@ -217,7 +226,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzFullConfiguration {
+	protected static class QuartzFullConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public JobDetail fooJob() {
@@ -237,7 +246,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzCalendarsConfiguration {
+	protected static class QuartzCalendarsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public Calendar weekly() {
@@ -252,7 +261,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzExecutorConfiguration {
+	protected static class QuartzExecutorConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public Executor executor() {
@@ -262,13 +271,20 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzCustomConfig {
+	protected static class QuartzCustomConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public SchedulerFactoryBeanCustomizer customizer() {
 			return schedulerFactoryBean -> schedulerFactoryBean
 					.setSchedulerName("fooScheduler");
 		}
+
+	}
+
+	public static class ComponentThatUsesScheduler {
+
+		@Autowired
+		private Scheduler scheduler;
 
 	}
 

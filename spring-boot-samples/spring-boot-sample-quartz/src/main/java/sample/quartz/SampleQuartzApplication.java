@@ -18,26 +18,40 @@ package sample.quartz;
 
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.Scheduler;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class SampleQuartzApplication {
+public class SampleQuartzApplication implements CommandLineRunner {
+
+	@Autowired
+	private Scheduler scheduler;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleQuartzApplication.class, args);
 	}
 
+	@Override
+	public void run(String... args) throws Exception {
+		Trigger trigger = TriggerBuilder.newTrigger().forJob(sampleJobDetail())
+				.withIdentity("startTrigger").usingJobData("name", "Boot").startNow()
+				.build();
+
+		this.scheduler.scheduleJob(trigger);
+	}
+
 	@Bean
 	public JobDetail sampleJobDetail() {
-		return JobBuilder.newJob().ofType(SampleJob.class).withIdentity("sampleJob")
-				.usingJobData("name", "World")
-				.storeDurably().build();
+		return JobBuilder.newJob(SampleJob.class).withIdentity("sampleJob")
+				.usingJobData("name", "World").storeDurably().build();
 	}
 
 	@Bean
