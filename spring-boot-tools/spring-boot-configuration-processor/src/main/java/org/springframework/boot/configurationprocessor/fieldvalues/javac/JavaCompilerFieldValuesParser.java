@@ -88,13 +88,13 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			DEFAULT_TYPE_VALUES = Collections.unmodifiableMap(values);
 		}
 
-		private static final Map<String, Object> WELL_KNOWN_STATIC_FINALS;
+		private static final Map<String, Object> BOOLEAN_SINGLETONS;
 
 		static {
 			Map<String, Object> values = new HashMap<String, Object>();
 			values.put("Boolean.TRUE", true);
 			values.put("Boolean.FALSE", false);
-			WELL_KNOWN_STATIC_FINALS = Collections.unmodifiableMap(values);
+			BOOLEAN_SINGLETONS = Collections.unmodifiableMap(values);
 		}
 
 		private final Map<String, Object> fieldValues = new HashMap<String, Object>();
@@ -148,13 +148,21 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				return this.staticFinals.get(expression.toString());
 			}
 			if (expression.getKind().equals("MEMBER_SELECT")) {
-				return WELL_KNOWN_STATIC_FINALS.get(expression.toString());
+				Object booleanSingleton = BOOLEAN_SINGLETONS.get(expression.toString());
+				if (booleanSingleton != null) {
+					return booleanSingleton;
+				}
+				return constantCaseToDashedCase(expression.getFieldName());
 			}
 			return defaultValue;
 		}
 
 		public Map<String, Object> getFieldValues() {
 			return this.fieldValues;
+		}
+
+		private static String constantCaseToDashedCase(String name) {
+			return name.toLowerCase().replace('_', '-');
 		}
 
 	}

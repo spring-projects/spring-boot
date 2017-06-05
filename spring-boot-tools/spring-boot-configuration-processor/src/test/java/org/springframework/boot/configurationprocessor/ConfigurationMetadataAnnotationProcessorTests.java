@@ -167,6 +167,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void enumDefaultValue() throws Exception {
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("simple.speed", "org.springframework.boot.configurationsample.simple.SimpleProperties$Speed")
+				.fromSource(SimpleProperties.class)
+				.withDefaultValue("very-slow"));
+	}
+
+	@Test
 	public void hierarchicalProperties() throws Exception {
 		ConfigurationMetadata metadata = compile(HierarchicalProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("hierarchical")
@@ -455,7 +463,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
 				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
 				.withDeprecation(null, null).withDefaultValue(true));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
@@ -468,7 +476,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
 						.fromSource(SimpleProperties.class)
 						.withDescription("A nice comparator."));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
@@ -482,7 +490,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
 						.fromSource(SimpleProperties.class)
 						.withDeprecation("Don't use this.", "simple.complex-comparator"));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test

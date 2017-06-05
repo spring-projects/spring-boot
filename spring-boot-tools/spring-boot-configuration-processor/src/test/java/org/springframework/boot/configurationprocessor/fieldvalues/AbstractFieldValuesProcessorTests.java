@@ -88,6 +88,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 				.isEqualTo(new Object[] { "c" });
 		assertThat(values.get("integerArray")).isEqualTo(new Object[] { 42, 24 });
 		assertThat(values.get("unknownArray")).isNull();
+		assertThat(values.get("enumInstance")).isEqualTo("enum-instance");
 	}
 
 	@SupportedAnnotationTypes({
