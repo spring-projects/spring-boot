@@ -4015,37 +4015,31 @@ validation altogether using the `spring.ldap.embedded.validation.enabled` proper
 you have custom attributes, you can use `spring.ldap.embedded.validation.schema` to define
 your custom attribute types or object classes.
 
+
+
 [[boot-features-influxdb]]
 === InfluxDB
-https://www.influxdata.com/[InfluxDB] is an open-source time series database developed by InfluxData.
-It is written in Go and optimized for fast, high-availability storage and retrieval of time series data in fields such
-as operations monitoring, application metrics, Internet of Things sensor data, and real-time analytics.
-It also has support for processing data from Graphite.
+https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for
+fast, high-availability storage and retrieval of time series data in fields such as
+operations monitoring, application metrics, Internet of Things sensor data, and real-time
+analytics.
+
+
 
 [[boot-features-connecting-to-influxdb]]
 ==== Connecting to InfluxDB
-You can inject an auto-configured `org.influxdb.InfluxDB` to access InfluxDB databases. You must specify your InfluxDB server url,
-there is no default url.
+Spring Boot auto-configures an `InfluxDB` instance as long as the `influxdb-java` client
+is on the classpath and the url of the database is set:
 
-[source,java,indent=0]
+[source,properties,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private InfluxDB influxDB;
-
-		@Autowired
-		public MyBean(InfluxDB influxDB) {
-			this.influxDB = influxDB;
-		}
-
-		// ...
-
-	}
+	spring.influx.url=http://172.0.0.1:8086
 ----
 
-You can set `spring.influx.client.url` property to change the URL. If the connection to InfluxDB require user and password,
-you can set `spring.influx.client.user` property and `spring.influx.client.password` property to change them.
+If the connection to InfluxDB requires a user and password, you can set the
+`spring.influx.user` and `spring.influx.password` properties accordingly.
+
+
 
 [[boot-features-caching]]
 == Caching
