@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ClassPathResource;
@@ -36,7 +37,7 @@ import org.springframework.core.io.ResourceLoader;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
-public class ResourceProperties implements ResourceLoaderAware {
+public class ResourceProperties implements ResourceLoaderAware, InitializingBean {
 
 	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };
 
@@ -108,9 +109,6 @@ public class ResourceProperties implements ResourceLoaderAware {
 		String[] result = new String[this.staticLocations.length];
 		for (int i = 0; i < result.length; i++) {
 			String location = this.staticLocations[i];
-			if (!location.endsWith("/")) {
-				location = location + "/";
-			}
 			result[i] = location + "index.html";
 		}
 		return result;
@@ -145,6 +143,22 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 	public Chain getChain() {
 		return this.chain;
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+
+		appendMissingTrailingSlash();
+
+	}
+
+	private void appendMissingTrailingSlash() {
+		for (int i = 0; i < this.staticLocations.length; i++) {
+			String location = this.staticLocations[i];
+			if (!location.endsWith("/")) {
+				this.staticLocations[i] = location + "/";
+			}
+		}
 	}
 
 	/**
