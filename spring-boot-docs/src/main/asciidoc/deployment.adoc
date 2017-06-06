@@ -442,8 +442,17 @@ of this guide.
 [[deployment-install]]
 == Installing Spring Boot applications
 In additional to running Spring Boot applications using `java -jar` it is also possible
-to make fully executable applications for Unix systems. This makes it very easy to install
-and manage Spring Boot applications in common production environments.
+to make fully executable applications for Unix systems. A fully executable jar can be
+executed like any other executable binary or it can be <<deployment-service,registered
+with `init.d` or `systemd`>>. This makes it very easy to install and manage Spring Boot
+applications in common production environments.
+
+WARNING: Fully executable jars work by embedding an extra script at the front of the
+file. Currently, some tools do not accept this format so you may not always be able to
+use this technique. For example, `jar -xf` may silently fail to extract a jar or war that
+has been made fully-executable. It is recommended that you only make your jar or war
+fully executable if you intened to execute it directly, rather than running it with
+`java -jar` or deploying it to a servlet container.
 
 To create a '`fully executable`' jar with Maven use the following plugin configuration:
 
@@ -458,7 +467,7 @@ To create a '`fully executable`' jar with Maven use the following plugin configu
 	</plugin>
 ----
 
-With Gradle, the equivalent configuration would be:
+With Gradle, the equivalent configuration is:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -468,18 +477,14 @@ With Gradle, the equivalent configuration would be:
 ----
 
 You can then run your application by typing `./my-application.jar` (where
-`my-application` is the name of your artifact).
+`my-application` is the name of your artifact). The directory containing the
+jar will be used as your application's working directory.
 
-NOTE: Fully executable jars work by embedding an extra script at the front of the file.
-Not all tools currently accept this format so you may not always be able to use this
-technique.
-
-NOTE: The default script supports most Linux distributions and is tested on CentOS and
+[[deployment-install-supported-operating-systems]]
+=== Supported operating systems
+The default script supports most Linux distributions and is tested on CentOS and
 Ubuntu. Other platforms, such as OS X and FreeBSD, will require the use of a custom
 `embeddedLaunchScript`.
-
-NOTE: When a fully executable jar is run, it uses the jar's directory as the working
-directory.
 
 
 
