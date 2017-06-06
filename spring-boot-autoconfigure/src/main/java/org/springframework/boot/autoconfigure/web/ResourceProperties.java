@@ -85,7 +85,16 @@ public class ResourceProperties implements ResourceLoaderAware {
 	}
 
 	public void setStaticLocations(String[] staticLocations) {
-		this.staticLocations = staticLocations;
+		this.staticLocations = appendSlashIfNecessary(staticLocations);
+	}
+
+	private String[] appendSlashIfNecessary(String[] staticLocations) {
+		String[] normalized = new String[staticLocations.length];
+		for (int i = 0; i < staticLocations.length; i++) {
+			String location = staticLocations[i];
+			normalized[i] = location.endsWith("/") ? location : location + "/";
+		}
+		return normalized;
 	}
 
 	public Resource getWelcomePage() {
