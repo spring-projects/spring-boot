@@ -6047,11 +6047,16 @@ public class MyTest {
 `TestRestTemplate` is a convenience alternative to Spring's `RestTemplate` that is useful
 in integration tests. You can get a vanilla template or one that sends Basic HTTP
 authentication (with a username and password). In either case the template will behave
-in a test-friendly way: not following redirects (so you can assert the response location),
-ignoring cookies (so the template is stateless), and not throwing exceptions on
-server-side errors. It is recommended, but not mandatory, to use Apache HTTP Client
-(version 4.3.2 or better), and if you have that on your classpath the `TestRestTemplate`
-will respond by configuring the client appropriately.
+in a test-friendly way by not throwing exceptions on server-side errors. It is
+recommended, but not mandatory, to use Apache HTTP Client (version 4.3.2 or better), and
+if you have that on your classpath the `TestRestTemplate` will respond by configuring
+the client appropriately. If you do use Apache's HTTP client some additional test-friendly
+features will be enabled:
+
+* Redirects will not be followed (so you can assert the response location)
+* Cookies will be ignored (so the template is stateless)
+
+`TestRestTemplate` can be instantiated directly in your integration tests:
 
 [source,java,indent=0]
 ----
@@ -6061,17 +6066,18 @@ public class MyTest {
 
 	@Test
 	public void testRequest() throws Exception {
-		HttpHeaders headers = template.getForEntity("http://myhost.com", String.class).getHeaders();
+		HttpHeaders headers = template.getForEntity("http://myhost.com/example", String.class).getHeaders();
 		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
 	}
 
 }
 ----
 
-If you are using the `@SpringBootTest` annotation with `WebEnvironment.RANDOM_PORT` or
-`WebEnvironment.DEFINED_PORT`, you can just inject a fully configured `TestRestTemplate`
-and start using it. If necessary, additional customizations can be applied via the
-`RestTemplateBuilder` bean:
+Alternatively, if you are using the `@SpringBootTest` annotation with
+`WebEnvironment.RANDOM_PORT` or `WebEnvironment.DEFINED_PORT`, you can just inject a
+fully configured `TestRestTemplate` and start using it. If necessary, additional
+customizations can be applied via the `RestTemplateBuilder` bean. Any URLs that do not
+specify a host and port will automatically connect to the embedded server:
 
 [source,java,indent=0]
 ----
@@ -6084,7 +6090,7 @@ public class MyTest {
 
 	@Test
 	public void testRequest() throws Exception {
-		HttpHeaders headers = template.getForEntity("http://myhost.com", String.class).getHeaders();
+		HttpHeaders headers = template.getForEntity("/example", String.class).getHeaders();
 		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
 	}
 
