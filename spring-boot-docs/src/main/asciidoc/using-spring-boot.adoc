@@ -777,6 +777,10 @@ NOTE: When deciding if an entry on the classpath should trigger a restart when i
 DevTools automatically ignores projects named `spring-boot`, `spring-boot-devtools`,
 `spring-boot-autoconfigure`, `spring-boot-actuator`, and `spring-boot-starter`.
 
+NOTE: DevTools needs to customize the `ResourceLoader` used by the `ApplicationContext`:
+if your application provides one already, it is going to be wrapped. Direct override of
+the `getResource` method on the `ApplicationContext` is not supported.
+
 [[using-spring-boot-restart-vs-reload]]
 .Restart vs Reload
 ****
