@@ -35,9 +35,8 @@ public class SampleQuartzApplication {
 
 	@Bean
 	public JobDetail sampleJobDetail() {
-		return JobBuilder.newJob().ofType(SampleJob.class).withIdentity("sampleJob")
-				.usingJobData("name", "World")
-				.storeDurably().build();
+		return JobBuilder.newJob(SampleJob.class).withIdentity("sampleJob")
+				.usingJobData("name", "World").storeDurably().build();
 	}
 
 	@Bean

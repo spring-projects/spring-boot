@@ -29,6 +29,7 @@ import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -85,14 +86,6 @@ public class QuartzAutoConfiguration {
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();
 		this.applicationContext = applicationContext;
-	}
-
-	@Bean
-	@ConditionalOnSingleCandidate(DataSource.class)
-	@ConditionalOnMissingBean
-	public QuartzDatabaseInitializer quartzDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
-		return new QuartzDatabaseInitializer(dataSource, resourceLoader, this.properties);
 	}
 
 	@Bean
@@ -153,6 +146,28 @@ public class QuartzAutoConfiguration {
 					}
 				}
 			};
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public QuartzDatabaseInitializer quartzDatabaseInitializer(DataSource dataSource,
+				ResourceLoader resourceLoader, QuartzProperties properties) {
+			return new QuartzDatabaseInitializer(dataSource, resourceLoader, properties);
+		}
+
+		@Bean
+		public static DatabaseInitializerSchedulerDependencyPostProcessor databaseInitializerSchedulerDependencyPostProcessor() {
+			return new DatabaseInitializerSchedulerDependencyPostProcessor();
+		}
+
+		private static class DatabaseInitializerSchedulerDependencyPostProcessor
+				extends AbstractDependsOnBeanFactoryPostProcessor {
+
+			DatabaseInitializerSchedulerDependencyPostProcessor() {
+				super(Scheduler.class, SchedulerFactoryBean.class,
+						"quartzDatabaseInitializer");
+			}
+
 		}
 
 	}
