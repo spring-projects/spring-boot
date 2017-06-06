@@ -36,18 +36,21 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -722,9 +725,105 @@ public class SpringApplicationTests {
 	private void verifyTestListenerEvents() {
 		ApplicationListener<ApplicationEvent> listener = this.context
 				.getBean("testApplicationListener", ApplicationListener.class);
-		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
-		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
+		verifyListenerEvents(listener, ContextRefreshedEvent.class,
+				ApplicationReadyEvent.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void verifyListenerEvents(ApplicationListener<ApplicationEvent> listener,
+			Class<? extends ApplicationEvent>... eventTypes) {
+		for (Class<? extends ApplicationEvent> eventType : eventTypes) {
+			verify(listener).onApplicationEvent(argThat(isA(eventType)));
+		}
 		verifyNoMoreInteractions(listener);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void applicationListenerFromApplicationIsCalledWhenContextFailsRefreshBeforeListenerRegistration() {
+		ApplicationListener<ApplicationEvent> listener = mock(ApplicationListener.class);
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.addListeners(listener);
+		try {
+			application.run();
+			fail("Run should have failed with an ApplicationContextException");
+		}
+		catch (ApplicationContextException ex) {
+			verifyListenerEvents(listener, ApplicationStartingEvent.class,
+					ApplicationEnvironmentPreparedEvent.class,
+					ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void applicationListenerFromApplicationIsCalledWhenContextFailsRefreshAfterListenerRegistration() {
+		ApplicationListener<ApplicationEvent> listener = mock(ApplicationListener.class);
+		SpringApplication application = new SpringApplication(
+				BrokenPostConstructConfig.class);
+		application.setWebEnvironment(false);
+		application.addListeners(listener);
+		try {
+			application.run();
+			fail("Run should have failed with a BeanCreationException");
+		}
+		catch (BeanCreationException ex) {
+			verifyListenerEvents(listener, ApplicationStartingEvent.class,
+					ApplicationEnvironmentPreparedEvent.class,
+					ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void applicationListenerFromContextIsCalledWhenContextFailsRefreshBeforeListenerRegistration() {
+		final ApplicationListener<ApplicationEvent> listener = mock(
+				ApplicationListener.class);
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.addInitializers(
+				new ApplicationContextInitializer<ConfigurableApplicationContext>() {
+
+					@Override
+					public void initialize(
+							ConfigurableApplicationContext applicationContext) {
+						applicationContext.addApplicationListener(listener);
+					}
+
+				});
+		try {
+			application.run();
+			fail("Run should have failed with an ApplicationContextException");
+		}
+		catch (ApplicationContextException ex) {
+			verifyListenerEvents(listener, ApplicationFailedEvent.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void applicationListenerFromContextIsCalledWhenContextFailsRefreshAfterListenerRegistration() {
+		final ApplicationListener<ApplicationEvent> listener = mock(
+				ApplicationListener.class);
+		SpringApplication application = new SpringApplication(
+				BrokenPostConstructConfig.class);
+		application.setWebEnvironment(false);
+		application.addInitializers(
+				new ApplicationContextInitializer<ConfigurableApplicationContext>() {
+
+					@Override
+					public void initialize(
+							ConfigurableApplicationContext applicationContext) {
+						applicationContext.addApplicationListener(listener);
+					}
+
+				});
+		try {
+			application.run();
+			fail("Run should have failed with a BeanCreationException");
+		}
+		catch (BeanCreationException ex) {
+			verifyListenerEvents(listener, ApplicationFailedEvent.class);
+		}
 	}
 
 	@Test
@@ -933,6 +1032,25 @@ public class SpringApplicationTests {
 
 	@Configuration
 	static class ExampleConfig {
+
+	}
+
+	@Configuration
+	static class BrokenPostConstructConfig {
+
+		@Bean
+		public Thing thing() {
+			return new Thing();
+		}
+
+		static class Thing {
+
+			@PostConstruct
+			public void boom() {
+				throw new IllegalStateException();
+			}
+
+		}
 
 	}
 
