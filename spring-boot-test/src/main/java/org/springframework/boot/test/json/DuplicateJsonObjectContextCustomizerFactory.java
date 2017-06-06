@@ -85,6 +85,19 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 			this.logger.warn(message);
 		}
 
+		@Override
+		public int hashCode() {
+			return getClass().hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || obj.getClass() != getClass()) {
+				return false;
+			}
+			return true;
+		}
+
 	}
 
 }
