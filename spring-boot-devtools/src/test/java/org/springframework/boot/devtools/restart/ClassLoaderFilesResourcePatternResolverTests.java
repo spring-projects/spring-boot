@@ -30,6 +30,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kin
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockServletContext;
@@ -38,6 +39,9 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -46,6 +50,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class ClassLoaderFilesResourcePatternResolverTests {
 
@@ -126,6 +131,18 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
+	public void customProtocolResolverIsUsedInNonWebApplication() throws Exception {
+		GenericApplicationContext context = new GenericApplicationContext();
+		Resource resource = mock(Resource.class);
+		ProtocolResolver resolver = mockProtocolResolver("foo:some-file.txt", resource);
+		context.addProtocolResolver(resolver);
+		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
+		Resource actual = this.resolver.getResource("foo:some-file.txt");
+		assertThat(actual).isSameAs(resource);
+		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+	}
+
+	@Test
 	public void customResourceLoaderIsUsedInWebApplication() throws Exception {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(
 				new MockServletContext());
@@ -134,6 +151,26 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		this.resolver.getResource("foo.txt");
 		verify(resourceLoader).getResource("foo.txt");
+	}
+
+	@Test
+	public void customProtocolResolverIsUsedInWebApplication() throws Exception {
+		GenericWebApplicationContext context = new GenericWebApplicationContext(
+				new MockServletContext());
+		Resource resource = mock(Resource.class);
+		ProtocolResolver resolver = mockProtocolResolver("foo:some-file.txt", resource);
+		context.addProtocolResolver(resolver);
+		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
+		Resource actual = this.resolver.getResource("foo:some-file.txt");
+		assertThat(actual).isSameAs(resource);
+		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+	}
+
+	private ProtocolResolver mockProtocolResolver(String path, Resource resource) {
+		ProtocolResolver resolver = mock(ProtocolResolver.class);
+		given(resolver.resolve(eq(path), any(ResourceLoader.class)))
+				.willReturn(resource);
+		return resolver;
 	}
 
 	private File createFile(File folder, String name) throws IOException {
