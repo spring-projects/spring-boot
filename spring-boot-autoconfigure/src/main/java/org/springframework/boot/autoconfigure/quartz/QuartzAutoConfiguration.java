@@ -29,11 +29,11 @@ import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -130,12 +130,22 @@ public class QuartzAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnSingleCandidate(DataSource.class)
-	@ConditionalOnProperty(prefix = "spring.quartz", name = "job-store-type", havingValue = "jdbc")
 	protected static class JdbcStoreTypeConfiguration {
 
 		@Bean
-		public static InitializerSchedulerDependencyPostProcessor initializerSchedulerDependencyPostProcessor() {
-			return new InitializerSchedulerDependencyPostProcessor();
+		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(
+				QuartzProperties properties, DataSource dataSource,
+				ObjectProvider<PlatformTransactionManager> transactionManager) {
+			return schedulerFactoryBean -> {
+				if (properties.getJobStoreType() == JobStoreType.JDBC) {
+					schedulerFactoryBean.setDataSource(dataSource);
+					PlatformTransactionManager txManager = transactionManager
+							.getIfUnique();
+					if (txManager != null) {
+						schedulerFactoryBean.setTransactionManager(txManager);
+					}
+				}
+			};
 		}
 
 		@Bean
@@ -146,22 +156,16 @@ public class QuartzAutoConfiguration {
 		}
 
 		@Bean
-		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(DataSource dataSource,
-				ObjectProvider<PlatformTransactionManager> transactionManager) {
-			return schedulerFactoryBean -> {
-				schedulerFactoryBean.setDataSource(dataSource);
-				PlatformTransactionManager txManager = transactionManager.getIfUnique();
-				if (txManager != null) {
-					schedulerFactoryBean.setTransactionManager(txManager);
-				}
-			};
+		public static DatabaseInitializerSchedulerDependencyPostProcessor databaseInitializerSchedulerDependencyPostProcessor() {
+			return new DatabaseInitializerSchedulerDependencyPostProcessor();
 		}
 
-		private static class InitializerSchedulerDependencyPostProcessor
-				extends SchedulerDependsOnPostProcessor {
+		private static class DatabaseInitializerSchedulerDependencyPostProcessor
+				extends AbstractDependsOnBeanFactoryPostProcessor {
 
-			InitializerSchedulerDependencyPostProcessor() {
-				super("quartzDatabaseInitializer");
+			DatabaseInitializerSchedulerDependencyPostProcessor() {
+				super(Scheduler.class, SchedulerFactoryBean.class,
+						"quartzDatabaseInitializer");
 			}
 
 		}

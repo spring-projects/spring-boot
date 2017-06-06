@@ -50,11 +50,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.scheduling.quartz.LocalTaskExecutorThreadPool;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -199,12 +201,9 @@ public class QuartzAutoConfigurationTests {
 		this.context = ctx;
 	}
 
+	@Import(ComponentThatUsesScheduler.class)
+	@Configuration
 	protected static class BaseQuartzConfiguration {
-
-		@Bean
-		public ComponentThatUsesScheduler component() {
-			return new ComponentThatUsesScheduler();
-		}
 
 	}
 
@@ -283,8 +282,12 @@ public class QuartzAutoConfigurationTests {
 
 	public static class ComponentThatUsesScheduler {
 
-		@Autowired
 		private Scheduler scheduler;
+
+		public ComponentThatUsesScheduler(Scheduler scheduler) {
+			Assert.notNull(scheduler, "Scheduler must not be null");
+			this.scheduler = scheduler;
+		}
 
 	}
 
