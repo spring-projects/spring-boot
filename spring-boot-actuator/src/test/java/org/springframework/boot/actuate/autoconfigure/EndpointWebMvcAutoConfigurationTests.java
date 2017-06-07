@@ -562,6 +562,17 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void samePortCanBeUsedWhenManagementSslIsExplicitlyDisabled()
+			throws Exception {
+		TestPropertyValues.of("management.ssl.enabled=false")
+				.applyTo(this.applicationContext);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+	}
+
+	@Test
 	public void managementServerCanDisableSslWhenUsingADifferentPort() throws Exception {
 		TestPropertyValues.of("management.port=" + ports.get().management,
 				"server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
