@@ -174,8 +174,6 @@ public class SpringApplication {
 	 */
 	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
 
-	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
-
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
@@ -325,8 +323,9 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
-		if (isWebEnvironment(environment) && !this.webEnvironment) {
-			environment = EnvironmentConverter.convertToStandardEnvironment(environment);
+		if (!this.webEnvironment) {
+			environment = new EnvironmentConverter(getClassLoader())
+					.convertToStandardEnvironmentIfNecessary(environment);
 		}
 		return environment;
 	}
@@ -443,17 +442,6 @@ public class SpringApplication {
 			String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
-	}
-
-	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
-		try {
-			Class<?> webEnvironmentClass = ClassUtils
-					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
-			return (webEnvironmentClass.isInstance(environment));
-		}
-		catch (Throwable ex) {
-			return false;
-		}
 	}
 
 	/**

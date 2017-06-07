@@ -21,18 +21,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
- * Utility class for converting one environment type to another.
+ * Utility class for converting one type of {@link Environment} to another.
  *
  * @author Ethan Rubinson
- * @since 1.5.4
+ * @author Andy Wilkinson
  */
 final class EnvironmentConverter {
+
+	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
 
 	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
 
@@ -44,42 +49,68 @@ final class EnvironmentConverter {
 		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
 	}
 
-	private EnvironmentConverter() {
+	private final ClassLoader classLoader;
 
+	/**
+	 * Creates a new {@link EnvironmentConverter} that will use the given
+	 * {@code classLoader} during conversion.
+	 * @param classLoader the class loader to use
+	 */
+	EnvironmentConverter(ClassLoader classLoader) {
+		this.classLoader = classLoader;
 	}
 
 	/**
-	 * Converts the specified environment to a {@link StandardEnvironment}.
+	 * Converts the given {@code environment} to a {@link StandardEnvironment}. If the
+	 * environment is already a {@code StandardEnvironment} and is not a
+	 * {@link ConfigurableWebEnvironment} no conversion is performed and it is returned
+	 * unchanged.
 	 *
-	 * @param environment The environment to convert.
-	 * @return The converted environment.
+	 * @param environment The Environment to convert
+	 * @return The converted Environment
 	 */
-	protected static ConfigurableEnvironment convertToStandardEnvironment(
+	StandardEnvironment convertToStandardEnvironmentIfNecessary(
 			ConfigurableEnvironment environment) {
-		final StandardEnvironment result = new StandardEnvironment();
-
-		/* Copy the profiles */
-		result.setActiveProfiles(environment.getActiveProfiles());
-
-		/* Copy the conversion service */
-		result.setConversionService(environment.getConversionService());
-
-		/*
-		 * Copy over all of the property sources except those unrelated to a standard
-		 * environment
-		 */
-		removeAllPropertySources(result.getPropertySources());
-		for (PropertySource<?> propertySource : environment.getPropertySources()) {
-			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
-				result.getPropertySources().addLast(propertySource);
-			}
+		if (environment instanceof StandardEnvironment
+				&& !isWebEnvironment(environment, this.classLoader)) {
+			return (StandardEnvironment) environment;
 		}
+		return convertToStandardEnvironment(environment);
+	}
 
+	private boolean isWebEnvironment(ConfigurableEnvironment environment,
+			ClassLoader classLoader) {
+		try {
+			Class<?> webEnvironmentClass = ClassUtils
+					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
+			return (webEnvironmentClass.isInstance(environment));
+		}
+		catch (Throwable ex) {
+			return false;
+		}
+	}
+
+	private StandardEnvironment convertToStandardEnvironment(
+			ConfigurableEnvironment environment) {
+		StandardEnvironment result = new StandardEnvironment();
+		result.setActiveProfiles(environment.getActiveProfiles());
+		result.setConversionService(environment.getConversionService());
+		copyNonServletPropertySources(environment, result);
 		return result;
 	}
 
-	private static void removeAllPropertySources(MutablePropertySources propertySources) {
-		final Set<String> names = new HashSet<String>();
+	private void copyNonServletPropertySources(ConfigurableEnvironment source,
+			StandardEnvironment target) {
+		removeAllPropertySources(target.getPropertySources());
+		for (PropertySource<?> propertySource : source.getPropertySources()) {
+			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
+				target.getPropertySources().addLast(propertySource);
+			}
+		}
+	}
+
+	private void removeAllPropertySources(MutablePropertySources propertySources) {
+		Set<String> names = new HashSet<String>();
 		for (PropertySource<?> propertySource : propertySources) {
 			names.add(propertySource.getName());
 		}
