@@ -51,11 +51,13 @@ import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -760,6 +762,11 @@ public class WebMvcAutoConfigurationTests {
 				.isSameAs(this.context.getBean("customJsr303Validator"));
 	}
 
+	@Test
+	public void httpMessageConverterThatUsesConversionServiceDoesNotCreateACycle() {
+		load(CustomHttpMessageConverter.class);
+	}
+
 	private void load(Class<?> config, String... environment) {
 		load(config, null, environment);
 	}
@@ -986,6 +993,17 @@ public class WebMvcAutoConfigurationTests {
 		@Bean
 		public Validator customSpringValidator() {
 			return mock(Validator.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomHttpMessageConverter {
+
+		@Bean
+		public HttpMessageConverter<?> customHttpMessageConverter(
+				ConversionService conversionService) {
+			return mock(HttpMessageConverter.class);
 		}
 
 	}
