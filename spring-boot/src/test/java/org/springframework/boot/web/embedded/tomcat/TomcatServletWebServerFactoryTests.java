@@ -41,6 +41,7 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.After;
@@ -272,6 +273,62 @@ public class TomcatServletWebServerFactoryTests
 		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler()
 				.findSslHostConfigs();
 		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("ALPHA:BRAVO:CHARLIE");
+	}
+
+	@Test
+	public void sslDisableCompression() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setDisableCompression(false);
+
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		Tomcat tomcat = getTomcat(factory);
+		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
+				.get(tomcat.getService())[0];
+
+		AbstractHttp11JsseProtocol protocol = (AbstractHttp11JsseProtocol) connector.getProtocolHandler();
+		assertThat(protocol.getSSLDisableCompression()).isEqualTo(false);
+	}
+
+	@Test
+	public void sslHonorCipherOrder() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setHonorCipherOrder("true");
+
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		Tomcat tomcat = getTomcat(factory);
+		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
+				.get(tomcat.getService())[0];
+
+		AbstractHttp11JsseProtocol protocol = (AbstractHttp11JsseProtocol) connector.getProtocolHandler();
+		assertThat(protocol.getSSLHonorCipherOrder()).isEqualTo("true");
+	}
+
+	@Test
+	public void sslSSLCertificate() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setCertificateFile("test.cert");
+		ssl.setCertificateKeyFile("test.key");
+		ssl.setCertificateChainFile("test.chain");
+
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		Tomcat tomcat = getTomcat(factory);
+		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
+				.get(tomcat.getService())[0];
+
+		AbstractHttp11JsseProtocol protocol = (AbstractHttp11JsseProtocol) connector.getProtocolHandler();
+		assertThat(protocol.getSSLCertificateFile()).isEqualTo("test.cert");
+		assertThat(protocol.getSSLCertificateKeyFile()).isEqualTo("test.key");
+		assertThat(protocol.getSSLCertificateChainFile()).isEqualTo("test.chain");
 	}
 
 	@Test
