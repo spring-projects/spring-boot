@@ -163,7 +163,7 @@ public class EndpointWebMvcAutoConfiguration
 		}
 		if (managementPort == ManagementServerPort.SAME) {
 			if (new RelaxedPropertyResolver(this.applicationContext.getEnvironment(),
-					"management.ssl.").getProperty("enabled") != null) {
+					"management.ssl.").getProperty("enabled", Boolean.class, false)) {
 				throw new IllegalStateException(
 						"Management-specific SSL cannot be configured as the management "
 								+ "server is not listening on a separate port");
