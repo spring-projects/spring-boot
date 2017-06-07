@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,27 +63,27 @@ public class JacksonProperties {
 	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
-	private Map<SerializationFeature, Boolean> serialization = new HashMap<SerializationFeature, Boolean>();
+	private Map<SerializationFeature, Boolean> serialization = new HashMap<>();
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are deserialized.
 	 */
-	private Map<DeserializationFeature, Boolean> deserialization = new HashMap<DeserializationFeature, Boolean>();
+	private Map<DeserializationFeature, Boolean> deserialization = new HashMap<>();
 
 	/**
 	 * Jackson general purpose on/off features.
 	 */
-	private Map<MapperFeature, Boolean> mapper = new HashMap<MapperFeature, Boolean>();
+	private Map<MapperFeature, Boolean> mapper = new HashMap<>();
 
 	/**
 	 * Jackson on/off features for parsers.
 	 */
-	private Map<JsonParser.Feature, Boolean> parser = new HashMap<JsonParser.Feature, Boolean>();
+	private Map<JsonParser.Feature, Boolean> parser = new HashMap<>();
 
 	/**
 	 * Jackson on/off features for generators.
 	 */
-	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<JsonGenerator.Feature, Boolean>();
+	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<>();
 
 	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of

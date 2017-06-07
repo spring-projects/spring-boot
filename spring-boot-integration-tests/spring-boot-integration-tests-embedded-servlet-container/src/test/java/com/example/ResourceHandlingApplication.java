@@ -46,8 +46,8 @@ public class ResourceHandlingApplication {
 	}
 
 	@Bean
-	public ServletRegistrationBean resourceServletRegistration() {
-		ServletRegistrationBean registration = new ServletRegistrationBean(
+	public ServletRegistrationBean<?> resourceServletRegistration() {
+		ServletRegistrationBean<?> registration = new ServletRegistrationBean<HttpServlet>(
 				new HttpServlet() {
 
 					@Override

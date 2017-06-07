@@ -41,7 +41,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	private static final Set<String> FALLBACKS;
 
 	static {
-		Set<String> fallbacks = new LinkedHashSet<String>();
+		Set<String> fallbacks = new LinkedHashSet<>();
 		fallbacks.add("org.hibernate.validator.messageinterpolation"
 				+ ".ParameterMessageInterpolator");
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
@@ -76,7 +76,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 
 	private MessageInterpolator getFallback(String fallback) {
 		Class<?> interpolatorClass = ClassUtils.resolveClassName(fallback, null);
-		Object interpolator = BeanUtils.instantiate(interpolatorClass);
+		Object interpolator = BeanUtils.instantiateClass(interpolatorClass);
 		return (MessageInterpolator) interpolator;
 	}
 

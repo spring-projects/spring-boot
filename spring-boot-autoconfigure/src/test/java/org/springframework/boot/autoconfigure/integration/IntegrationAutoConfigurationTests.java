@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,17 @@ import java.util.List;
 import javax.management.MBeanServer;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +43,8 @@ import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.gateway.RequestReplyExchanger;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -47,8 +56,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Artem Bilan
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 public class IntegrationAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -87,11 +100,12 @@ public class IntegrationAutoConfigurationTests {
 		load();
 		AnnotationConfigApplicationContext parent = this.context;
 		this.context = new AnnotationConfigApplicationContext();
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.setParent(parent);
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"SPRING_JMX_DEFAULT_DOMAIN=org.foo");
+				"spring.jmx.default_domain=org.foo");
 		this.context.refresh();
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
@@ -117,7 +131,7 @@ public class IntegrationAutoConfigurationTests {
 
 	@Test
 	public void customizeJmxDomain() {
-		load("SPRING_JMX_DEFAULT_DOMAIN=org.foo");
+		load("spring.jmx.default_domain=org.foo");
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		assertDomains(mBeanServer, true, "org.foo");
 		assertDomains(mBeanServer, false, "org.springframework.integration",
@@ -126,10 +140,57 @@ public class IntegrationAutoConfigurationTests {
 
 	@Test
 	public void primaryExporterIsAllowed() {
-		load(CustomMBeanExporter.class);
+		load(new Class[] { CustomMBeanExporter.class });
 		assertThat(this.context.getBeansOfType(MBeanExporter.class)).hasSize(2);
 		assertThat(this.context.getBean(MBeanExporter.class))
 				.isSameAs(this.context.getBean("myMBeanExporter"));
+	}
+
+	@Test
+	public void integrationJdbcDatabaseInitializerEnabled() {
+		load(new Class[] { EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class,
+				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
+				"spring.datasource.generate-unique-name=true",
+				"spring.integration.jdbc.initializer.enabled=true");
+		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isTrue();
+		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
+		assertThat(jdbcOperations.queryForList("select * from INT_MESSAGE")).isEmpty();
+		assertThat(jdbcOperations.queryForList("select * from INT_GROUP_TO_MESSAGE"))
+				.isEmpty();
+		assertThat(jdbcOperations.queryForList("select * from INT_MESSAGE_GROUP"))
+				.isEmpty();
+		assertThat(jdbcOperations.queryForList("select * from INT_LOCK")).isEmpty();
+		assertThat(jdbcOperations.queryForList("select * from INT_CHANNEL_MESSAGE"))
+				.isEmpty();
+	}
+
+	@Test
+	public void integrationJdbcDatabaseInitializerDisabled() {
+		load(new Class[] { EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class,
+				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
+				"spring.datasource.generate-unique-name=true",
+				"spring.integration.jdbc.initializer.enabled=false");
+		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isFalse();
+		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
+		this.thrown.expect(BadSqlGrammarException.class);
+		jdbcOperations.queryForList("select * from INT_MESSAGE");
+	}
+
+	@Test
+	public void integrationJdbcDatabaseInitializerDisabledByDefault() {
+		load(new Class[] { EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class,
+				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
+				"spring.datasource.generate-unique-name=true");
+		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isFalse();
+		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
+		this.thrown.expect(BadSqlGrammarException.class);
+		jdbcOperations.queryForList("select * from INT_MESSAGE");
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
@@ -144,12 +205,14 @@ public class IntegrationAutoConfigurationTests {
 		load(null, environment);
 	}
 
-	private void load(Class<?> config, String... environment) {
+	private void load(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		if (config != null) {
-			ctx.register(config);
+		TestPropertyValues.of(environment).applyTo(ctx);
+		if (configs != null) {
+			ctx.register(configs);
 		}
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(ctx, environment);
+		ConfigurationPropertySources.attach(ctx.getEnvironment());
 		ctx.register(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

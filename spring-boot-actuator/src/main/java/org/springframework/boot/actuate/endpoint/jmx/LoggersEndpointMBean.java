@@ -24,12 +24,15 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.util.Assert;
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapter to expose {@link LoggersEndpoint} as an {@link MvcEndpoint}.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 1.5.0
  */
 public class LoggersEndpointMBean extends EndpointMBean {
@@ -45,15 +48,25 @@ public class LoggersEndpointMBean extends EndpointMBean {
 	}
 
 	@ManagedOperation(description = "Get log level for a given logger")
+	@ManagedOperationParameters({
+			@ManagedOperationParameter(name = "loggerName", description = "Name of the logger") })
 	public Object getLogger(String loggerName) {
 		return convert(getEndpoint().invoke(loggerName));
 	}
 
 	@ManagedOperation(description = "Set log level for a given logger")
+	@ManagedOperationParameters({
+			@ManagedOperationParameter(name = "loggerName", description = "Name of the logger"),
+			@ManagedOperationParameter(name = "logLevel", description = "New log level (can be null or empty String to remove the custom level)") })
 	public void setLogLevel(String loggerName, String logLevel) {
-		Assert.notNull(logLevel, "LogLevel must not be null");
-		LogLevel level = LogLevel.valueOf(logLevel.toUpperCase());
-		getEndpoint().setLogLevel(loggerName, level);
+		getEndpoint().setLogLevel(loggerName, determineLogLevel(logLevel));
+	}
+
+	private LogLevel determineLogLevel(String logLevel) {
+		if (StringUtils.hasText(logLevel)) {
+			return LogLevel.valueOf(logLevel.toUpperCase());
+		}
+		return null;
 	}
 
 	@Override

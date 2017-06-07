@@ -125,13 +125,9 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private String[] getClassPath(URL booterJar) throws Exception {
-		JarFile jarFile = new JarFile(new File(booterJar.toURI()));
-		try {
+		try (JarFile jarFile = new JarFile(new File(booterJar.toURI()))) {
 			return StringUtils.delimitedListToStringArray(jarFile.getManifest()
 					.getMainAttributes().getValue(Attributes.Name.CLASS_PATH), " ");
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 

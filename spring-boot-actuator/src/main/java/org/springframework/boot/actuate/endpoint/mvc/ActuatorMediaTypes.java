@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
  * {@link MediaType MediaTypes} that can be consumed and produced by Actuator endpoints.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.5.0
  */
 public final class ActuatorMediaTypes {
@@ -32,10 +33,21 @@ public final class ActuatorMediaTypes {
 	public static final String APPLICATION_ACTUATOR_V1_JSON_VALUE = "application/vnd.spring-boot.actuator.v1+json";
 
 	/**
+	 * {@link String} equivalent of {@link #APPLICATION_ACTUATOR_V2_JSON}.
+	 */
+	public static final String APPLICATION_ACTUATOR_V2_JSON_VALUE = "application/vnd.spring-boot.actuator.v2+json";
+
+	/**
 	 * The {@code application/vnd.spring-boot.actuator.v1+json} media type.
 	 */
 	public static final MediaType APPLICATION_ACTUATOR_V1_JSON = MediaType
 			.valueOf(APPLICATION_ACTUATOR_V1_JSON_VALUE);
+
+	/**
+	 * The {@code application/vnd.spring-boot.actuator.v2+json} media type.
+	 */
+	public static final MediaType APPLICATION_ACTUATOR_V2_JSON = MediaType
+			.valueOf(APPLICATION_ACTUATOR_V2_JSON_VALUE);
 
 	private ActuatorMediaTypes() {
 

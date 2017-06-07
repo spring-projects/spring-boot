@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.util.Iterator;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.SocketUtils;
@@ -39,9 +39,8 @@ public class TomcatPublicMetricsTests {
 
 	@Test
 	public void tomcatMetrics() throws Exception {
-		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext(
-				Config.class);
-		try {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				Config.class)) {
 			TomcatPublicMetrics tomcatMetrics = context
 					.getBean(TomcatPublicMetrics.class);
 			Iterator<Metric<?>> metrics = tomcatMetrics.metrics().iterator();
@@ -49,17 +48,14 @@ public class TomcatPublicMetricsTests {
 			assertThat(metrics.next().getName()).isEqualTo("httpsessions.active");
 			assertThat(metrics.hasNext()).isFalse();
 		}
-		finally {
-			context.close();
-		}
 	}
 
 	@Configuration
 	static class Config {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory containerFactory() {
-			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		public TomcatServletWebServerFactory webServerFactory() {
+			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(SocketUtils.findAvailableTcpPort(40000));
 			return factory;
 		}

@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefiniti
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -110,11 +110,11 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		context.register(classes);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		if (driverClassName != null) {
-			EnvironmentTestUtils.addEnvironment(context,
-					"spring.datasource.driver-class-name:" + driverClassName);
+			TestPropertyValues.of(
+					"spring.datasource.driver-class-name:" + driverClassName).applyTo(context);
 		}
 		if (url != null) {
-			EnvironmentTestUtils.addEnvironment(context, "spring.datasource.url:" + url);
+			TestPropertyValues.of("spring.datasource.url:" + url).applyTo(context);
 		}
 		context.refresh();
 		return context;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,36 +22,40 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliases;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.util.ClassUtils;
 
 /**
  * Convenience class for building a {@link DataSource} with common implementations and
- * properties. If Tomcat, HikariCP or Commons DBCP are on the classpath one of them will
- * be selected (in that order with Tomcat first). In the interest of a uniform interface,
+ * properties. If HikariCP, Tomcat or Commons DBCP are on the classpath one of them will
+ * be selected (in that order with Hikari first). In the interest of a uniform interface,
  * and so that there can be a fallback to an embedded database if one can be detected on
  * the classpath, only a small set of common configuration properties are supported. To
  * inject additional properties into the result you can downcast it, or use
  * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  * @since 1.1.0
  */
 public class DataSourceBuilder {
 
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
-			"org.apache.tomcat.jdbc.pool.DataSource",
 			"com.zaxxer.hikari.HikariDataSource",
-			"org.apache.commons.dbcp.BasicDataSource", // deprecated
+			"org.apache.tomcat.jdbc.pool.DataSource",
 			"org.apache.commons.dbcp2.BasicDataSource" };
 
 	private Class<? extends DataSource> type;
 
 	private ClassLoader classLoader;
 
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	public static DataSourceBuilder create() {
 		return new DataSourceBuilder(null);
@@ -67,7 +71,7 @@ public class DataSourceBuilder {
 
 	public DataSource build() {
 		Class<? extends DataSource> type = getType();
-		DataSource result = BeanUtils.instantiate(type);
+		DataSource result = BeanUtils.instantiateClass(type);
 		maybeGetDriverClassName();
 		bind(result);
 		return result;
@@ -83,9 +87,13 @@ public class DataSourceBuilder {
 	}
 
 	private void bind(DataSource result) {
-		MutablePropertyValues properties = new MutablePropertyValues(this.properties);
-		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl")
-				.withAlias("username", "user").bind(properties);
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(
+				this.properties);
+		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
+		aliases.addAliases("url", "jdbc-url");
+		aliases.addAliases("username", "user");
+		Binder binder = new Binder(source.withAliases(aliases));
+		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(result));
 	}
 
 	public DataSourceBuilder type(Class<? extends DataSource> type) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class MavenModelDependencyManagement implements DependencyManagement {
 
 	private final List<Dependency> dependencies;
 
-	private final Map<String, Dependency> byArtifactId = new LinkedHashMap<String, Dependency>();
+	private final Map<String, Dependency> byArtifactId = new LinkedHashMap<>();
 
 	public MavenModelDependencyManagement(Model model) {
 		this.dependencies = extractDependenciesFromModel(model);
@@ -45,10 +45,10 @@ public class MavenModelDependencyManagement implements DependencyManagement {
 	}
 
 	private static List<Dependency> extractDependenciesFromModel(Model model) {
-		List<Dependency> dependencies = new ArrayList<Dependency>();
+		List<Dependency> dependencies = new ArrayList<>();
 		for (org.apache.maven.model.Dependency mavenDependency : model
 				.getDependencyManagement().getDependencies()) {
-			List<Exclusion> exclusions = new ArrayList<Exclusion>();
+			List<Exclusion> exclusions = new ArrayList<>();
 			for (org.apache.maven.model.Exclusion mavenExclusion : mavenDependency
 					.getExclusions()) {
 				exclusions.add(new Exclusion(mavenExclusion.getGroupId(),

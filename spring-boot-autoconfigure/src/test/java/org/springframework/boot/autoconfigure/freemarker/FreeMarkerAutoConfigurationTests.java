@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -177,17 +177,13 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void renderNonWebAppTemplate() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				FreeMarkerAutoConfiguration.class);
-		try {
-			freemarker.template.Configuration freemarker = context
+		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext(
+				FreeMarkerAutoConfiguration.class)) {
+			freemarker.template.Configuration freemarker = customContext
 					.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
 			freemarker.getTemplate("message.ftl").process(this, writer);
 			assertThat(writer.toString()).contains("Hello World");
-		}
-		finally {
-			context.close();
 		}
 	}
 
@@ -206,7 +202,7 @@ public class FreeMarkerAutoConfigurationTests {
 	}
 
 	private void registerAndRefreshContext(String... env) {
-		EnvironmentTestUtils.addEnvironment(this.context, env);
+		TestPropertyValues.of(env).applyTo(this.context);
 		this.context.register(FreeMarkerAutoConfiguration.class);
 		this.context.refresh();
 	}

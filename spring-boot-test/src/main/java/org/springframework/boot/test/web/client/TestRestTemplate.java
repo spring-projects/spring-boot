@@ -57,7 +57,7 @@ import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
@@ -148,7 +148,7 @@ public class TestRestTemplate {
 		if (interceptors == null) {
 			interceptors = Collections.emptyList();
 		}
-		interceptors = new ArrayList<ClientHttpRequestInterceptor>(interceptors);
+		interceptors = new ArrayList<>(interceptors);
 		Iterator<ClientHttpRequestInterceptor> iterator = interceptors.iterator();
 		while (iterator.hasNext()) {
 			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
@@ -161,7 +161,7 @@ public class TestRestTemplate {
 
 	/**
 	 * Configure the {@link UriTemplateHandler} to use to expand URI templates. By default
-	 * the {@link DefaultUriTemplateHandler} is used which relies on Spring's URI template
+	 * the {@link DefaultUriBuilderFactory} is used which relies on Spring's URI template
 	 * support and exposes several useful properties that customize its behavior for
 	 * encoding and for prepending a common base URL. An alternative implementation may be
 	 * used to plug an external URI template library.
@@ -1063,7 +1063,7 @@ public class TestRestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(
 				HttpClientOption[] httpClientOptions) {
-			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
+			Set<HttpClientOption> options = new HashSet<>(
 					Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
 					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);

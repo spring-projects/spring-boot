@@ -160,19 +160,15 @@ public class JarFile extends java.util.jar.JarFile {
 				manifest = new JarFile(this.getRootJarFile()).getManifest();
 			}
 			else {
-				InputStream inputStream = getInputStream(MANIFEST_NAME,
-						ResourceAccess.ONCE);
-				if (inputStream == null) {
-					return null;
-				}
-				try {
+				try (InputStream inputStream = getInputStream(MANIFEST_NAME,
+						ResourceAccess.ONCE)) {
+					if (inputStream == null) {
+						return null;
+					}
 					manifest = new Manifest(inputStream);
 				}
-				finally {
-					inputStream.close();
-				}
 			}
-			this.manifest = new SoftReference<Manifest>(manifest);
+			this.manifest = new SoftReference<>(manifest);
 		}
 		return manifest;
 	}
@@ -336,9 +332,8 @@ public class JarFile extends java.util.jar.JarFile {
 		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
 		// happening that often.
 		try {
-			JarInputStream inputStream = new JarInputStream(
-					getData().getInputStream(ResourceAccess.ONCE));
-			try {
+			try (JarInputStream inputStream = new JarInputStream(
+					getData().getInputStream(ResourceAccess.ONCE))) {
 				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
 				while (certEntry != null) {
 					inputStream.closeEntry();
@@ -348,9 +343,6 @@ public class JarFile extends java.util.jar.JarFile {
 					setCertificates(getJarEntry(certEntry.getName()), certEntry);
 					certEntry = inputStream.getNextJarEntry();
 				}
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 		catch (IOException ex) {

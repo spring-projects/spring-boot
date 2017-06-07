@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.core.annotation.AliasFor;
 /**
  * Enables scanning for Servlet components ({@link WebFilter filters}, {@link WebServlet
  * servlets}, and {@link WebListener listeners}). Scanning is only performed when using an
- * embedded Servlet container.
+ * embedded web server.
  * <p>
  * Typically, one of {@code value}, {@code basePackages}, or {@code basePackageClasses}
  * should be specified to control the packages to be scanned for components. In their

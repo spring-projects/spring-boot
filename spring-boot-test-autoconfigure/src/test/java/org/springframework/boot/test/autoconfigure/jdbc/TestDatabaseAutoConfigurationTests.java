@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -60,15 +60,11 @@ public class TestDatabaseAutoConfigurationTests {
 		DataSource datasource = this.context.getBean(DataSource.class);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
 		jdbcTemplate.execute("create table example (id int, name varchar);");
-		ConfigurableApplicationContext anotherContext = doLoad(
-				ExistingDataSourceConfiguration.class);
-		try {
+		try (ConfigurableApplicationContext anotherContext = doLoad(
+				ExistingDataSourceConfiguration.class)) {
 			DataSource anotherDatasource = anotherContext.getBean(DataSource.class);
 			JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(anotherDatasource);
 			anotherJdbcTemplate.execute("create table example (id int, name varchar);");
-		}
-		finally {
-			anotherContext.close();
 		}
 	}
 
@@ -76,13 +72,14 @@ public class TestDatabaseAutoConfigurationTests {
 		this.context = doLoad(config, environment);
 	}
 
-	private ConfigurableApplicationContext doLoad(Class<?> config, String... environment) {
+	private ConfigurableApplicationContext doLoad(Class<?> config,
+			String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (config != null) {
 			ctx.register(config);
 		}
 		ctx.register(TestDatabaseAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.refresh();
 		return ctx;
 	}

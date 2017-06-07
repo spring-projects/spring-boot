@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,13 @@
 package org.springframework.boot.actuate.info;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.boot.bind.PropertySourcesBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.info.InfoProperties;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
@@ -30,10 +33,14 @@ import org.springframework.util.StringUtils;
  *
  * @param <T> the type of the {@link InfoProperties} to expose
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 		implements InfoContributor {
+
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
+			.mapOf(String.class, Object.class);
 
 	private final T properties;
 
@@ -85,7 +92,8 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 	 * @return the raw content
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
-		return new PropertySourcesBinder(propertySource).extractAll("");
+		return new Binder(ConfigurationPropertySources.from(propertySource))
+				.bind("", STRING_OBJECT_MAP).orElseGet(LinkedHashMap::new);
 	}
 
 	/**

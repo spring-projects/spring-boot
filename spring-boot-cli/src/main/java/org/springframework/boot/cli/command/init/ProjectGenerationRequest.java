@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ class ProjectGenerationRequest {
 
 	private String bootVersion;
 
-	private List<String> dependencies = new ArrayList<String>();
+	private List<String> dependencies = new ArrayList<>();
 
 	/**
 	 * The URL of the service to use.
@@ -374,8 +374,7 @@ class ProjectGenerationRequest {
 			return result;
 		}
 		else if (isDetectType()) {
-			Map<String, ProjectType> types = new HashMap<String, ProjectType>(
-					metadata.getProjectTypes());
+			Map<String, ProjectType> types = new HashMap<>(metadata.getProjectTypes());
 			if (this.build != null) {
 				filter(types, "build", this.build);
 			}

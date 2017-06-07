@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,46 +60,6 @@ public class ConditionalOnSingleCandidateTests {
 		load(FooConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isTrue();
 		assertThat(this.context.getBean("baz")).isEqualTo("foo");
-	}
-
-	@Test
-	public void singleCandidateInParentsOneCandidateInCurrent() {
-		load();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(FooConfiguration.class,
-				OnBeanSingleCandidateInParentsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isFalse();
-		child.close();
-	}
-
-	@Test
-	public void singleCandidateInParentsOneCandidateInParent() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(OnBeanSingleCandidateInParentsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isTrue();
-		assertThat(child.getBean("baz")).isEqualTo("foo");
-		child.close();
-	}
-
-	@Test
-	public void singleCandidateInParentsOneCandidateInGrandparent() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.setParent(this.context);
-		parent.refresh();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(OnBeanSingleCandidateInParentsConfiguration.class);
-		child.setParent(parent);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isTrue();
-		assertThat(child.getBean("baz")).isEqualTo("foo");
-		child.close();
-		parent.close();
 	}
 
 	@Test
@@ -185,16 +145,12 @@ public class ConditionalOnSingleCandidateTests {
 	@Test
 	public void singleCandidateMultipleCandidatesInContextHierarchy() {
 		load(FooPrimaryConfiguration.class, BarConfiguration.class);
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.setParent(this.context);
-		child.register(OnBeanSingleCandidateConfiguration.class);
-		try {
+		try (AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext()) {
+			child.setParent(this.context);
+			child.register(OnBeanSingleCandidateConfiguration.class);
 			child.refresh();
 			assertThat(child.containsBean("baz")).isTrue();
 			assertThat(child.getBean("baz")).isEqualTo("foo");
-		}
-		finally {
-			child.close();
 		}
 	}
 
@@ -208,18 +164,6 @@ public class ConditionalOnSingleCandidateTests {
 	@Configuration
 	@ConditionalOnSingleCandidate(String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
-
-		@Bean
-		public String baz(String s) {
-			return s;
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	@Configuration
-	@ConditionalOnSingleCandidate(value = String.class, search = SearchStrategy.PARENTS)
-	protected static class OnBeanSingleCandidateInParentsConfiguration {
 
 		@Bean
 		public String baz(String s) {

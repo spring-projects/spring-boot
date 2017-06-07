@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = "app.datasource.url=jdbc:h2:mem:basic;DB_CLOSE_DELAY=-1")
+@SpringBootTest(properties = "app.datasource.jdbcUrl=jdbc:h2:mem:basic;DB_CLOSE_DELAY=-1")
 @Import(BasicDataSourceExample.BasicDataSourceConfiguration.class)
 public class BasicDataSourceExampleTests {
 

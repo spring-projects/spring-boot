@@ -236,17 +236,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
-			if (this.layout == LayoutType.MODULE) {
-				getLog().warn("Module layout is deprecated. Please use a custom"
-						+ " LayoutFactory instead.");
-			}
 			repackager.setLayout(this.layout.layout());
 		}
 		return repackager;
 	}
 
 	private ArtifactsFilter[] getAdditionalFilters() {
-		List<ArtifactsFilter> filters = new ArrayList<ArtifactsFilter>();
+		List<ArtifactsFilter> filters = new ArrayList<>();
 		if (this.excludeDevtools) {
 			Exclude exclude = new Exclude();
 			exclude.setGroupId("org.springframework.boot");
@@ -345,12 +341,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		 * Dir Layout.
 		 */
 		DIR(new Layouts.Expanded()),
-
-		/**
-		 * Module Layout.
-		 * @deprecated as of 1.5 in favor of a custom {@link LayoutFactory}
-		 */
-		@Deprecated MODULE(new Layouts.Module()),
 
 		/**
 		 * No Layout.

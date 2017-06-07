@@ -25,7 +25,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,35 +55,39 @@ public class ElasticsearchAutoConfigurationTests {
 	@Test
 	public void createNodeClientWithDefaults() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.home:target");
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.monitor.process.refresh_interval:2s",
+						"spring.data.elasticsearch.properties.path.home:target")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
-		assertThat(client.settings().get("node.local")).isEqualTo("true");
+		assertThat(client.settings().get("monitor.process.refresh_interval"))
+				.isEqualTo("2s");
+		assertThat(client.settings().get("transport.type")).isEqualTo("local");
 		assertThat(client.settings().get("http.enabled")).isEqualTo("false");
 	}
 
 	@Test
 	public void createNodeClientWithOverrides() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.home:target",
-				"spring.data.elasticsearch.properties.node.local:false",
-				"spring.data.elasticsearch.properties.node.data:true",
-				"spring.data.elasticsearch.properties.http.enabled:true");
+		TestPropertyValues
+				.of("spring.data.elasticsearch.properties.monitor.process.refresh_interval:2s",
+						"spring.data.elasticsearch.properties.path.home:target",
+						"spring.data.elasticsearch.properties.transport.type:local",
+						"spring.data.elasticsearch.properties.node.data:true",
+						"spring.data.elasticsearch.properties.http.enabled:true")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
-		assertThat(client.settings().get("node.local")).isEqualTo("false");
+		assertThat(client.settings().get("monitor.process.refresh_interval"))
+				.isEqualTo("2s");
+		assertThat(client.settings().get("transport.type")).isEqualTo("local");
 		assertThat(client.settings().get("node.data")).isEqualTo("true");
 		assertThat(client.settings().get("http.enabled")).isEqualTo("true");
 	}
@@ -105,9 +109,10 @@ public class ElasticsearchAutoConfigurationTests {
 		// We don't have a local elasticsearch server so use an address that's missing
 		// a port and check the exception
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.cluster-nodes:localhost",
-				"spring.data.elasticsearch.properties.path.home:target");
+		TestPropertyValues
+				.of("spring.data.elasticsearch.cluster-nodes:localhost",
+						"spring.data.elasticsearch.properties.path.home:target")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.thrown.expect(BeanCreationException.class);

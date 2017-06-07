@@ -1,0 +1,29 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'maven-publish'
+
+bootJar {
+	mainClass = 'com.example.Application'
+}
+
+group = 'com.example'
+version = '1.0'
+
+publishing {
+	repositories {
+		maven {
+			url "$buildDir/repo"
+		}
+	}
+	publications {
+		bootJava(MavenPublication) {
+			artifact bootJar
+		}
+	}
+}

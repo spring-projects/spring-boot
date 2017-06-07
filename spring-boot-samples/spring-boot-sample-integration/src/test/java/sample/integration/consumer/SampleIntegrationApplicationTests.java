@@ -97,13 +97,9 @@ public class SampleIntegrationApplicationTests {
 						}
 						StringBuilder builder = new StringBuilder();
 						for (Resource resource : resources) {
-							InputStream inputStream = resource.getInputStream();
-							try {
+							try (InputStream inputStream = resource.getInputStream()) {
 								builder.append(new String(
 										StreamUtils.copyToByteArray(inputStream)));
-							}
-							finally {
-								inputStream.close();
 							}
 						}
 						return builder.toString();

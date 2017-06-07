@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class Handler extends URLStreamHandler {
 	private static SoftReference<Map<File, JarFile>> rootFileCache;
 
 	static {
-		rootFileCache = new SoftReference<Map<File, JarFile>>(null);
+		rootFileCache = new SoftReference<>(null);
 	}
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
@@ -291,8 +291,8 @@ public class Handler extends URLStreamHandler {
 	static void addToRootFileCache(File sourceFile, JarFile jarFile) {
 		Map<File, JarFile> cache = rootFileCache.get();
 		if (cache == null) {
-			cache = new ConcurrentHashMap<File, JarFile>();
-			rootFileCache = new SoftReference<Map<File, JarFile>>(cache);
+			cache = new ConcurrentHashMap<>();
+			rootFileCache = new SoftReference<>(cache);
 		}
 		cache.put(sourceFile, jarFile);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,7 @@ import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiColors;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -45,6 +43,8 @@ import org.springframework.util.Assert;
  *
  * @author Craig Burke
  * @author Phillip Webb
+ * @author Madhura Bhave
+ * @author Raja Kolli
  * @since 1.4.0
  */
 public class ImageBanner implements Banner {
@@ -92,25 +92,21 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(Environment environment, PrintStream out)
 			throws IOException {
-		PropertyResolver properties = new RelaxedPropertyResolver(environment,
-				"banner.image.");
-		int width = properties.getProperty("width", Integer.class, 76);
-		int height = properties.getProperty("height", Integer.class, 0);
-		int margin = properties.getProperty("margin", Integer.class, 2);
-		boolean invert = properties.getProperty("invert", Boolean.class, false);
+		int width = environment.getProperty("banner.image.width", Integer.class, 76);
+		int height = environment.getProperty("banner.image.height", Integer.class, 0);
+		int margin = environment.getProperty("banner.image.margin", Integer.class, 2);
+		boolean invert = environment.getProperty("banner.image.invert", Boolean.class,
+				false);
 		BufferedImage image = readImage(width, height);
 		printBanner(image, margin, invert, out);
 	}
 
 	private BufferedImage readImage(int width, int height) throws IOException {
-		InputStream inputStream = this.image.getInputStream();
-		try {
+		try (InputStream inputStream = this.image.getInputStream()) {
 			BufferedImage image = ImageIO.read(inputStream);
 			return resizeImage(image, width, height);
 		}
-		finally {
-			inputStream.close();
-		}
+
 	}
 
 	private BufferedImage resizeImage(BufferedImage image, int width, int height) {

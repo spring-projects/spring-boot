@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -43,6 +44,7 @@ public class FileEncodingApplicationListenerTests {
 	public void testIllegalState() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.mandatory_file_encoding=FOO");
+		ConfigurationPropertySources.attach(this.environment);
 		this.initializer.onApplicationEvent(this.event);
 	}
 
@@ -56,6 +58,7 @@ public class FileEncodingApplicationListenerTests {
 		Assume.assumeNotNull(System.getProperty("file.encoding"));
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.mandatory_file_encoding:" + System.getProperty("file.encoding"));
+		ConfigurationPropertySources.attach(this.environment);
 		this.initializer.onApplicationEvent(this.event);
 	}
 

@@ -110,7 +110,7 @@ public class GroovyCompiler {
 			this.compilerAutoConfigurations = Collections.emptySet();
 		}
 
-		this.transformations = new ArrayList<ASTTransformation>();
+		this.transformations = new ArrayList<>();
 		this.transformations
 				.add(new DependencyManagementBomTransformation(resolutionContext));
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
@@ -185,7 +185,7 @@ public class GroovyCompiler {
 			throws CompilationFailedException, IOException {
 
 		this.loader.clearCache();
-		List<Class<?>> classes = new ArrayList<Class<?>>();
+		List<Class<?>> classes = new ArrayList<>();
 
 		CompilerConfiguration configuration = this.loader.getConfiguration();
 

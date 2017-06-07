@@ -26,16 +26,16 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.IgnoredRequestCustomizer;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -69,9 +69,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				WebClientAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class,
 				EndpointWebMvcManagementContextConfiguration.class,
 				CloudFoundryActuatorAutoConfiguration.class);
 	}
@@ -120,8 +119,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void skipSslValidation() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.cloudfoundry.skipSslValidation:true");
+		TestPropertyValues.of("management.cloudfoundry.skipSslValidation:true")
+				.applyTo(this.context);
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		CloudFoundryEndpointHandlerMapping handlerMapping = getHandlerMapping();
 		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
@@ -137,8 +137,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	public void cloudFoundryPlatformActiveAndCloudControllerUrlNotPresent()
 			throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id");
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+				.applyTo(this.context);
 		this.context.refresh();
 		CloudFoundryEndpointHandlerMapping handlerMapping = this.context.getBean(
 				"cloudFoundryEndpointHandlerMapping",
@@ -152,8 +153,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryPathsIgnoredBySpringSecurity() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id");
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+				.applyTo(this.context);
 		this.context.refresh();
 		IgnoredRequestCustomizer customizer = (IgnoredRequestCustomizer) this.context
 				.getBean("cloudFoundryIgnoredRequestCustomizer");
@@ -179,17 +181,19 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryManagementEndpointsDisabled() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION=---",
-				"management.cloudfoundry.enabled:false");
+		TestPropertyValues
+				.of("VCAP_APPLICATION=---", "management.cloudfoundry.enabled:false")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.containsBean("cloudFoundryEndpointHandlerMapping"))
 				.isFalse();
 	}
 
 	private CloudFoundryEndpointHandlerMapping getHandlerMapping() {
-		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:http://my-cloud-controller.com");
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:http://my-cloud-controller.com")
+				.applyTo(this.context);
 		this.context.refresh();
 		return this.context.getBean("cloudFoundryEndpointHandlerMapping",
 				CloudFoundryEndpointHandlerMapping.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ public class RestDocsTestController {
 	@ResponseBody
 	@RequestMapping(path = "/", produces = MediaTypes.HAL_JSON_VALUE)
 	public Map<String, Object> index() {
-		Map<String, Object> response = new HashMap<String, Object>();
-		Map<String, String> links = new HashMap<String, String>();
+		Map<String, Object> response = new HashMap<>();
+		Map<String, String> links = new HashMap<>();
 		links.put("self", ControllerLinkBuilder.linkTo(getClass()).toUri().toString());
 		response.put("_links", links);
 		return response;
