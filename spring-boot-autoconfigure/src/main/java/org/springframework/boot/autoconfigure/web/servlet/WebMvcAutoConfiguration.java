@@ -57,6 +57,7 @@ import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.converter.Converter;
@@ -173,7 +174,7 @@ public class WebMvcAutoConfiguration {
 
 		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties,
 				WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
-				HttpMessageConverters messageConverters,
+				@Lazy HttpMessageConverters messageConverters,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
 			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcProperties;
