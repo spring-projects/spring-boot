@@ -1697,10 +1697,19 @@ The most common options to set are:
 In addition all properties in `+spring.jpa.properties.*+` are passed through as normal JPA
 properties (with the prefix stripped) when the local `EntityManagerFactory` is created.
 
-Hibernate defines `Physical` and `Implicit` naming strategies: Spring Boot configures
-`SpringPhysicalNamingStrategy` by default. This implementation provides the same
-table structure as Hibernate 4. If you'd rather use Hibernate 5's default instead, set
-the following property:
+
+
+[[howto-configure-hibernate-naming-strategy]]
+=== Configure Hibernate Naming Strategy
+Hibernate defines `Physical` and `Implicit` naming strategies. Spring Boot configures
+`SpringPhysicalNamingStrategy` by default. This implementation provides the same table
+structure as Hibernate 4: all dots are replaced by underscores and camel cases are
+replaced by underscores as well. By default, all table names are generated in lower case
+but it is possible to override that flag if your schema requires it.
+
+Concretely, a `TelephoneNumber` entity will be mapped to the `telephone_number` table.
+
+If you'd rather use Hibernate 5's default instead, set the following property:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
