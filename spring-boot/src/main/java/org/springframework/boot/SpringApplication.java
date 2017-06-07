@@ -146,6 +146,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Michael Simons
  * @author Madhura Bhave
  * @author Brian Clozel
+ * @author Ethan Rubinson
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
  * @see #SpringApplication(Class...)
@@ -192,19 +193,7 @@ public class SpringApplication {
 	 */
 	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
 
-	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
-
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
-
-	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
-
-	static {
-		Set<String> names = new HashSet<>();
-		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
-		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
-		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
-		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
-	}
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
@@ -359,9 +348,9 @@ public class SpringApplication {
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
-		if (isWebEnvironment(environment)
-				&& this.webApplicationType == WebApplicationType.NONE) {
-			environment = convertToStandardEnvironment(environment);
+		if (this.webApplicationType == WebApplicationType.NONE) {
+			environment = new EnvironmentConverter(getClassLoader())
+					.convertToStandardEnvironmentIfNecessary(environment);
 		}
 		ConfigurationPropertySources.attach(environment);
 		return environment;
@@ -479,40 +468,6 @@ public class SpringApplication {
 			String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
-	}
-
-	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
-		try {
-			Class<?> webEnvironmentClass = ClassUtils
-					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
-			return (webEnvironmentClass.isInstance(environment));
-		}
-		catch (Throwable ex) {
-			return false;
-		}
-	}
-
-	private ConfigurableEnvironment convertToStandardEnvironment(
-			ConfigurableEnvironment environment) {
-		StandardEnvironment result = new StandardEnvironment();
-		removeAllPropertySources(result.getPropertySources());
-		result.setActiveProfiles(environment.getActiveProfiles());
-		for (PropertySource<?> propertySource : environment.getPropertySources()) {
-			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
-				result.getPropertySources().addLast(propertySource);
-			}
-		}
-		return result;
-	}
-
-	private void removeAllPropertySources(MutablePropertySources propertySources) {
-		Set<String> names = new HashSet<>();
-		for (PropertySource<?> propertySource : propertySources) {
-			names.add(propertySource.getName());
-		}
-		for (String name : names) {
-			propertySources.remove(name);
-		}
 	}
 
 	/**
