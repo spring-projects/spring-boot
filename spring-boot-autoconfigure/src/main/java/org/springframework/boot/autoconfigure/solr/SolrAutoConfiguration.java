@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for Solr 4.x.
  *
  * @author Christoph Strobl
+ * @author Anand Shah
  * @since 1.1.0
  */
 @Configuration
