@@ -1912,8 +1912,7 @@ provides the same table structure as Hibernate 4: all dots are replaced by under
 camel cases are replaced by underscores as well. By default, all table names are generated
 in lower case but it is possible to override that flag if your schema requires it.
 
-Concretely, the `TelephoneNumber` entity will use a `telephone_number` with the default
-strategy.
+Concretely, a `TelephoneNumber` entity will be mapped to the `telephone_number` table.
 
 If you'd rather use Hibernate 5's default instead, set the following property:
 
