@@ -202,8 +202,7 @@ public class CacheProperties {
 		 */
 		private Resource config;
 
-		@DeprecatedConfigurationProperty(replacement = "spring.hazelcast.config",
-				reason = "Use general hazelcast auto-configuration instead.")
+		@DeprecatedConfigurationProperty(replacement = "spring.hazelcast.config", reason = "Use general hazelcast auto-configuration instead.")
 		@Deprecated
 		public Resource getConfig() {
 			return this.config;

@@ -33,7 +33,7 @@ import org.springframework.beans.factory.FactoryBean;
  * @author Dave Syer
  * @since 1.2.2
  * @see MustacheResourceTemplateLoader
- * @deprecated  as of 1.5
+ * @deprecated as of 1.5
  */
 @Deprecated
 public class MustacheCompilerFactoryBean implements FactoryBean<Mustache.Compiler> {

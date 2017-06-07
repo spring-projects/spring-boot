@@ -263,11 +263,11 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	}
 
 	private ServletContainer getServletContainerFromNewFactory() {
-		UndertowEmbeddedServletContainer container = (UndertowEmbeddedServletContainer)
-				getFactory().getEmbeddedServletContainer();
+		UndertowEmbeddedServletContainer container = (UndertowEmbeddedServletContainer) getFactory()
+				.getEmbeddedServletContainer();
 		try {
-			return ((DeploymentManager) ReflectionTestUtils.getField(container, "manager"))
-					.getDeployment().getServletContainer();
+			return ((DeploymentManager) ReflectionTestUtils.getField(container,
+					"manager")).getDeployment().getServletContainer();
 		}
 		finally {
 			container.stop();

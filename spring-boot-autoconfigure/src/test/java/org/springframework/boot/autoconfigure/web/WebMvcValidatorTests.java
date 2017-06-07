@@ -54,8 +54,7 @@ public class WebMvcValidatorTests {
 
 	@Test
 	public void wrapLocalValidatorFactoryBean() {
-		WebMvcValidator wrapper = load(
-				LocalValidatorFactoryBeanConfig.class);
+		WebMvcValidator wrapper = load(LocalValidatorFactoryBeanConfig.class);
 		assertThat(wrapper.supports(SampleData.class)).isTrue();
 		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(),
 				"test");
