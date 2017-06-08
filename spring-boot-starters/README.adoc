@@ -127,4 +127,7 @@ do as they were designed before this was clarified.
 | http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
+| Charon reverse proxy
+| https://github.com/mkopylec/charon-spring-boot-starter
+
 |===
