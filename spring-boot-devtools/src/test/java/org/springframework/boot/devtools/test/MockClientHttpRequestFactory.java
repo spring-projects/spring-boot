@@ -41,6 +41,8 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
  */
 public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
+	private static final byte[] NO_DATA = {};
+
 	private AtomicLong seq = new AtomicLong();
 
 	private Deque<Object> responses = new ArrayDeque<>();
@@ -55,7 +57,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	public void willRespond(HttpStatus... response) {
 		for (HttpStatus status : response) {
-			this.responses.add(new Response(0, null, status));
+			this.responses.add(new Response(0, NO_DATA, status));
 		}
 	}
 
