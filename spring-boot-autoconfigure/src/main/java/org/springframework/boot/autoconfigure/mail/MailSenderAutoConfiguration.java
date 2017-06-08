@@ -75,6 +75,21 @@ public class MailSenderAutoConfiguration {
 		}
 		return sender;
 	}
+	
+	private void applyPropertiesToSystem() {
+		if (this.properties.getProperties().containsKey("mail.mime.multipart.ignoremissingendboundary")) {
+			System.getProperties().put("mail.mime.multipart.ignoremissingendboundary", this.properties.getProperties().get("mail.mime.multipart.ignoremissingendboundary"));
+		}
+		if (this.properties.getProperties().containsKey("mail.mime.multipart.ignoremissingboundaryparameter")) {
+			System.getProperties().put("mail.mime.multipart.ignoremissingboundaryparameter", this.properties.getProperties().get("mail.mime.multipart.ignoremissingboundaryparameter"));
+		}
+		if (this.properties.getProperties().containsKey("mail.mime.multipart.ignoreexistingboundaryparameter")) {
+			System.getProperties().put("mail.mime.multipart.ignoreexistingboundaryparameter", this.properties.getProperties().get("mail.mime.multipart.ignoreexistingboundaryparameter"));
+		}
+		if (this.properties.getProperties().containsKey("mail.mime.multipart.allowempty")) {
+			System.getProperties().put("mail.mime.multipart.allowempty", this.properties.getProperties().get("mail.mime.multipart.allowempty"));
+		}
+	}
 
 	private void applyProperties(JavaMailSenderImpl sender) {
 		sender.setHost(this.properties.getHost());
@@ -89,6 +104,7 @@ public class MailSenderAutoConfiguration {
 		}
 		if (!this.properties.getProperties().isEmpty()) {
 			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
+			applyPropertiesToSystem();
 		}
 	}
 
