@@ -29,6 +29,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import org.sonatype.plexus.build.incremental.BuildContext;
+
 import org.springframework.boot.loader.tools.BuildPropertiesWriter;
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.NullAdditionalPropertyValueException;
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
@@ -64,6 +66,12 @@ public class BuildInfoMojo extends AbstractMojo {
 	 */
 	@Parameter
 	private Map<String, String> additionalProperties;
+
+	/**
+	 * The Maven project.
+	 */
+	@Component
+	private BuildContext buildContext;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
