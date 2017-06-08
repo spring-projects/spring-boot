@@ -57,14 +57,14 @@ public class SampleAopApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		SampleAopApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertThat(output).contains("Hello Phil");
+		assertThat(output).contains("Hello Phil").contains("1lihP olleH").contains("Hello Phil2");
 	}
 
 	@Test
 	public void testCommandLineOverrides() throws Exception {
 		SampleAopApplication.main(new String[] { "--name=Gordon" });
 		String output = this.outputCapture.toString();
-		assertThat(output).contains("Hello Gordon");
+		assertThat(output).contains("Hello Gordon").contains("1nodroG olleH").contains("Hello Gordon2");;
 	}
 
 }

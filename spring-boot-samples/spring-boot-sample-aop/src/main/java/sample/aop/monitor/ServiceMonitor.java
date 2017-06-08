@@ -17,18 +17,33 @@
 package sample.aop.monitor;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
 public class ServiceMonitor {
 
+	@Pointcut("execution(* sample.aop.service.HelloWorldService.getHelloMessage(int))")
+	private void getHelloMessagePoint(){};
+
 	@AfterReturning("execution(* sample..*Service.*(..))")
 	public void logServiceAccess(JoinPoint joinPoint) {
 		System.out.println("Completed: " + joinPoint);
 	}
 
+	@Around("getHelloMessagePoint()")
+	public String getHelloMessageAround(ProceedingJoinPoint pjp) throws Throwable {
+		Object param = pjp.getArgs()[0];
+		String message = (String) pjp.proceed();
+		if ( 1 == Integer.parseInt(null == param?"":param.toString()) ) {
+			return new StringBuilder(message).reverse().toString();
+		}
+		return message;
+	}
 }
