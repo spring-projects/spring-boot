@@ -274,13 +274,11 @@ provides access to both the raw `String[]` arguments as well as parsed `option` 
 [source,java,indent=0]
 ----
 	import org.springframework.boot.*
-	import org.springframework.beans.factory.annotation.*
 	import org.springframework.stereotype.*
 
 	@Component
 	public class MyBean {
 
-		@Autowired
 		public MyBean(ApplicationArguments args) {
 			boolean debug = args.containsOption("debug");
 			List<String> files = args.getNonOptionArgs();
@@ -993,7 +991,6 @@ as any other bean.
 
 		private final FooProperties properties;
 
-		@Autowired
 		public MyService(FooProperties properties) {
 		    this.properties = properties;
 		}
@@ -2914,7 +2911,6 @@ you can `@Autowire` them directly into your own beans:
 
 [source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.jdbc.core.JdbcTemplate;
 	import org.springframework.stereotype.Component;
 
@@ -2923,7 +2919,6 @@ you can `@Autowire` them directly into your own beans:
 
 		private final JdbcTemplate jdbcTemplate;
 
-		@Autowired
 		public MyBean(JdbcTemplate jdbcTemplate) {
 			this.jdbcTemplate = jdbcTemplate;
 		}
@@ -3199,7 +3194,6 @@ application `DataSource`. To use the `DSLContext` you can just `@Autowire` it:
 
 		private final DSLContext create;
 
-		@Autowired
 		public JooqExample(DSLContext dslContext) {
 			this.create = dslContext;
 		}
@@ -3292,7 +3286,6 @@ instance will attempt to connect to a Redis server using `localhost:6379`:
 
 		private StringRedisTemplate template;
 
-		@Autowired
 		public MyBean(StringRedisTemplate template) {
 			this.template = template;
 		}
@@ -3334,7 +3327,6 @@ server using the URL `mongodb://localhost/test`:
 
 		private final MongoDbFactory mongo;
 
-		@Autowired
 		public MyBean(MongoDbFactory mongo) {
 			this.mongo = mongo;
 		}
@@ -3390,7 +3382,6 @@ auto-configures a bean for you to simply inject:
 
 [source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.data.mongodb.core.MongoTemplate;
 	import org.springframework.stereotype.Component;
 
@@ -3399,7 +3390,6 @@ auto-configures a bean for you to simply inject:
 
 		private final MongoTemplate mongoTemplate;
 
-		@Autowired
 		public MyBean(MongoTemplate mongoTemplate) {
 			this.mongoTemplate = mongoTemplate;
 		}
@@ -3490,7 +3480,6 @@ Neo4j server using `localhost:7474`:
 
 		private final Neo4jTemplate neo4jTemplate;
 
-		@Autowired
 		public MyBean(Neo4jTemplate neo4jTemplate) {
 			this.neo4jTemplate = neo4jTemplate;
 		}
@@ -3627,9 +3616,8 @@ bean. By default the instance will attempt to connect to a server using
 	@Component
 	public class MyBean {
 
-		private SolrClient solr;
+		private final SolrClient solr;
 
-		@Autowired
 		public MyBean(SolrClient solr) {
 			this.solr = solr;
 		}
@@ -3723,9 +3711,8 @@ Alternatively, you can switch to a remote server (i.e. a `TransportClient`) by s
 	@Component
 	public class MyBean {
 
-		private ElasticsearchTemplate template;
+		private final ElasticsearchTemplate template;
 
-		@Autowired
 		public MyBean(ElasticsearchTemplate template) {
 			this.template = template;
 		}
@@ -3785,9 +3772,8 @@ properties can be used to customize the connection. Generally you will provide
 	@Component
 	public class MyBean {
 
-		private CassandraTemplate template;
+		private final CassandraTemplate template;
 
-		@Autowired
 		public MyBean(CassandraTemplate template) {
 			this.template = template;
 		}
@@ -3878,7 +3864,6 @@ happens when you enable the couchbase support as explained above).
 
 		private final CouchbaseTemplate template;
 
-		@Autowired
 		public MyBean(CouchbaseTemplate template) {
 			this.template = template;
 		}
@@ -3971,7 +3956,6 @@ other Spring Bean.
 
 		private final LdapTemplate template;
 
-		@Autowired
 		public MyBean(LdapTemplate template) {
 			this.template = template;
 		}
@@ -4502,7 +4486,6 @@ beans:
 
 [source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.jms.core.JmsTemplate;
 	import org.springframework.stereotype.Component;
 
@@ -4511,7 +4494,6 @@ beans:
 
 		private final JmsTemplate jmsTemplate;
 
-		@Autowired
 		public MyBean(JmsTemplate jmsTemplate) {
 			this.jmsTemplate = jmsTemplate;
 		}
@@ -4650,7 +4632,6 @@ directly into your own beans:
 ----
 	import org.springframework.amqp.core.AmqpAdmin;
 	import org.springframework.amqp.core.AmqpTemplate;
-	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.stereotype.Component;
 
 	@Component
@@ -4659,7 +4640,6 @@ directly into your own beans:
 		private final AmqpAdmin amqpAdmin;
 		private final AmqpTemplate amqpTemplate;
 
-		@Autowired
 		public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
 			this.amqpAdmin = amqpAdmin;
 			this.amqpTemplate = amqpTemplate;
@@ -4798,7 +4778,6 @@ public class MyBean {
 
 	private final KafkaTemplate kafkaTemplate;
 
-	@Autowired
 	public MyBean(KafkaTemplate kafkaTemplate) {
 		this.kafkaTemplate = kafkaTemplate;
 	}
