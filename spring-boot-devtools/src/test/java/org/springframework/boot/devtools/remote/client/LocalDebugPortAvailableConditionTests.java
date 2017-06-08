@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -39,13 +38,11 @@ import static org.mockito.Mockito.mock;
  */
 public class LocalDebugPortAvailableConditionTests {
 
-	private int port = SocketUtils.findAvailableTcpPort();
-
 	private LocalDebugPortAvailableCondition condition = new LocalDebugPortAvailableCondition();
 
 	@Test
 	public void portAvailable() throws Exception {
-		ConditionOutcome outcome = getOutcome();
+		ConditionOutcome outcome = getOutcome(0);
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
 				.isEqualTo("Local Debug Port Condition found local debug port");
@@ -53,19 +50,19 @@ public class LocalDebugPortAvailableConditionTests {
 
 	@Test
 	public void portInUse() throws Exception {
-		final ServerSocket serverSocket = ServerSocketFactory.getDefault()
-				.createServerSocket(this.port);
-		ConditionOutcome outcome = getOutcome();
+		ServerSocket serverSocket = ServerSocketFactory.getDefault()
+				.createServerSocket(0);
+		ConditionOutcome outcome = getOutcome(serverSocket.getLocalPort());
 		serverSocket.close();
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
 				.isEqualTo("Local Debug Port Condition did not find local debug port");
 	}
 
-	private ConditionOutcome getOutcome() {
+	private ConditionOutcome getOutcome(int port) {
 		MockEnvironment environment = new MockEnvironment();
-		TestPropertyValues.of(
-				"spring.devtools.remote.debug.local-port:" + this.port).applyTo(environment);
+		TestPropertyValues.of("spring.devtools.remote.debug.local-port:" + port)
+				.applyTo(environment);
 		ConditionContext context = mock(ConditionContext.class);
 		given(context.getEnvironment()).willReturn(environment);
 		ConditionOutcome outcome = this.condition.getMatchOutcome(context, null);

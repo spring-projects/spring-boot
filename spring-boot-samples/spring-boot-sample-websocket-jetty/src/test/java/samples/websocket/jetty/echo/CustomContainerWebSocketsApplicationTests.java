@@ -37,13 +37,13 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
@@ -51,20 +51,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SampleJettyWebSocketsApplication.class,
-		CustomContainerConfiguration.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
+		CustomContainerConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class CustomContainerWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory
 			.getLog(CustomContainerWebSocketsApplicationTests.class);
 
-	private static int PORT = SocketUtils.findAvailableTcpPort();
+	@LocalServerPort
+	private int port;
 
 	@Test
 	public void echoEndpoint() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + PORT
+						.properties("websocket.uri:ws://localhost:" + this.port
 								+ "/ws/echo/websocket")
 						.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
@@ -80,8 +81,8 @@ public class CustomContainerWebSocketsApplicationTests {
 	public void reverseEndpoint() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-						.properties(
-								"websocket.uri:ws://localhost:" + PORT + "/ws/reverse")
+						.properties("websocket.uri:ws://localhost:" + this.port
+								+ "/ws/reverse")
 						.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
@@ -96,7 +97,7 @@ public class CustomContainerWebSocketsApplicationTests {
 
 		@Bean
 		public ServletWebServerFactory webServerFactory() {
-			return new JettyServletWebServerFactory("/ws", PORT);
+			return new JettyServletWebServerFactory("/ws", 0);
 		}
 
 	}

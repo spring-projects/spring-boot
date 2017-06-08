@@ -57,7 +57,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -347,9 +346,7 @@ public class PublicMetricsAutoConfigurationTests {
 
 		@Bean
 		public TomcatServletWebServerFactory webServerFactory() {
-			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-			factory.setPort(SocketUtils.findAvailableTcpPort(40000));
-			return factory;
+			return new TomcatServletWebServerFactory(0);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 import org.springframework.boot.loader.tools.JavaExecutable;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,15 +40,13 @@ public class WarCommandIT {
 
 	@Test
 	public void warCreation() throws Exception {
-		int port = SocketUtils.findAvailableTcpPort();
 		File war = new File("target/test-app.war");
 		Invocation invocation = this.cli.invoke("war", war.getAbsolutePath(),
 				"war.groovy");
 		invocation.await();
 		assertThat(war.exists()).isTrue();
 		Process process = new JavaExecutable()
-				.processBuilder("-jar", war.getAbsolutePath(), "--server.port=" + port)
-				.start();
+				.processBuilder("-jar", war.getAbsolutePath(), "--server.port=0").start();
 		invocation = new Invocation(process);
 		invocation.await();
 		assertThat(invocation.getOutput()).contains("onStart error");

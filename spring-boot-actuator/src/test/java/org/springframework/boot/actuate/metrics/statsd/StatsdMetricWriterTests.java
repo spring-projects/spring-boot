@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,12 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StatsdMetricWriterTests {
 
-	private int port = SocketUtils.findAvailableTcpPort();
-
-	private DummyStatsDServer server = new DummyStatsDServer(this.port);
+	private DummyStatsDServer server = new DummyStatsDServer(0);
 
 	private StatsdMetricWriter writer = new StatsdMetricWriter("me", "localhost",
-			this.port);
+			this.server.getPort());
 
 	@After
 	public void close() {
@@ -84,7 +81,7 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void nullPrefix() throws Exception {
-		this.writer = new StatsdMetricWriter("localhost", this.port);
+		this.writer = new StatsdMetricWriter("localhost", this.server.getPort());
 		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("gauge.foo:3|g");
@@ -92,7 +89,7 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void periodPrefix() throws Exception {
-		this.writer = new StatsdMetricWriter("my.", "localhost", this.port);
+		this.writer = new StatsdMetricWriter("my.", "localhost", this.server.getPort());
 		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("my.gauge.foo:3|g");
@@ -127,6 +124,10 @@ public class StatsdMetricWriterTests {
 				throw new IllegalStateException(ex);
 			}
 			new Thread(this).start();
+		}
+
+		int getPort() {
+			return this.server.getLocalPort();
 		}
 
 		public void stop() {

@@ -112,13 +112,15 @@ public class LiveReloadServer {
 
 	/**
 	 * Start the livereload server and accept incoming connections.
+	 * @return the port on which the server is listening
 	 * @throws IOException in case of I/O errors
 	 */
-	public void start() throws IOException {
+	public int start() throws IOException {
 		synchronized (this.monitor) {
 			Assert.state(!isStarted(), "Server already started");
 			logger.debug("Starting live reload server on port " + this.port);
 			this.serverSocket = new ServerSocket(this.port);
+			int localPort = this.serverSocket.getLocalPort();
 			this.listenThread = this.threadFactory.newThread(new Runnable() {
 
 				@Override
@@ -130,6 +132,7 @@ public class LiveReloadServer {
 			this.listenThread.setDaemon(true);
 			this.listenThread.setName("Live Reload Server");
 			this.listenThread.start();
+			return localPort;
 		}
 	}
 

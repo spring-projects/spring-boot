@@ -54,7 +54,6 @@ import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -92,7 +91,7 @@ public class TomcatServletWebServerFactoryTests
 	public void tomcatEngineNames() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
-		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+		factory.setPort(0);
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
 		// Make sure that the names are different
 		String firstName = ((TomcatWebServer) this.webServer).getTomcat().getEngine()
