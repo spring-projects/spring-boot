@@ -620,7 +620,7 @@ typically in `application.properties` or `application.yml`. For example:
 	server.ssl.key-password=another-secret
 ----
 
-See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of the
+See {sc-spring-boot}/web/server/Ssl.{sc-ext}[`Ssl`] for details of all of the
 supported properties.
 
 Using configuration like the example above means the application will no longer support

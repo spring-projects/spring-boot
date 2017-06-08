@@ -56,7 +56,7 @@ public class ElasticsearchDataAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		this.context.refresh();
-		asssertHasSingleBean(ElasticsearchTemplate.class);
+		assertHasSingleBean(ElasticsearchTemplate.class);
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class ElasticsearchDataAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		this.context.refresh();
-		asssertHasSingleBean(SimpleElasticsearchMappingContext.class);
+		assertHasSingleBean(SimpleElasticsearchMappingContext.class);
 	}
 
 	@Test
@@ -84,10 +84,10 @@ public class ElasticsearchDataAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		this.context.refresh();
-		asssertHasSingleBean(ElasticsearchConverter.class);
+		assertHasSingleBean(ElasticsearchConverter.class);
 	}
 
-	private void asssertHasSingleBean(Class<?> type) {
+	private void assertHasSingleBean(Class<?> type) {
 		assertThat(this.context.getBeanNamesForType(type)).hasSize(1);
 	}
 
