@@ -177,6 +177,7 @@ content into your application; rather pick only the properties that you need.
 	server.jetty.max-http-post-size=0 # Maximum size in bytes of the HTTP post or put content.
 	server.jetty.selectors= # Number of selector threads to use.
 	server.port=8080 # Server HTTP port.
+	server.port-range= # If server.port value is 0 the port automatically pick with specific port range (Ex 9000-9050)
 	server.server-header= # Value to use for the Server response header (no header is sent if empty)
 	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
 	server.servlet.context-parameters.*= # Servlet context init parameters
