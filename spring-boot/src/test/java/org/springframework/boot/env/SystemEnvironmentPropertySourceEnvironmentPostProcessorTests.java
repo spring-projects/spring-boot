@@ -44,7 +44,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessShouldReplaceSystemEnviromentPropertySource()
+	public void postProcessShouldReplaceSystemEnvironmentPropertySource()
 			throws Exception {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(this.environment, null);
