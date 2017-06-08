@@ -57,7 +57,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	public void willRespond(HttpStatus... response) {
 		for (HttpStatus status : response) {
-			this.responses.add(new Response(0, NO_DATA, status));
+			this.responses.add(new Response(0, null, status));
 		}
 	}
 
@@ -119,7 +119,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
 			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
-					this.payload == null ? new byte[0] : this.payload, this.status);
+					this.payload == null ? NO_DATA : this.payload, this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);
