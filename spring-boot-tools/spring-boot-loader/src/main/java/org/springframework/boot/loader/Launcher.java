@@ -37,6 +37,8 @@ import org.springframework.boot.loader.jar.JarFile;
  * @author Dave Syer
  */
 public abstract class Launcher {
+	
+	protected ClassLoader classLoader;
 
 	/**
 	 * Launch the application. This method is the initial entry point that should be
@@ -51,17 +53,27 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Create a classloader for the specified archives.
+	 * Create a classloader for the specified archives.  If previously called
+	 * it will return a cached classloader.
+	 * 
 	 * @param archives the archives
 	 * @return the classloader
 	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
+
+		if (classLoader != null) {
+			return classLoader;
+		}
+		
 		List<URL> urls = new ArrayList<>(archives.size());
+
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}
-		return createClassLoader(urls.toArray(new URL[urls.size()]));
+		
+		classLoader = createClassLoader(urls.toArray(new URL[urls.size()]));
+		return classLoader;
 	}
 
 	/**
