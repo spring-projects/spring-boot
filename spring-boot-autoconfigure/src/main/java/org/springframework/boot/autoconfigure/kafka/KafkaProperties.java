@@ -672,6 +672,11 @@ public class KafkaProperties {
 		 */
 		private Long ackTime;
 
+		/**
+		 * True if this should be batch listener.
+		 */
+		private Boolean batchListener;
+
 		public AckMode getAckMode() {
 			return this.ackMode;
 		}
@@ -712,6 +717,13 @@ public class KafkaProperties {
 			this.ackTime = ackTime;
 		}
 
+		public Boolean getBatchListener() {
+			return batchListener;
+		}
+
+		public void setBatchListener(Boolean batchListener) {
+			this.batchListener = batchListener;
+		}
 	}
 
 	public static class Ssl {
