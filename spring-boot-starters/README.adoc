@@ -76,6 +76,9 @@ do as they were designed before this was clarified.
 | http://log4jdbc.brunorozendo.com/[Log4jdbc]
 | https://github.com/candrews/log4jdbc-spring-boot-starter
 
+| https://logback.qos.ch/access.html[Logback-access]
+| https://github.com/akihyro/logback-access-spring-boot-starter
+
 | https://github.com/membrane/service-proxy[Membrane Service Proxy]
 | https://github.com/membrane/membrane-spring-boot-starter
 
