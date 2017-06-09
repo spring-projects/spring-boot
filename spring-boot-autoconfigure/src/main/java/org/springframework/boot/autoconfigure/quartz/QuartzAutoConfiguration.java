@@ -81,7 +81,7 @@ public class QuartzAutoConfiguration {
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers.getIfAvailable();
-		this.taskExecutor = taskExecutor.getIfAvailable();
+		this.taskExecutor = taskExecutor.getIfUnique();
 		this.jobDetails = jobDetails.getIfAvailable();
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();
