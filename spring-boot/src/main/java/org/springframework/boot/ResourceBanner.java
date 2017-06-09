@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot;
 
 import java.io.PrintStream;
@@ -43,102 +44,103 @@ import org.springframework.util.StreamUtils;
  */
 public class ResourceBanner implements Banner {
 
-    private static final Log logger = LogFactory.getLog(ResourceBanner.class);
+	private static final Log logger = LogFactory.getLog(ResourceBanner.class);
 
-    private Resource resource;
+	private Resource resource;
 
-    public ResourceBanner(Resource resource) {
-        Assert.notNull(resource, "Resource must not be null");
-        Assert.isTrue(resource.exists(), "Resource must exist");
-        this.resource = resource;
-    }
+	public ResourceBanner(Resource resource) {
+		Assert.notNull(resource, "Resource must not be null");
+		Assert.isTrue(resource.exists(), "Resource must exist");
+		this.resource = resource;
+	}
 
-    @Override
-    public void printBanner(Environment environment, Class<?> sourceClass,
-            PrintStream out) {
-        try {
-            String banner = getBannerText(environment);
+	@Override
+	public void printBanner(Environment environment, Class<?> sourceClass,
+			PrintStream out) {
+		try {
+			String banner = getBannerText(environment);
 
-            for (PropertyResolver resolver : getPropertyResolvers(environment,
-                    sourceClass)) {
-                banner = resolver.resolvePlaceholders(banner);
-            }
-            out.println(banner);
-        } catch (Exception ex) {
-            logger.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
-                    + ": '" + ex.getMessage() + "')", ex);
+			for (PropertyResolver resolver : getPropertyResolvers(environment,
+					sourceClass)) {
+				banner = resolver.resolvePlaceholders(banner);
+			}
+			out.println(banner);
+		}
+		catch (Exception ex) {
+			logger.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
+					+ ": '" + ex.getMessage() + "')", ex);
+		}
+	}
+
+        protected String getBannerText(Environment environment) throws Exception {
+            return StreamUtils.copyToString(this.resource.getInputStream(),
+                    environment.getProperty("banner.charset", Charset.class,
+                            Charset.forName("UTF-8")));
         }
-    }
+        
+	protected List<PropertyResolver> getPropertyResolvers(Environment environment,
+			Class<?> sourceClass) {
+		List<PropertyResolver> resolvers = new ArrayList<>();
+		resolvers.add(environment);
+		resolvers.add(getVersionResolver(sourceClass));
+		resolvers.add(getAnsiResolver());
+		resolvers.add(getTitleResolver(sourceClass));
+		return resolvers;
+	}
 
-    protected String getBannerText(Environment environment) throws Exception {
-        return StreamUtils.copyToString(this.resource.getInputStream(),
-                environment.getProperty("banner.charset", Charset.class,
-                        Charset.forName("UTF-8")));
-    }
+	private PropertyResolver getVersionResolver(Class<?> sourceClass) {
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources
+				.addLast(new MapPropertySource("version", getVersionsMap(sourceClass)));
+		return new PropertySourcesPropertyResolver(propertySources);
+	}
 
-    protected List<PropertyResolver> getPropertyResolvers(Environment environment,
-            Class<?> sourceClass) {
-        List<PropertyResolver> resolvers = new ArrayList<>();
-        resolvers.add(environment);
-        resolvers.add(getVersionResolver(sourceClass));
-        resolvers.add(getAnsiResolver());
-        resolvers.add(getTitleResolver(sourceClass));
-        return resolvers;
-    }
+	private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
+		String appVersion = getApplicationVersion(sourceClass);
+		String bootVersion = getBootVersion();
+		Map<String, Object> versions = new HashMap<>();
+		versions.put("application.version", getVersionString(appVersion, false));
+		versions.put("spring-boot.version", getVersionString(bootVersion, false));
+		versions.put("application.formatted-version", getVersionString(appVersion, true));
+		versions.put("spring-boot.formatted-version",
+				getVersionString(bootVersion, true));
+		return versions;
+	}
 
-    private PropertyResolver getVersionResolver(Class<?> sourceClass) {
-        MutablePropertySources propertySources = new MutablePropertySources();
-        propertySources
-                .addLast(new MapPropertySource("version", getVersionsMap(sourceClass)));
-        return new PropertySourcesPropertyResolver(propertySources);
-    }
+	protected String getApplicationVersion(Class<?> sourceClass) {
+		Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());
+		return (sourcePackage == null ? null : sourcePackage.getImplementationVersion());
+	}
 
-    private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
-        String appVersion = getApplicationVersion(sourceClass);
-        String bootVersion = getBootVersion();
-        Map<String, Object> versions = new HashMap<>();
-        versions.put("application.version", getVersionString(appVersion, false));
-        versions.put("spring-boot.version", getVersionString(bootVersion, false));
-        versions.put("application.formatted-version", getVersionString(appVersion, true));
-        versions.put("spring-boot.formatted-version",
-                getVersionString(bootVersion, true));
-        return versions;
-    }
+	protected String getBootVersion() {
+		return SpringBootVersion.getVersion();
+	}
 
-    protected String getApplicationVersion(Class<?> sourceClass) {
-        Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());
-        return (sourcePackage == null ? null : sourcePackage.getImplementationVersion());
-    }
+	private String getVersionString(String version, boolean format) {
+		if (version == null) {
+			return "";
+		}
+		return (format ? " (v" + version + ")" : version);
+	}
 
-    protected String getBootVersion() {
-        return SpringBootVersion.getVersion();
-    }
+	private PropertyResolver getAnsiResolver() {
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new AnsiPropertySource("ansi", true));
+		return new PropertySourcesPropertyResolver(sources);
+	}
 
-    private String getVersionString(String version, boolean format) {
-        if (version == null) {
-            return "";
-        }
-        return (format ? " (v" + version + ")" : version);
-    }
+	private PropertyResolver getTitleResolver(Class<?> sourceClass) {
+		MutablePropertySources sources = new MutablePropertySources();
+		String applicationTitle = getApplicationTitle(sourceClass);
+		Map<String, Object> titleMap = Collections.<String, Object>singletonMap(
+				"application.title", (applicationTitle == null ? "" : applicationTitle));
+		sources.addFirst(new MapPropertySource("title", titleMap));
+		return new PropertySourcesPropertyResolver(sources);
+	}
 
-    private PropertyResolver getAnsiResolver() {
-        MutablePropertySources sources = new MutablePropertySources();
-        sources.addFirst(new AnsiPropertySource("ansi", true));
-        return new PropertySourcesPropertyResolver(sources);
-    }
-
-    private PropertyResolver getTitleResolver(Class<?> sourceClass) {
-        MutablePropertySources sources = new MutablePropertySources();
-        String applicationTitle = getApplicationTitle(sourceClass);
-        Map<String, Object> titleMap = Collections.<String, Object>singletonMap(
-                "application.title", (applicationTitle == null ? "" : applicationTitle));
-        sources.addFirst(new MapPropertySource("title", titleMap));
-        return new PropertySourcesPropertyResolver(sources);
-    }
-
-    protected String getApplicationTitle(Class<?> sourceClass) {
-        Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());
-        return (sourcePackage == null ? null : sourcePackage.getImplementationTitle());
-    }
+	protected String getApplicationTitle(Class<?> sourceClass) {
+		Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());
+		return (sourcePackage == null ? null : sourcePackage.getImplementationTitle());
+	}
 
 }
