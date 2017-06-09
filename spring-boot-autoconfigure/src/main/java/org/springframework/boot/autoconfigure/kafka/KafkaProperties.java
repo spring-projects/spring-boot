@@ -718,7 +718,7 @@ public class KafkaProperties {
 		}
 
 		public Boolean getBatchListener() {
-			return batchListener;
+			return this.batchListener;
 		}
 
 		public void setBatchListener(Boolean batchListener) {
