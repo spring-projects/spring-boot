@@ -23,8 +23,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.ansi.AnsiPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -73,9 +75,9 @@ public class ResourceBanner implements Banner {
 	}
 
         protected String getBannerText(Environment environment) throws Exception {
-            return StreamUtils.copyToString(this.resource.getInputStream(),
-                    environment.getProperty("banner.charset", Charset.class,
-                            Charset.forName("UTF-8")));
+                return StreamUtils.copyToString(this.resource.getInputStream(),
+                        environment.getProperty("banner.charset", Charset.class,
+                                Charset.forName("UTF-8")));
         }
         
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment,
