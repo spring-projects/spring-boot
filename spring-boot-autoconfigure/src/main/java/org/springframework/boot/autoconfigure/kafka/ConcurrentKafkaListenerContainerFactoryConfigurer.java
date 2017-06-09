@@ -68,6 +68,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		if (container.getConcurrency() != null) {
 			listenerContainerFactory.setConcurrency(container.getConcurrency());
 		}
+		listenerContainerFactory.setBatchListener(container.getBatchListener());
 	}
 
 }

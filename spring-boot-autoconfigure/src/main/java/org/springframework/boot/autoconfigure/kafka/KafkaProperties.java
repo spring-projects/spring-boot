@@ -672,6 +672,11 @@ public class KafkaProperties {
 		 */
 		private Long ackTime;
 
+		/**
+		 * If true listener container factory will be configured to create batch listener.
+		 */
+		private boolean batchListener;
+
 		public AckMode getAckMode() {
 			return this.ackMode;
 		}
@@ -712,6 +717,13 @@ public class KafkaProperties {
 			this.ackTime = ackTime;
 		}
 
+		public boolean getBatchListener() {
+			return this.batchListener;
+		}
+
+		public void setBatchListener(boolean batchListener) {
+			this.batchListener = batchListener;
+		}
 	}
 
 	public static class Ssl {
