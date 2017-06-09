@@ -74,12 +74,12 @@ public class ResourceBanner implements Banner {
 		}
 	}
 
-        protected String getBannerText(Environment environment) throws Exception {
-                return StreamUtils.copyToString(this.resource.getInputStream(),
-                        environment.getProperty("banner.charset", Charset.class,
-                                Charset.forName("UTF-8")));
-        }
-        
+	protected String getBannerText(Environment environment) throws Exception {
+		return StreamUtils.copyToString(this.resource.getInputStream(),
+			environment.getProperty("banner.charset", Charset.class,
+				Charset.forName("UTF-8")));
+	}
+
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment,
 			Class<?> sourceClass) {
 		List<PropertyResolver> resolvers = new ArrayList<>();
