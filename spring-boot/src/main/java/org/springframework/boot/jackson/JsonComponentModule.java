@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jackson;
 
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -78,8 +79,9 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
-			if (JsonSerializer.class.isAssignableFrom(innerClass)
-					|| JsonDeserializer.class.isAssignableFrom(innerClass)) {
+			if (!Modifier.isAbstract(innerClass.getModifiers()) &&
+					(JsonSerializer.class.isAssignableFrom(innerClass)
+							|| JsonDeserializer.class.isAssignableFrom(innerClass))) {
 				try {
 					addJsonBean(innerClass.newInstance());
 				}

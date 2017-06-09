@@ -59,6 +59,15 @@ public class JsonComponentModuleTests {
 		context.close();
 	}
 
+	@Test
+	public void moduleShouldAllowInnerAbstractClasses() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				JsonComponentModule.class, ComponentWithInnerAbstractClass.class);
+		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		assertSerialize(module);
+		context.close();
+	}
+
 	private void assertSerialize(Module module) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
@@ -85,4 +94,15 @@ public class JsonComponentModuleTests {
 
 	}
 
+	@JsonComponent
+	static class ComponentWithInnerAbstractClass {
+
+		private static abstract class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
+
+		}
+
+		static class ConcreteSerializer extends AbstractSerializer {
+
+		}
+	}
 }
