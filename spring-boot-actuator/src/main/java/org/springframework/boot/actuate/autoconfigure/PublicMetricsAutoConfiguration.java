@@ -29,6 +29,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
+import org.springframework.boot.actuate.endpoint.KafkaPublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
@@ -55,6 +56,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.kafka.core.KafkaOperations;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link PublicMetrics}.
@@ -138,6 +140,18 @@ public class PublicMetricsAutoConfiguration {
 				Map<String, CacheManager> cacheManagers,
 				Collection<CacheStatisticsProvider<?>> statisticsProviders) {
 			return new CachePublicMetrics(cacheManagers, statisticsProviders);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(KafkaOperations.class)
+	static class KafkaStatisticsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public KafkaPublicMetrics kafkaPublicMetrics() {
+			return new KafkaPublicMetrics();
 		}
 
 	}
