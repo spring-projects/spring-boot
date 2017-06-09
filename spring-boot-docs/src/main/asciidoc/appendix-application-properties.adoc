@@ -714,7 +714,7 @@ content into your application; rather pick only the properties that you need.
 	spring.h2.console.settings.trace=false # Enable trace output.
 	spring.h2.console.settings.web-allow-others=false # Enable remote access.
 
-	# InfluxDB ({sc-spring-boot-autoconfigure}/influx/InfluxProperties.{sc-ext}[InfluxProperties])
+	# InfluxDB ({sc-spring-boot-autoconfigure}/influx/InfluxDbProperties.{sc-ext}[InfluxDbProperties])
 	spring.influx.password= # Login password.
 	spring.influx.url= # Url of the InfluxDB instance to connect to.
 	spring.influx.user= # Login user.
