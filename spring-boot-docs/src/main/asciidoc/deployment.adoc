@@ -458,7 +458,7 @@ WARNING: Fully executable jars work by embedding an extra script at the front of
 file. Currently, some tools do not accept this format so you may not always be able to
 use this technique. For example, `jar -xf` may silently fail to extract a jar or war that
 has been made fully-executable. It is recommended that you only make your jar or war
-fully executable if you intened to execute it directly, rather than running it with
+fully executable if you intend to execute it directly, rather than running it with
 `java -jar` or deploying it to a servlet container.
 
 To create a '`fully executable`' jar with Maven use the following plugin configuration:
