@@ -76,6 +76,9 @@ do as they were designed before this was clarified.
 | http://log4jdbc.brunorozendo.com/[Log4jdbc]
 | https://github.com/candrews/log4jdbc-spring-boot-starter
 
+| https://logback.qos.ch/access.html[Logback-access]
+| https://github.com/akihyro/logback-access-spring-boot-starter
+
 | https://github.com/membrane/service-proxy[Membrane Service Proxy]
 | https://github.com/membrane/membrane-spring-boot-starter
 
@@ -96,6 +99,9 @@ do as they were designed before this was clarified.
 
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
+
+| http://orika-mapper.github.io/orika-docs/[Orika]
+| https://github.com/akihyro/orika-spring-boot-starter
 
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
