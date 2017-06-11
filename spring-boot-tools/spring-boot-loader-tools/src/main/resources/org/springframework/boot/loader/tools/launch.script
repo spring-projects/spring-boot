@@ -46,6 +46,9 @@ done
 jarfolder="$( (cd "$(dirname "$jarfile")" && pwd -P) )"
 cd "$WORKING_DIR" || exit 1
 
+# Inline script specified in build properties
+{{inlinedConfScript:}}
+
 # Source any config file
 configfile="$(basename "${jarfile%.*}.conf")"
 

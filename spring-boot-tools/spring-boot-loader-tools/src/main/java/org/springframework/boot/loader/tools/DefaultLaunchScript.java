@@ -16,16 +16,16 @@
 
 package org.springframework.boot.loader.tools;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Default implementation of {@link LaunchScript}. Provides the default Spring Boot launch
@@ -33,16 +33,17 @@ import java.util.regex.Pattern;
  * expansion of the form <code>{{name:default}}</code>.
  *
  * @author Phillip Webb
+ * @author Justin Rosenberg
  * @since 1.3.0
  */
 public class DefaultLaunchScript implements LaunchScript {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-	private static final int BUFFER_SIZE = 4096;
-
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern
 			.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
+
+	private static final List<String> FILE_PATH_KEYS = Arrays.asList("inlinedConfScript");
 
 	private final String content;
 
@@ -57,45 +58,52 @@ public class DefaultLaunchScript implements LaunchScript {
 		this.content = expandPlaceholders(content, properties);
 	}
 
+	/**
+	 * Loads file contents.
+	 * @param file File to load. If null, will load default launch.script
+	 * @return String representation of file contents.
+	 * @throws IOException if file is not found our can't be loaded.
+	 */
 	private String loadContent(File file) throws IOException {
+		final byte[] fileBytes;
 		if (file == null) {
-			return loadContent(getClass().getResourceAsStream("launch.script"));
+			fileBytes = FileCopyUtils
+					.copyToByteArray(getClass().getResourceAsStream("launch.script"));
 		}
-		return loadContent(new FileInputStream(file));
+		else {
+			fileBytes = FileCopyUtils.copyToByteArray(file);
+		}
+		return new String(fileBytes, UTF_8);
 	}
 
-	private String loadContent(InputStream inputStream) throws IOException {
-		try {
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			copy(inputStream, outputStream);
-			return new String(outputStream.toByteArray(), UTF_8);
-		}
-		finally {
-			inputStream.close();
-		}
-	}
-
-	private void copy(InputStream inputStream, OutputStream outputStream)
+	/**
+	 * Replaces variable placeholders in file with specified property values.
+	 * @param content String with variables defined in {{variable:default}} format.
+	 * @param properties Key value pairs for variables to replace
+	 * @return Updated String
+	 * @throws IOException if a file property value or path is specified and the file
+	 * cannot be loaded.
+	 */
+	private String expandPlaceholders(String content, Map<?, ?> properties)
 			throws IOException {
-		byte[] buffer = new byte[BUFFER_SIZE];
-		int bytesRead = -1;
-		while ((bytesRead = inputStream.read(buffer)) != -1) {
-			outputStream.write(buffer, 0, bytesRead);
-		}
-		outputStream.flush();
-	}
-
-	private String expandPlaceholders(String content, Map<?, ?> properties) {
 		StringBuffer expanded = new StringBuffer();
 		Matcher matcher = PLACEHOLDER_PATTERN.matcher(content);
 		while (matcher.find()) {
 			String name = matcher.group(1);
-			String value = matcher.group(2);
+			final String value;
+			String defaultValue = matcher.group(2);
 			if (properties != null && properties.containsKey(name)) {
-				value = (String) properties.get(name);
+				Object propertyValue = properties.get(name);
+				if (FILE_PATH_KEYS.contains(name)) {
+					value = parseFilePropertyValue(properties.get(name));
+				}
+				else {
+					value = propertyValue.toString();
+				}
 			}
 			else {
-				value = (value == null ? matcher.group(0) : value.substring(1));
+				value = (defaultValue == null ? matcher.group(0)
+						: defaultValue.substring(1));
 			}
 			matcher.appendReplacement(expanded, value.replace("$", "\\$"));
 		}
@@ -103,6 +111,26 @@ public class DefaultLaunchScript implements LaunchScript {
 		return expanded.toString();
 	}
 
+	/**
+	 * Loads file based on File object or String path.
+	 * @param propertyValue File Object or String path to file.
+	 * @return File contents.
+	 * @throws IOException if a file property value or path is specified and the file
+	 * cannot be loaded.
+	 */
+	private String parseFilePropertyValue(Object propertyValue) throws IOException {
+		if (propertyValue instanceof File) {
+			return loadContent((File) propertyValue);
+		}
+		else {
+			return loadContent(new File(propertyValue.toString()));
+		}
+	}
+
+	/**
+	 * The content of the launch script as a byte array.
+	 * @return Byte representation of script.
+	 */
 	@Override
 	public byte[] toByteArray() {
 		return this.content.getBytes(UTF_8);
