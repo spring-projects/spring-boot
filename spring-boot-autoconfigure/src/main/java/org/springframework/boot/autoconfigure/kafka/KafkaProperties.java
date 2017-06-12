@@ -673,7 +673,7 @@ public class KafkaProperties {
 		private Long ackTime;
 
 		/**
-		 * True if this should be batch listener.
+		 * If true listener container factory will be configured to create batch listener.
 		 */
 		private Boolean batchListener;
 
