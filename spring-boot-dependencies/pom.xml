@@ -131,7 +131,7 @@
 		<mariadb.version>2.0.2</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
 		<mockito.version>2.8.9</mockito.version>
-		<mongo-driver-reactivestreams.version>1.4.0</mongo-driver-reactivestreams.version>
+		<mongo-driver-reactivestreams.version>1.5.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.4.2</mongodb.version>
 		<mysql.version>5.1.42</mysql.version>
 		<narayana.version>5.6.1.Final</narayana.version>
