@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -664,15 +663,9 @@ public class UndertowEmbeddedServletContainerFactory
 		@Override
 		public Resource getResource(String path) {
 			for (URL url : this.metaInfResourceJarUrls) {
-				try {
-					URL resourceUrl = new URL(url + "META-INF/resources" + path);
-					URLConnection connection = resourceUrl.openConnection();
-					if (connection.getContentLength() >= 0) {
-						return new URLResource(resourceUrl, connection, path);
-					}
-				}
-				catch (IOException ex) {
-					// Continue
+				URLResource resource = getMetaInfResource(url, path);
+				if (resource != null) {
+					return resource;
 				}
 			}
 			return null;
@@ -689,6 +682,21 @@ public class UndertowEmbeddedServletContainerFactory
 
 		@Override
 		public void removeResourceChangeListener(ResourceChangeListener listener) {
+
+		}
+
+		private URLResource getMetaInfResource(URL resourceJar, String path) {
+			try {
+				URL resourceUrl = new URL(resourceJar + "META-INF/resources" + path);
+				URLResource resource = new URLResource(resourceUrl, path);
+				if (resource.getContentLength() < 0) {
+					return null;
+				}
+				return resource;
+			}
+			catch (MalformedURLException ex) {
+				return null;
+			}
 		}
 	}
 
