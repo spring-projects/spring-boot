@@ -71,4 +71,12 @@ public class CloudPlatformTests {
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 
+	@Test
+	public void getActiveWhenHasHcLandscapeShouldReturnHcp() throws Exception {
+		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE", "---");
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isEqualTo(CloudPlatform.HCP);
+		assertThat(platform.isActive(environment)).isTrue();
+	}
+
 }
