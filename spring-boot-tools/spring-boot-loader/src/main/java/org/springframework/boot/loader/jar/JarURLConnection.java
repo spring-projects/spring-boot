@@ -187,6 +187,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public int getContentLength() {
+		long longContentLength = getContentLengthLong();
+		if (longContentLength > Integer.MAX_VALUE) {
+			return -1;
+		}
+		return (int) longContentLength;
+	}
+
+	@Override
+	public long getContentLengthLong() {
 		if (this.jarFile == null) {
 			return -1;
 		}
