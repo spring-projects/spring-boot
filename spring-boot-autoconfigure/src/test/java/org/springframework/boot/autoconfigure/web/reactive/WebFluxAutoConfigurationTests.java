@@ -45,7 +45,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.accept.CompositeContentTypeResolver;
+import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
@@ -91,7 +91,7 @@ public class WebFluxAutoConfigurationTests {
 				.isEqualTo(1);
 		assertThat(this.context.getBeansOfType(RequestMappingHandlerAdapter.class).size())
 				.isEqualTo(1);
-		assertThat(this.context.getBeansOfType(CompositeContentTypeResolver.class).size())
+		assertThat(this.context.getBeansOfType(RequestedContentTypeResolver.class).size())
 				.isEqualTo(1);
 		assertThat(this.context.getBean("resourceHandlerMapping", HandlerMapping.class))
 				.isNotNull();
