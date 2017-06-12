@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.node.NodeClient;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -45,11 +46,17 @@ public class ElasticsearchAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
+	@Before
+	public void preventElasticsearchFromConfiguringNetty() {
+		System.setProperty("es.set.netty.runtime.available.processors", "false");
+	}
+
 	@After
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
+		System.clearProperty("es.set.netty.runtime.available.processors");
 	}
 
 	@Test

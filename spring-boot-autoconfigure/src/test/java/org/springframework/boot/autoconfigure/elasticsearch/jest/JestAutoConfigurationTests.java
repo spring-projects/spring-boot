@@ -34,6 +34,7 @@ import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -64,6 +65,11 @@ import static org.mockito.Mockito.mock;
  */
 public class JestAutoConfigurationTests {
 
+	@Before
+	public void preventElasticsearchFromConfiguringNetty() {
+		System.setProperty("es.set.netty.runtime.available.processors", "false");
+	}
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -74,6 +80,7 @@ public class JestAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+		System.clearProperty("es.set.netty.runtime.available.processors");
 	}
 
 	@Test
