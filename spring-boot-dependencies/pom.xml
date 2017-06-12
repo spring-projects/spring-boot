@@ -137,7 +137,7 @@
 		<narayana.version>5.5.24.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.0.0-M01</neo4j-ogm.version>
-		<netty.version>4.1.11.Final</netty.version>
+		<netty.version>4.1.12.Final</netty.version>
 		<postgresql.version>42.1.1</postgresql.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.1.4</querydsl.version>
