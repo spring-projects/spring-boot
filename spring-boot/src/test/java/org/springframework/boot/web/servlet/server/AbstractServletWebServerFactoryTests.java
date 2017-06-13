@@ -83,7 +83,9 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.ApplicationTemp;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
+import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
@@ -133,7 +135,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	protected WebServer webServer;
 

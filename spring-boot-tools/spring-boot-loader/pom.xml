@@ -47,6 +47,11 @@
 			<version>1.46</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-support</artifactId>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>

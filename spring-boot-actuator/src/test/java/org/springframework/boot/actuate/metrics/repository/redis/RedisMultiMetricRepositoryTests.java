@@ -34,7 +34,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
-import org.springframework.boot.redis.RedisTestServer;
+import org.springframework.boot.testsupport.rule.RedisTestServer;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;

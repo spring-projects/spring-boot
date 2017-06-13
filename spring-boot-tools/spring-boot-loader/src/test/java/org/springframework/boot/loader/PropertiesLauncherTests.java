@@ -39,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -53,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PropertiesLauncherTests {
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();

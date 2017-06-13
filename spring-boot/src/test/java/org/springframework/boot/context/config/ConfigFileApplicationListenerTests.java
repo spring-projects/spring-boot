@@ -44,7 +44,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -83,7 +83,7 @@ public class ConfigFileApplicationListenerTests {
 	public ExpectedException expected = ExpectedException.none();
 
 	@Rule
-	public InternalOutputCapture out = new InternalOutputCapture();
+	public OutputCapture out = new OutputCapture();
 
 	private ConfigurableApplicationContext context;
 

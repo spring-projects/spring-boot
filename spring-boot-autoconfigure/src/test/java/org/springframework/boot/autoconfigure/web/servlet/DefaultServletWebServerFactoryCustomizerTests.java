@@ -45,7 +45,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
@@ -617,8 +618,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	private void bindProperties(Map<String, String> map) {
-		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
-		map.forEach(source::put);
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(map);
 		new Binder(source).bind("server", Bindable.ofInstance(this.properties));
 	}
 

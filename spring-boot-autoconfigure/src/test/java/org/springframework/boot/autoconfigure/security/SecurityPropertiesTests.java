@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,9 +64,10 @@ public class SecurityPropertiesTests {
 
 	@Test
 	public void testBindingIgnoredMultiValuedList() {
-		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
-		source.put("security.ignored[0]", "/css/**");
-		source.put("security.ignored[1]", "/foo/**");
+		Map<String, String> map = new LinkedHashMap<>();
+		map.put("security.ignored[0]", "/css/**");
+		map.put("security.ignored[1]", "/foo/**");
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource(map);
 		bind(source);
 		assertThat(this.security.getIgnored()).hasSize(2);
 		assertThat(this.security.getIgnored().contains("/foo/**")).isTrue();
@@ -94,7 +99,7 @@ public class SecurityPropertiesTests {
 	}
 
 	private void bind(String name, String value) {
-		bind(new MockConfigurationPropertySource(name, value));
+		bind(new MapConfigurationPropertySource(Collections.singletonMap(name, value)));
 	}
 
 	private void bind(ConfigurationPropertySource source) {

@@ -26,7 +26,8 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -183,8 +184,7 @@ public class ServerPropertiesTests {
 	}
 
 	private void bind(Map<String, String> map) {
-		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
-		map.forEach(source::put);
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(map);
 		new Binder(source).bind("server", Bindable.ofInstance(this.properties));
 	}
 

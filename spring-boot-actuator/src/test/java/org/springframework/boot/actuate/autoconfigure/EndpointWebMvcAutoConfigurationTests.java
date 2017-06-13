@@ -63,7 +63,7 @@ import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testutil.Matched;
+import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;

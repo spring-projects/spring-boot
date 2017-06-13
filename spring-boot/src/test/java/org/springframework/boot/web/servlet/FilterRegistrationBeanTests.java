@@ -20,7 +20,7 @@ import javax.servlet.Filter;
 
 import org.junit.Test;
 
-import org.springframework.boot.testutil.MockFilter;
+import org.springframework.boot.web.servlet.mock.MockFilter;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;

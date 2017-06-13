@@ -34,7 +34,7 @@ import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -62,7 +62,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 			getClass().getClassLoader());
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	private Logger logger;
 

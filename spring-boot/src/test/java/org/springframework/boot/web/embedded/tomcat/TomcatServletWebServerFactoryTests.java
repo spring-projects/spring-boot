@@ -48,7 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -74,7 +74,7 @@ public class TomcatServletWebServerFactoryTests
 		extends AbstractServletWebServerFactoryTests {
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Override
 	protected TomcatServletWebServerFactory getFactory() {

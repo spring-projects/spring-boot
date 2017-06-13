@@ -45,8 +45,8 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.testutil.InternalOutputCapture;
-import org.springframework.boot.testutil.Matched;
+import org.springframework.boot.testsupport.assertj.Matched;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -70,7 +70,7 @@ import static org.mockito.Mockito.verify;
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
 			getClass().getClassLoader());

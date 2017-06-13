@@ -36,8 +36,8 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
-import org.springframework.boot.junit.compiler.TestCompiler;
-import org.springframework.boot.junit.compiler.TestCompiler.TestCompilationTask;
+import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.boot.testsupport.compiler.TestCompiler.TestCompilationTask;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
