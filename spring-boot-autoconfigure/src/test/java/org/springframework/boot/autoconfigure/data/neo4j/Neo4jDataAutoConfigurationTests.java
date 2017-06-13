@@ -81,7 +81,8 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void customNeo4jTransactionManagerUsingProperties() {
-		load(null, "spring.transaction.default-timeout=30",
+		load(null, "spring.data.neo4j.uri=http://localhost:8989",
+				"spring.transaction.default-timeout=30",
 				"spring.transaction.rollback-on-commit-failure:true");
 		Neo4jTransactionManager transactionManager = this.context
 				.getBean(Neo4jTransactionManager.class);
@@ -110,6 +111,8 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void usesAutoConfigurationPackageToPickUpDomainTypes() {
 		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.data.neo4j.uri=http://localhost:8989")
+				.applyTo(this.context);
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register((BeanDefinitionRegistry) this.context,
 				cityPackage);
@@ -123,14 +126,16 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void openSessionInViewInterceptorCanBeDisabled() {
-		load(null, "spring.data.neo4j.open-in-view:false");
+		load(null, "spring.data.neo4j.uri=http://localhost:8989",
+				"spring.data.neo4j.open-in-view:false");
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
 				.isEmpty();
 	}
 
 	@Test
 	public void eventListenersAreAutoRegistered() {
-		load(EventListenerConfiguration.class);
+		load(EventListenerConfiguration.class,
+				"spring.data.neo4j.uri=http://localhost:8989");
 		Session session = this.context.getBean(SessionFactory.class).openSession();
 		session.notifyListeners(new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
 		verify(this.context.getBean("eventListenerOne", EventListener.class))
