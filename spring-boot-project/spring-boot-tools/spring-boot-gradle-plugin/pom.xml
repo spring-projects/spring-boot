@@ -76,6 +76,8 @@
 								<argument>${gradle.task}</argument>
 								<argument>-Pversion=${project.version}</argument>
 								<argument>-Pdescription=${project.description}</argument>
+								<argument>-d</argument>
+								<argument>-S</argument>
 							</arguments>
 						</configuration>
 						<goals>
