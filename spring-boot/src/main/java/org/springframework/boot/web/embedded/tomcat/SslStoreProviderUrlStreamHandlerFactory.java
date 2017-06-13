@@ -66,9 +66,12 @@ class SslStoreProviderUrlStreamHandlerFactory implements URLStreamHandlerFactory
 											.getKeyStore());
 						}
 						if (TRUST_STORE_PATH.equals(url.getPath())) {
-							return new KeyStoreUrlConnection(url,
-									SslStoreProviderUrlStreamHandlerFactory.this.sslStoreProvider
-											.getTrustStore());
+							KeyStore trustStore = SslStoreProviderUrlStreamHandlerFactory.this.sslStoreProvider
+											.getTrustStore();
+							if(trustStore == null) {
+								return null
+							}
+							return new KeyStoreUrlConnection(url, trustStore);
 						}
 					}
 					catch (Exception ex) {
