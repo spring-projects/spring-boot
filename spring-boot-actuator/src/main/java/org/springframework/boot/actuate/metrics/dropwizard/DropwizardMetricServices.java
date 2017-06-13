@@ -148,7 +148,7 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		}
 		catch (IllegalArgumentException ex) {
 			Metric added = this.registry.getMetrics().get(name);
-			registrar.checkExisting(metric);
+			registrar.checkExisting(added);
 			return (T) added;
 		}
 	}
