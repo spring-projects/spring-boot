@@ -83,12 +83,8 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testCustomizeRedisConfiguration() {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(RedisAutoConfiguration.class);
-		ctx.register(CustomConfiguration.class);
-		ctx.refresh();
-
-		LettuceConnectionFactory cf = ctx.getBean(LettuceConnectionFactory.class);
+		load(CustomConfiguration.class);
+		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.isUseSsl()).isTrue();
 	}
 
@@ -203,8 +199,15 @@ public class RedisAutoConfigurationTests {
 	}
 
 	private void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of(environment).applyTo(ctx);
+		if (config != null) {
+			ctx.register(config);
+		}
 		ctx.register(RedisAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

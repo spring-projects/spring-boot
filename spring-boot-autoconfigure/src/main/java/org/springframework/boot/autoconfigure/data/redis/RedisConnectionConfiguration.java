@@ -40,26 +40,19 @@ abstract class RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
-	private final RedisStandaloneConfiguration standaloneConfiguration;
-
 	private final RedisSentinelConfiguration sentinelConfiguration;
 
 	private final RedisClusterConfiguration clusterConfiguration;
 
 	protected RedisConnectionConfiguration(RedisProperties properties,
-			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
 		this.properties = properties;
-		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
 	}
 
 	protected final RedisStandaloneConfiguration getStandaloneConfig() {
-		if (this.standaloneConfiguration != null) {
-			return this.standaloneConfiguration;
-		}
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
 
 		if (StringUtils.hasText(this.properties.getUrl())) {

@@ -67,12 +67,8 @@ public class RedisAutoConfigurationJedisTests {
 
 	@Test
 	public void testCustomizeRedisConfiguration() throws Exception {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(RedisAutoConfiguration.class);
-		ctx.register(CustomConfiguration.class);
-		ctx.refresh();
-
-		JedisConnectionFactory cf = ctx.getBean(JedisConnectionFactory.class);
+		load(CustomConfiguration.class);
+		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
 		assertThat(cf.isUseSsl()).isTrue();
 	}
 
@@ -144,8 +140,15 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	private void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of(environment).applyTo(ctx);
+		if (config != null) {
+			ctx.register(config);
+		}
 		ctx.register(RedisAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

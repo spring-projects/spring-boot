@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
@@ -55,12 +54,10 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	private final List<JedisClientConfigurationBuilderCustomizer> builderCustomizers;
 
 	JedisConnectionConfiguration(RedisProperties properties,
-			ObjectProvider<RedisStandaloneConfiguration> standaloneConfiguration,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
 			ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> builderCustomizers) {
-		super(properties, standaloneConfiguration, sentinelConfiguration,
-				clusterConfiguration);
+		super(properties, sentinelConfiguration, clusterConfiguration);
 		this.properties = properties;
 		this.builderCustomizers = builderCustomizers
 				.getIfAvailable(Collections::emptyList);

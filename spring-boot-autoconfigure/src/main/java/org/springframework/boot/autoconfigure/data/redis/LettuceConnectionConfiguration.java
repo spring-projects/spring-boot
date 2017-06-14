@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
@@ -58,12 +57,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	private final List<LettuceClientConfigurationBuilderCustomizer> builderCustomizers;
 
 	LettuceConnectionConfiguration(RedisProperties properties,
-			ObjectProvider<RedisStandaloneConfiguration> standaloneConfiguration,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
 			ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> builderCustomizers) {
-		super(properties, standaloneConfiguration, sentinelConfigurationProvider,
-				clusterConfigurationProvider);
+		super(properties, sentinelConfigurationProvider, clusterConfigurationProvider);
 		this.properties = properties;
 		this.builderCustomizers = builderCustomizers
 				.getIfAvailable(Collections::emptyList);
