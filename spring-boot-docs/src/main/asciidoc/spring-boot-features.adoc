@@ -3310,6 +3310,10 @@ instance will attempt to connect to a Redis server using `localhost:6379`:
 	}
 ----
 
+TIP: You can also register an arbitrary number of beans implementing
+`JedisClientConfigurationBuilderCustomizer` for more advanced customizations. If you are
+using Lettuce, `LettuceClientConfigurationBuilderCustomizer` is also available.
+
 If you add a `@Bean` of your own of any of the auto-configured types it will replace the
 default (except in the case of `RedisTemplate` the exclusion is based on the bean name
 '`redisTemplate`' not its type). If `commons-pool2` is on the classpath you will get a
