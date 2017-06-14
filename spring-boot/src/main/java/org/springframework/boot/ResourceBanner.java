@@ -60,9 +60,7 @@ public class ResourceBanner implements Banner {
 	public void printBanner(Environment environment, Class<?> sourceClass,
 			PrintStream out) {
 		try {
-			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
-					environment.getProperty("banner.charset", Charset.class,
-							Charset.forName("UTF-8")));
+			String banner = getBannerText(environment);
 
 			for (PropertyResolver resolver : getPropertyResolvers(environment,
 					sourceClass)) {
@@ -74,6 +72,12 @@ public class ResourceBanner implements Banner {
 			logger.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
 					+ ": '" + ex.getMessage() + "')", ex);
 		}
+	}
+
+	protected String getBannerText(Environment environment) throws Exception {
+		return StreamUtils.copyToString(this.resource.getInputStream(),
+			environment.getProperty("banner.charset", Charset.class,
+				Charset.forName("UTF-8")));
 	}
 
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment,
