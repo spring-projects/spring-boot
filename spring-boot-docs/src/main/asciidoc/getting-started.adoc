@@ -99,7 +99,8 @@ installed you can follow the instructions at http://maven.apache.org.
 
 TIP: On many operating systems Maven can be installed via a package manager. If you're an
 OSX Homebrew user try `brew install maven`. Ubuntu users can run
-`sudo apt-get install maven`.
+`sudo apt-get install maven`. Windows users with Chocolatey can run `choco install maven`
+from an elevated prompt.
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically your
 Maven POM file will inherit from the `spring-boot-starter-parent` project and declare
