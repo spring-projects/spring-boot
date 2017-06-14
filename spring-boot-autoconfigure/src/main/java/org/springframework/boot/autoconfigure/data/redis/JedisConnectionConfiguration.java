@@ -17,6 +17,9 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
@@ -30,6 +33,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.util.StringUtils;
@@ -46,66 +52,70 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
+	private final List<JedisClientConfigurationBuilderCustomizer> builderCustomizers;
+
 	JedisConnectionConfiguration(RedisProperties properties,
+			ObjectProvider<RedisStandaloneConfiguration> standaloneConfiguration,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
-		super(properties, sentinelConfiguration, clusterConfiguration);
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
+			ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> builderCustomizers) {
+		super(properties, standaloneConfiguration, sentinelConfiguration,
+				clusterConfiguration);
 		this.properties = properties;
+		this.builderCustomizers = builderCustomizers
+				.getIfAvailable(Collections::emptyList);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	public JedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-		return applyProperties(createJedisConnectionFactory());
-	}
-
-	private JedisConnectionFactory applyProperties(JedisConnectionFactory factory) {
-		configureConnection(factory);
-		if (this.properties.isSsl()) {
-			factory.setUseSsl(true);
-		}
-		factory.setDatabase(this.properties.getDatabase());
-		if (this.properties.getTimeout() > 0) {
-			factory.setTimeout(this.properties.getTimeout());
-		}
-		return factory;
-	}
-
-	private void configureConnection(JedisConnectionFactory factory) {
-		if (StringUtils.hasText(this.properties.getUrl())) {
-			configureConnectionFromUrl(factory);
-		}
-		else {
-			factory.setHostName(this.properties.getHost());
-			factory.setPort(this.properties.getPort());
-			if (this.properties.getPassword() != null) {
-				factory.setPassword(this.properties.getPassword());
-			}
-		}
-	}
-
-	private void configureConnectionFromUrl(JedisConnectionFactory factory) {
-		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
-		factory.setUseSsl(connectionInfo.isUseSsl());
-		factory.setHostName(connectionInfo.getHostName());
-		factory.setPort(connectionInfo.getPort());
-		if (connectionInfo.getPassword() != null) {
-			factory.setPassword(connectionInfo.getPassword());
-		}
+		return createJedisConnectionFactory();
 	}
 
 	private JedisConnectionFactory createJedisConnectionFactory() {
-		RedisProperties.Pool pool = this.properties.getJedis().getPool();
-		JedisPoolConfig poolConfig = pool != null ? jedisPoolConfig(pool)
-				: new JedisPoolConfig();
+		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration();
 
 		if (getSentinelConfig() != null) {
-			return new JedisConnectionFactory(getSentinelConfig(), poolConfig);
+			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
+
 		if (getClusterConfiguration() != null) {
-			return new JedisConnectionFactory(getClusterConfiguration(), poolConfig);
+			return new JedisConnectionFactory(getClusterConfiguration(),
+					clientConfiguration);
 		}
-		return new JedisConnectionFactory(poolConfig);
+
+		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
+	}
+
+	private JedisClientConfiguration getJedisClientConfiguration() {
+		JedisClientConfigurationBuilder builder = applyProperties(
+				JedisClientConfiguration.builder());
+		RedisProperties.Pool pool = this.properties.getJedis().getPool();
+		if (pool != null) {
+			applyPooling(pool, builder);
+		}
+		if (StringUtils.hasText(this.properties.getUrl())) {
+			customizeConfigurationFromUrl(builder);
+		}
+		customize(builder);
+		return builder.build();
+	}
+
+	private JedisClientConfigurationBuilder applyProperties(
+			JedisClientConfigurationBuilder builder) {
+		if (this.properties.isSsl()) {
+			builder.useSsl();
+		}
+		if (this.properties.getTimeout() != 0) {
+			Duration timeout = Duration.ofMillis(this.properties.getTimeout());
+			builder.readTimeout(timeout).connectTimeout(timeout);
+		}
+		return builder;
+	}
+
+	private void applyPooling(RedisProperties.Pool pool,
+			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
+		builder.usePooling().poolConfig(jedisPoolConfig(pool));
 	}
 
 	private JedisPoolConfig jedisPoolConfig(RedisProperties.Pool pool) {
@@ -115,6 +125,21 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		config.setMinIdle(pool.getMinIdle());
 		config.setMaxWaitMillis(pool.getMaxWait());
 		return config;
+	}
+
+	private void customizeConfigurationFromUrl(
+			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
+		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
+		if (connectionInfo.isUseSsl()) {
+			builder.useSsl();
+		}
+	}
+
+	private void customize(
+			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
+		for (JedisClientConfigurationBuilderCustomizer customizer : this.builderCustomizers) {
+			customizer.customize(builder);
+		}
 	}
 
 }
