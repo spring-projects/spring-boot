@@ -28,7 +28,10 @@ import org.junit.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -79,6 +82,13 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	public void testCustomizeRedisConfiguration() {
+		load(CustomConfiguration.class);
+		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.isUseSsl()).isTrue();
+	}
+
+	@Test
 	public void testRedisUrlConfiguration() throws Exception {
 		load("spring.redis.host:foo",
 				"spring.redis.url:redis://user:password@example:33");
@@ -111,7 +121,6 @@ public class RedisAutoConfigurationTests {
 				"spring.redis.lettuce.pool.max-wait:2000");
 		LettuceConnectionFactory cf = this.context
 				.getBean(LettuceConnectionFactory.class);
-		assertThat(cf.getHostName()).isEqualTo("foo");
 		assertThat(getDefaultLettucePool(cf).getHostName()).isEqualTo("foo");
 		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMinIdle()).isEqualTo(1);
 		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxIdle()).isEqualTo(4);
@@ -190,11 +199,28 @@ public class RedisAutoConfigurationTests {
 	}
 
 	private void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of(environment).applyTo(ctx);
+		if (config != null) {
+			ctx.register(config);
+		}
 		ctx.register(RedisAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
+	}
+
+	@Configuration
+	static class CustomConfiguration {
+
+		@Bean
+		LettuceClientConfigurationBuilderCustomizer customizer() {
+			return LettuceClientConfigurationBuilder::useSsl;
+		}
+
 	}
 
 }
