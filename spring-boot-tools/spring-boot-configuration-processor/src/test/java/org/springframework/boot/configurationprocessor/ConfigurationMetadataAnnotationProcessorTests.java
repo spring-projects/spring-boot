@@ -557,13 +557,15 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void mergeExistingPropertyDeprecation() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
 				null, null, null, null,
-				new ItemDeprecation("Don't use this.", "simple.complex-comparator"));
+				new ItemDeprecation("Don't use this.", "simple.complex-comparator",
+						"error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata)
 				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
 						.fromSource(SimpleProperties.class)
-						.withDeprecation("Don't use this.", "simple.complex-comparator"));
+						.withDeprecation("Don't use this.", "simple.complex-comparator",
+								"error"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
@@ -578,6 +580,19 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				Metadata.withProperty("singledeprecated.name", String.class.getName())
 						.fromSource(DeprecatedSingleProperty.class)
 						.withDeprecation("Don't use this.", "single.name"));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	public void mergeExistingPropertyDeprecationOverrideLevel() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null,
+				null, null, null, null, new ItemDeprecation(null, null, "error"));
+		writeAdditionalMetadata(property);
+		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
+		assertThat(metadata).has(
+				Metadata.withProperty("singledeprecated.name", String.class.getName())
+						.fromSource(DeprecatedSingleProperty.class)
+						.withDeprecation("renamed", "singledeprecated.new-name", "error"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
