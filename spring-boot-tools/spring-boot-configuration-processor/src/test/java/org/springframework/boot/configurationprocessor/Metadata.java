@@ -202,9 +202,14 @@ public final class Metadata {
 		}
 
 		public MetadataItemCondition withDeprecation(String reason, String replacement) {
+			return withDeprecation(reason, replacement, null);
+		}
+
+		public MetadataItemCondition withDeprecation(String reason, String replacement,
+				String level) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type,
 					this.sourceType, this.sourceMethod, this.description,
-					this.defaultValue, new ItemDeprecation(reason, replacement));
+					this.defaultValue, new ItemDeprecation(reason, replacement, level));
 		}
 
 		public MetadataItemCondition withNoDeprecation() {
