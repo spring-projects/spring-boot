@@ -330,6 +330,10 @@
     "defaultValue": "required"
   },
   {
+    "name": "spring.kafka.listener.type",
+    "defaultValue": "single"
+  },
+  {
     "name": "spring.mobile.devicedelegatingviewresolver.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable device view resolver.",

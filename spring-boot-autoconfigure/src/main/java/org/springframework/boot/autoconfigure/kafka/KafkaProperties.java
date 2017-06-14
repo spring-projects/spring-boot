@@ -645,6 +645,25 @@ public class KafkaProperties {
 
 	public static class Listener {
 
+		public enum Type {
+
+			/**
+			 * Invokes the endpoint with one ConsumerRecord at a time.
+			 */
+			SINGLE,
+
+			/**
+			 * Invokes the endpoint with a batch of ConsumerRecord.
+			 */
+			BATCH;
+
+		}
+
+		/**
+		 * Listener type.
+		 */
+		private Type type = Type.SINGLE;
+
 		/**
 		 * Listener AckMode; see the spring-kafka documentation.
 		 */
@@ -672,10 +691,13 @@ public class KafkaProperties {
 		 */
 		private Long ackTime;
 
-		/**
-		 * If true listener container factory will be configured to create batch listener.
-		 */
-		private boolean batchListener;
+		public Type getType() {
+			return this.type;
+		}
+
+		public void setType(Type type) {
+			this.type = type;
+		}
 
 		public AckMode getAckMode() {
 			return this.ackMode;
@@ -717,13 +739,6 @@ public class KafkaProperties {
 			this.ackTime = ackTime;
 		}
 
-		public boolean getBatchListener() {
-			return this.batchListener;
-		}
-
-		public void setBatchListener(boolean batchListener) {
-			this.batchListener = batchListener;
-		}
 	}
 
 	public static class Ssl {
