@@ -21,6 +21,8 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -36,6 +38,16 @@ import static org.mockito.Mockito.verify;
  */
 public class DevToolsPooledDataSourceAutoConfigurationTests
 		extends AbstractDevToolsDataSourceAutoConfigurationTests {
+
+	@Before
+	public void before() {
+		System.setProperty("derby.stream.error.file", "target/derby.log");
+	}
+
+	@After
+	public void after() {
+		System.clearProperty("derby.stream.error.file");
+	}
 
 	@Test
 	public void autoConfiguredInMemoryDataSourceIsShutdown() throws SQLException {
