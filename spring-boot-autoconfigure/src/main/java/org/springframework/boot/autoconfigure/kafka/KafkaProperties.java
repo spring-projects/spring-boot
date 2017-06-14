@@ -645,6 +645,25 @@ public class KafkaProperties {
 
 	public static class Listener {
 
+		public enum Type {
+
+			/**
+			 * Invokes the endpoint with one ConsumerRecord at a time.
+			 */
+			SINGLE,
+
+			/**
+			 * Invokes the endpoint with a batch of ConsumerRecord.
+			 */
+			BATCH;
+
+		}
+
+		/**
+		 * Listener type.
+		 */
+		private Type type = Type.SINGLE;
+
 		/**
 		 * Listener AckMode; see the spring-kafka documentation.
 		 */
@@ -671,6 +690,14 @@ public class KafkaProperties {
 		 * "COUNT_TIME".
 		 */
 		private Long ackTime;
+
+		public Type getType() {
+			return this.type;
+		}
+
+		public void setType(Type type) {
+			this.type = type;
+		}
 
 		public AckMode getAckMode() {
 			return this.ackMode;

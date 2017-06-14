@@ -986,6 +986,7 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.listener.ack-time= # Time in milliseconds between offset commits when ackMode is "TIME" or "COUNT_TIME".
 	spring.kafka.listener.concurrency= # Number of threads to run in the listener containers.
 	spring.kafka.listener.poll-timeout= # Timeout in milliseconds to use when polling the consumer.
+	spring.kafka.listener.type=single # Listener type.
 	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.
 	spring.kafka.producer.batch-size= # Number of records to batch before sending.
 	spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
