@@ -6010,6 +6010,30 @@ disable transaction management for a test or for the whole class as follows:
 A list of the auto-configuration that is enabled by `@DataNeo4jTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-redis-test]]
+==== Auto-configured Data Redis tests
+`@DataRedisTest` can be used if you want to test Redis applications.
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataRedisTest
+	public class ExampleDataRedisTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+A list of the auto-configuration that is enabled by `@DataRedisTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-ldap-test]]
