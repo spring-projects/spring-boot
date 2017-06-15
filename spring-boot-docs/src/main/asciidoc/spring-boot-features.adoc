@@ -6012,6 +6012,35 @@ A list of the auto-configuration that is enabled by `@DataNeo4jTest` can be
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-redis-test]]
+==== Auto-configured Data Redis tests
+`@DataRedisTest` can be used if you want to test Redis applications. By default, it will
+scan for `@RedisHash` classes and configure Spring Data Redis repositories. Regular
+`@Component` beans will not be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataRedisTest
+	public class ExampleDataRedisTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+A list of the auto-configuration that is enabled by `@DataRedisTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-ldap-test]]
 ==== Auto-configured Data LDAP tests
 `@DataLdapTest` can be used if you want to test LDAP applications. By default, it will
