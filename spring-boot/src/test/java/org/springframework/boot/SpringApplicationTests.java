@@ -497,6 +497,15 @@ public class SpringApplicationTests {
 		assertThat(environment.getProperty("bar")).isEqualTo("foo");
 		// New command line properties take precedence
 		assertThat(environment.getProperty("foo")).isEqualTo("bar");
+		CompositePropertySource composite = (CompositePropertySource) environment
+				.getPropertySources().get("commandLineArgs");
+		assertThat(composite.getPropertySources()).hasSize(2);
+		assertThat(composite.getPropertySources()).first().matches(
+				(source) -> source.getName().equals("springApplicationCommandLineArgs"),
+				"is named springApplicationCommandLineArgs");
+		assertThat(composite.getPropertySources()).element(1).matches(
+				(source) -> source.getName().equals("commandLineArgs"),
+				"is named commandLineArgs");
 	}
 
 	@Test
