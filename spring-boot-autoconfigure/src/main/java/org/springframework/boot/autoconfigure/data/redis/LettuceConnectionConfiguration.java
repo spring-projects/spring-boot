@@ -85,8 +85,16 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceConnectionFactory createLettuceConnectionFactory(
 			ClientResources clientResources) {
-		return new LettuceConnectionFactory(applyProperties(createLettucePool(),
-				this.properties.getLettuce().getPool(), clientResources));
+		return applyProperties(
+				new LettuceConnectionFactory(applyProperties(createLettucePool(),
+						this.properties.getLettuce().getPool(), clientResources)));
+	}
+
+	private LettuceConnectionFactory applyProperties(
+			LettuceConnectionFactory connectionFactory) {
+		connectionFactory
+				.setShutdownTimeout(this.properties.getLettuce().getShutdownTimeout());
+		return connectionFactory;
 	}
 
 	private DefaultLettucePool createLettucePool() {
@@ -173,7 +181,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			RedisProperties.Lettuce lettuce = this.properties.getLettuce();
 			if (lettuce.getShutdownTimeout() >= 0) {
 				builder.shutdownTimeout(Duration
-						.ofSeconds(this.properties.getLettuce().getShutdownTimeout()));
+						.ofMillis(this.properties.getLettuce().getShutdownTimeout()));
 			}
 		}
 		return builder;
