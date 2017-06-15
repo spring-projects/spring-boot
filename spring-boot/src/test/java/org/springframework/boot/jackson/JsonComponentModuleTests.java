@@ -18,6 +18,7 @@ package org.springframework.boot.jackson;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -31,32 +32,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonComponentModuleTests {
 
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void moduleShouldRegisterSerializers() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, OnlySerializer.class);
-		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		load(OnlySerializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertSerialize(module);
-		context.close();
 	}
 
 	@Test
 	public void moduleShouldRegisterDeserializers() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, OnlyDeserializer.class);
-		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		load(OnlyDeserializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertDeserialize(module);
-		context.close();
 	}
 
 	@Test
 	public void moduleShouldRegisterInnerClasses() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, NameAndAgeJsonComponent.class);
-		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		load(NameAndAgeJsonComponent.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertSerialize(module);
 		assertDeserialize(module);
-		context.close();
 	}
 
 	@Test
@@ -66,6 +70,14 @@ public class JsonComponentModuleTests {
 		JsonComponentModule module = context.getBean(JsonComponentModule.class);
 		assertSerialize(module);
 		context.close();
+	}
+
+	private void load(Class<?>... configs) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(configs);
+		ctx.register(JsonComponentModule.class);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 	private void assertSerialize(Module module) throws Exception {
