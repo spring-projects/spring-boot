@@ -1265,8 +1265,6 @@ content into your application; rather pick only the properties that you need.
 
 	# REMOTE DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/RemoteDevToolsProperties.{sc-ext}[RemoteDevToolsProperties])
 	spring.devtools.remote.context-path=/.~~spring-boot!~ # Context path used to handle the remote connection.
-	spring.devtools.remote.debug.enabled=true # Enable remote debug support.
-	spring.devtools.remote.debug.local-port=8000 # Local remote debug server port.
 	spring.devtools.remote.proxy.host= # The host of the proxy to use to connect to the remote application.
 	spring.devtools.remote.proxy.port= # The port of the proxy to use to connect to the remote application.
 	spring.devtools.remote.restart.enabled=true # Enable remote restart.

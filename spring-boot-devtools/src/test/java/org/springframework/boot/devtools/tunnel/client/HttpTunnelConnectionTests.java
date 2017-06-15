@@ -147,15 +147,6 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void serviceUnavailableResponseLogsWarningAndClosesTunnel() throws Exception {
-		this.requestFactory.willRespond(HttpStatus.SERVICE_UNAVAILABLE);
-		TunnelChannel tunnel = openTunnel(true);
-		assertThat(tunnel.isOpen()).isFalse();
-		this.outputCapture.expect(containsString(
-				"Did you forget to start it with remote debugging enabled?"));
-	}
-
-	@Test
 	public void connectFailureLogsWarning() throws Exception {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);

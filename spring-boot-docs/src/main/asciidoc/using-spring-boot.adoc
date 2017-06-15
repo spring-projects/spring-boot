@@ -1047,49 +1047,6 @@ before starting the remote client, it won't be pushed to the remote server.
 
 
 
-[[using-boot-devtools-remote-debugtunnel]]
-==== Remote debug tunnel
-Java remote debugging is useful when diagnosing issues on a remote application.
-Unfortunately, it's not always possible to enable remote debugging when your application
-is deployed outside of your data center. Remote debugging can also be tricky to setup if
-you are using a container based technology such as Docker.
-
-To help work around these limitations, devtools supports tunneling of remote debug traffic
-over HTTP. The remote client provides a local server on port `8000` that you can attach
-a remote debugger to. Once a connection is established, debug traffic is sent over HTTP
-to the remote application. You can use the `spring.devtools.remote.debug.local-port`
-property if you want to use a different port.
-
-You'll need to ensure that your remote application is started with remote debugging
-enabled. Often this can be achieved by configuring `JAVA_OPTS`. For example, with
-Cloud Foundry you can add the following to your `manifest.yml`:
-
-[source,yaml,indent=0]
-----
-	---
-		env:
-			JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
-----
-
-TIP: Notice that you don't need to pass an `address=NNNN` option to `-Xrunjdwp`. If
-omitted Java will simply pick a random free port.
-
-NOTE: Debugging a remote service over the Internet can be slow and you might need to
-increase timeouts in your IDE. For example, in Eclipse you can select `Java` -> `Debug`
-from `Preferences...` and change the `Debugger timeout (ms)` to a more suitable value
-(`60000` works well in most situations).
-
-WARNING: When using the remote debug tunnel with IntelliJ IDEA, all breakpoints must be
-configured to suspend the thread rather than the VM. By default, breakpoints in IntelliJ
-IDEA suspend the entire VM rather than only suspending the thread that hit the
-breakpoint. This has the unwanted side-effect of suspending the thread that manages the
-remote debug tunnel, causing your debugging session to freeze. When using the remote
-debug tunnel with IntelliJ IDEA, all breakpoints should be configured to suspend the
-thread rather than the VM. Please see
-https://youtrack.jetbrains.com/issue/IDEA-165769[IDEA-165769] for further details.
-
-
-
 [[using-boot-packaging-for-production]]
 == Packaging your application for production
 Executable jars can be used for production deployment. As they are self-contained, they
