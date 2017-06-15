@@ -72,13 +72,15 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testOverrideRedisConfiguration() {
-		load("spring.redis.host:foo", "spring.redis.database:1");
+		load("spring.redis.host:foo", "spring.redis.database:1",
+				"spring.redis.lettuce.shutdown-timeout:100");
 		LettuceConnectionFactory cf = this.context
 				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
 		assertThat(cf.getDatabase()).isEqualTo(1);
 		assertThat(cf.getPassword()).isNull();
 		assertThat(cf.isUseSsl()).isFalse();
+		assertThat(cf.getShutdownTimeout()).isEqualTo(100);
 	}
 
 	@Test
@@ -118,9 +120,11 @@ public class RedisAutoConfigurationTests {
 		load("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
 				"spring.redis.lettuce.pool.max-idle:4",
 				"spring.redis.lettuce.pool.max-active:16",
-				"spring.redis.lettuce.pool.max-wait:2000");
+				"spring.redis.lettuce.pool.max-wait:2000",
+				"spring.redis.lettuce.shutdown-timeout:100");
 		LettuceConnectionFactory cf = this.context
 				.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.getShutdownTimeout()).isEqualTo(100);
 		assertThat(getDefaultLettucePool(cf).getHostName()).isEqualTo("foo");
 		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMinIdle()).isEqualTo(1);
 		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxIdle()).isEqualTo(4);
