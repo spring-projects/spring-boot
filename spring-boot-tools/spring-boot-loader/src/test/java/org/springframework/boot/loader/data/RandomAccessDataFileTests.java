@@ -90,7 +90,12 @@ public class RandomAccessDataFileTests {
 	@After
 	public void cleanup() throws Exception {
 		this.inputStream.close();
-		this.file.close();
+		try {
+			this.file.close();
+		}
+		catch (NullPointerException e) {
+			// See gh-9529
+		}
 	}
 
 	@Test
