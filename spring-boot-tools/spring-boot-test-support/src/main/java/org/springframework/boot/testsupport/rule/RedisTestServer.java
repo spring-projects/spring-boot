@@ -16,6 +16,8 @@
 
 package org.springframework.boot.testsupport.rule;
 
+import java.time.Duration;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
@@ -23,8 +25,13 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link TestRule} for working with an optional Redis server.
@@ -38,7 +45,7 @@ public class RedisTestServer implements TestRule {
 
 	private static final Log logger = LogFactory.getLog(RedisTestServer.class);
 
-	private JedisConnectionFactory connectionFactory;
+	private RedisConnectionFactory connectionFactory;
 
 	@Override
 	public Statement apply(final Statement base, Description description) {
@@ -52,14 +59,23 @@ public class RedisTestServer implements TestRule {
 		}
 	}
 
-	private JedisConnectionFactory createConnectionFactory() {
-		JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
-		connectionFactory.afterPropertiesSet();
-		testConnection(connectionFactory);
-		return connectionFactory;
+	private RedisConnectionFactory createConnectionFactory() {
+		ClassLoader classLoader = RedisTestServer.class.getClassLoader();
+		RedisConnectionFactory cf;
+		if (ClassUtils.isPresent("redis.clients.jedis.Jedis", classLoader)) {
+			cf = new JedisConnectionFactoryConfiguration()
+					.createConnectionFactory();
+		}
+		else {
+			cf = new LettuceConnectionFactoryConfiguration()
+					.createConnectionFactory();
+		}
+
+		testConnection(cf);
+		return cf;
 	}
 
-	private void testConnection(JedisConnectionFactory connectionFactory) {
+	private void testConnection(RedisConnectionFactory connectionFactory) {
 		connectionFactory.getConnection().close();
 	}
 
@@ -76,9 +92,9 @@ public class RedisTestServer implements TestRule {
 
 		private final Statement base;
 
-		private final JedisConnectionFactory connectionFactory;
+		private final RedisConnectionFactory connectionFactory;
 
-		RedisStatement(Statement base, JedisConnectionFactory connectionFactory) {
+		RedisStatement(Statement base, RedisConnectionFactory connectionFactory) {
 			this.base = base;
 			this.connectionFactory = connectionFactory;
 		}
@@ -90,7 +106,9 @@ public class RedisTestServer implements TestRule {
 			}
 			finally {
 				try {
-					this.connectionFactory.destroy();
+					if (this.connectionFactory instanceof DisposableBean) {
+						((DisposableBean) this.connectionFactory).destroy();
+					}
 				}
 				catch (Exception ex) {
 					logger.warn("Exception while trying to cleanup redis resource", ex);
@@ -106,6 +124,30 @@ public class RedisTestServer implements TestRule {
 		public void evaluate() throws Throwable {
 			Assume.assumeTrue("Skipping test due to " + "Redis ConnectionFactory"
 					+ " not being available", false);
+		}
+
+	}
+
+	private static class JedisConnectionFactoryConfiguration {
+
+		RedisConnectionFactory createConnectionFactory() {
+			JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
+			connectionFactory.afterPropertiesSet();
+			return connectionFactory;
+		}
+
+	}
+
+	private static class LettuceConnectionFactoryConfiguration {
+
+		RedisConnectionFactory createConnectionFactory() {
+			LettuceClientConfiguration config = LettuceClientConfiguration.builder()
+					.shutdownTimeout(Duration.ofMillis(0))
+					.build();
+			LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(
+					new RedisStandaloneConfiguration(), config);
+			connectionFactory.afterPropertiesSet();
+			return connectionFactory;
 		}
 
 	}
