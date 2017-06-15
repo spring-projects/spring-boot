@@ -37,8 +37,7 @@ public class ElasticsearchProperties {
 	private String clusterName = "elasticsearch";
 
 	/**
-	 * Comma-separated list of cluster node addresses. If not specified, starts a client
-	 * node.
+	 * Comma-separated list of cluster node addresses.
 	 */
 	private String clusterNodes;
 

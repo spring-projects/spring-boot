@@ -441,7 +441,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void elasticsearchHealthIndicator() {
 		TestPropertyValues
-				.of("spring.data.elasticsearch.properties.path.home:target",
+				.of("spring.data.elasticsearch.cluster-nodes:localhost:0",
 						"management.health.diskspace.enabled:false")
 				.applyTo(this.context);
 		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,

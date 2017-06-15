@@ -16,21 +16,18 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
-import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.After;
@@ -39,16 +36,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchNodeTemplate;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -122,22 +113,31 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void jestCanCommunicateWithElasticsearchInstance() throws IOException {
-		new File("target/elastic/logs").mkdirs();
-		load(HttpPortConfiguration.class,
-				"spring.data.elasticsearch.properties.path.home:target/elastic",
-				"spring.data.elasticsearch.properties.http.enabled:true",
-				"spring.data.elasticsearch.properties.http.port:0",
-				"spring.data.elasticsearch.properties.node.portsfile:true");
-		JestClient client = this.context.getBean(JestClient.class);
-		Map<String, String> source = new HashMap<>();
-		source.put("a", "alpha");
-		source.put("b", "bravo");
-		Index index = new Index.Builder(source).index("foo").type("bar").build();
-		client.execute(index);
-		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
-		assertThat(client.execute(new Search.Builder(searchSourceBuilder.toString())
-				.addIndex("foo").build()).getResponseCode()).isEqualTo(200);
+		new ElasticsearchNodeTemplate().doWithNode((node) -> {
+			load("spring.elasticsearch.jest.uris=http://localhost:" + node.getHttpPort());
+			JestClient client = this.context.getBean(JestClient.class);
+			Map<String, String> source = new HashMap<>();
+			source.put("a", "alpha");
+			source.put("b", "bravo");
+			Index index = new Index.Builder(source).index("foo").type("bar").build();
+			execute(client, index);
+			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+			searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
+			assertThat(
+					execute(client,
+							new Search.Builder(searchSourceBuilder.toString())
+									.addIndex("foo").build()).getResponseCode())
+											.isEqualTo(200);
+		});
+	}
+
+	private JestResult execute(JestClient client, Action<? extends JestResult> action) {
+		try {
+			return client.execute(action);
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void load(String... environment) {
@@ -195,55 +195,6 @@ public class JestAutoConfigurationTests {
 
 		Gson getGson() {
 			return this.gson;
-		}
-
-	}
-
-	@Configuration
-	@Import(ElasticsearchAutoConfiguration.class)
-	static class HttpPortConfiguration {
-
-		@Bean
-		public static BeanPostProcessor portPropertyConfigurer() {
-			return new PortPropertyConfigurer();
-		}
-
-		private static final class PortPropertyConfigurer
-				implements BeanPostProcessor, ApplicationContextAware {
-
-			private ConfigurableApplicationContext applicationContext;
-
-			@Override
-			public Object postProcessAfterInitialization(Object bean, String beanName)
-					throws BeansException {
-				if (bean instanceof NodeClient) {
-					this.applicationContext.getBean(JestProperties.class)
-							.setUris(Arrays.asList("http://localhost:" + readHttpPort()));
-				}
-				return bean;
-			}
-
-			@Override
-			public void setApplicationContext(ApplicationContext applicationContext)
-					throws BeansException {
-				this.applicationContext = (ConfigurableApplicationContext) applicationContext;
-			}
-
-			private int readHttpPort() {
-				try {
-					for (String line : Files
-							.readAllLines(Paths.get("target/elastic/logs/http.ports"))) {
-						if (line.startsWith("127.0.0.1")) {
-							return Integer
-									.parseInt(line.substring(line.indexOf(":") + 1));
-						}
-					}
-					throw new FatalBeanException("HTTP port not found");
-				}
-				catch (IOException ex) {
-					throw new FatalBeanException("Failed to read HTTP port", ex);
-				}
-			}
 		}
 
 	}
