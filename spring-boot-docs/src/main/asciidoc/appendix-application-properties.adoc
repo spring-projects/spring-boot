@@ -886,7 +886,7 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.lettuce.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
 	spring.redis.lettuce.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
 	spring.redis.lettuce.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
-	spring.redis.lettuce.shutdown-timeout=2000 # Shutdown timeout in milliseconds.
+	spring.redis.lettuce.shutdown-timeout=100 # Shutdown timeout in milliseconds.
 	spring.redis.password= # Login password of the redis server.
 	spring.redis.port=6379 # Redis server port.
 	spring.redis.sentinel.master= # Name of Redis server.
