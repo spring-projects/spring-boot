@@ -6061,6 +6061,35 @@ A list of the auto-configuration that is enabled by `@DataLdapTest` can be
 
 
 
+[boot-features-testing-spring-boot-applications-testing-autoconfigured-elasticsearch-test]]
+`@DataElasticSearchTest` can be used if you want to test ElasticSearch applications. By default, it will
+configure a local ElasticSearch (if available), configure an `ElasticSearchTemplate`, scan
+for `@Document` classes and configure Spring Data ElasticSearch repositories. Regular
+`@Component` beans will not be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
+	import org.springframework.data.elasticsearch.core.ElasticSearchTemplate;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataElasticSearchTest
+	public class ExampleDataElasticSearchTests {
+
+		@Autowired
+		private ElasticSearchTemplate elasticTemplate;
+
+		//
+	}
+----
+
+A list of the auto-configuration that is enabled by `@DataElasticSearchTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST clients
 The `@RestClientTest` annotation can be used if you want to test REST clients. By default
