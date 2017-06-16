@@ -51,7 +51,9 @@ public class SpringBootDependencyInjectionTestExecutionListener
 							.get(((ConfigurableApplicationContext) context).getBeanFactory());
 					System.err.println(new ConditionEvaluationReportMessage(report));
 				}
-			} catch (Exception ignore) {}
+			}
+			catch (Exception ignore) {
+			}
 			throw ex;
 		}
 	}
