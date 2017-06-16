@@ -588,11 +588,8 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.consistency-level= # Queries consistency level.
 	spring.data.cassandra.contact-points=localhost # Comma-separated list of cluster node addresses.
 	spring.data.cassandra.fetch-size= # Queries default fetch size.
-	spring.data.cassandra.heartbeat-interval-seconds= # Pooling option: heartbeat interval.
 	spring.data.cassandra.keyspace-name= # Keyspace name to use.
 	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
-	spring.data.cassandra.max-requests-per-connection.*= # Pooling option: max requests per connection.
-	spring.data.cassandra.max-queue-size= # Pooling option: max queue size.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
 	spring.data.cassandra.pool.heartbeat-interval=30 # Heartbeat interval (in seconds) after which a message is sent on an idle connection to make sure it's still alive.
@@ -1024,6 +1021,12 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.direct.default-requeue-rejected= # Whether rejected deliveries are requeued by default; default true.
 	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published in milliseconds.
 	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
+	spring.rabbitmq.listener.direct.retry.enabled=false # Whether or not publishing retries are enabled.
+    spring.rabbitmq.listener.direct.retry.initial-interval=1000 # Interval between the first and second attempt to publish or deliver a message.
+    spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to publish or deliver a message.
+    spring.rabbitmq.listener.direct.retry.max-interval=10000 # Maximum interval between attempts.
+    spring.rabbitmq.listener.direct.retry.multiplier=1 # A multiplier to apply to the previous retry interval.
+    spring.rabbitmq.listener.direct.retry.stateless=true # Whether or not retries are stateless or stateful.
 	spring.rabbitmq.listener.simple.acknowledge-mode= # Acknowledge mode of container.
 	spring.rabbitmq.listener.simple.auto-startup=true # Start the container automatically on startup.
 	spring.rabbitmq.listener.simple.concurrency= # Minimum number of listener invoker threads.
