@@ -86,7 +86,8 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testCustomizeRedisConfiguration() {
 		load(CustomConfiguration.class);
-		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.isUseSsl()).isTrue();
 	}
 

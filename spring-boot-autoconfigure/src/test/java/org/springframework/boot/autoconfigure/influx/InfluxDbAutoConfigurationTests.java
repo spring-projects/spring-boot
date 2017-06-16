@@ -50,8 +50,7 @@ public class InfluxDbAutoConfigurationTests {
 
 	@Test
 	public void influxDbCanBeCustomized() {
-		load("spring.influx.url=http://localhost",
-				"spring.influx.password:password",
+		load("spring.influx.url=http://localhost", "spring.influx.password:password",
 				"spring.influx.user:user");
 		assertThat(this.context.getBeansOfType(InfluxDB.class)).hasSize(1);
 	}

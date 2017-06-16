@@ -91,12 +91,10 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
-	private void load(Class config, String... environment) {
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment)
-				.and("spring.datasource.initialize", "false")
-				.and("spring.data.neo4j.uri", "http://localhost:8989")
-				.applyTo(ctx);
+		TestPropertyValues.of(environment).and("spring.datasource.initialize", "false")
+				.and("spring.data.neo4j.uri", "http://localhost:8989").applyTo(ctx);
 		ctx.register(config);
 		ctx.register(DataSourceAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class,

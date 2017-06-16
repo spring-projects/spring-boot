@@ -53,8 +53,8 @@ public class InfluxDbAutoConfiguration {
 		if (Strings.isNullOrEmpty(this.properties.getUser())) {
 			return InfluxDBFactory.connect(this.properties.getUrl());
 		}
-		return InfluxDBFactory.connect(this.properties.getUrl(), this.properties.getUser(),
-				this.properties.getPassword());
+		return InfluxDBFactory.connect(this.properties.getUrl(),
+				this.properties.getUser(), this.properties.getPassword());
 	}
 
 }
