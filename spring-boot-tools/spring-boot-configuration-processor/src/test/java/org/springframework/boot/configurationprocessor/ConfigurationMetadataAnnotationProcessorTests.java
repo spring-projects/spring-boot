@@ -490,8 +490,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void lombokInnerClassWithGetterProperties() throws IOException {
-		ConfigurationMetadata metadata =
-				compile(LombokInnerClassWithGetterProperties.class);
+		ConfigurationMetadata metadata = compile(
+				LombokInnerClassWithGetterProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config")
 				.fromSource(LombokInnerClassWithGetterProperties.class));
 		assertThat(metadata).has(Metadata.withGroup("config.first")
@@ -541,16 +541,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void mergeExistingPropertyDeprecation() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
-				null, null, null, null,
-				new ItemDeprecation("Don't use this.", "simple.complex-comparator",
-						"error"));
+				null, null, null, null, new ItemDeprecation("Don't use this.",
+						"simple.complex-comparator", "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata)
 				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
-						.fromSource(SimpleProperties.class)
-						.withDeprecation("Don't use this.", "simple.complex-comparator",
-								"error"));
+						.fromSource(SimpleProperties.class).withDeprecation(
+								"Don't use this.", "simple.complex-comparator", "error"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
@@ -576,8 +574,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
 		assertThat(metadata).has(
 				Metadata.withProperty("singledeprecated.name", String.class.getName())
-						.fromSource(DeprecatedSingleProperty.class)
-						.withDeprecation("renamed", "singledeprecated.new-name", "error"));
+						.fromSource(DeprecatedSingleProperty.class).withDeprecation(
+								"renamed", "singledeprecated.new-name", "error"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 

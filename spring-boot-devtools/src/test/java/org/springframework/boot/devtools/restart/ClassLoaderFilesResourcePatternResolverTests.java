@@ -168,8 +168,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 
 	private ProtocolResolver mockProtocolResolver(String path, Resource resource) {
 		ProtocolResolver resolver = mock(ProtocolResolver.class);
-		given(resolver.resolve(eq(path), any(ResourceLoader.class)))
-				.willReturn(resource);
+		given(resolver.resolve(eq(path), any(ResourceLoader.class))).willReturn(resource);
 		return resolver;
 	}
 

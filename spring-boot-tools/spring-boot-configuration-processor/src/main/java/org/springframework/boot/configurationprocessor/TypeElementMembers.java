@@ -179,8 +179,8 @@ class TypeElementMembers {
 				return candidate;
 			}
 			TypeMirror alternative = this.typeUtils.getWrapperOrPrimitiveFor(type);
-			if (alternative != null &&
-					this.env.getTypeUtils().isSameType(returnType, alternative)) {
+			if (alternative != null
+					&& this.env.getTypeUtils().isSameType(returnType, alternative)) {
 				return candidate;
 			}
 		}

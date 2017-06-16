@@ -79,8 +79,8 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
-			if (!Modifier.isAbstract(innerClass.getModifiers()) &&
-					(JsonSerializer.class.isAssignableFrom(innerClass)
+			if (!Modifier.isAbstract(innerClass.getModifiers())
+					&& (JsonSerializer.class.isAssignableFrom(innerClass)
 							|| JsonDeserializer.class.isAssignableFrom(innerClass))) {
 				try {
 					addJsonBean(innerClass.newInstance());

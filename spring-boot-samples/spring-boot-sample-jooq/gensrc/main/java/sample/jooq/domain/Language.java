@@ -114,6 +114,7 @@ public class Language extends TableImpl<Record> {
 	/**
 	 * Rename this table
 	 */
+	@Override
 	public Language rename(String name) {
 		return new Language(name, null);
 	}

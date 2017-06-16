@@ -71,8 +71,8 @@ public class ItemDeprecation {
 	@Override
 	public String toString() {
 		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
-				+ "replacement='" + this.replacement + '\'' + ", "
-				+ "level='" + this.level + '\'' + '}';
+				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
+				+ this.level + '\'' + '}';
 	}
 
 	@Override
