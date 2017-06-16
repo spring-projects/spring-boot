@@ -616,7 +616,7 @@ content into your application; rather pick only the properties that you need.
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/data/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.
-	spring.data.elasticsearch.cluster-nodes= # Comma-separated list of cluster node addresses. If not specified, starts a client node.
+	spring.data.elasticsearch.cluster-nodes= # Comma-separated list of cluster node addresses.
 	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client.
 	spring.data.elasticsearch.repositories.enabled=true # Enable Elasticsearch repositories.
 
