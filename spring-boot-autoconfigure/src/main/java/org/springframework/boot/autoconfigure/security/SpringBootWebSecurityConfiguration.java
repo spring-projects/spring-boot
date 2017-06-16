@@ -230,10 +230,6 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests()
-					.requestMatchers(
-							(request) -> request.getHeader("Host").equals("whatever"))
-					.permitAll();
 			http.requestMatcher(new RequestMatcher() {
 				@Override
 				public boolean matches(HttpServletRequest request) {
