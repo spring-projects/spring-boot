@@ -39,9 +39,9 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -168,8 +168,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 
 	private ProtocolResolver mockProtocolResolver(String path, Resource resource) {
 		ProtocolResolver resolver = mock(ProtocolResolver.class);
-		given(resolver.resolve(eq(path), any(ResourceLoader.class)))
-				.willReturn(resource);
+		given(resolver.resolve(eq(path), any(ResourceLoader.class))).willReturn(resource);
 		return resolver;
 	}
 

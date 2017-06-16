@@ -70,7 +70,8 @@ public class SampleSecureOAuth2ActuatorApplicationTests {
 
 	@Test
 	public void healthAvailable() throws Exception {
-		this.mvc.perform(get("/application/health")).andExpect(status().isOk()).andDo(print());
+		this.mvc.perform(get("/application/health")).andExpect(status().isOk())
+				.andDo(print());
 	}
 
 	@Test

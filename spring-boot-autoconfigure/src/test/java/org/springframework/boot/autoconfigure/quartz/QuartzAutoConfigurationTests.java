@@ -354,11 +354,8 @@ public class QuartzAutoConfigurationTests {
 
 	public static class ComponentThatUsesScheduler {
 
-		private Scheduler scheduler;
-
 		public ComponentThatUsesScheduler(Scheduler scheduler) {
 			Assert.notNull(scheduler, "Scheduler must not be null");
-			this.scheduler = scheduler;
 		}
 
 	}

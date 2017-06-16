@@ -38,7 +38,7 @@ public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@Rule
 	public Neo4jTestServer server = new Neo4jTestServer(
-			new String[]{"org.springframework.boot.test.autoconfigure.data.neo4j"});
+			new String[] { "org.springframework.boot.test.autoconfigure.data.neo4j" });
 
 	@Autowired
 	private ExampleService service;

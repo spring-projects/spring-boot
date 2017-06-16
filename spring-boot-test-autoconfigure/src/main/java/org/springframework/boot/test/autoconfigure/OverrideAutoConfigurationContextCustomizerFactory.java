@@ -56,8 +56,9 @@ class OverrideAutoConfigurationContextCustomizerFactory
 		@Override
 		public void customizeContext(ConfigurableApplicationContext context,
 				MergedContextConfiguration mergedConfig) {
-			TestPropertyValues.of(
-					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false").applyTo(context);
+			TestPropertyValues
+					.of(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false")
+					.applyTo(context);
 		}
 
 		@Override

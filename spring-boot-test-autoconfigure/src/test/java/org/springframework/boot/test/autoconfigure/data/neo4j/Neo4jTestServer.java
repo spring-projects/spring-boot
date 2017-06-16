@@ -104,8 +104,9 @@ public class Neo4jTestServer implements TestRule {
 
 		@Override
 		public void evaluate() throws Throwable {
-			Assume.assumeTrue("Skipping test due to Neo4j SessionFactory"
-					+ " not being available", false);
+			Assume.assumeTrue(
+					"Skipping test due to Neo4j SessionFactory" + " not being available",
+					false);
 		}
 
 	}

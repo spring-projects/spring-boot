@@ -168,6 +168,7 @@ public class KafkaAutoConfigurationTests {
 				.isEmpty();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void listenerProperties() {
 		load("spring.kafka.template.default-topic=testTopic",
@@ -176,8 +177,8 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.listener.ack-time=456",
 				"spring.kafka.listener.concurrency=3",
 				"spring.kafka.listener.poll-timeout=2000",
-				"spring.kafka.listener.type=batch",
-				"spring.kafka.jaas.enabled=true", "spring.kafka.jaas.login-module=foo",
+				"spring.kafka.listener.type=batch", "spring.kafka.jaas.enabled=true",
+				"spring.kafka.jaas.login-module=foo",
 				"spring.kafka.jaas.control-flag=REQUISITE",
 				"spring.kafka.jaas.options.useKeyTab=true");
 		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context
@@ -199,8 +200,7 @@ public class KafkaAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
 		assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
 				.isEqualTo(2000L);
-		assertThat(dfa.getPropertyValue("batchListener"))
-				.isEqualTo(true);
+		assertThat(dfa.getPropertyValue("batchListener")).isEqualTo(true);
 		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
 				.hasSize(1);
 		KafkaJaasLoginModuleInitializer jaas = this.context

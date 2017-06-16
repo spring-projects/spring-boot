@@ -42,8 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataLdapTest
-@TestPropertySource(properties = {"spring.ldap.embedded.base-dn=dc=spring,dc=org",
-"spring.ldap.embedded.ldif=classpath:org/springframework/boot/test/autoconfigure/data/ldap/schema.ldif"})
+@TestPropertySource(properties = { "spring.ldap.embedded.base-dn=dc=spring,dc=org",
+		"spring.ldap.embedded.ldif=classpath:org/springframework/boot/test/autoconfigure/data/ldap/schema.ldif" })
 public class DataLdapTestIntegrationTests {
 
 	@Rule
@@ -63,10 +63,11 @@ public class DataLdapTestIntegrationTests {
 		LdapQuery ldapQuery = LdapQueryBuilder.query().where("cn").is("Bob Smith");
 		Optional<ExampleEntry> entry = this.exampleRepository.findOne(ldapQuery);
 		assertThat(entry.isPresent());
-		assertThat(entry.get().getDn())
-				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
-		assertThat(this.ldapTemplate.findOne(ldapQuery, ExampleEntry.class) .getDn())
-				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
+		assertThat(entry.get().getDn()).isEqualTo(LdapUtils
+				.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
+		assertThat(this.ldapTemplate.findOne(ldapQuery, ExampleEntry.class).getDn())
+				.isEqualTo(LdapUtils.newLdapName(
+						"cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
 	}
 
 	@Test

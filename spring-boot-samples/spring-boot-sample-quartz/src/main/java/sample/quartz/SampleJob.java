@@ -22,7 +22,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 public class SampleJob extends QuartzJobBean {
-	
+
 	private String name;
 
 	// Invoked if a Job data map entry with that name

@@ -47,16 +47,16 @@ public class SampleHypermediaUiSecureApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/env",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		ResponseEntity<String> user = this.restTemplate.getForEntity("/application/env/foo",
-				String.class);
+		ResponseEntity<String> user = this.restTemplate
+				.getForEntity("/application/env/foo", String.class);
 		assertThat(user.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(user.getBody()).contains("{\"foo\":");
 	}
 
 	@Test
 	public void testSecurePath() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/metrics",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("/application/metrics", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 }

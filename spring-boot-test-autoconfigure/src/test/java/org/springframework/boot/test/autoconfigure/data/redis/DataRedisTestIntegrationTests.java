@@ -66,7 +66,8 @@ public class DataRedisTestIntegrationTests {
 		assertThat(personHash.getId()).isNull();
 		PersonHash savedEntity = this.exampleRepository.save(personHash);
 		assertThat(savedEntity.getId()).isNotNull();
-		assertThat(this.operations.execute((RedisConnection connection) -> connection.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
+		assertThat(this.operations.execute((RedisConnection connection) -> connection
+				.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
 		this.exampleRepository.deleteAll();
 	}
 

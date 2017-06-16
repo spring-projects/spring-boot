@@ -216,8 +216,8 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 				ApplicationContext applicationContext) {
 			DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 			if (applicationContext instanceof DefaultResourceLoader) {
-				Collection<ProtocolResolver> protocolResolvers =
-						((DefaultResourceLoader) applicationContext).getProtocolResolvers();
+				Collection<ProtocolResolver> protocolResolvers = ((DefaultResourceLoader) applicationContext)
+						.getProtocolResolvers();
 				for (ProtocolResolver protocolResolver : protocolResolvers) {
 					resourceLoader.addProtocolResolver(protocolResolver);
 				}
@@ -247,11 +247,11 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 		private ResourceLoader createResourceLoader(
 				WebApplicationContext applicationContext) {
-			WebApplicationContextResourceLoader resourceLoader =
-					new WebApplicationContextResourceLoader(applicationContext);
+			WebApplicationContextResourceLoader resourceLoader = new WebApplicationContextResourceLoader(
+					applicationContext);
 			if (applicationContext instanceof DefaultResourceLoader) {
-				Collection<ProtocolResolver> protocolResolvers =
-						((DefaultResourceLoader) applicationContext).getProtocolResolvers();
+				Collection<ProtocolResolver> protocolResolvers = ((DefaultResourceLoader) applicationContext)
+						.getProtocolResolvers();
 				for (ProtocolResolver protocolResolver : protocolResolvers) {
 					resourceLoader.addProtocolResolver(protocolResolver);
 				}

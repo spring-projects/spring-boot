@@ -42,7 +42,6 @@ import org.springframework.data.cassandra.core.CassandraAdminOperations;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.convert.MappingCassandraConverter;
-import org.springframework.data.cassandra.core.mapping.BasicCassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.util.StringUtils;
@@ -81,7 +80,7 @@ public class CassandraDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
-		BasicCassandraMappingContext context = new BasicCassandraMappingContext();
+		CassandraMappingContext context = new CassandraMappingContext();
 		List<String> packages = EntityScanPackages.get(this.beanFactory)
 				.getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {

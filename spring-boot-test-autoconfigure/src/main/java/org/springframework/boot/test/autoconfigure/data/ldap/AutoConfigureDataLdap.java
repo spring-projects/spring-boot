@@ -26,9 +26,9 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 /**
- * {@link ImportAutoConfiguration Auto-configuration imports} for typical Data LDAP
- * tests. Most tests should consider using {@link DataLdapTest @DataLdapTest} rather
- * than using this annotation directly.
+ * {@link ImportAutoConfiguration Auto-configuration imports} for typical Data LDAP tests.
+ * Most tests should consider using {@link DataLdapTest @DataLdapTest} rather than using
+ * this annotation directly.
  *
  * @author Eddú Meléndez
  * @since 2.0.0

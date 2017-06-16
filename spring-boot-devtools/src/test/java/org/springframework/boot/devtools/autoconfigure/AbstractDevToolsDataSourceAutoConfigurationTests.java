@@ -110,8 +110,9 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		context.register(classes);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		if (driverClassName != null) {
-			TestPropertyValues.of(
-					"spring.datasource.driver-class-name:" + driverClassName).applyTo(context);
+			TestPropertyValues
+					.of("spring.datasource.driver-class-name:" + driverClassName)
+					.applyTo(context);
 		}
 		if (url != null) {
 			TestPropertyValues.of("spring.datasource.url:" + url).applyTo(context);

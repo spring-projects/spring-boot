@@ -987,7 +987,7 @@ public class SpringApplicationTests {
 			public void run() {
 				SpringApplication application = new SpringApplication(
 						FailingConfig.class);
-				application.setWebEnvironment(false);
+				application.setWebApplicationType(WebApplicationType.NONE);
 				application.run();
 			};
 		};

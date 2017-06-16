@@ -36,7 +36,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.data.cassandra.core.mapping.BasicCassandraMappingContext;
+import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableReactiveCassandraRepositories;
 import org.springframework.data.cql.core.session.ReactiveSession;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -87,8 +87,8 @@ public class CassandraReactiveRepositoriesAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private Set<Class<?>> getInitialEntitySet() {
-		BasicCassandraMappingContext mappingContext = this.context
-				.getBean(BasicCassandraMappingContext.class);
+		CassandraMappingContext mappingContext = this.context
+				.getBean(CassandraMappingContext.class);
 		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
 				"initialEntitySet");
 	}

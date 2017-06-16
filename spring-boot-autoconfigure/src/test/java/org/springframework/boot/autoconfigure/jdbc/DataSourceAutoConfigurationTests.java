@@ -210,19 +210,16 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void testExplicitDriverClassClearsUsername() throws Exception {
 		TestPropertyValues.of(
-				"spring.datasource.driverClassName:"
-						+ "org.springframework.boot.autoconfigure.jdbc."
-						+ "DataSourceAutoConfigurationTests$DatabaseTestDriver",
+				"spring.datasource.driverClassName:" + DatabaseTestDriver.class.getName(),
 				"spring.datasource.url:jdbc:foo://localhost").applyTo(this.context);
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		DataSource bean = this.context.getBean(DataSource.class);
-		assertThat(bean).isNotNull();
-		HikariDataSource pool = (HikariDataSource) bean;
-		assertThat(pool.getDriverClassName()).isEqualTo(
-				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseTestDriver");
-		assertThat(pool.getUsername()).isNull();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(((HikariDataSource) dataSource).getDriverClassName())
+				.isEqualTo(DatabaseTestDriver.class.getName());
+		assertThat(((HikariDataSource) dataSource).getUsername()).isNull();
 	}
 
 	@Test
