@@ -90,6 +90,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 						this.properties.getLettuce().getPool(), clientResources)));
 	}
 
+	@SuppressWarnings("deprecation")
 	private LettuceConnectionFactory applyProperties(
 			LettuceConnectionFactory connectionFactory) {
 		connectionFactory
