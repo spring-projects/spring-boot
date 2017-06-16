@@ -168,7 +168,7 @@ public class OAuth2RestOperationsConfiguration {
 				return ConditionOutcome.match(message
 						.foundExactly("security.oauth2.client.client-id property"));
 			}
-			return ConditionOutcome.match(message
+			return ConditionOutcome.noMatch(message
 					.didNotFind("security.oauth2.client.client-id property").atAll());
 		}
 
