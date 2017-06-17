@@ -56,7 +56,7 @@ public class DiskSpaceHealthIndicatorTests {
 
 	@Test
 	public void diskSpaceIsUp() throws Exception {
-		given(this.fileMock.getFreeSpace()).willReturn(THRESHOLD_BYTES + 10);
+		given(this.fileMock.getUsableSpace()).willReturn(THRESHOLD_BYTES + 10);
 		given(this.fileMock.getTotalSpace()).willReturn(THRESHOLD_BYTES * 10);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -67,7 +67,7 @@ public class DiskSpaceHealthIndicatorTests {
 
 	@Test
 	public void diskSpaceIsDown() throws Exception {
-		given(this.fileMock.getFreeSpace()).willReturn(THRESHOLD_BYTES - 10);
+		given(this.fileMock.getUsableSpace()).willReturn(THRESHOLD_BYTES - 10);
 		given(this.fileMock.getTotalSpace()).willReturn(THRESHOLD_BYTES * 10);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
