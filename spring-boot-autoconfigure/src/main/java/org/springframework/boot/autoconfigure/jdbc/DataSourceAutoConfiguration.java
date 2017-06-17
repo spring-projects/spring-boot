@@ -17,22 +17,28 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.SQLException;
+import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -51,6 +57,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jmx.export.MBeanExporter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
@@ -133,6 +140,46 @@ public class DataSourceAutoConfiguration {
 			return null;
 		}
 
+	}
+
+	/**
+	 * Used for avoiding double registration MBean for HikariDataSource.
+	 */
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBean(DataSource.class)
+	@ConditionalOnClass(HikariDataSource.class)
+	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
+	protected static class HikariDataSourceJmxConfiguration {
+
+		private ApplicationContext ctx;
+		private ObjectProvider<MBeanExporter> mBeanExporterProvider;
+
+		@Autowired
+		public HikariDataSourceJmxConfiguration(ApplicationContext ctx,
+												ObjectProvider<MBeanExporter> mBeanExporterProvider) {
+			this.ctx = ctx;
+			this.mBeanExporterProvider = mBeanExporterProvider;
+		}
+
+		@PostConstruct
+		public void configureJmx() {
+			MBeanExporter mBeanExporter = this.mBeanExporterProvider.getIfAvailable();
+
+			if (mBeanExporter == null) {
+				return;
+			}
+
+			for (Map.Entry<String, DataSource> beanEntry : this.ctx.getBeansOfType(DataSource.class).entrySet()) {
+				if (beanEntry.getValue() instanceof HikariDataSource) {
+					HikariDataSource ds = (HikariDataSource) beanEntry.getValue();
+
+					if (ds.isRegisterMbeans()) {
+						mBeanExporter.addExcludedBean(beanEntry.getKey());
+					}
+				}
+			}
+		}
 	}
 
 	/**
