@@ -46,7 +46,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		File path = this.properties.getPath();
-		long diskFreeInBytes = path.getFreeSpace();
+		long diskFreeInBytes = path.getUsableSpace();
 		if (diskFreeInBytes >= this.properties.getThreshold()) {
 			builder.up();
 		}
