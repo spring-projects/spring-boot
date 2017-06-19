@@ -105,9 +105,9 @@ public class WebFluxAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		assertThat((List<HandlerMethodArgumentResolver>) ReflectionTestUtils
 				.getField(adapter.getArgumentResolverConfigurer(), "customResolvers"))
-						.contains(
-								this.context.getBean("firstResolver",
-										HandlerMethodArgumentResolver.class),
+				.contains(
+						this.context.getBean("firstResolver",
+								HandlerMethodArgumentResolver.class),
 						this.context.getBean("secondResolver",
 								HandlerMethodArgumentResolver.class));
 	}
