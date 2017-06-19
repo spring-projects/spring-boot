@@ -24,7 +24,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -39,15 +38,17 @@ import org.springframework.data.cassandra.core.convert.CassandraCustomConversion
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CassandraDataAutoConfiguration}
+ * Tests for {@link CassandraDataAutoConfiguration}.
  *
  * @author Eddú Meléndez
  * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 public class CassandraDataAutoConfigurationTests {
 
@@ -62,13 +63,7 @@ public class CassandraDataAutoConfigurationTests {
 
 	@Test
 	public void templateExists() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
-				.applyTo(this.context);
-		this.context.register(TestExcludeConfiguration.class, TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
-		this.context.refresh();
+		load(TestExcludeConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length)
 				.isEqualTo(1);
 	}
@@ -76,12 +71,7 @@ public class CassandraDataAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test");
-		this.context.register(TestConfiguration.class, EntityScanConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
-		this.context.refresh();
+		load(EntityScanConfig.class);
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
@@ -91,13 +81,7 @@ public class CassandraDataAutoConfigurationTests {
 
 	@Test
 	public void userTypeResolverShouldBeSet() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
-				.applyTo(this.context);
-		this.context.register(TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
@@ -106,13 +90,7 @@ public class CassandraDataAutoConfigurationTests {
 
 	@Test
 	public void defaultConversions() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
-				.applyTo(this.context);
-		this.context.register(TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(Person.class,
 				String.class)).isFalse();
@@ -120,18 +98,24 @@ public class CassandraDataAutoConfigurationTests {
 
 	@Test
 	public void customConversions() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
-				.applyTo(this.context);
-		this.context.register(CustomConversionConfig.class,
-				TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
-		this.context.refresh();
+		load(CustomConversionConfig.class);
 		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(Person.class,
 				String.class)).isTrue();
 
+	}
+
+	public void load(Class<?>... config) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
+				.applyTo(ctx);
+		if (!ObjectUtils.isEmpty(config)) {
+			ctx.register(config);
+		}
+		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 	@Configuration
