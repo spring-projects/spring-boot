@@ -46,7 +46,6 @@ import org.springframework.data.cassandra.core.convert.CassandraCustomConversion
 import org.springframework.data.cassandra.core.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
-import org.springframework.data.convert.CustomConversions;
 import org.springframework.util.StringUtils;
 
 /**
@@ -82,7 +81,8 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMapping(CustomConversions conversions) throws ClassNotFoundException {
+	public CassandraMappingContext cassandraMapping(
+			CassandraCustomConversions conversions) throws ClassNotFoundException {
 		CassandraMappingContext context = new CassandraMappingContext();
 		List<String> packages = EntityScanPackages.get(this.beanFactory)
 				.getPackageNames();
@@ -103,7 +103,7 @@ public class CassandraDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CassandraConverter cassandraConverter(CassandraMappingContext mapping,
-			CustomConversions conversions) {
+			CassandraCustomConversions conversions) {
 		MappingCassandraConverter converter = new MappingCassandraConverter(mapping);
 		converter.setCustomConversions(conversions);
 		return converter;
@@ -132,7 +132,7 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CustomConversions cassandraCustomConversions() {
+	public CassandraCustomConversions cassandraCustomConversions() {
 		return new CassandraCustomConversions(Collections.emptyList());
 	}
 

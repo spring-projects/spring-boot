@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 import com.datastax.driver.core.Session;
@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -106,10 +105,24 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
+	public void defaultConversions() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
+				.applyTo(this.context);
+		this.context.register(TestConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
+		this.context.refresh();
+		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
+		assertThat(template.getConverter().getConversionService().canConvert(Person.class,
+				String.class)).isFalse();
+	}
+
+	@Test
 	public void customConversions() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
+		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
+				.applyTo(this.context);
 		this.context.register(CustomConversionConfig.class,
 				TestConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -148,8 +161,9 @@ public class CassandraDataAutoConfigurationTests {
 	static class CustomConversionConfig {
 
 		@Bean
-		public CassandraCustomConversions cassandraCustomConversions() {
-			return new CassandraCustomConversions(Arrays.asList(new MyConverter()));
+		public CassandraCustomConversions myCassandraCustomConversions() {
+			return new CassandraCustomConversions(Collections.singletonList(
+					new MyConverter()));
 		}
 
 	}
