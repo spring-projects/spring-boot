@@ -195,6 +195,9 @@ final class MetricsFilter extends OncePerRequestFilter {
 		if (this.properties.shouldSubmitToCounter(submission)) {
 			incrementCounter(getKey("status." + prefix + status + suffix));
 		}
+		if (this.properties.shouldSubmitToTimer(submission)) {
+			submitToGauge(getKey("timer.response." + prefix + suffix), time);
+		}
 	}
 
 	private String getKey(String string) {
