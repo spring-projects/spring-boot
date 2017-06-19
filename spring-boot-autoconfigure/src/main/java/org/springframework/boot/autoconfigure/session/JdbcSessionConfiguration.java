@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,22 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration;
 
 /**
@@ -38,17 +42,18 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
  * @author Vedran Pavic
  */
 @Configuration
-@ConditionalOnClass(JdbcTemplate.class)
+@ConditionalOnClass({ JdbcTemplate.class, JdbcOperationsSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(DataSource.class)
 @Conditional(SessionCondition.class)
+@EnableConfigurationProperties({ ServerProperties.class, JdbcSessionProperties.class })
 class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public JdbcSessionDatabaseInitializer jdbcSessionDatabaseInitializer(
 			DataSource dataSource, ResourceLoader resourceLoader,
-			SessionProperties properties) {
+			JdbcSessionProperties properties) {
 		return new JdbcSessionDatabaseInitializer(dataSource, resourceLoader, properties);
 	}
 
@@ -56,13 +61,25 @@ class JdbcSessionConfiguration {
 	public static class SpringBootJdbcHttpSessionConfiguration
 			extends JdbcHttpSessionConfiguration {
 
-		@Autowired
-		public void customize(SessionProperties sessionProperties) {
-			Integer timeout = sessionProperties.getTimeout();
-			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds(timeout);
+		private final JdbcSessionProperties sessionProperties;
+
+		private final ServerProperties serverProperties;
+
+		SpringBootJdbcHttpSessionConfiguration(JdbcSessionProperties sessionProperties,
+				ObjectProvider<ServerProperties> serverProperties) {
+			this.sessionProperties = sessionProperties;
+			this.serverProperties = serverProperties.getIfUnique();
+		}
+
+		@PostConstruct
+		public void init() {
+			if (this.serverProperties != null) {
+				Integer timeout = this.serverProperties.getSession().getTimeout();
+				if (timeout != null) {
+					setMaxInactiveIntervalInSeconds(timeout);
+				}
 			}
-			setTableName(sessionProperties.getJdbc().getTableName());
+			setTableName(this.sessionProperties.getTableName());
 		}
 
 	}

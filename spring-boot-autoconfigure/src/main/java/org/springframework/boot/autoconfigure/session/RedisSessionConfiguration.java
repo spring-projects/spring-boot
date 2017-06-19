@@ -16,15 +16,20 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 
 /**
@@ -37,28 +42,37 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
  * @author Vedran Pavic
  */
 @Configuration
-@ConditionalOnClass(RedisTemplate.class)
+@ConditionalOnClass({ RedisTemplate.class, RedisOperationsSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(RedisConnectionFactory.class)
 @Conditional(SessionCondition.class)
+@EnableConfigurationProperties({ ServerProperties.class, RedisSessionProperties.class })
 class RedisSessionConfiguration {
 
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration
 			extends RedisHttpSessionConfiguration {
 
-		private SessionProperties sessionProperties;
+		private final RedisSessionProperties sessionProperties;
 
-		@Autowired
-		public void customize(SessionProperties sessionProperties) {
+		private final ServerProperties serverProperties;
+
+		SpringBootRedisHttpSessionConfiguration(RedisSessionProperties sessionProperties,
+				ObjectProvider<ServerProperties> serverProperties) {
 			this.sessionProperties = sessionProperties;
-			Integer timeout = this.sessionProperties.getTimeout();
-			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds(timeout);
+			this.serverProperties = serverProperties.getIfUnique();
+		}
+
+		@PostConstruct
+		public void init() {
+			if (this.serverProperties != null) {
+				Integer timeout = this.serverProperties.getSession().getTimeout();
+				if (timeout != null) {
+					setMaxInactiveIntervalInSeconds(timeout);
+				}
 			}
-			SessionProperties.Redis redis = this.sessionProperties.getRedis();
-			setRedisNamespace(redis.getNamespace());
-			setRedisFlushMode(redis.getFlushMode());
+			setRedisNamespace(this.sessionProperties.getNamespace());
+			setRedisFlushMode(this.sessionProperties.getFlushMode());
 		}
 
 	}
