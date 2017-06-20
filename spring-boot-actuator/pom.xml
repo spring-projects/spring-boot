@@ -362,7 +362,7 @@
 		<dependency>
 		    <groupId>org.neo4j</groupId>
 		    <artifactId>neo4j-ogm-test</artifactId>
-		    <version>3.0.0-M02</version>
+		    <version>${neo4j-ogm.version}</version>
 		    <scope>test</scope>
 		</dependency>		
 	</dependencies>
