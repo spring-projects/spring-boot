@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurationTests.Config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ObjectUtils;
@@ -60,7 +62,9 @@ import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link WebFluxAutoConfiguration}.
@@ -110,6 +114,15 @@ public class WebFluxAutoConfigurationTests {
 								HandlerMethodArgumentResolver.class),
 						this.context.getBean("secondResolver",
 								HandlerMethodArgumentResolver.class));
+	}
+
+	@Test
+	public void shouldCustomizeCodecs() throws Exception {
+		load(CustomCodecCustomizers.class);
+		CodecCustomizer codecCustomizer =
+				this.context.getBean("firstCodecCustomizer", CodecCustomizer.class);
+		assertThat(codecCustomizer).isNotNull();
+		verify(codecCustomizer).customize(any(ServerCodecConfigurer.class));
 	}
 
 	@Test
@@ -314,6 +327,15 @@ public class WebFluxAutoConfigurationTests {
 			return mock(HandlerMethodArgumentResolver.class);
 		}
 
+	}
+
+	@Configuration
+	protected static class CustomCodecCustomizers {
+
+		@Bean
+		public CodecCustomizer firstCodecCustomizer() {
+			return mock(CodecCustomizer.class);
+		}
 	}
 
 	@Configuration

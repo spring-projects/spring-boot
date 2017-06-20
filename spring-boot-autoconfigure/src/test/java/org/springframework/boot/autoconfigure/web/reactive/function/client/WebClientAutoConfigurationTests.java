@@ -22,12 +22,14 @@ import org.junit.After;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +54,17 @@ public class WebClientAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+	}
+
+	@Test
+	public void shouldCustomizeClientCodecs() throws Exception {
+		load(CodecConfiguration.class);
+		WebClient.Builder builder = this.context.getBean(WebClient.Builder.class);
+		CodecCustomizer codecCustomizer = this.context.getBean(CodecCustomizer.class);
+		WebClientCodecCustomizer clientCustomizer = this.context.getBean(WebClientCodecCustomizer.class);
+		builder.build();
+		assertThat(clientCustomizer).isNotNull();
+		verify(codecCustomizer).customize(any(CodecConfigurer.class));
 	}
 
 	@Test
@@ -102,6 +115,15 @@ public class WebClientAutoConfigurationTests {
 		ctx.register(WebClientAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
+	}
+
+	@Configuration
+	static class CodecConfiguration {
+
+		@Bean
+		public CodecCustomizer myCodecCustomizer() {
+			return mock(CodecCustomizer.class);
+		}
 	}
 
 	@Configuration
