@@ -24,12 +24,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,33 +34,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HikariDataSourceConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class HikariDataSourceConfigurationTests {
 
-	private static final String PREFIX = "spring.datasource.hikari.";
-
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private AnnotationConfigApplicationContext context;
 
 	@After
-	public void restore() {
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
 		EmbeddedDatabaseConnection.override = null;
 	}
 
 	@Test
 	public void testDataSourceExists() throws Exception {
-		this.context.register(HikariDataSourceConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(DataSource.class)).isNotNull();
-		assertThat(this.context.getBean(HikariDataSource.class)).isNotNull();
+		load();
+		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(HikariDataSource.class)).hasSize(1);
 	}
 
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
-		this.context.register(HikariDataSourceConfiguration.class);
-		TestPropertyValues.of(PREFIX + "jdbcUrl:jdbc:foo//bar/spam")
-				.applyTo(this.context);
-		TestPropertyValues.of(PREFIX + "maxLifetime:1234").applyTo(this.context);
-		this.context.refresh();
+		load("spring.datasource.hikari.jdbc-url=jdbc:foo//bar/spam",
+				"spring.datasource.hikari.max-lifetime=1234");
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
 		assertThat(ds.getMaxLifetime()).isEqualTo(1234);
@@ -73,12 +67,7 @@ public class HikariDataSourceConfigurationTests {
 
 	@Test
 	public void testDataSourceGenericPropertiesOverridden() throws Exception {
-		this.context.register(HikariDataSourceConfiguration.class);
-		TestPropertyValues
-				.of(PREFIX
-						+ "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource")
-				.applyTo(this.context);
-		this.context.refresh();
+		load("spring.datasource.hikari.data-source-properties.dataSourceClassName=org.h2.JDBCDataSource");
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
 				.isEqualTo("org.h2.JDBCDataSource");
@@ -86,10 +75,24 @@ public class HikariDataSourceConfigurationTests {
 
 	@Test
 	public void testDataSourceDefaultsPreserved() throws Exception {
-		this.context.register(HikariDataSourceConfiguration.class);
-		this.context.refresh();
+		load();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertThat(ds.getMaxLifetime()).isEqualTo(1800000);
+	}
+
+	@Test
+	public void nameIsAliasedToPoolName() {
+		load("spring.datasource.name=myDS");
+		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
+		assertThat(ds.getPoolName()).isEqualTo("myDS");
+	}
+
+	@Test
+	public void poolNameTakesPrecedenceOverName() {
+		load("spring.datasource.name=myDS",
+				"spring.datasource.hikari.pool-name=myHikariDS");
+		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
+		assertThat(ds.getPoolName()).isEqualTo("myHikariDS");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -99,16 +102,15 @@ public class HikariDataSourceConfigurationTests {
 		return (T) ReflectionUtils.getField(field, target);
 	}
 
-	@Configuration
-	@EnableConfigurationProperties
-	protected static class HikariDataSourceConfiguration {
-
-		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.hikari")
-		public DataSource dataSource() {
-			return DataSourceBuilder.create().type(HikariDataSource.class).build();
-		}
-
+	private void load(String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(environment)
+				.and("spring.datasource.initialize", "false")
+				.and("spring.datasource.type", HikariDataSource.class.getName())
+				.applyTo(ctx);
+		ctx.register(DataSourceAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 }

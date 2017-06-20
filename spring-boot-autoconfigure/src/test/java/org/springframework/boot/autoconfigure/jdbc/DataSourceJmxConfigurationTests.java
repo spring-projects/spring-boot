@@ -75,7 +75,7 @@ public class DataSourceJmxConfigurationTests {
 			throws MalformedObjectNameException {
 		String poolName = UUID.randomUUID().toString();
 		load("spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.pool-name=" + poolName,
+				"spring.datasource.name=" + poolName,
 				"spring.datasource.hikari.register-mbeans=true");
 		assertThat(this.context.getBeansOfType(HikariDataSource.class)).hasSize(1);
 		assertThat(this.context.getBean(HikariDataSource.class).isRegisterMbeans())
@@ -89,7 +89,7 @@ public class DataSourceJmxConfigurationTests {
 		String poolName = UUID.randomUUID().toString();
 		load("spring.datasource.type=" + HikariDataSource.class.getName(),
 				"spring.jmx.enabled=false",
-				"spring.datasource.hikari.pool-name=" + poolName,
+				"spring.datasource.name=" + poolName,
 				"spring.datasource.hikari.register-mbeans=true");
 		assertThat(this.context.getBeansOfType(HikariDataSource.class)).hasSize(1);
 		assertThat(this.context.getBean(HikariDataSource.class).isRegisterMbeans())
