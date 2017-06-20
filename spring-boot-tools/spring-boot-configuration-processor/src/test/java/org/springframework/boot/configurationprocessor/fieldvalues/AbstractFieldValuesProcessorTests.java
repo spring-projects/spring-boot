@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
-import org.springframework.boot.junit.compiler.TestCompiler;
+import org.springframework.boot.testsupport.compiler.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -97,7 +97,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 
 		private FieldValuesParser processor;
 
-		private Map<String, Object> values = new HashMap<String, Object>();
+		private Map<String, Object> values = new HashMap<>();
 
 		@Override
 		public synchronized void init(ProcessingEnvironment env) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -50,33 +49,16 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			final BeanDefinitionRegistry registry) {
-		super.registerBeanDefinitions(
-				new IntegrationComponentScanConfigurationMetaData(this.beanFactory),
-				registry);
+		super.registerBeanDefinitions(new StandardAnnotationMetadata(
+				IntegrationComponentScanConfiguration.class, true), registry);
 	}
 
-	private static class IntegrationComponentScanConfigurationMetaData
-			extends StandardAnnotationMetadata {
-
-		private final BeanFactory beanFactory;
-
-		IntegrationComponentScanConfigurationMetaData(BeanFactory beanFactory) {
-			super(IntegrationComponentScanConfiguration.class, true);
-			this.beanFactory = beanFactory;
-		}
-
-		@Override
-		public Map<String, Object> getAnnotationAttributes(String annotationName) {
-			Map<String, Object> attributes = super.getAnnotationAttributes(
-					annotationName);
-			if (IntegrationComponentScan.class.getName().equals(annotationName)
-					&& AutoConfigurationPackages.has(this.beanFactory)) {
-				List<String> packages = AutoConfigurationPackages.get(this.beanFactory);
-				attributes = new LinkedHashMap<String, Object>(attributes);
-				attributes.put("value", packages.toArray(new String[packages.size()]));
-			}
-			return attributes;
-		}
+	@Override
+	protected Collection<String> getBasePackages(
+			AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+		return AutoConfigurationPackages.has(this.beanFactory)
+				? AutoConfigurationPackages.get(this.beanFactory)
+				: Collections.emptyList();
 	}
 
 	@IntegrationComponentScan

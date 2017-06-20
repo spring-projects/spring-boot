@@ -80,6 +80,12 @@ public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint>
 		verify(getLoggingSystem()).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
+	@Test
+	public void setLogLevelToNull() {
+		getEndpointBean().setLogLevel("ROOT", null);
+		verify(getLoggingSystem()).setLogLevel("ROOT", null);
+	}
+
 	private LoggingSystem getLoggingSystem() {
 		return this.context.getBean(LoggingSystem.class);
 	}

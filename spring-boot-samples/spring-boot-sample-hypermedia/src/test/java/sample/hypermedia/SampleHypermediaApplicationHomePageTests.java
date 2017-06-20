@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class SampleHypermediaApplicationHomePageTests {
 	public void linksWithJson() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> response = this.restTemplate.exchange("/actuator",
+		ResponseEntity<String> response = this.restTemplate.exchange("/application",
 				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(response.getBody()).contains("\"_links\":");
 	}
@@ -60,7 +60,7 @@ public class SampleHypermediaApplicationHomePageTests {
 	public void halWithHtml() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> response = this.restTemplate.exchange("/actuator/",
+		ResponseEntity<String> response = this.restTemplate.exchange("/application/",
 				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(response.getBody()).contains("HAL Browser");
 	}

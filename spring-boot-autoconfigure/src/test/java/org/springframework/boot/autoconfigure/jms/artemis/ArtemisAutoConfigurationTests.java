@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -234,9 +234,8 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void severalEmbeddedBrokers() {
 		load(EmptyConfiguration.class, "spring.artemis.embedded.queues=Queue1");
-		AnnotationConfigApplicationContext anotherContext = doLoad(
-				EmptyConfiguration.class, "spring.artemis.embedded.queues=Queue2");
-		try {
+		try (AnnotationConfigApplicationContext anotherContext = doLoad(
+				EmptyConfiguration.class, "spring.artemis.embedded.queues=Queue2")) {
 			ArtemisProperties properties = this.context.getBean(ArtemisProperties.class);
 			ArtemisProperties anotherProperties = anotherContext
 					.getBean(ArtemisProperties.class);
@@ -249,28 +248,22 @@ public class ArtemisAutoConfigurationTests {
 			anotherChecker.checkQueue("Queue2", true);
 			anotherChecker.checkQueue("Queue1", true);
 		}
-		finally {
-			anotherContext.close();
-		}
 	}
 
 	@Test
 	public void connectToASpecificEmbeddedBroker() {
 		load(EmptyConfiguration.class, "spring.artemis.embedded.serverId=93",
 				"spring.artemis.embedded.queues=Queue1");
-		AnnotationConfigApplicationContext anotherContext = doLoad(
+
+		try (AnnotationConfigApplicationContext anotherContext = doLoad(
 				EmptyConfiguration.class, "spring.artemis.mode=embedded",
-				"spring.artemis.embedded.serverId=93", // Connect to the "main" broker
-				"spring.artemis.embedded.enabled=false"); // do not start a specific one
-		try {
+				"spring.artemis.embedded.serverId=93", /* Connect to the "main" broker */
+				"spring.artemis.embedded.enabled=false" /* do not start a specific one */)) {
 			DestinationChecker checker = new DestinationChecker(this.context);
 			checker.checkQueue("Queue1", true);
 
 			DestinationChecker anotherChecker = new DestinationChecker(anotherContext);
 			anotherChecker.checkQueue("Queue1", true);
-		}
-		finally {
-			anotherContext.close();
 		}
 	}
 
@@ -312,7 +305,7 @@ public class ArtemisAutoConfigurationTests {
 		applicationContext.register(config);
 		applicationContext.register(ArtemisAutoConfiguration.class,
 				JmsAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
 		return applicationContext;
 	}

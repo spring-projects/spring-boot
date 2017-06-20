@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.util.SocketUtils;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -46,15 +44,13 @@ public class TunnelClientTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private int listenPort = SocketUtils.findAvailableTcpPort();
-
 	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test
-	public void listenPortMustBePositive() throws Exception {
+	public void listenPortMustNotBeNegative() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ListenPort must be positive");
-		new TunnelClient(0, this.tunnelConnection);
+		this.thrown.expectMessage("ListenPort must be greater than or equal to 0");
+		new TunnelClient(-5, this.tunnelConnection);
 	}
 
 	@Test
@@ -66,10 +62,9 @@ public class TunnelClientTests {
 
 	@Test
 	public void typicalTraffic() throws Exception {
-		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
-		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
+		int port = client.start();
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
 		channel.write(ByteBuffer.wrap("hello".getBytes()));
 		ByteBuffer buffer = ByteBuffer.allocate(5);
 		channel.read(buffer);
@@ -80,10 +75,9 @@ public class TunnelClientTests {
 
 	@Test
 	public void socketChannelClosedTriggersTunnelClose() throws Exception {
-		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
-		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
+		int port = client.start();
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
 		Thread.sleep(200);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
@@ -94,10 +88,9 @@ public class TunnelClientTests {
 
 	@Test
 	public void stopTriggersTunnelClose() throws Exception {
-		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
-		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
+		int port = client.start();
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
 		Thread.sleep(200);
 		client.stop();
 		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
@@ -107,12 +100,11 @@ public class TunnelClientTests {
 
 	@Test
 	public void addListener() throws Exception {
-		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
+		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		TunnelClientListener listener = mock(TunnelClientListener.class);
 		client.addListener(listener);
-		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		int port = client.start();
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
 		Thread.sleep(200);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();

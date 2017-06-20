@@ -73,7 +73,7 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 	 * @param client StatsD client to write metrics with
 	 */
 	public StatsdMetricWriter(StatsDClient client) {
-		Assert.notNull(client, "client must not be null");
+		Assert.notNull(client, "Client must not be null");
 		this.client = client;
 	}
 

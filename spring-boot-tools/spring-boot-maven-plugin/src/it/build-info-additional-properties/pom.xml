@@ -8,6 +8,8 @@
 	<name>Generate build info</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>@java.version@</maven.compiler.source>
+		<maven.compiler.target>@java.version@</maven.compiler.target>
 	</properties>
 	<build>
 		<plugins>

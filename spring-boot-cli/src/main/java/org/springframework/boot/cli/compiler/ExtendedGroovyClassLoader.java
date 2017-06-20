@@ -53,7 +53,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	private static final URL[] NO_URLS = new URL[] {};
 
-	private final Map<String, byte[]> classResources = new HashMap<String, byte[]>();
+	private final Map<String, byte[]> classResources = new HashMap<>();
 
 	private final GroovyCompilerScope scope;
 
@@ -98,13 +98,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 	private Class<?> findSharedClass(String name) {
 		try {
 			String path = name.replace('.', '/').concat(".class");
-			InputStream inputStream = getParent().getResourceAsStream(path);
-			if (inputStream != null) {
-				try {
+			try (InputStream inputStream = getParent().getResourceAsStream(path)) {
+				if (inputStream != null) {
 					return defineClass(name, FileCopyUtils.copyToByteArray(inputStream));
-				}
-				finally {
-					inputStream.close();
 				}
 			}
 			return null;
@@ -183,13 +179,13 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		}
 
 		private URL[] getGroovyJars(final ClassLoader parent) {
-			Set<URL> urls = new HashSet<URL>();
+			Set<URL> urls = new HashSet<>();
 			findGroovyJarsDirectly(parent, urls);
 			if (urls.isEmpty()) {
 				findGroovyJarsFromClassPath(parent, urls);
 			}
 			Assert.state(!urls.isEmpty(), "Unable to find groovy JAR");
-			return new ArrayList<URL>(urls).toArray(new URL[urls.size()]);
+			return new ArrayList<>(urls).toArray(new URL[urls.size()]);
 		}
 
 		private void findGroovyJarsDirectly(ClassLoader classLoader, Set<URL> urls) {

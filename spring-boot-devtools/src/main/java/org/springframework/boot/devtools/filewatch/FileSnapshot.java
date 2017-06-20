@@ -70,9 +70,9 @@ class FileSnapshot {
 	@Override
 	public int hashCode() {
 		int hashCode = this.file.hashCode();
-		hashCode = 31 * hashCode + (this.exists ? 1231 : 1237);
-		hashCode = 31 * hashCode + (int) (this.length ^ (this.length >>> 32));
-		hashCode = 31 * hashCode + (int) (this.lastModified ^ (this.lastModified >>> 32));
+		hashCode = 31 * hashCode + Boolean.hashCode(this.exists);
+		hashCode = 31 * hashCode + Long.hashCode(this.length);
+		hashCode = 31 * hashCode + Long.hashCode(this.lastModified);
 		return hashCode;
 	}
 

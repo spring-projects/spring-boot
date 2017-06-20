@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,20 +57,14 @@ public class BeanNotOfRequiredTypeFailureAnalyzerTests {
 	}
 
 	private Exception createFailure(Class<?> configuration) {
-		ConfigurableApplicationContext context = null;
-		try {
-			context = new AnnotationConfigApplicationContext(configuration);
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				configuration)) {
+			fail("Expected failure did not occur");
+			return null;
 		}
 		catch (Exception ex) {
 			return ex;
 		}
-		finally {
-			if (context != null) {
-				context.close();
-			}
-		}
-		fail("Expected failure did not occur");
-		return null;
 	}
 
 	@Configuration

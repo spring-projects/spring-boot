@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import org.apache.catalina.session.ManagerBase;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -47,9 +47,9 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		if (this.applicationContext instanceof EmbeddedWebApplicationContext) {
+		if (this.applicationContext instanceof ServletWebServerApplicationContext) {
 			Manager manager = getManager(
-					(EmbeddedWebApplicationContext) this.applicationContext);
+					(ServletWebServerApplicationContext) this.applicationContext);
 			if (manager != null) {
 				return metrics(manager);
 			}
@@ -57,18 +57,16 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 		return Collections.emptySet();
 	}
 
-	private Manager getManager(EmbeddedWebApplicationContext applicationContext) {
-		EmbeddedServletContainer embeddedServletContainer = applicationContext
-				.getEmbeddedServletContainer();
-		if (embeddedServletContainer instanceof TomcatEmbeddedServletContainer) {
-			return getManager((TomcatEmbeddedServletContainer) embeddedServletContainer);
+	private Manager getManager(ServletWebServerApplicationContext applicationContext) {
+		WebServer webServer = applicationContext.getWebServer();
+		if (webServer instanceof TomcatWebServer) {
+			return getManager((TomcatWebServer) webServer);
 		}
 		return null;
 	}
 
-	private Manager getManager(TomcatEmbeddedServletContainer servletContainer) {
-		for (Container container : servletContainer.getTomcat().getHost()
-				.findChildren()) {
+	private Manager getManager(TomcatWebServer webServer) {
+		for (Container container : webServer.getTomcat().getHost().findChildren()) {
 			if (container instanceof Context) {
 				return ((Context) container).getManager();
 			}
@@ -77,7 +75,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private Collection<Metric<?>> metrics(Manager manager) {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>(2);
+		List<Metric<?>> metrics = new ArrayList<>(2);
 		if (manager instanceof ManagerBase) {
 			addMetric(metrics, "httpsessions.max",
 					((ManagerBase) manager).getMaxActiveSessions());
@@ -87,7 +85,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private void addMetric(List<Metric<?>> metrics, String name, Integer value) {
-		metrics.add(new Metric<Integer>(name, value));
+		metrics.add(new Metric<>(name, value));
 	}
 
 	@Override

@@ -1,0 +1,14 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+mainClassName = 'com.example.CustomMainClass'
+
+task echoMainClassName {
+	println 'Main class name = ' + bootRun.main
+}

@@ -59,7 +59,7 @@ public final class CommandLineInvoker {
 	}
 
 	private Process runCliProcess(String... args) throws IOException {
-		List<String> command = new ArrayList<String>();
+		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
 		ProcessBuilder processBuilder = new ProcessBuilder(command)
@@ -79,8 +79,7 @@ public final class CommandLineInvoker {
 				}
 
 			})[0];
-			ZipInputStream input = new ZipInputStream(new FileInputStream(zip));
-			try {
+			try (ZipInputStream input = new ZipInputStream(new FileInputStream(zip))) {
 				ZipEntry entry;
 				while ((entry = input.getNextEntry()) != null) {
 					File file = new File(unpacked, entry.getName());
@@ -89,21 +88,14 @@ public final class CommandLineInvoker {
 					}
 					else {
 						file.getParentFile().mkdirs();
-						FileOutputStream output = new FileOutputStream(file);
-						try {
+						try (FileOutputStream output = new FileOutputStream(file)) {
 							StreamUtils.copy(input, output);
 							if (entry.getName().endsWith("/bin/spring")) {
 								file.setExecutable(true);
 							}
 						}
-						finally {
-							output.close();
-						}
 					}
 				}
-			}
-			finally {
-				input.close();
 			}
 		}
 		File bin = new File(unpacked.listFiles()[0], "bin");
@@ -130,7 +122,7 @@ public final class CommandLineInvoker {
 
 		private final Process process;
 
-		private final List<Thread> streamReaders = new ArrayList<Thread>();
+		private final List<Thread> streamReaders = new ArrayList<>();
 
 		public Invocation(Process process) {
 			this.process = process;
@@ -174,7 +166,7 @@ public final class CommandLineInvoker {
 			BufferedReader reader = new BufferedReader(
 					new StringReader(buffer.toString()));
 			String line;
-			List<String> lines = new ArrayList<String>();
+			List<String> lines = new ArrayList<>();
 			try {
 				while ((line = reader.readLine()) != null) {
 					if (!line.startsWith("Picked up ")) {

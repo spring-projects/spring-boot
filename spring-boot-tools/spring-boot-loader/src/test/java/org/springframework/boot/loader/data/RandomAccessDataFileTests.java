@@ -37,7 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.internal.util.MockUtil;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -47,9 +47,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.spy;
 
 /**
@@ -288,7 +288,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void concurrentReads() throws Exception {
 		ExecutorService executorService = Executors.newFixedThreadPool(20);
-		List<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+		List<Future<Boolean>> results = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
 			results.add(executorService.submit(new Callable<Boolean>() {
 
@@ -333,7 +333,7 @@ public class RandomAccessDataFileTests {
 			public RandomAccessFile answer(InvocationOnMock invocation) throws Throwable {
 				RandomAccessFile originalFile = (RandomAccessFile) invocation
 						.callRealMethod();
-				if (new MockUtil().isSpy(originalFile)) {
+				if (Mockito.mockingDetails(originalFile).isSpy()) {
 					return originalFile;
 				}
 				RandomAccessFile spiedFile = spy(originalFile);

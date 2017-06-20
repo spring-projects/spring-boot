@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,15 +37,14 @@ public class ElasticsearchProperties {
 	private String clusterName = "elasticsearch";
 
 	/**
-	 * Comma-separated list of cluster node addresses. If not specified, starts a client
-	 * node.
+	 * Comma-separated list of cluster node addresses.
 	 */
 	private String clusterNodes;
 
 	/**
 	 * Additional properties used to configure the client.
 	 */
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	public String getClusterName() {
 		return this.clusterName;

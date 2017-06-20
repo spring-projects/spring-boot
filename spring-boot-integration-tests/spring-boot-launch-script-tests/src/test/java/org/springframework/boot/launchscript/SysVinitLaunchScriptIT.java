@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class SysVinitLaunchScriptIT {
 
 	@Parameters(name = "{0} {1}")
 	public static List<Object[]> parameters() {
-		List<Object[]> parameters = new ArrayList<Object[]>();
+		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
 			for (File version : os.listFiles()) {
 				parameters.add(new Object[] { os.getName(), version.getName() });
@@ -278,7 +278,7 @@ public class SysVinitLaunchScriptIT {
 		String tag = "spring-boot-it/" + this.os.toLowerCase() + ":" + this.version;
 		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
 
-			private List<BuildResponseItem> items = new ArrayList<BuildResponseItem>();
+			private List<BuildResponseItem> items = new ArrayList<>();
 
 			@Override
 			public void onNext(BuildResponseItem item) {

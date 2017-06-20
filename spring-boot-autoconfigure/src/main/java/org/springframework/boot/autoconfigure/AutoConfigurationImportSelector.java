@@ -20,10 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +35,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
@@ -52,7 +50,6 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
@@ -109,6 +106,11 @@ public class AutoConfigurationImportSelector
 	}
 
 	protected boolean isEnabled(AnnotationMetadata metadata) {
+		if (getClass().equals(AutoConfigurationImportSelector.class)) {
+			return getEnvironment().getProperty(
+					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
+					true);
+		}
 		return true;
 	}
 
@@ -167,7 +169,7 @@ public class AutoConfigurationImportSelector
 
 	private void checkExcludedClasses(List<String> configurations,
 			Set<String> exclusions) {
-		List<String> invalidExcludes = new ArrayList<String>(exclusions.size());
+		List<String> invalidExcludes = new ArrayList<>(exclusions.size());
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
 					&& !configurations.contains(exclusion)) {
@@ -203,7 +205,7 @@ public class AutoConfigurationImportSelector
 	 */
 	protected Set<String> getExclusions(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		Set<String> excluded = new LinkedHashSet<String>();
+		Set<String> excluded = new LinkedHashSet<>();
 		excluded.addAll(asList(attributes, "exclude"));
 		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
 		excluded.addAll(getExcludeAutoConfigurationsProperty());
@@ -211,28 +213,14 @@ public class AutoConfigurationImportSelector
 	}
 
 	private List<String> getExcludeAutoConfigurationsProperty() {
+		String name = "spring.autoconfigure.exclude";
 		if (getEnvironment() instanceof ConfigurableEnvironment) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					this.environment, "spring.autoconfigure.");
-			Map<String, Object> properties = resolver.getSubProperties("exclude");
-			if (properties.isEmpty()) {
-				return Collections.emptyList();
-			}
-			List<String> excludes = new ArrayList<String>();
-			for (Map.Entry<String, Object> entry : properties.entrySet()) {
-				String name = entry.getKey();
-				Object value = entry.getValue();
-				if (name.isEmpty() || name.startsWith("[") && value != null) {
-					excludes.addAll(new HashSet<String>(Arrays.asList(StringUtils
-							.tokenizeToStringArray(String.valueOf(value), ","))));
-				}
-			}
-			return excludes;
+			Binder binder = Binder.get(getEnvironment());
+			return binder.bind(name, String[].class).map(Arrays::asList)
+					.orElse(Collections.emptyList());
 		}
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(getEnvironment(),
-				"spring.autoconfigure.");
-		String[] exclude = resolver.getProperty("exclude", String[].class);
-		return (Arrays.asList(exclude == null ? new String[0] : exclude));
+		String[] excludes = getEnvironment().getProperty(name, String[].class);
+		return (excludes == null ? Collections.emptyList() : Arrays.asList(excludes));
 	}
 
 	private List<String> sort(List<String> configurations,
@@ -261,7 +249,7 @@ public class AutoConfigurationImportSelector
 		if (!skipped) {
 			return configurations;
 		}
-		List<String> result = new ArrayList<String>(candidates.length);
+		List<String> result = new ArrayList<>(candidates.length);
 		for (int i = 0; i < candidates.length; i++) {
 			if (!skip[i]) {
 				result.add(candidates[i]);
@@ -273,7 +261,7 @@ public class AutoConfigurationImportSelector
 					+ TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
 					+ " ms");
 		}
-		return new ArrayList<String>(result);
+		return new ArrayList<>(result);
 	}
 
 	protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
@@ -293,7 +281,7 @@ public class AutoConfigurationImportSelector
 	}
 
 	protected final <T> List<T> removeDuplicates(List<T> list) {
-		return new ArrayList<T>(new LinkedHashSet<T>(list));
+		return new ArrayList<>(new LinkedHashSet<>(list));
 	}
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {

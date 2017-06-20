@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.IgnoredRequestCustomizer;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -60,7 +59,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryEndpointHandlerMapping cloudFoundryEndpointHandlerMapping(
 			MvcEndpoints mvcEndpoints, RestTemplateBuilder restTemplateBuilder,
 			Environment environment) {
-		Set<NamedMvcEndpoint> endpoints = new LinkedHashSet<NamedMvcEndpoint>(
+		Set<NamedMvcEndpoint> endpoints = new LinkedHashSet<>(
 				mvcEndpoints.getEndpoints(NamedMvcEndpoint.class));
 		HandlerInterceptor securityInterceptor = getSecurityInterceptor(
 				restTemplateBuilder, environment);
@@ -84,11 +83,9 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	private CloudFoundrySecurityService getCloudFoundrySecurityService(
 			RestTemplateBuilder restTemplateBuilder, Environment environment) {
-		RelaxedPropertyResolver cloudFoundryProperties = new RelaxedPropertyResolver(
-				environment, "management.cloudfoundry.");
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
-		boolean skipSslValidation = cloudFoundryProperties
-				.getProperty("skip-ssl-validation", Boolean.class, false);
+		boolean skipSslValidation = environment.getProperty(
+				"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
 		return cloudControllerUrl == null ? null
 				: new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl,
 						skipSslValidation);

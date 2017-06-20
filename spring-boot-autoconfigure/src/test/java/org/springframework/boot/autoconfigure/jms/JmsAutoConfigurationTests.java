@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -405,7 +405,7 @@ public class JmsAutoConfigurationTests {
 		applicationContext.register(configs);
 		applicationContext.register(ActiveMQAutoConfiguration.class,
 				JmsAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
 		return applicationContext;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,18 +66,15 @@ public class SampleUndertowApplicationTests {
 	public void testCompression() throws Exception {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
-		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+		HttpEntity<?> requestEntity = new HttpEntity<>(requestHeaders);
 		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
 				requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		GZIPInputStream inflater = new GZIPInputStream(
-				new ByteArrayInputStream(entity.getBody()));
-		try {
+
+		try (GZIPInputStream inflater = new GZIPInputStream(
+				new ByteArrayInputStream(entity.getBody()))) {
 			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
 					.isEqualTo("Hello World");
-		}
-		finally {
-			inflater.close();
 		}
 	}
 

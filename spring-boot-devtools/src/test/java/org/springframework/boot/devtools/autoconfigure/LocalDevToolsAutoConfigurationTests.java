@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,13 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -47,6 +43,8 @@ import org.springframework.boot.devtools.restart.FailureHandler;
 import org.springframework.boot.devtools.restart.MockRestartInitializer;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,10 +53,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -79,8 +76,6 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Rule
 	public MockRestarter mockRestarter = new MockRestarter();
 
-	private int liveReloadPort = SocketUtils.findAvailableTcpPort();
-
 	private ConfigurableApplicationContext context;
 
 	@After
@@ -93,16 +88,16 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Test
 	public void thymeleafCacheIsFalse() throws Exception {
 		this.context = initializeAndRun(Config.class);
-		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-		resolver.initialize();
+		SpringResourceTemplateResolver resolver = this.context
+				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(resolver.isCacheable()).isFalse();
 	}
 
 	@Test
 	public void defaultPropertyCanBeOverriddenFromCommandLine() throws Exception {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
-		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-		resolver.initialize();
+		SpringResourceTemplateResolver resolver = this.context
+				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(resolver.isCacheable()).isTrue();
 	}
 
@@ -113,8 +108,8 @@ public class LocalDevToolsAutoConfigurationTests {
 				new File("src/test/resources/user-home").getAbsolutePath());
 		try {
 			this.context = initializeAndRun(Config.class);
-			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-			resolver.initialize();
+			SpringResourceTemplateResolver resolver = this.context
+					.getBean(SpringResourceTemplateResolver.class);
 			assertThat(resolver.isCacheable()).isTrue();
 		}
 		finally {
@@ -169,7 +164,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void liveReloadDisabled() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.livereload.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -204,7 +199,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void restartDisabled() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -213,7 +208,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void restartWithTriggerFile() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.trigger-file", "somefile.txt");
 		this.context = initializeAndRun(Config.class, properties);
 		ClassPathFileSystemWatcher classPathWatcher = this.context
@@ -226,7 +221,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void watchingAdditionalPaths() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.additional-paths",
 				"src/main/java,src/test/java");
 		this.context = initializeAndRun(Config.class, properties);
@@ -245,8 +240,8 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Test
 	public void devToolsSwitchesJspServletToDevelopmentMode() {
 		this.context = initializeAndRun(Config.class);
-		TomcatEmbeddedServletContainer tomcatContainer = (TomcatEmbeddedServletContainer) ((EmbeddedWebApplicationContext) this.context)
-				.getEmbeddedServletContainer();
+		TomcatWebServer tomcatContainer = (TomcatWebServer) ((ServletWebServerApplicationContext) this.context)
+				.getWebServer();
 		Container context = tomcatContainer.getTomcat().getHost().findChildren()[0];
 		StandardWrapper jspServletWrapper = (StandardWrapper) context.findChild("jsp");
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
@@ -270,26 +265,24 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	private Map<String, Object> getDefaultProperties(
 			Map<String, Object> specifiedProperties) {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.thymeleaf.check-template-location", false);
-		properties.put("spring.devtools.livereload.port", this.liveReloadPort);
+		properties.put("spring.devtools.livereload.port", 0);
 		properties.put("server.port", 0);
 		properties.putAll(specifiedProperties);
 		return properties;
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
-	@EnableConfigurationProperties(ServerProperties.class)
 	public static class Config {
 
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
-	@EnableConfigurationProperties(ServerProperties.class)
 	public static class ConfigWithMockLiveReload {
 
 		@Bean
@@ -300,9 +293,8 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
-	@EnableConfigurationProperties(ServerProperties.class)
 	public static class WebResourcesConfig {
 
 	}
@@ -312,7 +304,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 		@Bean
 		public RedisTemplate<Object, Object> sessionRedisTemplate() {
-			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
+			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}

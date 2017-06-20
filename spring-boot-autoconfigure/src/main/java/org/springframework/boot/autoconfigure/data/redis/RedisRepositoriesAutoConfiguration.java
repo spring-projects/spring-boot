@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import redis.clients.jedis.Jedis;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.repository.support.RedisRepositoryFactoryBean;
 
@@ -33,11 +33,13 @@ import org.springframework.data.redis.repository.support.RedisRepositoryFactoryB
  * Repositories.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @see EnableRedisRepositories
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ Jedis.class, EnableRedisRepositories.class })
+@ConditionalOnClass(EnableRedisRepositories.class)
+@ConditionalOnBean(RedisConnectionFactory.class)
 @ConditionalOnProperty(prefix = "spring.data.redis.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnMissingBean(RedisRepositoryFactoryBean.class)
 @Import(RedisRepositoriesAutoConfigureRegistrar.class)

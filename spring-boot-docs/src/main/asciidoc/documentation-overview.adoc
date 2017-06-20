@@ -124,7 +124,6 @@ When you're ready to push your Spring Boot application to production, we've got
 * *Connection options:*
 <<production-ready-features.adoc#production-ready-monitoring, HTTP>> |
 <<production-ready-features.adoc#production-ready-jmx, JMX>> |
-<<production-ready-features.adoc#production-ready-remote-shell, SSH>>
 * *Monitoring:*
 <<production-ready-features.adoc#production-ready-metrics, Metrics>> |
 <<production-ready-features.adoc#production-ready-auditing, Auditing>> |

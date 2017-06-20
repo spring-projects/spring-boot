@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,13 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
  */
 public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
+	private static final byte[] NO_DATA = {};
+
 	private AtomicLong seq = new AtomicLong();
 
-	private Deque<Object> responses = new ArrayDeque<Object>();
+	private Deque<Object> responses = new ArrayDeque<>();
 
-	private List<MockClientHttpRequest> executedRequests = new ArrayList<MockClientHttpRequest>();
+	private List<MockClientHttpRequest> executedRequests = new ArrayList<>();
 
 	@Override
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
@@ -116,8 +118,8 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 		}
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
-			MockClientHttpResponse httpResponse = new MockClientHttpResponse(this.payload,
-					this.status);
+			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
+					this.payload == null ? NO_DATA : this.payload, this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);

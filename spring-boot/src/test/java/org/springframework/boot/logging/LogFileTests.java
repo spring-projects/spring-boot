@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class LogFileTests {
 	}
 
 	private PropertyResolver getPropertyResolver(String file, String path) {
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("logging.file", file);
 		properties.put("logging.path", path);
 		PropertySource<?> propertySource = new MapPropertySource("properties",

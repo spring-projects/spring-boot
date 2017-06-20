@@ -17,11 +17,12 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.PoolingOptions;
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +81,37 @@ public class CassandraAutoConfigurationTests {
 		assertThat(cluster.getClusterName()).isEqualTo("overridden-name");
 	}
 
+	@Test
+	public void defaultPoolOptions() {
+		load();
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
+		PoolingOptions poolingOptions = this.context.getBean(Cluster.class)
+				.getConfiguration().getPoolingOptions();
+		assertThat(poolingOptions.getIdleTimeoutSeconds())
+				.isEqualTo(PoolingOptions.DEFAULT_IDLE_TIMEOUT_SECONDS);
+		assertThat(poolingOptions.getPoolTimeoutMillis())
+				.isEqualTo(PoolingOptions.DEFAULT_POOL_TIMEOUT_MILLIS);
+		assertThat(poolingOptions.getHeartbeatIntervalSeconds())
+				.isEqualTo(PoolingOptions.DEFAULT_HEARTBEAT_INTERVAL_SECONDS);
+		assertThat(poolingOptions.getMaxQueueSize())
+				.isEqualTo(PoolingOptions.DEFAULT_MAX_QUEUE_SIZE);
+	}
+
+	@Test
+	public void customizePoolOptions() {
+		load("spring.data.cassandra.pool.idle-timeout=42",
+				"spring.data.cassandra.pool.pool-timeout=52",
+				"spring.data.cassandra.pool.heartbeat-interval=62",
+				"spring.data.cassandra.pool.max-queue-size=72");
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
+		PoolingOptions poolingOptions = this.context.getBean(Cluster.class)
+				.getConfiguration().getPoolingOptions();
+		assertThat(poolingOptions.getIdleTimeoutSeconds()).isEqualTo(42);
+		assertThat(poolingOptions.getPoolTimeoutMillis()).isEqualTo(52);
+		assertThat(poolingOptions.getHeartbeatIntervalSeconds()).isEqualTo(62);
+		assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(72);
+	}
+
 	private void load(String... environment) {
 		load(null, environment);
 	}
@@ -91,7 +123,7 @@ public class CassandraAutoConfigurationTests {
 		}
 		ctx.register(PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.refresh();
 		this.context = ctx;
 	}

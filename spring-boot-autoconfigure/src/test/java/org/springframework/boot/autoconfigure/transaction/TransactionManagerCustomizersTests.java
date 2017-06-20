@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ public class TransactionManagerCustomizersTests {
 
 	@Test
 	public void customizeShouldCheckGeneric() throws Exception {
-		List<TestCustomizer<?>> list = new ArrayList<TestCustomizer<?>>();
-		list.add(new TestCustomizer<PlatformTransactionManager>());
+		List<TestCustomizer<?>> list = new ArrayList<>();
+		list.add(new TestCustomizer<>());
 		list.add(new TestJtaCustomizer());
 		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(
 				list);

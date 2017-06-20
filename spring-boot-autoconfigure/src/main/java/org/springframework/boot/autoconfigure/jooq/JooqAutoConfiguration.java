@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * {@link EnableAutoConfiguration Auto-configuration} for JOOQ.
  *
  * @author Andreas Ahlenstorf
+ * @author Michael Simons
  * @since 1.3.0
  */
 @Configuration
@@ -85,6 +86,8 @@ public class JooqAutoConfiguration {
 
 		private final ConnectionProvider connection;
 
+		private final DataSource dataSource;
+
 		private final TransactionProvider transactionProvider;
 
 		private final RecordMapperProvider recordMapperProvider;
@@ -98,7 +101,7 @@ public class JooqAutoConfiguration {
 		private final VisitListenerProvider[] visitListenerProviders;
 
 		public DslContextConfiguration(JooqProperties properties,
-				ConnectionProvider connectionProvider,
+				ConnectionProvider connectionProvider, DataSource dataSource,
 				ObjectProvider<TransactionProvider> transactionProvider,
 				ObjectProvider<RecordMapperProvider> recordMapperProvider,
 				ObjectProvider<Settings> settings,
@@ -107,6 +110,7 @@ public class JooqAutoConfiguration {
 				ObjectProvider<VisitListenerProvider[]> visitListenerProviders) {
 			this.properties = properties;
 			this.connection = connectionProvider;
+			this.dataSource = dataSource;
 			this.transactionProvider = transactionProvider.getIfAvailable();
 			this.recordMapperProvider = recordMapperProvider.getIfAvailable();
 			this.settings = settings.getIfAvailable();
@@ -124,9 +128,7 @@ public class JooqAutoConfiguration {
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
 		public DefaultConfiguration jooqConfiguration() {
 			DefaultConfiguration configuration = new DefaultConfiguration();
-			if (this.properties.getSqlDialect() != null) {
-				configuration.set(this.properties.getSqlDialect());
-			}
+			configuration.set(this.properties.determineSqlDialect(this.dataSource));
 			configuration.set(this.connection);
 			if (this.transactionProvider != null) {
 				configuration.set(this.transactionProvider);

@@ -51,6 +51,17 @@ public enum CloudPlatform {
 			return environment.containsProperty("DYNO");
 		}
 
+	},
+
+	/**
+	 * SAP Hana Cloud platform.
+	 */
+	HCP {
+
+		@Override
+		public boolean isActive(Environment environment) {
+			return environment.containsProperty("HC_LANDSCAPE");
+		}
 	};
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.Index;
@@ -29,19 +31,19 @@ import io.searchbox.core.Search;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchNodeTemplate;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -54,6 +56,11 @@ import static org.mockito.Mockito.mock;
  */
 public class JestAutoConfigurationTests {
 
+	@Before
+	public void preventElasticsearchFromConfiguringNetty() {
+		System.setProperty("es.set.netty.runtime.available.processors", "false");
+	}
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -64,6 +71,7 @@ public class JestAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+		System.clearProperty("es.set.netty.runtime.available.processors");
 	}
 
 	@Test
@@ -105,22 +113,31 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void jestCanCommunicateWithElasticsearchInstance() throws IOException {
-		int port = SocketUtils.findAvailableTcpPort();
-		load(ElasticsearchAutoConfiguration.class,
-				"spring.data.elasticsearch.properties.path.home:target/elastic",
-				"spring.data.elasticsearch.properties.http.enabled:true",
-				"spring.data.elasticsearch.properties.http.port:" + port,
-				"spring.elasticsearch.jest.uris:http://localhost:" + port);
-		JestClient client = this.context.getBean(JestClient.class);
-		Map<String, String> source = new HashMap<String, String>();
-		source.put("a", "alpha");
-		source.put("b", "bravo");
-		Index index = new Index.Builder(source).index("foo").type("bar").build();
-		client.execute(index);
-		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
-		assertThat(client.execute(new Search.Builder(searchSourceBuilder.toString())
-				.addIndex("foo").build()).getResponseCode()).isEqualTo(200);
+		new ElasticsearchNodeTemplate().doWithNode((node) -> {
+			load("spring.elasticsearch.jest.uris=http://localhost:" + node.getHttpPort());
+			JestClient client = this.context.getBean(JestClient.class);
+			Map<String, String> source = new HashMap<>();
+			source.put("a", "alpha");
+			source.put("b", "bravo");
+			Index index = new Index.Builder(source).index("foo").type("bar").build();
+			execute(client, index);
+			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+			searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
+			assertThat(
+					execute(client,
+							new Search.Builder(searchSourceBuilder.toString())
+									.addIndex("foo").build()).getResponseCode())
+											.isEqualTo(200);
+		});
+	}
+
+	private JestResult execute(JestClient client, Action<? extends JestResult> action) {
+		try {
+			return client.execute(action);
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void load(String... environment) {
@@ -129,7 +146,7 @@ public class JestAutoConfigurationTests {
 
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, environment);
+		TestPropertyValues.of(environment).applyTo(context);
 		if (config != null) {
 			context.register(config);
 		}
