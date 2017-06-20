@@ -16,14 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.sql.SQLException;
-
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -109,28 +106,6 @@ public class DataSourceAutoConfiguration {
 			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Generic.class,
 			DataSourceJmxConfiguration.class })
 	protected static class PooledDataSourceConfiguration {
-
-	}
-
-	@Configuration
-	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled")
-	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
-	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
-	@ConditionalOnMissingBean(name = "dataSourceMBean")
-	protected static class TomcatDataSourceJmxConfiguration {
-
-		@Bean
-		public Object dataSourceMBean(DataSource dataSource) {
-			if (dataSource instanceof DataSourceProxy) {
-				try {
-					return ((DataSourceProxy) dataSource).createPool().getJmxPool();
-				}
-				catch (SQLException ex) {
-					logger.warn("Cannot expose DataSource to JMX (could not connect)");
-				}
-			}
-			return null;
-		}
 
 	}
 

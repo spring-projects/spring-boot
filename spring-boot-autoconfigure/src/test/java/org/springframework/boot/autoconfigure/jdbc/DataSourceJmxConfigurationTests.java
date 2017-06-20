@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.lang.management.ManagementFactory;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import javax.management.MBeanServer;
@@ -24,6 +25,9 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.DataSourceProxy;
+import org.apache.tomcat.jdbc.pool.jmx.ConnectionPool;
 import org.hsqldb.jdbc.JDBCDriver;
 import org.junit.After;
 import org.junit.Rule;
@@ -93,7 +97,6 @@ public class DataSourceJmxConfigurationTests {
 		// Hikari can still register mBeans
 		validateHikariMBeansRegistration(ManagementFactory.getPlatformMBeanServer(),
 				poolName, true);
-
 	}
 
 	private void validateHikariMBeansRegistration(MBeanServer mBeanServer,
@@ -102,6 +105,21 @@ public class DataSourceJmxConfigurationTests {
 				"com.zaxxer.hikari:type=Pool (" + poolName + ")"))).isEqualTo(expected);
 		assertThat(mBeanServer.isRegistered(new ObjectName(
 				"com.zaxxer.hikari:type=PoolConfig (" + poolName + ")"))).isEqualTo(expected);
+	}
+
+	@Test
+	public void tomcatDoesNotExposeMBeanPoolByDefault() {
+		load("spring.datasource.type=" + DataSource.class.getName());
+		assertThat(this.context.getBeansOfType(ConnectionPool.class)).isEmpty();
+	}
+
+	@Test
+	public void tomcatAutoConfiguredCanExposeMBeanPool() throws SQLException {
+		load("spring.datasource.type=" + DataSource.class.getName(),
+				"spring.datasource.jmx-enabled=true");
+		assertThat(this.context.getBeansOfType(ConnectionPool.class)).hasSize(1);
+		assertThat(this.context.getBean(DataSourceProxy.class).createPool().getJmxPool())
+				.isSameAs(this.context.getBean(ConnectionPool.class));
 	}
 
 	private void load(String... environment) {
