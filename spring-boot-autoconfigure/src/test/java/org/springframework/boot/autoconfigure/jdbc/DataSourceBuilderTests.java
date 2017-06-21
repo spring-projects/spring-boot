@@ -26,6 +26,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.test.context.HidePackagesClassLoader;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

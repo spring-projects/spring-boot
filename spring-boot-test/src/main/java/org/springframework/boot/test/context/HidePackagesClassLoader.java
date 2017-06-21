@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.test.context;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * Test {@link URLClassLoader} that hides configurable packages.
+ * Test {@link URLClassLoader} that hides configurable packages. No class
+ * in one of those packages or sub-packages are visible.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
-final class HidePackagesClassLoader extends URLClassLoader {
+public final class HidePackagesClassLoader extends URLClassLoader {
 
 	private final String[] hiddenPackages;
 
-	HidePackagesClassLoader(String... hiddenPackages) {
+	/**
+	 * Create a new instance with the packages to hide.
+	 * @param hiddenPackages the packages to hide
+	 */
+	public HidePackagesClassLoader(String... hiddenPackages) {
 		super(new URL[0], HidePackagesClassLoader.class.getClassLoader());
 		this.hiddenPackages = hiddenPackages;
 	}
