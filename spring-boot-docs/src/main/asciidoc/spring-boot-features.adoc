@@ -5739,6 +5739,74 @@ definition.
 A list of the auto-configuration that is enabled by `@WebMvcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
+[[boot-features-testing-spring-boot-applications-testing-spring-security]]
+==== MockMvc and spring-security
+Its important to note that `@SpringBootTest` will load the context from class annotated with `@SpringBootApplication` automatically, however it will not load any `WebSecurityConfigurerAdapter` subclass you have defined even if it is annotated with `@Configuration`. In order to use `@WithMockUser` and `@WithUserDetails` annotations along with `@AutoConfigureMockMvc` you will have to load any security configuration you have in your applications by using `@Import` annotation. You can `@Import` the security configuration directly in your test cases.
+
+----
+	package com.cisco.ple;
+
+	import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+	import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+	import org.springframework.boot.test.context.SpringBootTest;
+	import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+	import org.springframework.context.annotation.Import;
+	import org.springframework.security.test.context.support.WithMockUser;
+	import org.springframework.test.context.ActiveProfiles;
+	import org.springframework.test.context.junit4.SpringRunner;
+	import org.springframework.test.web.servlet.MockMvc;
+
+
+	@RunWith(SpringRunner.class)
+	@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+	@AutoConfigureMockMvc
+	@Import({MyWebSecurityConfiguration.class})
+	public class BaseTests {
+		@Autowired
+		private MockMvc mvc;
+
+		@Test
+		public void disallowAnonymousUser() throws Exception {
+			this.mvc.perform(get("/admin"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrlPattern("http://*/login"));
+		}
+
+		@Test
+		@WithMockUser(roles={"ROLE_ADMIN"})
+		public void homePage() throws Exception {
+			this.mvc.perform(get("/admin"))
+			.andExpect(status().isOk());
+		}
+	}
+----
+
+If you don't want to copy-paste `@Import({MyWebSecurityConfiguration.class})` in every test class you can instead annotate your application class directly with it like the following.
+
+----
+package com.cisco.ple;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+@SpringBootApplication
+@Import({MyWebSecurityConfiguration.class})
+public class MyApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(MyApplication.class, args);
+  }
+}
+----
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
