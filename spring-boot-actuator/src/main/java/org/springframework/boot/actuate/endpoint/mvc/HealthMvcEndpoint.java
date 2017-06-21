@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,6 +47,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Madhura Bhave
+ * @author Utku Ozdemir
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "endpoints.health")
@@ -59,9 +61,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private Map<String, HttpStatus> statusMapping = new HashMap<>();
 
-	private long lastAccess = 0;
-
-	private Health cached;
+	private final AtomicReference<HealthCache> healthCache = new AtomicReference<>();
 
 	public HealthMvcEndpoint(HealthEndpoint delegate) {
 		this(delegate, true);
@@ -165,22 +165,24 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private Health getHealth(HttpServletRequest request, Principal principal) {
 		long accessTime = System.currentTimeMillis();
-		if (isCacheStale(accessTime)) {
-			this.lastAccess = accessTime;
-			this.cached = getDelegate().invoke();
-		}
+
+		Health health = healthCache.updateAndGet(current -> {
+			if (current == null || (accessTime - current.lastAccess) >= getDelegate()
+					.getTimeToLive()) {
+				return new HealthCache(accessTime, getDelegate().invoke());
+			}
+			else {
+				return new HealthCache(accessTime, current.health);
+			}
+		}).health;
+
 		if (exposeHealthDetails(request, principal)) {
-			return this.cached;
+			return health;
 		}
-		return Health.status(this.cached.getStatus()).build();
+
+		return Health.status(health.getStatus()).build();
 	}
 
-	private boolean isCacheStale(long accessTime) {
-		if (this.cached == null) {
-			return true;
-		}
-		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
-	}
 
 	protected boolean exposeHealthDetails(HttpServletRequest request,
 			Principal principal) {
@@ -212,6 +214,19 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	private boolean isSpringSecurityAuthentication(Principal principal) {
 		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
 				null) && principal instanceof Authentication;
+	}
+
+	/**
+	 * An immutable class to hold the health information along with its access time.
+	 */
+	private static final class HealthCache {
+		private final long lastAccess;
+		private final Health health;
+
+		private HealthCache(long lastAccess, Health health) {
+			this.lastAccess = lastAccess;
+			this.health = health;
+		}
 	}
 
 }
