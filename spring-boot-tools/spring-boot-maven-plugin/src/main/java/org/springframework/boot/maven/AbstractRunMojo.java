@@ -68,7 +68,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * this feature and many more.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.addResources", defaultValue = "false")
+	@Parameter(property = "spring-boot.run.addResources", defaultValue = "false")
 	private boolean addResources = false;
 
 	/**
@@ -76,14 +76,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * forking a new JVM.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.agent")
+	@Parameter(property = "spring-boot.run.agent")
 	private File[] agent;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.noverify")
+	@Parameter(property = "spring-boot.run.noverify")
 	private boolean noverify = false;
 
 	/**
@@ -92,7 +92,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * started by forking a new JVM.
 	 * @since 1.5
 	 */
-	@Parameter(property = "run.workingDirectory")
+	@Parameter(property = "spring-boot.run.workingDirectory")
 	private File workingDirectory;
 
 	/**
@@ -102,7 +102,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * new JVM.
 	 * @since 1.1
 	 */
-	@Parameter(property = "run.jvmArguments")
+	@Parameter(property = "spring-boot.run.jvmArguments")
 	private String jvmArguments;
 
 	/**
@@ -110,7 +110,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * separate multiple arguments.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.arguments")
+	@Parameter(property = "spring-boot.run.arguments")
 	private String[] arguments;
 
 	/**
@@ -119,7 +119,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * profiles.
 	 * @since 1.3
 	 */
-	@Parameter(property = "run.profiles")
+	@Parameter(property = "spring-boot.run.profiles")
 	private String[] profiles;
 
 	/**
@@ -152,21 +152,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * or if devtools is present.
 	 * @since 1.2
 	 */
-	@Parameter(property = "fork")
+	@Parameter(property = "spring-boot.run.fork")
 	private Boolean fork;
 
 	/**
 	 * Flag to include the test classpath when running.
 	 * @since 1.3
 	 */
-	@Parameter(property = "useTestClasspath", defaultValue = "false")
+	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
 	private Boolean useTestClasspath;
 
 	/**
 	 * Skip the execution.
 	 * @since 1.3.2
 	 */
-	@Parameter(property = "skip", defaultValue = "false")
+	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
 	private boolean skip;
 
 	@Override
