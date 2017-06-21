@@ -16,8 +16,12 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.specification.RequestSpecification;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -29,40 +33,77 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation;
+import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring REST Docs.
  *
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties
 public class RestDocsAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean(MockMvcRestDocumentationConfigurer.class)
-	public MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
-			ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizerProvider,
-			RestDocumentationContextProvider contextProvider) {
-		MockMvcRestDocumentationConfigurer configurer = MockMvcRestDocumentation
-				.documentationConfiguration(contextProvider);
-		RestDocsMockMvcConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
-				.getIfAvailable();
-		if (configurationCustomizer != null) {
-			configurationCustomizer.customize(configurer);
+	@Configuration
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@ConditionalOnClass(MockMvcRestDocumentation.class)
+	static class RestDocsMockMvcAutoConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(MockMvcRestDocumentationConfigurer.class)
+		public MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
+				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizerProvider,
+				RestDocumentationContextProvider contextProvider) {
+			MockMvcRestDocumentationConfigurer configurer = MockMvcRestDocumentation
+					.documentationConfiguration(contextProvider);
+			RestDocsMockMvcConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+					.getIfAvailable();
+			if (configurationCustomizer != null) {
+				configurationCustomizer.customize(configurer);
+			}
+			return configurer;
 		}
-		return configurer;
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.test.restdocs")
+		public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(
+				MockMvcRestDocumentationConfigurer configurer,
+				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
+			return new RestDocsMockMvcBuilderCustomizer(configurer,
+					resultHandler.getIfAvailable());
+		}
+
 	}
 
-	@Bean
-	@ConfigurationProperties(prefix = "spring.test.restdocs")
-	public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(
-			MockMvcRestDocumentationConfigurer configurer,
-			ObjectProvider<RestDocumentationResultHandler> resultHandler) {
-		return new RestDocsMockMvcBuilderCustomizer(configurer,
-				resultHandler.getIfAvailable());
+	@Configuration
+	@ConditionalOnClass({ RequestSpecification.class, RestAssuredRestDocumentation.class })
+	static class RestDocsRestAssuredAutoConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(RequestSpecification.class)
+		public RequestSpecification restDocsRestAssuredConfigurer(
+				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizerProvider,
+				RestDocumentationContextProvider contextProvider) {
+			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
+					.documentationConfiguration(contextProvider);
+			RestDocsRestAssuredConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider.getIfAvailable();
+			if (configurationCustomizer != null) {
+				configurationCustomizer.customize(configurer);
+			}
+			return new RequestSpecBuilder().addFilter(configurer).build();
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.test.restdocs")
+		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(
+				RequestSpecification configurer) {
+			return new RestDocsRestAssuredBuilderCustomizer(configurer);
+		}
+
 	}
+
 
 }
