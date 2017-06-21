@@ -100,17 +100,6 @@
 					</archive>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<configuration>
-					<annotations>
-						<annotation>org.springframework.boot.loader.tools.UsesUnsafeJava</annotation>
-						<annotation>org.springframework.lang.UsesJava7</annotation>
-						<annotation>org.springframework.lang.UsesJava8</annotation>
-					</annotations>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 </project>

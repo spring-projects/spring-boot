@@ -306,11 +306,6 @@
 					<version>3.4</version>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.15</version>
-				</plugin>
-				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
 					<version>1.6.2</version>
@@ -584,33 +579,6 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<configuration>
-					<skip>${disable.checks}</skip>
-					<signature>
-						<groupId>org.codehaus.mojo.signature</groupId>
-						<artifactId>java18</artifactId>
-						<version>1.0</version>
-					</signature>
-					<annotations>
-						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
-					</annotations>
-					<excludeDependencies>
-						<excludeDependency>org.glassfish.hk2.external:asm-all-repackaged</excludeDependency>
-					</excludeDependencies>
-				</configuration>
-				<executions>
-					<execution>
-						<id>enforce-java-8</id>
-						<phase>test</phase>
-						<goals>
-							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>
