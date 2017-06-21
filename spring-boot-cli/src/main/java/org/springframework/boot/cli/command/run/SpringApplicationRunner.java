@@ -160,7 +160,7 @@ public class SpringApplicationRunner {
 			super("runner-" + (runnerCounter++));
 			this.compiledSources = compiledSources;
 			if (compiledSources.length != 0) {
-				setContextClassLoader(((Class<?>) compiledSources[0]).getClassLoader());
+				setContextClassLoader(compiledSources[0].getClassLoader());
 			}
 			setDaemon(true);
 		}
