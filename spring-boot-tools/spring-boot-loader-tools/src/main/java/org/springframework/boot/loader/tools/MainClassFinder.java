@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
@@ -115,6 +116,44 @@ public abstract class MainClassFinder {
 		SingleMainClassCallback callback = new SingleMainClassCallback(annotationName);
 		MainClassFinder.doWithMainClasses(rootFolder, callback);
 		return callback.getMainClassName();
+	}
+
+	/**
+	 * Find a single main class from the given {@code rootFolders}. A main class annotated
+	 * with an annotation with the given {@code annotationName} will be preferred over a
+	 * main class with no such annotation.
+	 * @param rootFolders the root folders to search
+	 * @param annotationName the name of the annotation that may be present on the main
+	 * class
+	 * @return the main class or {@code null}
+	 * @throws IOException if a root folder cannot be read
+	 * @since 1.5.5
+	 */
+	public static String findSingleMainClass(Collection<File> rootFolders,
+			String annotationName) throws IOException {
+		SingleMainClassCallback callback = new SingleMainClassCallback(annotationName);
+		doWithMainClasses(rootFolders, callback);
+		return callback.getMainClassName();
+	}
+
+	/**
+	 * Perform the given callback operation on all main classes from the given root
+	 * folder.
+	 * @param <T> the result type
+	 * @param rootFolders the root folders
+	 * @param callback the callback
+	 * @return the first callback result or {@code null}
+	 * @throws IOException in case of I/O errors
+	 */
+	static <T> T doWithMainClasses(Collection<File> rootFolders,
+			MainClassCallback<T> callback) throws IOException {
+		for (File rootFolder : rootFolders) {
+			T result = doWithMainClasses(rootFolder, callback);
+			if (result != null) {
+				return result;
+			}
+		}
+		return null;
 	}
 
 	/**

@@ -16,11 +16,16 @@
 
 package org.springframework.boot.gradle.run;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ApplicationPluginConvention;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.tasks.Input;
@@ -30,6 +35,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Task to find and set the 'mainClassName' convention when it's missing by searching the
@@ -103,13 +109,13 @@ public class FindMainClassTask extends DefaultTask {
 		if (mainClass == null) {
 			// Search
 			if (this.mainClassSourceSetOutput != null) {
-				project.getLogger().debug("Looking for main in: "
-						+ this.mainClassSourceSetOutput.getClassesDir());
+				Collection<File> classesDirs = getClassesDirs(
+						this.mainClassSourceSetOutput);
+				getProject().getLogger().debug("Looking for main in: " + classesDirs);
 				try {
-					mainClass = MainClassFinder.findSingleMainClass(
-							this.mainClassSourceSetOutput.getClassesDir(),
+					mainClass = MainClassFinder.findSingleMainClass(classesDirs,
 							SPRING_BOOT_APPLICATION_CLASS_NAME);
-					project.getLogger().info("Computed main class: " + mainClass);
+					getProject().getLogger().info("Computed main class: " + mainClass);
 				}
 				catch (IOException ex) {
 					throw new IllegalStateException("Cannot find main class", ex);
@@ -130,6 +136,17 @@ public class FindMainClassTask extends DefaultTask {
 		}
 
 		return mainClass;
+	}
+
+	private Collection<File> getClassesDirs(SourceSetOutput sourceSetOutput) {
+		Method getClassesDirs = ReflectionUtils.findMethod(SourceSetOutput.class,
+				"getClassesDirs");
+		if (getClassesDirs == null) {
+			return Arrays.asList(sourceSetOutput.getClassesDir());
+		}
+		FileCollection classesDirs = (FileCollection) ReflectionUtils
+				.invokeMethod(getClassesDirs, sourceSetOutput);
+		return classesDirs.getFiles();
 	}
 
 	private JavaExec findRunTask(Project project) {
