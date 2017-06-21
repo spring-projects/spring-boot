@@ -60,13 +60,11 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private final List<String> roles;
 
+	private volatile CachedHealth cachedHealth;
+
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
 	private RelaxedPropertyResolver securityPropertyResolver;
-
-	private long lastAccess = 0;
-
-	private Health cached;
 
 	public HealthMvcEndpoint(HealthEndpoint delegate) {
 		this(delegate, true);
@@ -165,22 +163,29 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	}
 
 	private Health getHealth(HttpServletRequest request, Principal principal) {
-		long accessTime = System.currentTimeMillis();
-		if (isCacheStale(accessTime)) {
-			this.lastAccess = accessTime;
-			this.cached = getDelegate().invoke();
-		}
+		Health currentHealth = getCurrentHealth();
 		if (exposeHealthDetails(request, principal)) {
-			return this.cached;
+			return this.cachedHealth.health;
 		}
-		return Health.status(this.cached.getStatus()).build();
+		return Health.status(currentHealth.getStatus()).build();
 	}
 
-	private boolean isCacheStale(long accessTime) {
-		if (this.cached == null) {
+	private Health getCurrentHealth() {
+		long accessTime = System.currentTimeMillis();
+		CachedHealth cachedHealth = this.cachedHealth;
+		if (isStale(cachedHealth, accessTime)) {
+			Health health = getDelegate().invoke();
+			this.cachedHealth = new CachedHealth(health, accessTime);
+			return health;
+		}
+		return cachedHealth.health;
+	}
+
+	private boolean isStale(CachedHealth cachedHealth, long accessTime) {
+		if (cachedHealth == null) {
 			return true;
 		}
-		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
+		return (accessTime - cachedHealth.creationTime) >= getDelegate().getTimeToLive();
 	}
 
 	protected boolean exposeHealthDetails(HttpServletRequest request,
@@ -219,6 +224,23 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	private boolean isSpringSecurityAuthentication(Principal principal) {
 		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
 				null) && principal instanceof Authentication;
+	}
+
+	/**
+	 * A cached {@link Health} that encapsulates the {@code Health} itself and the time at
+	 * which it was created.
+	 */
+	static class CachedHealth {
+
+		private final Health health;
+
+		private final long creationTime;
+
+		CachedHealth(Health health, long creationTime) {
+			this.health = health;
+			this.creationTime = creationTime;
+		}
+
 	}
 
 }
