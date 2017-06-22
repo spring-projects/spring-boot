@@ -234,7 +234,7 @@ public class ResourceServerProperties implements BeanFactoryAware {
 						"Missing tokenInfoUri and userInfoUri and there is no "
 								+ "JWT verifier key");
 			}
-			if (StringUtils.hasText(this.tokenInfoUri) && this.isPreferTokenInfo()) {
+			if (StringUtils.hasText(this.tokenInfoUri) && isPreferTokenInfo()) {
 				if (!StringUtils.hasText(this.clientSecret)) {
 					errors.rejectValue("clientSecret", "missing.clientSecret",
 							"Missing client secret");
