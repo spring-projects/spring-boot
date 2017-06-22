@@ -630,7 +630,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
+			<artifactId>spring-session-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
