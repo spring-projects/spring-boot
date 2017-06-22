@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,9 @@ package org.springframework.boot.actuate.health;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.Assert;
 
 /**
  * {@link HealthIndicator} that tests the status of a Neo4j by executing a Cypher
@@ -37,10 +32,7 @@ import org.springframework.util.Assert;
 public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 
 	/** The key used to store Cypher execution results within the Health.Builder. */
-	public static final String CYPHER_RESULTS = "cypherResults";
-
-	/** The default Cypher query. */
-	public static final String CYPHER_DEFUALT = "match (n) return count(n) as nodeCount";
+	public static final String NEO4J = "neo4j";
 
 	private SessionFactory sessionFactory;
 
@@ -49,14 +41,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	/**
 	 * The default Cypher statement.
 	 */
-	@Value("${neo4jHealthIndicator.cypher}")
-	private String cypher = CYPHER_DEFUALT;
-
-	/**
-	 * Create a new {@link Neo4jHealthIndicator} instance.
-	 */
-	public Neo4jHealthIndicator() {
-	}
+	private String cypher = "match (n) return count(n) as nodeCount";
 
 	/**
 	 * Create a new {@link Neo4jHealthIndicator} using the specified
@@ -67,28 +52,6 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 		this.sessionFactory = sessionFactory;
 	}
 
-	/**
-	 * Create a new {@link Neo4jHealthIndicator} using the specified
-	 * {@link SessionFactory} and validation query.
-	 * @param sessionFactory the SessionFactory
-	 * @param cypher the validation cypher query to use
-	 */
-	public Neo4jHealthIndicator(SessionFactory sessionFactory, String cypher) {
-		this.cypher = cypher;
-		this.sessionFactory = sessionFactory;
-	}
-
-	/**
-	 * Ensure that the SessionFactory and Cypher validation query has been supplied.
-	 */
-	@PostConstruct
-	public void postConstruct() {
-		Assert.notNull(this.sessionFactory,
-				"SessionFactory for Neo4jHealthIndicator must not be null");
-
-		Assert.hasText(this.cypher, "The Cypher statement must be specified");
-	}
-
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
@@ -96,7 +59,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 		Result result = session.query(this.cypher, this.emptyParameters);
 		Iterable<Map<String, Object>> results = result.queryResults();
 
-		builder.up().withDetail(CYPHER_RESULTS, results);
+		builder.up().withDetail(NEO4J, results);
 	}
 
 	/**
@@ -114,14 +77,6 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public void setCypher(String cypher) {
 		this.cypher = cypher;
-	}
-
-	/**
-	 * Set the {@link SessionFactory} to use.
-	 * @param sessionFactory The SessionFactory.
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
 	}
 
 }

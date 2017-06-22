@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
-import org.neo4j.ogm.transaction.Transaction;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Neo4jHealthIndicator}.
@@ -40,103 +39,54 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class Neo4jHealthIndicatorTests {
 
-	public static final String NODE_COUNT = "nodeCount";
-	public static final String RELATIONSHIP_COUNT = "relationshipCount";
-
+	private Result result;
+	private Session session;
 	private SessionFactory sessionFactory;
+
+	private Neo4jHealthIndicator neo4jHealthIndicator;
+
+	private Map<String, Object> emptyParameters = new HashMap<>();
 
 	@Before
 	public void before() {
-		Configuration configuration = new Configuration.Builder().build();
-		this.sessionFactory = new SessionFactory(configuration, "foo.bar");
-	}
+		this.result = mock(Result.class);
+		this.session = mock(Session.class);
+		this.sessionFactory = mock(SessionFactory.class);
 
-	@After
-	public void after() {
-		if (this.sessionFactory != null) {
-			this.sessionFactory.close();
-		}
+		given(this.sessionFactory.openSession()).willReturn(this.session);
+
+		this.neo4jHealthIndicator = new Neo4jHealthIndicator(this.sessionFactory);
 	}
 
 	@Test
-	public void defaultValidationQuery() {
-		Map<String, Object> parameters = new HashMap<>();
-		Neo4jHealthIndicator neo4jHealthIndicator = new Neo4jHealthIndicator(
-				this.sessionFactory);
-		Session session = this.sessionFactory.openSession();
-		Result result = session.query(Neo4jHealthIndicator.CYPHER_DEFUALT, parameters);
-		long nodeCount = (long) result.iterator().next().get("nodeCount");
+	public void defaultValidationQueryNeo4jUp() {
+		String cypher = this.neo4jHealthIndicator.getCypher();
+		given(this.session.query(cypher, this.emptyParameters)).willReturn(this.result);
+
 		Map<String, Object> expectedCypherDetails = new HashMap<>();
-		expectedCypherDetails.put(NODE_COUNT, nodeCount);
-		assertExpectedResults(neo4jHealthIndicator, Status.UP, expectedCypherDetails);
+		expectedCypherDetails.put("nodeCount", 500);
+
+		List<Map<String, Object>> queryResults = new ArrayList<>();
+		queryResults.add(expectedCypherDetails);
+
+		given(this.result.queryResults()).willReturn(queryResults);
+
+		assertExpectedResults(this.neo4jHealthIndicator, Status.UP,
+				expectedCypherDetails);
 	}
 
 	@Test
-	public void customValidationQuery() {
-		Map<String, Object> parameters = new HashMap<>();
-		String customValidationQuery = "MATCH (n)-[r]-() RETURN count(n) as nodeCount, count(distinct(r)) as relationshipCount";
-		Session session = this.sessionFactory.openSession();
-		Result result = session.query(customValidationQuery, parameters);
-		Iterator<Map<String, Object>> results = result.iterator();
-		Map<String, Object> r = results.next();
-		long nodeCount = (long) r.get("nodeCount");
-		Map<String, Object> expectedCypherDetails = new HashMap<>();
-		expectedCypherDetails.put(NODE_COUNT, nodeCount);
-		long relationshipCount = (long) r.get("relationshipCount");
-		expectedCypherDetails.put(RELATIONSHIP_COUNT, relationshipCount);
-		Neo4jHealthIndicator neo4jHealthIndicator = new Neo4jHealthIndicator(
-				this.sessionFactory);
-		neo4jHealthIndicator.setCypher(customValidationQuery);
-		assertExpectedResults(neo4jHealthIndicator, Status.UP, expectedCypherDetails);
+	public void invalidCypherNeo4jDown() {
+		String invalidCypher = "invalid cypher";
+		this.neo4jHealthIndicator.setCypher(invalidCypher);
+		CypherException cypherException = new CypherException("Error executing Cypher",
+				"Neo.ClientError.Statement.SyntaxError",
+				"Unable to execute invalid Cypher");
 
-		// Create 2 nodes and 1 relationship
-		try (Transaction transaction = session.beginTransaction()) {
-			session.query(
-					"create (a:A { name: 'foo' })-[:CONNECTED]->(b:B {name : 'bar'})",
-					parameters);
-			transaction.commit();
-		}
+		given(this.session.query(invalidCypher, this.emptyParameters))
+				.willThrow(cypherException);
 
-		expectedCypherDetails.put(NODE_COUNT, nodeCount + 2);
-		expectedCypherDetails.put(RELATIONSHIP_COUNT, relationshipCount + 1);
-		assertExpectedResults(neo4jHealthIndicator, Status.UP, expectedCypherDetails);
-	}
-
-	@Test
-	public void invalidCustomValidationQuery() {
-		String invalidCypher = "invalid cypher statement";
-		Neo4jHealthIndicator neo4jHealthIndicator = new Neo4jHealthIndicator(
-				this.sessionFactory);
-		neo4jHealthIndicator.setCypher(invalidCypher);
-		assertExpectedResults(neo4jHealthIndicator, Status.DOWN, null);
-
-		neo4jHealthIndicator = new Neo4jHealthIndicator(this.sessionFactory,
-				invalidCypher);
-		assertExpectedResults(neo4jHealthIndicator, Status.DOWN, null);
-	}
-
-	@Test
-	public void postConstruct_success() {
-		Neo4jHealthIndicator neo4jHealthIndicator = new Neo4jHealthIndicator();
-		neo4jHealthIndicator.setSessionFactory(this.sessionFactory);
-		String cypher = "this is the cypher";
-		neo4jHealthIndicator.setCypher(cypher);
-		neo4jHealthIndicator.postConstruct();
-		Assert.assertEquals(cypher, neo4jHealthIndicator.getCypher());
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void postConstruct_null_session_factor() {
-		Neo4jHealthIndicator neo4jHealthIndicator = new Neo4jHealthIndicator();
-		neo4jHealthIndicator.postConstruct();
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void postConstruct_null_cypher() {
-		Neo4jHealthIndicator neo4jHealthIndicator = new Neo4jHealthIndicator();
-		neo4jHealthIndicator.setSessionFactory(this.sessionFactory);
-		neo4jHealthIndicator.setCypher(null);
-		neo4jHealthIndicator.postConstruct();
+		assertExpectedResults(this.neo4jHealthIndicator, Status.DOWN, null);
 	}
 
 	protected void assertExpectedResults(Neo4jHealthIndicator neo4jHealthIndicator,
@@ -144,17 +94,16 @@ public class Neo4jHealthIndicatorTests {
 		Health health = neo4jHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(expectedStatus);
 
+		Map<String, Object> details = health.getDetails();
+
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> cypherDetails = (List<Map<String, Object>>) details
+				.get(Neo4jHealthIndicator.NEO4J);
+
 		if (expectedCypherDetails == null) {
-			assertThat(health.getDetails().get(Neo4jHealthIndicator.CYPHER_RESULTS))
-					.isNull();
+			assertThat(cypherDetails).isNull();
 		}
 		else {
-			Map<String, Object> details = health.getDetails();
-			assertThat(health.getDetails().get(Neo4jHealthIndicator.CYPHER_RESULTS))
-					.isNotNull();
-			@SuppressWarnings("unchecked")
-			List<Map<String, Object>> cypherDetails = (List<Map<String, Object>>) details
-					.get(Neo4jHealthIndicator.CYPHER_RESULTS);
 			assertThat(cypherDetails).containsOnly(expectedCypherDetails);
 		}
 	}
