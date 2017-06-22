@@ -30,6 +30,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.rules.TemporaryFolder;
@@ -114,7 +115,8 @@ public class GradleBuild implements TestRule {
 				+ absolutePath("build/resources/main") + ","
 				+ pathOfJarContaining(LaunchScript.class) + ","
 				+ pathOfJarContaining(ClassVisitor.class) + ","
-				+ pathOfJarContaining(DependencyManagementPlugin.class);
+				+ pathOfJarContaining(DependencyManagementPlugin.class) + ","
+				+ pathOfJarContaining(ArchiveEntry.class);
 	}
 
 	private String absolutePath(String path) {

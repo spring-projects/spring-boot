@@ -22,12 +22,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -592,6 +595,23 @@ public class RepackagerTests {
 		try (JarFile jarFile = new JarFile(dest)) {
 			assertThat(jarFile.getEntry("META-INF/aop.xml")).isNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/aop.xml")).isNotNull();
+		}
+	}
+
+	@Test
+	public void allEntriesUseUnixPlatformAndUtf8NameEncoding() throws IOException {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		repackager.repackage(dest, NO_LIBRARIES);
+		try (ZipFile zip = new ZipFile(dest)) {
+			Enumeration<ZipArchiveEntry> entries = zip.getEntries();
+			while (entries.hasMoreElements()) {
+				ZipArchiveEntry entry = entries.nextElement();
+				assertThat(entry.getPlatform()).isEqualTo(ZipArchiveEntry.PLATFORM_UNIX);
+				assertThat(entry.getGeneralPurposeBit().usesUTF8ForNames()).isTrue();
+			}
 		}
 	}
 

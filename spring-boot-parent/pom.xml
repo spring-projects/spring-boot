@@ -86,6 +86,11 @@
 				<version>4.6</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.14</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.ivy</groupId>
 				<artifactId>ivy</artifactId>
 				<version>2.3.0</version>

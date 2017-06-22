@@ -29,6 +29,10 @@
 			<groupId>io.spring.gradle</groupId>
 			<artifactId>dependency-management-plugin</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

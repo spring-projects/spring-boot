@@ -83,7 +83,7 @@ class BootArchiveSupport {
 		CopyAction copyAction = new BootZipCopyAction(jar.getArchivePath(),
 				jar.isPreserveFileTimestamps(), isUsingDefaultLoader(jar),
 				this.requiresUnpack.getAsSpec(), this.exclusions.getAsExcludeSpec(),
-				this.launchScript, this.compressionResolver);
+				this.launchScript, this.compressionResolver, jar.getMetadataCharset());
 		if (!jar.isReproducibleFileOrder()) {
 			return copyAction;
 		}
