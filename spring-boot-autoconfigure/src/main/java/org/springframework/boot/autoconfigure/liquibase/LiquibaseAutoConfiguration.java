@@ -161,7 +161,7 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	/**
-	 * A custom {@link SpringLiquibase} extension that close the underlying
+	 * A custom {@link SpringLiquibase} extension that closes the underlying
 	 * {@link DataSource} once the database has been migrated.
 	 */
 	private static final class DataSourceClosingSpringLiquibase extends SpringLiquibase {

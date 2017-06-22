@@ -5144,7 +5144,7 @@ provide good examples of how to write XA wrappers.
 [[boot-features-hazelcast]]
 == Hazelcast
 
-If hazelcast is on the classpath, Spring Boot will auto-configure an `HazelcastInstance`
+If Hazelcast is on the classpath, Spring Boot will auto-configure a `HazelcastInstance`
 that you can inject in your application. The `HazelcastInstance` is only created if a
 configuration is found.
 
