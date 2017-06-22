@@ -40,7 +40,7 @@
   a comma, that is:
 
 ---
-mvn spring-boot:run -Drun.profiles=foo,bar
+mvn spring-boot:run -Dspring-boot.run.profiles=foo,bar
 ---
 
 

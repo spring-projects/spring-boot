@@ -54,7 +54,7 @@ public class StopMojo extends AbstractMojo {
 	 * {@link StartMojo start} the process.
 	 * @since 1.3
 	 */
-	@Parameter(property = "fork")
+	@Parameter(property = "spring-boot.stop.fork")
 	private Boolean fork;
 
 	/**
@@ -75,7 +75,7 @@ public class StopMojo extends AbstractMojo {
 	 * Skip the execution.
 	 * @since 1.3.2
 	 */
-	@Parameter(property = "skip", defaultValue = "false")
+	@Parameter(property = "spring-boot.stop.skip", defaultValue = "false")
 	private boolean skip;
 
 	@Override

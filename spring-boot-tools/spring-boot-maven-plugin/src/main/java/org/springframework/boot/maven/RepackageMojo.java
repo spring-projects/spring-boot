@@ -90,7 +90,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * Skip the execution.
 	 * @since 1.2
 	 */
-	@Parameter(property = "skip", defaultValue = "false")
+	@Parameter(property = "spring-boot.repackage.skip", defaultValue = "false")
 	private boolean skip;
 
 	/**
