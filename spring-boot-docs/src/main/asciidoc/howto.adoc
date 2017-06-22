@@ -2318,7 +2318,7 @@ for other Groovy customization options.
 [[howto-reload-fast-restart]]
 === Fast application restarts
 The `spring-boot-devtools` module includes support for automatic application restarts.
-Whilst not as fast a technologies such as http://zeroturnaround.com/software/jrebel/[JRebel]
+Whilst not as fast as technologies such as http://zeroturnaround.com/software/jrebel/[JRebel]
 it's usually significantly faster than a "`cold start`". You should probably give it a try
 before investigating some of the more complex reload options discussed below.
 
