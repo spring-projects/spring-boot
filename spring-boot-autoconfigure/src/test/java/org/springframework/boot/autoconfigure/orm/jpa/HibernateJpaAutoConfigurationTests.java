@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Map;
 
-import javax.sql.DataSource;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -35,8 +34,6 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -50,6 +47,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @author Stephane Nicoll
  */
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
@@ -64,55 +62,40 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testDataScriptWithMissingDdl() throws Exception {
-		TestPropertyValues
-				.of("spring.datasource.data:classpath:/city.sql",
-						// Missing:
-						"spring.datasource.schema:classpath:/ddl.sql")
-				.applyTo(this.context);
-		setupTestConfiguration();
 		this.thrown.expectMessage("ddl.sql");
 		this.thrown.expectMessage("spring.datasource.schema");
-		this.context.refresh();
-
+		load("spring.datasource.data:classpath:/city.sql",
+				// Missing:
+				"spring.datasource.schema:classpath:/ddl.sql");
 	}
 
-	// This can't succeed because the data SQL is executed immediately after the schema
-	// and Hibernate hasn't initialized yet at that point
-	@Test(expected = BeanCreationException.class)
+	@Test
 	public void testDataScript() throws Exception {
-		TestPropertyValues.of("spring.datasource.data:classpath:/city.sql")
-				.applyTo(this.context);
-		setupTestConfiguration();
-		this.context.refresh();
-		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
-				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+		// This can't succeed because the data SQL is executed immediately after the schema
+		// and Hibernate hasn't initialized yet at that point
+		this.thrown.expect(BeanCreationException.class);
+		load("spring.datasource.data:classpath:/city.sql");
 	}
 
 	@Test
 	public void testFlywayPlusValidation() throws Exception {
-		TestPropertyValues.of("spring.datasource.initialize:false",
+		load(new Class<?>[0], new Class<?>[] { FlywayAutoConfiguration.class },
+				"spring.datasource.initialize:false",
 				"flyway.locations:classpath:db/city",
-				"spring.jpa.hibernate.ddl-auto:validate").applyTo(this.context);
-		setupTestConfiguration();
-		this.context.register(FlywayAutoConfiguration.class);
-		this.context.refresh();
+				"spring.jpa.hibernate.ddl-auto:validate");
 	}
 
 	@Test
 	public void testLiquibasePlusValidation() throws Exception {
-		TestPropertyValues.of("spring.datasource.initialize:false",
+		load(new Class<?>[0], new Class<?>[] { LiquibaseAutoConfiguration.class },
+				"spring.datasource.initialize:false",
 				"liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
-				"spring.jpa.hibernate.ddl-auto:validate").applyTo(this.context);
-		setupTestConfiguration();
-		this.context.register(LiquibaseAutoConfiguration.class);
-		this.context.refresh();
+				"spring.jpa.hibernate.ddl-auto:validate");
 	}
 
 	@Test
 	public void defaultJtaPlatform() throws Exception {
-		this.context.register(JtaAutoConfiguration.class);
-		setupTestConfiguration();
-		this.context.refresh();
+		load(JtaAutoConfiguration.class);
 		Map<String, Object> jpaPropertyMap = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class)
 				.getJpaPropertyMap();
@@ -122,11 +105,9 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomJtaPlatform() throws Exception {
-		TestPropertyValues.of("spring.jpa.properties.hibernate.transaction.jta.platform:"
-				+ TestJtaPlatform.class.getName()).applyTo(this.context);
-		this.context.register(JtaAutoConfiguration.class);
-		setupTestConfiguration();
-		this.context.refresh();
+		load(JtaAutoConfiguration.class,
+				"spring.jpa.properties.hibernate.transaction.jta.platform:"
+						+ TestJtaPlatform.class.getName());
 		Map<String, Object> jpaPropertyMap = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class)
 				.getJpaPropertyMap();
@@ -136,12 +117,8 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
-		TestPropertyValues
-				.of("spring.transaction.default-timeout:30",
-						"spring.transaction.rollback-on-commit-failure:true")
-				.applyTo(this.context);
-		setupTestConfiguration();
-		this.context.refresh();
+		load("spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
 		JpaTransactionManager transactionManager = this.context
 				.getBean(JpaTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);

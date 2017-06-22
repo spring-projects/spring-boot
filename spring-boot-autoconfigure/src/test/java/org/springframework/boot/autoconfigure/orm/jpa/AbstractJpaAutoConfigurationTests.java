@@ -51,6 +51,7 @@ import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,44 +61,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
-	protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	protected AnnotationConfigApplicationContext context;
 
 	@After
 	public void close() {
-		this.context.close();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	protected abstract Class<?> getAutoConfigureClass();
 
 	@Test
 	public void testNoDataSource() throws Exception {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(PropertyPlaceholderAutoConfiguration.class,
 				getAutoConfigureClass());
 		this.expected.expect(BeanCreationException.class);
 		this.expected.expectMessage("No qualifying bean");
 		this.expected.expectMessage("DataSource");
-		this.context.refresh();
+		ctx.refresh();
 	}
 
 	@Test
 	public void testEntityManagerCreated() throws Exception {
-		setupTestConfiguration();
-		this.context.refresh();
+		load();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		assertThat(this.context.getBean(JpaTransactionManager.class)).isNotNull();
 	}
 
 	@Test
 	public void testDataSourceTransactionManagerNotCreated() throws Exception {
-		this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
-		setupTestConfiguration();
-		this.context.refresh();
+		load(new Class<?>[0],
+				new Class<?>[] { DataSourceTransactionManagerAutoConfiguration.class });
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		assertThat(this.context.getBean("transactionManager"))
 				.isInstanceOf(JpaTransactionManager.class);
@@ -140,10 +143,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void customJpaProperties() throws Exception {
-		TestPropertyValues.of("spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c",
-				"spring.jpa.properties.c:d").applyTo(this.context);
-		setupTestConfiguration();
-		this.context.refresh();
+		load("spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c",
+				"spring.jpa.properties.c:d");
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = bean.getJpaPropertyMap();
@@ -154,10 +155,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
-		TestPropertyValues.of("spring.datasource.initialize:false");
-		setupTestConfiguration(
-				TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
-		this.context.refresh();
+		load(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = factoryBean.getJpaPropertyMap();
@@ -166,9 +164,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedEntityManagerFactoryIfAvailable() {
-		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
-		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
-		this.context.refresh();
+		load(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
 		EntityManagerFactory factoryBean = this.context
 				.getBean(EntityManagerFactory.class);
 		Map<String, Object> map = factoryBean.getProperties();
@@ -177,8 +173,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedTransactionManagerBeanIfAvailable() {
-		setupTestConfiguration(TestConfigurationWithTransactionManager.class);
-		this.context.refresh();
+		load(TestConfigurationWithTransactionManager.class);
 		PlatformTransactionManager txManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		assertThat(txManager).isInstanceOf(CustomJpaTransactionManager.class);
@@ -186,8 +181,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void customPersistenceUnitManager() throws Exception {
-		setupTestConfiguration(TestConfigurationWithCustomPersistenceUnitManager.class);
-		this.context.refresh();
+		load(TestConfigurationWithCustomPersistenceUnitManager.class);
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Field field = LocalContainerEntityManagerFactoryBean.class
@@ -197,14 +191,32 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				.isEqualTo(this.context.getBean(PersistenceUnitManager.class));
 	}
 
-	protected void setupTestConfiguration() {
-		setupTestConfiguration(TestConfiguration.class);
+	protected void load(String... environment) {
+		load(new Class<?>[0], new Class<?>[0], environment);
 	}
 
-	protected void setupTestConfiguration(Class<?> configClass) {
-		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
+	protected void load(Class<?> config, String... environment) {
+		Class<?>[] configs = config != null ? new Class<?>[] { config } : null;
+		load(configs, new Class<?>[0], environment);
+	}
+
+	protected void load(Class<?>[] configs, Class<?>[] autoConfigs, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(environment)
+				.and("spring.datasource.generate-unique-name", "true")
+				.applyTo(ctx);
+		ctx.register(TestConfiguration.class);
+		if (!ObjectUtils.isEmpty(configs)) {
+			ctx.register(configs);
+		}
+		ctx.register(
 				DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+		if (!ObjectUtils.isEmpty(autoConfigs)) {
+			ctx.register(autoConfigs);
+		}
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 	private String[] getInterceptorBeans(ApplicationContext context) {
