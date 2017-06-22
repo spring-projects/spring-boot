@@ -127,7 +127,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * contains a 'main' method will be used.
 	 * @since 1.0
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.run.main-class")
 	private String mainClass;
 
 	/**
@@ -135,7 +135,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * classpath.
 	 * @since 1.0
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.run.folders")
 	private String[] folders;
 
 	/**

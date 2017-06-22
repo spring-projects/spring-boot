@@ -45,7 +45,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * {@code classifier} property.
 	 * @since 1.2
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.includes")
 	private List<Include> includes;
 
 	/**
@@ -54,7 +54,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * {@code classifier} property.
 	 * @since 1.1
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.excludes")
 	private List<Exclude> excludes;
 
 	/**
