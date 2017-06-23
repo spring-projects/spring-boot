@@ -38,6 +38,7 @@ import org.springframework.boot.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.actuate.health.LdapHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.actuate.health.Neo4jHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
@@ -45,6 +46,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
@@ -65,6 +67,7 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.ldap.core.LdapOperations;
+import org.neo4j.ogm.session.SessionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -76,6 +79,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Eric Spiegelberg
  */
 public class HealthIndicatorAutoConfigurationTests {
 
@@ -578,6 +582,34 @@ public class HealthIndicatorAutoConfigurationTests {
 				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
+	@Test
+	public void neo4jHealthIndicator() throws Exception {
+		TestPropertyValues.of("management.health.diskspace.enabled:false")
+				.applyTo(this.context);
+		this.context.register(Neo4jConfiguration.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans.size()).isEqualTo(1);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(Neo4jHealthIndicator.class);
+	}
+	
+	@Test
+	public void notNeo4jHealthIndicator() throws Exception {
+		TestPropertyValues.of("management.health.diskspace.enabled:false",
+				"management.health.neo4j.enabled:false").applyTo(this.context);
+		this.context.register(Neo4jConfiguration.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans.size()).isEqualTo(1);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
+	}
+	
 	@Configuration
 	@EnableConfigurationProperties
 	protected static class DataSourceConfig {
@@ -659,4 +691,14 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	protected static class Neo4jConfiguration {
+
+		@Bean
+		public SessionFactory sessionFactory() {
+			return mock(SessionFactory.class);
+		}
+		
+	}
+	
 }

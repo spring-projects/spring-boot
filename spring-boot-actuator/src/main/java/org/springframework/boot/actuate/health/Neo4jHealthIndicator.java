@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import org.neo4j.ogm.model.Result;
@@ -36,8 +36,6 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 
 	private SessionFactory sessionFactory;
 
-	private Map<String, Object> emptyParameters = new HashMap<>();
-
 	/**
 	 * The default Cypher statement.
 	 */
@@ -56,7 +54,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
 
-		Result result = session.query(this.cypher, this.emptyParameters);
+		Result result = session.query(this.cypher, Collections.emptyMap());
 		Iterable<Map<String, Object>> results = result.queryResults();
 
 		builder.up().withDetail(NEO4J, results);
