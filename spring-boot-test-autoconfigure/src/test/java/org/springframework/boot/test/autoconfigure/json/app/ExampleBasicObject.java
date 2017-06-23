@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,36 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.json;
-
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+package org.springframework.boot.test.autoconfigure.json.app;
 
 /**
- * Example {@link SpringBootApplication @SpringBootApplication} for use with
- * {@link JsonTest @JsonTest} tests.
+ * Example object to read/write as JSON.
  *
  * @author Phillip Webb
  */
-@SpringBootApplication
-public class ExampleJsonApplication {
+public class ExampleBasicObject {
+
+	private String value;
+
+	public String getValue() {
+		return this.value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj != null && obj.getClass().equals(getClass())) {
+			return this.value.equals(((ExampleBasicObject) obj).value);
+		}
+		return false;
+	}
 
 }

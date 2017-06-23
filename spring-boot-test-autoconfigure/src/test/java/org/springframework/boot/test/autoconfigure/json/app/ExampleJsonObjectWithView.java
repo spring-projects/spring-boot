@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.json;
+package org.springframework.boot.test.autoconfigure.json.app;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -68,7 +68,7 @@ public class ExampleJsonObjectWithView {
 		return this.value + " " + this.id;
 	}
 
-	static class TestView {
+	public static class TestView {
 
 	}
 
