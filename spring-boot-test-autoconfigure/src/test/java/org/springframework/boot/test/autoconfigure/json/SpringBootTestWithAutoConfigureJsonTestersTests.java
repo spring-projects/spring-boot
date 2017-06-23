@@ -21,10 +21,12 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.app.ExampleBasicObject;
+import org.springframework.boot.test.autoconfigure.json.app.ExampleJsonApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -35,6 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureJsonTesters
+@ContextConfiguration(classes = ExampleJsonApplication.class)
 public class SpringBootTestWithAutoConfigureJsonTestersTests {
 
 	@Autowired
