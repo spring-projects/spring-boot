@@ -21,45 +21,34 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.app.ExampleBasicObject;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * Integration tests for {@link JsonTest} with {@link AutoConfigureJsonTesters}.
+ * Integration tests for {@link SpringBootTest} with {@link AutoConfigureJsonTesters}.
  *
- * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@JsonTest
-@AutoConfigureJsonTesters(enabled = false)
-public class JsonTestWithAutoConfigureJsonTestersTests {
+@SpringBootTest
+@AutoConfigureJsonTesters
+public class SpringBootTestWithAutoConfigureJsonTestersTests {
 
-	@Autowired(required = false)
-	private BasicJsonTester basicJson;
+	@Autowired
+	BasicJsonTester basicJson;
 
-	@Autowired(required = false)
-	private JacksonTester<ExampleBasicObject> jacksonTester;
+	@Autowired
+	JacksonTester<ExampleBasicObject> jacksonTester;
 
-	@Autowired(required = false)
-	private GsonTester<ExampleBasicObject> gsonTester;
-
-	@Test
-	public void basicJson() throws Exception {
-		assertThat(this.basicJson).isNull();
-	}
+	@Autowired
+	GsonTester<ExampleBasicObject> gsonTester;
 
 	@Test
-	public void jackson() throws Exception {
-		assertThat(this.jacksonTester).isNull();
-	}
+	public void contextLoads() {
 
-	@Test
-	public void gson() throws Exception {
-		assertThat(this.gsonTester).isNull();
 	}
 
 }

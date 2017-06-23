@@ -41,7 +41,9 @@ org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 
 # AutoConfigureJsonTesters auto-configuration imports
 org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters=\
-org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration
+org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration,\
+org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
+org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\
