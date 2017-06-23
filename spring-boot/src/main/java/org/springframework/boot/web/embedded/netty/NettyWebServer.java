@@ -110,7 +110,9 @@ public class NettyWebServer implements WebServer {
 		if (context != null) {
 			context.dispose();
 		}
-		this.latch.countDown();
+		if (this.latch != null) {
+			this.latch.countDown();
+		}
 	}
 
 	@Override
