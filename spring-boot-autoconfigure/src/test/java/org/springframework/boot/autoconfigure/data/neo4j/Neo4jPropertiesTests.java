@@ -64,7 +64,7 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
-	public void httpUriUseHttpServer() {
+	public void httpUriUseHttpDriver() {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.uri=http://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
