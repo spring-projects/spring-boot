@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,12 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import javax.annotation.PostConstruct;
-
 import com.hazelcast.core.HazelcastInstance;
 
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -45,35 +42,22 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @Conditional(SessionCondition.class)
-@EnableConfigurationProperties({ ServerProperties.class,
-		HazelcastSessionProperties.class })
+@EnableConfigurationProperties(HazelcastSessionProperties.class)
 class HazelcastSessionConfiguration {
 
 	@Configuration
 	public static class SpringBootHazelcastHttpSessionConfiguration
 			extends HazelcastHttpSessionConfiguration {
 
-		private final HazelcastSessionProperties sessionProperties;
-
-		private final ServerProperties serverProperties;
-
-		SpringBootHazelcastHttpSessionConfiguration(
-				HazelcastSessionProperties sessionProperties,
-				ObjectProvider<ServerProperties> serverProperties) {
-			this.sessionProperties = sessionProperties;
-			this.serverProperties = serverProperties.getIfUnique();
-		}
-
-		@PostConstruct
-		public void init() {
-			if (this.serverProperties != null) {
-				Integer timeout = this.serverProperties.getSession().getTimeout();
-				if (timeout != null) {
-					setMaxInactiveIntervalInSeconds(timeout);
-				}
+		@Autowired
+		public void customize(SessionProperties sessionProperties,
+				HazelcastSessionProperties hazelcastSessionProperties) {
+			Integer timeout = sessionProperties.getTimeout();
+			if (timeout != null) {
+				setMaxInactiveIntervalInSeconds(timeout);
 			}
-			setSessionMapName(this.sessionProperties.getMapName());
-			setHazelcastFlushMode(this.sessionProperties.getFlushMode());
+			setSessionMapName(hazelcastSessionProperties.getMapName());
+			setHazelcastFlushMode(hazelcastSessionProperties.getFlushMode());
 		}
 
 	}

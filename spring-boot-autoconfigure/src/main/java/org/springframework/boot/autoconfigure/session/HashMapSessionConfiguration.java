@@ -16,10 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -38,23 +35,14 @@ import org.springframework.session.config.annotation.web.http.EnableSpringHttpSe
 @EnableSpringHttpSession
 @Conditional(SessionCondition.class)
 @ConditionalOnMissingBean(SessionRepository.class)
-@EnableConfigurationProperties(ServerProperties.class)
 class HashMapSessionConfiguration {
 
-	private final ServerProperties serverProperties;
-
-	HashMapSessionConfiguration(ObjectProvider<ServerProperties> serverProperties) {
-		this.serverProperties = serverProperties.getIfUnique();
-	}
-
 	@Bean
-	public MapSessionRepository sessionRepository() {
+	public MapSessionRepository sessionRepository(SessionProperties properties) {
 		MapSessionRepository repository = new MapSessionRepository();
-		if (this.serverProperties != null) {
-			Integer timeout = this.serverProperties.getSession().getTimeout();
-			if (timeout != null) {
-				repository.setDefaultMaxInactiveInterval(timeout);
-			}
+		Integer timeout = properties.getTimeout();
+		if (timeout != null) {
+			repository.setDefaultMaxInactiveInterval(timeout);
 		}
 		return repository;
 	}

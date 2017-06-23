@@ -16,13 +16,10 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -46,33 +43,25 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(RedisConnectionFactory.class)
 @Conditional(SessionCondition.class)
-@EnableConfigurationProperties({ ServerProperties.class, RedisSessionProperties.class })
+@EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisSessionConfiguration {
 
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration
 			extends RedisHttpSessionConfiguration {
 
-		private final RedisSessionProperties sessionProperties;
+		private SessionProperties sessionProperties;
 
-		private final ServerProperties serverProperties;
-
-		SpringBootRedisHttpSessionConfiguration(RedisSessionProperties sessionProperties,
-				ObjectProvider<ServerProperties> serverProperties) {
+		@Autowired
+		public void customize(SessionProperties sessionProperties,
+				RedisSessionProperties redisSessionProperties) {
 			this.sessionProperties = sessionProperties;
-			this.serverProperties = serverProperties.getIfUnique();
-		}
-
-		@PostConstruct
-		public void init() {
-			if (this.serverProperties != null) {
-				Integer timeout = this.serverProperties.getSession().getTimeout();
-				if (timeout != null) {
-					setMaxInactiveIntervalInSeconds(timeout);
-				}
+			Integer timeout = this.sessionProperties.getTimeout();
+			if (timeout != null) {
+				setMaxInactiveIntervalInSeconds(timeout);
 			}
-			setRedisNamespace(this.sessionProperties.getNamespace());
-			setRedisFlushMode(this.sessionProperties.getFlushMode());
+			setRedisNamespace(redisSessionProperties.getNamespace());
+			setRedisFlushMode(redisSessionProperties.getFlushMode());
 		}
 
 	}

@@ -384,11 +384,6 @@
     "defaultValue": "on-save"
   },
   {
-    "name": "spring.session.store-type",
-    "type": "org.springframework.boot.autoconfigure.session.StoreType",
-    "description": "Session store type."
-  },
-  {
     "name": "spring.social.auto-connection-views",
     "type": "java.lang.Boolean",
     "description": "Enable the connection status view for supported providers.",

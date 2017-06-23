@@ -31,11 +31,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
-import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
@@ -54,6 +53,7 @@ import org.springframework.session.SessionRepository;
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
+@EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class,
@@ -83,21 +83,19 @@ public class SessionAutoConfiguration {
 	 */
 	static class SessionRepositoryValidator {
 
-		private Environment environment;
+		private SessionProperties sessionProperties;
 
 		private ObjectProvider<SessionRepository<?>> sessionRepositoryProvider;
 
-		SessionRepositoryValidator(Environment environment,
+		SessionRepositoryValidator(SessionProperties sessionProperties,
 				ObjectProvider<SessionRepository<?>> sessionRepositoryProvider) {
-			this.environment = environment;
+			this.sessionProperties = sessionProperties;
 			this.sessionRepositoryProvider = sessionRepositoryProvider;
 		}
 
 		@PostConstruct
 		public void checkSessionRepository() {
-			Binder binder = Binder.get(this.environment);
-			StoreType storeType = binder
-					.bind("spring.session.store-type", StoreType.class).orElse(null);
+			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE
 					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
 				if (storeType != null) {
