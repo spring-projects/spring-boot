@@ -30,13 +30,13 @@ import org.springframework.util.Assert;
  */
 public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer {
 
-	private final SessionProperties.Jdbc properties;
+	private final JdbcSessionProperties properties;
 
 	public JdbcSessionDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, SessionProperties properties) {
+			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
 		super(dataSource, resourceLoader);
-		Assert.notNull(properties, "SessionProperties must not be null");
-		this.properties = properties.getJdbc();
+		Assert.notNull(properties, "JdbcSessionProperties must not be null");
+		this.properties = properties;
 	}
 
 	@Override

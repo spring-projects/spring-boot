@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.session;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.session.data.redis.RedisFlushMode;
-import org.springframework.session.hazelcast.HazelcastFlushMode;
 
 /**
  * Configuration properties for Spring Session.
@@ -39,12 +37,6 @@ public class SessionProperties {
 	private StoreType storeType;
 
 	private Integer timeout;
-
-	private final Hazelcast hazelcast = new Hazelcast();
-
-	private final Jdbc jdbc = new Jdbc();
-
-	private final Redis redis = new Redis();
 
 	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
 		ServerProperties properties = serverProperties.getIfUnique();
@@ -66,145 +58,6 @@ public class SessionProperties {
 	 */
 	public Integer getTimeout() {
 		return this.timeout;
-	}
-
-	public Hazelcast getHazelcast() {
-		return this.hazelcast;
-	}
-
-	public Jdbc getJdbc() {
-		return this.jdbc;
-	}
-
-	public Redis getRedis() {
-		return this.redis;
-	}
-
-	public static class Hazelcast {
-
-		/**
-		 * Name of the map used to store sessions.
-		 */
-		private String mapName = "spring:session:sessions";
-
-		/**
-		 * Sessions flush mode.
-		 */
-		private HazelcastFlushMode flushMode = HazelcastFlushMode.ON_SAVE;
-
-		public String getMapName() {
-			return this.mapName;
-		}
-
-		public void setMapName(String mapName) {
-			this.mapName = mapName;
-		}
-
-		public HazelcastFlushMode getFlushMode() {
-			return this.flushMode;
-		}
-
-		public void setFlushMode(HazelcastFlushMode flushMode) {
-			this.flushMode = flushMode;
-		}
-
-	}
-
-	public static class Jdbc {
-
-		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
-				+ "session/jdbc/schema-@@platform@@.sql";
-
-		private static final String DEFAULT_TABLE_NAME = "SPRING_SESSION";
-
-		/**
-		 * Path to the SQL file to use to initialize the database schema.
-		 */
-		private String schema = DEFAULT_SCHEMA_LOCATION;
-
-		/**
-		 * Name of database table used to store sessions.
-		 */
-		private String tableName = DEFAULT_TABLE_NAME;
-
-		private final Initializer initializer = new Initializer();
-
-		public String getSchema() {
-			return this.schema;
-		}
-
-		public void setSchema(String schema) {
-			this.schema = schema;
-		}
-
-		public String getTableName() {
-			return this.tableName;
-		}
-
-		public void setTableName(String tableName) {
-			this.tableName = tableName;
-		}
-
-		public Initializer getInitializer() {
-			return this.initializer;
-		}
-
-		public class Initializer {
-
-			/**
-			 * Create the required session tables on startup if necessary. Enabled
-			 * automatically if the default table name is set or a custom schema is
-			 * configured.
-			 */
-			private Boolean enabled;
-
-			public boolean isEnabled() {
-				if (this.enabled != null) {
-					return this.enabled;
-				}
-				boolean defaultTableName = DEFAULT_TABLE_NAME
-						.equals(Jdbc.this.getTableName());
-				boolean customSchema = !DEFAULT_SCHEMA_LOCATION
-						.equals(Jdbc.this.getSchema());
-				return (defaultTableName || customSchema);
-			}
-
-			public void setEnabled(boolean enabled) {
-				this.enabled = enabled;
-			}
-
-		}
-
-	}
-
-	public static class Redis {
-
-		/**
-		 * Namespace for keys used to store sessions.
-		 */
-		private String namespace = "";
-
-		/**
-		 * Sessions flush mode.
-		 */
-		private RedisFlushMode flushMode = RedisFlushMode.ON_SAVE;
-
-		public String getNamespace() {
-			return this.namespace;
-		}
-
-		public void setNamespace(String namespace) {
-			this.namespace = namespace;
-		}
-
-		public RedisFlushMode getFlushMode() {
-			return this.flushMode;
-		}
-
-		public void setFlushMode(RedisFlushMode flushMode) {
-			this.flushMode = flushMode;
-		}
-
 	}
 
 }

@@ -20,10 +20,13 @@ import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.hazelcast.HazelcastSessionRepository;
 import org.springframework.session.hazelcast.config.annotation.web.http.HazelcastHttpSessionConfiguration;
 
 /**
@@ -35,9 +38,11 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
  * @author Vedran Pavic
  */
 @Configuration
+@ConditionalOnClass(HazelcastSessionRepository.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @Conditional(SessionCondition.class)
+@EnableConfigurationProperties(HazelcastSessionProperties.class)
 class HazelcastSessionConfiguration {
 
 	@Configuration
@@ -45,14 +50,14 @@ class HazelcastSessionConfiguration {
 			extends HazelcastHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties) {
+		public void customize(SessionProperties sessionProperties,
+				HazelcastSessionProperties hazelcastSessionProperties) {
 			Integer timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds(timeout);
 			}
-			SessionProperties.Hazelcast hazelcast = sessionProperties.getHazelcast();
-			setSessionMapName(hazelcast.getMapName());
-			setHazelcastFlushMode(hazelcast.getFlushMode());
+			setSessionMapName(hazelcastSessionProperties.getMapName());
+			setHazelcastFlushMode(hazelcastSessionProperties.getFlushMode());
 		}
 
 	}
