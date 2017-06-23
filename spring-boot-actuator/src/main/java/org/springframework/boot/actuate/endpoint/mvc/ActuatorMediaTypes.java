@@ -28,20 +28,9 @@ import org.springframework.http.MediaType;
 public final class ActuatorMediaTypes {
 
 	/**
-	 * {@link String} equivalent of {@link #APPLICATION_ACTUATOR_V1_JSON}.
-	 */
-	public static final String APPLICATION_ACTUATOR_V1_JSON_VALUE = "application/vnd.spring-boot.actuator.v1+json";
-
-	/**
 	 * {@link String} equivalent of {@link #APPLICATION_ACTUATOR_V2_JSON}.
 	 */
 	public static final String APPLICATION_ACTUATOR_V2_JSON_VALUE = "application/vnd.spring-boot.actuator.v2+json";
-
-	/**
-	 * The {@code application/vnd.spring-boot.actuator.v1+json} media type.
-	 */
-	public static final MediaType APPLICATION_ACTUATOR_V1_JSON = MediaType
-			.valueOf(APPLICATION_ACTUATOR_V1_JSON_VALUE);
 
 	/**
 	 * The {@code application/vnd.spring-boot.actuator.v2+json} media type.
