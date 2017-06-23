@@ -23,23 +23,23 @@ import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
  * {@link HealthIndicator} that tests the status of a Neo4j by executing a Cypher
  * statement.
  *
  * @author Eric Spiegelberg
  */
+@ConfigurationProperties(prefix = "management.health.neo4j", ignoreUnknownFields = false)
 public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 
-	/** The key used to store Cypher execution results within the Health.Builder. */
-	public static final String NEO4J = "neo4j";
-
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 
 	/**
-	 * The default Cypher statement.
+	 * The Cypher statement used to verify Neo4j is up.
 	 */
-	private String cypher = "match (n) return count(n) as nodeCount";
+	public static final String CYPHER = "match (n) return count(n) as nodes";
 
 	/**
 	 * Create a new {@link Neo4jHealthIndicator} using the specified
@@ -54,27 +54,11 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
 
-		Result result = session.query(this.cypher, Collections.emptyMap());
+		Result result = session.query(CYPHER, Collections.emptyMap());
 		Iterable<Map<String, Object>> results = result.queryResults();
+		int nodes = (int) results.iterator().next().get("nodes");
 
-		builder.up().withDetail(NEO4J, results);
-	}
-
-	/**
-	 * Return the validation Cypher query or {@code null}.
-	 * @return The query or {@code null}.
-	 */
-	public String getCypher() {
-		return this.cypher;
-	}
-
-	/**
-	 * Set a specific validation Cypher query to use to validate a connection. If none is
-	 * set, the default query is used.
-	 * @param cypher The cypher query used to evaluate the status of Neo4j.
-	 */
-	public void setCypher(String cypher) {
-		this.cypher = cypher;
+		builder.up().withDetail("nodes", nodes);
 	}
 
 }

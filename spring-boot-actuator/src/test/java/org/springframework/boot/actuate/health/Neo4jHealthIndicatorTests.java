@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.ogm.exception.CypherException;
@@ -59,53 +60,41 @@ public class Neo4jHealthIndicatorTests {
 	}
 
 	@Test
-	public void defaultValidationQueryNeo4jUp() {
-		String cypher = this.neo4jHealthIndicator.getCypher();
-		given(this.session.query(cypher, this.emptyParameters)).willReturn(this.result);
+	public void neo4jUp() {
+		given(this.session.query(Neo4jHealthIndicator.CYPHER, this.emptyParameters))
+				.willReturn(this.result);
 
+		int nodeCount = 500;
 		Map<String, Object> expectedCypherDetails = new HashMap<>();
-		expectedCypherDetails.put("nodeCount", 500);
+		expectedCypherDetails.put("nodes", nodeCount);
 
 		List<Map<String, Object>> queryResults = new ArrayList<>();
 		queryResults.add(expectedCypherDetails);
 
 		given(this.result.queryResults()).willReturn(queryResults);
 
-		assertExpectedResults(this.neo4jHealthIndicator, Status.UP,
-				expectedCypherDetails);
+		Health health = this.neo4jHealthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+
+		Map<String, Object> details = health.getDetails();
+		int nodeCountFromDetails = (int) details.get("nodes");
+
+		Assert.assertEquals(nodeCount, nodeCountFromDetails);
+
 	}
 
 	@Test
-	public void invalidCypherNeo4jDown() {
-		String invalidCypher = "invalid cypher";
-		this.neo4jHealthIndicator.setCypher(invalidCypher);
+	public void neo4jDown() {
+
 		CypherException cypherException = new CypherException("Error executing Cypher",
 				"Neo.ClientError.Statement.SyntaxError",
 				"Unable to execute invalid Cypher");
 
-		given(this.session.query(invalidCypher, this.emptyParameters))
+		given(this.session.query(Neo4jHealthIndicator.CYPHER, this.emptyParameters))
 				.willThrow(cypherException);
 
-		assertExpectedResults(this.neo4jHealthIndicator, Status.DOWN, null);
-	}
-
-	protected void assertExpectedResults(Neo4jHealthIndicator neo4jHealthIndicator,
-			Status expectedStatus, Map<String, Object> expectedCypherDetails) {
-		Health health = neo4jHealthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(expectedStatus);
-
-		Map<String, Object> details = health.getDetails();
-
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> cypherDetails = (List<Map<String, Object>>) details
-				.get(Neo4jHealthIndicator.NEO4J);
-
-		if (expectedCypherDetails == null) {
-			assertThat(cypherDetails).isNull();
-		}
-		else {
-			assertThat(cypherDetails).containsOnly(expectedCypherDetails);
-		}
+		Health health = this.neo4jHealthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 }
