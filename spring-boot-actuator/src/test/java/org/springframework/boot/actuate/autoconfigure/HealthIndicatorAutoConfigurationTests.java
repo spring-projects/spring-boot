@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import io.searchbox.client.JestClient;
 import org.junit.After;
 import org.junit.Test;
+import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CassandraHealthIndicator;
@@ -46,7 +47,6 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
@@ -67,7 +67,6 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.ldap.core.LdapOperations;
-import org.neo4j.ogm.session.SessionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -595,7 +594,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		assertThat(beans.values().iterator().next().getClass())
 				.isEqualTo(Neo4jHealthIndicator.class);
 	}
-	
+
 	@Test
 	public void notNeo4jHealthIndicator() throws Exception {
 		TestPropertyValues.of("management.health.diskspace.enabled:false",
@@ -609,7 +608,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		assertThat(beans.values().iterator().next().getClass())
 				.isEqualTo(ApplicationHealthIndicator.class);
 	}
-	
+
 	@Configuration
 	@EnableConfigurationProperties
 	protected static class DataSourceConfig {
@@ -698,7 +697,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		public SessionFactory sessionFactory() {
 			return mock(SessionFactory.class);
 		}
-		
+
 	}
-	
+
 }
