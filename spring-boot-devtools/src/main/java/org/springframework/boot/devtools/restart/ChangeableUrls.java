@@ -147,7 +147,7 @@ final class ChangeableUrls implements Iterable<URL> {
 					urls.add(referenced.toURI().toURL());
 				}
 				else {
-					System.err.println("Ignoring Class-Path entry " + entry + " found in"
+					System.err.println("Ignoring Class-Path entry " + entry + " found in "
 							+ jarFile.getName() + " as " + referenced
 							+ " does not exist");
 				}
