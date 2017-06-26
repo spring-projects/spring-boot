@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,60 +38,49 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link Neo4jHealthIndicator}.
  *
  * @author Eric Spiegelberg
+ * @author Stephane Nicoll
  */
 public class Neo4jHealthIndicatorTests {
 
-	private Result result;
 	private Session session;
-	private SessionFactory sessionFactory;
 
 	private Neo4jHealthIndicator neo4jHealthIndicator;
 
-	private Map<String, Object> emptyParameters = new HashMap<>();
-
 	@Before
 	public void before() {
-		this.result = mock(Result.class);
 		this.session = mock(Session.class);
-		this.sessionFactory = mock(SessionFactory.class);
-
-		given(this.sessionFactory.openSession()).willReturn(this.session);
-
-		this.neo4jHealthIndicator = new Neo4jHealthIndicator(this.sessionFactory);
+		SessionFactory sessionFactory = mock(SessionFactory.class);
+		given(sessionFactory.openSession()).willReturn(this.session);
+		this.neo4jHealthIndicator = new Neo4jHealthIndicator(sessionFactory);
 	}
 
 	@Test
 	public void neo4jUp() {
-		given(this.session.query(Neo4jHealthIndicator.CYPHER, this.emptyParameters))
-				.willReturn(this.result);
+		Result result = mock(Result.class);
+		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.EMPTY_MAP))
+				.willReturn(result);
 
 		int nodeCount = 500;
 		Map<String, Object> expectedCypherDetails = new HashMap<>();
 		expectedCypherDetails.put("nodes", nodeCount);
-
 		List<Map<String, Object>> queryResults = new ArrayList<>();
 		queryResults.add(expectedCypherDetails);
-
-		given(this.result.queryResults()).willReturn(queryResults);
+		given(result.queryResults()).willReturn(queryResults);
 
 		Health health = this.neo4jHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-
 		Map<String, Object> details = health.getDetails();
 		int nodeCountFromDetails = (int) details.get("nodes");
 
 		Assert.assertEquals(nodeCount, nodeCountFromDetails);
-
 	}
 
 	@Test
 	public void neo4jDown() {
-
 		CypherException cypherException = new CypherException("Error executing Cypher",
 				"Neo.ClientError.Statement.SyntaxError",
 				"Unable to execute invalid Cypher");
-
-		given(this.session.query(Neo4jHealthIndicator.CYPHER, this.emptyParameters))
+		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.EMPTY_MAP))
 				.willThrow(cypherException);
 
 		Health health = this.neo4jHealthIndicator.health();

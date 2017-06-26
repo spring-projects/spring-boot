@@ -23,23 +23,21 @@ import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 /**
  * {@link HealthIndicator} that tests the status of a Neo4j by executing a Cypher
  * statement.
  *
  * @author Eric Spiegelberg
+ * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.health.neo4j", ignoreUnknownFields = false)
 public class Neo4jHealthIndicator extends AbstractHealthIndicator {
-
-	private final SessionFactory sessionFactory;
 
 	/**
 	 * The Cypher statement used to verify Neo4j is up.
 	 */
-	public static final String CYPHER = "match (n) return count(n) as nodes";
+	static final String CYPHER = "match (n) return count(n) as nodes";
+
+	private final SessionFactory sessionFactory;
 
 	/**
 	 * Create a new {@link Neo4jHealthIndicator} using the specified
@@ -54,7 +52,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
 
-		Result result = session.query(CYPHER, Collections.emptyMap());
+		Result result = session.query(CYPHER, Collections.EMPTY_MAP);
 		Iterable<Map<String, Object>> results = result.queryResults();
 		int nodes = (int) results.iterator().next().get("nodes");
 

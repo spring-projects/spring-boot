@@ -105,8 +105,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 		JestAutoConfiguration.class, JmsAutoConfiguration.class,
 		LdapDataAutoConfiguration.class, MailSenderAutoConfiguration.class,
 		MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		RabbitAutoConfiguration.class, RedisAutoConfiguration.class,
-		SolrAutoConfiguration.class, Neo4jDataAutoConfiguration.class })
+		Neo4jDataAutoConfiguration.class, RabbitAutoConfiguration.class,
+		RedisAutoConfiguration.class, SolrAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
 @Import({
 		ElasticsearchHealthIndicatorConfiguration.ElasticsearchClientHealthIndicatorConfiguration.class,
@@ -262,6 +262,27 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnBean(MongoTemplate.class)
+	@ConditionalOnEnabledHealthIndicator("mongo")
+	public static class MongoHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
+
+		private final Map<String, MongoTemplate> mongoTemplates;
+
+		public MongoHealthIndicatorConfiguration(
+				Map<String, MongoTemplate> mongoTemplates) {
+			this.mongoTemplates = mongoTemplates;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "mongoHealthIndicator")
+		public HealthIndicator mongoHealthIndicator() {
+			return createHealthIndicator(this.mongoTemplates);
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnClass(SessionFactory.class)
 	@ConditionalOnBean(SessionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("neo4j")
@@ -279,27 +300,6 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "neo4jHealthIndicator")
 		public HealthIndicator neo4jHealthIndicator() {
 			return createHealthIndicator(this.sessionFactories);
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnBean(MongoTemplate.class)
-	@ConditionalOnEnabledHealthIndicator("mongo")
-	public static class MongoHealthIndicatorConfiguration extends
-			CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
-
-		private final Map<String, MongoTemplate> mongoTemplates;
-
-		public MongoHealthIndicatorConfiguration(
-				Map<String, MongoTemplate> mongoTemplates) {
-			this.mongoTemplates = mongoTemplates;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(name = "mongoHealthIndicator")
-		public HealthIndicator mongoHealthIndicator() {
-			return createHealthIndicator(this.mongoTemplates);
 		}
 
 	}
