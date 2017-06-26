@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import com.couchbase.client.java.Bucket;
 import com.datastax.driver.core.Cluster;
 import org.apache.solr.client.solrj.SolrClient;
+import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,6 +43,7 @@ import org.springframework.boot.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.actuate.health.LdapHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.actuate.health.Neo4jHealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
@@ -59,6 +61,7 @@ import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoCo
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -91,6 +94,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Phillip Webb
  * @author Tommy Ludwig
  * @author Eddú Meléndez
+ * @author Eric Spiegelberg
  * @since 1.1.0
  */
 @Configuration
@@ -101,8 +105,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 		JestAutoConfiguration.class, JmsAutoConfiguration.class,
 		LdapDataAutoConfiguration.class, MailSenderAutoConfiguration.class,
 		MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		RabbitAutoConfiguration.class, RedisAutoConfiguration.class,
-		SolrAutoConfiguration.class })
+		Neo4jDataAutoConfiguration.class, RabbitAutoConfiguration.class,
+		RedisAutoConfiguration.class, SolrAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
 @Import({
 		ElasticsearchHealthIndicatorConfiguration.ElasticsearchClientHealthIndicatorConfiguration.class,
@@ -274,6 +278,28 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "mongoHealthIndicator")
 		public HealthIndicator mongoHealthIndicator() {
 			return createHealthIndicator(this.mongoTemplates);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(SessionFactory.class)
+	@ConditionalOnBean(SessionFactory.class)
+	@ConditionalOnEnabledHealthIndicator("neo4j")
+	public static class Neo4jHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<Neo4jHealthIndicator, SessionFactory> {
+
+		private final Map<String, SessionFactory> sessionFactories;
+
+		public Neo4jHealthIndicatorConfiguration(
+				Map<String, SessionFactory> sessionFactories) {
+			this.sessionFactories = sessionFactories;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "neo4jHealthIndicator")
+		public HealthIndicator neo4jHealthIndicator() {
+			return createHealthIndicator(this.sessionFactories);
 		}
 
 	}

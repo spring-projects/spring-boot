@@ -182,6 +182,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.health.neo4j.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Neo4j health check.",
+    "defaultValue": true
+  },
+  {
     "name": "management.info.build.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable build info.",

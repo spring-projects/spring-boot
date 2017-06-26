@@ -1214,6 +1214,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.ldap.enabled=true # Enable LDAP health check.
 	management.health.mail.enabled=true # Enable Mail health check.
 	management.health.mongo.enabled=true # Enable MongoDB health check.
+	management.health.neo4j.enabled=true # Enable Neo4j health check.
 	management.health.rabbit.enabled=true # Enable RabbitMQ health check.
 	management.health.redis.enabled=true # Enable Redis health check.
 	management.health.solr.enabled=true # Enable Solr health check.
