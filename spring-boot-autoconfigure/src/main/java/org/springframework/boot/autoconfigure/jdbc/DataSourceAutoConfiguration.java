@@ -19,13 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -63,32 +57,11 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
 public class DataSourceAutoConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(DataSourceAutoConfiguration.class);
-
 	@Bean
 	@ConditionalOnMissingBean
 	public DataSourceInitializer dataSourceInitializer(DataSourceProperties properties,
 			ApplicationContext applicationContext) {
 		return new DataSourceInitializer(properties, applicationContext);
-	}
-
-	/**
-	 * Determines if the {@code dataSource} being used by Spring was created from
-	 * {@link EmbeddedDataSourceConfiguration}.
-	 * @param beanFactory the bean factory
-	 * @return true if the data source was auto-configured.
-	 */
-	public static boolean containsAutoConfiguredDataSource(
-			ConfigurableListableBeanFactory beanFactory) {
-		try {
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition("dataSource");
-			return EmbeddedDataSourceConfiguration.class.getName()
-					.equals(beanDefinition.getFactoryBeanName());
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return false;
-		}
 	}
 
 	@Configuration

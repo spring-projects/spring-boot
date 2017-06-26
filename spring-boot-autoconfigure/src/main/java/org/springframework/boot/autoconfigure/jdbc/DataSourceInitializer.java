@@ -45,7 +45,6 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @since 1.1.0
  * @see DataSourceAutoConfiguration
  */
 class DataSourceInitializer implements ApplicationListener<DataSourceInitializedEvent> {
