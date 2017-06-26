@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
-import javax.annotation.Resource;
-
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -105,9 +104,12 @@ public class OAuth2RestOperationsConfiguration {
 		@Configuration
 		protected static class ClientContextConfiguration {
 
-			@Resource
-			@Qualifier("accessTokenRequest")
-			protected AccessTokenRequest accessTokenRequest;
+			private final AccessTokenRequest accessTokenRequest;
+
+			public ClientContextConfiguration(@Qualifier("accessTokenRequest")
+					ObjectProvider<AccessTokenRequest> accessTokenRequest) {
+				this.accessTokenRequest = accessTokenRequest.getIfAvailable();
+			}
 
 			@Bean
 			@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
