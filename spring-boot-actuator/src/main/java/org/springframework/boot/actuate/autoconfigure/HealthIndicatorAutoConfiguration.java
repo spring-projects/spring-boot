@@ -258,6 +258,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(MongoTemplate.class)
 	@ConditionalOnBean(MongoTemplate.class)
 	@ConditionalOnEnabledHealthIndicator("mongo")
 	public static class MongoHealthIndicatorConfiguration extends
