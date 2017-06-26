@@ -128,11 +128,6 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
-	public void inlinedConfScriptCanBeReplaced() throws Exception {
-		assertThatPlaceholderCanBeReplaced("inlinedConfScript");
-	}
-
-	@Test
 	public void inlinedConfScriptFileLoad() throws IOException {
 		DefaultLaunchScript script = new DefaultLaunchScript(null,
 				createProperties("inlinedConfScript:src/test/resources/example.script"));
