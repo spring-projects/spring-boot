@@ -433,7 +433,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastCacheExplicit() { // Fail
+	public void hazelcastCacheExplicit() {
 		load(new Class[] { HazelcastAutoConfiguration.class,
 				DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast");
 		HazelcastCacheManager cacheManager = validateCacheManager(
