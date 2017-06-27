@@ -95,7 +95,7 @@ public final class ConfigurationPropertyName
 	}
 
 	/**
-	 * Return if the an element in the name is indexed.
+	 * Return if the element in the name is indexed.
 	 * @param elementIndex the index of the element
 	 * @return {@code true} if the element is indexed
 	 */
@@ -104,11 +104,11 @@ public final class ConfigurationPropertyName
 	}
 
 	/**
-	 * Return if the an element in the name is indexed and numeric.
+	 * Return if the element in the name is indexed and numeric.
 	 * @param elementIndex the index of the element
 	 * @return {@code true} if the element is indexed and numeric
 	 */
-	public boolean IsNumericIndex(int elementIndex) {
+	public boolean isNumericIndex(int elementIndex) {
 		return isIndexed(elementIndex)
 				&& isNumeric(getElement(elementIndex, Form.ORIGINAL));
 	}
