@@ -5427,6 +5427,19 @@ classes, on fields within your test, or on `@Configuration` classes and fields. 
 on a field, the instance of the created mock will also be injected. Mock beans are
 automatically reset after each test method.
 
+[NOTE]
+====
+This feature is automatically enabled as long as your test uses one of Spring Boot's
+test annotations (i.e. `@SpringBootTest`). To use this feature with a different
+arrangement, a listener will need to be added explicitly:
+
+[source,java,indent=0]
+----
+	@TestExecutionListeners(MockitoTestExecutionListener.class)
+----
+
+====
+
 Here's a typical example where we replace an existing `RemoteService` bean with a mock
 implementation:
 
