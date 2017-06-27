@@ -352,7 +352,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		embeddedFactory.start();
 		try {
 			assertThat(((AbstractProtocol<?>) embeddedFactory.getTomcat().getConnector()
-					.getProtocolHandler()).getBacklog()).isEqualTo(10);
+					.getProtocolHandler()).getAcceptCount()).isEqualTo(10);
 		}
 		finally {
 			embeddedFactory.stop();

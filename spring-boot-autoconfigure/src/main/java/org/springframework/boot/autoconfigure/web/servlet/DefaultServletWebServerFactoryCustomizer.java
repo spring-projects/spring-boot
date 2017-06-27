@@ -276,7 +276,7 @@ public class DefaultServletWebServerFactoryCustomizer
 					ProtocolHandler handler = connector.getProtocolHandler();
 					if (handler instanceof AbstractProtocol) {
 						AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-						protocol.setBacklog(acceptCount);
+						protocol.setAcceptCount(acceptCount);
 					}
 				}
 
