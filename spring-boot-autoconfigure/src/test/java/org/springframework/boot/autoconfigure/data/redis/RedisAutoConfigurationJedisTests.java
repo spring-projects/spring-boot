@@ -126,6 +126,16 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
+	public void testRedisConfigurationWithSentinelAndPassword() {
+		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
+				"spring.redis.sentinel.nodes:" + StringUtils
+						.collectionToCommaDelimitedString(sentinels));
+		assertThat(this.context.getBean(JedisConnectionFactory.class)
+				.getPassword()).isEqualTo("password");
+	}
+
+	@Test
 	public void testRedisConfigurationWithCluster() throws Exception {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
 		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),

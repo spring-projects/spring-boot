@@ -149,12 +149,32 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRedisConfigurationWithSentinelAndPassword() throws Exception {
+		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
+				"spring.redis.sentinel.nodes:"
+						+ StringUtils.collectionToCommaDelimitedString(sentinels));
+		assertThat(this.context.getBean(LettuceConnectionFactory.class)
+				.getPassword()).isEqualTo("password");
+	}
+
+	@Test
 	public void testRedisConfigurationWithCluster() throws Exception {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
 		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
 		assertThat(this.context.getBean(LettuceConnectionFactory.class)
 				.getClusterConnection()).isNotNull();
+	}
+
+	@Test
+	public void testRedisConfigurationWithClusterAndPassword() throws Exception {
+		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		load("spring.redis.password=password",
+				"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
+		assertThat(this.context.getBean(LettuceConnectionFactory.class)
+				.getPassword()).isEqualTo("password");
 	}
 
 	private DefaultLettucePool getDefaultLettucePool(LettuceConnectionFactory factory) {
