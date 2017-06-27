@@ -41,9 +41,9 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param properties the batch properties
 	 * @param dataSource the underlying data source
-	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 * @param transactionManagerCustomizers transaction manager customizers (or
 	 * {@code null})
+	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
 	protected JpaBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			TransactionManagerCustomizers transactionManagerCustomizers,

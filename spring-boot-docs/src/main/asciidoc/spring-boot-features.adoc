@@ -5434,7 +5434,7 @@ configuration is usually found.
 
 If you want to customize the primary configuration, you can use a nested
 `@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
-instead of a your application's primary configuration, a nested `@TestConfiguration` class
+instead of your application's primary configuration, a nested `@TestConfiguration` class
 will be used in addition to your application's primary configuration.
 
 NOTE: Spring's test framework will cache application contexts between tests. Therefore, as
