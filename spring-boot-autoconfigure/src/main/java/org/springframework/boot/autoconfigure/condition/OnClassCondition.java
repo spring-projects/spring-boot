@@ -306,7 +306,7 @@ class OnClassCondition extends SpringBootCondition
 					this.autoConfigurationMetadata);
 		}
 
-		private ConditionOutcome[] getOutcomes(final String[] autoConfigurationClasses,
+		private ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 				int start, int end, AutoConfigurationMetadata autoConfigurationMetadata) {
 			ConditionOutcome[] outcomes = new ConditionOutcome[end - start];
 			for (int i = start; i < end; i++) {

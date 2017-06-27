@@ -109,7 +109,7 @@ public final class ConfigurationPropertySources {
 	 * {@link StubPropertySource stub property sources}. Updates to the underlying source
 	 * will be automatically tracked.
 	 * @param sources the Spring property sources to adapt
-	 * @return an {@link Iterable} containing a single newly adapted
+	 * @return an {@link Iterable} containing newly adapted
 	 * {@link SpringConfigurationPropertySource} instances
 	 */
 	public static Iterable<ConfigurationPropertySource> from(
@@ -124,7 +124,7 @@ public final class ConfigurationPropertySources {
 	 * This method will flatten any nested property sources and will filter all
 	 * {@link StubPropertySource stub property sources}.
 	 * @param sources the Spring property sources to adapt
-	 * @return an {@link Iterable} containing a single newly adapted
+	 * @return an {@link Iterable} containing newly adapted
 	 * {@link SpringConfigurationPropertySource} instances
 	 */
 	public static Iterable<ConfigurationPropertySource> from(

@@ -134,7 +134,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			int start = this.root.getNumberOfElements() + 1;
 			int size = name.getNumberOfElements();
 			for (int i = start; i < size; i++) {
-				if (name.IsNumericIndex(i)) {
+				if (name.isNumericIndex(i)) {
 					return name.chop(i);
 				}
 			}
