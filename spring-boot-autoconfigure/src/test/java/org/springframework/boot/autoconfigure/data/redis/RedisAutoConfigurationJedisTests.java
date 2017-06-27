@@ -22,7 +22,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import redis.clients.jedis.Jedis;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -120,23 +119,19 @@ public class RedisAutoConfigurationJedisTests {
 	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		if (isAtLeastOneNodeAvailable(sentinels)) {
-			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
-					+ StringUtils.collectionToCommaDelimitedString(sentinels));
-			assertThat(this.context.getBean(JedisConnectionFactory.class)
-					.isRedisSentinelAware()).isTrue();
-		}
+		load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
+				+ StringUtils.collectionToCommaDelimitedString(sentinels));
+		assertThat(this.context.getBean(JedisConnectionFactory.class)
+				.isRedisSentinelAware()).isTrue();
 	}
 
 	@Test
 	public void testRedisConfigurationWithCluster() throws Exception {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
-		if (isAtLeastOneNodeAvailable(clusterNodes)) {
-			load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-					"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
-			assertThat(this.context.getBean(JedisConnectionFactory.class)
-					.getClusterConnection()).isNotNull();
-		}
+		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
+		assertThat(this.context.getBean(JedisConnectionFactory.class)
+				.getClusterConnection()).isNotNull();
 	}
 
 	private void load(String... environment) {
@@ -152,41 +147,6 @@ public class RedisAutoConfigurationJedisTests {
 		ctx.register(RedisAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
-	}
-
-	private boolean isAtLeastOneNodeAvailable(List<String> nodes) {
-		for (String node : nodes) {
-			if (isAvailable(node)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private boolean isAvailable(String node) {
-		Jedis jedis = null;
-		try {
-			String[] hostAndPort = node.split(":");
-			jedis = new Jedis(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
-			jedis.connect();
-			jedis.ping();
-			return true;
-		}
-		catch (Exception ex) {
-			return false;
-		}
-		finally {
-			if (jedis != null) {
-				try {
-					jedis.disconnect();
-					jedis.close();
-				}
-				catch (Exception ex) {
-					// Continue
-				}
-			}
-		}
 	}
 
 	@Configuration

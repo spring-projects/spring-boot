@@ -18,11 +18,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.api.StatefulRedisConnection;
 import org.junit.After;
 import org.junit.Test;
 
@@ -146,12 +142,10 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		if (isAtLeastOneNodeAvailable(sentinels)) {
-			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
-					+ StringUtils.collectionToCommaDelimitedString(sentinels));
-			assertThat(this.context.getBean(LettuceConnectionFactory.class)
-					.isRedisSentinelAware()).isTrue();
-		}
+		load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
+				+ StringUtils.collectionToCommaDelimitedString(sentinels));
+		assertThat(this.context.getBean(LettuceConnectionFactory.class)
+				.isRedisSentinelAware()).isTrue();
 	}
 
 	@Test
@@ -165,42 +159,6 @@ public class RedisAutoConfigurationTests {
 
 	private DefaultLettucePool getDefaultLettucePool(LettuceConnectionFactory factory) {
 		return (DefaultLettucePool) ReflectionTestUtils.getField(factory, "pool");
-	}
-
-	private boolean isAtLeastOneNodeAvailable(List<String> nodes) {
-		for (String node : nodes) {
-			if (isAvailable(node)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private boolean isAvailable(String node) {
-		RedisClient redisClient = null;
-		try {
-			String[] hostAndPort = node.split(":");
-			redisClient = RedisClient.create(new RedisURI(hostAndPort[0],
-					Integer.valueOf(hostAndPort[1]), 10, TimeUnit.SECONDS));
-			StatefulRedisConnection<String, String> connection = redisClient.connect();
-			connection.sync().ping();
-			connection.close();
-			return true;
-		}
-		catch (Exception ex) {
-			return false;
-		}
-		finally {
-			if (redisClient != null) {
-				try {
-					redisClient.shutdown(0, 0, TimeUnit.SECONDS);
-				}
-				catch (Exception ex) {
-					// Continue
-				}
-			}
-		}
 	}
 
 	private void load(String... environment) {
