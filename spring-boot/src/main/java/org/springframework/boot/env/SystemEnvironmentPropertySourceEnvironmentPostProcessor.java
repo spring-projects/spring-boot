@@ -16,12 +16,11 @@
 
 package org.springframework.boot.env;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.origin.OriginTrackedValue;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -32,7 +31,7 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 /**
  * An {@link EnvironmentPostProcessor} that replaces the systemEnvironment
  * {@link SystemEnvironmentPropertySource} with an
- * {@link OriginTrackedSystemPropertySource} that can track the
+ * {@link OriginAwareSystemEnvironmentPropertySource} that can track the
  * {@link SystemEnvironmentOrigin} for every system environment property.
  *
  * @author Madhura Bhave
@@ -63,17 +62,11 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor
 	@SuppressWarnings("unchecked")
 	private void replacePropertySource(ConfigurableEnvironment environment,
 			String sourceName, PropertySource<?> propertySource) {
-		if (propertySource.getSource() instanceof Map) {
 			Map<String, Object> originalSource = (Map<String, Object>) propertySource
 					.getSource();
-			Map<String, Object> originTrackedSource = new LinkedHashMap<>(originalSource);
-			originTrackedSource.entrySet().forEach(e -> e.setValue(OriginTrackedValue
-					.of(e.getValue(), new SystemEnvironmentOrigin(e.getKey()))));
-			OriginTrackedSystemPropertySource source = new OriginTrackedSystemPropertySource(
-					sourceName, Collections.unmodifiableMap(originTrackedSource));
+			SystemEnvironmentPropertySource source = new OriginAwareSystemEnvironmentPropertySource(sourceName, originalSource);
 			environment.getPropertySources().replace(sourceName, source);
 		}
-	}
 
 	@Override
 	public int getOrder() {
@@ -82,6 +75,26 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor
 
 	public void setOrder(int order) {
 		this.order = order;
+	}
+
+	/**
+	 * {@link SystemEnvironmentPropertySource} that also tracks {@link Origin}.
+	 */
+	protected static class OriginAwareSystemEnvironmentPropertySource extends SystemEnvironmentPropertySource
+			implements OriginLookup<String> {
+
+		OriginAwareSystemEnvironmentPropertySource(String name, Map<String, Object> source) {
+			super(name, source);
+		}
+
+		@Override
+		public Origin getOrigin(String key) {
+			String property = resolvePropertyName(key);
+			if (super.containsProperty(property)) {
+				return new SystemEnvironmentOrigin(property);
+			}
+			return null;
+		}
 	}
 
 }

@@ -5434,7 +5434,7 @@ configuration is usually found.
 
 If you want to customize the primary configuration, you can use a nested
 `@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
-instead of a your application's primary configuration, a nested `@TestConfiguration` class
+instead of your application's primary configuration, a nested `@TestConfiguration` class
 will be used in addition to your application's primary configuration.
 
 NOTE: Spring's test framework will cache application contexts between tests. Therefore, as
@@ -5508,6 +5508,19 @@ or replace a single existing bean definition. The annotation can be used directl
 classes, on fields within your test, or on `@Configuration` classes and fields. When used
 on a field, the instance of the created mock will also be injected. Mock beans are
 automatically reset after each test method.
+
+[NOTE]
+====
+This feature is automatically enabled as long as your test uses one of Spring Boot's
+test annotations (i.e. `@SpringBootTest`). To use this feature with a different
+arrangement, a listener will need to be added explicitly:
+
+[source,java,indent=0]
+----
+	@TestExecutionListeners(MockitoTestExecutionListener.class)
+----
+
+====
 
 Here's a typical example where we replace an existing `RemoteService` bean with a mock
 implementation:

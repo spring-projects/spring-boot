@@ -115,6 +115,26 @@ refreshed using `EnvironmentPostProcessor`. Each implementation should be regist
 	org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
 ----
 
+The implementation can load arbitrary files and add them to the `Environment`. For
+instance, this example loads a YAML configuration file from the classpath:
+
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/EnvironmentPostProcessorExample.java[tag=example]
+----
+
+TIP: The `Environment` will already have been prepared with all the usual property sources
+that Spring Boot loads by default. It is therefore possible to get the location of the
+file from the environment. This example adds the `custom-resource` property source at the
+end of the list so that a key defined in any of the usual other locations takes
+precedence. A custom implementation may obviously defines another order.
+
+NOTE: While using `@PropertySource` on your `@SpringBootApplication` seems convenient and
+easy enough to load a custom resource in the `Environment`, we do not recommend it as
+Spring Boot prepares the `Environment` before the `ApplicationContext` is refreshed. Any
+key defined via `@PropertySource` will be loaded too late to have any effect on
+auto-configuration.
 
 
 [[howto-build-an-application-context-hierarchy]]
