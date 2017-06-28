@@ -47,7 +47,7 @@ public class SessionAutoConfigurationMongoTests
 
 	@Test
 	public void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=mongo")
+		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb")
 				.withConfiguration(AutoConfigurations.of(
 						EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
@@ -73,8 +73,8 @@ public class SessionAutoConfigurationMongoTests
 				.withConfiguration(AutoConfigurations.of(
 						EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=mongo",
-						"spring.session.mongo.collection-name=foo")
+				.withPropertyValues("spring.session.store-type=mongodb",
+						"spring.session.mongodb.collection-name=foo")
 				.run(validateSpringSessionUsesMongo("foo"));
 	}
 

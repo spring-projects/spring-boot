@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.session.mongo")
+@ConfigurationProperties(prefix = "spring.session.mongodb")
 public class MongoSessionProperties {
 
 	/**
