@@ -72,4 +72,10 @@ public interface ConfigurationPropertySource {
 		return new AliasedConfigurationPropertySource(this, aliases);
 	}
 
+	/**
+	 * Return the underlying {@PropertySource}.
+	 * @return the underlying property source.
+	 */
+	Object getUnderlyingSource();
+
 }

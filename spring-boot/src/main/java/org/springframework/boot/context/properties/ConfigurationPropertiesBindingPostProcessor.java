@@ -43,6 +43,7 @@ import org.springframework.boot.context.properties.bind.handler.NoUnboundElement
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -420,7 +421,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
 		if (!annotation.ignoreUnknownFields()) {
-			handler = new NoUnboundElementsBindHandler(handler);
+			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
+			handler = new NoUnboundElementsBindHandler(handler, filter);
 		}
 		if (validator != null) {
 			handler = new ValidationBindHandler(handler, validator);

@@ -76,6 +76,11 @@ public class MockConfigurationPropertySource
 	}
 
 	@Override
+	public Object getUnderlyingSource() {
+		return this.map;
+	}
+
+	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
 		OriginTrackedValue result = this.map.get(name);
@@ -90,6 +95,11 @@ public class MockConfigurationPropertySource
 	}
 
 	private class NonIterable implements ConfigurationPropertySource {
+
+		@Override
+		public Object getUnderlyingSource() {
+			return MockConfigurationPropertySource.this.map;
+		}
 
 		@Override
 		public ConfigurationProperty getConfigurationProperty(

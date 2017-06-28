@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind.handler;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
@@ -42,12 +43,19 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	private final Set<ConfigurationPropertyName> boundNames = new HashSet<>();
 
+	private final Function<ConfigurationPropertySource, Boolean> filter;
+
 	NoUnboundElementsBindHandler() {
-		super();
+		this(BindHandler.DEFAULT, (configurationPropertySource) -> true);
 	}
 
 	public NoUnboundElementsBindHandler(BindHandler parent) {
+		this(parent, (configurationPropertySource) -> true);
+	}
+
+	public NoUnboundElementsBindHandler(BindHandler parent, Function<ConfigurationPropertySource, Boolean> filter) {
 		super(parent);
+		this.filter = filter;
 	}
 
 	@Override
@@ -69,7 +77,7 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 			BindContext context) {
 		Set<ConfigurationProperty> unbound = new TreeSet<>();
 		for (ConfigurationPropertySource source : context.getSources()) {
-			if (source instanceof IterableConfigurationPropertySource) {
+			if (this.filter.apply(source)) {
 				collectUnbound(name, unbound,
 						(IterableConfigurationPropertySource) source);
 			}

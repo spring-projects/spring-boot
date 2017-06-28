@@ -68,6 +68,11 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 		return ConfigurationPropertyState.ABSENT;
 	}
 
+	@Override
+	public Object getUnderlyingSource() {
+		return this.source.getUnderlyingSource();
+	}
+
 	protected ConfigurationPropertySource getSource() {
 		return this.source;
 	}

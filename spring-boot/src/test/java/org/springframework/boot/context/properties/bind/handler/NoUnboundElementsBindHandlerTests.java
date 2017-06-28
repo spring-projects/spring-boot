@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -100,6 +101,20 @@ public class NoUnboundElementsBindHandlerTests {
 		this.binder = new Binder(this.sources);
 		Example bound = this.binder.bind("example", Bindable.of(Example.class),
 				new NoUnboundElementsBindHandler()).get();
+		assertThat(bound.getFoo()).isEqualTo("bar");
+	}
+
+	@Test
+	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundSystemProperties()
+			throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("example.foo", "bar");
+		source.put("example.other", "baz");
+		this.sources.add(source);
+		this.binder = new Binder(this.sources);
+		NoUnboundElementsBindHandler handler = new NoUnboundElementsBindHandler(BindHandler.DEFAULT, (configurationPropertySource -> false));
+		Example bound = this.binder.bind("example", Bindable.of(Example.class),
+				handler).get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
