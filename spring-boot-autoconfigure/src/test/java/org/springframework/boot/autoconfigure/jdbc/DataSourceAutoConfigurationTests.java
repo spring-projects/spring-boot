@@ -44,7 +44,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -96,7 +95,7 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void testBadDriverClass() throws Exception {
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage(contains("org.none.jdbcDriver"));
+		this.thrown.expectMessage("org.none.jdbcDriver");
 		load("spring.datasource.driverClassName:org.none.jdbcDriver");
 	}
 
