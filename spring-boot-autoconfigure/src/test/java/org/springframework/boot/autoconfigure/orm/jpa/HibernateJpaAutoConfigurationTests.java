@@ -16,8 +16,17 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -30,10 +39,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -75,6 +88,17 @@ public class HibernateJpaAutoConfigurationTests
 		// and Hibernate hasn't initialized yet at that point
 		this.thrown.expect(BeanCreationException.class);
 		load("spring.datasource.data:classpath:/city.sql");
+	}
+
+	@Test
+	public void testDataScriptRunsEarly() {
+		load(new Class<?>[] { TestInitializedJpaConfiguration.class }, null,
+				new HideDataScriptClassLoader(),
+				"spring.jpa.show-sql=true",
+				"spring.jpa.hibernate.ddl-auto:create-drop",
+				"spring.datasource.data:classpath:/city.sql");
+		assertThat(this.context.getBean(
+				TestInitializedJpaConfiguration.class).called).isTrue();
 	}
 
 	@Test
@@ -125,6 +149,25 @@ public class HibernateJpaAutoConfigurationTests
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
+	@Configuration
+	@TestAutoConfigurationPackage(City.class)
+	static class TestInitializedJpaConfiguration {
+
+		private boolean called;
+
+		@Autowired
+		public void validateDataSourceIsInitialized(
+				EntityManagerFactory entityManagerFactory) {
+			// Inject the entity manager to validate it is initialized at the injection point
+			EntityManager entityManager = entityManagerFactory.createEntityManager();
+			City city = entityManager.find(City.class, 2000L);
+			assertThat(city).isNotNull();
+			assertThat(city.getName()).isEqualTo("Washington");
+			this.called = true;
+		}
+
+	}
+
 	public static class TestJtaPlatform implements JtaPlatform {
 
 		@Override
@@ -157,6 +200,25 @@ public class HibernateJpaAutoConfigurationTests
 			throw new UnsupportedOperationException();
 		}
 
+	}
+
+	private static class HideDataScriptClassLoader extends URLClassLoader {
+
+		private static final List<String> HIDDEN_RESOURCES =
+				Arrays.asList("schema-all.sql", "schema.sql");
+
+		HideDataScriptClassLoader() {
+			super(new URL[0], HideDataScriptClassLoader.class.getClassLoader());
+		}
+
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			if (HIDDEN_RESOURCES.contains(name)) {
+				return new Vector().elements();
+			}
+			return super.getResources(name);
+		}
 	}
 
 }

@@ -201,7 +201,15 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	protected void load(Class<?>[] configs, Class<?>[] autoConfigs, String... environment) {
+		load(configs, autoConfigs, null, environment);
+	}
+
+	protected void load(Class<?>[] configs, Class<?>[] autoConfigs,
+			ClassLoader classLoader, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		if (classLoader != null) {
+			ctx.setClassLoader(classLoader);
+		}
 		TestPropertyValues.of(environment)
 				.and("spring.datasource.generate-unique-name", "true")
 				.applyTo(ctx);

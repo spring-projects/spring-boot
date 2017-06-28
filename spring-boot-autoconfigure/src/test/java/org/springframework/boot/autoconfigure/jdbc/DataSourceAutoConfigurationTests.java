@@ -35,12 +35,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -200,6 +202,14 @@ public class DataSourceAutoConfigurationTests {
 		assertThat(dataSource).isInstanceOf(BasicDataSource.class);
 	}
 
+	@Test
+	public void testDataSourceIsInitializedEarly() {
+		load(TestInitializedDataSourceConfiguration.class,
+				"spring.datasource.initialize=true");
+		assertThat(this.context.getBean(
+				TestInitializedDataSourceConfiguration.class).called).isTrue();
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T extends DataSource> T autoConfigureDataSource(Class<T> expectedType,
 			final String... hiddenPackages) {
@@ -247,6 +257,22 @@ public class DataSourceAutoConfigurationTests {
 			this.pool.setUrl("jdbc:hsqldb:target/overridedb");
 			this.pool.setUsername("sa");
 			return this.pool;
+		}
+
+	}
+
+	@Configuration
+	static class TestInitializedDataSourceConfiguration {
+
+		private boolean called;
+
+		@Autowired
+		public void validateDataSourceIsInitialized(DataSource dataSource) {
+			// Inject the datasource to validate it is initialized at the injection point
+			JdbcTemplate template = new JdbcTemplate(dataSource);
+			assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
+					.isEqualTo(1);
+			this.called = true;
 		}
 
 	}
