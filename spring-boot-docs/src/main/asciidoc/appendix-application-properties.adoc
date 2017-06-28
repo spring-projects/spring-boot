@@ -427,8 +427,8 @@ content into your application; rather pick only the properties that you need.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
 
-	# SPRING SESSION MONGO ({sc-spring-boot-autoconfigure}/session/MonogoSessionProperties.{sc-ext}[MongoSessionProperties])
-	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
+	# SPRING SESSION MONGODB ({sc-spring-boot-autoconfigure}/session/MongoSessionProperties.{sc-ext}[MongoSessionProperties])
+	spring.session.mongodb.collection-name=sessions # Collection name used to store sessions.
 
 	# SPRING SESSION REDIS ({sc-spring-boot-autoconfigure}/session/RedisSessionProperties.{sc-ext}[RedisSessionProperties])
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.

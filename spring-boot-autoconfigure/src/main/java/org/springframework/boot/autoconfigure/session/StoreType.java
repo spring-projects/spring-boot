@@ -32,9 +32,9 @@ public enum StoreType {
 	REDIS,
 
 	/**
-	 * Mongo backed sessions.
+	 * MongoDB backed sessions.
 	 */
-	MONGO,
+	MONGODB,
 
 	/**
 	 * JDBC backed sessions.
