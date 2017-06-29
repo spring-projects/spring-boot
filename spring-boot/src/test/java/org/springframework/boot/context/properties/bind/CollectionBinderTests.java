@@ -305,4 +305,30 @@ public class CollectionBinderTests {
 		assertThat(result).hasSize(3);
 	}
 
+	@Test
+	public void bindToCollectionShouldAlsoCallSetterIfPresent() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items", "a,b,c");
+		this.sources.add(source);
+		ExampleCollectionBean result = this.binder
+				.bind("foo", ExampleCollectionBean.class)
+				.get();
+		assertThat(result.getItems()).hasSize(4);
+		assertThat(result.getItems()).containsExactly("a", "b", "c", "d");
+	}
+
+	public static class ExampleCollectionBean {
+
+		private List<String> items = new ArrayList<>();
+
+		public List<String> getItems() {
+			return this.items;
+		}
+
+		public void setItems(List<String> items) {
+			this.items.add("d");
+		}
+
+	}
+
 }
