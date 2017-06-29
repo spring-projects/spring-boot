@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *     &#064;Test
  *     public someTest() {
  *         this.contextLoader.config(UserConfig.class).env("spring.foo=biz")
- *                 .load(context -> {
+ *                 .load(context -&gt; {
  *            			// assertions using the context
  *         });
  *     }
