@@ -472,6 +472,7 @@ content into your application; rather pick only the properties that you need.
 	spring.webservices.path=/services # Path that serves as the base URI for the services.
 	spring.webservices.servlet.init= # Servlet init parameters to pass to Spring Web Services.
 	spring.webservices.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
+	spring.webservices.wsdl-locations= # Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans.
 
 
 	[[common-application-properties-security]]
