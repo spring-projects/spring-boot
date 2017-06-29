@@ -234,9 +234,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	}
 
 	@Override
-	public boolean supportsEventType(Class<? extends ApplicationEvent> aClass) {
-		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(aClass) ||
-				ApplicationPreparedEvent.class.isAssignableFrom(aClass);
+	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType) ||
+				ApplicationPreparedEvent.class.isAssignableFrom(eventType);
 	}
 
 	@Override
