@@ -62,7 +62,6 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -151,6 +150,17 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	private int order = DEFAULT_ORDER;
 
 	private final ConversionService conversionService = new DefaultConversionService();
+
+	@Override
+	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType) ||
+				ApplicationPreparedEvent.class.isAssignableFrom(eventType);
+	}
+
+	@Override
+	public boolean supportsSourceType(Class<?> aClass) {
+		return true;
+	}
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -275,17 +285,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	public void setSearchNames(String names) {
 		Assert.hasLength(names, "Names must not be empty");
 		this.names = names;
-	}
-
-	@Override
-	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType) ||
-				ApplicationPreparedEvent.class.isAssignableFrom(eventType);
-	}
-
-	@Override
-	public boolean supportsSourceType(@Nullable Class<?> aClass) {
-		return true;
 	}
 
 	/**
