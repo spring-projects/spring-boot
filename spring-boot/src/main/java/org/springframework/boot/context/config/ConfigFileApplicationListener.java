@@ -46,9 +46,9 @@ import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.convert.ConversionService;
@@ -102,7 +102,7 @@ import org.springframework.validation.BindException;
  * @author Eddú Meléndez
  */
 public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
-		ApplicationListener<ApplicationEvent>, Ordered {
+		SmartApplicationListener, Ordered {
 
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
@@ -150,6 +150,17 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	private int order = DEFAULT_ORDER;
 
 	private final ConversionService conversionService = new DefaultConversionService();
+
+	@Override
+	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType) ||
+				ApplicationPreparedEvent.class.isAssignableFrom(eventType);
+	}
+
+	@Override
+	public boolean supportsSourceType(Class<?> aClass) {
+		return true;
+	}
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
