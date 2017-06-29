@@ -20,10 +20,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -186,6 +188,14 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.execute();
 		assertThat(Files.readAllBytes(this.task.getArchivePath().toPath()))
 				.startsWith(new DefaultLaunchScript(null, null).toByteArray());
+		try {
+			Set<PosixFilePermission> permissions = Files
+					.getPosixFilePermissions(this.task.getArchivePath().toPath());
+			assertThat(permissions).contains(PosixFilePermission.OWNER_EXECUTE);
+		}
+		catch (UnsupportedOperationException ex) {
+			// Windows, presumably. Continue
+		}
 	}
 
 	@Test
