@@ -45,9 +45,9 @@ import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -93,7 +93,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  */
 public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
-		ApplicationListener<ApplicationEvent>, Ordered {
+		SmartApplicationListener, Ordered {
 
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
@@ -139,6 +139,17 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	private String names;
 
 	private int order = DEFAULT_ORDER;
+
+	@Override
+	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType) ||
+				ApplicationPreparedEvent.class.isAssignableFrom(eventType);
+	}
+
+	@Override
+	public boolean supportsSourceType(Class<?> aClass) {
+		return true;
+	}
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
