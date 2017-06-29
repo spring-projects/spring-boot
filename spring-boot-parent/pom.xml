@@ -602,6 +602,7 @@
 						<java.awt.headless>true</java.awt.headless>
 					</systemPropertyVariables>
 					<argLine>-Xmx1024m</argLine>
+					<trimStackTrace>false</trimStackTrace>
 				</configuration>
 			</plugin>
 			<plugin>
