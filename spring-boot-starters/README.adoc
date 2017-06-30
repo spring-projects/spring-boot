@@ -55,6 +55,9 @@ do as they were designed before this was clarified.
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
+| http://graphql.org/[GraphQL] with https://github.com/graphql-java/[GraphQL Java]
+| https://github.com/graphql-java/graphql-spring-boot
+
 | http://graphql.org/[GraphQL]
 | https://github.com/merapar/graphql-spring-boot-starter
 
@@ -117,9 +120,6 @@ do as they were designed before this was clarified.
 
 | http://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
-
-| http://graphql.org/[GraphQL] with https://github.com/graphql-java/[GraphQL Java]
-| https://github.com/graphql-java/graphql-spring-boot
 
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
