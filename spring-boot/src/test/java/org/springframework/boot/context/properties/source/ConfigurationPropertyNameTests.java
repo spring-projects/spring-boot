@@ -51,35 +51,35 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void ofNameShouldNotStartWithNumber() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("1foo");
 	}
 
 	@Test
 	public void ofNameShouldNotStartWithDash() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("-foo");
 	}
 
 	@Test
 	public void ofNameShouldNotStartWithDot() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of(".foo");
 	}
 
 	@Test
 	public void ofNameShouldNotEndWithDot() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("foo.");
 	}
 
 	@Test
 	public void ofNameShouldNotContainUppercase() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("fOo");
 	}
@@ -92,7 +92,7 @@ public class ConfigurationPropertyNameTests {
 				ConfigurationPropertyName.of("foo" + c);
 				fail("Did not throw for invalid char " + c);
 			}
-			catch (IllegalArgumentException ex) {
+			catch (InvalidConfigurationPropertyNameException ex) {
 				assertThat(ex.getMessage()).contains("is not valid");
 			}
 		}
@@ -163,21 +163,21 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void ofNameWhenMissingCloseBracket() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("[bar");
 	}
 
 	@Test
 	public void ofNameWhenMissingOpenBracket() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("bar]");
 	}
 
 	@Test
 	public void ofNameWhenMultipleMismatchedBrackets() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("[a[[[b]ar]");
 	}
@@ -192,7 +192,7 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void ofNameWithWhitespaceInName() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("foo. bar");
 	}
@@ -420,8 +420,8 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void appendWhenElementNameIsNotValidShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Element value '1bar' is not valid");
+		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
+		this.thrown.expectMessage("Configuration property name '1bar' is not valid");
 		ConfigurationPropertyName.of("foo").append("1bar");
 	}
 

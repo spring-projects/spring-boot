@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -174,6 +175,7 @@ public final class ConfigurationPropertyName
 	 * value.
 	 * @param elementValue the single element value to append
 	 * @return a new {@link ConfigurationPropertyName}
+	 * @throws InvalidConfigurationPropertyNameException if elementValue is not valid
 	 */
 	public ConfigurationPropertyName append(String elementValue) {
 		if (elementValue == null) {
@@ -182,9 +184,12 @@ public final class ConfigurationPropertyName
 		process(elementValue, '.', (value, start, end, indexed) -> Assert.isTrue(
 				start == 0,
 				() -> "Element value '" + elementValue + "' must be a single item"));
-		Assert.isTrue(
-				isIndexed(elementValue) || ElementValidator.isValidElement(elementValue),
-				() -> "Element value '" + elementValue + "' is not valid");
+		if (!isIndexed(elementValue)) {
+			List<Character> invalidChars = ElementValidator.getInvalidChars(elementValue);
+			if (!invalidChars.isEmpty()) {
+				throw new InvalidConfigurationPropertyNameException(invalidChars, elementValue);
+			}
+		}
 		int length = this.elements.length;
 		CharSequence[] elements = new CharSequence[length + 1];
 		System.arraycopy(this.elements, 0, elements, 0, length);
@@ -436,14 +441,13 @@ public final class ConfigurationPropertyName
 	 * Return a {@link ConfigurationPropertyName} for the specified string.
 	 * @param name the source name
 	 * @return a {@link ConfigurationPropertyName} instance
-	 * @throws IllegalArgumentException if the name is not valid
+	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
 	 */
 	public static ConfigurationPropertyName of(CharSequence name) {
 		Assert.notNull(name, "Name must not be null");
 		if (name.length() >= 1
 				&& (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
-			throw new IllegalArgumentException(
-					"Configuration property name '" + name + "' is not valid");
+			throw new InvalidConfigurationPropertyNameException(Collections.singletonList('.'), name);
 		}
 		if (name.length() == 0) {
 			return EMPTY;
@@ -451,8 +455,12 @@ public final class ConfigurationPropertyName
 		List<CharSequence> elements = new ArrayList<CharSequence>(10);
 		process(name, '.', (elementValue, start, end, indexed) -> {
 			if (elementValue.length() > 0) {
-				Assert.isTrue(indexed || ElementValidator.isValidElement(elementValue),
-						() -> "Configuration property name '" + name + "' is not valid");
+				if (!indexed) {
+					List<Character> invalidChars = ElementValidator.getInvalidChars(elementValue);
+					if (!invalidChars.isEmpty()) {
+						throw new InvalidConfigurationPropertyNameException(invalidChars, name);
+					}
+				}
 				elements.add(elementValue);
 			}
 		});
@@ -651,12 +659,7 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidElement(CharSequence elementValue) {
-			for (int i = 0; i < elementValue.length(); i++) {
-				if (!isValidChar(elementValue.charAt(i), i)) {
-					return false;
-				}
-			}
-			return true;
+			return getInvalidChars(elementValue).isEmpty();
 		}
 
 		public static boolean isValidChar(char ch, int index) {
@@ -666,6 +669,17 @@ public final class ConfigurationPropertyName
 				return isAlpha;
 			}
 			return isAlpha || isNumeric || ch == '-';
+		}
+
+		private static List<Character> getInvalidChars(CharSequence elementValue) {
+			List<Character> chars = new ArrayList<>();
+			for (int i = 0; i < elementValue.length(); i++) {
+				char ch = elementValue.charAt(i);
+				if (!isValidChar(ch, i)) {
+					chars.add(ch);
+				}
+			}
+			return chars;
 		}
 
 	}
