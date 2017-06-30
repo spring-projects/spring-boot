@@ -18,12 +18,9 @@ package org.springframework.boot.test.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.ContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,52 +33,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestDatabaseAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class TestDatabaseAutoConfigurationTests {
 
-	private ConfigurableApplicationContext context;
-
-	@After
-	public void closeContext() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ContextLoader contextLoader = new ContextLoader()
+			.autoConfig(TestDatabaseAutoConfiguration.class);
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {
-		load(null);
-		assertThat(this.context.getBeansOfType(DataSource.class)).isEmpty();
+		this.contextLoader.load(context -> {
+			assertThat(context.getBeansOfType(DataSource.class)).isEmpty();
+		});
 	}
 
 	@Test
 	public void replaceWithUniqueDatabase() {
-		load(ExistingDataSourceConfiguration.class);
-		DataSource datasource = this.context.getBean(DataSource.class);
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
-		jdbcTemplate.execute("create table example (id int, name varchar);");
-		try (ConfigurableApplicationContext anotherContext = doLoad(
-				ExistingDataSourceConfiguration.class)) {
-			DataSource anotherDatasource = anotherContext.getBean(DataSource.class);
-			JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(anotherDatasource);
-			anotherJdbcTemplate.execute("create table example (id int, name varchar);");
-		}
-	}
-
-	private void load(Class<?> config, String... environment) {
-		this.context = doLoad(config, environment);
-	}
-
-	private ConfigurableApplicationContext doLoad(Class<?> config,
-			String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		if (config != null) {
-			ctx.register(config);
-		}
-		ctx.register(TestDatabaseAutoConfiguration.class);
-		TestPropertyValues.of(environment).applyTo(ctx);
-		ctx.refresh();
-		return ctx;
+		this.contextLoader.config(ExistingDataSourceConfiguration.class).load(context -> {
+			DataSource datasource = context.getBean(DataSource.class);
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
+			jdbcTemplate.execute("create table example (id int, name varchar);");
+			this.contextLoader.load(anotherContext -> {
+				DataSource anotherDatasource = anotherContext.getBean(DataSource.class);
+				JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(anotherDatasource);
+				anotherJdbcTemplate
+						.execute("create table example (id int, name varchar);");
+			});
+		});
 	}
 
 	@Configuration

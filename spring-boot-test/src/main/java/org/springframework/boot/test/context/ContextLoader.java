@@ -26,13 +26,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -95,6 +101,8 @@ public class ContextLoader {
 	private final Set<Class<?>> userConfigurations = new LinkedHashSet<>();
 
 	private final LinkedList<Class<?>> autoConfigurations = new LinkedList<>();
+
+	private Supplier<ConfigurableApplicationContext> contextSupplier = () -> new AnnotationConfigApplicationContext();
 
 	private ClassLoader classLoader;
 
@@ -183,6 +191,32 @@ public class ContextLoader {
 	}
 
 	/**
+	 * Configures the loader to create an {@link ApplicationContext} suitable for use in a
+	 * reactive web application.
+	 * @return this instance
+	 */
+	public ContextLoader webReactive() {
+		this.contextSupplier = () -> {
+			return new GenericReactiveWebApplicationContext();
+		};
+		return this;
+	}
+
+	/**
+	 * Configures the loader to create an {@link ApplicationContext} suitable for use in a
+	 * servlet web application.
+	 * @return this instance
+	 */
+	public ContextLoader webServlet() {
+		this.contextSupplier = () -> {
+			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+			context.setServletContext(new MockServletContext());
+			return context;
+		};
+		return this;
+	}
+
+	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
 	 * this loader. The context is consumed by the specified {@link ContextConsumer} and
 	 * closed upon completion.
@@ -239,25 +273,26 @@ public class ContextLoader {
 	}
 
 	private ConfigurableApplicationContext createApplicationContext() {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ConfigurableApplicationContext context = ContextLoader.this.contextSupplier.get();
 		if (this.classLoader != null) {
-			ctx.setClassLoader(this.classLoader);
+			((DefaultResourceLoader) context).setClassLoader(this.classLoader);
 		}
 		if (!ObjectUtils.isEmpty(this.env)) {
 			TestPropertyValues.of(this.env.toArray(new String[this.env.size()]))
-					.applyTo(ctx);
+					.applyTo(context);
 		}
+		AnnotationConfigRegistry registry = ((AnnotationConfigRegistry) context);
 		if (!ObjectUtils.isEmpty(this.userConfigurations)) {
-			ctx.register(this.userConfigurations
+			registry.register(this.userConfigurations
 					.toArray(new Class<?>[this.userConfigurations.size()]));
 		}
 		if (!ObjectUtils.isEmpty(this.autoConfigurations)) {
 			LinkedHashSet<Class<?>> linkedHashSet = new LinkedHashSet<>(
 					this.autoConfigurations);
-			ctx.register(
+			registry.register(
 					linkedHashSet.toArray(new Class<?>[this.autoConfigurations.size()]));
 		}
-		return ctx;
+		return context;
 	}
 
 	/**
