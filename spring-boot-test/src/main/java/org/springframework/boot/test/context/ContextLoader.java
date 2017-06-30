@@ -37,8 +37,8 @@ import org.springframework.util.ObjectUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Manage the lifecycle of an {@link ApplicationContext}. Such helper is best used as
- * a field of a test class, describing the shared configuration required for the test:
+ * Manage the lifecycle of an {@link ApplicationContext}. Such helper is best used as a
+ * field of a test class, describing the shared configuration required for the test:
  *
  * <pre class="code">
  * public class FooAutoConfigurationTests {
@@ -48,12 +48,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * }</pre>
  *
- * <p>The initialization above makes sure to register {@code FooAutoConfiguration} for all
+ * <p>
+ * The initialization above makes sure to register {@code FooAutoConfiguration} for all
  * tests and set the {@code spring.foo} property to {@code bar} unless specified
  * otherwise.
  *
- * <p>Based on the configuration above, a specific test can simulate what would happen
- * if the user customizes a property and/or provides its own configuration:
+ * <p>
+ * Based on the configuration above, a specific test can simulate what would happen if the
+ * user customizes a property and/or provides its own configuration:
  *
  * <pre class="code">
  * public class FooAutoConfigurationTests {
@@ -68,13 +70,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * }</pre>
  *
- * <p>The test above includes an extra {@code UserConfig} class that is guaranteed to
- * be processed <strong>before</strong> any auto-configuration. Also, {@code spring.foo}
- * has been overwritten to {@code biz}. The {@link #load(ContextConsumer) load} method
- * takes a consumer that can use the context to assert its state. Upon completion, the
- * context is automatically closed.
+ * <p>
+ * The test above includes an extra {@code UserConfig} class that is guaranteed to be
+ * processed <strong>before</strong> any auto-configuration. Also, {@code spring.foo} has
+ * been overwritten to {@code biz}. The {@link #load(ContextConsumer) load} method takes a
+ * consumer that can use the context to assert its state. Upon completion, the context is
+ * automatically closed.
  *
- * <p>If a failure scenario has to be tested, {@link #loadAndFail(Consumer)} can be used
+ * <p>
+ * If a failure scenario has to be tested, {@link #loadAndFail(Consumer)} can be used
  * instead: it expects the startup of the context to fail and call the {@link Consumer}
  * with the exception for further assertions.
  *
@@ -95,10 +99,9 @@ public class ContextLoader {
 	private ClassLoader classLoader;
 
 	/**
-	 * Set the specified system property prior to loading the context and restore
-	 * its previous value once the consumer has been invoked and the context closed. If
-	 * the {@code value} is {@code null} this removes any prior customization for that
-	 * key.
+	 * Set the specified system property prior to loading the context and restore its
+	 * previous value once the consumer has been invoked and the context closed. If the
+	 * {@code value} is {@code null} this removes any prior customization for that key.
 	 * @param key the system property
 	 * @param value the value (can be null to remove any existing customization)
 	 * @return this instance
@@ -115,10 +118,10 @@ public class ContextLoader {
 	}
 
 	/**
-	 * Add the specified property pairs. Name-value pairs can be specified with
-	 * colon (":") or equals ("=") separators. Override matching keys that might
-	 * have been specified previously.
-	 * @param pairs The key value pairs for properties that need to be added to the
+	 * Add the specified property pairs. Key-value pairs can be specified with colon (":")
+	 * or equals ("=") separators. Override matching keys that might have been specified
+	 * previously.
+	 * @param pairs the key-value pairs for properties that need to be added to the
 	 * environment
 	 * @return this instance
 	 */
@@ -155,10 +158,9 @@ public class ContextLoader {
 
 	/**
 	 * Add the specified auto-configurations at the beginning (in that order) so that it
-	 * is applied before any other existing auto-configurations, but after any
-	 * user configuration. If {@code A} and {@code B} are specified, {@code A} will
-	 * be processed, then {@code B} and finally the rest of the existing
-	 * auto-configuration.
+	 * is applied before any other existing auto-configurations, but after any user
+	 * configuration. If {@code A} and {@code B} are specified, {@code A} will be
+	 * processed, then {@code B} and finally the rest of the existing auto-configuration.
 	 * @param autoConfigurations the auto-configuration to add
 	 * @return this instance
 	 */
@@ -168,9 +170,9 @@ public class ContextLoader {
 	}
 
 	/**
-	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should
-	 * use. Customizing the {@link ClassLoader} is an effective manner to hide resources
-	 * from the classpath.
+	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use.
+	 * Customizing the {@link ClassLoader} is an effective manner to hide resources from
+	 * the classpath.
 	 * @param classLoader the classloader to use (can be null to use the default)
 	 * @return this instance
 	 * @see HidePackagesClassLoader
@@ -181,9 +183,9 @@ public class ContextLoader {
 	}
 
 	/**
-	 * Create and refresh a new {@link ApplicationContext} based on the current state
-	 * of this loader. The context is consumed by the specified {@link ContextConsumer}
-	 * and closed upon completion.
+	 * Create and refresh a new {@link ApplicationContext} based on the current state of
+	 * this loader. The context is consumed by the specified {@link ContextConsumer} and
+	 * closed upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
 	public void load(ContextConsumer consumer) {
@@ -196,15 +198,15 @@ public class ContextLoader {
 				throw ex;
 			}
 			catch (Throwable ex) {
-				throw new IllegalStateException("An unexpected error occurred: "
-						+ ex.getMessage(), ex);
+				throw new IllegalStateException(
+						"An unexpected error occurred: " + ex.getMessage(), ex);
 			}
 		}
 	}
 
 	/**
-	 * Create and refresh a new {@link ApplicationContext} based on the current state
-	 * of this loader that this expected to fail. If the context does not fail, an
+	 * Create and refresh a new {@link ApplicationContext} based on the current state of
+	 * this loader that this expected to fail. If the context does not fail, an
 	 * {@link AssertionError} is thrown. Otherwise the exception is consumed by the
 	 * specified {@link Consumer} with no expectation on the type of the exception.
 	 * @param consumer the consumer of the failure
@@ -214,8 +216,8 @@ public class ContextLoader {
 	}
 
 	/**
-	 * Create and refresh a new {@link ApplicationContext} based on the current state
-	 * of this loader that this expected to fail. If the context does not fail, an
+	 * Create and refresh a new {@link ApplicationContext} based on the current state of
+	 * this loader that this expected to fail. If the context does not fail, an
 	 * {@link AssertionError} is thrown. If the exception does not match the specified
 	 * {@code exceptionType}, an {@link AssertionError} is thrown as well. If the
 	 * exception type matches, it is consumed by the specified {@link Consumer}.
@@ -246,14 +248,14 @@ public class ContextLoader {
 					.applyTo(ctx);
 		}
 		if (!ObjectUtils.isEmpty(this.userConfigurations)) {
-			ctx.register(this.userConfigurations.toArray(
-					new Class<?>[this.userConfigurations.size()]));
+			ctx.register(this.userConfigurations
+					.toArray(new Class<?>[this.userConfigurations.size()]));
 		}
 		if (!ObjectUtils.isEmpty(this.autoConfigurations)) {
-			LinkedHashSet<Class<?>> linkedHashSet =
-					new LinkedHashSet(this.autoConfigurations);
-			ctx.register(linkedHashSet.toArray(
-					new Class<?>[this.autoConfigurations.size()]));
+			LinkedHashSet<Class<?>> linkedHashSet = new LinkedHashSet<>(
+					this.autoConfigurations);
+			ctx.register(
+					linkedHashSet.toArray(new Class<?>[this.autoConfigurations.size()]));
 		}
 		return ctx;
 	}
