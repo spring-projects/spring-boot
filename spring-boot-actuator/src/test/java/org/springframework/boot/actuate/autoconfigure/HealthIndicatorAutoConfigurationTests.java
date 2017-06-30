@@ -248,7 +248,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		HealthIndicator bean = beans.values().iterator().next();
 		assertThat(bean).isExactlyInstanceOf(CompositeHealthIndicator.class);
 		assertThat(bean.health().getDetails()).containsOnlyKeys("dataSource",
-				"testDataSource");
+				"testDataSource", "responseTimeMs");
 	}
 
 	@Test

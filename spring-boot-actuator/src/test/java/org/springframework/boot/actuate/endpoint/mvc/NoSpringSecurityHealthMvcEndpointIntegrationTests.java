@@ -89,7 +89,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		mockMvc.perform(get("/application/health")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(
-						"\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\"}")));
+						"\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\",\"responseTimeMs\":1},\"responseTimeMs\":")));
 	}
 
 	private RequestPostProcessor getRequestPostProcessor() {
@@ -119,7 +119,9 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 
 				@Override
 				public Health health() {
-					return Health.up().withDetail("hello", "world").build();
+					return Health.up()
+							.withDetail("hello", "world")
+							.withDetail("responseTimeMs", 1).build();
 				}
 
 			};
