@@ -146,6 +146,16 @@ public class ContextLoaderTests {
 	}
 
 	@Test
+	public void autoConfigureFirstWithSeveralConfigsIsAppliedProperly() {
+		this.contextLoader.autoConfig(ConfigA.class, ConfigB.class)
+				.autoConfigFirst(AutoConfigA.class, AutoConfigB.class)
+				.load(context -> {
+					assertThat(context.getBean("a")).isEqualTo("a");
+					assertThat(context.getBean("b")).isEqualTo(1);
+				});
+	}
+
+	@Test
 	public void autoConfigurationIsAdditive() {
 		this.contextLoader.autoConfig(AutoConfigA.class)
 				.autoConfig(AutoConfigB.class).load(context -> {

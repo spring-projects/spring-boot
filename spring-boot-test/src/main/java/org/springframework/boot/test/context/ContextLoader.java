@@ -154,14 +154,16 @@ public class ContextLoader {
 	}
 
 	/**
-	 * Add the specified auto-configuration at the beginning so that it is
-	 * applied before any other existing auto-configurations, but after any
-	 * user configuration.
-	 * @param autoConfiguration the auto-configuration to add
+	 * Add the specified auto-configurations at the beginning (in that order) so that it
+	 * is applied before any other existing auto-configurations, but after any
+	 * user configuration. If {@code A} and {@code B} are specified, {@code A} will
+	 * be processed, then {@code B} and finally the rest of the existing
+	 * auto-configuration.
+	 * @param autoConfigurations the auto-configuration to add
 	 * @return this instance
 	 */
-	public ContextLoader autoConfigFirst(Class<?> autoConfiguration) {
-		this.autoConfigurations.addFirst(autoConfiguration);
+	public ContextLoader autoConfigFirst(Class<?>... autoConfigurations) {
+		this.autoConfigurations.addAll(0, Arrays.asList(autoConfigurations));
 		return this;
 	}
 
