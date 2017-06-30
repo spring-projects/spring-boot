@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import io.searchbox.client.JestClient;
-import org.junit.After;
 import org.junit.Test;
 import org.neo4j.ogm.session.SessionFactory;
 
@@ -44,13 +43,11 @@ import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
@@ -59,8 +56,8 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.ContextConsumer;
+import org.springframework.boot.test.context.ContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -82,531 +79,303 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthIndicatorAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	public final ContextLoader contextLoader = new ContextLoader()
+			.autoConfig(HealthIndicatorAutoConfiguration.class,
+					ManagementServerProperties.class);
 
 	@Test
 	public void defaultHealthIndicator() {
-		this.context.register(HealthIndicatorAutoConfiguration.class,
-				ManagementServerProperties.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+		this.contextLoader.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void defaultHealthIndicatorsDisabled() {
-		this.context.register(HealthIndicatorAutoConfiguration.class,
-				ManagementServerProperties.class);
-		TestPropertyValues.of("management.health.defaults.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+		this.contextLoader.env("management.health.defaults.enabled:false")
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void defaultHealthIndicatorsDisabledWithCustomOne() {
-		this.context.register(CustomHealthIndicator.class,
-				HealthIndicatorAutoConfiguration.class, ManagementServerProperties.class);
-		TestPropertyValues.of("management.health.defaults.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(this.context.getBean("customHealthIndicator"))
-				.isSameAs(beans.values().iterator().next());
+		this.contextLoader.config(CustomHealthIndicator.class)
+				.env("management.health.defaults.enabled:false").load(context -> {
+			Map<String, HealthIndicator> beans = context
+					.getBeansOfType(HealthIndicator.class);
+			assertThat(beans).hasSize(1);
+			assertThat(context.getBean("customHealthIndicator"))
+					.isSameAs(beans.values().iterator().next());
+		});
 	}
 
 	@Test
 	public void defaultHealthIndicatorsDisabledButOne() {
-		this.context.register(HealthIndicatorAutoConfiguration.class,
-				ManagementServerProperties.class);
-		TestPropertyValues.of("management.health.defaults.enabled:false",
-				"management.health.diskspace.enabled:true").applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(DiskSpaceHealthIndicator.class);
+		this.contextLoader
+				.env("management.health.defaults.enabled:false",
+						"management.health.diskspace.enabled:true")
+				.load(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
 	}
 
 	@Test
 	public void redisHealthIndicator() {
-		this.context.register(RedisAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(RedisHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(RedisAutoConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(RedisHealthIndicator.class));
 	}
 
 	@Test
 	public void notRedisHealthIndicator() {
-		this.context.register(RedisAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues
-				.of("management.health.redis.enabled:false",
+		this.contextLoader.autoConfigFirst(RedisAutoConfiguration.class)
+				.env("management.health.redis.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void mongoHealthIndicator() {
-		this.context.register(MongoAutoConfiguration.class,
-				ManagementServerProperties.class, MongoDataAutoConfiguration.class,
-				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(MongoHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(MongoHealthIndicator.class));
 	}
 
 	@Test
 	public void notMongoHealthIndicator() {
-		this.context.register(MongoAutoConfiguration.class,
-				ManagementServerProperties.class, MongoDataAutoConfiguration.class,
-				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues
-				.of("management.health.mongo.enabled:false",
+		this.contextLoader.autoConfigFirst(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class)
+				.env("management.health.mongo.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void combinedHealthIndicator() {
-		this.context.register(MongoAutoConfiguration.class, RedisAutoConfiguration.class,
-				MongoDataAutoConfiguration.class, SolrAutoConfiguration.class,
-				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(4);
+		this.contextLoader.autoConfigFirst(MongoAutoConfiguration.class,
+				RedisAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				SolrAutoConfiguration.class).load(context -> {
+			Map<String, HealthIndicator> beans = context
+					.getBeansOfType(HealthIndicator.class);
+			assertThat(beans).hasSize(4);
+		});
 	}
 
 	@Test
 	public void dataSourceHealthIndicator() {
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(DataSourceHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(EmbeddedDataSourceConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(DataSourceHealthIndicator.class));
 	}
 
 	@Test
 	public void dataSourceHealthIndicatorWithSeveralDataSources() {
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				DataSourceConfig.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		HealthIndicator bean = beans.values().iterator().next();
-		assertThat(bean).isExactlyInstanceOf(CompositeHealthIndicator.class);
-		assertThat(bean.health().getDetails()).containsOnlyKeys("dataSource",
-				"testDataSource");
+		this.contextLoader.config(EmbeddedDataSourceConfiguration.class,
+				DataSourceConfig.class).env("management.health.diskspace.enabled:false")
+				.load(context -> {
+					Map<String, HealthIndicator> beans = context
+							.getBeansOfType(HealthIndicator.class);
+					assertThat(beans).hasSize(1);
+					HealthIndicator bean = beans.values().iterator().next();
+					assertThat(bean).isExactlyInstanceOf(CompositeHealthIndicator.class);
+					assertThat(bean.health().getDetails()).containsOnlyKeys("dataSource",
+							"testDataSource");
+				});
 	}
 
 	@Test
 	public void dataSourceHealthIndicatorWithAbstractRoutingDataSource() {
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				RoutingDatasourceConfig.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next())
-				.isExactlyInstanceOf(DataSourceHealthIndicator.class);
+		this.contextLoader.config(EmbeddedDataSourceConfiguration.class,
+				RoutingDatasourceConfig.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(DataSourceHealthIndicator.class));
 	}
 
 	@Test
 	public void dataSourceHealthIndicatorWithCustomValidationQuery() {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerProperties.class, DataSourceProperties.class,
-				DataSourceConfig.class,
+		this.contextLoader.config(DataSourceConfig.class,
 				DataSourcePoolMetadataProvidersConfiguration.class,
-				HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues
-				.of("spring.datasource.test.validation-query:SELECT from FOOBAR",
-						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		HealthIndicator healthIndicator = beans.values().iterator().next();
-		assertThat(healthIndicator.getClass()).isEqualTo(DataSourceHealthIndicator.class);
-		DataSourceHealthIndicator dataSourceHealthIndicator = (DataSourceHealthIndicator) healthIndicator;
-		assertThat(dataSourceHealthIndicator.getQuery()).isEqualTo("SELECT from FOOBAR");
+				HealthIndicatorAutoConfiguration.class).env(
+				"spring.datasource.test.validation-query:SELECT from FOOBAR",
+				"management.health.diskspace.enabled:false").load(context -> {
+			Map<String, HealthIndicator> beans = context
+					.getBeansOfType(HealthIndicator.class);
+			assertThat(beans).hasSize(1);
+			HealthIndicator healthIndicator = beans.values().iterator().next();
+			assertThat(healthIndicator.getClass()).isEqualTo(DataSourceHealthIndicator.class);
+			DataSourceHealthIndicator dataSourceHealthIndicator = (DataSourceHealthIndicator) healthIndicator;
+			assertThat(dataSourceHealthIndicator.getQuery()).isEqualTo("SELECT from FOOBAR");
+		});
 	}
 
 	@Test
 	public void notDataSourceHealthIndicator() {
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues
-				.of("management.health.db.enabled:false",
+		this.contextLoader.config(EmbeddedDataSourceConfiguration.class)
+				.env(
+						"management.health.db.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void rabbitHealthIndicator() {
-		this.context.register(RabbitAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(RabbitHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(RabbitAutoConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(RabbitHealthIndicator.class));
 	}
 
 	@Test
 	public void notRabbitHealthIndicator() {
-		this.context.register(RabbitAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues
-				.of("management.health.rabbit.enabled:false",
+		this.contextLoader.autoConfigFirst(RabbitAutoConfiguration.class)
+				.env("management.health.rabbit.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void solrHealthIndicator() {
-		this.context.register(SolrAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(SolrHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(SolrAutoConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(SolrHealthIndicator.class));
 	}
 
 	@Test
 	public void notSolrHealthIndicator() {
-		this.context.register(SolrAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		TestPropertyValues
-				.of("management.health.solr.enabled:false",
+		this.contextLoader.autoConfigFirst(SolrAutoConfiguration.class)
+				.env("management.health.solr.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void diskSpaceHealthIndicator() {
-		this.context.register(HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(DiskSpaceHealthIndicator.class);
+		this.contextLoader.load(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
 	}
 
 	@Test
 	public void mailHealthIndicator() {
-		TestPropertyValues
-				.of("spring.mail.host:smtp.acme.org",
+		this.contextLoader.autoConfigFirst(MailSenderAutoConfiguration.class)
+				.env("spring.mail.host:smtp.acme.org",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(MailSenderAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(MailHealthIndicator.class);
+				.load(hasSingleHealthIndicator(MailHealthIndicator.class));
 	}
 
 	@Test
 	public void notMailHealthIndicator() {
-		TestPropertyValues
-				.of("spring.mail.host:smtp.acme.org",
+		this.contextLoader.autoConfigFirst(MailSenderAutoConfiguration.class)
+				.env("spring.mail.host:smtp.acme.org",
 						"management.health.mail.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(MailSenderAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void jmsHealthIndicator() {
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(ActiveMQAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(JmsHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(ActiveMQAutoConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(JmsHealthIndicator.class));
 	}
 
 	@Test
 	public void notJmsHealthIndicator() {
-		TestPropertyValues
-				.of("management.health.jms.enabled:false",
+		this.contextLoader.autoConfigFirst(ActiveMQAutoConfiguration.class)
+				.env("management.health.jms.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(ActiveMQAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void elasticsearchHealthIndicator() {
-		TestPropertyValues
-				.of("spring.data.elasticsearch.cluster-nodes:localhost:0",
+		this.contextLoader.autoConfigFirst(JestClientConfiguration.class,
+				JestAutoConfiguration.class, ElasticsearchAutoConfiguration.class)
+				.env("spring.data.elasticsearch.cluster-nodes:localhost:0",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ElasticsearchHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ElasticsearchHealthIndicator.class));
 	}
 
 	@Test
 	public void elasticsearchJestHealthIndicator() {
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ElasticsearchJestHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(JestClientConfiguration.class,
+				JestAutoConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(ElasticsearchJestHealthIndicator.class));
 	}
 
 	@Test
 	public void notElasticsearchHealthIndicator() {
-		TestPropertyValues
-				.of("management.health.elasticsearch.enabled:false",
+		this.contextLoader.autoConfigFirst(JestClientConfiguration.class,
+				JestAutoConfiguration.class, ElasticsearchAutoConfiguration.class)
+				.env("management.health.elasticsearch.enabled:false",
 						"spring.data.elasticsearch.properties.path.home:target",
 						"management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void cassandraHealthIndicator() throws Exception {
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(CassandraConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(CassandraHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(CassandraConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(CassandraHealthIndicator.class));
 	}
 
 	@Test
 	public void notCassandraHealthIndicator() throws Exception {
-		TestPropertyValues
-				.of("management.health.diskspace.enabled:false",
+		this.contextLoader.autoConfigFirst(CassandraConfiguration.class)
+				.env("management.health.diskspace.enabled:false",
 						"management.health.cassandra.enabled:false")
-				.applyTo(this.context);
-		this.context.register(CassandraConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void couchbaseHealthIndicator() throws Exception {
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(CouchbaseConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans.size()).isEqualTo(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(CouchbaseHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(CouchbaseConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(CouchbaseHealthIndicator.class));
 	}
 
 	@Test
 	public void notCouchbaseHealthIndicator() throws Exception {
-		TestPropertyValues
-				.of("management.health.diskspace.enabled:false",
+		this.contextLoader.autoConfigFirst(CouchbaseConfiguration.class)
+				.env("management.health.diskspace.enabled:false",
 						"management.health.couchbase.enabled:false")
-				.applyTo(this.context);
-		this.context.register(CouchbaseConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans.size()).isEqualTo(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void ldapHealthIndicator() throws Exception {
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(LdapConfiguration.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans.size()).isEqualTo(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(LdapHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(LdapConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(LdapHealthIndicator.class));
 	}
 
 	@Test
 	public void notLdapHealthIndicator() throws Exception {
-		TestPropertyValues.of("management.health.diskspace.enabled:false",
-				"management.health.ldap.enabled:false").applyTo(this.context);
-		this.context.register(LdapConfiguration.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans.size()).isEqualTo(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(LdapConfiguration.class)
+				.env("management.health.diskspace.enabled:false",
+						"management.health.ldap.enabled:false")
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void neo4jHealthIndicator() throws Exception {
-		TestPropertyValues.of("management.health.diskspace.enabled:false")
-				.applyTo(this.context);
-		this.context.register(Neo4jConfiguration.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans.size()).isEqualTo(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(Neo4jHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(Neo4jConfiguration.class)
+				.env("management.health.diskspace.enabled:false")
+				.load(hasSingleHealthIndicator(Neo4jHealthIndicator.class));
 	}
 
 	@Test
 	public void notNeo4jHealthIndicator() throws Exception {
-		TestPropertyValues.of("management.health.diskspace.enabled:false",
-				"management.health.neo4j.enabled:false").applyTo(this.context);
-		this.context.register(Neo4jConfiguration.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
-		Map<String, HealthIndicator> beans = this.context
-				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans.size()).isEqualTo(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(ApplicationHealthIndicator.class);
+		this.contextLoader.autoConfigFirst(Neo4jConfiguration.class)
+				.env("management.health.diskspace.enabled:false",
+						"management.health.neo4j.enabled:false")
+				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+	}
+
+	private ContextConsumer hasSingleHealthIndicator(
+			Class<? extends HealthIndicator> type) {
+		return context -> {
+			Map<String, HealthIndicator> beans = context
+					.getBeansOfType(HealthIndicator.class);
+			assertThat(beans).hasSize(1);
+			assertThat(beans.values().iterator().next().getClass()).isEqualTo(type);
+		};
 	}
 
 	@Configuration
@@ -654,8 +423,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 		@Bean
 		public CassandraOperations cassandraOperations() {
-			CassandraOperations operations = mock(CassandraOperations.class);
-			return operations;
+			return mock(CassandraOperations.class);
 		}
 
 	}
@@ -665,8 +433,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 		@Bean
 		public CouchbaseOperations couchbaseOperations() {
-			CouchbaseOperations operations = mock(CouchbaseOperations.class);
-			return operations;
+			return mock(CouchbaseOperations.class);
 		}
 
 	}
