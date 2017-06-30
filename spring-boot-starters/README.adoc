@@ -55,7 +55,7 @@ do as they were designed before this was clarified.
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
-| http://graphql.org/[GrahQL]
+| http://graphql.org/[GraphQL]
 | https://github.com/merapar/graphql-spring-boot-starter
 
 | http://www.grpc.io/[gRPC]
