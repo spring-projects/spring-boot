@@ -21,8 +21,10 @@ import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -80,6 +82,31 @@ public class ActiveMQAutoConfigurationTests {
 		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis())
 				.isEqualTo(2048);
 		assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
+	}
+
+	@Test
+	public void customActiveMQConnectionFactoryPoolConfigurationFromProperties() {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true",
+				"spring.activemq.pool.configuration.properties:sendTimeout=5000\ncheckForDuplicates=true");
+		PooledConnectionFactory pooledConnectionFactory = this.context
+			.getBean(PooledConnectionFactory.class);
+		ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory)
+				pooledConnectionFactory.getConnectionFactory();
+		assertThat(connectionFactory.getSendTimeout()).isEqualTo(5000);
+		assertThat(connectionFactory.isCheckForDuplicates()).isTrue();
+	}
+
+	@Test
+	public void customActiveMQConnectionFactoryPoolConfigurationFromProperty() {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true",
+				"spring.activemq.pool.configuration.properties.nonBlockingRedelivery:true",
+				"spring.activemq.pool.configuration.properties.producerWindowSize:10");
+		PooledConnectionFactory pooledConnectionFactory = this.context
+				.getBean(PooledConnectionFactory.class);
+		ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory)
+				pooledConnectionFactory.getConnectionFactory();
+		assertThat(connectionFactory.isNonBlockingRedelivery()).isTrue();
+		assertThat(connectionFactory.getProducerWindowSize()).isEqualTo(10);
 	}
 
 	@Test

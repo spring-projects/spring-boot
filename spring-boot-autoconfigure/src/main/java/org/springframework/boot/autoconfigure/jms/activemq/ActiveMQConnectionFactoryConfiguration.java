@@ -27,6 +27,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
+import java.util.Properties;
 
 /**
  * Configuration for ActiveMQ {@link ConnectionFactory}.
@@ -50,13 +53,18 @@ class ActiveMQConnectionFactoryConfiguration {
 	}
 
 	@ConditionalOnClass(PooledConnectionFactory.class)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true", matchIfMissing = false)
 	static class PooledConnectionFactoryConfiguration {
 
+		@Component
+		@ConfigurationProperties(prefix = "spring.activemq.pool.configuration.properties")
+		static class PoolProperties extends Properties {}
+
 		@Bean(destroyMethod = "stop")
-		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true", matchIfMissing = false)
 		@ConfigurationProperties(prefix = "spring.activemq.pool.configuration")
 		public PooledConnectionFactory pooledJmsConnectionFactory(
-				ActiveMQProperties properties) {
+				ActiveMQProperties properties,
+				PoolProperties poolProperties) {
 			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(
 					new ActiveMQConnectionFactoryFactory(properties)
 							.createConnectionFactory(ActiveMQConnectionFactory.class));
@@ -65,6 +73,7 @@ class ActiveMQConnectionFactoryConfiguration {
 			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
 			pooledConnectionFactory.setIdleTimeout(pool.getIdleTimeout());
 			pooledConnectionFactory.setExpiryTimeout(pool.getExpiryTimeout());
+			pooledConnectionFactory.setProperties(poolProperties);
 			return pooledConnectionFactory;
 		}
 
