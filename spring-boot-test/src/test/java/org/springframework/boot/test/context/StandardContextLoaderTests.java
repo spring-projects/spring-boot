@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.rule;
+package org.springframework.boot.test.context;
 
 import java.util.UUID;
 
@@ -24,27 +24,28 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link ContextLoader}.
+ * Tests for {@link AbstractContextLoader}.
  *
  * @author Stephane Nicoll
  */
-public class ContextLoaderTests {
+public class StandardContextLoaderTests {
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final ContextLoader contextLoader = new ContextLoader();
+	private final StandardContextLoader<AnnotationConfigApplicationContext> contextLoader = new StandardContextLoader<>(
+			() -> new AnnotationConfigApplicationContext());
 
 	@Test
 	public void systemPropertyIsSetAndRemoved() {
@@ -61,9 +62,9 @@ public class ContextLoaderTests {
 	public void systemPropertyIsRemovedIfContextFailed() {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
-		this.contextLoader.systemProperty(key, "value")
-				.config(ConfigC.class).loadAndFail(e -> {
-		});
+		this.contextLoader.systemProperty(key, "value").config(ConfigC.class)
+				.loadAndFail(e -> {
+				});
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 	}
 
@@ -87,10 +88,10 @@ public class ContextLoaderTests {
 	public void systemPropertyCanBeSetToNullValue() {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
-		this.contextLoader.systemProperty(key, "value")
-				.systemProperty(key, null).load(context -> {
-			assertThat(System.getProperties().containsKey(key)).isFalse();
-		});
+		this.contextLoader.systemProperty(key, "value").systemProperty(key, null)
+				.load(context -> {
+					assertThat(System.getProperties().containsKey(key)).isFalse();
+				});
 	}
 
 	@Test
@@ -102,8 +103,8 @@ public class ContextLoaderTests {
 	@Test
 	public void envIsAdditive() {
 		this.contextLoader.env("test.foo=1").env("test.bar=2").load(context -> {
-			ConfigurableEnvironment environment = context.getBean(
-					ConfigurableEnvironment.class);
+			ConfigurableEnvironment environment = context
+					.getBean(ConfigurableEnvironment.class);
 			assertThat(environment.getProperty("test.foo", Integer.class)).isEqualTo(1);
 			assertThat(environment.getProperty("test.bar", Integer.class)).isEqualTo(2);
 		});
@@ -111,45 +112,42 @@ public class ContextLoaderTests {
 
 	@Test
 	public void envOverridesExistingKey() {
-		this.contextLoader.env("test.foo=1").env("test.foo=2").load(context ->
-				assertThat(context.getBean(ConfigurableEnvironment.class)
+		this.contextLoader.env("test.foo=1").env("test.foo=2")
+				.load(context -> assertThat(context.getBean(ConfigurableEnvironment.class)
 						.getProperty("test.foo", Integer.class)).isEqualTo(2));
 	}
 
 	@Test
 	public void configurationIsProcessedInOrder() {
-		this.contextLoader.config(ConfigA.class, AutoConfigA.class).load(context ->
-				assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
+		this.contextLoader.config(ConfigA.class, AutoConfigA.class).load(
+				context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
 	}
 
 	@Test
 	public void configurationIsProcessedBeforeAutoConfiguration() {
-		this.contextLoader.autoConfig(AutoConfigA.class)
-				.config(ConfigA.class).load(context ->
-				assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
+		this.contextLoader.autoConfig(AutoConfigA.class).config(ConfigA.class).load(
+				context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
 	}
 
 	@Test
 	public void configurationIsAdditive() {
-		this.contextLoader.config(AutoConfigA.class)
-				.config(AutoConfigB.class).load(context -> {
-			assertThat(context.containsBean("a")).isTrue();
-			assertThat(context.containsBean("b")).isTrue();
-		});
+		this.contextLoader.config(AutoConfigA.class).config(AutoConfigB.class)
+				.load(context -> {
+					assertThat(context.containsBean("a")).isTrue();
+					assertThat(context.containsBean("b")).isTrue();
+				});
 	}
 
 	@Test
 	public void autoConfigureFirstIsAppliedProperly() {
-		this.contextLoader.autoConfig(ConfigA.class)
-				.autoConfigFirst(AutoConfigA.class).load(context ->
-				assertThat(context.getBean("a")).isEqualTo("a"));
+		this.contextLoader.autoConfig(ConfigA.class).autoConfigFirst(AutoConfigA.class)
+				.load(context -> assertThat(context.getBean("a")).isEqualTo("a"));
 	}
 
 	@Test
 	public void autoConfigureFirstWithSeveralConfigsIsAppliedProperly() {
 		this.contextLoader.autoConfig(ConfigA.class, ConfigB.class)
-				.autoConfigFirst(AutoConfigA.class, AutoConfigB.class)
-				.load(context -> {
+				.autoConfigFirst(AutoConfigA.class, AutoConfigB.class).load(context -> {
 					assertThat(context.getBean("a")).isEqualTo("a");
 					assertThat(context.getBean("b")).isEqualTo(1);
 				});
@@ -157,18 +155,18 @@ public class ContextLoaderTests {
 
 	@Test
 	public void autoConfigurationIsAdditive() {
-		this.contextLoader.autoConfig(AutoConfigA.class)
-				.autoConfig(AutoConfigB.class).load(context -> {
-			assertThat(context.containsBean("a")).isTrue();
-			assertThat(context.containsBean("b")).isTrue();
-		});
+		this.contextLoader.autoConfig(AutoConfigA.class).autoConfig(AutoConfigB.class)
+				.load(context -> {
+					assertThat(context.containsBean("a")).isTrue();
+					assertThat(context.containsBean("b")).isTrue();
+				});
 	}
 
 	@Test
 	public void loadAndFailWithExpectedException() {
-		this.contextLoader.config(ConfigC.class)
-				.loadAndFail(BeanCreationException.class, ex ->
-						assertThat(ex.getMessage()).contains("Error creating bean with name 'c'"));
+		this.contextLoader.config(ConfigC.class).loadAndFail(BeanCreationException.class,
+				ex -> assertThat(ex.getMessage())
+						.contains("Error creating bean with name 'c'"));
 	}
 
 	@Test
@@ -182,16 +180,19 @@ public class ContextLoaderTests {
 
 	@Test
 	public void classLoaderIsUsed() {
-		this.contextLoader.classLoader(new HidePackagesClassLoader(
-				Gson.class.getPackage().getName())).load(context -> {
-			try {
-				ClassUtils.forName(Gson.class.getName(), context.getClassLoader());
-				fail("Should have thrown a ClassNotFoundException");
-			}
-			catch (ClassNotFoundException e) {
-				// expected
-			}
-		});
+		this.contextLoader
+				.classLoader(
+						new HidePackagesClassLoader(Gson.class.getPackage().getName()))
+				.load(context -> {
+					try {
+						ClassUtils.forName(Gson.class.getName(),
+								context.getClassLoader());
+						fail("Should have thrown a ClassNotFoundException");
+					}
+					catch (ClassNotFoundException e) {
+						// expected
+					}
+				});
 	}
 
 	@Configuration

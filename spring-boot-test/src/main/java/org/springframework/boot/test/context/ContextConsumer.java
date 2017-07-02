@@ -20,22 +20,21 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Callback interface used in tests to process a running
- * {@link ConfigurableApplicationContext} with the ability to throw a (checked)
- * exception.
+ * {@link ConfigurableApplicationContext} with the ability to throw a (checked) exception.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @param <T> the type of the context that can be consumed
  */
 @FunctionalInterface
-public interface ContextConsumer {
+public interface ContextConsumer<T extends ConfigurableApplicationContext> {
 
 	/**
-	 * Performs this operation on the supplied {@link ConfigurableApplicationContext
-	 * ApplicationContext}.
+	 * Performs this operation on the supplied {@code context}.
 	 * @param context the application context to consume
 	 * @throws Throwable any exception that might occur in assertions
 	 */
-	void accept(ConfigurableApplicationContext context) throws Throwable;
+	void accept(T context) throws Throwable;
 
 }

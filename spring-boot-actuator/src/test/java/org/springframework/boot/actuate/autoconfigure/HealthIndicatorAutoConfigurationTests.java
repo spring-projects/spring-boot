@@ -58,6 +58,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ContextConsumer;
 import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -79,8 +80,9 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthIndicatorAutoConfigurationTests {
 
-	public final ContextLoader contextLoader = new ContextLoader().autoConfig(
-			HealthIndicatorAutoConfiguration.class, ManagementServerProperties.class);
+	public final ContextLoader<AnnotationConfigApplicationContext> contextLoader = ContextLoader
+			.standard().autoConfig(HealthIndicatorAutoConfiguration.class,
+					ManagementServerProperties.class);
 
 	@Test
 	public void defaultHealthIndicator() {
@@ -378,7 +380,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
-	private ContextConsumer hasSingleHealthIndicator(
+	private ContextConsumer<AnnotationConfigApplicationContext> hasSingleHealthIndicator(
 			Class<? extends HealthIndicator> type) {
 		return context -> {
 			Map<String, HealthIndicator> beans = context

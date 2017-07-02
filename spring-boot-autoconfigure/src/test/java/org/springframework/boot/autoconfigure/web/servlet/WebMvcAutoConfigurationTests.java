@@ -61,7 +61,7 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -114,11 +114,12 @@ public class WebMvcAutoConfigurationTests {
 
 	private static final MockServletWebServerFactory webServerFactory = new MockServletWebServerFactory();
 
-	private final ContextLoader contextLoader = new ContextLoader()
+	private final ContextLoader<AnnotationConfigWebApplicationContext> contextLoader = ContextLoader
+			.servletWeb()
 			.autoConfig(WebMvcAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class)
-			.config(Config.class).webServlet();
+			.config(Config.class);
 
 	@Test
 	public void handlerAdaptersCreated() {
@@ -574,11 +575,10 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingProducesNotFoundResponseWhenThereIsNoWelcomePage() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/no-welcome-page/");
-		this.contextLoader.webServlet().load(context -> {
+		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
-			// TODO This cast is ugly. Fix it with generics and ContextLoader subclasses
-			MockMvcBuilders.webAppContextSetup((WebApplicationContext) context).build()
+			MockMvcBuilders.webAppContextSetup(context).build()
 					.perform(get("/").accept(MediaType.TEXT_HTML))
 					.andExpect(status().isNotFound());
 		});
@@ -603,8 +603,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
-			MockMvc mockMvc = MockMvcBuilders
-					.webAppContextSetup((WebApplicationContext) context).build();
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
 					.andExpect(status().isOk()).andExpect(forwardedUrl("index.html"));
 			mockMvc.perform(get("/").accept("*/*")).andExpect(status().isOk())
@@ -619,8 +618,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
-			MockMvc mockMvc = MockMvcBuilders
-					.webAppContextSetup((WebApplicationContext) context).build();
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isNotFound());
 		});
@@ -633,8 +631,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
-			MockMvc mockMvc = MockMvcBuilders
-					.webAppContextSetup((WebApplicationContext) context).build();
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			mockMvc.perform(get("/")).andExpect(status().isOk())
 					.andExpect(forwardedUrl("index.html"));
 		});
@@ -648,8 +645,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
-			MockMvc mockMvc = MockMvcBuilders
-					.webAppContextSetup((WebApplicationContext) context).build();
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			mockMvc.perform(get("/").header(HttpHeaders.ACCEPT, ""))
 					.andExpect(status().isOk()).andExpect(forwardedUrl("index.html"));
 		});
@@ -663,8 +659,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
-			MockMvc mockMvc = MockMvcBuilders
-					.webAppContextSetup((WebApplicationContext) context).build();
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
 					.andExpect(status().isOk()).andExpect(forwardedUrl("index.html"));
 		});

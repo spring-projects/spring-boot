@@ -24,6 +24,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.context.ContextLoader;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class WebServicesAutoConfigurationTests {
 
-	private final ContextLoader contextLoader = new ContextLoader().webServlet()
-			.autoConfig(WebServicesAutoConfiguration.class);
+	private final ContextLoader<AnnotationConfigWebApplicationContext> contextLoader = ContextLoader
+			.servletWeb().autoConfig(WebServicesAutoConfiguration.class);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

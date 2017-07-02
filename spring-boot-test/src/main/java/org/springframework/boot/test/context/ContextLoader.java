@@ -16,31 +16,14 @@
 
 package org.springframework.boot.test.context;
 
-import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigRegistry;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Manage the lifecycle of an {@link ApplicationContext}. Such helper is best used as a
@@ -91,20 +74,45 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @param <T> the type of the context to be loaded
  */
-public class ContextLoader {
+public interface ContextLoader<T extends ConfigurableApplicationContext> {
 
-	private final Map<String, String> systemProperties = new HashMap<>();
+	/**
+	 * Creates a {@code ContextLoader} that will load a standard
+	 * {@link AnnotationConfigApplicationContext}.
+	 *
+	 * @return the context loader
+	 */
+	static ContextLoader<AnnotationConfigApplicationContext> standard() {
+		return new StandardContextLoader<>(
+				() -> new AnnotationConfigApplicationContext());
+	}
 
-	private final List<String> env = new ArrayList<>();
+	/**
+	 * Creates a {@code ContextLoader} that will load a
+	 * {@link AnnotationConfigWebApplicationContext}.
+	 *
+	 * @return the context loader
+	 */
+	static ContextLoader<AnnotationConfigWebApplicationContext> servletWeb() {
+		return new StandardContextLoader<>(() -> {
+			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+			context.setServletContext(new MockServletContext());
+			return context;
+		});
+	}
 
-	private final Set<Class<?>> userConfigurations = new LinkedHashSet<>();
-
-	private final LinkedList<Class<?>> autoConfigurations = new LinkedList<>();
-
-	private Supplier<ConfigurableApplicationContext> contextSupplier = () -> new AnnotationConfigApplicationContext();
-
-	private ClassLoader classLoader;
+	/**
+	 * Creates a {@code ContextLoader} that will load a
+	 * {@link GenericReactiveWebApplicationContext}.
+	 *
+	 * @return the context loader
+	 */
+	static ContextLoader<GenericReactiveWebApplicationContext> reactiveWeb() {
+		return new StandardContextLoader<>(
+				() -> new GenericReactiveWebApplicationContext());
+	}
 
 	/**
 	 * Set the specified system property prior to loading the context and restore its
@@ -114,16 +122,7 @@ public class ContextLoader {
 	 * @param value the value (can be null to remove any existing customization)
 	 * @return this instance
 	 */
-	public ContextLoader systemProperty(String key, String value) {
-		Assert.notNull(key, "Key must not be null");
-		if (value != null) {
-			this.systemProperties.put(key, value);
-		}
-		else {
-			this.systemProperties.remove(key);
-		}
-		return this;
-	}
+	public ContextLoader<T> systemProperty(String key, String value);
 
 	/**
 	 * Add the specified property pairs. Key-value pairs can be specified with colon (":")
@@ -133,36 +132,21 @@ public class ContextLoader {
 	 * environment
 	 * @return this instance
 	 */
-	public ContextLoader env(String... pairs) {
-		if (!ObjectUtils.isEmpty(pairs)) {
-			this.env.addAll(Arrays.asList(pairs));
-		}
-		return this;
-	}
+	public ContextLoader<T> env(String... pairs);
 
 	/**
 	 * Add the specified user configuration classes.
 	 * @param configs the user configuration classes to add
 	 * @return this instance
 	 */
-	public ContextLoader config(Class<?>... configs) {
-		if (!ObjectUtils.isEmpty(configs)) {
-			this.userConfigurations.addAll(Arrays.asList(configs));
-		}
-		return this;
-	}
+	public ContextLoader<T> config(Class<?>... configs);
 
 	/**
 	 * Add the specified auto-configuration classes.
 	 * @param autoConfigurations the auto-configuration classes to add
 	 * @return this instance
 	 */
-	public ContextLoader autoConfig(Class<?>... autoConfigurations) {
-		if (!ObjectUtils.isEmpty(autoConfigurations)) {
-			this.autoConfigurations.addAll(Arrays.asList(autoConfigurations));
-		}
-		return this;
-	}
+	public ContextLoader<T> autoConfig(Class<?>... autoConfigurations);
 
 	/**
 	 * Add the specified auto-configurations at the beginning (in that order) so that it
@@ -172,10 +156,7 @@ public class ContextLoader {
 	 * @param autoConfigurations the auto-configuration to add
 	 * @return this instance
 	 */
-	public ContextLoader autoConfigFirst(Class<?>... autoConfigurations) {
-		this.autoConfigurations.addAll(0, Arrays.asList(autoConfigurations));
-		return this;
-	}
+	public ContextLoader<T> autoConfigFirst(Class<?>... autoConfigurations);
 
 	/**
 	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use.
@@ -185,58 +166,15 @@ public class ContextLoader {
 	 * @return this instance
 	 * @see HidePackagesClassLoader
 	 */
-	public ContextLoader classLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-		return this;
-	}
-
-	/**
-	 * Configures the loader to create an {@link ApplicationContext} suitable for use in a
-	 * reactive web application.
-	 * @return this instance
-	 */
-	public ContextLoader webReactive() {
-		this.contextSupplier = () -> {
-			return new GenericReactiveWebApplicationContext();
-		};
-		return this;
-	}
-
-	/**
-	 * Configures the loader to create an {@link ApplicationContext} suitable for use in a
-	 * servlet web application.
-	 * @return this instance
-	 */
-	public ContextLoader webServlet() {
-		this.contextSupplier = () -> {
-			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-			context.setServletContext(new MockServletContext());
-			return context;
-		};
-		return this;
-	}
+	public ContextLoader<T> classLoader(ClassLoader classLoader);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
-	 * this loader. The context is consumed by the specified {@link ContextConsumer} and
-	 * closed upon completion.
+	 * this loader. The context is consumed by the specified {@code consumers} and closed
+	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
-	public void load(ContextConsumer consumer) {
-		try (ApplicationContextLifecycleHandler handler = new ApplicationContextLifecycleHandler()) {
-			try {
-				ConfigurableApplicationContext ctx = handler.load();
-				consumer.accept(ctx);
-			}
-			catch (RuntimeException ex) {
-				throw ex;
-			}
-			catch (Throwable ex) {
-				throw new IllegalStateException(
-						"An unexpected error occurred: " + ex.getMessage(), ex);
-			}
-		}
-	}
+	public void load(ContextConsumer<T> consumer);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
@@ -245,9 +183,7 @@ public class ContextLoader {
 	 * specified {@link Consumer} with no expectation on the type of the exception.
 	 * @param consumer the consumer of the failure
 	 */
-	public void loadAndFail(Consumer<Throwable> consumer) {
-		loadAndFail(Throwable.class, consumer);
-	}
+	public void loadAndFail(Consumer<Throwable> consumer);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
@@ -257,98 +193,9 @@ public class ContextLoader {
 	 * exception type matches, it is consumed by the specified {@link Consumer}.
 	 * @param exceptionType the expected type of the failure
 	 * @param consumer the consumer of the failure
-	 * @param <T> the expected type of the failure
+	 * @param <E> the expected type of the failure
 	 */
-	public <T extends Throwable> void loadAndFail(Class<T> exceptionType,
-			Consumer<T> consumer) {
-		try (ApplicationContextLifecycleHandler handler = new ApplicationContextLifecycleHandler()) {
-			handler.load();
-			throw new AssertionError("ApplicationContext should have failed");
-		}
-		catch (Throwable ex) {
-			assertThat(ex).as("Wrong application context failure exception")
-					.isInstanceOf(exceptionType);
-			consumer.accept(exceptionType.cast(ex));
-		}
-	}
-
-	private ConfigurableApplicationContext createApplicationContext() {
-		ConfigurableApplicationContext context = ContextLoader.this.contextSupplier.get();
-		if (this.classLoader != null) {
-			((DefaultResourceLoader) context).setClassLoader(this.classLoader);
-		}
-		if (!ObjectUtils.isEmpty(this.env)) {
-			TestPropertyValues.of(this.env.toArray(new String[this.env.size()]))
-					.applyTo(context);
-		}
-		AnnotationConfigRegistry registry = ((AnnotationConfigRegistry) context);
-		if (!ObjectUtils.isEmpty(this.userConfigurations)) {
-			registry.register(this.userConfigurations
-					.toArray(new Class<?>[this.userConfigurations.size()]));
-		}
-		if (!ObjectUtils.isEmpty(this.autoConfigurations)) {
-			LinkedHashSet<Class<?>> linkedHashSet = new LinkedHashSet<>(
-					this.autoConfigurations);
-			registry.register(
-					linkedHashSet.toArray(new Class<?>[this.autoConfigurations.size()]));
-		}
-		return context;
-	}
-
-	/**
-	 * Handles the lifecycle of the {@link ApplicationContext}.
-	 */
-	private class ApplicationContextLifecycleHandler implements Closeable {
-
-		private final Map<String, String> customSystemProperties;
-
-		private final Map<String, String> previousSystemProperties = new HashMap<>();
-
-		private ConfigurableApplicationContext context;
-
-		ApplicationContextLifecycleHandler() {
-			this.customSystemProperties = new HashMap<>(
-					ContextLoader.this.systemProperties);
-		}
-
-		public ConfigurableApplicationContext load() {
-			setCustomSystemProperties();
-			ConfigurableApplicationContext context = createApplicationContext();
-			context.refresh();
-			this.context = context;
-			return context;
-		}
-
-		@Override
-		public void close() {
-			try {
-				if (this.context != null) {
-					this.context.close();
-				}
-			}
-			finally {
-				unsetCustomSystemProperties();
-			}
-		}
-
-		private void setCustomSystemProperties() {
-			this.customSystemProperties.forEach((key, value) -> {
-				String previous = System.setProperty(key, value);
-				this.previousSystemProperties.put(key, previous);
-			});
-		}
-
-		private void unsetCustomSystemProperties() {
-			this.previousSystemProperties.forEach((key, value) -> {
-				if (value != null) {
-					System.setProperty(key, value);
-				}
-				else {
-					System.clearProperty(key);
-				}
-			});
-		}
-
-	}
+	public <E extends Throwable> void loadAndFail(Class<E> exceptionType,
+			Consumer<E> consumer);
 
 }

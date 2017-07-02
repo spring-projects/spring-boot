@@ -41,6 +41,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.context.ContextConsumer;
 import org.springframework.boot.test.context.ContextLoader;
 import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -57,15 +58,16 @@ import static org.mockito.Mockito.mock;
  */
 public class DataSourceAutoConfigurationTests {
 
-	private final ContextLoader contextLoader = new ContextLoader()
-			.autoConfig(DataSourceAutoConfiguration.class)
+	private final ContextLoader<AnnotationConfigApplicationContext> contextLoader = ContextLoader
+			.standard().autoConfig(DataSourceAutoConfiguration.class)
 			.env("spring.datasource.initialize=false",
-					"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+					"spring.datasource.url:jdbc:hsqldb:mem:testdb-"
+							+ new Random().nextInt());
 
 	@Test
 	public void testDefaultDataSourceExists() throws Exception {
-		this.contextLoader.load(context ->
-				assertThat(context.getBean(DataSource.class)).isNotNull());
+		this.contextLoader.load(
+				context -> assertThat(context.getBean(DataSource.class)).isNotNull());
 	}
 
 	@Test
@@ -93,25 +95,25 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void testBadDriverClass() throws Exception {
 		this.contextLoader.env("spring.datasource.driverClassName:org.none.jdbcDriver")
-				.loadAndFail(BeanCreationException.class, ex ->
-						assertThat(ex.getMessage()).contains("org.none.jdbcDriver"));
+				.loadAndFail(BeanCreationException.class,
+						ex -> assertThat(ex.getMessage())
+								.contains("org.none.jdbcDriver"));
 	}
 
 	@Test
 	public void hikariValidatesConnectionByDefault() throws Exception {
 		assertDataSource(HikariDataSource.class,
-				Collections.singletonList("org.apache.tomcat"),
-				dataSource ->
-						// Use Connection#isValid()
-						assertThat(dataSource.getConnectionTestQuery()).isNull()
-		);
+				Collections.singletonList("org.apache.tomcat"), dataSource ->
+				// Use Connection#isValid()
+				assertThat(dataSource.getConnectionTestQuery()).isNull());
 	}
 
 	@Test
 	public void tomcatIsFallback() throws Exception {
 		assertDataSource(org.apache.tomcat.jdbc.pool.DataSource.class,
-				Collections.singletonList("com.zaxxer.hikari"), dataSource ->
-						assertThat(dataSource.getUrl()).startsWith("jdbc:hsqldb:mem:testdb"));
+				Collections.singletonList("com.zaxxer.hikari"),
+				dataSource -> assertThat(dataSource.getUrl())
+						.startsWith("jdbc:hsqldb:mem:testdb"));
 	}
 
 	@Test
@@ -127,8 +129,9 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void commonsDbcp2IsFallback() throws Exception {
 		assertDataSource(BasicDataSource.class,
-				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), dataSource ->
-						assertThat(dataSource.getUrl()).startsWith("jdbc:hsqldb:mem:testdb"));
+				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"),
+				dataSource -> assertThat(dataSource.getUrl())
+						.startsWith("jdbc:hsqldb:mem:testdb"));
 	}
 
 	@Test
@@ -136,7 +139,8 @@ public class DataSourceAutoConfigurationTests {
 		assertDataSource(org.apache.commons.dbcp2.BasicDataSource.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), dataSource -> {
 					assertThat(dataSource.getTestOnBorrow()).isEqualTo(true);
-					assertThat(dataSource.getValidationQuery()).isNull(); // Use Connection#isValid()
+					assertThat(dataSource.getValidationQuery()).isNull(); // Use
+																			// Connection#isValid()
 				});
 	}
 
@@ -144,13 +148,14 @@ public class DataSourceAutoConfigurationTests {
 	public void testEmbeddedTypeDefaultsUsername() throws Exception {
 		this.contextLoader.env("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb").load(context -> {
-			DataSource bean = context.getBean(DataSource.class);
-			assertThat(bean).isNotNull();
-			@SuppressWarnings("resource")
-			HikariDataSource pool = (HikariDataSource) bean;
-			assertThat(pool.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
-			assertThat(pool.getUsername()).isEqualTo("sa");
-		});
+					DataSource bean = context.getBean(DataSource.class);
+					assertThat(bean).isNotNull();
+					@SuppressWarnings("resource")
+					HikariDataSource pool = (HikariDataSource) bean;
+					assertThat(pool.getDriverClassName())
+							.isEqualTo("org.hsqldb.jdbcDriver");
+					assertThat(pool.getUsername()).isEqualTo("sa");
+				});
 	}
 
 	/**
@@ -159,24 +164,28 @@ public class DataSourceAutoConfigurationTests {
 	 */
 	@Test
 	public void explicitTypeNoSupportedDataSource() {
-		this.contextLoader.classLoader(
-				new HidePackagesClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
-						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"))
+		this.contextLoader
+				.classLoader(new HidePackagesClassLoader("org.apache.tomcat",
+						"com.zaxxer.hikari", "org.apache.commons.dbcp",
+						"org.apache.commons.dbcp2"))
 				.env("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 						"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-						"spring.datasource.type:" + SimpleDriverDataSource.class.getName())
+						"spring.datasource.type:"
+								+ SimpleDriverDataSource.class.getName())
 				.load(testExplicitType());
 	}
 
 	@Test
 	public void explicitTypeSupportedDataSource() {
-		this.contextLoader.env("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName())
+		this.contextLoader
+				.env("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+						"spring.datasource.type:"
+								+ SimpleDriverDataSource.class.getName())
 				.load(testExplicitType());
 	}
 
-	private ContextConsumer testExplicitType() {
+	private ContextConsumer<AnnotationConfigApplicationContext> testExplicitType() {
 		return context -> {
 			assertThat(context.getBeansOfType(DataSource.class)).hasSize(1);
 			DataSource bean = context.getBean(DataSource.class);
@@ -187,14 +196,15 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testExplicitDriverClassClearsUsername() throws Exception {
-		this.contextLoader.env("spring.datasource.driverClassName:" + DatabaseTestDriver.class.getName(),
+		this.contextLoader.env(
+				"spring.datasource.driverClassName:" + DatabaseTestDriver.class.getName(),
 				"spring.datasource.url:jdbc:foo://localhost").load(context -> {
-			DataSource dataSource = context.getBean(DataSource.class);
-			assertThat(dataSource).isNotNull();
-			assertThat(((HikariDataSource) dataSource).getDriverClassName())
-					.isEqualTo(DatabaseTestDriver.class.getName());
-			assertThat(((HikariDataSource) dataSource).getUsername()).isNull();
-		});
+					DataSource dataSource = context.getBean(DataSource.class);
+					assertThat(dataSource).isNotNull();
+					assertThat(((HikariDataSource) dataSource).getDriverClassName())
+							.isEqualTo(DatabaseTestDriver.class.getName());
+					assertThat(((HikariDataSource) dataSource).getUsername()).isNull();
+				});
 	}
 
 	@Test
@@ -208,22 +218,21 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void testDataSourceIsInitializedEarly() {
 		this.contextLoader.config(TestInitializedDataSourceConfiguration.class)
-				.env("spring.datasource.initialize=true").load(context ->
-				assertThat(context.getBean(
-						TestInitializedDataSourceConfiguration.class).called).isTrue());
+				.env("spring.datasource.initialize=true")
+				.load(context -> assertThat(context
+						.getBean(TestInitializedDataSourceConfiguration.class).called)
+								.isTrue());
 	}
 
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType,
 			List<String> hiddenPackages, Consumer<T> consumer) {
 		HidePackagesClassLoader classLoader = new HidePackagesClassLoader(
 				hiddenPackages.toArray(new String[hiddenPackages.size()]));
-		this.contextLoader
-				.classLoader(classLoader)
-				.load(context -> {
-					DataSource bean = context.getBean(DataSource.class);
-					assertThat(bean).isInstanceOf(expectedType);
-					consumer.accept(expectedType.cast(bean));
-				});
+		this.contextLoader.classLoader(classLoader).load(context -> {
+			DataSource bean = context.getBean(DataSource.class);
+			assertThat(bean).isInstanceOf(expectedType);
+			consumer.accept(expectedType.cast(bean));
+		});
 	}
 
 	@Configuration

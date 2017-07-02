@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,59 +42,70 @@ import static org.mockito.Mockito.mockingDetails;
  */
 public class ActiveMQAutoConfigurationTests {
 
-	private final ContextLoader contextLoader = new ContextLoader().autoConfig(
-			ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class);
+	private final ContextLoader<AnnotationConfigApplicationContext> contextLoader = ContextLoader
+			.standard()
+			.autoConfig(ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class);
 
 	@Test
 	public void brokerIsEmbeddedByDefault() {
 		this.contextLoader.config(EmptyConfiguration.class).load(context -> {
-			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+			ConnectionFactory connectionFactory = context
+					.getBean(ConnectionFactory.class);
 			assertThat(connectionFactory).isInstanceOf(ActiveMQConnectionFactory.class);
-			String brokerUrl = ((ActiveMQConnectionFactory) connectionFactory).getBrokerURL();
+			String brokerUrl = ((ActiveMQConnectionFactory) connectionFactory)
+					.getBrokerURL();
 			assertThat(brokerUrl).isEqualTo("vm://localhost?broker.persistent=false");
 		});
 	}
 
 	@Test
 	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
-		this.contextLoader.config(CustomConnectionFactoryConfiguration.class).load(
-				context -> assertThat(mockingDetails(context
-						.getBean(ConnectionFactory.class)).isMock()).isTrue());
+		this.contextLoader.config(CustomConnectionFactoryConfiguration.class)
+				.load(context -> assertThat(
+						mockingDetails(context.getBean(ConnectionFactory.class)).isMock())
+								.isTrue());
 	}
 
 	@Test
 	public void customPooledConnectionFactoryConfiguration() {
-		this.contextLoader.config(EmptyConfiguration.class).env(
-				"spring.activemq.pool.enabled:true",
-				"spring.activemq.pool.maxConnections:256",
-				"spring.activemq.pool.idleTimeout:512",
-				"spring.activemq.pool.expiryTimeout:4096",
-				"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
-				"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048").load(context -> {
-			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
-			assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
-			PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
-			assertThat(pooledConnectionFactory.getMaxConnections()).isEqualTo(256);
-			assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
-			assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection())
-					.isEqualTo(1024);
-			assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis())
-					.isEqualTo(2048);
-			assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
-		});
+		this.contextLoader.config(EmptyConfiguration.class)
+				.env("spring.activemq.pool.enabled:true",
+						"spring.activemq.pool.maxConnections:256",
+						"spring.activemq.pool.idleTimeout:512",
+						"spring.activemq.pool.expiryTimeout:4096",
+						"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
+						"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048")
+				.load(context -> {
+					ConnectionFactory connectionFactory = context
+							.getBean(ConnectionFactory.class);
+					assertThat(connectionFactory)
+							.isInstanceOf(PooledConnectionFactory.class);
+					PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
+					assertThat(pooledConnectionFactory.getMaxConnections())
+							.isEqualTo(256);
+					assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
+					assertThat(pooledConnectionFactory
+							.getMaximumActiveSessionPerConnection()).isEqualTo(1024);
+					assertThat(
+							pooledConnectionFactory.getTimeBetweenExpirationCheckMillis())
+									.isEqualTo(2048);
+					assertThat(pooledConnectionFactory.getExpiryTimeout())
+							.isEqualTo(4096);
+				});
 	}
 
 	@Test
 	public void pooledConnectionFactoryConfiguration() throws JMSException {
 		this.contextLoader.config(EmptyConfiguration.class)
 				.env("spring.activemq.pool.enabled:true").load(context -> {
-			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
-			assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
-			context.close();
-			assertThat(connectionFactory.createConnection()).isNull();
-		});
+					ConnectionFactory connectionFactory = context
+							.getBean(ConnectionFactory.class);
+					assertThat(connectionFactory)
+							.isInstanceOf(PooledConnectionFactory.class);
+					context.close();
+					assertThat(connectionFactory.createConnection()).isNull();
+				});
 	}
-
 
 	@Configuration
 	static class EmptyConfiguration {
