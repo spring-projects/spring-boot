@@ -63,7 +63,7 @@
 		<commons-codec.version>1.10</commons-codec.version>
 		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
 		<commons-digester.version>2.1</commons-digester.version>
-		<commons-lang3.version>3.5</commons-lang3.version>
+		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.4.2</commons-pool2.version>
 		<couchbase-client.version>2.4.6</couchbase-client.version>
