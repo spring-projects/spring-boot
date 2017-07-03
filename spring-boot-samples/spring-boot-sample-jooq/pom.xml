@@ -119,7 +119,7 @@
 								<inherited>false</inherited>
 								<configuration>
 									<includes>
-										<inclue>sample/jooq/util/**</inclue>
+										<include>sample/jooq/util/**</include>
 									</includes>
 								</configuration>
 							</execution>
