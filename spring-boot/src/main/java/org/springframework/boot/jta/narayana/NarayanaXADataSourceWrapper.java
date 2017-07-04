@@ -52,18 +52,11 @@ public class NarayanaXADataSourceWrapper implements XADataSourceWrapper {
 
 	@Override
 	public DataSource wrapDataSource(XADataSource dataSource) {
-		XAResourceRecoveryHelper recoveryHelper = getRecoveryHelper(dataSource);
+		ConnectionManager connectionManager = new ConnectionManager(dataSource, this.properties.getRecoveryDbUser(),
+				this.properties.getRecoveryDbPass());
+		XAResourceRecoveryHelper recoveryHelper = new DataSourceXAResourceRecoveryHelper(connectionManager);
 		this.recoveryManager.registerXAResourceRecoveryHelper(recoveryHelper);
 		return new NarayanaDataSourceBean(dataSource);
-	}
-
-	private XAResourceRecoveryHelper getRecoveryHelper(XADataSource dataSource) {
-		if (this.properties.getRecoveryDbUser() == null
-				&& this.properties.getRecoveryDbPass() == null) {
-			return new DataSourceXAResourceRecoveryHelper(dataSource);
-		}
-		return new DataSourceXAResourceRecoveryHelper(dataSource,
-				this.properties.getRecoveryDbUser(), this.properties.getRecoveryDbPass());
 	}
 
 }
