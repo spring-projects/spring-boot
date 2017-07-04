@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -53,6 +54,11 @@ public class ActiveMQProperties {
 	 */
 	private String password;
 
+	/**
+	 * Additional connection factory properties; see ActiveMQConnectionFactory.
+	 */
+	private Properties properties;
+
 	private Pool pool = new Pool();
 
 	private Packages packages = new Packages();
@@ -87,6 +93,14 @@ public class ActiveMQProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Properties getProperties() {
+		return this.properties;
+	}
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
 	}
 
 	public Pool getPool() {

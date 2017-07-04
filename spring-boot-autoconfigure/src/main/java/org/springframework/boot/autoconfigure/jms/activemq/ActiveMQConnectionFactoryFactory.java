@@ -20,7 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties.Packages;
+import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -59,6 +61,9 @@ class ActiveMQConnectionFactoryFactory {
 	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(
 			Class<T> factoryClass) throws Exception {
 		T factory = createConnectionFactoryInstance(factoryClass);
+		MutablePropertyValues propertyValues =
+				new MutablePropertyValues(this.properties.getProperties());
+		new RelaxedDataBinder(factory).bind(propertyValues);
 		Packages packages = this.properties.getPackages();
 		if (packages.getTrustAll() != null) {
 			factory.setTrustAllPackages(packages.getTrustAll());
