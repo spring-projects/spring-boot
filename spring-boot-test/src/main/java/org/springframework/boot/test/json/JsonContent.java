@@ -53,6 +53,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	}
 
 	@Override
+	@Deprecated
 	public JsonContentAssert assertThat() {
 		return new JsonContentAssert(this.resourceLoadClass, this.json);
 	}
