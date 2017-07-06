@@ -304,10 +304,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 		Binder binder = Binder.get(environment);
 		binder.bind("logging.level", STRING_STRING_MAP).orElseGet(Collections::emptyMap)
-				.forEach((name, level) -> setLogLevel(system, environment, name, level));
+				.forEach((name, level) -> setLogLevel(system, name, level));
 	}
 
-	private void setLogLevel(LoggingSystem system, Environment environment, String name,
+	private void setLogLevel(LoggingSystem system, String name,
 			String level) {
 		try {
 			name = (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name);
