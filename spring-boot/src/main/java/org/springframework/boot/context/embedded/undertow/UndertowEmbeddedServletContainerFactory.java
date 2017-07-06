@@ -321,7 +321,6 @@ public class UndertowEmbeddedServletContainerFactory
 						keyManagerFactory.getKeyManagers());
 			}
 			return keyManagerFactory.getKeyManagers();
-
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

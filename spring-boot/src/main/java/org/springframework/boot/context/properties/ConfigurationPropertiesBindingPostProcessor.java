@@ -420,8 +420,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			if (AnnotatedElementUtils.hasAnnotation(type, Validated.class)) {
 				return true;
 			}
-			if (type.getPackage() != null &&
-					type.getPackage().getName().startsWith("org.springframework.boot")) {
+			if (type.getPackage() != null && type.getPackage().getName()
+					.startsWith("org.springframework.boot")) {
 				return false;
 			}
 			if (getConstraintsForClass(type).isBeanConstrained()) {

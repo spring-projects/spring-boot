@@ -29,6 +29,8 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Integration tests for {@link SpringBootTest} with {@link AutoConfigureJsonTesters}.
  *
@@ -41,17 +43,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class SpringBootTestWithAutoConfigureJsonTestersTests {
 
 	@Autowired
-	BasicJsonTester basicJson;
+	private BasicJsonTester basicJson;
 
 	@Autowired
-	JacksonTester<ExampleBasicObject> jacksonTester;
+	private JacksonTester<ExampleBasicObject> jacksonTester;
 
 	@Autowired
-	GsonTester<ExampleBasicObject> gsonTester;
+	private GsonTester<ExampleBasicObject> gsonTester;
 
 	@Test
 	public void contextLoads() {
-
+		assertThat(this.basicJson).isNotNull();
+		assertThat(this.jacksonTester).isNotNull();
+		assertThat(this.gsonTester).isNotNull();
 	}
 
 }

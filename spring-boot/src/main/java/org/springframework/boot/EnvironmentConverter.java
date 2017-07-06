@@ -65,7 +65,6 @@ final class EnvironmentConverter {
 	 * environment is already a {@code StandardEnvironment} and is not a
 	 * {@link ConfigurableWebEnvironment} no conversion is performed and it is returned
 	 * unchanged.
-	 *
 	 * @param environment The Environment to convert
 	 * @return The converted Environment
 	 */

@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -208,21 +207,27 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 		public ResourcePatternResolver getResourcePatternResolver(
 				ApplicationContext applicationContext, ResourceLoader resourceLoader) {
-			return new PathMatchingResourcePatternResolver(resourceLoader == null
-					? createResourceLoader(applicationContext) : resourceLoader);
+			if (resourceLoader == null) {
+				resourceLoader = new DefaultResourceLoader();
+				copyProtocolResolvers(applicationContext, resourceLoader);
+			}
+			return new PathMatchingResourcePatternResolver(resourceLoader);
 		}
 
-		private ResourceLoader createResourceLoader(
-				ApplicationContext applicationContext) {
-			DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-			if (applicationContext instanceof DefaultResourceLoader) {
-				Collection<ProtocolResolver> protocolResolvers = ((DefaultResourceLoader) applicationContext)
-						.getProtocolResolvers();
-				for (ProtocolResolver protocolResolver : protocolResolvers) {
-					resourceLoader.addProtocolResolver(protocolResolver);
-				}
+		protected final void copyProtocolResolvers(ApplicationContext applicationContext,
+				ResourceLoader resourceLoader) {
+			if (applicationContext instanceof DefaultResourceLoader
+					&& resourceLoader instanceof DefaultResourceLoader) {
+				copyProtocolResolvers((DefaultResourceLoader) applicationContext,
+						(DefaultResourceLoader) resourceLoader);
 			}
-			return resourceLoader;
+		}
+
+		protected final void copyProtocolResolvers(DefaultResourceLoader source,
+				DefaultResourceLoader destination) {
+			for (ProtocolResolver resolver : source.getProtocolResolvers()) {
+				destination.addProtocolResolver(resolver);
+			}
 		}
 
 	}
@@ -238,25 +243,21 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		public ResourcePatternResolver getResourcePatternResolver(
 				ApplicationContext applicationContext, ResourceLoader resourceLoader) {
 			if (applicationContext instanceof WebApplicationContext) {
-				return new ServletContextResourcePatternResolver(resourceLoader == null
-						? createResourceLoader((WebApplicationContext) applicationContext)
-						: resourceLoader);
+				return getResourcePatternResolver(
+						(WebApplicationContext) applicationContext, resourceLoader);
 			}
 			return super.getResourcePatternResolver(applicationContext, resourceLoader);
 		}
 
-		private ResourceLoader createResourceLoader(
-				WebApplicationContext applicationContext) {
-			WebApplicationContextResourceLoader resourceLoader = new WebApplicationContextResourceLoader(
-					applicationContext);
-			if (applicationContext instanceof DefaultResourceLoader) {
-				Collection<ProtocolResolver> protocolResolvers = ((DefaultResourceLoader) applicationContext)
-						.getProtocolResolvers();
-				for (ProtocolResolver protocolResolver : protocolResolvers) {
-					resourceLoader.addProtocolResolver(protocolResolver);
-				}
+		private ResourcePatternResolver getResourcePatternResolver(
+				WebApplicationContext applicationContext, ResourceLoader resourceLoader) {
+			if (resourceLoader == null) {
+				resourceLoader = new WebApplicationContextResourceLoader(
+						applicationContext);
+				copyProtocolResolvers(applicationContext, resourceLoader);
 			}
-			return resourceLoader;
+			return new ServletContextResourcePatternResolver(resourceLoader);
+
 		}
 
 	}

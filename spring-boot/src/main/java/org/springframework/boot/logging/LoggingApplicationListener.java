@@ -346,7 +346,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			String name = entry.getKey();
 			if (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME)) {
 				if (rootProcessed) {
-					return;
+					continue;
 				}
 				name = null;
 				rootProcessed = true;

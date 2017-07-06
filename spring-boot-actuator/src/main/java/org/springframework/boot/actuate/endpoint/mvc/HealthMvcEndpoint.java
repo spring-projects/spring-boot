@@ -172,20 +172,13 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private Health getCurrentHealth() {
 		long accessTime = System.currentTimeMillis();
-		CachedHealth cachedHealth = this.cachedHealth;
-		if (isStale(cachedHealth, accessTime)) {
+		CachedHealth cached = this.cachedHealth;
+		if (cached == null || cached.isStale(accessTime, getDelegate().getTimeToLive())) {
 			Health health = getDelegate().invoke();
 			this.cachedHealth = new CachedHealth(health, accessTime);
 			return health;
 		}
-		return cachedHealth.health;
-	}
-
-	private boolean isStale(CachedHealth cachedHealth, long accessTime) {
-		if (cachedHealth == null) {
-			return true;
-		}
-		return (accessTime - cachedHealth.creationTime) >= getDelegate().getTimeToLive();
+		return cached.getHealth();
 	}
 
 	protected boolean exposeHealthDetails(HttpServletRequest request,
@@ -239,6 +232,14 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		CachedHealth(Health health, long creationTime) {
 			this.health = health;
 			this.creationTime = creationTime;
+		}
+
+		public boolean isStale(long accessTime, long timeToLive) {
+			return (accessTime - this.creationTime) >= timeToLive;
+		}
+
+		public Health getHealth() {
+			return this.health;
 		}
 
 	}

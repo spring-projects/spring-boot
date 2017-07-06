@@ -32,11 +32,9 @@ import org.springframework.core.io.Resource;
  * @author Stephane Nicoll
  */
 // tag::example[]
-public class EnvironmentPostProcessorExample
-		implements EnvironmentPostProcessor {
+public class EnvironmentPostProcessorExample implements EnvironmentPostProcessor {
 
-	private final YamlPropertySourceLoader loader
-			= new YamlPropertySourceLoader();
+	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
@@ -48,15 +46,14 @@ public class EnvironmentPostProcessorExample
 
 	private PropertySource<?> loadYaml(Resource path) {
 		if (!path.exists()) {
-			throw new IllegalArgumentException("Resource " + path
-					+ " does not exist");
+			throw new IllegalArgumentException("Resource " + path + " does not exist");
 		}
 		try {
 			return this.loader.load("custom-resource", path, null);
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Failed to load yaml configuration "
-					+ "from " + path, ex);
+			throw new IllegalStateException(
+					"Failed to load yaml configuration from " + path, ex);
 		}
 	}
 

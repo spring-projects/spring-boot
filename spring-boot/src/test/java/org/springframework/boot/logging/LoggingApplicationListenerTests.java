@@ -485,10 +485,14 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig() throws Exception {
-		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
-		propertySources.addFirst(new MapPropertySource("test1", Collections.<String, Object>singletonMap("logging.level.ROOT", "DEBUG")));
-		propertySources.addLast(new MapPropertySource("test2", Collections.<String, Object>singletonMap("logging.level.root", "WARN")));
+	public void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig()
+			throws Exception {
+		MutablePropertySources propertySources = this.context.getEnvironment()
+				.getPropertySources();
+		propertySources.addFirst(new MapPropertySource("test1",
+				Collections.<String, Object>singletonMap("logging.level.ROOT", "DEBUG")));
+		propertySources.addLast(new MapPropertySource("test2",
+				Collections.<String, Object>singletonMap("logging.level.root", "WARN")));
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");

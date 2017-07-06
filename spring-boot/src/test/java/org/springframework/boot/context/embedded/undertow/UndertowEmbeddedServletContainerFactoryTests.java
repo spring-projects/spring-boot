@@ -257,8 +257,11 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
 		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
 		factory.setSsl(ssl);
-		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(factory, "getKeyManagers");
-		Class<?> name = Class.forName("org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory$ConfigurableAliasKeyManager");
+		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(factory,
+				"getKeyManagers");
+		Class<?> name = Class
+				.forName("org.springframework.boot.context.embedded.undertow."
+						+ "UndertowEmbeddedServletContainerFactory$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(name);
 	}
 
