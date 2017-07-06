@@ -316,8 +316,12 @@ public class UndertowEmbeddedServletContainerFactory
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
 			keyManagerFactory.init(keyStore, keyPassword);
-			return getConfigurableAliasKeyManagers(ssl,
-					keyManagerFactory.getKeyManagers());
+			if (ssl.getKeyAlias() != null) {
+				return getConfigurableAliasKeyManagers(ssl,
+						keyManagerFactory.getKeyManagers());
+			}
+			return keyManagerFactory.getKeyManagers();
+
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
