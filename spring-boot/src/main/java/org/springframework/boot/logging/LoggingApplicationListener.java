@@ -341,17 +341,23 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	protected void setLogLevels(LoggingSystem system, Environment environment) {
 		Map<String, Object> levels = new RelaxedPropertyResolver(environment)
 				.getSubProperties("logging.level.");
+		boolean rootProcessed = false;
 		for (Entry<String, Object> entry : levels.entrySet()) {
-			setLogLevel(system, environment, entry.getKey(), entry.getValue().toString());
+			String name = entry.getKey();
+			if (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME)) {
+				if (rootProcessed) {
+					return;
+				}
+				name = null;
+				rootProcessed = true;
+			}
+			setLogLevel(system, environment, name, entry.getValue().toString());
 		}
 	}
 
 	private void setLogLevel(LoggingSystem system, Environment environment, String name,
 			String level) {
 		try {
-			if (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME)) {
-				name = null;
-			}
 			level = environment.resolvePlaceholders(level);
 			system.setLogLevel(name, coerceLogLevel(level));
 		}

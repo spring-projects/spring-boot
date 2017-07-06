@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +48,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -479,6 +482,17 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console ${pid}");
+	}
+
+	@Test
+	public void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig() throws Exception {
+		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
+		propertySources.addFirst(new MapPropertySource("test1", Collections.<String, Object>singletonMap("logging.level.ROOT", "DEBUG")));
+		propertySources.addLast(new MapPropertySource("test2", Collections.<String, Object>singletonMap("logging.level.root", "WARN")));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
 	}
 
 	@Test
