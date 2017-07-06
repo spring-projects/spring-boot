@@ -18,6 +18,7 @@ package org.springframework.boot.context.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -58,6 +59,8 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -110,7 +113,9 @@ public class LoggingApplicationListenerTests {
 
 	@After
 	public void clear() {
-		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
+		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
+		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
+		loggingSystem.cleanUp();
 		System.clearProperty(LoggingSystem.class.getName());
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
@@ -518,6 +523,17 @@ public class LoggingApplicationListenerTests {
 		multicastEvent(new ApplicationFailedEvent(this.springApplication, new String[0],
 				new GenericApplicationContext(), new Exception()));
 		assertThat(loggingSystem.cleanedUp).isTrue();
+	}
+
+	@Test
+	public void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig() throws Exception {
+		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
+		propertySources.addFirst(new MapPropertySource("test1", Collections.singletonMap("logging.level.ROOT", "DEBUG")));
+		propertySources.addLast(new MapPropertySource("test2", Collections.singletonMap("logging.level.root", "WARN")));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
 	}
 
 	private void multicastEvent(ApplicationEvent event) {
