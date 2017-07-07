@@ -56,6 +56,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.cache.Cache;
@@ -73,7 +74,6 @@ import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -101,8 +101,8 @@ public class CacheAutoConfigurationTests {
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final ContextLoader<AnnotationConfigApplicationContext> contextLoader = ContextLoader
-			.standard().autoConfig(CacheAutoConfiguration.class);
+	private final StandardContextLoader contextLoader = ContextLoader.standard()
+			.autoConfig(CacheAutoConfiguration.class);
 
 	@Test
 	public void noEnableCaching() {

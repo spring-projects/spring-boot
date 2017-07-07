@@ -43,8 +43,8 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
@@ -66,8 +66,7 @@ public class ArtemisAutoConfigurationTests {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private final ContextLoader<AnnotationConfigApplicationContext> contextLoader = ContextLoader
-			.standard()
+	private final StandardContextLoader contextLoader = ContextLoader.standard()
 			.autoConfig(ArtemisAutoConfiguration.class, JmsAutoConfiguration.class);
 
 	@Test

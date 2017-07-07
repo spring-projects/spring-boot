@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TestDatabaseAutoConfigurationTests {
 
-	private final ContextLoader<AnnotationConfigApplicationContext> contextLoader = ContextLoader
-			.standard().autoConfig(TestDatabaseAutoConfiguration.class);
+	private final StandardContextLoader contextLoader = ContextLoader.standard()
+			.autoConfig(TestDatabaseAutoConfiguration.class);
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {

@@ -25,16 +25,15 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @since 2.0.0
- * @param <T> the type of the context that can be consumed
  */
 @FunctionalInterface
-public interface ContextConsumer<T extends ConfigurableApplicationContext> {
+public interface ContextConsumer {
 
 	/**
 	 * Performs this operation on the supplied {@code context}.
 	 * @param context the application context to consume
 	 * @throws Throwable any exception that might occur in assertions
 	 */
-	void accept(T context) throws Throwable;
+	void accept(ConfigurableApplicationContext context) throws Throwable;
 
 }

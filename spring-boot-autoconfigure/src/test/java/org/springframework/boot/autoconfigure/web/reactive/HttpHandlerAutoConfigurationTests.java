@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import org.junit.Test;
 
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.test.context.ReactiveWebContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -39,8 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpHandlerAutoConfigurationTests {
 
-	private final ContextLoader<GenericReactiveWebApplicationContext> contextLoader = ContextLoader
-			.reactiveWeb().autoConfig(HttpHandlerAutoConfiguration.class);
+	private final ReactiveWebContextLoader contextLoader = ContextLoader.reactiveWeb()
+			.autoConfig(HttpHandlerAutoConfiguration.class);
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {

@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
 import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.test.context.ServletWebContextLoader;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -61,7 +62,6 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -114,8 +114,7 @@ public class WebMvcAutoConfigurationTests {
 
 	private static final MockServletWebServerFactory webServerFactory = new MockServletWebServerFactory();
 
-	private final ContextLoader<AnnotationConfigWebApplicationContext> contextLoader = ContextLoader
-			.servletWeb()
+	private final ServletWebContextLoader contextLoader = ContextLoader.servletWeb()
 			.autoConfig(WebMvcAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class)
@@ -236,7 +235,6 @@ public class WebMvcAutoConfigurationTests {
 					assertThat(resolver.getStrategyMap().get("/**/*.js"))
 							.isInstanceOf(FixedVersionStrategy.class);
 				});
-		;
 	}
 
 	@Test
@@ -575,7 +573,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingProducesNotFoundResponseWhenThereIsNoWelcomePage() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/no-welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.loadWeb(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvcBuilders.webAppContextSetup(context).build()
@@ -600,7 +598,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.loadWeb(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -615,7 +613,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingDoesNotHandleRequestsThatDoNotAcceptTextHtml() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.loadWeb(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -628,7 +626,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingHandlesRequestsWithNoAcceptHeader() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.loadWeb(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -642,7 +640,7 @@ public class WebMvcAutoConfigurationTests {
 			throws Exception {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.loadWeb(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -656,7 +654,7 @@ public class WebMvcAutoConfigurationTests {
 			throws Exception {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page");
-		this.contextLoader.load(context -> {
+		this.contextLoader.loadWeb(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();

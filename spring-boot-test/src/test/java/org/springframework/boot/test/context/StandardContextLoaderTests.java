@@ -28,14 +28,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link AbstractContextLoader}.
+ * Tests for {@link  StandardContextLoader}.
  *
  * @author Stephane Nicoll
  */
@@ -44,8 +43,8 @@ public class StandardContextLoaderTests {
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final StandardContextLoader<AnnotationConfigApplicationContext> contextLoader = new StandardContextLoader<>(
-			() -> new AnnotationConfigApplicationContext());
+	private final StandardContextLoader contextLoader = new StandardContextLoader(
+			AnnotationConfigApplicationContext::new);
 
 	@Test
 	public void systemPropertyIsSetAndRemoved() {

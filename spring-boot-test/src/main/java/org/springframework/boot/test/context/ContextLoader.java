@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -32,7 +31,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * <pre class="code">
  * public class FooAutoConfigurationTests {
  *
- *     private final ContextLoader contextLoader = new ContextLoader()
+ *     private final ContextLoader contextLoader = ContextLoader.standard()
  *             .autoConfig(FooAutoConfiguration.class).env("spring.foo=bar");
  *
  * }</pre>
@@ -67,6 +66,10 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * automatically closed.
  *
  * <p>
+ * Web environment can easily be simulated using the {@link #servletWeb()} and
+ * {@link #reactiveWeb()} factory methods.
+ *
+ * <p>
  * If a failure scenario has to be tested, {@link #loadAndFail(Consumer)} can be used
  * instead: it expects the startup of the context to fail and call the {@link Consumer}
  * with the exception for further assertions.
@@ -74,9 +77,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @since 2.0.0
- * @param <T> the type of the context to be loaded
  */
-public interface ContextLoader<T extends ConfigurableApplicationContext> {
+public interface ContextLoader {
 
 	/**
 	 * Creates a {@code ContextLoader} that will load a standard
@@ -84,9 +86,8 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 *
 	 * @return the context loader
 	 */
-	static ContextLoader<AnnotationConfigApplicationContext> standard() {
-		return new StandardContextLoader<>(
-				() -> new AnnotationConfigApplicationContext());
+	static StandardContextLoader standard() {
+		return new StandardContextLoader(AnnotationConfigApplicationContext::new);
 	}
 
 	/**
@@ -95,8 +96,8 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 *
 	 * @return the context loader
 	 */
-	static ContextLoader<AnnotationConfigWebApplicationContext> servletWeb() {
-		return new StandardContextLoader<>(() -> {
+	static ServletWebContextLoader servletWeb() {
+		return new ServletWebContextLoader(() -> {
 			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 			context.setServletContext(new MockServletContext());
 			return context;
@@ -109,9 +110,8 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 *
 	 * @return the context loader
 	 */
-	static ContextLoader<GenericReactiveWebApplicationContext> reactiveWeb() {
-		return new StandardContextLoader<>(
-				() -> new GenericReactiveWebApplicationContext());
+	static ReactiveWebContextLoader reactiveWeb() {
+		return new ReactiveWebContextLoader(GenericReactiveWebApplicationContext::new);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 * @param value the value (can be null to remove any existing customization)
 	 * @return this instance
 	 */
-	public ContextLoader<T> systemProperty(String key, String value);
+	ContextLoader systemProperty(String key, String value);
 
 	/**
 	 * Add the specified property pairs. Key-value pairs can be specified with colon (":")
@@ -132,21 +132,21 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 * environment
 	 * @return this instance
 	 */
-	public ContextLoader<T> env(String... pairs);
+	ContextLoader env(String... pairs);
 
 	/**
 	 * Add the specified user configuration classes.
 	 * @param configs the user configuration classes to add
 	 * @return this instance
 	 */
-	public ContextLoader<T> config(Class<?>... configs);
+	ContextLoader config(Class<?>... configs);
 
 	/**
 	 * Add the specified auto-configuration classes.
 	 * @param autoConfigurations the auto-configuration classes to add
 	 * @return this instance
 	 */
-	public ContextLoader<T> autoConfig(Class<?>... autoConfigurations);
+	ContextLoader autoConfig(Class<?>... autoConfigurations);
 
 	/**
 	 * Add the specified auto-configurations at the beginning (in that order) so that it
@@ -156,7 +156,7 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 * @param autoConfigurations the auto-configuration to add
 	 * @return this instance
 	 */
-	public ContextLoader<T> autoConfigFirst(Class<?>... autoConfigurations);
+	ContextLoader autoConfigFirst(Class<?>... autoConfigurations);
 
 	/**
 	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use.
@@ -166,15 +166,15 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 * @return this instance
 	 * @see HidePackagesClassLoader
 	 */
-	public ContextLoader<T> classLoader(ClassLoader classLoader);
+	ContextLoader classLoader(ClassLoader classLoader);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
-	 * this loader. The context is consumed by the specified {@code consumers} and closed
+	 * this loader. The context is consumed by the specified {@code consumer} and closed
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
-	public void load(ContextConsumer<T> consumer);
+	void load(ContextConsumer consumer);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
@@ -183,7 +183,7 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 * specified {@link Consumer} with no expectation on the type of the exception.
 	 * @param consumer the consumer of the failure
 	 */
-	public void loadAndFail(Consumer<Throwable> consumer);
+	void loadAndFail(Consumer<Throwable> consumer);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
@@ -195,7 +195,6 @@ public interface ContextLoader<T extends ConfigurableApplicationContext> {
 	 * @param consumer the consumer of the failure
 	 * @param <E> the expected type of the failure
 	 */
-	public <E extends Throwable> void loadAndFail(Class<E> exceptionType,
-			Consumer<E> consumer);
+	<E extends Throwable> void loadAndFail(Class<E> exceptionType, Consumer<E> consumer);
 
 }

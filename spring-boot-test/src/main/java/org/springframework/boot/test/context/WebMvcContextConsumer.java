@@ -16,22 +16,25 @@
 
 package org.springframework.boot.test.context;
 
-import java.util.function.Supplier;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
- * A {@link ContextLoader} that simulates a standard, non web environment.
+ * Specialized callback interface used in tests to process a running
+ * {@link ConfigurableWebApplicationContext} with the ability to throw a (checked)
+ * exception.
  *
  * @author Stephane Nicoll
- * @author Andy Wilkinson
+ * @see ContextConsumer
  * @since 2.0.0
  */
-public class StandardContextLoader
-		extends AbstractContextLoader<AnnotationConfigApplicationContext, StandardContextLoader> {
+@FunctionalInterface
+public interface WebMvcContextConsumer {
 
-	public StandardContextLoader(Supplier<AnnotationConfigApplicationContext> contextSupplier) {
-		super(contextSupplier);
-	}
+	/**
+	 * Performs this operation on the supplied {@code context}.
+	 * @param context the application context to consume
+	 * @throws Throwable any exception that might occur in assertions
+	 */
+	void accept(ConfigurableWebApplicationContext context) throws Throwable;
 
 }

@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -60,8 +60,8 @@ public class HazelcastAutoConfigurationClientTests {
 		}
 	}
 
-	private final ContextLoader<AnnotationConfigApplicationContext> contextLoader = ContextLoader
-			.standard().autoConfig(HazelcastAutoConfiguration.class);
+	private final StandardContextLoader contextLoader = ContextLoader.standard()
+			.autoConfig(HazelcastAutoConfiguration.class);
 
 	@Test
 	public void systemProperty() throws IOException {
