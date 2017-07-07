@@ -1657,8 +1657,10 @@ tried (`myPropertyName`, `MY_PROPERTY_NAME` etc).
 [[boot-features-developing-web-applications]]
 == Developing web applications
 Spring Boot is well suited for web application development. You can easily create a
-self-contained HTTP server using embedded Tomcat, Jetty, or Undertow. Most web
-applications will use the `spring-boot-starter-web` module to get up and running quickly.
+self-contained HTTP server using embedded Tomcat, Jetty, Undertow, or Netty.
+Most web applications will use the `spring-boot-starter-web` module to get up
+and running quickly. You can also choose to use to build reactive web applications
+by using the `spring-boot-starter-webflux` module.
 
 If you haven't yet developed a Spring Boot web application you can follow the
 "Hello World!" example in the
@@ -1700,7 +1702,7 @@ Here is a typical example `@RestController` to serve JSON data:
 ----
 
 Spring MVC is part of the core Spring Framework and detailed information is available in
-the  {spring-reference}#mvc[reference documentation]. There are also several guides
+the  {spring-reference}web.html#mvc[reference documentation]. There are also several guides
 available at http://spring.io/guides that cover Spring MVC.
 
 
@@ -1722,9 +1724,9 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (see below).
 
 If you want to keep Spring Boot MVC features, and
-you just want to add additional {spring-reference}#mvc[MVC configuration] (interceptors,
+you just want to add additional {spring-reference}web.html#mvc[MVC configuration] (interceptors,
 formatters, view controllers etc.) you can add your own `@Configuration` class of type
-`WebMvcConfigurerAdapter`, but *without* `@EnableWebMvc`. If you wish to provide custom
+`WebMvcConfigurer`, but *without* `@EnableWebMvc`. If you wish to provide custom
 instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter` or
 `ExceptionHandlerExceptionResolver` you can declare a `WebMvcRegistrationsAdapter`
 instance providing such components.
@@ -1827,7 +1829,7 @@ you set the `spring.mvc.message-codes-resolver.format` property `PREFIX_ERROR_CO
 By default Spring Boot will serve static content from a directory called `/static` (or
 `/public` or `/resources` or `/META-INF/resources`) in the classpath or from the root
 of the `ServletContext`.  It uses the `ResourceHttpRequestHandler` from Spring MVC so you
-can modify that behavior by adding your own `WebMvcConfigurerAdapter` and overriding the
+can modify that behavior by adding your own `WebMvcConfigurer` and overriding the
 `addResourceHandlers` method.
 
 In a stand-alone web application the default servlet from the container is also
@@ -1912,7 +1914,7 @@ for more of the supported options.
 ====
 This feature has been thoroughly described in a dedicated
 https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post]
-and in Spring Framework's {spring-reference}/#mvc-config-static-resources[reference documentation].
+and in Spring Framework's {spring-reference}web.html#mvc-config-static-resources[reference documentation].
 ====
 
 
@@ -2069,8 +2071,8 @@ interface.
 
 
 You can also use regular Spring MVC features like
-{spring-reference}/#mvc-exceptionhandlers[`@ExceptionHandler` methods] and
-{spring-reference}/#mvc-ann-controller-advice[`@ControllerAdvice`]. The `ErrorController`
+{spring-reference}web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and
+{spring-reference}web.html#mvc-ann-controller-advice[`@ControllerAdvice`]. The `ErrorController`
 will then pick up any unhandled exceptions.
 
 
@@ -2159,12 +2161,12 @@ http://caniuse.com/#feat=cors[most browsers] that allows you to specify in a fle
 way what kind of cross domain requests are authorized, instead of using some less secure
 and less powerful approaches like IFRAME or JSONP.
 
-As of version 4.2, Spring MVC {spring-reference}/#cors[supports CORS] out of the box.
-Using {spring-reference}/#_controller_method_cors_configuration[controller method CORS
+As of version 4.2, Spring MVC {spring-reference}web.html#cors[supports CORS] out of the box.
+Using {spring-reference}web.html#controller-method-cors-configuration[controller method CORS
 configuration] with
 {spring-javadoc}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`]
 annotations in your Spring Boot application does not require any specific configuration.
-{spring-reference}/#_global_cors_configuration[Global CORS configuration] can be defined
+{spring-reference}web.html#global-cors-configuration[Global CORS configuration] can be defined
 by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)`
 method:
 
@@ -2175,7 +2177,7 @@ method:
 
 		@Bean
 		public WebMvcConfigurer corsConfigurer() {
-			return new WebMvcConfigurerAdapter() {
+			return new WebMvcConfigurer() {
 				@Override
 				public void addCorsMappings(CorsRegistry registry) {
 					registry.addMapping("/api/**");
@@ -2185,6 +2187,184 @@ method:
 	}
 ----
 
+[[boot-features-spring-webflux]]
+=== The '`Spring WebFlux framework`'
+
+Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
+Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous and
+non-blocking, and implements the http://www.reactive-streams.org/[Reactive Streams]
+specification through http://projectreactor.io/[the Reactor project].
+
+Spring WebFlux comes in two flavours — the annotation-based one is quite close to
+the Spring MVC model we know:
+
+[source,java,indent=0]
+----
+	@RestController
+	@RequestMapping("/users")
+	public class MyRestController {
+
+		@GetMapping("/{user}")
+		public Mono<User> getUser(@PathVariable Long user) {
+			// ...
+		}
+
+		@GetMapping("/{user}/customers")
+		Flux<Customer> getUserCustomers(@PathVariable Long user) {
+			// ...
+		}
+
+		@DeleteMapping("/{user}")
+		public Mono<User> deleteUser(@PathVariable Long user) {
+			// ...
+		}
+
+	}
+----
+
+'`WebFlux.fn`', the functional variant, separates the routing configuration from the actual handling
+of the requests:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class RoutingConfiguration {
+
+		@Bean
+		public RouterFunction<ServerResponse> monoRouterFunction(UserHandler userHandler) {
+			return route(GET("/{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
+					.andRoute(GET("/{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
+					.andRoute(DELETE("/{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
+		}
+		
+	}
+
+	@Component
+	public class UserHandler {
+
+    	public Mono<ServerResponse> getUser(ServerRequest request) {
+    		// ...
+    	}
+
+    	public Mono<ServerResponse> getUserCustomers(ServerRequest request) {
+			// ...
+		}
+
+		public Mono<ServerResponse> deleteUser(ServerRequest request) {
+			// ...
+		}
+	}
+----
+
+WebFlux is part of the Spring Framework and detailed information is available in
+the  {spring-reference}web.html#web-reactive[reference documentation].
+
+To get started, add the `spring-boot-starter-webflux` module to your application.
+
+NOTE: Adding both `spring-boot-starter-web` and `spring-boot-starter-webflux`
+modules in your application will result in Spring Boot auto-configuring Spring
+MVC, not WebFlux. This behavior has been chosen because many Spring developers
+will add `spring-boot-starter-webflux` to their Spring MVC application to use
+the reactive `WebCLient`. You can still enforce your choice by setting the
+chosen application type like
+`SpringApplication.setWebApplicationType(WebApplicationType.REACTIVE)`.
+
+[[boot-features-spring-webflux-auto-configuration]]
+==== Spring WebFlux auto-configuration
+Spring Boot provides auto-configuration for Spring WebFlux that works well with most
+applications.
+
+The auto-configuration adds the following features on top of Spring's defaults:
+
+* Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (see below).
+* Support for serving static resources, including support for WebJars (see below).
+
+
+If you want to keep Spring Boot WebFlux features, and
+you just want to add additional {spring-reference}web.html#web-reactive[WebFlux configuration]
+you can add your own `@Configuration` class of type `WebFluxConfigurer`,
+but *without* `@EnableWebFlux`.
+
+If you want to take complete control of Spring WebFlux, you can add your own `@Configuration`
+annotated with `@EnableWebFlux`.
+
+
+[[boot-features-spring-webflux-httpcodecs]]
+==== HTTP codecs with HttpMessageReaders and HttpMessageWriters
+Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interface to convert
+HTTP requests and responses. They are configured with `CodecConfigurer` with sensible defaults,
+by looking at the libraries available in your classpath.
+
+Spring Boot will apply further customization using `CodecCustomizer` instances.
+For example, `spring.jackson.*` configuration keys will be applied to the Jackson codec.
+
+If you need to add or customize codecs you can create a custom `CodecCustomizer` component:
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.web.codec.CodecCustomizer;
+
+	@Configuration
+	public class MyConfiguration {
+
+		@Bean
+		public CodecCustomizer myCodecCustomizer() {
+			return codecConfigurer -> {
+				// ...
+			}
+		}
+
+	}
+----
+
+You can also leverage <<boot-features-json-components,Boot's custom JSON serializers and deserializers>>.
+
+[[boot-features-spring-webflux-static-content]]
+==== Static Content
+By default Spring Boot will serve static content from a directory called `/static` (or
+`/public` or `/resources` or `/META-INF/resources`) in the classpath.
+It uses the `ResourceWebHandler` from Spring WebFlux so you
+can modify that behavior by adding your own `WebFluxConfigurer` and overriding the
+`addResourceHandlers` method.
+
+By default, resources are mapped on `+/**+` but you can tune that via
+`spring.mvc.static-path-pattern`. For instance, relocating all resources to `/resources/**`
+can be achieved as follows:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.static-path-pattern=/resources/**
+----
+
+You can also customize the static resource locations using
+`spring.resources.static-locations` (replacing the default values with a list of directory
+locations). If you do this the default welcome page detection will switch to your custom
+locations, so if there is an `index.html` in any of your locations on startup, it will be
+the home page of the application.
+
+In addition to the '`standard`' static resource locations above, a special case is made
+for http://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+`
+will be served from jar files if they are packaged in the Webjars format.
+
+TIP: Spring WebFlux applications don't strictly depend on the Servlet API, so they can't
+be deployed as war and have no use of the `src/main/webapp` directory.
+
+
+
+[[boot-features-spring-webflux-template-engines]]
+==== Template engines
+As well as REST web services, you can also use Spring WebFlux to serve dynamic HTML content.
+Spring WebFlux supports a variety of templating technologies including Thymeleaf, FreeMarker
+and Mustache.
+
+Spring Boot includes auto-configuration support for the following templating engines:
+
+ * http://freemarker.org/docs/[FreeMarker]
+ * http://www.thymeleaf.org[Thymeleaf]
+ * http://mustache.github.io/[Mustache]
+
+When you're using one of these templating engines with the default configuration, your
+templates will be picked up automatically from `src/main/resources/templates`.
 
 
 [[boot-features-jersey]]
@@ -4050,7 +4230,7 @@ transparently, without any interference to the invoker.  Spring Boot auto-config
 cache infrastructure as long as the caching support is enabled via the `@EnableCaching`
 annotation.
 
-NOTE: Check the {spring-reference}/#cache[relevant section] of the Spring Framework
+NOTE: Check the {spring-reference}integration.html#cache[relevant section] of the Spring Framework
 reference for more details.
 
 In a nutshell, adding caching to an operation of your service is as easy as adding the
@@ -4092,8 +4272,8 @@ application uses. Practically all providers require you to explicitly configure 
 cache that you use in the application. Some offer a way to customize the default caches
 defined by the `spring.cache.cache-names` property.
 
-TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
-{spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
+TIP: It is also possible to {spring-reference}integration.html#cache-annotations-put[update] or
+{spring-reference}integration.html#cache-annotations-evict[evict] data from the cache transparently.
 
 NOTE: If you are using the cache infrastructure with beans that are not interface-based,
 make sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
@@ -4395,7 +4575,7 @@ The `javax.jms.ConnectionFactory` interface provides a standard method of creati
 `javax.jms.Connection` for interacting with a JMS broker. Although Spring needs a
 `ConnectionFactory` to work with JMS, you generally won't need to use it directly yourself
 and you can instead rely on higher level messaging abstractions (see the
-{spring-reference}/#jms[relevant section] of the Spring Framework reference
+{spring-reference}integration.html#jms[relevant section] of the Spring Framework reference
 documentation for details). Spring Boot also auto-configures the necessary infrastructure
 to send and receive messages.
 
@@ -4880,8 +5060,8 @@ include::{code-examples}/kafka/KafkaSpecialProducerConsumerConfigExample.java[ta
 
 
 
-[[boot-features-restclient]]
-== Calling REST services
+[[boot-features-resttemplate]]
+== Calling REST services with '`RestTemplate`'
 If you need to call remote REST services from your application, you can use Spring
 Framework's `RestTemplate` class. Since `RestTemplate` instances often need to be
 customized before being used, Spring Boot does not provide any single auto-configured
@@ -4895,7 +5075,7 @@ Here's a typical example:
 [source,java,indent=0]
 ----
 	@Service
-	public class MyBean {
+	public class MyService {
 
 		private final RestTemplate restTemplate;
 
@@ -4914,7 +5094,7 @@ TIP: `RestTemplateBuilder` includes a number of useful methods that can be used 
 configure a `RestTemplate`. For example, to add BASIC auth support you can use
 `builder.basicAuthorization("user", "password").build()`.
 
-[[boot-features-restclient-customization]]
+[[boot-features-resttemplate-customization]]
 === RestTemplate customization
 There are three main approaches to `RestTemplate` customization, depending on how broadly
 you want the customizations to apply.
@@ -4941,6 +5121,60 @@ Lastly, the most extreme (and rarely used) option is to create your own
 `RestTemplateBuilder` and will prevent any `RestTemplateCustomizer` beans from being used.
 
 
+[[boot-features-webclient]]
+== Calling REST services with '`WebClient`'
+
+If you have Spring WebFlux on your classpath, you can also choose to use `WebClient`
+to call remote REST services; compared to `RestTemplate`, this client has more a
+functional feel to it and is fully reactive. You can create your own client
+instance with the builder `WebClient.create()`, which already provides a good
+out-of-the-box experience. See the
+{spring-reference}web.html#web-reactive-client[relevant section on WebClient].
+
+Spring Boot will create and pre-configure such a builder for you; for example,
+client HTTP codecs will be configured just like the server ones
+(see <<boot-features-spring-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>).
+
+Here's a typical example:
+
+[source,java,indent=0]
+----
+	@Service
+	public class MyService {
+
+		private final WebClient webClient;
+
+		public MyBean(WebClient.Builder webClientBuilder) {
+			this.webClient = webClientBuilder.baseUrl("http://example.org").build();
+		}
+
+		public Mono<Details> someRestCall(String name) {
+			return this.webClient.get().url("/{name}/details", name)
+							.retrieve().bodyToMono(Details.class);
+		}
+
+	}
+----
+
+
+
+[[boot-features-webclient-customization]]
+=== WebClient customization
+There are three main approaches to `WebClient` customization, depending on how broadly
+you want the customizations to apply.
+
+To make the scope of any customizations as narrow as possible, inject the auto-configured
+`WebClient.Builder` and then call its methods as required. `WebClient.Builder` instances
+are stateful; any change on the builder will be reflected in all clients subsequently
+created with it. If you'd like to create several clients with the same builder, you can
+also consider cloning the builder with `WebClient.Builder other = builder.clone();`.
+
+To make an application-wide, additive customization to all `WebClient.Builder` instances,
+you can declare `WebClientCustomizer` beans and change the `WebClient.Builder` as you
+would do locally at the point of injection.
+
+Lastly, you can fall back to the original API and just use `WebClient.create()`. In that
+case, no auto-configuration nor `WebClientCustomizer` will be applied.
 
 [[boot-features-validation]]
 == Validation
@@ -4976,7 +5210,7 @@ The Spring Framework provides an easy abstraction for sending email using the
 `JavaMailSender` interface and Spring Boot provides auto-configuration for it as well as
 a starter module.
 
-TIP: Check the {spring-reference}/#mail[reference documentation] for a detailed
+TIP: Check the {spring-reference}integration.html#mail[reference documentation] for a detailed
 explanation of how you can use `JavaMailSender`.
 
 If `spring.mail.host` and the relevant libraries (as defined by
@@ -5344,7 +5578,7 @@ If you use the
 the following provided libraries:
 
 * http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
-* {spring-reference}/#integration-testing[Spring Test] & Spring Boot Test --
+* {spring-reference}testing.html#integration-testing[Spring Test] & Spring Boot Test --
   Utilities and integration test support for Spring Boot applications.
 * http://joel-costigliola.github.io/assertj/[AssertJ] -- A fluent assertion library.
 * http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
@@ -5374,7 +5608,7 @@ You can declare a dependency directly to `org.springframework:spring-test` or us
 `spring-boot-starter-test` '`Starter`' to pull it in transitively.
 
 If you have not used the `spring-test` module before you should start by reading the
-{spring-reference}/#testing[relevant section] of the Spring Framework reference
+{spring-reference}testing.html#testing[relevant section] of the Spring Framework reference
 documentation.
 
 
@@ -5713,7 +5947,7 @@ TIP: If you need to configure elements of the auto-configuration (for example wh
 filters should be applied) you can use attributes in the `@AutoConfigureMockMvc`
 annotation.
 
-If you use HtmlUnit or Selenium, auto-configuration will also provide a `WebClient` bean
+If you use HtmlUnit or Selenium, auto-configuration will also provide an HTMLUnit `WebClient` bean
 and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 
 
@@ -5758,6 +5992,58 @@ definition.
 A list of the auto-configuration that is enabled by `@WebMvcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-webflux-tests]]
+==== Auto-configured Spring WebFlux tests
+To test Spring WebFlux controllers are working as expected you can use the `@WebFluxTest`
+annotation. `@WebFluxTest` will auto-configure the Spring WebFlux infrastructure and limit
+scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`,and `WebFluxConfigurer`.
+Regular `@Component` beans will not be scanned when using this annotation.
+
+Often `@WebFluxTest` will be limited to a single controller and used in combination with
+`@MockBean` to provide mock implementations for required collaborators.
+
+`@WebFluxTest` also auto-configures `WebTestClient`, which offers a powerful way to quickly
+test WebFlux controllers without needing to start a full HTTP server.
+
+TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest`
+(e.g. `SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`.
+
+[source,java,indent=0]
+----
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+	@RunWith(SpringRunner.class)
+	@WebFluxTest(UserVehicleController.class)
+	public class MyControllerTests {
+
+		@Autowired
+		private WebTestClient webClient;
+
+		@MockBean
+		private UserVehicleService userVehicleService;
+
+		@Test
+		public void testExample() throws Exception {
+			given(this.userVehicleService.getVehicleDetails("sboot"))
+					.willReturn(new VehicleDetails("Honda", "Civic"));
+			this.webClient.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)
+					.exchange()
+					.expectStatus().isOk()
+					.expectBody(String.class).isEqualTo("Honda Civic");
+		}
+
+	}
+----
+
+A list of the auto-configuration that is enabled by `@WebFluxTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
@@ -5768,7 +6054,7 @@ Data JPA repositories. Regular `@Component` beans will not be loaded into the
 `ApplicationContext`.
 
 Data JPA tests are transactional and rollback at the end of each test by default,
-see the {spring-reference}#testcontext-tx-enabling-transactions[relevant section] in the
+see the {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section] in the
 Spring Reference Documentation for more details. If that's not what you want, you can
 disable transaction management for a test or for the whole class as follows:
 
@@ -5853,7 +6139,7 @@ will also configure an in-memory embedded database and a `JdbcTemplate`. Regular
 `@Component` beans will not be loaded into the `ApplicationContext`.
 
 JDBC tests are transactional and rollback at the end of each test by default,
-see the {spring-reference}#testcontext-tx-enabling-transactions[relevant section] in the
+see the {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section] in the
 Spring Reference Documentation for more details. If that's not what you want, you can
 disable transaction management for a test or for the whole class as follows:
 
@@ -5994,7 +6280,7 @@ beans will not be loaded into the `ApplicationContext`:
 ----
 
 Data Neo4j tests are transactional and rollback at the end of each test by default,
-see the {spring-reference}#testcontext-tx-enabling-transactions[relevant section] in the
+see the {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section] in the
 Spring Reference Documentation for more details. If that's not what you want, you can
 disable transaction management for a test or for the whole class as follows:
 
@@ -6371,7 +6657,7 @@ and Undertow. If you're deploying a war file to a standalone container, Spring B
 assumes that the container will be responsible for the configuration of its WebSocket
 support.
 
-Spring Framework provides {spring-reference}/#websocket[rich WebSocket support] that can
+Spring Framework provides {spring-reference}web.html#websocket[rich WebSocket support] that can
 be easily accessed via the `spring-boot-starter-websocket` module.
 
 
@@ -6550,7 +6836,7 @@ application'. A web application is any application that is using a Spring
 [[boot-features-spel-conditions]]
 ==== SpEL expression conditions
 The `@ConditionalOnExpression` annotation allows configuration to be included based on the
-result of a {spring-reference}/#expressions[SpEL expression].
+result of a {spring-reference}core.html#expressions[SpEL expression].
 
 
 

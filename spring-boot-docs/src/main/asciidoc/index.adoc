@@ -36,7 +36,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
 :spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin/
 :spring-boot-gradle-plugin: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin/
-:spring-reference: http://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/htmlsingle
+:spring-reference: http://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/
 :spring-security-reference: http://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
 :spring-security-oauth2-reference: http://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-webservices-reference: http://docs.spring.io/spring-ws/docs/{spring-webservices-docs-version}/reference/htmlsingle
@@ -52,8 +52,8 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :ant-manual: http://ant.apache.org/manual
 :code-examples: ../java/org/springframework/boot
 :gradle-user-guide: https://docs.gradle.org/3.4.1/userguide
-:jetty-documentation: https://www.eclipse.org/jetty/documentation/9.3.x
-:tomcat-documentation: https://tomcat.apache.org/tomcat-8.0-doc
+:jetty-documentation: https://www.eclipse.org/jetty/documentation/9.4.x
+:tomcat-documentation: https://tomcat.apache.org/tomcat-8.5-doc
 // ======================================================================================
 
 include::documentation-overview.adoc[]

@@ -487,8 +487,78 @@ Spring Boot. The definitive list comes from searching the source code for
 
 
 
-[[howto-embedded-servlet-containers]]
-== Embedded servlet containers
+[[howto-embedded-web-servers]]
+== Embedded Web servers
+
+
+
+[[howto-use-another-web-server]]
+=== Use another Web server
+The Spring Boot starters bring a default embedded container for you:
+
+* `spring-boot-starter-web` brings Tomcat with `spring-boot-starter-tomcat`,
+  but `spring-boot-starter-jetty` and `spring-boot-starter-undertow` can be used instead.
+* `spring-boot-starter-webflux` brings Reactor Netty with `spring-boot-starter-reactor-netty`,
+  but `spring-boot-starter-tomcat`, `spring-boot-starter-jetty` and
+  `spring-boot-starter-undertow` can be used instead.
+
+NOTE: Many starters only support Spring MVC, so they transitively bring
+`spring-boot-starter-web` into your application classpath
+
+If you choose to use a different HTTP server, you need to exclude those dependencies
+and include the one you chose instead. Spring Boot provides separate starters for
+HTTP servers to help make this process as easy as possible.
+
+Example in Maven, for Spring MVC:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+			<!-- Exclude the Tomcat dependency -->
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<!-- Use Jetty instead -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jetty</artifactId>
+	</dependency>
+----
+
+Example in Gradle, for Spring WebFlux:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	configurations {
+		// exclude Reactor Netty
+		compile.exclude module: 'spring-boot-starter-reactor-netty'
+	}
+
+	dependencies {
+		compile 'org.springframework.boot:spring-boot-starter-webflux'
+		// Use Undertow instead
+		compile 'org.springframework.boot:spring-boot-starter-undertow'
+		// ...
+	}
+----
+
+NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient`,
+so excluding it is not required if you wish to use a different HTTP server.
+
+[[howto-configure-jetty]]
+=== Configure Jetty
+Generally you can follow the advice from
+_<<howto-discover-build-in-options-for-external-properties>>_ about
+`@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
+`ServletWebServerFactoryCustomizer`. The Jetty APIs are quite rich so once you have
+access to the `JettyServletWebServerFactory` you can modify it in a number
+of ways. Or the nuclear option is to add your own `JettyServletWebServerFactory`.
 
 
 
@@ -824,104 +894,6 @@ way that cookies are written, you can instead configure Tomcat to use a
 [source,java,indent=0]
 ----
 include::{code-examples}/context/embedded/TomcatLegacyCookieProcessorExample.java[tag=customizer]
-----
-
-
-
-[[howto-use-jetty-instead-of-tomcat]]
-=== Use Jetty instead of Tomcat
-The Spring Boot starters (`spring-boot-starter-web` in particular) use Tomcat as an
-embedded container by default. You need to exclude those dependencies and include the
-Jetty one instead. Spring Boot provides Tomcat and Jetty dependencies bundled together
-as separate starters to help make this process as easy as possible.
-
-Example in Maven:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
-		<exclusions>
-			<exclusion>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-tomcat</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-jetty</artifactId>
-	</dependency>
-----
-
-Example in Gradle:
-
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
-----
-	configurations {
-		compile.exclude module: 'spring-boot-starter-tomcat'
-	}
-
-	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web'
-		compile 'org.springframework.boot:spring-boot-starter-jetty'
-		// ...
-	}
-----
-
-
-
-[[howto-configure-jetty]]
-=== Configure Jetty
-Generally you can follow the advice from
-_<<howto-discover-build-in-options-for-external-properties>>_ about
-`@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
-`ServletWebServerFactoryCustomizer`. The Jetty APIs are quite rich so once you have
-access to the `JettyServletWebServerFactory` you can modify it in a number
-of ways. Or the nuclear option is to add your own `JettyServletWebServerFactory`.
-
-
-
-[[howto-use-undertow-instead-of-tomcat]]
-=== Use Undertow instead of Tomcat
-Using Undertow instead of Tomcat is very similar to <<howto-use-jetty-instead-of-tomcat,
-using Jetty instead of Tomcat>>. You need to exclude the Tomcat dependencies and include
-the Undertow starter instead.
-
-Example in Maven:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
-		<exclusions>
-			<exclusion>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-tomcat</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-undertow</artifactId>
-	</dependency>
-----
-
-Example in Gradle:
-
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
-----
-	configurations {
-		compile.exclude module: 'spring-boot-starter-tomcat'
-	}
-
-	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web'
-		compile 'org.springframework.boot:spring-boot-starter-undertow'
-		// ...
-	}
 ----
 
 
@@ -1288,7 +1260,7 @@ Check out {sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc
 
 [[howto-http-clients-proxy-configuration]]
 === Configure RestTemplate to use a proxy
-As described in <<spring-boot-features.adoc#boot-features-restclient-customization>>,
+As described in <<spring-boot-features.adoc#boot-features-resttemplate-customization>>,
 a `RestTemplateCustomizer` can be used with `RestTemplateBuilder` to build a customized
 `RestTemplate`. This is the recommended approach for creating a `RestTemplate` configured
 to use a proxy.
