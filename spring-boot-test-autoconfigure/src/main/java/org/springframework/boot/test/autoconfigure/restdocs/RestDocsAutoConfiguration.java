@@ -85,9 +85,14 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(RequestSpecification.class)
 		public RequestSpecification restDocsRestAssuredConfigurer(
+				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {
 			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
 					.documentationConfiguration(contextProvider);
+			RestDocsRestAssuredConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider.getIfAvailable();
+			if (configurationCustomizer != null) {
+				configurationCustomizer.customize(configurer);
+			}
 			return new RequestSpecBuilder().addFilter(configurer).build();
 		}
 
