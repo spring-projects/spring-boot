@@ -209,4 +209,14 @@ public class ConfigurationMetadata {
 		return content;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("items: %n"));
+		this.items.values().forEach(itemMetadata -> {
+			sb.append("\t").append(String.format("%s%n", itemMetadata));
+		});
+		return sb.toString();
+	}
+
 }
