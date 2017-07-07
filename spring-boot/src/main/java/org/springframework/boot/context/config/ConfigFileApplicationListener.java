@@ -92,8 +92,8 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Madhura Bhave
  */
-public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
-		SmartApplicationListener, Ordered {
+public class ConfigFileApplicationListener
+		implements EnvironmentPostProcessor, SmartApplicationListener, Ordered {
 
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
@@ -142,8 +142,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 
 	@Override
 	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType) ||
-				ApplicationPreparedEvent.class.isAssignableFrom(eventType);
+		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType)
+				|| ApplicationPreparedEvent.class.isAssignableFrom(eventType);
 	}
 
 	@Override

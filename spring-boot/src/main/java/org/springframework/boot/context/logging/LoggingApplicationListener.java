@@ -307,8 +307,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				.forEach((name, level) -> setLogLevel(system, name, level));
 	}
 
-	private void setLogLevel(LoggingSystem system, String name,
-			String level) {
+	private void setLogLevel(LoggingSystem system, String name, String level) {
 		try {
 			name = (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name);
 			system.setLogLevel(name, coerceLogLevel(level));

@@ -76,7 +76,8 @@ public class Neo4jPropertiesTests {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.uri=https://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "https://localhost:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
+				"https://localhost:7474");
 	}
 
 	@Test

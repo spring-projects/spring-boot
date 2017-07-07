@@ -47,13 +47,18 @@ public class OAuth2RestOperationsConfigurationTests {
 	public void clientIdConditionMatches() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.client.client-id=acme");
-		this.context = new SpringApplicationBuilder(OAuth2RestOperationsConfiguration.class).environment(this.environment).web(false).run();
-		assertThat(this.context.getBean(OAuth2RestOperationsConfiguration.class)).isNotNull();
+		this.context = new SpringApplicationBuilder(
+				OAuth2RestOperationsConfiguration.class).environment(this.environment)
+						.web(false).run();
+		assertThat(this.context.getBean(OAuth2RestOperationsConfiguration.class))
+				.isNotNull();
 	}
 
 	@Test
 	public void clientIdConditionDoesNotMatch() throws Exception {
-		this.context = new SpringApplicationBuilder(OAuth2RestOperationsConfiguration.class).environment(this.environment).web(false).run();
+		this.context = new SpringApplicationBuilder(
+				OAuth2RestOperationsConfiguration.class).environment(this.environment)
+						.web(false).run();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(OAuth2RestOperationsConfiguration.class);
 	}

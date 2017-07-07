@@ -2475,8 +2475,8 @@ and `AuthenticationManagerConfiguration` for authentication configuration which 
 relevant in non-web applications). To switch off the default web application security
 configuration completely you can add a bean with `@EnableWebSecurity` (this does not
 disable the authentication manager configuration or Actuator's security).
-To customize it you normally use external properties and beans of type `WebSecurityConfigurerAdapter`
-(e.g. to add form-based login).
+To customize it you normally use external properties and beans of type
+`WebSecurityConfigurerAdapter` (e.g. to add form-based login).
 
 NOTE: If you add `@EnableWebSecurity` and also disable Actuator security, you will get
 the default form-based login for the entire application unless you add a custom
@@ -6261,7 +6261,7 @@ where one will be auto-configured for you.
 
 [source,java,indent=0]
 ----
-EnvironmentTestUtils.addEnvironment(env, "org=Spring", "name=Boot");
+	EnvironmentTestUtils.addEnvironment(env, "org=Spring", "name=Boot");
 ----
 
 
@@ -6274,25 +6274,25 @@ for assertions:
 
 [source,java,indent=0]
 ----
-import org.junit.Rule;
-import org.junit.Test;
-import org.springframework.boot.test.rule.OutputCapture;
+	import org.junit.Rule;
+	import org.junit.Test;
+	import org.springframework.boot.test.rule.OutputCapture;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+	import static org.hamcrest.Matchers.*;
+	import static org.junit.Assert.*;
 
-public class MyTest {
+	public class MyTest {
 
-	@Rule
-	public OutputCapture capture = new OutputCapture();
+		@Rule
+		public OutputCapture capture = new OutputCapture();
 
-	@Test
-	public void testName() throws Exception {
-		System.out.println("Hello World!");
-		assertThat(capture.toString(), containsString("World"));
+		@Test
+		public void testName() throws Exception {
+			System.out.println("Hello World!");
+			assertThat(capture.toString(), containsString("World"));
+		}
+
 	}
-
-}
 ----
 
 [[boot-features-rest-templates-test-utility]]
@@ -6313,17 +6313,17 @@ features will be enabled:
 
 [source,java,indent=0]
 ----
-public class MyTest {
+	public class MyTest {
 
-	private TestRestTemplate template = new TestRestTemplate();
+		private TestRestTemplate template = new TestRestTemplate();
 
-	@Test
-	public void testRequest() throws Exception {
-		HttpHeaders headers = template.getForEntity("http://myhost.com/example", String.class).getHeaders();
-		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
+		@Test
+		public void testRequest() throws Exception {
+			HttpHeaders headers = template.getForEntity("http://myhost.com/example", String.class).getHeaders();
+			assertThat(headers.getLocation().toString(), containsString("myotherhost"));
+		}
+
 	}
-
-}
 ----
 
 Alternatively, if you are using the `@SpringBootTest` annotation with
@@ -6334,32 +6334,32 @@ specify a host and port will automatically connect to the embedded server:
 
 [source,java,indent=0]
 ----
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class MyTest {
+	@RunWith(SpringRunner.class)
+	@SpringBootTest
+	public class MyTest {
 
-	@Autowired
-	private TestRestTemplate template;
+		@Autowired
+		private TestRestTemplate template;
 
-	@Test
-	public void testRequest() throws Exception {
-		HttpHeaders headers = template.getForEntity("/example", String.class).getHeaders();
-		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
-	}
+		@Test
+		public void testRequest() throws Exception {
+			HttpHeaders headers = template.getForEntity("/example", String.class).getHeaders();
+			assertThat(headers.getLocation().toString(), containsString("myotherhost"));
+		}
 
-	@TestConfiguration
-	static class Config {
+		@TestConfiguration
+		static class Config {
 
-		@Bean
-		public RestTemplateBuilder restTemplateBuilder() {
-			return new RestTemplateBuilder()
-				.additionalMessageConverters(...)
-				.customizers(...);
+			@Bean
+			public RestTemplateBuilder restTemplateBuilder() {
+				return new RestTemplateBuilder()
+					.additionalMessageConverters(...)
+					.customizers(...);
+			}
+
 		}
 
 	}
-
-}
 ----
 
 

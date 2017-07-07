@@ -106,8 +106,8 @@ public class OAuth2RestOperationsConfiguration {
 
 			private final AccessTokenRequest accessTokenRequest;
 
-			public ClientContextConfiguration(@Qualifier("accessTokenRequest")
-					ObjectProvider<AccessTokenRequest> accessTokenRequest) {
+			public ClientContextConfiguration(
+					@Qualifier("accessTokenRequest") ObjectProvider<AccessTokenRequest> accessTokenRequest) {
 				this.accessTokenRequest = accessTokenRequest.getIfAvailable();
 			}
 
