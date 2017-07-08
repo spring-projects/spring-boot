@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.mockingDetails;
  */
 public class ActiveMQAutoConfigurationTests {
 
-	private final StandardContextLoader contextLoader = ContextLoader.standard()
+	private final ContextLoader contextLoader = ContextLoader.standard()
 			.autoConfig(ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class);
 
 	@Test

@@ -58,7 +58,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ContextConsumer;
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -80,7 +79,7 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthIndicatorAutoConfigurationTests {
 
-	public final StandardContextLoader contextLoader = ContextLoader.standard()
+	public final ContextLoader contextLoader = ContextLoader.standard()
 			.autoConfig(HealthIndicatorAutoConfiguration.class,
 					ManagementServerProperties.class);
 

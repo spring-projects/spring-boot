@@ -41,7 +41,6 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.context.ContextConsumer;
 import org.springframework.boot.test.context.ContextLoader;
 import org.springframework.boot.test.context.HidePackagesClassLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -58,8 +57,8 @@ import static org.mockito.Mockito.mock;
  */
 public class DataSourceAutoConfigurationTests {
 
-	private final StandardContextLoader contextLoader = ContextLoader
-			.standard().autoConfig(DataSourceAutoConfiguration.class)
+	private final ContextLoader contextLoader = ContextLoader.standard()
+			.autoConfig(DataSourceAutoConfiguration.class)
 			.env("spring.datasource.initialize=false",
 					"spring.datasource.url:jdbc:hsqldb:mem:testdb-"
 							+ new Random().nextInt());

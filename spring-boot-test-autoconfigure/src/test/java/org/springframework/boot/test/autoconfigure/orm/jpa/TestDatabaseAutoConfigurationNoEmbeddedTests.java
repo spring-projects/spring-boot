@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.mock;
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar", "derby-*.jar" })
 public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
-	private final StandardContextLoader contextLoader = ContextLoader.standard()
+	private final ContextLoader contextLoader = ContextLoader.standard()
 			.config(ExistingDataSourceConfiguration.class)
 			.autoConfig(TestDatabaseAutoConfiguration.class);
 

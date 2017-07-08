@@ -56,7 +56,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.cache.Cache;
@@ -101,7 +100,7 @@ public class CacheAutoConfigurationTests {
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final StandardContextLoader contextLoader = ContextLoader.standard()
+	private final ContextLoader contextLoader = ContextLoader.standard()
 			.autoConfig(CacheAutoConfiguration.class);
 
 	@Test

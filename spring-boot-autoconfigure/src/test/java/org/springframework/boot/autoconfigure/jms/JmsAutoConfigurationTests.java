@@ -28,7 +28,6 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -62,7 +61,7 @@ public class JmsAutoConfigurationTests {
 
 	private static final String ACTIVEMQ_NETWORK_URL = "tcp://localhost:61616";
 
-	private final StandardContextLoader contextLoader = ContextLoader.standard()
+	private final ContextLoader contextLoader = ContextLoader.standard()
 			.autoConfig(ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class);
 
 	@Test

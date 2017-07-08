@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TestDatabaseAutoConfigurationTests {
 
-	private final StandardContextLoader contextLoader = ContextLoader.standard()
+	private final ContextLoader contextLoader = ContextLoader.standard()
 			.autoConfig(TestDatabaseAutoConfiguration.class);
 
 	@Test

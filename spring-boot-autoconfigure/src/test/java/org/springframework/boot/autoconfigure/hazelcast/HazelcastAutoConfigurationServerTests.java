@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.StandardContextLoader;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions("hazelcast-client-*.jar")
 public class HazelcastAutoConfigurationServerTests {
 
-	private final StandardContextLoader contextLoader = ContextLoader.standard()
+	private final ContextLoader contextLoader = ContextLoader.standard()
 			.autoConfig(HazelcastAutoConfiguration.class);
 
 	@Test
