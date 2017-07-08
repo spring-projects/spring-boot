@@ -16,11 +16,13 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 
 /**
@@ -70,8 +72,17 @@ public class OptionalLiveReloadServer {
 	 * Trigger LiveReload if the server is up an running.
 	 */
 	public void triggerReload() {
-		if (this.server != null) {
+		if (this.server != null)
 			this.server.triggerReload();
+	}
+	
+	/**
+	 * Trigger LiveReload specifying a set of changed 
+	 * files if the server is up an running.
+	 */
+	public void triggerReload(Set<ChangedFiles> changedFiles) {
+		if (this.server != null) {
+			this.server.triggerReload(changedFiles);
 		}
 	}
 

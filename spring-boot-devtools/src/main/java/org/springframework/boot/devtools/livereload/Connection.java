@@ -129,13 +129,35 @@ class Connection {
 	}
 
 	/**
-	 * Trigger livereload for the client using this connection.
+	 * Trigger livereload with root path.
+	 * 
 	 * @throws IOException in case of I/O errors
 	 */
-	public void triggerReload() throws IOException {
+	public void triggerReload() throws IOException {	
+		triggerReload(new Frame("{\"command\":\"reload\",\"path\":\"/\"}"));	
+	}
+	
+	/**
+	 * Trigger livereload with a specific path
+	 * 
+	 * @param path The path of the file that has been changed
+	 * @throws IOException in case of I/O errors
+	 */
+	public void triggerReload(String path) throws IOException {
+		triggerReload(new Frame("{\"command\":\"reload\",\"path\":\"" + path + "\"}"));
+	}
+	
+	
+	/**
+	 * Trigger livereload for the client using this connection.
+	 * 
+	 * @param frame The websocket frame
+	 * @throws IOException in case of I/O errors
+	 */
+	private void triggerReload(Frame frame) throws IOException {
 		if (this.webSocket) {
 			logger.debug("Triggering LiveReload");
-			writeWebSocketFrame(new Frame("{\"command\":\"reload\",\"path\":\"/\"}"));
+			writeWebSocketFrame(frame);
 		}
 	}
 

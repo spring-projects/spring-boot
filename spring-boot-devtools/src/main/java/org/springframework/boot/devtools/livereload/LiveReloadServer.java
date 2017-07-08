@@ -24,6 +24,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -32,7 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.boot.devtools.filewatch.ChangedFile;
+import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.util.Assert;
 
 /**
@@ -210,14 +212,36 @@ public class LiveReloadServer {
 	}
 
 	/**
-	 * Trigger livereload of all connected clients.
+	 * Trigger a full reload
 	 */
 	public void triggerReload() {
+		triggerReload("/");
+	}
+	
+	/**
+	 * Trigger multiple reloads based on what files have changed
+	 * 
+	 * @param changedFiles A set of {@code ChangedFiles}
+	 */
+	public void triggerReload(Set<ChangedFiles> changedFiles) {
+		for (ChangedFiles files : changedFiles) {
+			for (ChangedFile file: files) {
+				triggerReload(file.getFile().getPath());
+			}
+		}
+	}
+	
+	/**
+	 * Trigger livereload of all connected clients.
+	 * 
+	 * @param path The file path that has changed
+	 */
+	private void triggerReload(String path) {
 		synchronized (this.monitor) {
 			synchronized (this.connections) {
 				for (Connection connection : this.connections) {
 					try {
-						connection.triggerReload();
+						connection.triggerReload(path);
 					}
 					catch (Exception ex) {
 						logger.debug("Unable to send reload message", ex);

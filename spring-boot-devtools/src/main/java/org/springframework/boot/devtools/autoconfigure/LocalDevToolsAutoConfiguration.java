@@ -84,7 +84,7 @@ public class LocalDevToolsAutoConfiguration {
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (!event.isRestartRequired()) {
-				optionalLiveReloadServer().triggerReload();
+				optionalLiveReloadServer().triggerReload(event.getChangeSet());
 			}
 		}
 
