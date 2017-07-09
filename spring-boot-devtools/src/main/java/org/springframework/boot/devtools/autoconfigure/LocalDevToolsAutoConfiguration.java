@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.autoconfigure;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,6 +31,8 @@ import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
+import org.springframework.boot.devtools.filewatch.ChangedFile;
+import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
@@ -48,6 +51,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
+ * @author Luka Žitnik
  * @since 1.3.0
  */
 @Configuration
@@ -84,13 +88,24 @@ public class LocalDevToolsAutoConfiguration {
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (!event.isRestartRequired()) {
-				optionalLiveReloadServer().triggerReload();
+				optionalLiveReloadServer().triggerReload(this.deduceSinglePath(event));
 			}
 		}
 
 		@Bean
 		public OptionalLiveReloadServer optionalLiveReloadServer() {
 			return new OptionalLiveReloadServer(this.liveReloadServer);
+		}
+
+		private String deduceSinglePath(ClassPathChangedEvent event) {
+			Set<ChangedFiles> changeSet = event.getChangeSet();
+			if (changeSet.size() == 1) {
+				Set<ChangedFile> changedFiles = changeSet.iterator().next().getFiles();
+				if (changedFiles.size() == 1) {
+					return changedFiles.iterator().next().getRelativeName();
+				}
+			}
+			return null;
 		}
 
 	}

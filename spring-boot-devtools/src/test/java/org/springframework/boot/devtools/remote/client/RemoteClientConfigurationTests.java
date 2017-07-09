@@ -59,6 +59,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link RemoteClientConfiguration}.
  *
  * @author Phillip Webb
+ * @author Luka Žitnik
  */
 public class RemoteClientConfigurationTests {
 
@@ -123,7 +124,7 @@ public class RemoteClientConfigurationTests {
 		configuration.getExecutor().shutdown();
 		configuration.getExecutor().awaitTermination(2, TimeUnit.SECONDS);
 		LiveReloadServer server = this.clientContext.getBean(LiveReloadServer.class);
-		verify(server).triggerReload();
+		verify(server).triggerReload(null);
 	}
 
 	@Test

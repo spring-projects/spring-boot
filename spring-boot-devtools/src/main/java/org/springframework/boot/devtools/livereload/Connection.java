@@ -35,6 +35,7 @@ import org.springframework.util.Base64Utils;
  * A {@link LiveReloadServer} connection.
  *
  * @author Phillip Webb
+ * @author Luka Žitnik
  */
 class Connection {
 
@@ -130,12 +131,15 @@ class Connection {
 
 	/**
 	 * Trigger livereload for the client using this connection.
+	 * @param path path of file to reload, as full as possible/known, absolute path
+	 * preferred, file name only is OK
 	 * @throws IOException in case of I/O errors
 	 */
-	public void triggerReload() throws IOException {
+	public void triggerReload(String path) throws IOException {
 		if (this.webSocket) {
 			logger.debug("Triggering LiveReload");
-			writeWebSocketFrame(new Frame("{\"command\":\"reload\",\"path\":\"/\"}"));
+			writeWebSocketFrame(
+					new Frame("{\"command\":\"reload\",\"path\":\"" + path + "\"}"));
 		}
 	}
 

@@ -28,6 +28,7 @@ import org.springframework.boot.devtools.livereload.LiveReloadServer;
  * gracefully fail to start (e.g. because of a port conflict) or may be omitted entirely.
  *
  * @author Phillip Webb
+ * @author Luka Žitnik
  * @since 1.3.0
  */
 public class OptionalLiveReloadServer {
@@ -68,11 +69,17 @@ public class OptionalLiveReloadServer {
 
 	/**
 	 * Trigger LiveReload if the server is up an running.
+	 * @param path path of file to reload, as full as possible/known, absolute path
+	 * preferred, file name only is OK
 	 */
-	public void triggerReload() {
+	public void triggerReload(String path) {
 		if (this.server != null) {
-			this.server.triggerReload();
+			this.server.triggerReload(path);
 		}
+	}
+
+	public void triggerReload() {
+		this.triggerReload(null);
 	}
 
 }

@@ -211,13 +211,15 @@ public class LiveReloadServer {
 
 	/**
 	 * Trigger livereload of all connected clients.
+	 * @param path path of file to reload, as full as possible/known, absolute path
+	 * preferred, file name only is OK
 	 */
-	public void triggerReload() {
+	public void triggerReload(String path) {
 		synchronized (this.monitor) {
 			synchronized (this.connections) {
 				for (Connection connection : this.connections) {
 					try {
-						connection.triggerReload();
+						connection.triggerReload(path);
 					}
 					catch (Exception ex) {
 						logger.debug("Unable to send reload message", ex);
@@ -225,6 +227,10 @@ public class LiveReloadServer {
 				}
 			}
 		}
+	}
+
+	public void triggerReload() {
+		this.triggerReload(null);
 	}
 
 	private void addConnection(Connection connection) {

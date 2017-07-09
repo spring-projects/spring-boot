@@ -19,7 +19,9 @@ package org.springframework.boot.devtools.autoconfigure;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardWrapper;
@@ -28,6 +30,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -37,6 +40,8 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
+import org.springframework.boot.devtools.filewatch.ChangedFile;
+import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.FailureHandler;
@@ -67,6 +72,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
+ * @author Luka Žitnik
  */
 public class LocalDevToolsAutoConfigurationTests {
 
@@ -75,6 +81,9 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Rule
 	public MockRestarter mockRestarter = new MockRestarter();
+
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
 
 	private ConfigurableApplicationContext context;
 
@@ -137,7 +146,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		this.context.publishEvent(new ContextRefreshedEvent(this.context));
-		verify(server).triggerReload();
+		verify(server).triggerReload(null);
 	}
 
 	@Test
@@ -148,7 +157,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.<ChangedFiles>emptySet(), false);
 		this.context.publishEvent(event);
-		verify(server).triggerReload();
+		verify(server).triggerReload(null);
 	}
 
 	@Test
@@ -159,7 +168,47 @@ public class LocalDevToolsAutoConfigurationTests {
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.<ChangedFiles>emptySet(), true);
 		this.context.publishEvent(event);
-		verify(server, never()).triggerReload();
+		verify(server, never()).triggerReload(null);
+	}
+
+	@Test
+	public void liveReloadTriggeredSingleFileReload() throws Exception {
+		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		reset(server);
+		File sourceFolder = this.temp.getRoot();
+		File folder = this.temp.newFolder("A");
+		File file = new File(folder, "B.css");
+		ChangedFile changedFile = new ChangedFile(sourceFolder, file, Type.MODIFY);
+		Set<ChangedFile> files = Collections.singleton(changedFile);
+		ChangedFiles changedFiles = new ChangedFiles(new File("source"), files);
+		Set<ChangedFiles> changeSet = Collections.singleton(changedFiles);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, changeSet,
+				false);
+		this.context.publishEvent(event);
+		verify(server).triggerReload("A/B.css");
+	}
+
+	@Test
+	public void liveReloadTriggeredMultipleFilesReload() throws Exception {
+		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		reset(server);
+		File sourceFolder = this.temp.getRoot();
+		File folder = this.temp.newFolder("A");
+		File file1 = new File(folder, "B.css");
+		File file2 = new File(folder, "C.css");
+		ChangedFile changedFile1 = new ChangedFile(sourceFolder, file1, Type.MODIFY);
+		ChangedFile changedFile2 = new ChangedFile(sourceFolder, file2, Type.MODIFY);
+		Set<ChangedFile> files = new LinkedHashSet<>();
+		files.add(changedFile1);
+		files.add(changedFile2);
+		ChangedFiles changedFiles = new ChangedFiles(new File("source"), files);
+		Set<ChangedFiles> changeSet = Collections.singleton(changedFiles);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, changeSet,
+				false);
+		this.context.publishEvent(event);
+		verify(server).triggerReload(null);
 	}
 
 	@Test
