@@ -528,7 +528,7 @@ in "/".
 If a property is not found in the locations specified in `spring.config.location`
 the default search path will be used (`classpath:,classpath:/config,file:,file:config/`).
 
-If spring.config.location contains multiple locations they will be searched from right
+If `spring.config.location` contains multiple locations they will be searched from right
 to left, i.e. the last location in the list has precedence (just like in the default
 search path). In that way you can set up default values for your application in
 `application.properties` (or whatever other basename you choose with `spring.config.name`)
@@ -565,7 +565,7 @@ NOTE: If you have specified any files in `spring.config.location`, profile-speci
 variants of those files will not be considered. Use directories in `spring.config.location`
 if you also want to use profile-specific properties. In that case, the base file name
 specified in `spring.config.name` (or `application` by default) and the profile-specific
-suffixes are appended to the directories before the config is being loaded.
+suffixes are appended to the directories before the properties are being loaded.
 
 
 
