@@ -197,6 +197,7 @@
 		<webjars-locator.version>0.32-1</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<xmlunit.version>2.3.0</xmlunit.version>
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
@@ -2516,6 +2517,11 @@
 				<groupId>org.webjars</groupId>
 				<artifactId>webjars-locator</artifactId>
 				<version>${webjars-locator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-core</artifactId>
+				<version>${xmlunit.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
