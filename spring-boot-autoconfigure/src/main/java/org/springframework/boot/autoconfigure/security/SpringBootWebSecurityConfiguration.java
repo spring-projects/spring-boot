@@ -196,9 +196,8 @@ public class SpringBootWebSecurityConfiguration {
 					matchers.add(new AntPathRequestMatcher(pattern, null));
 				}
 			}
-			if (!matchers.isEmpty()) {
-				configurer.requestMatchers(new OrRequestMatcher(matchers));
-			}
+			matchers.add(new AntPathRequestMatcher("/**", "OPTIONS"));
+			configurer.requestMatchers(new OrRequestMatcher(matchers));
 		}
 
 		private List<String> getIgnored(SecurityProperties security) {
