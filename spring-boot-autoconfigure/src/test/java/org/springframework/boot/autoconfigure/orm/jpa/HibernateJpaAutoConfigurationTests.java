@@ -84,7 +84,8 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testDataScript() throws Exception {
-		// This can't succeed because the data SQL is executed immediately after the schema
+		// This can't succeed because the data SQL is executed immediately after the
+		// schema
 		// and Hibernate hasn't initialized yet at that point
 		this.thrown.expect(BeanCreationException.class);
 		load("spring.datasource.data:classpath:/city.sql");
@@ -93,12 +94,11 @@ public class HibernateJpaAutoConfigurationTests
 	@Test
 	public void testDataScriptRunsEarly() {
 		load(new Class<?>[] { TestInitializedJpaConfiguration.class }, null,
-				new HideDataScriptClassLoader(),
-				"spring.jpa.show-sql=true",
+				new HideDataScriptClassLoader(), "spring.jpa.show-sql=true",
 				"spring.jpa.hibernate.ddl-auto:create-drop",
 				"spring.datasource.data:classpath:/city.sql");
-		assertThat(this.context.getBean(
-				TestInitializedJpaConfiguration.class).called).isTrue();
+		assertThat(this.context.getBean(TestInitializedJpaConfiguration.class).called)
+				.isTrue();
 	}
 
 	@Test
@@ -158,7 +158,8 @@ public class HibernateJpaAutoConfigurationTests
 		@Autowired
 		public void validateDataSourceIsInitialized(
 				EntityManagerFactory entityManagerFactory) {
-			// Inject the entity manager to validate it is initialized at the injection point
+			// Inject the entity manager to validate it is initialized at the injection
+			// point
 			EntityManager entityManager = entityManagerFactory.createEntityManager();
 			City city = entityManager.find(City.class, 2000L);
 			assertThat(city).isNotNull();
@@ -204,21 +205,21 @@ public class HibernateJpaAutoConfigurationTests
 
 	private static class HideDataScriptClassLoader extends URLClassLoader {
 
-		private static final List<String> HIDDEN_RESOURCES =
-				Arrays.asList("schema-all.sql", "schema.sql");
+		private static final List<String> HIDDEN_RESOURCES = Arrays
+				.asList("schema-all.sql", "schema.sql");
 
 		HideDataScriptClassLoader() {
 			super(new URL[0], HideDataScriptClassLoader.class.getClassLoader());
 		}
 
-
 		@Override
 		public Enumeration<URL> getResources(String name) throws IOException {
 			if (HIDDEN_RESOURCES.contains(name)) {
-				return new Vector().elements();
+				return new Vector<URL>().elements();
 			}
 			return super.getResources(name);
 		}
+
 	}
 
 }

@@ -55,8 +55,7 @@ class DataSourceJmxConfiguration {
 
 		private final ObjectProvider<MBeanExporter> mBeanExporter;
 
-		Hikari(HikariDataSource dataSource,
-				ObjectProvider<MBeanExporter> mBeanExporter) {
+		Hikari(HikariDataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
 			this.dataSource = dataSource;
 			this.mBeanExporter = mBeanExporter;
 		}

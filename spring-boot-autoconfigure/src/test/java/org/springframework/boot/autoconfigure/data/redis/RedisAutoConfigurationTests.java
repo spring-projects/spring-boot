@@ -154,8 +154,8 @@ public class RedisAutoConfigurationTests {
 		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
 				"spring.redis.sentinel.nodes:"
 						+ StringUtils.collectionToCommaDelimitedString(sentinels));
-		assertThat(this.context.getBean(LettuceConnectionFactory.class)
-				.getPassword()).isEqualTo("password");
+		assertThat(this.context.getBean(LettuceConnectionFactory.class).getPassword())
+				.isEqualTo("password");
 	}
 
 	@Test
@@ -173,8 +173,8 @@ public class RedisAutoConfigurationTests {
 		load("spring.redis.password=password",
 				"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
-		assertThat(this.context.getBean(LettuceConnectionFactory.class)
-				.getPassword()).isEqualTo("password");
+		assertThat(this.context.getBean(LettuceConnectionFactory.class).getPassword())
+				.isEqualTo("password");
 	}
 
 	private DefaultLettucePool getDefaultLettucePool(LettuceConnectionFactory factory) {

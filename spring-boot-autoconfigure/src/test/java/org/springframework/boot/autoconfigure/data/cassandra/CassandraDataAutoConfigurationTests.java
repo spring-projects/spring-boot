@@ -146,8 +146,8 @@ public class CassandraDataAutoConfigurationTests {
 
 		@Bean
 		public CassandraCustomConversions myCassandraCustomConversions() {
-			return new CassandraCustomConversions(Collections.singletonList(
-					new MyConverter()));
+			return new CassandraCustomConversions(
+					Collections.singletonList(new MyConverter()));
 		}
 
 	}

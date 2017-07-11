@@ -498,9 +498,9 @@ The Spring Boot starters bring a default embedded container for you:
 
 * `spring-boot-starter-web` brings Tomcat with `spring-boot-starter-tomcat`,
   but `spring-boot-starter-jetty` and `spring-boot-starter-undertow` can be used instead.
-* `spring-boot-starter-webflux` brings Reactor Netty with `spring-boot-starter-reactor-netty`,
-  but `spring-boot-starter-tomcat`, `spring-boot-starter-jetty` and
-  `spring-boot-starter-undertow` can be used instead.
+* `spring-boot-starter-webflux` brings Reactor Netty with
+  `spring-boot-starter-reactor-netty`, but `spring-boot-starter-tomcat`,
+  `spring-boot-starter-jetty` and `spring-boot-starter-undertow` can be used instead.
 
 NOTE: Many starters only support Spring MVC, so they transitively bring
 `spring-boot-starter-web` into your application classpath
@@ -548,8 +548,10 @@ Example in Gradle, for Spring WebFlux:
 	}
 ----
 
-NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient`,
-so excluding it is not required if you wish to use a different HTTP server.
+NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient`, so excluding
+it is not required if you wish to use a different HTTP server.
+
+
 
 [[howto-configure-jetty]]
 === Configure Jetty

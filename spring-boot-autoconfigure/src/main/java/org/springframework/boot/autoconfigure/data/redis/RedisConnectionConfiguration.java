@@ -54,7 +54,6 @@ abstract class RedisConnectionConfiguration {
 
 	protected final RedisStandaloneConfiguration getStandaloneConfig() {
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-
 		if (StringUtils.hasText(this.properties.getUrl())) {
 			ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
 			config.setHostName(connectionInfo.getHostName());
@@ -149,7 +148,9 @@ abstract class RedisConnectionConfiguration {
 	protected static class ConnectionInfo {
 
 		private final URI uri;
+
 		private final boolean useSsl;
+
 		private final String password;
 
 		public ConnectionInfo(URI uri, boolean useSsl, String password) {

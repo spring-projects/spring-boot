@@ -61,7 +61,8 @@ public class WebClientAutoConfigurationTests {
 		load(CodecConfiguration.class);
 		WebClient.Builder builder = this.context.getBean(WebClient.Builder.class);
 		CodecCustomizer codecCustomizer = this.context.getBean(CodecCustomizer.class);
-		WebClientCodecCustomizer clientCustomizer = this.context.getBean(WebClientCodecCustomizer.class);
+		WebClientCodecCustomizer clientCustomizer = this.context
+				.getBean(WebClientCodecCustomizer.class);
 		builder.build();
 		assertThat(clientCustomizer).isNotNull();
 		verify(codecCustomizer).customize(any(CodecConfigurer.class));
@@ -79,24 +80,22 @@ public class WebClientAutoConfigurationTests {
 	@Test
 	public void shouldGetPrototypeScopedBean() throws Exception {
 		load(WebClientCustomizerConfig.class);
-
 		ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
 		given(firstConnector.connect(any(), any(), any())).willReturn(Mono.empty());
 		WebClient.Builder firstBuilder = this.context.getBean(WebClient.Builder.class);
 		firstBuilder.clientConnector(firstConnector).baseUrl("http://first.example.org");
-
 		ClientHttpConnector secondConnector = mock(ClientHttpConnector.class);
 		given(secondConnector.connect(any(), any(), any())).willReturn(Mono.empty());
 		WebClient.Builder secondBuilder = this.context.getBean(WebClient.Builder.class);
-		secondBuilder.clientConnector(secondConnector).baseUrl("http://second.example.org");
-
+		secondBuilder.clientConnector(secondConnector)
+				.baseUrl("http://second.example.org");
 		assertThat(firstBuilder).isNotEqualTo(secondBuilder);
-
 		firstBuilder.build().get().uri("/foo").exchange().block();
 		secondBuilder.build().get().uri("/foo").exchange().block();
-
-		verify(firstConnector).connect(eq(HttpMethod.GET), eq(URI.create("http://first.example.org/foo")), any());
-		verify(secondConnector).connect(eq(HttpMethod.GET), eq(URI.create("http://second.example.org/foo")), any());
+		verify(firstConnector).connect(eq(HttpMethod.GET),
+				eq(URI.create("http://first.example.org/foo")), any());
+		verify(secondConnector).connect(eq(HttpMethod.GET),
+				eq(URI.create("http://second.example.org/foo")), any());
 		WebClientCustomizer customizer = this.context.getBean(WebClientCustomizer.class);
 		verify(customizer, times(1)).customize(any(WebClient.Builder.class));
 	}
@@ -107,7 +106,6 @@ public class WebClientAutoConfigurationTests {
 		WebClient.Builder builder = this.context.getBean(WebClient.Builder.class);
 		assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
 	}
-
 
 	private void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
@@ -124,6 +122,7 @@ public class WebClientAutoConfigurationTests {
 		public CodecCustomizer myCodecCustomizer() {
 			return mock(CodecCustomizer.class);
 		}
+
 	}
 
 	@Configuration

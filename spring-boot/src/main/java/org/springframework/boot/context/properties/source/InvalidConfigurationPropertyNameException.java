@@ -19,22 +19,22 @@ package org.springframework.boot.context.properties.source;
 import java.util.List;
 
 /**
- * Exception thrown when {@link ConfigurationPropertyName} has invalid
- * characters.
+ * Exception thrown when {@link ConfigurationPropertyName} has invalid characters.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 public class InvalidConfigurationPropertyNameException extends RuntimeException {
 
-	private final List<Character> invalidCharacters;
-
 	private final CharSequence name;
 
-	public InvalidConfigurationPropertyNameException(List<Character> invalidCharacters, CharSequence name) {
+	private final List<Character> invalidCharacters;
+
+	public InvalidConfigurationPropertyNameException(CharSequence name,
+			List<Character> invalidCharacters) {
 		super("Configuration property name '" + name + "' is not valid");
-		this.invalidCharacters = invalidCharacters;
 		this.name = name;
+		this.invalidCharacters = invalidCharacters;
 	}
 
 	public List<Character> getInvalidCharacters() {
@@ -45,5 +45,11 @@ public class InvalidConfigurationPropertyNameException extends RuntimeException 
 		return this.name;
 	}
 
-}
+	public static void throwIfHasInvalidChars(CharSequence name,
+			List<Character> invalidCharacters) {
+		if (!invalidCharacters.isEmpty()) {
+			throw new InvalidConfigurationPropertyNameException(name, invalidCharacters);
+		}
+	}
 
+}

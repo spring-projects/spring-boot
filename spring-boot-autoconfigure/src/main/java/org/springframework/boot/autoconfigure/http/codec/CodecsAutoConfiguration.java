@@ -32,14 +32,19 @@ import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.util.MimeType;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration}
- * for {@link org.springframework.core.codec.Encoder}s and {@link org.springframework.core.codec.Decoder}s.
+ * {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link org.springframework.core.codec.Encoder Encoders} and
+ * {@link org.springframework.core.codec.Decoder Decoders}.
+ *
  * @author Brian Clozel
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(CodecConfigurer.class)
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
 public class CodecsAutoConfiguration {
+
+	private static final MimeType[] EMPTY_MIME_TYPES = {};
 
 	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
@@ -48,10 +53,12 @@ public class CodecsAutoConfiguration {
 		@Bean
 		@ConditionalOnBean(ObjectMapper.class)
 		public CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
-			return configurer -> {
+			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
-				defaults.jackson2Decoder(new Jackson2JsonDecoder(objectMapper, new MimeType[0]));
-				defaults.jackson2Encoder(new Jackson2JsonEncoder(objectMapper, new MimeType[0]));
+				defaults.jackson2Decoder(
+						new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
+				defaults.jackson2Encoder(
+						new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
 			};
 		}
 

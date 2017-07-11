@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JsonComponentModule}.
  *
  * @author Phillip Webb
+ * @author Vladimir Tsanev
  */
 public class JsonComponentModuleTests {
 
@@ -73,11 +74,11 @@ public class JsonComponentModuleTests {
 	}
 
 	private void load(Class<?>... configs) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(configs);
-		ctx.register(JsonComponentModule.class);
-		ctx.refresh();
-		this.context = ctx;
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(configs);
+		context.register(JsonComponentModule.class);
+		context.refresh();
+		this.context = context;
 	}
 
 	private void assertSerialize(Module module) throws Exception {
@@ -117,5 +118,7 @@ public class JsonComponentModuleTests {
 		static class ConcreteSerializer extends AbstractSerializer {
 
 		}
+
 	}
+
 }

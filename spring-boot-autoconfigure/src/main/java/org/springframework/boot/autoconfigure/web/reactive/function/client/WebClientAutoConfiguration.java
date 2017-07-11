@@ -38,8 +38,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebClient}.
- * <p>This will produce a {@link WebClient.Builder} bean with the {@code prototype} scope,
- * meaning each injection point will receive a newly cloned instance of the builder.
+ * <p>
+ * This will produce a
+ * {@link org.springframework.web.reactive.function.client.WebClient.Builder
+ * WebClient.Builder} bean with the {@code prototype} scope, meaning each injection point
+ * will receive a newly cloned instance of the builder.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -51,14 +54,15 @@ public class WebClientAutoConfiguration {
 
 	private final WebClient.Builder webClientBuilder;
 
-
-	public WebClientAutoConfiguration(ObjectProvider<List<WebClientCustomizer>> customizerProvider) {
+	public WebClientAutoConfiguration(
+			ObjectProvider<List<WebClientCustomizer>> customizerProvider) {
 		this.webClientBuilder = WebClient.builder();
 		List<WebClientCustomizer> customizers = customizerProvider.getIfAvailable();
 		if (!CollectionUtils.isEmpty(customizers)) {
 			customizers = new ArrayList<>(customizers);
 			AnnotationAwareOrderComparator.sort(customizers);
-			customizers.forEach(customizer -> customizer.customize(this.webClientBuilder));
+			customizers
+					.forEach(customizer -> customizer.customize(this.webClientBuilder));
 		}
 	}
 

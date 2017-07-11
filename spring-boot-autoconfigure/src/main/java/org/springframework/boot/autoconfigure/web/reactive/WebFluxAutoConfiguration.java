@@ -82,7 +82,8 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
-@AutoConfigureAfter({ ReactiveWebServerAutoConfiguration.class, CodecsAutoConfiguration.class })
+@AutoConfigureAfter({ ReactiveWebServerAutoConfiguration.class,
+		CodecsAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
@@ -133,7 +134,8 @@ public class WebFluxAutoConfiguration {
 		@Override
 		public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
 			if (this.codecCustomizers != null) {
-				this.codecCustomizers.forEach(codecCustomizer -> codecCustomizer.customize(configurer));
+				this.codecCustomizers
+						.forEach((customizer) -> customizer.customize(configurer));
 			}
 		}
 

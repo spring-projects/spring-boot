@@ -27,10 +27,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class StandardContextLoader
-		extends AbstractContextLoader<AnnotationConfigApplicationContext, StandardContextLoader> {
+public class StandardContextLoader extends
+		AbstractContextLoader<AnnotationConfigApplicationContext, StandardContextLoader> {
 
-	public StandardContextLoader(Supplier<AnnotationConfigApplicationContext> contextSupplier) {
+	public StandardContextLoader(
+			Supplier<AnnotationConfigApplicationContext> contextSupplier) {
 		super(contextSupplier);
 	}
 

@@ -58,7 +58,6 @@ public class WebTestClientAutoConfigurationTests {
 		verify(codecCustomizer).customize(any(CodecConfigurer.class));
 	}
 
-
 	private void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(config);

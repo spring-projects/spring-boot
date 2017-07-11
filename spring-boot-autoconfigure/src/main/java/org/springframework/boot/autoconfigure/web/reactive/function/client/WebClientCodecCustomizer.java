@@ -25,6 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * {@link WebClientCustomizer} that configures codecs for the HTTP client.
+ *
  * @author Brian Clozel
  * @since 2.0.0
  */
@@ -39,9 +40,10 @@ public class WebClientCodecCustomizer implements WebClientCustomizer {
 	@Override
 	public void customize(WebClient.Builder webClientBuilder) {
 		webClientBuilder
-				.exchangeStrategies(ExchangeStrategies.builder()
-						.codecs(codecs -> {
-							this.codecCustomizers.forEach(codecCustomizer -> codecCustomizer.customize(codecs));
-						}).build());
+				.exchangeStrategies(ExchangeStrategies.builder().codecs(codecs -> {
+					this.codecCustomizers
+							.forEach((customizer) -> customizer.customize(codecs));
+				}).build());
 	}
+
 }

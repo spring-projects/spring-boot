@@ -79,9 +79,8 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthIndicatorAutoConfigurationTests {
 
-	public final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(HealthIndicatorAutoConfiguration.class,
-					ManagementServerProperties.class);
+	public final ContextLoader contextLoader = ContextLoader.standard().autoConfig(
+			HealthIndicatorAutoConfiguration.class, ManagementServerProperties.class);
 
 	@Test
 	public void defaultHealthIndicator() {

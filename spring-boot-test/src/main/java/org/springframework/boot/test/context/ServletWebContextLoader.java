@@ -29,8 +29,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public final class ServletWebContextLoader
-		extends AbstractContextLoader<AnnotationConfigWebApplicationContext, ServletWebContextLoader> {
+public final class ServletWebContextLoader extends
+		AbstractContextLoader<AnnotationConfigWebApplicationContext, ServletWebContextLoader> {
 
 	ServletWebContextLoader(
 			Supplier<AnnotationConfigWebApplicationContext> contextSupplier) {
@@ -41,7 +41,8 @@ public final class ServletWebContextLoader
 	 * Create and refresh a new {@link ConfigurableWebApplicationContext} based on the
 	 * current state of this loader. The context is consumed by the specified
 	 * {@link WebMvcContextConsumer consumer} and closed upon completion.
-	 * @param consumer the consumer of the created {@link ConfigurableWebApplicationContext}
+	 * @param consumer the consumer of the created
+	 * {@link ConfigurableWebApplicationContext}
 	 */
 	public void loadWeb(WebMvcContextConsumer consumer) {
 		doLoad(consumer::accept);

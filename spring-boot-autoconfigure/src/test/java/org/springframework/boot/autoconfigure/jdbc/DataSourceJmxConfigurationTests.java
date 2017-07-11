@@ -88,8 +88,7 @@ public class DataSourceJmxConfigurationTests {
 	public void hikariAutoConfiguredUsesJmsFlag() throws MalformedObjectNameException {
 		String poolName = UUID.randomUUID().toString();
 		load("spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.jmx.enabled=false",
-				"spring.datasource.name=" + poolName,
+				"spring.jmx.enabled=false", "spring.datasource.name=" + poolName,
 				"spring.datasource.hikari.register-mbeans=true");
 		assertThat(this.context.getBeansOfType(HikariDataSource.class)).hasSize(1);
 		assertThat(this.context.getBean(HikariDataSource.class).isRegisterMbeans())
@@ -101,10 +100,12 @@ public class DataSourceJmxConfigurationTests {
 
 	private void validateHikariMBeansRegistration(MBeanServer mBeanServer,
 			String poolName, boolean expected) throws MalformedObjectNameException {
-		assertThat(mBeanServer.isRegistered(new ObjectName(
-				"com.zaxxer.hikari:type=Pool (" + poolName + ")"))).isEqualTo(expected);
-		assertThat(mBeanServer.isRegistered(new ObjectName(
-				"com.zaxxer.hikari:type=PoolConfig (" + poolName + ")"))).isEqualTo(expected);
+		assertThat(mBeanServer.isRegistered(
+				new ObjectName("com.zaxxer.hikari:type=Pool (" + poolName + ")")))
+						.isEqualTo(expected);
+		assertThat(mBeanServer.isRegistered(
+				new ObjectName("com.zaxxer.hikari:type=PoolConfig (" + poolName + ")")))
+						.isEqualTo(expected);
 	}
 
 	@Test
@@ -127,16 +128,16 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		String jdbcUrl = "jdbc:hsqldb:mem:test-" + UUID.randomUUID().toString();
 		TestPropertyValues.of(environment).and("spring.datasource.url", jdbcUrl)
-				.applyTo(ctx);
+				.applyTo(context);
 		if (config != null) {
-			ctx.register(config);
+			context.register(config);
 		}
-		ctx.register(JmxAutoConfiguration.class, DataSourceAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		context.register(JmxAutoConfiguration.class, DataSourceAutoConfiguration.class);
+		context.refresh();
+		this.context = context;
 	}
 
 	@Configuration

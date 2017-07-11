@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
@@ -51,11 +50,8 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
-
-		Result result = session.query(CYPHER, Collections.EMPTY_MAP);
-		Iterable<Map<String, Object>> results = result.queryResults();
-		int nodes = (int) results.iterator().next().get("nodes");
-
+		Result result = session.query(CYPHER, Collections.emptyMap());
+		int nodes = (int) result.queryResults().iterator().next().get("nodes");
 		builder.up().withDetail("nodes", nodes);
 	}
 

@@ -81,13 +81,14 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void testNoDataSource() throws Exception {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(PropertyPlaceholderAutoConfiguration.class,
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(PropertyPlaceholderAutoConfiguration.class,
 				getAutoConfigureClass());
 		this.expected.expect(BeanCreationException.class);
 		this.expected.expectMessage("No qualifying bean");
 		this.expected.expectMessage("DataSource");
-		ctx.refresh();
+		context.refresh();
+		context.close();
 	}
 
 	@Test
@@ -200,7 +201,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		load(configs, new Class<?>[0], environment);
 	}
 
-	protected void load(Class<?>[] configs, Class<?>[] autoConfigs, String... environment) {
+	protected void load(Class<?>[] configs, Class<?>[] autoConfigs,
+			String... environment) {
 		load(configs, autoConfigs, null, environment);
 	}
 
@@ -211,14 +213,13 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			ctx.setClassLoader(classLoader);
 		}
 		TestPropertyValues.of(environment)
-				.and("spring.datasource.generate-unique-name", "true")
-				.applyTo(ctx);
+				.and("spring.datasource.generate-unique-name", "true").applyTo(ctx);
 		ctx.register(TestConfiguration.class);
 		if (!ObjectUtils.isEmpty(configs)) {
 			ctx.register(configs);
 		}
-		ctx.register(
-				DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
+		ctx.register(DataSourceAutoConfiguration.class,
+				TransactionAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		if (!ObjectUtils.isEmpty(autoConfigs)) {
 			ctx.register(autoConfigs);

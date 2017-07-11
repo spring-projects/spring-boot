@@ -19,7 +19,9 @@ package org.springframework.boot.web.reactive.function.client;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Callback interface that can be used to customize a {@link WebClient.Builder}.
+ * Callback interface that can be used to customize a
+ * {@link org.springframework.web.reactive.function.client.WebClient.Builder
+ * WebClient.Builder}.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -28,8 +30,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 public interface WebClientCustomizer {
 
 	/**
-	 * Callback to customize a {@link WebClient.Builder} instance.
+	 * Callback to customize a
+	 * {@link org.springframework.web.reactive.function.client.WebClient.Builder
+	 * WebClient.Builder} instance.
 	 * @param webClientBuilder the client builder to customize
 	 */
 	void customize(WebClient.Builder webClientBuilder);
+
 }

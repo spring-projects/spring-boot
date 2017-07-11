@@ -107,20 +107,20 @@ public class WebFluxAutoConfigurationTests {
 		load(CustomArgumentResolvers.class);
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertThat((List<HandlerMethodArgumentResolver>) ReflectionTestUtils
-				.getField(adapter.getArgumentResolverConfigurer(), "customResolvers"))
-				.contains(
-						this.context.getBean("firstResolver",
-								HandlerMethodArgumentResolver.class),
-						this.context.getBean("secondResolver",
-								HandlerMethodArgumentResolver.class));
+		List<HandlerMethodArgumentResolver> customResolvers = (List<HandlerMethodArgumentResolver>) ReflectionTestUtils
+				.getField(adapter.getArgumentResolverConfigurer(), "customResolvers");
+		assertThat(customResolvers).contains(
+				this.context.getBean("firstResolver",
+						HandlerMethodArgumentResolver.class),
+				this.context.getBean("secondResolver",
+						HandlerMethodArgumentResolver.class));
 	}
 
 	@Test
 	public void shouldCustomizeCodecs() throws Exception {
 		load(CustomCodecCustomizers.class);
-		CodecCustomizer codecCustomizer =
-				this.context.getBean("firstCodecCustomizer", CodecCustomizer.class);
+		CodecCustomizer codecCustomizer = this.context.getBean("firstCodecCustomizer",
+				CodecCustomizer.class);
 		assertThat(codecCustomizer).isNotNull();
 		verify(codecCustomizer).customize(any(ServerCodecConfigurer.class));
 	}
@@ -133,7 +133,6 @@ public class WebFluxAutoConfigurationTests {
 		assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 		ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
 		assertThat(staticHandler.getLocations()).hasSize(5);
-
 		assertThat(hm.getUrlMap().get("/webjars/**"))
 				.isInstanceOf(ResourceWebHandler.class);
 		ResourceWebHandler webjarsHandler = (ResourceWebHandler) hm.getUrlMap()

@@ -37,13 +37,15 @@ public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 	private InvalidConfigurationPropertyNameFailureAnalyzer analyzer = new InvalidConfigurationPropertyNameFailureAnalyzer();
 
 	@Test
-	public void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName() throws Exception {
+	public void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName()
+			throws Exception {
 		BeanCreationException failure = createFailure(InvalidPrefixConfiguration.class);
 		FailureAnalysis analysis = this.analyzer.analyze(failure);
 		assertThat(analysis.getDescription()).contains(String.format(
-				"%n    Invalid characters: %s%n    Bean: %s%n    Reason: %s",
-				"'F','P'", "invalidPrefixProperties", "Canonical names should be kebab-case('-' separated), " +
-						"lowercase alpha-numeric characters and must start with a letter"));
+				"%n    Invalid characters: %s%n    Bean: %s%n    Reason: %s", "'F', 'P'",
+				"invalidPrefixProperties",
+				"Canonical names should be kebab-case ('-' separated), "
+						+ "lowercase alpha-numeric characters and must start with a letter"));
 	}
 
 	private BeanCreationException createFailure(Class<?> configuration) {
@@ -81,6 +83,7 @@ public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 		public void setValue(String value) {
 			this.value = value;
 		}
+
 	}
 
 }

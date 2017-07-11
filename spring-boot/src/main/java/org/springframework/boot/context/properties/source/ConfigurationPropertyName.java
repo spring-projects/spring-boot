@@ -185,10 +185,8 @@ public final class ConfigurationPropertyName
 				start == 0,
 				() -> "Element value '" + elementValue + "' must be a single item"));
 		if (!isIndexed(elementValue)) {
-			List<Character> invalidChars = ElementValidator.getInvalidChars(elementValue);
-			if (!invalidChars.isEmpty()) {
-				throw new InvalidConfigurationPropertyNameException(invalidChars, elementValue);
-			}
+			InvalidConfigurationPropertyNameException.throwIfHasInvalidChars(elementValue,
+					ElementValidator.getInvalidChars(elementValue));
 		}
 		int length = this.elements.length;
 		CharSequence[] elements = new CharSequence[length + 1];
@@ -447,7 +445,8 @@ public final class ConfigurationPropertyName
 		Assert.notNull(name, "Name must not be null");
 		if (name.length() >= 1
 				&& (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
-			throw new InvalidConfigurationPropertyNameException(Collections.singletonList('.'), name);
+			throw new InvalidConfigurationPropertyNameException(name,
+					Collections.singletonList('.'));
 		}
 		if (name.length() == 0) {
 			return EMPTY;
@@ -456,10 +455,8 @@ public final class ConfigurationPropertyName
 		process(name, '.', (elementValue, start, end, indexed) -> {
 			if (elementValue.length() > 0) {
 				if (!indexed) {
-					List<Character> invalidChars = ElementValidator.getInvalidChars(elementValue);
-					if (!invalidChars.isEmpty()) {
-						throw new InvalidConfigurationPropertyNameException(invalidChars, name);
-					}
+					InvalidConfigurationPropertyNameException.throwIfHasInvalidChars(name,
+							ElementValidator.getInvalidChars(elementValue));
 				}
 				elements.add(elementValue);
 			}
@@ -662,15 +659,6 @@ public final class ConfigurationPropertyName
 			return getInvalidChars(elementValue).isEmpty();
 		}
 
-		public static boolean isValidChar(char ch, int index) {
-			boolean isAlpha = ch >= 'a' && ch <= 'z';
-			boolean isNumeric = ch >= '0' && ch <= '9';
-			if (index == 0) {
-				return isAlpha;
-			}
-			return isAlpha || isNumeric || ch == '-';
-		}
-
 		private static List<Character> getInvalidChars(CharSequence elementValue) {
 			List<Character> chars = new ArrayList<>();
 			for (int i = 0; i < elementValue.length(); i++) {
@@ -680,6 +668,15 @@ public final class ConfigurationPropertyName
 				}
 			}
 			return chars;
+		}
+
+		public static boolean isValidChar(char ch, int index) {
+			boolean isAlpha = ch >= 'a' && ch <= 'z';
+			boolean isNumeric = ch >= '0' && ch <= '9';
+			if (index == 0) {
+				return isAlpha;
+			}
+			return isAlpha || isNumeric || ch == '-';
 		}
 
 	}

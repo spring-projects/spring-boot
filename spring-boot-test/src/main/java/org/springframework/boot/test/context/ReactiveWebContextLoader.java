@@ -28,8 +28,8 @@ import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicati
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public final class ReactiveWebContextLoader
-		extends AbstractContextLoader<GenericReactiveWebApplicationContext, ReactiveWebContextLoader> {
+public final class ReactiveWebContextLoader extends
+		AbstractContextLoader<GenericReactiveWebApplicationContext, ReactiveWebContextLoader> {
 
 	ReactiveWebContextLoader(
 			Supplier<GenericReactiveWebApplicationContext> contextSupplier) {

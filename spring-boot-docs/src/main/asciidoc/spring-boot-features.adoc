@@ -2187,6 +2187,8 @@ method:
 	}
 ----
 
+
+
 [[boot-features-spring-webflux]]
 === The '`Spring WebFlux framework`'
 
@@ -2195,8 +2197,8 @@ Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous an
 non-blocking, and implements the http://www.reactive-streams.org/[Reactive Streams]
 specification through http://projectreactor.io/[the Reactor project].
 
-Spring WebFlux comes in two flavours — the annotation-based one is quite close to
-the Spring MVC model we know:
+Spring WebFlux comes in two flavors — the annotation-based one is quite close to the
+Spring MVC model we know:
 
 [source,java,indent=0]
 ----
@@ -2222,8 +2224,8 @@ the Spring MVC model we know:
 	}
 ----
 
-'`WebFlux.fn`', the functional variant, separates the routing configuration from the actual handling
-of the requests:
+'`WebFlux.fn`', the functional variant, separates the routing configuration from the
+actual handling of the requests:
 
 [source,java,indent=0]
 ----
@@ -2236,17 +2238,17 @@ of the requests:
 					.andRoute(GET("/{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
 					.andRoute(DELETE("/{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
 		}
-		
+
 	}
 
 	@Component
 	public class UserHandler {
 
-    	public Mono<ServerResponse> getUser(ServerRequest request) {
-    		// ...
-    	}
+		public Mono<ServerResponse> getUser(ServerRequest request) {
+			// ...
+		}
 
-    	public Mono<ServerResponse> getUserCustomers(ServerRequest request) {
+		public Mono<ServerResponse> getUserCustomers(ServerRequest request) {
 			// ...
 		}
 
@@ -2256,18 +2258,19 @@ of the requests:
 	}
 ----
 
-WebFlux is part of the Spring Framework and detailed information is available in
-the  {spring-reference}web.html#web-reactive[reference documentation].
+WebFlux is part of the Spring Framework and detailed information is available in the
+{spring-reference}web.html#web-reactive[reference documentation].
 
 To get started, add the `spring-boot-starter-webflux` module to your application.
 
-NOTE: Adding both `spring-boot-starter-web` and `spring-boot-starter-webflux`
-modules in your application will result in Spring Boot auto-configuring Spring
-MVC, not WebFlux. This behavior has been chosen because many Spring developers
-will add `spring-boot-starter-webflux` to their Spring MVC application to use
-the reactive `WebCLient`. You can still enforce your choice by setting the
-chosen application type like
+NOTE: Adding both `spring-boot-starter-web` and `spring-boot-starter-webflux` modules in
+your application will result in Spring Boot auto-configuring Spring MVC, not WebFlux. This
+behavior has been chosen because many Spring developers will add
+`spring-boot-starter-webflux` to their Spring MVC application to use the reactive
+`WebCLient`. You can still enforce your choice by setting the chosen application type like
 `SpringApplication.setWebApplicationType(WebApplicationType.REACTIVE)`.
+
+
 
 [[boot-features-spring-webflux-auto-configuration]]
 ==== Spring WebFlux auto-configuration
@@ -2276,29 +2279,30 @@ applications.
 
 The auto-configuration adds the following features on top of Spring's defaults:
 
-* Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (see below).
+* Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (see
+  below).
 * Support for serving static resources, including support for WebJars (see below).
 
+If you want to keep Spring Boot WebFlux features, and you just want to add additional
+{spring-reference}web.html#web-reactive[WebFlux configuration] you can add your own
+`@Configuration` class of type `WebFluxConfigurer`, but *without* `@EnableWebFlux`.
 
-If you want to keep Spring Boot WebFlux features, and
-you just want to add additional {spring-reference}web.html#web-reactive[WebFlux configuration]
-you can add your own `@Configuration` class of type `WebFluxConfigurer`,
-but *without* `@EnableWebFlux`.
+If you want to take complete control of Spring WebFlux, you can add your own
+`@Configuration` annotated with `@EnableWebFlux`.
 
-If you want to take complete control of Spring WebFlux, you can add your own `@Configuration`
-annotated with `@EnableWebFlux`.
 
 
 [[boot-features-spring-webflux-httpcodecs]]
 ==== HTTP codecs with HttpMessageReaders and HttpMessageWriters
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interface to convert
-HTTP requests and responses. They are configured with `CodecConfigurer` with sensible defaults,
-by looking at the libraries available in your classpath.
+HTTP requests and responses. They are configured with `CodecConfigurer` with sensible
+defaults, by looking at the libraries available in your classpath.
 
 Spring Boot will apply further customization using `CodecCustomizer` instances.
 For example, `spring.jackson.*` configuration keys will be applied to the Jackson codec.
 
-If you need to add or customize codecs you can create a custom `CodecCustomizer` component:
+If you need to add or customize codecs you can create a custom `CodecCustomizer`
+component:
 
 [source,java,indent=0]
 ----
@@ -2318,6 +2322,8 @@ If you need to add or customize codecs you can create a custom `CodecCustomizer`
 ----
 
 You can also leverage <<boot-features-json-components,Boot's custom JSON serializers and deserializers>>.
+
+
 
 [[boot-features-spring-webflux-static-content]]
 ==== Static Content
@@ -2353,9 +2359,9 @@ be deployed as war and have no use of the `src/main/webapp` directory.
 
 [[boot-features-spring-webflux-template-engines]]
 ==== Template engines
-As well as REST web services, you can also use Spring WebFlux to serve dynamic HTML content.
-Spring WebFlux supports a variety of templating technologies including Thymeleaf, FreeMarker
-and Mustache.
+As well as REST web services, you can also use Spring WebFlux to serve dynamic HTML
+content. Spring WebFlux supports a variety of templating technologies including Thymeleaf,
+FreeMarker and Mustache.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
@@ -2365,6 +2371,7 @@ Spring Boot includes auto-configuration support for the following templating eng
 
 When you're using one of these templating engines with the default configuration, your
 templates will be picked up automatically from `src/main/resources/templates`.
+
 
 
 [[boot-features-jersey]]
@@ -5094,6 +5101,8 @@ TIP: `RestTemplateBuilder` includes a number of useful methods that can be used 
 configure a `RestTemplate`. For example, to add BASIC auth support you can use
 `builder.basicAuthorization("user", "password").build()`.
 
+
+
 [[boot-features-resttemplate-customization]]
 === RestTemplate customization
 There are three main approaches to `RestTemplate` customization, depending on how broadly
@@ -5121,9 +5130,9 @@ Lastly, the most extreme (and rarely used) option is to create your own
 `RestTemplateBuilder` and will prevent any `RestTemplateCustomizer` beans from being used.
 
 
+
 [[boot-features-webclient]]
 == Calling REST services with '`WebClient`'
-
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient`
 to call remote REST services; compared to `RestTemplate`, this client has more a
 functional feel to it and is fully reactive. You can create your own client
@@ -5175,6 +5184,8 @@ would do locally at the point of injection.
 
 Lastly, you can fall back to the original API and just use `WebClient.create()`. In that
 case, no auto-configuration nor `WebClientCustomizer` will be applied.
+
+
 
 [[boot-features-validation]]
 == Validation
@@ -5992,12 +6003,15 @@ definition.
 A list of the auto-configuration that is enabled by `@WebMvcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-webflux-tests]]
 ==== Auto-configured Spring WebFlux tests
 To test Spring WebFlux controllers are working as expected you can use the `@WebFluxTest`
 annotation. `@WebFluxTest` will auto-configure the Spring WebFlux infrastructure and limit
-scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`,and `WebFluxConfigurer`.
-Regular `@Component` beans will not be scanned when using this annotation.
+scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`,and
+`WebFluxConfigurer`. Regular `@Component` beans will not be scanned when using this
+annotation.
 
 Often `@WebFluxTest` will be limited to a single controller and used in combination with
 `@MockBean` to provide mock implementations for required collaborators.
@@ -6010,14 +6024,14 @@ TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest`
 
 [source,java,indent=0]
 ----
-import org.junit.Test;
-import org.junit.runner.RunWith;
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.reactive.server.WebTestClient;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+	import org.springframework.http.MediaType;
+	import org.springframework.test.context.junit4.SpringRunner;
+	import org.springframework.test.web.reactive.server.WebTestClient;
 
 	@RunWith(SpringRunner.class)
 	@WebFluxTest(UserVehicleController.class)
@@ -6044,6 +6058,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 A list of the auto-configuration that is enabled by `@WebFluxTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]

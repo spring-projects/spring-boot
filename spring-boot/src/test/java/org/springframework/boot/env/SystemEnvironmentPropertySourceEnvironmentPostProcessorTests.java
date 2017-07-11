@@ -52,7 +52,8 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		postProcessor.postProcessEnvironment(this.environment, null);
 		PropertySource<?> replaced = this.environment.getPropertySources()
 				.get("systemEnvironment");
-		assertThat(replaced).isInstanceOf(OriginAwareSystemEnvironmentPropertySource.class);
+		assertThat(replaced)
+				.isInstanceOf(OriginAwareSystemEnvironmentPropertySource.class);
 	}
 
 	@Test
@@ -62,37 +63,39 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		PropertySource<?> original = this.environment.getPropertySources()
 				.get("systemEnvironment");
 		postProcessor.postProcessEnvironment(this.environment, null);
-		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment.getPropertySources()
-				.get("systemEnvironment");
+		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
+				.getPropertySources().get("systemEnvironment");
 		Map<String, Object> originalMap = (Map<String, Object>) original.getSource();
-		Map<String, Object> replacedMap = replaced
-				.getSource();
+		Map<String, Object> replacedMap = replaced.getSource();
 		for (Map.Entry<String, Object> entry : originalMap.entrySet()) {
 			Object actual = replacedMap.get(entry.getKey());
 			assertThat(actual).isEqualTo(entry.getValue());
-			assertThat(replaced.getOrigin(entry.getKey())).isInstanceOf(SystemEnvironmentOrigin.class);
+			assertThat(replaced.getOrigin(entry.getKey()))
+					.isInstanceOf(SystemEnvironmentOrigin.class);
 		}
 	}
 
 	@Test
-	public void replacedPropertySourceWhenPropertyAbsentShouldReturnNullOrigin() throws Exception {
+	public void replacedPropertySourceWhenPropertyAbsentShouldReturnNullOrigin()
+			throws Exception {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(this.environment, null);
-		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment.getPropertySources()
-				.get("systemEnvironment");
+		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
+				.getPropertySources().get("systemEnvironment");
 		assertThat(replaced.getOrigin("NON_EXISTENT")).isNull();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void replacedPropertySourceShouldResolveProperty() throws Exception {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		Map<String, Object> source = Collections.singletonMap("FOO_BAR_BAZ", "hello");
-		this.environment.getPropertySources().replace("systemEnvironment", new SystemEnvironmentPropertySource("systemEnvironment", source));
+		this.environment.getPropertySources().replace("systemEnvironment",
+				new SystemEnvironmentPropertySource("systemEnvironment", source));
 		postProcessor.postProcessEnvironment(this.environment, null);
-		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment.getPropertySources()
-				.get("systemEnvironment");
-		SystemEnvironmentOrigin origin = (SystemEnvironmentOrigin) replaced.getOrigin("foo.bar.baz");
+		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
+				.getPropertySources().get("systemEnvironment");
+		SystemEnvironmentOrigin origin = (SystemEnvironmentOrigin) replaced
+				.getOrigin("foo.bar.baz");
 		assertThat(origin.getProperty()).isEqualTo("FOO_BAR_BAZ");
 		assertThat(replaced.getProperty("foo.bar.baz")).isEqualTo("hello");
 	}

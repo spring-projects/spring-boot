@@ -20,6 +20,7 @@ import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends AbstractContextLoader<T, ?>>
 		implements ContextLoader {
 
-	private final Map<String, String> systemProperties = new HashMap<>();
+	private final Map<String, String> systemProperties = new LinkedHashMap<>();
 
 	private final List<String> env = new ArrayList<>();
 
@@ -155,10 +156,10 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 		return self();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected final L self() {
 		return (L) this;
 	}
-
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
@@ -226,13 +227,8 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 	private T configureApplicationContext() {
 		T context = AbstractContextLoader.this.contextSupplier.get();
 		if (this.classLoader != null) {
-			if (context instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) context).setClassLoader(this.classLoader);
-			}
-			else {
-				throw new IllegalStateException("Cannot configure ClassLoader: " + context
-						+ " is not a DefaultResourceLoader sub-class");
-			}
+			Assert.isInstanceOf(DefaultResourceLoader.class, context);
+			((DefaultResourceLoader) context).setClassLoader(this.classLoader);
 		}
 		if (!ObjectUtils.isEmpty(this.env)) {
 			TestPropertyValues.of(this.env.toArray(new String[this.env.size()]))

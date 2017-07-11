@@ -311,8 +311,7 @@ public class CollectionBinderTests {
 		source.put("foo.items", "a,b,c");
 		this.sources.add(source);
 		ExampleCollectionBean result = this.binder
-				.bind("foo", ExampleCollectionBean.class)
-				.get();
+				.bind("foo", ExampleCollectionBean.class).get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "d");
 	}

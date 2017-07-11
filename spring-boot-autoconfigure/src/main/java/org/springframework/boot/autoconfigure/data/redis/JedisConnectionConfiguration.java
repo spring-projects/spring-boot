@@ -71,16 +71,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private JedisConnectionFactory createJedisConnectionFactory() {
 		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration();
-
 		if (getSentinelConfig() != null) {
 			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
-
 		if (getClusterConfiguration() != null) {
 			return new JedisConnectionFactory(getClusterConfiguration(),
 					clientConfiguration);
 		}
-
 		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
 	}
 

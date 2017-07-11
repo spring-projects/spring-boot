@@ -40,7 +40,6 @@ import org.springframework.test.context.BootstrapWith;
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to Redis tests.
- * <p>
  *
  * @author Jayaram Pradhan
  * @since 2.0.0

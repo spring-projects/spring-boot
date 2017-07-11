@@ -1076,54 +1076,63 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<CacheManager> allCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<ConcurrentMapCacheManager> simpleCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<ConcurrentMapCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SimpleCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CouchbaseCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<RedisCacheManager> redisCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<RedisCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<EhCacheCacheManager> ehcacheCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<EhCacheCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<HazelcastCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
+
 			};
 		}
 

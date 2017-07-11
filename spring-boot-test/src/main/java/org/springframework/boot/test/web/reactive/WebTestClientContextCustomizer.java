@@ -59,7 +59,6 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			registerWebTestClient(context, (BeanDefinitionRegistry) context);
 		}
-
 	}
 
 	private void registerWebTestClient(ConfigurableApplicationContext context,
@@ -75,10 +74,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
-			return false;
-		}
-		return true;
+		return (obj != null && obj.getClass().equals(getClass()));
 	}
 
 	/**
@@ -139,13 +135,14 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder,
 				ApplicationContext context) {
-			Collection<CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class).values();
+			Collection<CodecCustomizer> codecCustomizers = context
+					.getBeansOfType(CodecCustomizer.class).values();
 			if (!CollectionUtils.isEmpty(codecCustomizers)) {
-				clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
-						.codecs(codecs -> {
-							codecCustomizers.forEach(codecCustomizer -> codecCustomizer.customize(codecs));
-						})
-						.build());
+				clientBuilder.exchangeStrategies(
+						ExchangeStrategies.builder().codecs(codecs -> {
+							codecCustomizers.forEach(
+									codecCustomizer -> codecCustomizer.customize(codecs));
+						}).build());
 			}
 		}
 

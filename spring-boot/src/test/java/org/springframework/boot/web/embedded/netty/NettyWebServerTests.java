@@ -32,4 +32,5 @@ public class NettyWebServerTests {
 		this.server = new NettyWebServer(null, null);
 		this.server.stop();
 	}
+
 }

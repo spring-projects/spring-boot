@@ -145,16 +145,13 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceConnectionFactory createLettuceConnectionFactory(
 			LettuceClientConfiguration clientConfiguration) {
-
 		if (getSentinelConfig() != null) {
 			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
-
 		if (getClusterConfiguration() != null) {
 			return new LettuceConnectionFactory(getClusterConfiguration(),
 					clientConfiguration);
 		}
-
 		return new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
 	}
 

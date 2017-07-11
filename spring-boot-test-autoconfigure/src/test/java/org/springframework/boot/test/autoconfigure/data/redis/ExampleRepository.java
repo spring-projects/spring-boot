@@ -24,4 +24,5 @@ import org.springframework.data.repository.CrudRepository;
  * @author Jayaram Pradhan
  */
 public interface ExampleRepository extends CrudRepository<PersonHash, String> {
+
 }

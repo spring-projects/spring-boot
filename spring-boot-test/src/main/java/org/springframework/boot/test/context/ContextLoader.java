@@ -81,40 +81,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 public interface ContextLoader {
 
 	/**
-	 * Creates a {@code ContextLoader} that will load a standard
-	 * {@link AnnotationConfigApplicationContext}.
-	 *
-	 * @return the context loader
-	 */
-	static StandardContextLoader standard() {
-		return new StandardContextLoader(AnnotationConfigApplicationContext::new);
-	}
-
-	/**
-	 * Creates a {@code ContextLoader} that will load a
-	 * {@link AnnotationConfigWebApplicationContext}.
-	 *
-	 * @return the context loader
-	 */
-	static ServletWebContextLoader servletWeb() {
-		return new ServletWebContextLoader(() -> {
-			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-			context.setServletContext(new MockServletContext());
-			return context;
-		});
-	}
-
-	/**
-	 * Creates a {@code ContextLoader} that will load a
-	 * {@link GenericReactiveWebApplicationContext}.
-	 *
-	 * @return the context loader
-	 */
-	static ReactiveWebContextLoader reactiveWeb() {
-		return new ReactiveWebContextLoader(GenericReactiveWebApplicationContext::new);
-	}
-
-	/**
 	 * Set the specified system property prior to loading the context and restore its
 	 * previous value once the consumer has been invoked and the context closed. If the
 	 * {@code value} is {@code null} this removes any prior customization for that key.
@@ -196,5 +162,36 @@ public interface ContextLoader {
 	 * @param <E> the expected type of the failure
 	 */
 	<E extends Throwable> void loadAndFail(Class<E> exceptionType, Consumer<E> consumer);
+
+	/**
+	 * Creates a {@code ContextLoader} that will load a standard
+	 * {@link AnnotationConfigApplicationContext}.
+	 * @return the context loader
+	 */
+	static StandardContextLoader standard() {
+		return new StandardContextLoader(AnnotationConfigApplicationContext::new);
+	}
+
+	/**
+	 * Creates a {@code ContextLoader} that will load a
+	 * {@link AnnotationConfigWebApplicationContext}.
+	 * @return the context loader
+	 */
+	static ServletWebContextLoader servletWeb() {
+		return new ServletWebContextLoader(() -> {
+			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+			context.setServletContext(new MockServletContext());
+			return context;
+		});
+	}
+
+	/**
+	 * Creates a {@code ContextLoader} that will load a
+	 * {@link GenericReactiveWebApplicationContext}.
+	 * @return the context loader
+	 */
+	static ReactiveWebContextLoader reactiveWeb() {
+		return new ReactiveWebContextLoader(GenericReactiveWebApplicationContext::new);
+	}
 
 }
