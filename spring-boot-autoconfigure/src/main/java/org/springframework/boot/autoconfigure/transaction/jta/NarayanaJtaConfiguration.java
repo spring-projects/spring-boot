@@ -22,6 +22,7 @@ import javax.jms.Message;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import com.arjuna.ats.arjuna.recovery.RecoveryManager;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import org.jboss.narayana.jta.jms.TransactionHelper;
 import org.jboss.tm.XAResourceRecoveryRegistry;
@@ -115,6 +116,7 @@ public class NarayanaJtaConfiguration {
 	@Bean
 	@DependsOn("narayanaConfiguration")
 	public RecoveryManagerService narayanaRecoveryManagerService() {
+		RecoveryManager.delayRecoveryManagerThread();
 		return new RecoveryManagerService();
 	}
 
