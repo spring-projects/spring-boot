@@ -118,6 +118,7 @@ public class NarayanaJtaConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public NarayanaRecoveryManagerBean narayanaRecoveryManager(
 			RecoveryManagerService recoveryManagerService) {
 		return new NarayanaRecoveryManagerBean(recoveryManagerService);
