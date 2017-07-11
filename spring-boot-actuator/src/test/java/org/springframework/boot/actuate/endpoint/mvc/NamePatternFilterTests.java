@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Dylian Bego
  */
 public class NamePatternFilterTests {
 
@@ -35,6 +36,13 @@ public class NamePatternFilterTests {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		assertThat(filter.getResults("not.a.regex")).containsEntry("not.a.regex",
 				"not.a.regex");
+		assertThat(filter.isGetNamesCalled()).isFalse();
+	}
+
+	@Test
+	public void nonRegexThatContainsRegexPart() throws Exception {
+		MockNamePatternFilter filter = new MockNamePatternFilter();
+		assertThat(filter.getResults("*")).containsEntry("*", "*");
 		assertThat(filter.isGetNamesCalled()).isFalse();
 	}
 
