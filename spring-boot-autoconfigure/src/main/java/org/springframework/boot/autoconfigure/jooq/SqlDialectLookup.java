@@ -66,11 +66,11 @@ final class SqlDialectLookup {
 			return SQLDialect.DEFAULT;
 		}
 		try {
-			String url = (String) JdbcUtils.extractDatabaseMetaData(dataSource, "getURL");
+			String url = JdbcUtils.extractDatabaseMetaData(dataSource, "getURL");
 			DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(url);
-			SQLDialect sQLDialect = LOOKUP.get(driver);
-			if (sQLDialect != null) {
-				return sQLDialect;
+			SQLDialect sqlDialect = LOOKUP.get(driver);
+			if (sqlDialect != null) {
+				return sqlDialect;
 			}
 		}
 		catch (MetaDataAccessException ex) {

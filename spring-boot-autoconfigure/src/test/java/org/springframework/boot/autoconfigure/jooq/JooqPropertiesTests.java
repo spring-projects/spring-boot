@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class JooqPropertiesTest {
+public class JooqPropertiesTests {
 
 	private AnnotationConfigApplicationContext context;
 
