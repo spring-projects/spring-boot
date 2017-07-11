@@ -61,16 +61,16 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
-		new ElasticsearchNodeTemplate().doWithNode((address) -> {
-			load(EmptyConfiguration.class, address);
+		new ElasticsearchNodeTemplate().doWithNode((node) -> {
+			load(EmptyConfiguration.class, node);
 			assertThat(this.context.getBean(Client.class)).isNotNull();
 		});
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		new ElasticsearchNodeTemplate().doWithNode((address) -> {
-			load(CustomizedConfiguration.class, address);
+		new ElasticsearchNodeTemplate().doWithNode((node) -> {
+			load(CustomizedConfiguration.class, node);
 			assertThat(this.context.getBean(CityElasticsearchDbRepository.class))
 					.isNotNull();
 		});

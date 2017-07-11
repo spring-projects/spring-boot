@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
 import org.neo4j.ogm.session.Session;
@@ -159,7 +158,7 @@ public class Neo4jDataAutoConfigurationTests {
 	private static void assertDomainTypesDiscovered(Neo4jMappingContext mappingContext,
 			Class<?>... types) {
 		for (Class<?> type : types) {
-			Assertions.assertThat(mappingContext.getPersistentEntity(type)).isNotNull();
+			assertThat(mappingContext.getPersistentEntity(type)).isNotNull();
 		}
 	}
 
