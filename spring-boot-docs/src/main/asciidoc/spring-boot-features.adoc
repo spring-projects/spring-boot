@@ -5470,7 +5470,7 @@ provided with the Quartz library. It is also possible to provide a custom script
 `spring.quartz.jdbc.schema` property.
 
 Quartz Scheduler configuration can be customized using Quartz configuration properties (see
-`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans which allows
+`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans which allow
 programmatic `SchedulerFactoryBean` customization.
 
 Job can define setters to inject data map properties. Regular beans can also be injected

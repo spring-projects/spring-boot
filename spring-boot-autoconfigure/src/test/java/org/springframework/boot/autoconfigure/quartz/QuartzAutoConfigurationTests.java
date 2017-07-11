@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -71,9 +70,6 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @author Stephane Nicoll
  */
 public class QuartzAutoConfigurationTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
