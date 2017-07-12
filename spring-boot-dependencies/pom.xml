@@ -2444,6 +2444,11 @@
 				<version>${webjars-locator.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-core</artifactId>
+				<version>${xmlunit.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
@@ -2462,11 +2467,6 @@
 				<groupId>xml-apis</groupId>
 				<artifactId>xml-apis</artifactId>
 				<version>${xml-apis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.xmlunit</groupId>
-				<artifactId>xmlunit-core</artifactId>
-				<version>${xmlunit.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
