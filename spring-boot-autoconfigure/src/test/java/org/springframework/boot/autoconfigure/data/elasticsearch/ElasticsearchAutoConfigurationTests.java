@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
@@ -63,9 +62,9 @@ public class ElasticsearchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
-		Assertions.assertThat(this.context.getBeanNamesForType(Client.class).length)
+		assertThat(this.context.getBeanNamesForType(Client.class).length)
 				.isEqualTo(1);
-		Assertions.assertThat(this.context.getBean("myClient"))
+		assertThat(this.context.getBean("myClient"))
 				.isSameAs(this.context.getBean(Client.class));
 	}
 

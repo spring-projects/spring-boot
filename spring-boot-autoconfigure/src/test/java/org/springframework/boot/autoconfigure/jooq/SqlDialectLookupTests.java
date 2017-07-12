@@ -68,7 +68,7 @@ public class SqlDialectLookupTests {
 	}
 
 	@Test
-	public void getSqlDialectWhenOracleShouldReturnOracle() throws Exception {
+	public void getSqlDialectWhenOracleShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:oracle:", SQLDialect.DEFAULT);
 	}
 
@@ -78,17 +78,17 @@ public class SqlDialectLookupTests {
 	}
 
 	@Test
-	public void getSqlDialectWhenSqlserverShouldReturnSqlserver() throws Exception {
+	public void getSqlDialectWhenSqlserverShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:sqlserver:", SQLDialect.DEFAULT);
 	}
 
 	@Test
-	public void getSqlDialectWhenDb2ShouldReturnDb2() throws Exception {
+	public void getSqlDialectWhenDb2ShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:db2:", SQLDialect.DEFAULT);
 	}
 
 	@Test
-	public void getSqlDialectWhenInformixShouldReturnInformix() throws Exception {
+	public void getSqlDialectWhenInformixShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:informix-sqli:", SQLDialect.DEFAULT);
 	}
 

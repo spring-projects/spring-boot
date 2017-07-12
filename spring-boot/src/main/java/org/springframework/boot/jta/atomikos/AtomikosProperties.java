@@ -352,7 +352,7 @@ public class AtomikosProperties {
 		private long delay = 10000;
 
 		/**
-		 * Number of retries attempts to commit the transaction before throwing an
+		 * Number of retry attempts to commit the transaction before throwing an
 		 * exception.
 		 */
 		private int maxRetries = 5;
