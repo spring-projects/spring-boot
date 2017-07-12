@@ -24,12 +24,9 @@ import java.util.Set;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -40,21 +37,20 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link LoggersEndpoint}.
  *
  * @author Ben Hale
+ * @author Andy Wilkinson
  */
-public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint> {
+public class LoggersEndpointTests {
 
-	public LoggersEndpointTests() {
-		super(Config.class, LoggersEndpoint.class, "loggers", "endpoints.loggers");
-	}
+	private final LoggingSystem loggingSystem = mock(LoggingSystem.class);
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void invokeShouldReturnConfigurations() throws Exception {
-		given(getLoggingSystem().getLoggerConfigurations()).willReturn(Collections
+	public void loggersShouldReturnLoggerConfigurations() throws Exception {
+		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
-		given(getLoggingSystem().getSupportedLogLevels())
+		given(this.loggingSystem.getSupportedLogLevels())
 				.willReturn(EnumSet.allOf(LogLevel.class));
-		Map<String, Object> result = getEndpointBean().invoke();
+		Map<String, Object> result = new LoggersEndpoint(this.loggingSystem).loggers();
 		Map<String, LoggerLevels> loggers = (Map<String, LoggerLevels>) result
 				.get("loggers");
 		Set<LogLevel> levels = (Set<LogLevel>) result.get("levels");
@@ -66,44 +62,25 @@ public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint>
 	}
 
 	@Test
-	public void invokeWhenNameSpecifiedShouldReturnLevels() throws Exception {
-		given(getLoggingSystem().getLoggerConfiguration("ROOT"))
+	public void loggerLevelsWhenNameSpecifiedShouldReturnLevels() throws Exception {
+		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
-		LoggerLevels levels = getEndpointBean().invoke("ROOT");
+		LoggerLevels levels = new LoggersEndpoint(this.loggingSystem)
+				.loggerLevels("ROOT");
 		assertThat(levels.getConfiguredLevel()).isNull();
 		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}
 
 	@Test
-	public void setLogLevelShouldSetLevelOnLoggingSystem() throws Exception {
-		getEndpointBean().setLogLevel("ROOT", LogLevel.DEBUG);
-		verify(getLoggingSystem()).setLogLevel("ROOT", LogLevel.DEBUG);
+	public void configureLogLevelShouldSetLevelOnLoggingSystem() throws Exception {
+		new LoggersEndpoint(this.loggingSystem).configureLogLevel("ROOT", LogLevel.DEBUG);
+		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@Test
-	public void setLogLevelToNull() {
-		getEndpointBean().setLogLevel("ROOT", null);
-		verify(getLoggingSystem()).setLogLevel("ROOT", null);
-	}
-
-	private LoggingSystem getLoggingSystem() {
-		return this.context.getBean(LoggingSystem.class);
-	}
-
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
-
-		@Bean
-		public LoggingSystem loggingSystem() {
-			return mock(LoggingSystem.class);
-		}
-
-		@Bean
-		public LoggersEndpoint endpoint(LoggingSystem loggingSystem) {
-			return new LoggersEndpoint(loggingSystem);
-		}
-
+	public void configureLogLevelWithNullSetsLevelOnLoggingSystemToNull() {
+		new LoggersEndpoint(this.loggingSystem).configureLogLevel("ROOT", null);
+		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
 }

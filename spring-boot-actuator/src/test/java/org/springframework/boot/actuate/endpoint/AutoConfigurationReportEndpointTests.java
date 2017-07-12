@@ -27,8 +27,8 @@ import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Configuration;
@@ -43,24 +43,19 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AutoConfigurationReportEndpointTests
-		extends AbstractEndpointTests<AutoConfigurationReportEndpoint> {
-
-	public AutoConfigurationReportEndpointTests() {
-		super(Config.class, AutoConfigurationReportEndpoint.class, "autoconfig",
-				"endpoints.autoconfig");
-	}
+public class AutoConfigurationReportEndpointTests {
 
 	@Test
 	public void invoke() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(this.configClass);
-		this.context.refresh();
-		Report report = getEndpointBean().invoke();
-		assertThat(report.getPositiveMatches()).isEmpty();
-		assertThat(report.getNegativeMatches()).containsKey("a");
-		assertThat(report.getUnconditionalClasses()).contains("b");
-		assertThat(report.getExclusions()).contains("com.foo.Bar");
+		new ApplicationContextRunner().withUserConfiguration(Config.class)
+				.run((context) -> {
+					Report report = context.getBean(AutoConfigurationReportEndpoint.class)
+							.getEvaluationReport();
+					assertThat(report.getPositiveMatches()).isEmpty();
+					assertThat(report.getNegativeMatches()).containsKey("a");
+					assertThat(report.getUnconditionalClasses()).contains("b");
+					assertThat(report.getExclusions()).contains("com.foo.Bar");
+				});
 	}
 
 	@Configuration
@@ -84,8 +79,9 @@ public class AutoConfigurationReportEndpointTests
 		}
 
 		@Bean
-		public AutoConfigurationReportEndpoint endpoint() {
-			return new AutoConfigurationReportEndpoint();
+		public AutoConfigurationReportEndpoint endpoint(
+				ConditionEvaluationReport report) {
+			return new AutoConfigurationReportEndpoint(report);
 		}
 
 	}

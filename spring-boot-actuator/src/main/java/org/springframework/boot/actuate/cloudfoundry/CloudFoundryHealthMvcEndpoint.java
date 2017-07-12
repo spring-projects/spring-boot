@@ -16,31 +16,29 @@
 
 package org.springframework.boot.actuate.cloudfoundry;
 
-import java.security.Principal;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 
 /**
- * Extension of {@link HealthMvcEndpoint} for Cloud Foundry. Since security for Cloud
- * Foundry actuators is already handled by the {@link CloudFoundrySecurityInterceptor},
- * this endpoint skips the additional security checks done by the regular
- * {@link HealthMvcEndpoint}.
+ * Extension of {@link HealthWebEndpointExtension} for Cloud Foundry. Since security for
+ * Cloud Foundry actuators is already handled by the
+ * {@link CloudFoundrySecurityInterceptor}, this endpoint skips the additional security
+ * checks done by the regular {@link HealthWebEndpointExtension}.
  *
  * @author Madhura Bhave
  */
-class CloudFoundryHealthMvcEndpoint extends HealthMvcEndpoint {
+class CloudFoundryHealthMvcEndpoint extends HealthWebEndpointExtension {
+
+	// TODO Port to new infrastructure
 
 	CloudFoundryHealthMvcEndpoint(HealthEndpoint delegate) {
 		super(delegate);
 	}
-
-	@Override
-	protected boolean exposeHealthDetails(HttpServletRequest request,
-			Principal principal) {
-		return true;
-	}
+	//
+	// @Override
+	// protected boolean exposeHealthDetails(HttpServletRequest request,
+	// Principal principal) {
+	// return true;
+	// }
 
 }

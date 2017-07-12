@@ -82,9 +82,6 @@ The following technology agnostic endpoints are available:
 |`configprops`
 |Displays a collated list of all `@ConfigurationProperties`.
 
-|`dump`
-|Performs a thread dump.
-
 |`env`
 |Exposes properties from Spring's `ConfigurableEnvironment`.
 
@@ -112,11 +109,15 @@ The following technology agnostic endpoints are available:
 |`shutdown`
 |Allows the application to be gracefully shutdown (not enabled by default).
 
+|`threaddump`
+|Performs a thread dump.
+
 |`trace`
 |Displays trace information (by default the last 100 HTTP requests).
 |===
 
-If you are using Spring MVC, the following additional endpoints can also be used:
+If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), the
+following additional endpoints can also be used:
 
 [cols="2,5"]
 |===
@@ -234,8 +235,9 @@ from `/management`.
 === CORS support
 http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
 (CORS) is a http://www.w3.org/TR/cors/[W3C specification] that allows you to specify in a
-flexible way what kind of cross domain requests are authorized. Actuator's MVC endpoints
-can be configured to support such scenarios.
+flexible way what kind of cross domain requests are authorized. If you are using Spring
+MVC or Spring WebFlux, Actuator's web endpoints can be configured to support such
+scenarios.
 
 CORS support is disabled by default and is only enabled once the
 `endpoints.cors.allowed-origins` property has been set. The configuration below permits
@@ -254,18 +256,15 @@ for a complete list of options.
 
 [[production-ready-customizing-endpoints-programmatically]]
 === Adding custom endpoints
-If you add a `@Bean` of type `Endpoint` then it will automatically be exposed over JMX and
-HTTP (if there is an server available). An HTTP endpoints can be customized further by
-creating a bean of type `MvcEndpoint`. Your `MvcEndpoint` is not a `@Controller` but it
-can use `@RequestMapping` (and `@Managed*`) to expose resources.
+If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with
+`@ReadOperation` or `@WriteOperation` will automatically be exposed over JMX and, in a web
+application, over HTTP as well.
 
 TIP: If you are doing this as a library feature consider adding a configuration class
 annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
 key `org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration`. If
-you do that then the endpoint will move to a child context with all the other MVC
-endpoints if your users ask for a separate management port or address. A configuration
-declared this way can be a `WebConfigurerAdapter` if it wants to add static resources (for
-instance) to the management endpoints.
+you do that then the endpoint will move to a child context with all the other web
+endpoints endpoints if your users ask for a separate management port or address.
 
 
 
@@ -286,13 +285,6 @@ derived by the `HealthAggregator` which sorts the statuses from each `HealthIndi
 based on an ordered list of statuses. The first status in the sorted list is used as the
 overall health status. If no `HealthIndicator` returns a status that is known to the
 `HealthAggregator`, an `UNKNOWN` status is used.
-
-
-
-=== Security with HealthIndicators
-Health responses are also cached to prevent "`denial of service`" attacks. Use the
-`endpoints.health.time-to-live` property if you want to change the default cache period
-of 1000 milliseconds.
 
 
 
@@ -561,7 +553,8 @@ is exposed as `/application/health`.
 === Customizing the management endpoint paths
 Sometimes it is useful to customize the prefix for the management endpoints.
 For example, your application might already use `/application` for another purpose.
-You can use the `management.context-path` property to change the prefix for your management endpoint:
+You can use the `management.context-path` property to change the prefix for your
+management endpoint:
 
 [source,properties,indent=0]
 ----
@@ -571,20 +564,8 @@ You can use the `management.context-path` property to change the prefix for your
 The `application.properties` example above will change the endpoint from `/application/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
 
-You can also change the "`path`" of an endpoint (using `endpoints.{name}.path`) which then
-changes the default resource path for the MVC endpoint. There is no validation on
-those values (so you can use anything that is legal in a URL path). For example, to change
-the location of the `/health` endpoint to `/ping/me` you can set
-`endpoints.health.path=/ping/me`.
-
 NOTE: Even if an endpoint path is configured separately, it is still relative to the
 `management.context-path`.
-
-TIP: If you provide a custom `MvcEndpoint` remember to include a settable `path` property,
-and default it to `/{id}` if you want your code to behave like the standard MVC endpoints.
-(Take a look at the `HealthMvcEndpoint` to see how you might do that.) If your custom
-endpoint is an `Endpoint` (not an `MvcEndpoint`) then Spring Boot will take care of the
-path for you.
 
 
 
@@ -686,10 +667,7 @@ The information exposed by the health endpoint varies depending on whether or no
 accessed anonymously, and whether or not the enclosing application is secure.
 By default, when accessed anonymously in a secure application, any details about the
 server's health are hidden and the endpoint will simply indicate whether or not the server
-is up or down. Furthermore the response is cached for a configurable period to prevent the
-endpoint being used in a denial of service attack. The `endpoints.health.time-to-live`
-property is used to configure the caching period in milliseconds. It defaults to 1000,
-i.e. one second.
+is up or down.
 
 Sample summarized HTTP response (default for anonymous request):
 
@@ -1429,7 +1407,7 @@ customize the file name and path via the `Writer` constructor.
 == Cloud Foundry support
 Spring Boot's actuator module includes additional support that is activated when you
 deploy to a compatible Cloud Foundry instance. The `/cloudfoundryapplication` path
-provides an alternative secured route to all `NamedMvcEndpoint` beans.
+provides an alternative secured route to all `@Endpoint` beans.
 
 The extended support allows Cloud Foundry management UIs (such as the web
 application that you can use to view deployed applications) to be augmented with Spring

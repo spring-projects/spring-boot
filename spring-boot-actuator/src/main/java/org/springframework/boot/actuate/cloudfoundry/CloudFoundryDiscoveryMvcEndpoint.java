@@ -16,75 +16,62 @@
 
 package org.springframework.boot.actuate.cloudfoundry;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.boot.actuate.endpoint.mvc.AbstractMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 /**
  * {@link MvcEndpoint} to expose HAL-formatted JSON for Cloud Foundry specific actuator
  * endpoints.
  *
  * @author Madhura Bhave
  */
-class CloudFoundryDiscoveryMvcEndpoint extends AbstractMvcEndpoint {
+class CloudFoundryDiscoveryMvcEndpoint {
 
-	private final Set<NamedMvcEndpoint> endpoints;
+	// TODO Port to new infrastructure
 
-	CloudFoundryDiscoveryMvcEndpoint(Set<NamedMvcEndpoint> endpoints) {
-		super("");
-		this.endpoints = endpoints;
-	}
-
-	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public Map<String, Map<String, Link>> links(HttpServletRequest request) {
-		Map<String, Link> links = new LinkedHashMap<>();
-		String url = request.getRequestURL().toString();
-		if (url.endsWith("/")) {
-			url = url.substring(0, url.length() - 1);
-		}
-		links.put("self", Link.withHref(url));
-		AccessLevel accessLevel = AccessLevel.get(request);
-		for (NamedMvcEndpoint endpoint : this.endpoints) {
-			if (accessLevel != null && accessLevel.isAccessAllowed(endpoint.getPath())) {
-				links.put(endpoint.getName(),
-						Link.withHref(url + "/" + endpoint.getName()));
-			}
-		}
-		return Collections.singletonMap("_links", links);
-	}
-
-	/**
-	 * Details for a link in the HAL response.
-	 */
-	static class Link {
-
-		private String href;
-
-		public String getHref() {
-			return this.href;
-		}
-
-		public void setHref(String href) {
-			this.href = href;
-		}
-
-		static Link withHref(Object href) {
-			Link link = new Link();
-			link.setHref(href.toString());
-			return link;
-		}
-
-	}
+	// private final Set<NamedMvcEndpoint> endpoints;
+	//
+	// CloudFoundryDiscoveryMvcEndpoint(Set<NamedMvcEndpoint> endpoints) {
+	// this.endpoints = endpoints;
+	// }
+	//
+	// @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	// @ResponseBody
+	// public Map<String, Map<String, Link>> links(HttpServletRequest request) {
+	// Map<String, Link> links = new LinkedHashMap<>();
+	// String url = request.getRequestURL().toString();
+	// if (url.endsWith("/")) {
+	// url = url.substring(0, url.length() - 1);
+	// }
+	// links.put("self", Link.withHref(url));
+	// AccessLevel accessLevel = AccessLevel.get(request);
+	// for (NamedMvcEndpoint endpoint : this.endpoints) {
+	// if (accessLevel != null && accessLevel.isAccessAllowed(endpoint.getPath())) {
+	// links.put(endpoint.getName(),
+	// Link.withHref(url + "/" + endpoint.getName()));
+	// }
+	// }
+	// return Collections.singletonMap("_links", links);
+	// }
+	//
+	// /**
+	// * Details for a link in the HAL response.
+	// */
+	// static class Link {
+	//
+	// private String href;
+	//
+	// public String getHref() {
+	// return this.href;
+	// }
+	//
+	// public void setHref(String href) {
+	// this.href = href;
+	// }
+	//
+	// static Link withHref(Object href) {
+	// Link link = new Link();
+	// link.setHref(href.toString());
+	// return link;
+	// }
+	//
+	// }
 
 }

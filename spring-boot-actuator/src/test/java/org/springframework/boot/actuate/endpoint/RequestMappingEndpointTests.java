@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,17 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
+import org.springframework.boot.endpoint.EndpointInfo;
+import org.springframework.boot.endpoint.EndpointOperationType;
+import org.springframework.boot.endpoint.web.OperationRequestPredicate;
+import org.springframework.boot.endpoint.web.WebEndpointHttpMethod;
+import org.springframework.boot.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.endpoint.web.mvc.WebEndpointServletHandlerMapping;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,7 +57,7 @@ public class RequestMappingEndpointTests {
 		mapping.initApplicationContext();
 		this.endpoint.setHandlerMappings(
 				Collections.<AbstractUrlHandlerMapping>singletonList(mapping));
-		Map<String, Object> result = this.endpoint.invoke();
+		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
@@ -70,7 +73,7 @@ public class RequestMappingEndpointTests {
 		mapping.initApplicationContext();
 		context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
 		this.endpoint.setApplicationContext(context);
-		Map<String, Object> result = this.endpoint.invoke();
+		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
@@ -82,7 +85,7 @@ public class RequestMappingEndpointTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				MappingConfiguration.class);
 		this.endpoint.setApplicationContext(context);
-		Map<String, Object> result = this.endpoint.invoke();
+		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
@@ -93,20 +96,17 @@ public class RequestMappingEndpointTests {
 	@Test
 	public void beanMethodMappings() {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
-		mapping.setApplicationContext(new StaticApplicationContext());
-		mapping.afterPropertiesSet();
-		context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
+		context.getDefaultListableBeanFactory().registerSingleton("mapping",
+				createHandlerMapping());
 		this.endpoint.setApplicationContext(context);
-		Map<String, Object> result = this.endpoint.invoke();
+		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
 		assertThat(result.keySet())
-				.filteredOn((key) -> key.contains("/dump || /dump.json"))
+				.filteredOn((key) -> key.contains("[/application/test]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("bean", "method"));
-		assertThat(result.keySet()).filteredOn((key) -> key.contains(" || /.json"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/application]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("bean", "method"));
@@ -115,23 +115,35 @@ public class RequestMappingEndpointTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void concreteMethodMappings() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
-		mapping.setApplicationContext(new StaticApplicationContext());
-		mapping.afterPropertiesSet();
+		WebEndpointServletHandlerMapping mapping = createHandlerMapping();
 		this.endpoint.setMethodMappings(
 				Collections.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
-		Map<String, Object> result = this.endpoint.invoke();
+		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
 		assertThat(result.keySet())
-				.filteredOn((key) -> key.contains("/dump || /dump.json"))
+				.filteredOn((key) -> key.contains("[/application/test]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("method"));
-		assertThat(result.keySet()).filteredOn((key) -> key.contains(" || /.json"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/application]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("method"));
+	}
+
+	private WebEndpointServletHandlerMapping createHandlerMapping() {
+		OperationRequestPredicate requestPredicate = new OperationRequestPredicate("test",
+				WebEndpointHttpMethod.GET, Collections.singletonList("application/json"),
+				Collections.singletonList("application/json"));
+		WebEndpointOperation operation = new WebEndpointOperation(
+				EndpointOperationType.READ, (arguments) -> "Invoked", true,
+				requestPredicate, "test");
+		WebEndpointServletHandlerMapping mapping = new WebEndpointServletHandlerMapping(
+				"application", Collections.singleton(new EndpointInfo<>("test", true,
+						Collections.singleton(operation))));
+		mapping.setApplicationContext(new StaticApplicationContext());
+		mapping.afterPropertiesSet();
+		return mapping;
 	}
 
 	@Configuration

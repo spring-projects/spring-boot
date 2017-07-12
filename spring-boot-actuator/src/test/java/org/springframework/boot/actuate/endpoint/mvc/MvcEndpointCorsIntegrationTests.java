@@ -19,15 +19,20 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaManagementContextConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointInfrastructureAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.BeansEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,18 +59,19 @@ public class MvcEndpointCorsIntegrationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
-				JolokiaManagementContextConfiguration.class,
-				WebMvcAutoConfiguration.class);
+				WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				EndpointInfrastructureAutoConfiguration.class,
+				EndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				ServletEndpointAutoConfiguration.class);
 	}
 
 	@Test
 	public void corsIsDisabledByDefault() throws Exception {
-		createMockMvc()
-				.perform(options("/application/beans").header("Origin", "foo.example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-				.andExpect(
+		MockMvc mockMvc = createMockMvc();
+		System.out.println(new ConditionEvaluationReportMessage(
+				this.context.getBean(ConditionEvaluationReport.class)));
+		mockMvc.perform(options("/application/beans").header("Origin", "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
 						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
 	}
 
@@ -137,7 +143,7 @@ public class MvcEndpointCorsIntegrationTests {
 		TestPropertyValues.of("endpoints.cors.allowed-origins:foo.example.com",
 				"endpoints.cors.allowed-methods:GET,HEAD").applyTo(this.context);
 		createMockMvc()
-				.perform(options("/application/health")
+				.perform(options("/application/beans")
 						.header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
 				.andExpect(status().isOk()).andExpect(header()
@@ -176,6 +182,16 @@ public class MvcEndpointCorsIntegrationTests {
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
 						"foo.example.com"))
 				.andExpect(status().isOk());
+	}
+
+	@Configuration
+	static class EndpointConfiguration {
+
+		@Bean
+		public BeansEndpoint beansEndpoint() {
+			return new BeansEndpoint();
+		}
+
 	}
 
 }

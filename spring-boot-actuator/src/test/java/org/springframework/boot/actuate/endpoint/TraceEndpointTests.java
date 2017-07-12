@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import org.junit.Test;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,30 +30,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TraceEndpoint}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
-
-	public TraceEndpointTests() {
-		super(Config.class, TraceEndpoint.class, "trace", "endpoints.trace");
-	}
+public class TraceEndpointTests {
 
 	@Test
-	public void invoke() throws Exception {
-		Trace trace = getEndpointBean().invoke().get(0);
+	public void trace() throws Exception {
+		TraceRepository repository = new InMemoryTraceRepository();
+		repository.add(Collections.<String, Object>singletonMap("a", "b"));
+		Trace trace = new TraceEndpoint(repository).traces().get(0);
 		assertThat(trace.getInfo().get("a")).isEqualTo("b");
-	}
-
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
-
-		@Bean
-		public TraceEndpoint endpoint() {
-			TraceRepository repository = new InMemoryTraceRepository();
-			repository.add(Collections.<String, Object>singletonMap("a", "b"));
-			return new TraceEndpoint(repository);
-		}
-
 	}
 
 }

@@ -185,7 +185,8 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void traceWithParameterMap() throws Exception {
-		this.restTemplate.getForEntity("/application/health?param1=value1", String.class);
+		this.restTemplate.withBasicAuth("user", getPassword())
+				.getForEntity("/application/health?param1=value1", String.class);
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<List> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())

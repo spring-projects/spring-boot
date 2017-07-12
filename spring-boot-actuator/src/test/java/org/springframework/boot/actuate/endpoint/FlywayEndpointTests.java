@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -33,16 +34,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link FlywayEndpoint}.
  *
  * @author Eddú Meléndez
+ * @author Andy Wilkinson
  */
-public class FlywayEndpointTests extends AbstractEndpointTests<FlywayEndpoint> {
-
-	public FlywayEndpointTests() {
-		super(Config.class, FlywayEndpoint.class, "flyway", "endpoints.flyway");
-	}
+public class FlywayEndpointTests {
 
 	@Test
-	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke()).hasSize(1);
+	public void flywayReportIsProduced() throws Exception {
+		new ApplicationContextRunner().withUserConfiguration(Config.class)
+				.run((context) -> assertThat(
+						context.getBean(FlywayEndpoint.class).flywayReports())
+								.hasSize(1));
 	}
 
 	@Configuration

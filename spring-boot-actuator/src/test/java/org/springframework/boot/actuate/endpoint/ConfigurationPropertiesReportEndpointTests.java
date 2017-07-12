@@ -18,18 +18,20 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.CollectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,211 +39,169 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConfigurationPropertiesReportEndpoint}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointTests
-		extends AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
-
-	public ConfigurationPropertiesReportEndpointTests() {
-		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",
-				"endpoints.configprops");
-	}
-
-	@Test
-	public void testInvoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size()).isGreaterThan(0);
-	}
+public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testNaming() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("testProperties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("prefix")).isEqualTo("test");
-		assertThat(nestedProperties.get("properties")).isNotNull();
-
+	public void configurationPropertiesAreReturned() throws Exception {
+		load((properties) -> {
+			assertThat(properties.size()).isGreaterThan(0);
+			Map<String, Object> nestedProperties = (Map<String, Object>) properties
+					.get("testProperties");
+			assertThat(nestedProperties).isNotNull();
+			assertThat(nestedProperties.get("prefix")).isEqualTo("test");
+			assertThat(nestedProperties.get("properties")).isNotNull();
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entriesWithNullValuesAreNotIncluded() {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("testProperties");
-		assertThat((Map<String, Object>) nestedProperties.get("properties"))
-				.doesNotContainKey("nullValue");
+		load((properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) properties
+					.get("testProperties");
+			assertThat((Map<String, Object>) nestedProperties.get("properties"))
+					.doesNotContainKey("nullValue");
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testDefaultKeySanitization() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
-		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
+	public void defaultKeySanitization() throws Exception {
+		load((properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties).isNotNull();
+			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
+			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testKeySanitization() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		report.setKeysToSanitize("property");
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
-		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testKeySanitizationWithList() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		report.setKeysToSanitize("property");
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
-		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
+	public void customKeySanitization() throws Exception {
+		load("property", (properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties).isNotNull();
+			assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
+			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
+		});
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testKeySanitizationWithCustomPattern() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		report.setKeysToSanitize(".*pass.*");
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
-		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
+	public void customPatternKeySanitization() throws Exception {
+		load(".*pass.*", (properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties).isNotNull();
+			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
+			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
+		});
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testKeySanitizationWithCustomKeysByEnvironment() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("endpoints.configprops.keys-to-sanitize:property")
-				.applyTo(this.context);
-		this.context.register(Config.class);
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
-		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testKeySanitizationWithCustomPatternByEnvironment() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("endpoints.configprops.keys-to-sanitize: .*pass.*")
-				.applyTo(this.context);
-		this.context.register(Config.class);
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
-		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
+	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
+		ApplicationContextRunner tester = new ApplicationContextRunner()
+				.withPropertyValues(
+						"endpoints.configprops.keys-to-sanitize: .*pass.*, property")
+				.withUserConfiguration(Config.class);
+		tester.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			Map<String, Object> properties = endpoint.configurationProperties();
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties).isNotNull();
+			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
+			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment()
-			throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("endpoints.configprops.keys-to-sanitize: .*pass.*, property")
-				.applyTo(this.context);
-		this.context.register(Config.class);
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
-		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testKeySanitizationWithCustomPatternUsingCompositeKeys()
-			throws Exception {
+	public void keySanitizationWithCustomPatternUsingCompositeKeys() throws Exception {
 		// gh-4415
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("endpoints.configprops.keys-to-sanitize: .*\\.secrets\\..*, .*\\.hidden\\..*")
-				.applyTo(this.context);
-		this.context.register(Config.class);
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties).isNotNull();
-		Map<String, Object> secrets = (Map<String, Object>) nestedProperties
-				.get("secrets");
-		Map<String, Object> hidden = (Map<String, Object>) nestedProperties.get("hidden");
-		assertThat(secrets.get("mine")).isEqualTo("******");
-		assertThat(secrets.get("yours")).isEqualTo("******");
-		assertThat(hidden.get("mine")).isEqualTo("******");
+		load(Arrays.asList(".*\\.secrets\\..*", ".*\\.hidden\\..*"), (properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties).isNotNull();
+			Map<String, Object> secrets = (Map<String, Object>) nestedProperties
+					.get("secrets");
+			Map<String, Object> hidden = (Map<String, Object>) nestedProperties
+					.get("hidden");
+			assertThat(secrets.get("mine")).isEqualTo("******");
+			assertThat(secrets.get("yours")).isEqualTo("******");
+			assertThat(hidden.get("mine")).isEqualTo("******");
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void mixedBoolean() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
+		load((properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void listsAreSanitized() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties.get("listItems")).isInstanceOf(List.class);
-		List<Object> list = (List<Object>) nestedProperties.get("listItems");
-		assertThat(list).hasSize(1);
-		Map<String, Object> item = (Map<String, Object>) list.get(0);
-		assertThat(item.get("somePassword")).isEqualTo("******");
+		load((properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties.get("listItems")).isInstanceOf(List.class);
+			List<Object> list = (List<Object>) nestedProperties.get("listItems");
+			assertThat(list).hasSize(1);
+			Map<String, Object> item = (Map<String, Object>) list.get(0);
+			assertThat(item.get("somePassword")).isEqualTo("******");
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void listsOfListsAreSanitized() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-				.get("testProperties")).get("properties");
-		assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);
-		List<List<Object>> listOfLists = (List<List<Object>>) nestedProperties
-				.get("listOfListItems");
-		assertThat(listOfLists).hasSize(1);
-		List<Object> list = listOfLists.get(0);
-		assertThat(list).hasSize(1);
-		Map<String, Object> item = (Map<String, Object>) list.get(0);
-		assertThat(item.get("somePassword")).isEqualTo("******");
+		load((properties) -> {
+			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+					.get("testProperties")).get("properties");
+			assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);
+			List<List<Object>> listOfLists = (List<List<Object>>) nestedProperties
+					.get("listOfListItems");
+			assertThat(listOfLists).hasSize(1);
+			List<Object> list = listOfLists.get(0);
+			assertThat(list).hasSize(1);
+			Map<String, Object> item = (Map<String, Object>) list.get(0);
+			assertThat(item.get("somePassword")).isEqualTo("******");
+		});
+	}
+
+	private void load(Consumer<Map<String, Object>> properties) {
+		load(Collections.emptyList(), properties);
+	}
+
+	private void load(String keyToSanitize, Consumer<Map<String, Object>> properties) {
+		load(Collections.singletonList(keyToSanitize), properties);
+	}
+
+	private void load(List<String> keysToSanitize,
+			Consumer<Map<String, Object>> properties) {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(Config.class);
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			if (!CollectionUtils.isEmpty(keysToSanitize)) {
+				endpoint.setKeysToSanitize(
+						keysToSanitize.toArray(new String[keysToSanitize.size()]));
+			}
+			properties.accept(endpoint.configurationProperties());
+		});
 	}
 
 	@Configuration

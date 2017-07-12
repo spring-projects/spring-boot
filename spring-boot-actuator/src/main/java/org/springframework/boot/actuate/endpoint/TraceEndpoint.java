@@ -20,7 +20,8 @@ import java.util.List;
 
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.util.Assert;
 
 /**
@@ -28,8 +29,8 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.trace")
-public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
+@Endpoint(id = "trace")
+public class TraceEndpoint {
 
 	private final TraceRepository repository;
 
@@ -38,13 +39,12 @@ public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 	 * @param repository the trace repository
 	 */
 	public TraceEndpoint(TraceRepository repository) {
-		super("trace");
 		Assert.notNull(repository, "Repository must not be null");
 		this.repository = repository;
 	}
 
-	@Override
-	public List<Trace> invoke() {
+	@ReadOperation
+	public List<Trace> traces() {
 		return this.repository.findAll();
 	}
 

@@ -19,9 +19,11 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointInfrastructureAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.security.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -30,6 +32,7 @@ import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguratio
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Import;
@@ -42,10 +45,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -55,60 +56,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class MvcEndpointIntegrationTests {
 
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
 	private AnnotationConfigWebApplicationContext context;
 
 	@After
 	public void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
-	}
-
-	@Test
-	public void defaultJsonResponseIsNotIndented() throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/application/mappings"))
-				.andExpect(content().string(startsWith("{\"")));
-	}
-
-	@Test
-	public void jsonResponsesCanBeIndented() throws Exception {
-		assertIndentedJsonResponse(SecureConfiguration.class);
-	}
-
-	@Test
-	public void jsonResponsesCanBeIndentedWhenSpringHateoasIsAutoConfigured()
-			throws Exception {
-		assertIndentedJsonResponse(SpringHateoasConfiguration.class);
-	}
-
-	@Test
-	public void jsonResponsesCanBeIndentedWhenSpringDataRestIsAutoConfigured()
-			throws Exception {
-		assertIndentedJsonResponse(SpringDataRestConfiguration.class);
-	}
-
-	@Test
-	public void fileExtensionNotFound() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(DefaultConfiguration.class);
-		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/application/beans.cmd")).andExpect(status().isNotFound());
-	}
-
-	@Test
-	public void jsonExtensionProvided() throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/application/beans.json")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -127,19 +80,6 @@ public class MvcEndpointIntegrationTests {
 				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isUnauthorized());
-	}
-
-	@Test
-	public void endpointsAreSecureWithNonActuatorRoleWithCustomContextPath()
-			throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.context-path:/management")
-				.applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/management/beans")).andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -174,22 +114,6 @@ public class MvcEndpointIntegrationTests {
 		mockMvc.perform(get("/application/beans")).andExpect(status().isOk());
 	}
 
-	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(configuration);
-		TestPropertyValues.of("spring.jackson.serialization.indent-output:true")
-				.applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/application/mappings"))
-				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
-	}
-
-	private MockMvc createMockMvc() {
-		return doCreateMockMvc();
-	}
-
 	private MockMvc createSecureMockMvc() {
 		return doCreateMockMvc(springSecurity());
 	}
@@ -205,10 +129,12 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
+			EndpointInfrastructureAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
+			ServletEndpointAutoConfiguration.class, AuditAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			AuditAutoConfiguration.class })
+			ManagementContextAutoConfiguration.class, AuditAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class })
 	static class DefaultConfiguration {
 
 	}

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -32,23 +31,6 @@ public class ManagementContextResolver {
 
 	public ManagementContextResolver(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-	}
-
-	void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
-
-	/**
-	 * Return all {@link MvcEndpoints} from the management context.
-	 * @return {@link MvcEndpoints} from the management context
-	 */
-	public MvcEndpoints getMvcEndpoints() {
-		try {
-			return getApplicationContext().getBean(MvcEndpoints.class);
-		}
-		catch (Exception ex) {
-			return null;
-		}
 	}
 
 	/**

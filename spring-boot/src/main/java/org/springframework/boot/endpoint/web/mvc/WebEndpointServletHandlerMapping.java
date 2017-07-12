@@ -106,6 +106,14 @@ public class WebEndpointServletHandlerMapping extends RequestMappingInfoHandlerM
 		setOrder(-100);
 	}
 
+	public Collection<EndpointInfo<WebEndpointOperation>> getEndpoints() {
+		return this.webEndpoints;
+	}
+
+	public String getEndpointPath() {
+		return this.endpointPath;
+	}
+
 	@Override
 	protected void initHandlerMethods() {
 		this.webEndpoints.stream()

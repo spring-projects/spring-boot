@@ -16,18 +16,24 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointInfrastructureAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -75,15 +81,29 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class,
+			EndpointInfrastructureAutoConfiguration.class,
+			ManagementContextAutoConfiguration.class,
+			ServletEndpointAutoConfiguration.class })
 	@Configuration
 	static class TestConfiguration {
 
 		@Bean
 		public HealthIndicator testHealthIndicator() {
 			return () -> Health.up().withDetail("hello", "world").build();
+		}
+
+		@Bean
+		public HealthEndpoint healthEndpoint(
+				Map<String, HealthIndicator> healthIndicators) {
+			return new HealthEndpoint(new OrderedHealthAggregator(), healthIndicators);
+		}
+
+		@Bean
+		public HealthWebEndpointExtension healthWebEndpointExtension(
+				HealthEndpoint delegate) {
+			return new HealthWebEndpointExtension(delegate);
 		}
 
 	}

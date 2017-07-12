@@ -25,7 +25,8 @@ import java.util.Map.Entry;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.method.HandlerMethod;
@@ -38,9 +39,8 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.mappings")
-public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>>
-		implements ApplicationContextAware {
+@Endpoint(id = "mappings")
+public class RequestMappingEndpoint implements ApplicationContextAware {
 
 	private List<AbstractUrlHandlerMapping> handlerMappings = Collections.emptyList();
 
@@ -48,10 +48,6 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 			.emptyList();
 
 	private ApplicationContext applicationContext;
-
-	public RequestMappingEndpoint() {
-		super("mappings");
-	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -75,8 +71,8 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 		this.methodMappings = methodMappings;
 	}
 
-	@Override
-	public Map<String, Object> invoke() {
+	@ReadOperation
+	public Map<String, Object> mappings() {
 		Map<String, Object> result = new LinkedHashMap<>();
 		extractHandlerMappings(this.handlerMappings, result);
 		extractHandlerMappings(this.applicationContext, result);

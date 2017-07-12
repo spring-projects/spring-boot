@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,53 +33,47 @@ import static org.assertj.core.api.Assertions.assertThat;
  * context.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class ConfigurationPropertiesReportEndpointParentTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-			if (this.context.getParent() != null) {
-				((ConfigurableApplicationContext) this.context.getParent()).close();
-			}
-		}
+	@Test
+	@SuppressWarnings("unchecked")
+	public void configurationPropertiesClass() throws Exception {
+		new ApplicationContextRunner().withUserConfiguration(Parent.class)
+				.run((parent) -> {
+					new ApplicationContextRunner()
+							.withUserConfiguration(ClassConfigurationProperties.class)
+							.withParent(parent).run(child -> {
+						ConfigurationPropertiesReportEndpoint endpoint = child
+								.getBean(ConfigurationPropertiesReportEndpoint.class);
+						Map<String, Object> result = endpoint.configurationProperties();
+						assertThat(result.keySet()).containsExactlyInAnyOrder("parent",
+								"endpoint", "someProperties");
+						assertThat(((Map<String, Object>) result.get("parent")).keySet())
+								.containsExactly("testProperties");
+					});
+				});
 	}
 
 	@Test
-	public void testInvoke() throws Exception {
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.register(Parent.class);
-		parent.refresh();
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setParent(parent);
-		this.context.register(Config.class);
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint endpoint = this.context
-				.getBean(ConfigurationPropertiesReportEndpoint.class);
-		Map<String, Object> result = endpoint.invoke();
-		assertThat(result).containsKey("parent");
-		assertThat(result).hasSize(3); // the endpoint, the test props and the parent
-		// System.err.println(result);
-	}
-
-	@Test
-	public void testInvokeWithFactory() throws Exception {
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.register(Parent.class);
-		parent.refresh();
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setParent(parent);
-		this.context.register(Factory.class);
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint endpoint = this.context
-				.getBean(ConfigurationPropertiesReportEndpoint.class);
-		Map<String, Object> result = endpoint.invoke();
-		assertThat(result.containsKey("parent")).isTrue();
-		assertThat(result).hasSize(3); // the endpoint, the test props and the parent
-		// System.err.println(result);
+	@SuppressWarnings("unchecked")
+	public void configurationPropertiesBeanMethod() throws Exception {
+		new ApplicationContextRunner().withUserConfiguration(Parent.class)
+				.run((parent) -> {
+					new ApplicationContextRunner()
+							.withUserConfiguration(
+									BeanMethodConfigurationProperties.class)
+							.withParent(parent).run(child -> {
+						ConfigurationPropertiesReportEndpoint endpoint = child
+								.getBean(ConfigurationPropertiesReportEndpoint.class);
+						Map<String, Object> result = endpoint.configurationProperties();
+						assertThat(result.keySet()).containsExactlyInAnyOrder("parent",
+								"endpoint", "otherProperties");
+						assertThat(((Map<String, Object>) result.get("parent")).keySet())
+								.containsExactly("testProperties");
+					});
+				});
 	}
 
 	@Configuration
@@ -97,7 +89,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	public static class Config {
+	public static class ClassConfigurationProperties {
 
 		@Bean
 		public ConfigurationPropertiesReportEndpoint endpoint() {
@@ -113,7 +105,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	public static class Factory {
+	public static class BeanMethodConfigurationProperties {
 
 		@Bean
 		public ConfigurationPropertiesReportEndpoint endpoint() {

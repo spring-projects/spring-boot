@@ -23,12 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
-import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -57,52 +51,54 @@ public class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 		this.applicationId = applicationId;
 	}
 
+	// TODO Port to new infrastructure
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object handler) throws Exception {
-		if (CorsUtils.isPreFlightRequest(request)) {
-			return true;
-		}
-		try {
-			if (!StringUtils.hasText(this.applicationId)) {
-				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
-						"Application id is not available");
-			}
-			if (this.cloudFoundrySecurityService == null) {
-				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
-						"Cloud controller URL is not available");
-			}
-			HandlerMethod handlerMethod = (HandlerMethod) handler;
-			if (HttpMethod.OPTIONS.matches(request.getMethod())
-					&& !(handlerMethod.getBean() instanceof MvcEndpoint)) {
-				return true;
-			}
-			MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
-			check(request, mvcEndpoint);
-		}
-		catch (CloudFoundryAuthorizationException ex) {
-			logger.error(ex);
-			response.setContentType(MediaType.APPLICATION_JSON.toString());
-			response.getWriter()
-					.write("{\"security_error\":\"" + ex.getMessage() + "\"}");
-			response.setStatus(ex.getStatusCode().value());
-			return false;
-		}
+		// if (CorsUtils.isPreFlightRequest(request)) {
+		// return true;
+		// }
+		// try {
+		// if (!StringUtils.hasText(this.applicationId)) {
+		// throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
+		// "Application id is not available");
+		// }
+		// if (this.cloudFoundrySecurityService == null) {
+		// throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
+		// "Cloud controller URL is not available");
+		// }
+		// HandlerMethod handlerMethod = (HandlerMethod) handler;
+		// if (HttpMethod.OPTIONS.matches(request.getMethod())
+		// && !(handlerMethod.getBean() instanceof MvcEndpoint)) {
+		// return true;
+		// }
+		// MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
+		// check(request, mvcEndpoint);
+		// }
+		// catch (CloudFoundryAuthorizationException ex) {
+		// logger.error(ex);
+		// response.setContentType(MediaType.APPLICATION_JSON.toString());
+		// response.getWriter()
+		// .write("{\"security_error\":\"" + ex.getMessage() + "\"}");
+		// response.setStatus(ex.getStatusCode().value());
+		// return false;
+		// }
 		return true;
 	}
 
-	private void check(HttpServletRequest request, MvcEndpoint mvcEndpoint)
-			throws Exception {
-		Token token = getToken(request);
-		this.tokenValidator.validate(token);
-		AccessLevel accessLevel = this.cloudFoundrySecurityService
-				.getAccessLevel(token.toString(), this.applicationId);
-		if (!accessLevel.isAccessAllowed(mvcEndpoint.getPath())) {
-			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
-					"Access denied");
-		}
-		accessLevel.put(request);
-	}
+	// private void check(HttpServletRequest request, MvcEndpoint mvcEndpoint)
+	// throws Exception {
+	// Token token = getToken(request);
+	// this.tokenValidator.validate(token);
+	// AccessLevel accessLevel = this.cloudFoundrySecurityService
+	// .getAccessLevel(token.toString(), this.applicationId);
+	// if (!accessLevel.isAccessAllowed(mvcEndpoint.getPath())) {
+	// throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
+	// "Access denied");
+	// }
+	// accessLevel.put(request);
+	// }
 
 	private Token getToken(HttpServletRequest request) {
 		String authorization = request.getHeader("Authorization");

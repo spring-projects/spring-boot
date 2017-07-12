@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +24,11 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
+import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
-import org.springframework.boot.actuate.endpoint.DumpEndpoint;
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
@@ -42,6 +40,7 @@ import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.actuate.endpoint.ThreadDumpEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -59,10 +58,12 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 
 /**
@@ -78,112 +79,110 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Meang Akira Tanaka
  * @author Ben Hale
  * @since 2.0.0
+ * @author Andy Wilkinson
  */
 @Configuration
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 @EnableConfigurationProperties(EndpointProperties.class)
 public class EndpointAutoConfiguration {
 
-	private final HealthAggregator healthAggregator;
-
-	private final Map<String, HealthIndicator> healthIndicators;
-
-	private final List<InfoContributor> infoContributors;
-
-	private final Collection<PublicMetrics> publicMetrics;
-
-	private final TraceRepository traceRepository;
-
-	public EndpointAutoConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
-			ObjectProvider<Map<String, HealthIndicator>> healthIndicators,
-			ObjectProvider<List<InfoContributor>> infoContributors,
-			ObjectProvider<Collection<PublicMetrics>> publicMetrics,
-			ObjectProvider<TraceRepository> traceRepository) {
-		this.healthAggregator = healthAggregator.getIfAvailable();
-		this.healthIndicators = healthIndicators.getIfAvailable();
-		this.infoContributors = infoContributors.getIfAvailable();
-		this.publicMetrics = publicMetrics.getIfAvailable();
-		this.traceRepository = traceRepository.getIfAvailable();
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	public EnvironmentEndpoint environmentEndpoint(Environment environment) {
+		return new EnvironmentEndpoint(environment);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public EnvironmentEndpoint environmentEndpoint() {
-		return new EnvironmentEndpoint();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HealthEndpoint healthEndpoint() {
+	@ConditionalOnEnabledEndpoint
+	public HealthEndpoint healthEndpoint(
+			ObjectProvider<HealthAggregator> healthAggregator,
+			ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
 		return new HealthEndpoint(
-				this.healthAggregator == null ? new OrderedHealthAggregator()
-						: this.healthAggregator,
-				this.healthIndicators == null
-						? Collections.<String, HealthIndicator>emptyMap()
-						: this.healthIndicators);
+				healthAggregator.getIfAvailable(() -> new OrderedHealthAggregator()),
+				healthIndicators.getIfAvailable(Collections::emptyMap));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
 	public BeansEndpoint beansEndpoint() {
 		return new BeansEndpoint();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfoEndpoint infoEndpoint() throws Exception {
-		return new InfoEndpoint(this.infoContributors == null
-				? Collections.<InfoContributor>emptyList() : this.infoContributors);
+	@ConditionalOnEnabledEndpoint
+	public InfoEndpoint infoEndpoint(
+			ObjectProvider<List<InfoContributor>> infoContributors) {
+		return new InfoEndpoint(infoContributors.getIfAvailable(Collections::emptyList));
 	}
 
 	@Bean
 	@ConditionalOnBean(LoggingSystem.class)
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
 	public LoggersEndpoint loggersEndpoint(LoggingSystem loggingSystem) {
 		return new LoggersEndpoint(loggingSystem);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MetricsEndpoint metricsEndpoint() {
-		List<PublicMetrics> publicMetrics = new ArrayList<>();
-		if (this.publicMetrics != null) {
-			publicMetrics.addAll(this.publicMetrics);
-		}
-		publicMetrics.sort(AnnotationAwareOrderComparator.INSTANCE);
-		return new MetricsEndpoint(publicMetrics);
+	@ConditionalOnEnabledEndpoint
+	public MetricsEndpoint metricsEndpoint(
+			ObjectProvider<List<PublicMetrics>> publicMetrics) {
+		List<PublicMetrics> sortedPublicMetrics = publicMetrics
+				.getIfAvailable(Collections::emptyList);
+		Collections.sort(sortedPublicMetrics, AnnotationAwareOrderComparator.INSTANCE);
+		return new MetricsEndpoint(sortedPublicMetrics);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public TraceEndpoint traceEndpoint() {
-		return new TraceEndpoint(this.traceRepository == null
-				? new InMemoryTraceRepository() : this.traceRepository);
+	@ConditionalOnEnabledEndpoint
+	public TraceEndpoint traceEndpoint(ObjectProvider<TraceRepository> traceRepository) {
+		return new TraceEndpoint(
+				traceRepository.getIfAvailable(() -> new InMemoryTraceRepository()));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DumpEndpoint dumpEndpoint() {
-		return new DumpEndpoint();
+	@ConditionalOnEnabledEndpoint
+	public ThreadDumpEndpoint dumpEndpoint() {
+		return new ThreadDumpEndpoint();
 	}
 
 	@Bean
 	@ConditionalOnBean(ConditionEvaluationReport.class)
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public AutoConfigurationReportEndpoint autoConfigurationReportEndpoint() {
-		return new AutoConfigurationReportEndpoint();
+	@ConditionalOnEnabledEndpoint
+	public AutoConfigurationReportEndpoint autoConfigurationReportEndpoint(
+			ConditionEvaluationReport conditionEvaluationReport) {
+		return new AutoConfigurationReportEndpoint(conditionEvaluationReport);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
 	public ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
 		return new ConfigurationPropertiesReportEndpoint();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(AuditEventRepository.class)
+	@ConditionalOnEnabledEndpoint
+	public AuditEventsEndpoint auditEventsEndpoint(
+			AuditEventRepository auditEventRepository) {
+		return new AuditEventsEndpoint(auditEventRepository);
 	}
 
 	@Configuration
@@ -193,6 +192,7 @@ public class EndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnEnabledEndpoint
 		public FlywayEndpoint flywayEndpoint(Map<String, Flyway> flyways) {
 			return new FlywayEndpoint(flyways);
 		}
@@ -206,6 +206,7 @@ public class EndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnEnabledEndpoint
 		public LiquibaseEndpoint liquibaseEndpoint(
 				Map<String, SpringLiquibase> liquibases) {
 			return new LiquibaseEndpoint(liquibases);
@@ -219,6 +220,7 @@ public class EndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnEnabledEndpoint
 		public RequestMappingEndpoint requestMappingEndpoint() {
 			RequestMappingEndpoint endpoint = new RequestMappingEndpoint();
 			return endpoint;

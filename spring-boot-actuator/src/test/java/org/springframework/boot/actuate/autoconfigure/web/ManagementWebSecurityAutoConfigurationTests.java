@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.security.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -88,7 +88,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				ManagementWebSecurityAutoConfiguration.class,
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				EndpointAutoConfiguration.class, ServletEndpointAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
 		TestPropertyValues.of("security.basic.enabled:false").applyTo(this.context);
 		this.context.refresh();
@@ -195,7 +195,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				ManagementWebSecurityAutoConfiguration.class,
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				EndpointAutoConfiguration.class, ServletEndpointAutoConfiguration.class,
 				WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				AuditAutoConfiguration.class);
 		this.context.refresh();
@@ -236,7 +236,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			EndpointAutoConfiguration.class, ServletEndpointAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
 			FallbackWebSecurityAutoConfiguration.class })
 	static class WebConfiguration {

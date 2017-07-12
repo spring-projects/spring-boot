@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.security;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -28,9 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ManagementContextResolver;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -51,6 +49,9 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.endpoint.EndpointInfo;
+import org.springframework.boot.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.endpoint.web.mvc.WebEndpointServletHandlerMapping;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -218,7 +219,8 @@ public class ManagementWebSecurityAutoConfiguration {
 				AuthenticationEntryPoint entryPoint = entryPoint();
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
 				// Match all the requests for actuator endpoints ...
-				http.requestMatcher(matcher);
+				http.requestMatcher(matcher).authorizeRequests().anyRequest()
+						.authenticated();
 				http.httpBasic().authenticationEntryPoint(entryPoint).and().cors();
 				// No cookies for management endpoints by default
 				http.csrf().disable();
@@ -256,20 +258,21 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	private static class EndpointPaths {
 
-		public String[] getPaths(EndpointHandlerMapping endpointHandlerMapping) {
+		public String[] getPaths(
+				WebEndpointServletHandlerMapping endpointHandlerMapping) {
 			if (endpointHandlerMapping == null) {
 				return NO_PATHS;
 			}
-			Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
+			Collection<EndpointInfo<WebEndpointOperation>> endpoints = endpointHandlerMapping
+					.getEndpoints();
 			Set<String> paths = new LinkedHashSet<>(endpoints.size());
-			for (MvcEndpoint endpoint : endpoints) {
-				String path = endpointHandlerMapping.getPath(endpoint.getPath());
+			for (EndpointInfo<WebEndpointOperation> endpoint : endpoints) {
+				String path = endpointHandlerMapping.getEndpointPath() + "/"
+						+ endpoint.getId();
 				paths.add(path);
-				if (!path.equals("")) {
-					paths.add(path + "/**");
-					// Add Spring MVC-generated additional paths
-					paths.add(path + ".*");
-				}
+				paths.add(path + "/**");
+				// Add Spring MVC-generated additional paths
+				paths.add(path + ".*");
 				paths.add(path + "/");
 			}
 			return paths.toArray(new String[paths.size()]);
@@ -300,7 +303,7 @@ public class ManagementWebSecurityAutoConfiguration {
 						server.getServlet().getPath(path) + "/**");
 				return matcher;
 			}
-			// Match everything, including the sensitive and non-sensitive paths
+			// Match all endpoint paths
 			return new LazyEndpointPathRequestMatcher(contextResolver,
 					new EndpointPaths());
 		}
@@ -323,7 +326,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			ServerProperties server = this.contextResolver.getApplicationContext()
 					.getBean(ServerProperties.class);
 			List<RequestMatcher> matchers = new ArrayList<>();
-			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
+			WebEndpointServletHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
 				matchers.add(
 						new AntPathRequestMatcher(server.getServlet().getPath(path)));
@@ -331,16 +334,18 @@ public class ManagementWebSecurityAutoConfiguration {
 			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
 		}
 
-		private EndpointHandlerMapping getRequiredEndpointHandlerMapping() {
-			EndpointHandlerMapping endpointHandlerMapping = null;
+		private WebEndpointServletHandlerMapping getRequiredEndpointHandlerMapping() {
+			WebEndpointServletHandlerMapping endpointHandlerMapping = null;
 			ApplicationContext context = this.contextResolver.getApplicationContext();
-			if (context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
-				endpointHandlerMapping = context.getBean(EndpointHandlerMapping.class);
+			if (context.getBeanNamesForType(
+					WebEndpointServletHandlerMapping.class).length > 0) {
+				endpointHandlerMapping = context
+						.getBean(WebEndpointServletHandlerMapping.class);
 			}
 			if (endpointHandlerMapping == null) {
 				// Maybe there are actually no endpoints (e.g. management.port=-1)
-				endpointHandlerMapping = new EndpointHandlerMapping(
-						Collections.<NamedMvcEndpoint>emptySet());
+				endpointHandlerMapping = new WebEndpointServletHandlerMapping("",
+						Collections.emptySet());
 			}
 			return endpointHandlerMapping;
 		}

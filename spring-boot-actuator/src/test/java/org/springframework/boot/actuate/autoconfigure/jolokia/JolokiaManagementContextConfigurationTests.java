@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.jolokia;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -39,7 +39,7 @@ public class JolokiaManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(
-					AutoConfigurations.of(EndpointWebMvcAutoConfiguration.class,
+					AutoConfigurations.of(ManagementContextAutoConfiguration.class,
 							JolokiaManagementContextConfiguration.class));
 
 	@Test

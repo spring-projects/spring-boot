@@ -16,15 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
-
-import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,33 +30,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Meang Akira Tanaka
+ * @author Andy Wilkinson
  */
-public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
+public class InfoEndpointTests {
 
-	public InfoEndpointTests() {
-		super(Config.class, InfoEndpoint.class, "info", "endpoints.info");
+	@Test
+	public void info() {
+		InfoEndpoint endpoint = new InfoEndpoint(
+				Arrays.asList((builder) -> builder.withDetail("key1", "value1"),
+						(builder) -> builder.withDetail("key2", "value2")));
+		Map<String, Object> info = endpoint.info();
+		assertThat(info).hasSize(2);
+		assertThat(info).containsEntry("key1", "value1");
+		assertThat(info).containsEntry("key2", "value2");
 	}
 
 	@Test
-	public void invoke() throws Exception {
-		Map<String, Object> actual = getEndpointBean().invoke();
-		assertThat(actual.get("key1")).isEqualTo("value1");
-	}
-
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
-
-		@Bean
-		public InfoContributor infoContributor() {
-			return (builder) -> builder.withDetail("key1", "value1");
-		}
-
-		@Bean
-		public InfoEndpoint endpoint(List<InfoContributor> infoContributors) {
-			return new InfoEndpoint(infoContributors);
-		}
-
+	public void infoWithNoContributorsProducesEmptyMap() {
+		InfoEndpoint endpoint = new InfoEndpoint(Collections.emptyList());
+		Map<String, Object> info = endpoint.info();
+		assertThat(info).isEmpty();
 	}
 
 }
