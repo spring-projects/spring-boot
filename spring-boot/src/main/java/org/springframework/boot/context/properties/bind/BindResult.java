@@ -47,7 +47,7 @@ public final class BindResult<T> {
 	/**
 	 * Return the object that was bound or throw a {@link NoSuchElementException} if no
 	 * value was bound.
-	 * @return the the bound value (never {@code null})
+	 * @return the bound value (never {@code null})
 	 * @throws NoSuchElementException if no value was bound
 	 * @see #isBound()
 	 */
