@@ -336,7 +336,29 @@ callbacks (such as the `DisposableBean` interface, or the `@PreDestroy` annotati
 be used.
 
 In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator`
-interface if they wish to return a specific exit code when the application ends.
+interface if they wish to return a specific exit code when `SpringApplication.exit()`
+is called. This exit code can then be passed to `System.exit()` to pass it to the outside.
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+    public class ExitCodeApplication {
+
+    	public static void main(String[] args) {
+    		System.exit(SpringApplication.exit(SpringApplication.run(ExitCodeApplication.class, args)));
+    	}
+
+    	@Bean
+    	public ExitCodeGenerator exitCodeGenerator(){
+    		return () -> 42;
+    	}
+
+    }
+----
+
+Also, the `ExitCodeGenerator` interface may be implemented by exceptions. When such an exception is
+encountered, Spring Boot will return the exit code provided by the implemented `getExitCode()` method
+to the outside caller.
 
 
 
