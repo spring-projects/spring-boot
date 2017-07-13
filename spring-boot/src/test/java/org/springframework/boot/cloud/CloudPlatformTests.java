@@ -16,12 +16,11 @@
 
 package org.springframework.boot.cloud;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.Test;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CloudPlatform}.
@@ -72,11 +71,11 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasHcLandscapeShouldReturnHcp() throws Exception {
+	public void getActiveWhenHasHcLandscapeShouldReturnSap() throws Exception {
 		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE",
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform).isEqualTo(CloudPlatform.HCP);
+		assertThat(platform).isEqualTo(CloudPlatform.SAP);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 

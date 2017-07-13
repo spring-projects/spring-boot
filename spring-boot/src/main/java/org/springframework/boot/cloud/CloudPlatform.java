@@ -54,9 +54,9 @@ public enum CloudPlatform {
 	},
 
 	/**
-	 * SAP Hana Cloud platform.
+	 * SAP Cloud platform.
 	 */
-	HCP {
+	SAP {
 
 		@Override
 		public boolean isActive(Environment environment) {
@@ -67,6 +67,7 @@ public enum CloudPlatform {
 
 	/**
 	 * Determines if the platform is active (i.e. the application is running in it).
+	 *
 	 * @param environment the environment
 	 * @return if the platform is active.
 	 */
@@ -75,6 +76,7 @@ public enum CloudPlatform {
 	/**
 	 * Returns if the platform is behind a load balancer and uses
 	 * {@literal X-Forwarded-For} headers.
+	 *
 	 * @return if {@literal X-Forwarded-For} headers are used
 	 */
 	public boolean isUsingForwardHeaders() {
@@ -83,6 +85,7 @@ public enum CloudPlatform {
 
 	/**
 	 * Returns the active {@link CloudPlatform} or {@code null} if one cannot be deduced.
+	 *
 	 * @param environment the environment
 	 * @return the {@link CloudPlatform} or {@code null}
 	 */
