@@ -30,8 +30,7 @@ import org.springframework.mock.env.MockEnvironment;
 public class CloudPlatformTests {
 
 	@Test
-	public void getActiveWhenEnvironmentIsNullShouldReturnNull()
-			throws Exception {
+	public void getActiveWhenEnvironmentIsNullShouldReturnNull() throws Exception {
 		CloudPlatform platform = CloudPlatform.getActive(null);
 		assertThat(platform).isNull();
 	}
@@ -47,18 +46,17 @@ public class CloudPlatformTests {
 	@Test
 	public void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry()
 			throws Exception {
-		Environment environment = new MockEnvironment()
-				.withProperty("VCAP_APPLICATION", "---");
+		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION",
+				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 
 	@Test
-	public void getActiveWhenHasVcapServicesShouldReturnCloudFoundry()
-			throws Exception {
-		Environment environment = new MockEnvironment()
-				.withProperty("VCAP_SERVICES", "---");
+	public void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() throws Exception {
+		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES",
+				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
@@ -66,20 +64,18 @@ public class CloudPlatformTests {
 
 	@Test
 	public void getActiveWhenHasDynoShouldReturnHeroku() throws Exception {
-		Environment environment = new MockEnvironment().withProperty("DYNO",
-				"---");
+		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 
 	@Test
-	public void getActiveWhenHasHcLandscapeShouldReturnSapCloudPlatform()
-			throws Exception {
-		Environment environment = new MockEnvironment()
-				.withProperty("HC_LANDSCAPE", "---");
+	public void getActiveWhenHasHcLandscapeShouldReturnSap() throws Exception {
+		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE",
+				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform).isEqualTo(CloudPlatform.SAP_CLOUD_PLATFORM);
+		assertThat(platform).isEqualTo(CloudPlatform.SAP);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 
