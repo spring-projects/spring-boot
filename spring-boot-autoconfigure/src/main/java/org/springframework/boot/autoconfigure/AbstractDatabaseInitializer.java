@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
@@ -52,7 +53,8 @@ public abstract class AbstractDatabaseInitializer {
 
 	@PostConstruct
 	protected void initialize() {
-		if (!isEnabled()) {
+		if ((getMode() == DatabaseInitializerMode.EMBEDDED && !isEmbeddedDataSource())
+				|| getMode() == DatabaseInitializerMode.NEVER) {
 			return;
 		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
@@ -66,7 +68,7 @@ public abstract class AbstractDatabaseInitializer {
 		DatabasePopulatorUtils.execute(populator, this.dataSource);
 	}
 
-	protected abstract boolean isEnabled();
+	protected abstract DatabaseInitializerMode getMode();
 
 	protected abstract String getSchemaLocation();
 
@@ -84,6 +86,10 @@ public abstract class AbstractDatabaseInitializer {
 		catch (MetaDataAccessException ex) {
 			throw new IllegalStateException("Unable to detect database type", ex);
 		}
+	}
+
+	private boolean isEmbeddedDataSource() {
+		return EmbeddedDatabaseConnection.isEmbedded(this.dataSource);
 	}
 
 }

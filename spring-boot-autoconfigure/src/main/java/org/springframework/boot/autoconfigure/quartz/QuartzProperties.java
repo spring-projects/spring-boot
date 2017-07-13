@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.quartz;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -70,9 +71,9 @@ public class QuartzProperties {
 		private String schema = DEFAULT_SCHEMA_LOCATION;
 
 		/**
-		 * Create the required Quartz Scheduler tables on startup.
+		 * Quartz Scheduler database schema initialization mode.
 		 */
-		private boolean initializeSchema;
+		private DatabaseInitializerMode initializeSchema = DatabaseInitializerMode.EMBEDDED;
 
 		public String getSchema() {
 			return this.schema;
@@ -82,11 +83,11 @@ public class QuartzProperties {
 			this.schema = schema;
 		}
 
-		public boolean isInitializeSchema() {
+		public DatabaseInitializerMode getInitializeSchema() {
 			return this.initializeSchema;
 		}
 
-		public void setInitializeSchema(boolean initializeSchema) {
+		public void setInitializeSchema(DatabaseInitializerMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
 		}
 
