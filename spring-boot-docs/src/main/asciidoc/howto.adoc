@@ -1936,11 +1936,12 @@ data.
 === Initialize a Spring Batch database
 If you are using Spring Batch then it comes pre-packaged with SQL initialization scripts
 for most popular database platforms. Spring Boot will detect your database type, and
-execute those scripts by default, and in this case will switch the fail fast setting to
-false (errors are logged but do not prevent the application from starting). This is
-because the scripts are known to be reliable and generally do not contain bugs, so errors
-are ignorable, and ignoring them makes the scripts idempotent. You can switch off the
-initialization explicitly using `spring.batch.initializer.enabled=false`.
+execute those scripts by default when using an embedded database, and in this case will
+switch the fail fast setting to false (errors are logged but do not prevent the
+application from starting). This is because the scripts are known to be reliable and
+generally do not contain bugs, so errors are ignorable, and ignoring them makes the
+scripts idempotent. You can switch off the initialization explicitly using
+`spring.batch.initialize-schema=never`.
 
 
 

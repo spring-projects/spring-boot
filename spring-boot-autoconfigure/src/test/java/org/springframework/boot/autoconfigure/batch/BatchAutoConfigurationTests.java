@@ -47,6 +47,7 @@ import org.springframework.batch.support.transaction.ResourcelessTransactionMana
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -86,8 +87,9 @@ public class BatchAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					assertThat(context).hasSingleBean(JobExplorer.class);
-					assertThat(context.getBean(BatchProperties.class).getInitializer()
-							.isEnabled()).isTrue();
+					assertThat(
+							context.getBean(BatchProperties.class).getInitializeSchema())
+									.isEqualTo(DatabaseInitializerMode.EMBEDDED);
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 				});
@@ -169,11 +171,12 @@ public class BatchAutoConfigurationTests {
 				.withUserConfiguration(TestConfiguration.class,
 						EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.batch.initializer.enabled:false")
+						"spring.batch.initialize-schema:never")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
-					assertThat(context.getBean(BatchProperties.class).getInitializer()
-							.isEnabled()).isFalse();
+					assertThat(
+							context.getBean(BatchProperties.class).getInitializeSchema())
+									.isEqualTo(DatabaseInitializerMode.NEVER);
 					this.expected.expect(BadSqlGrammarException.class);
 					new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION");
@@ -210,8 +213,9 @@ public class BatchAutoConfigurationTests {
 						"spring.batch.tablePrefix:PREFIX_")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
-					assertThat(context.getBean(BatchProperties.class).getInitializer()
-							.isEnabled()).isTrue();
+					assertThat(
+							context.getBean(BatchProperties.class).getInitializeSchema())
+									.isEqualTo(DatabaseInitializerMode.EMBEDDED);
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from PREFIX_JOB_EXECUTION"))
 									.isEmpty();
@@ -220,25 +224,6 @@ public class BatchAutoConfigurationTests {
 					JobRepository jobRepository = context.getBean(JobRepository.class);
 					assertThat(jobRepository.getLastJobExecution("test",
 							new JobParameters())).isNull();
-				});
-	}
-
-	@Test
-	public void testCustomTablePrefixWithDefaultSchemaDisablesInitializer()
-			throws Exception {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class,
-						EmbeddedDataSourceConfiguration.class,
-						HibernateJpaAutoConfiguration.class)
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.batch.tablePrefix:PREFIX_")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JobLauncher.class);
-					assertThat(context.getBean(BatchProperties.class).getInitializer()
-							.isEnabled()).isFalse();
-					this.expected.expect(BadSqlGrammarException.class);
-					new JdbcTemplate(context.getBean(DataSource.class))
-							.queryForList("select * from BATCH_JOB_EXECUTION");
 				});
 	}
 
