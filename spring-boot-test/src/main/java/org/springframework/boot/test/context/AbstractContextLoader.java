@@ -62,6 +62,8 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 
 	private ClassLoader classLoader;
 
+	private ApplicationContext parent;
+
 	protected AbstractContextLoader(Supplier<T> contextSupplier) {
 		this.contextSupplier = contextSupplier;
 	}
@@ -112,6 +114,12 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 		if (!ObjectUtils.isEmpty(configs)) {
 			this.userConfigurations.addAll(Arrays.asList(configs));
 		}
+		return self();
+	}
+
+	@Override
+	public L parent(ApplicationContext parent) {
+		this.parent = parent;
 		return self();
 	}
 
@@ -226,6 +234,9 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 
 	private T configureApplicationContext() {
 		T context = AbstractContextLoader.this.contextSupplier.get();
+		if (this.parent != null) {
+			context.setParent(this.parent);
+		}
 		if (this.classLoader != null) {
 			Assert.isInstanceOf(DefaultResourceLoader.class, context);
 			((DefaultResourceLoader) context).setClassLoader(this.classLoader);

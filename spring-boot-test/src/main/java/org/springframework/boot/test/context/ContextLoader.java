@@ -135,6 +135,16 @@ public interface ContextLoader {
 	ContextLoader classLoader(ClassLoader classLoader);
 
 	/**
+	 * Configure the
+	 * {@link org.springframework.context.ConfigurableApplicationContext#setParent(ApplicationContext)
+	 * parent} of the {@link ApplicationContext}.
+	 *
+	 * @param parent the parent
+	 * @return this instance
+	 */
+	ContextLoader parent(ApplicationContext parent);
+
+	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
 	 * this loader. The context is consumed by the specified {@code consumer} and closed
 	 * upon completion.
