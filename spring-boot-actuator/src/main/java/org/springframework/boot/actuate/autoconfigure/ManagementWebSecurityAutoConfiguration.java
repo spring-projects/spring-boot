@@ -222,7 +222,7 @@ public class ManagementWebSecurityAutoConfiguration {
 				http.requestMatcher(matcher);
 				// ... but permitAll() for the non-sensitive ones
 				configurePermittedRequests(http.authorizeRequests());
-				http.httpBasic().authenticationEntryPoint(entryPoint);
+				http.httpBasic().authenticationEntryPoint(entryPoint).and().cors();
 				// No cookies for management endpoints by default
 				http.csrf().disable();
 				http.sessionManagement()
