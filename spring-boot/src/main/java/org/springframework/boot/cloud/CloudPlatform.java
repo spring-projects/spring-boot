@@ -19,8 +19,8 @@ package org.springframework.boot.cloud;
 import org.springframework.core.env.Environment;
 
 /**
- * Simple detection for well known cloud platforms. For more advanced cloud provider
- * integration consider the Spring Cloud project.
+ * Simple detection for well known cloud platforms. For more advanced cloud
+ * provider integration consider the Spring Cloud project.
  *
  * @author Phillip Webb
  * @since 1.3.0
@@ -54,9 +54,9 @@ public enum CloudPlatform {
 	},
 
 	/**
-	 * SAP Hana Cloud platform.
+	 * SAP Cloud platform.
 	 */
-	HCP {
+	SAP_CLOUD_PLATFORM {
 
 		@Override
 		public boolean isActive(Environment environment) {
@@ -66,8 +66,11 @@ public enum CloudPlatform {
 	};
 
 	/**
-	 * Determines if the platform is active (i.e. the application is running in it).
-	 * @param environment the environment
+	 * Determines if the platform is active (i.e. the application is running in
+	 * it).
+	 * 
+	 * @param environment
+	 *            the environment
 	 * @return if the platform is active.
 	 */
 	public abstract boolean isActive(Environment environment);
@@ -75,6 +78,7 @@ public enum CloudPlatform {
 	/**
 	 * Returns if the platform is behind a load balancer and uses
 	 * {@literal X-Forwarded-For} headers.
+	 * 
 	 * @return if {@literal X-Forwarded-For} headers are used
 	 */
 	public boolean isUsingForwardHeaders() {
@@ -82,8 +86,11 @@ public enum CloudPlatform {
 	}
 
 	/**
-	 * Returns the active {@link CloudPlatform} or {@code null} if one cannot be deduced.
-	 * @param environment the environment
+	 * Returns the active {@link CloudPlatform} or {@code null} if one cannot be
+	 * deduced.
+	 * 
+	 * @param environment
+	 *            the environment
 	 * @return the {@link CloudPlatform} or {@code null}
 	 */
 	public static CloudPlatform getActive(Environment environment) {
