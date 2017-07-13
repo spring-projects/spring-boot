@@ -18,8 +18,7 @@ package org.springframework.boot;
 
 /**
  * Interface used to generate an 'exit code' from a running command line
- * {@link SpringApplication}. Since 1.3.2 this interface can be used on exceptions as well
- * as directly on beans.
+ * {@link SpringApplication}. Can be used on exceptions as well as directly on beans.
  *
  * @author Dave Syer
  * @see SpringApplication#exit(org.springframework.context.ApplicationContext,
