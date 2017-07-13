@@ -16,6 +16,11 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import io.undertow.Undertow;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
@@ -23,6 +28,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
+import org.springframework.util.Assert;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link UndertowWebServer}s.
@@ -39,6 +45,8 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	private Integer workerThreads;
 
 	private Boolean directBuffers;
+
+	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<>();
 
 	/**
 	 * Create a new {@link UndertowReactiveWebServerFactory} instance.
@@ -78,6 +86,9 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			builder.setDirectBuffers(this.directBuffers);
 		}
 		builder.addHttpListener(port, getListenAddress());
+		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
+			customizer.customize(builder);
+		}
 		return builder;
 	}
 
@@ -102,6 +113,36 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	public void setDirectBuffers(Boolean directBuffers) {
 		this.directBuffers = directBuffers;
+	}
+
+	/**
+	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
+	 * {@link Undertow.Builder}. Calling this method will replace any existing customizers.
+	 * @param customizers the customizers to set
+	 */
+	public void setBuilderCustomizers(
+			Collection<? extends UndertowBuilderCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.builderCustomizers = new ArrayList<>(customizers);
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
+	 * applied to the Undertow {@link Undertow.Builder} .
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
+		return this.builderCustomizers;
+	}
+
+	/**
+	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
+	 * Undertow {@link Undertow.Builder}.
+	 * @param customizers the customizers to add
+	 */
+	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.builderCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 }

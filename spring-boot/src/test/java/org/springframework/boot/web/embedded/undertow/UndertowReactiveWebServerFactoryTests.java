@@ -16,12 +16,24 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.util.Arrays;
+
+import io.undertow.Undertow;
+import org.junit.Test;
+import org.mockito.InOrder;
+
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.http.server.reactive.HttpHandler;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link UndertowReactiveWebServerFactory} and {@link UndertowWebServer}.
  *
  * @author Brian Clozel
+ * @author Madhura Bhave
  */
 public class UndertowReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
@@ -29,6 +41,39 @@ public class UndertowReactiveWebServerFactoryTests
 	@Override
 	protected UndertowReactiveWebServerFactory getFactory() {
 		return new UndertowReactiveWebServerFactory(0);
+	}
+
+	@Test
+	public void setNullBuilderCustomizersShouldThrowException() {
+		UndertowReactiveWebServerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.setBuilderCustomizers(null);
+	}
+
+	@Test
+	public void addNullBuilderCustomizersShouldThrowException() {
+		UndertowReactiveWebServerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null);
+	}
+
+	@Test
+	public void builderCustomizersShouldBeInvoked() throws Exception {
+		UndertowReactiveWebServerFactory factory = getFactory();
+		HttpHandler handler = mock(HttpHandler.class);
+		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
+		for (int i = 0; i < customizers.length; i++) {
+			customizers[i] = mock(UndertowBuilderCustomizer.class);
+		}
+		factory.setBuilderCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.addBuilderCustomizers(customizers[2], customizers[3]);
+		this.webServer = factory.getWebServer(handler);
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (UndertowBuilderCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(Undertow.Builder.class));
+		}
 	}
 
 }
