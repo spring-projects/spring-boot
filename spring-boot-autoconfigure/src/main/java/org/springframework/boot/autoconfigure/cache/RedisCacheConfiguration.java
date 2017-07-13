@@ -57,7 +57,6 @@ class RedisCacheConfiguration {
 
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-
 		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory);
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
