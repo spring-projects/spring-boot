@@ -119,7 +119,7 @@
 		<jolokia.version>1.3.7</jolokia.version>
 		<jooq.version>3.9.3</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
-		<json-path.version>2.3.0</json-path.version>
+		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<jtds.version>1.3.1</jtds.version>
 		<junit.version>4.12</junit.version>
