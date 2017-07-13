@@ -54,9 +54,9 @@ public enum CloudPlatform {
 	},
 
 	/**
-	 * SAP Hana Cloud platform.
+	 * SAP Cloud platform.
 	 */
-	HCP {
+	SAP {
 
 		@Override
 		public boolean isActive(Environment environment) {
