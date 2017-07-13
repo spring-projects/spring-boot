@@ -79,7 +79,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -92,6 +92,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Mark Paluch
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("hazelcast-client-*.jar")
@@ -282,8 +283,9 @@ public class CacheAutoConfigurationTests {
 					RedisCacheManager cacheManager = validateCacheManager(context,
 							RedisCacheManager.class);
 					assertThat(cacheManager.getCacheNames()).isEmpty();
-					assertThat((Boolean) new DirectFieldAccessor(cacheManager)
-							.getPropertyValue("usePrefix")).isTrue();
+					assertThat(((org.springframework.data.redis.cache.RedisCacheConfiguration)
+							new DirectFieldAccessor(cacheManager).getPropertyValue(
+									"defaultCacheConfig")).usePrefix()).isTrue();
 				});
 	}
 
@@ -892,8 +894,8 @@ public class CacheAutoConfigurationTests {
 	static class RedisCacheConfiguration {
 
 		@Bean
-		public RedisTemplate<?, ?> redisTemplate() {
-			return mock(RedisTemplate.class);
+		public RedisConnectionFactory redisConnectionFactory() {
+			return mock(RedisConnectionFactory.class);
 		}
 
 	}
