@@ -186,7 +186,7 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 				T ctx = handler.load();
 				contextHandler.handle(ctx);
 			}
-			catch (RuntimeException ex) {
+			catch (RuntimeException | AssertionError ex) {
 				throw ex;
 			}
 			catch (Throwable ex) {

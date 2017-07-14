@@ -194,6 +194,18 @@ public class StandardContextLoaderTests {
 				});
 	}
 
+	@Test
+	public void assertionErrorsAreAvailableAsIs() {
+		try {
+			this.contextLoader.load(context -> {
+				fail("This is expected");
+			});
+		}
+		catch (AssertionError ex) {
+			assertThat(ex.getMessage()).isEqualTo("This is expected");
+		}
+	}
+
 	@Configuration
 	static class ConfigA {
 
