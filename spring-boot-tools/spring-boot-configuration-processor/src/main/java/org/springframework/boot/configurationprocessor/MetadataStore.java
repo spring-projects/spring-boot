@@ -47,6 +47,8 @@ public class MetadataStore {
 
 	private static final String CLASSES_FOLDER = "classes";
 
+	private static final String JAVA_FOLDER = "java";
+
 	private final ProcessingEnvironment environment;
 
 	public MetadataStore(ProcessingEnvironment environment) {
@@ -113,15 +115,28 @@ public class MetadataStore {
 		FileObject fileObject = this.environment.getFiler()
 				.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
 		File file = new File(fileObject.toUri());
+
 		if (!file.exists()) {
 			// Gradle keeps things separate
 			String path = file.getPath();
+
 			int index = path.lastIndexOf(CLASSES_FOLDER);
 			if (index >= 0) {
 				path = path.substring(0, index) + RESOURCES_FOLDER
 						+ path.substring(index + CLASSES_FOLDER.length());
 				file = new File(path);
+
+				if (!file.exists()) {
+					/*
+					Gradle 4 introduces a new 'java' directory which causes issues for one-to-one path mapping
+					of class locations and resources. Ensure resources can be found under '/build/resources/main'
+					rather than '/build/resources/java/main'.
+					 */
+					path = path.replace('/' + JAVA_FOLDER, "");
+					file = new File(path);
+				}
 			}
+
 		}
 		return (file.exists() ? new FileInputStream(file)
 				: fileObject.toUri().toURL().openStream());
