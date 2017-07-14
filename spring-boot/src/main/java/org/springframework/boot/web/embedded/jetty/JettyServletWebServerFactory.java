@@ -571,7 +571,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	/**
 	 * Sets {@link JettyServerCustomizer}s that will be applied to the {@link Server}
-	 * before it is started. Calling this method will replace any existing configurations.
+	 * before it is started. Calling this method will replace any existing customizers.
 	 * @param customizers the Jetty customizers to apply
 	 */
 	public void setServerCustomizers(
@@ -581,9 +581,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Returns a mutable collection of Jetty {@link Configuration}s that will be applied
-	 * to the {@link WebAppContext} before the server is created.
-	 * @return the Jetty {@link Configuration}s
+	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be applied
+	 * to the {@link Server} before the it is created.
+	 * @return the {@link JettyServerCustomizer}s
 	 */
 	public Collection<JettyServerCustomizer> getServerCustomizers() {
 		return this.jettyServerCustomizers;

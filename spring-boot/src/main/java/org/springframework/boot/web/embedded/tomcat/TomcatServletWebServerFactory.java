@@ -699,7 +699,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	/**
-	 * Add {@link TomcatContextCustomizer}s that should be added to the Tomcat
+	 * Add {@link TomcatConnectorCustomizer}s that should be added to the Tomcat
 	 * {@link Connector}.
 	 * @param tomcatConnectorCustomizers the customizers to add
 	 */
@@ -712,8 +712,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable collection of the {@link TomcatConnectorCustomizer}s that will be
-	 * applied to the Tomcat {@link Context} .
-	 * @return the listeners that will be applied
+	 * applied to the Tomcat {@link Connector} .
+	 * @return the customizers that will be applied
 	 */
 	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {
 		return this.tomcatConnectorCustomizers;
