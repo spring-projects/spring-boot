@@ -1100,15 +1100,40 @@ The following properties names can all be used:
 |Standard camel case syntax.
 
 |`person.first-name`
-|Dashed notation, recommended for use in `.properties` and `.yml` files.
+|Kebab-case, recommended for use in `.properties` and `.yml` files.
 
 |`person.first_name`
 |Underscore notation, alternative format for use in `.properties` and `.yml` files.
 
-|`PERSON_FIRST_NAME`
+|`PERSON_FIRSTNAME`
 |Upper case format. Recommended when using a system environment variables.
 |===
 
+NOTE: The `prefix` value for the annotation must be in kebab-case, ie, lowercase and separated by `-`.
+
+.relaxed binding rules per property source
+[cols="2,4,4"]
+|===
+| Property Source | Simple | List
+
+|Properties Files
+|Camel-case, kebab-case or underscore notation
+|Standard list syntax using `[ ]` or comma-separated values
+
+|YAML Files
+|Camel-case, kebab-case or underscore notation
+|Standard YAML list syntax or comma-separated values
+
+|Environment Variables
+|Upper case format with underscore as the delimiter. `_` should not be used within a property name
+|Numeric values surrounded by underscores. eg: `MY_FOO_1_BAR = my.foo[1].bar`
+
+|System properties
+|Camel-case, kebab-case or underscore notation
+|Standard list syntax using `[ ]` or comma-separated values
+|===
+
+TIP: We recommend that, when possible, properties are stored in lowercase kebab format. i.e. `my.property-name=foo`
 
 
 [[boot-features-external-config-conversion]]
@@ -1671,9 +1696,8 @@ use the `defaultValue` attribute.
 	</appender>
 ----
 
-TIP: The `RelaxedPropertyResolver` is used to access `Environment` properties. If specify
-the `source` in dashed notation (`my-property-name`) all the relaxed variations will be
-tried (`myPropertyName`, `MY_PROPERTY_NAME` etc).
+NOTE: The `source` must be specified using kebab-case (`my.property-name`). However, properties can be added to the
+`Environment` using the relaxed rules.
 
 
 

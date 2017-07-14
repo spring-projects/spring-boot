@@ -74,12 +74,9 @@ rules of thumb:
   properties, thus `ServerProperties` has `prefix="server"` and its configuration properties
   are `server.port`, `server.address` etc. In a running Actuator app look at the
   `configprops` endpoint.
-* Look for use of `RelaxedPropertyResolver` to pull configuration values explicitly out of the
-  `Environment`. It often is used with a prefix.
-* Look for `@Value` annotations that bind directly to the `Environment`. This is less
-  flexible than the `RelaxedPropertyResolver` approach, but does allow some relaxed binding,
-  specifically for OS environment variables (so `CAPITALS_AND_UNDERSCORES` are synonyms
-  for `period.separated`).
+* Look for uses of the `bind` method on the `Binder` to pull configuration values explicitly out of the
+  `Environment` in a relaxed manner. It is often is used with a prefix.
+* Look for `@Value` annotations that bind directly to the `Environment`.
 * Look for `@ConditionalOnExpression` annotations that switch features on and off in
   response to SpEL expressions, normally evaluated with placeholders resolved from the
   `Environment`.
@@ -483,7 +480,7 @@ The appendix includes an <<appendix-application-properties#common-application-pr
 `application.properties`>> example with a list of the most common properties supported by
 Spring Boot. The definitive list comes from searching the source code for
 `@ConfigurationProperties` and `@Value` annotations, as well as the occasional use of
-`RelaxedPropertyResolver`.
+`Binder`.
 
 
 
