@@ -35,8 +35,9 @@ public class SampleMongoReactiveApplication implements CommandLineRunner {
 		this.repository.deleteAll().then().block();
 
 		// save a couple of customers
-		this.repository.save(new Customer("Alice", "Smith")).then().block();
-		this.repository.save(new Customer("Bob", "Smith")).then().block();
+		this.repository.saveAll(
+				Flux.just(new Customer("Alice", "Smith"), new Customer("Bob", "Smith")))
+				.then().block();
 
 		// fetch all customers
 		System.out.println("Customers found with findAll():");
