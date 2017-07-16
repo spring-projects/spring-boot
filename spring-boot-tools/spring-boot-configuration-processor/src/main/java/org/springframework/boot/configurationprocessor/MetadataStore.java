@@ -120,20 +120,15 @@ public class MetadataStore {
 
 			int index = path.lastIndexOf(CLASSES_FOLDER);
 			if (index >= 0) {
-				path = path.substring(0, index) + RESOURCES_FOLDER
-						+ path.substring(index + CLASSES_FOLDER.length());
-				file = new File(path);
-
+				File resourcesFolder = new File(path.substring(0, index) + RESOURCES_FOLDER);
+				file = new File(resourcesFolder, path.substring(index + CLASSES_FOLDER.length()));
 				if (!file.exists()) {
 					/*
 					Gradle 4 introduces a new 'java' directory which causes issues for one-to-one path mapping
 					of class locations and resources. Ensure resources can be found under '/build/resources/main'
 					rather than '/build/resources/java/main'.
 					 */
-					while (file != null && !file.getName().equals(RESOURCES_FOLDER)) {
-						file = file.getParentFile();
-					}
-					file = new File(file, "main/" + ADDITIONAL_METADATA_PATH);
+					file = new File(resourcesFolder, "main/" + ADDITIONAL_METADATA_PATH);
 				}
 			}
 
