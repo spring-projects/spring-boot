@@ -47,8 +47,6 @@ public class MetadataStore {
 
 	private static final String CLASSES_FOLDER = "classes";
 
-	private static final String JAVA_FOLDER = "java";
-
 	private final ProcessingEnvironment environment;
 
 	public MetadataStore(ProcessingEnvironment environment) {
@@ -132,8 +130,10 @@ public class MetadataStore {
 					of class locations and resources. Ensure resources can be found under '/build/resources/main'
 					rather than '/build/resources/java/main'.
 					 */
-					path = path.replace('/' + JAVA_FOLDER, "");
-					file = new File(path);
+					while (file != null && !file.getName().equals(RESOURCES_FOLDER)) {
+						file = file.getParentFile();
+					}
+					file = new File(file, "main/" + ADDITIONAL_METADATA_PATH);
 				}
 			}
 
