@@ -78,6 +78,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.consumer.client-id=ccid", // test override common
 				"spring.kafka.consumer.enable-auto-commit=false",
 				"spring.kafka.consumer.fetch-max-wait=456",
+				"spring.kafka.consumer.properties.fiz.buz=fix.fox",
 				"spring.kafka.consumer.fetch-min-size=789",
 				"spring.kafka.consumer.group-id=bar",
 				"spring.kafka.consumer.heartbeat-interval=234",
@@ -85,9 +86,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer");
 		DefaultKafkaConsumerFactory<?, ?> consumerFactory = this.context
 				.getBean(DefaultKafkaConsumerFactory.class);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> configs = (Map<String, Object>) new DirectFieldAccessor(
-				consumerFactory).getPropertyValue("configs");
+		Map<String, Object> configs = consumerFactory.getConfigurationProperties();
 		// common
 		assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
 				.isEqualTo(Collections.singletonList("foo:1234"));
@@ -120,17 +119,21 @@ public class KafkaAutoConfigurationTests {
 		assertThat(configs.get("foo")).isEqualTo("bar");
 		assertThat(configs.get("baz")).isEqualTo("qux");
 		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
+		assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 	}
 
 	@Test
 	public void producerProperties() {
-		load("spring.kafka.clientId=cid", "spring.kafka.producer.acks=all",
+		load("spring.kafka.clientId=cid",
+				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
+				"spring.kafka.producer.acks=all",
 				"spring.kafka.producer.batch-size=20",
 				"spring.kafka.producer.bootstrap-servers=bar:1234", // test override
 				"spring.kafka.producer.buffer-memory=12345",
 				"spring.kafka.producer.compression-type=gzip",
 				"spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.LongSerializer",
 				"spring.kafka.producer.retries=2",
+				"spring.kafka.producer.properties.fiz.buz=fix.fox",
 				"spring.kafka.producer.ssl.key-password=p4",
 				"spring.kafka.producer.ssl.keystore-location=classpath:ksLocP",
 				"spring.kafka.producer.ssl.keystore-password=p5",
@@ -139,9 +142,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer");
 		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context
 				.getBean(DefaultKafkaProducerFactory.class);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> configs = (Map<String, Object>) new DirectFieldAccessor(
-				producerFactory).getPropertyValue("configs");
+		Map<String, Object> configs = producerFactory.getConfigurationProperties();
 		// common
 		assertThat(configs.get(ProducerConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
 		// producer
@@ -166,6 +167,8 @@ public class KafkaAutoConfigurationTests {
 				.isEqualTo(IntegerSerializer.class);
 		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
 				.isEmpty();
+		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
+		assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 	}
 
 	@SuppressWarnings("unchecked")
