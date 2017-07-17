@@ -48,6 +48,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -426,7 +427,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		MutablePropertySources propertySources = env.getPropertySources();
 		propertySources.addFirst(new MapPropertySource("test",
 				Collections.singletonMap("com.example.foo", 5)));
-		propertySources.addLast(new SystemEnvironmentPropertySource("system",
+		propertySources.addLast(new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("COM_EXAMPLE_OTHER", "10")));
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();

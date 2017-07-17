@@ -77,7 +77,7 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 			BindContext context) {
 		Set<ConfigurationProperty> unbound = new TreeSet<>();
 		for (ConfigurationPropertySource source : context.getSources()) {
-			if (this.filter.apply(source)) {
+			if (source instanceof IterableConfigurationPropertySource && this.filter.apply(source)) {
 				collectUnbound(name, unbound,
 						(IterableConfigurationPropertySource) source);
 			}
