@@ -104,7 +104,7 @@ class DocumentRoot {
 			if (connection instanceof JarURLConnection) {
 				path = ((JarURLConnection) connection).getJarFile().getName();
 			}
-			if (path.indexOf("!/") != -1) {
+			if (path.contains("!/")) {
 				path = path.substring(0, path.indexOf("!/"));
 			}
 			return new File(path);

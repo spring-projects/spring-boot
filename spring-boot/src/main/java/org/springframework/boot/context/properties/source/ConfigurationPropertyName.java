@@ -283,8 +283,8 @@ public final class ConfigurationPropertyName
 		}
 		if (indexed1 && indexed2) {
 			try {
-				long v1 = Long.parseLong(e1.toString());
-				long v2 = Long.parseLong(e2.toString());
+				long v1 = Long.parseLong(e1);
+				long v2 = Long.parseLong(e2);
 				return Long.compare(v1, v2);
 			}
 			catch (NumberFormatException ex) {
@@ -451,7 +451,7 @@ public final class ConfigurationPropertyName
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		List<CharSequence> elements = new ArrayList<>(10);
 		process(name, '.', (elementValue, start, end, indexed) -> {
 			if (elementValue.length() > 0) {
 				if (!indexed) {
@@ -496,7 +496,7 @@ public final class ConfigurationPropertyName
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		List<CharSequence> elements = new ArrayList<>(10);
 		process(name, separator, (elementValue, start, end, indexed) -> {
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {

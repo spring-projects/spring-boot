@@ -65,10 +65,10 @@ public class JacksonJsonParser implements JsonParser {
 
 	private static class MapTypeReference extends TypeReference<Map<String, Object>> {
 
-	};
+	}
 
 	private static class ListTypeReference extends TypeReference<List<Object>> {
 
-	};
+	}
 
 }

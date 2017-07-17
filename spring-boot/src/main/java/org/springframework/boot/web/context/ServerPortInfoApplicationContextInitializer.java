@@ -54,15 +54,9 @@ public class ServerPortInfoApplicationContextInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addApplicationListener(
-				new ApplicationListener<WebServerInitializedEvent>() {
-
-					@Override
-					public void onApplicationEvent(WebServerInitializedEvent event) {
-						ServerPortInfoApplicationContextInitializer.this
-								.onApplicationEvent(event);
-					}
-
-				});
+				(ApplicationListener<WebServerInitializedEvent>)
+						ServerPortInfoApplicationContextInitializer
+								.this::onApplicationEvent);
 	}
 
 	protected void onApplicationEvent(WebServerInitializedEvent event) {
@@ -88,7 +82,7 @@ public class ServerPortInfoApplicationContextInitializer
 		MutablePropertySources sources = environment.getPropertySources();
 		PropertySource<?> source = sources.get("server.ports");
 		if (source == null) {
-			source = new MapPropertySource("server.ports", new HashMap<String, Object>());
+			source = new MapPropertySource("server.ports", new HashMap<>());
 			sources.addFirst(source);
 		}
 		((Map<String, Object>) source.getSource()).put(propertyName, port);

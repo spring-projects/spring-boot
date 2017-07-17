@@ -78,11 +78,7 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 			MetadataReader reader = readerFactory.getMetadataReader(resource);
 			return ClassUtils.forName(reader.getClassMetadata().getClassName(), loader);
 		}
-		catch (ClassNotFoundException ex) {
-			handleFailure(resource, ex);
-			return null;
-		}
-		catch (LinkageError ex) {
+		catch (ClassNotFoundException | LinkageError ex) {
 			handleFailure(resource, ex);
 			return null;
 		}

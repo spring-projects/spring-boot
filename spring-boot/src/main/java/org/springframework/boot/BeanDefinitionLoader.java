@@ -191,10 +191,7 @@ class BeanDefinitionLoader {
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
 		}
-		catch (IllegalArgumentException ex) {
-			// swallow exception and continue
-		}
-		catch (ClassNotFoundException ex) {
+		catch (IllegalArgumentException | ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
 		// Attempt as resources
@@ -246,7 +243,7 @@ class BeanDefinitionLoader {
 			// a file list of the package content. We double check here that it's not
 			// actually a package.
 			String path = ((ClassPathResource) resource).getPath();
-			if (path.indexOf(".") == -1) {
+			if (!path.contains(".")) {
 				try {
 					return Package.getPackage(path) == null;
 				}

@@ -91,21 +91,21 @@ public class NarayanaProperties {
 	/**
 	 * Comma-separated list of orphan filters.
 	 */
-	private List<String> xaResourceOrphanFilters = new ArrayList<String>(Arrays.asList(
+	private List<String> xaResourceOrphanFilters = new ArrayList<>(Arrays.asList(
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter",
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"));
 
 	/**
 	 * Comma-separated list of recovery modules.
 	 */
-	private List<String> recoveryModules = new ArrayList<String>(Arrays.asList(
+	private List<String> recoveryModules = new ArrayList<>(Arrays.asList(
 			"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule"));
 
 	/**
 	 * Comma-separated list of expiry scanners.
 	 */
-	private List<String> expiryScanners = new ArrayList<String>(Collections.singletonList(
+	private List<String> expiryScanners = new ArrayList<>(Collections.singletonList(
 			"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner"));
 
 	public String getLogDir() {
