@@ -222,13 +222,14 @@ public class ResourceServerTokenServicesConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ResourceServerTokenServices.class)
-		public DefaultTokenServices jwkTokenServices() {
+		public DefaultTokenServices jwkTokenServices(TokenStore jwkTokenStore) {
 			DefaultTokenServices services = new DefaultTokenServices();
-			services.setTokenStore(jwkTokenStore());
+			services.setTokenStore(jwkTokenStore);
 			return services;
 		}
 
 		@Bean
+		@ConditionalOnMissingBean(TokenStore.class)
 		public TokenStore jwkTokenStore() {
 			return new JwkTokenStore(this.resource.getJwk().getKeySetUri());
 		}
@@ -254,13 +255,14 @@ public class ResourceServerTokenServicesConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ResourceServerTokenServices.class)
-		public DefaultTokenServices jwtTokenServices() {
+		public DefaultTokenServices jwtTokenServices(TokenStore jwtTokenStore) {
 			DefaultTokenServices services = new DefaultTokenServices();
-			services.setTokenStore(jwtTokenStore());
+			services.setTokenStore(jwtTokenStore);
 			return services;
 		}
 
 		@Bean
+		@ConditionalOnMissingBean(TokenStore.class)
 		public TokenStore jwtTokenStore() {
 			return new JwtTokenStore(jwtTokenEnhancer());
 		}
