@@ -63,7 +63,8 @@ public class KafkaProperties {
 	private String clientId;
 
 	/**
-	 * Additional properties used to configure the client.
+	 * Additional properties, common to producers and consumers, used to configure the
+	 * client.
 	 */
 	private Map<String, String> properties = new HashMap<>();
 
@@ -268,6 +269,11 @@ public class KafkaProperties {
 		 */
 		private Integer maxPollRecords;
 
+		/**
+		 * Additional properties used to configure the client.
+		 */
+		private Map<String, String> properties = new HashMap<>();
+
 		public Ssl getSsl() {
 			return this.ssl;
 		}
@@ -368,6 +374,14 @@ public class KafkaProperties {
 			this.maxPollRecords = maxPollRecords;
 		}
 
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
+		public void setProperties(Map<String, String> properties) {
+			this.properties = properties;
+		}
+
 		public Map<String, Object> buildProperties() {
 			Map<String, Object> properties = new HashMap<>();
 			if (this.autoCommitInterval != null) {
@@ -435,6 +449,7 @@ public class KafkaProperties {
 				properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
 						this.maxPollRecords);
 			}
+			properties.putAll(this.properties);
 			return properties;
 		}
 
@@ -491,6 +506,11 @@ public class KafkaProperties {
 		 * When greater than zero, enables retrying of failed sends.
 		 */
 		private Integer retries;
+
+		/**
+		 * Additional properties used to configure the client.
+		 */
+		private Map<String, String> properties = new HashMap<>();
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -568,6 +588,14 @@ public class KafkaProperties {
 			this.retries = retries;
 		}
 
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
+		public void setProperties(Map<String, String> properties) {
+			this.properties = properties;
+		}
+
 		public Map<String, Object> buildProperties() {
 			Map<String, Object> properties = new HashMap<>();
 			if (this.acks != null) {
@@ -621,6 +649,7 @@ public class KafkaProperties {
 				properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
 						this.valueSerializer);
 			}
+			properties.putAll(this.properties);
 			return properties;
 		}
 
