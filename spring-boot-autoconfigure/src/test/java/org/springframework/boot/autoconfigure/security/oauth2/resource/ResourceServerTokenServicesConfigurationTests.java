@@ -57,7 +57,10 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -256,6 +259,25 @@ public class ResourceServerTokenServicesConfigurationTests {
 		assertThat(this.context.getBeansOfType(JwtAccessTokenConverter.class)).hasSize(1);
 	}
 
+	@Test
+	public void jwkTokenStoreShouldBeConditionalOnMissingBean() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.jwk.key-set-uri=http://my-auth-server/token_keys");
+		this.context = new SpringApplicationBuilder(JwkTokenStoreConfiguration.class,
+				ResourceConfiguration.class)
+				.environment(this.environment).web(false).run();
+		assertThat(this.context.getBeansOfType(JwkTokenStore.class)).hasSize(1);
+	}
+
+	@Test
+	public void jwtTokenStoreShouldBeConditionalOnMissingBean() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.jwt.keyValue=" + PUBLIC_KEY);
+		this.context = new SpringApplicationBuilder(JwtTokenStoreConfiguration.class, ResourceConfiguration.class)
+				.environment(this.environment).web(false).run();
+		assertThat(this.context.getBeansOfType(JwtTokenStore.class)).hasSize(1);
+	}
+
 	@Configuration
 	@Import({ ResourceServerTokenServicesConfiguration.class,
 			ResourceServerPropertiesConfiguration.class,
@@ -376,6 +398,26 @@ public class ResourceServerTokenServicesConfigurationTests {
 		@Bean
 		public JwtAccessTokenConverterRestTemplateCustomizer restTemplateCustomizer() {
 			return new MockRestCallCustomizer();
+		}
+
+	}
+
+	@Configuration
+	static class JwtTokenStoreConfiguration {
+
+		@Bean
+		public TokenStore tokenStore(JwtAccessTokenConverter jwtTokenEnhancer) {
+			return new JwtTokenStore(jwtTokenEnhancer);
+		}
+
+	}
+
+	@Configuration
+	static class JwkTokenStoreConfiguration {
+
+		@Bean
+		public TokenStore tokenStore() {
+			return new JwkTokenStore("http://my.key-set.uri");
 		}
 
 	}
