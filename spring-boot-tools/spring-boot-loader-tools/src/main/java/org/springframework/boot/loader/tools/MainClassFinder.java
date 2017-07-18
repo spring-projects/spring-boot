@@ -148,7 +148,7 @@ public abstract class MainClassFinder {
 	}
 
 	private static void pushAllSorted(Deque<File> stack, File[] files) {
-		Arrays.sort(files, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+		Arrays.sort(files, Comparator.comparing(File::getName));
 		for (File file : files) {
 			stack.push(file);
 		}

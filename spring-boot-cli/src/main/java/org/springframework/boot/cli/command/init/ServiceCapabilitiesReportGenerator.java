@@ -19,6 +19,7 @@ package org.springframework.boot.cli.command.init;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ class ServiceCapabilitiesReportGenerator {
 
 	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
 		ArrayList<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
-		dependencies.sort((o1, o2) -> o1.getId().compareTo(o2.getId()));
+		dependencies.sort(Comparator.comparing(Dependency::getId));
 		return dependencies;
 	}
 
@@ -102,7 +103,7 @@ class ServiceCapabilitiesReportGenerator {
 		report.append("Available project types:" + NEW_LINE);
 		report.append("------------------------" + NEW_LINE);
 		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(
-				(o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+				Comparator.comparing(Entry::getKey));
 		entries.addAll(metadata.getProjectTypes().entrySet());
 		for (Entry<String, ProjectType> entry : entries) {
 			ProjectType type = entry.getValue();

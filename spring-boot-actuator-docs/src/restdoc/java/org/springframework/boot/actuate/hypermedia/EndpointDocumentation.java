@@ -195,7 +195,7 @@ public class EndpointDocumentation {
 		List<? extends MvcEndpoint> endpoints = new ArrayList<>(
 				this.mvcEndpoints.getEndpoints());
 		endpoints.sort(
-				(Comparator<MvcEndpoint>) (o1, o2) -> o1.getPath().compareTo(o2.getPath()));
+				(Comparator.comparing(MvcEndpoint::getPath)));
 		return endpoints;
 	}
 
