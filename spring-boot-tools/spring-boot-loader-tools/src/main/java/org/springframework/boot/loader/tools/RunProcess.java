@@ -87,7 +87,7 @@ public class RunProcess {
 			if (!inheritedIO) {
 				redirectOutput(process);
 			}
-			SignalUtils.attachSignalHandler(() -> handleSigInt());
+			SignalUtils.attachSignalHandler(this::handleSigInt);
 			if (waitForProcess) {
 				try {
 					return process.waitFor();

@@ -221,7 +221,7 @@ public class FileSystemWatcherTests {
 		File folder = this.temp.newFolder();
 		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
 		this.watcher.addSourceFolder(folder);
-		this.watcher.addListener(changeSet -> listener2Changes.addAll(changeSet));
+		this.watcher.addListener(listener2Changes::addAll);
 		this.watcher.start();
 		File file = touch(new File(folder, "test.txt"));
 		this.watcher.stopAfter(1);

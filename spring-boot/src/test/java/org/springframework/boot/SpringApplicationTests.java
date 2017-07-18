@@ -314,7 +314,7 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		final AtomicReference<ApplicationContext> reference = new AtomicReference<>();
 		application.setInitializers(Arrays.asList(
-				(ApplicationContextInitializer<ConfigurableApplicationContext>) context -> reference.set(context)));
+				(ApplicationContextInitializer<ConfigurableApplicationContext>) reference::set));
 		this.context = application.run("--foo=bar");
 		assertThat(this.context).isSameAs(reference.get());
 		// Custom initializers do not switch off the defaults
@@ -754,7 +754,7 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners(
-				(ApplicationListener<ApplicationEvent>) event -> events.add(event));
+				(ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
@@ -768,7 +768,7 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners(
-				(ApplicationListener<ApplicationEvent>) event -> events.add(event));
+				(ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);

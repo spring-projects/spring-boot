@@ -60,7 +60,7 @@ class DefinitionsParser {
 
 	public void parse(Class<?> source) {
 		parseElement(source);
-		ReflectionUtils.doWithFields(source, field -> parseElement(field));
+		ReflectionUtils.doWithFields(source, this::parseElement);
 	}
 
 	private void parseElement(AnnotatedElement element) {

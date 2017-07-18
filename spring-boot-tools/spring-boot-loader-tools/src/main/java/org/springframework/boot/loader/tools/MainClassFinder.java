@@ -72,7 +72,7 @@ public abstract class MainClassFinder {
 	 * @throws IOException if the folder cannot be read
 	 */
 	public static String findMainClass(File rootFolder) throws IOException {
-		return doWithMainClasses(rootFolder, mainClass -> mainClass.getName());
+		return doWithMainClasses(rootFolder, MainClass::getName);
 	}
 
 	/**
@@ -163,8 +163,7 @@ public abstract class MainClassFinder {
 	 */
 	public static String findMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {
-		return doWithMainClasses(jarFile, classesLocation,
-				mainClass -> mainClass.getName());
+		return doWithMainClasses(jarFile, classesLocation, MainClass::getName);
 	}
 
 	/**

@@ -136,7 +136,7 @@ public class LocalDevToolsAutoConfiguration {
 
 		@Bean
 		public FileSystemWatcherFactory fileSystemWatcherFactory() {
-			return () -> newFileSystemWatcher();
+			return this::newFileSystemWatcher;
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {

@@ -119,7 +119,7 @@ public class Shell {
 	}
 
 	private void attachSignalHandler() {
-		SignalUtils.attachSignalHandler(() -> handleSigInt());
+		SignalUtils.attachSignalHandler(this::handleSigInt);
 	}
 
 	/**

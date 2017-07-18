@@ -75,7 +75,7 @@ public class MockRestarter implements TestRule {
 					}
 					return attribute;
 				});
-		given(this.mock.getThreadFactory()).willReturn(r -> new Thread(r));
+		given(this.mock.getThreadFactory()).willReturn(Thread::new);
 	}
 
 	private void cleanup() {

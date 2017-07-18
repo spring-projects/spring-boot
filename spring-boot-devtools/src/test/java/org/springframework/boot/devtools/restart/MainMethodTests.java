@@ -55,7 +55,7 @@ public class MainMethodTests {
 
 	@Test
 	public void validMainMethod() throws Exception {
-		MainMethod method = new TestThread(() -> Valid.main()).test();
+		MainMethod method = new TestThread(Valid::main).test();
 		assertThat(method.getMethod()).isEqualTo(this.actualMain);
 		assertThat(method.getDeclaringClassName())
 				.isEqualTo(this.actualMain.getDeclaringClass().getName());
@@ -65,7 +65,7 @@ public class MainMethodTests {
 	public void missingArgsMainMethod() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to find main method");
-		new TestThread(() -> MissingArgs.main()).test();
+		new TestThread(MissingArgs::main).test();
 	}
 
 	@Test

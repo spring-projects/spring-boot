@@ -41,7 +41,7 @@ public class MetricRegistryMetricReaderTests {
 
 	@Test
 	public void nonNumberGaugesAreTolerated() {
-		this.metricRegistry.register("test", (Gauge<Set<String>>) () -> new HashSet<>());
+		this.metricRegistry.register("test", (Gauge<Set<String>>) HashSet::new);
 		assertThat(this.metricReader.findOne("test")).isNull();
 		this.metricRegistry.remove("test");
 		assertThat(this.metricReader.findOne("test")).isNull();

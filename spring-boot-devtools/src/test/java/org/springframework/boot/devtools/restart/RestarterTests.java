@@ -84,7 +84,7 @@ public class RestarterTests {
 	@Test
 	public void testRestart() throws Exception {
 		Restarter.clearInstance();
-		Thread thread = new Thread(() -> SampleApplication.main());
+		Thread thread = new Thread(SampleApplication::main);
 		thread.start();
 		Thread.sleep(2600);
 		String output = this.out.toString();

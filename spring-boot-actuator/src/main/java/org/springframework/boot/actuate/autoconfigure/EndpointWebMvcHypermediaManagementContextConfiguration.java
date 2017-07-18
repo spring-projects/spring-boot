@@ -101,7 +101,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@Bean
 	public ManagementServletContext managementServletContext(
 			final ManagementServerProperties properties) {
-		return () -> properties.getContextPath();
+		return properties::getContextPath;
 	}
 
 	@ConditionalOnEnabledEndpoint("actuator")

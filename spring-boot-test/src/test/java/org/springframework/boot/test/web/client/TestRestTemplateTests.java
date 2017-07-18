@@ -211,8 +211,7 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void deleteHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(
-				(testRestTemplate, relativeUri) -> testRestTemplate.delete(relativeUri));
+		verifyRelativeUriHandling(TestRestTemplate::delete);
 	}
 
 	@Test
@@ -264,14 +263,12 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void headForHeadersHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(
-				(testRestTemplate, relativeUri) -> testRestTemplate.headForHeaders(relativeUri));
+		verifyRelativeUriHandling(TestRestTemplate::headForHeaders);
 	}
 
 	@Test
 	public void optionsForAllowHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(
-				(testRestTemplate, relativeUri) -> testRestTemplate.optionsForAllow(relativeUri));
+		verifyRelativeUriHandling(TestRestTemplate::optionsForAllow);
 	}
 
 	@Test
