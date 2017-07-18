@@ -238,7 +238,7 @@ public class ServletContextInitializerBeans
 			}
 		}
 		beans.addAll(map.entrySet());
-		Collections.sort(beans, comparator);
+		beans.sort(comparator);
 		return beans;
 	}
 

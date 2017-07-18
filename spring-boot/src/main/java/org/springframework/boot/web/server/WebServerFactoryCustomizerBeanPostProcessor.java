@@ -114,7 +114,7 @@ public class WebServerFactoryCustomizerBeanPostProcessor
 		if (this.customizers == null) {
 			// Look up does not include the parent context
 			this.customizers = new ArrayList<>(getWebServerFactoryCustomizerBeans());
-			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
+			this.customizers.sort(AnnotationAwareOrderComparator.INSTANCE);
 			this.customizers = Collections.unmodifiableList(this.customizers);
 		}
 		return this.customizers;

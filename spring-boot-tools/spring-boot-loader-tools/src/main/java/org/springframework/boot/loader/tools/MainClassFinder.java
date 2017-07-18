@@ -234,7 +234,7 @@ public abstract class MainClassFinder {
 	static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
 			MainClassCallback<T> callback) throws IOException {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
-		Collections.sort(classEntries, new ClassEntryComparator());
+		classEntries.sort(new ClassEntryComparator());
 		for (JarEntry entry : classEntries) {
 			try (InputStream inputStream = new BufferedInputStream(
 					jarFile.getInputStream(entry))) {

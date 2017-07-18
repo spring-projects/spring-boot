@@ -199,7 +199,7 @@ public class EndpointDocumentation {
 	private Collection<? extends MvcEndpoint> getEndpoints() {
 		List<? extends MvcEndpoint> endpoints = new ArrayList<>(
 				this.mvcEndpoints.getEndpoints());
-		Collections.sort(endpoints, new Comparator<MvcEndpoint>() {
+		endpoints.sort(new Comparator<MvcEndpoint>() {
 			@Override
 			public int compare(MvcEndpoint o1, MvcEndpoint o2) {
 				return o1.getPath().compareTo(o2.getPath());
