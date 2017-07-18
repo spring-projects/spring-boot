@@ -120,13 +120,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	}
 
 	private String getProduct() {
-		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
-			@Override
-			public String doInConnection(Connection connection)
-					throws SQLException, DataAccessException {
-				return connection.getMetaData().getDatabaseProductName();
-			}
-		});
+		return this.jdbcTemplate.execute(
+				(ConnectionCallback<String>) connection -> connection.getMetaData().getDatabaseProductName());
 	}
 
 	protected String getValidationQuery(String product) {

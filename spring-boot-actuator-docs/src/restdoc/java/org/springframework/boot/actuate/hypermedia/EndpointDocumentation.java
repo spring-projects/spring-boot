@@ -175,15 +175,10 @@ public class EndpointDocumentation {
 						.perform(get("/application" + endpointPath)
 								.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
-						.andDo(new ResultHandler() {
-
-							@Override
-							public void handle(MvcResult mvcResult) throws Exception {
-								EndpointDoc endpoint = new EndpointDoc(docs,
-										endpointPath);
-								endpoints.add(endpoint);
-							}
-
+						.andDo(mvcResult -> {
+							EndpointDoc endpoint1 = new EndpointDoc(docs,
+									endpointPath);
+							endpoints.add(endpoint1);
 						});
 			}
 		}
@@ -199,11 +194,8 @@ public class EndpointDocumentation {
 	private Collection<? extends MvcEndpoint> getEndpoints() {
 		List<? extends MvcEndpoint> endpoints = new ArrayList<>(
 				this.mvcEndpoints.getEndpoints());
-		endpoints.sort(new Comparator<MvcEndpoint>() {
-			@Override public int compare(MvcEndpoint o1, MvcEndpoint o2) {
-				return o1.getPath().compareTo(o2.getPath());
-			}
-		});
+		endpoints.sort(
+				(Comparator<MvcEndpoint>) (o1, o2) -> o1.getPath().compareTo(o2.getPath()));
 		return endpoints;
 	}
 

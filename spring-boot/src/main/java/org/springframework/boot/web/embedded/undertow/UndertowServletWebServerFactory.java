@@ -415,14 +415,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
-		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
-
-			@Override
-			public HttpHandler wrap(HttpHandler handler) {
-				return createAccessLogHandler(handler);
-			}
-
-		});
+		deploymentInfo.addInitialHandlerChainWrapper(
+				handler -> createAccessLogHandler(handler));
 	}
 
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {

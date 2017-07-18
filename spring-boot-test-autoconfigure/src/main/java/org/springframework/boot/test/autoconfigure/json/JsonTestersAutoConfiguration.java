@@ -153,15 +153,8 @@ public class JsonTestersAutoConfiguration {
 		public Object postProcessAfterInitialization(final Object bean, String beanName)
 				throws BeansException {
 
-			ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
-
-				@Override
-				public void doWith(Field field)
-						throws IllegalArgumentException, IllegalAccessException {
-					processField(bean, field);
-				}
-
-			});
+			ReflectionUtils.doWithFields(bean.getClass(),
+					field -> processField(bean, field));
 			return bean;
 		}
 

@@ -266,10 +266,8 @@ public class Binder {
 
 	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
-		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
-			return context.withSource(source,
-					() -> Binder.this.bind(itemName, itemTarget, handler, context));
-		};
+		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> context.withSource(source,
+				() -> Binder.this.bind(itemName, itemTarget, handler, context));
 		return context.withIncreasedDepth(
 				() -> aggregateBinder.bind(name, target, elementBinder));
 	}

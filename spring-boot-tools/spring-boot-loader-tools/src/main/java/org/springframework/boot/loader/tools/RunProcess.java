@@ -87,12 +87,7 @@ public class RunProcess {
 			if (!inheritedIO) {
 				redirectOutput(process);
 			}
-			SignalUtils.attachSignalHandler(new Runnable() {
-				@Override
-				public void run() {
-					handleSigInt();
-				}
-			});
+			SignalUtils.attachSignalHandler(() -> handleSigInt());
 			if (waitForProcess) {
 				try {
 					return process.waitFor();
@@ -154,25 +149,20 @@ public class RunProcess {
 	private void redirectOutput(Process process) {
 		final BufferedReader reader = new BufferedReader(
 				new InputStreamReader(process.getInputStream()));
-		new Thread() {
-
-			@Override
-			public void run() {
-				try {
-					String line = reader.readLine();
-					while (line != null) {
-						System.out.println(line);
-						line = reader.readLine();
-						System.out.flush();
-					}
-					reader.close();
+		new Thread(() -> {
+			try {
+				String line = reader.readLine();
+				while (line != null) {
+					System.out.println(line);
+					line = reader.readLine();
+					System.out.flush();
 				}
-				catch (Exception ex) {
-					// Ignore
-				}
+				reader.close();
 			}
-
-		}.start();
+			catch (Exception ex) {
+				// Ignore
+			}
+		}).start();
 	}
 
 	/**

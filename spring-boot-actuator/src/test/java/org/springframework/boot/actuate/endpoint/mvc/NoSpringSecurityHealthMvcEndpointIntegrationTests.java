@@ -93,16 +93,10 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	private RequestPostProcessor getRequestPostProcessor() {
-		return new RequestPostProcessor() {
-
-			@Override
-			public MockHttpServletRequest postProcessRequest(
-					MockHttpServletRequest request) {
-				Principal principal = mock(Principal.class);
-				request.setUserPrincipal(principal);
-				return request;
-			}
-
+		return request -> {
+			Principal principal = mock(Principal.class);
+			request.setUserPrincipal(principal);
+			return request;
 		};
 	}
 
@@ -115,14 +109,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 
 		@Bean
 		public HealthIndicator testHealthIndicator() {
-			return new HealthIndicator() {
-
-				@Override
-				public Health health() {
-					return Health.up().withDetail("hello", "world").build();
-				}
-
-			};
+			return () -> Health.up().withDetail("hello", "world").build();
 		}
 
 	}

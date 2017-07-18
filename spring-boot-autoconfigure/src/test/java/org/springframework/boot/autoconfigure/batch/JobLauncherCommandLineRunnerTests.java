@@ -80,13 +80,7 @@ public class JobLauncherCommandLineRunnerTests {
 		PlatformTransactionManager transactionManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		this.steps = new StepBuilderFactory(jobRepository, transactionManager);
-		this.step = this.steps.get("step").tasklet(new Tasklet() {
-			@Override
-			public RepeatStatus execute(StepContribution contribution,
-					ChunkContext chunkContext) throws Exception {
-				return null;
-			}
-		}).build();
+		this.step = this.steps.get("step").tasklet((contribution, chunkContext) -> null).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
 		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher,
@@ -115,12 +109,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecution() throws Exception {
 		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
+				.start(this.steps.get("step").tasklet((contribution, chunkContext) -> {
+					throw new RuntimeException("Planned");
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
@@ -130,12 +120,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecutionOnNonRestartableJob() throws Exception {
 		this.job = this.jobs.get("job").preventRestart()
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
+				.start(this.steps.get("step").tasklet((contribution, chunkContext) -> {
+					throw new RuntimeException("Planned");
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
@@ -147,12 +133,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
 		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
+				.start(this.steps.get("step").tasklet((contribution, chunkContext) -> {
+					throw new RuntimeException("Planned");
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
 				.addLong("foo", 2L, false).toJobParameters();

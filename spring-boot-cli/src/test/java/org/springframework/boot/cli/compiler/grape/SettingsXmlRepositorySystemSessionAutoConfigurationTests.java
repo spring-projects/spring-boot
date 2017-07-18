@@ -79,25 +79,15 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 				.newSession();
 		given(this.repositorySystem.newLocalRepositoryManager(eq(session),
 				any(LocalRepository.class)))
-						.willAnswer(new Answer<LocalRepositoryManager>() {
-
-							@Override
-							public LocalRepositoryManager answer(
-									InvocationOnMock invocation) throws Throwable {
-								LocalRepository localRepository = invocation
-										.getArgument(1);
-								return new SimpleLocalRepositoryManagerFactory()
-										.newInstance(session, localRepository);
-							}
+						.willAnswer(invocation -> {
+							LocalRepository localRepository = invocation
+									.getArgument(1);
+							return new SimpleLocalRepositoryManagerFactory()
+									.newInstance(session, localRepository);
 						});
 
-		SystemProperties.doWithSystemProperties(new Runnable() {
-			@Override
-			public void run() {
-				new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
-						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
-			}
-		}, "user.home:src/test/resources/maven-settings/property-interpolation",
+		SystemProperties.doWithSystemProperties(() -> new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
+				SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem), "user.home:src/test/resources/maven-settings/property-interpolation",
 				"foo:bar");
 
 		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath())
@@ -107,13 +97,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	private void assertSessionCustomization(String userHome) {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
 				.newSession();
-		SystemProperties.doWithSystemProperties(new Runnable() {
-			@Override
-			public void run() {
-				new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
-						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
-			}
-		}, "user.home:" + userHome);
+		SystemProperties.doWithSystemProperties(() -> new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
+				SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem), "user.home:" + userHome);
 
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
 				"http://maven.example.com").build();

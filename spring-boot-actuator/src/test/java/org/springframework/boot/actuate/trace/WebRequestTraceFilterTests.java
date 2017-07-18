@@ -93,30 +93,17 @@ public class WebRequestTraceFilterTests {
 		request.setPathInfo(url);
 		tmp.deleteOnExit();
 		request.setAuthType("authType");
-		Principal principal = new Principal() {
-
-			@Override
-			public String getName() {
-				return "principalTest";
-			}
-
-		};
+		Principal principal = () -> "principalTest";
 		request.setUserPrincipal(principal);
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
 		response.addHeader("Set-Cookie", "a=b");
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-				BufferedReader bufferedReader = request.getReader();
-				while (bufferedReader.readLine() != null) {
-					// read the contents as normal (forces cache to fill up)
-				}
-				response.getWriter().println("Goodbye, World!");
+		this.filter.doFilterInternal(request, response, (request1, response1) -> {
+			BufferedReader bufferedReader = request1.getReader();
+			while (bufferedReader.readLine() != null) {
+				// read the contents as normal (forces cache to fill up)
 			}
-
+			response1.getWriter().println("Goodbye, World!");
 		});
 		assertThat(this.repository.findAll()).hasSize(1);
 		Map<String, Object> trace = this.repository.findAll().iterator().next().getInfo();
@@ -146,11 +133,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-			}
+		this.filter.doFilterInternal(request, response, (request1, response1) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -177,13 +160,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-			}
-
+		this.filter.doFilterInternal(request, response, (request1, response1) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -199,13 +176,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-			}
-
+		this.filter.doFilterInternal(request, response, (request1, response1) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -279,14 +250,8 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		try {
-			this.filter.doFilterInternal(request, response, new FilterChain() {
-
-				@Override
-				public void doFilter(ServletRequest request, ServletResponse response)
-						throws IOException, ServletException {
-					throw new RuntimeException();
-				}
-
+			this.filter.doFilterInternal(request, response, (request1, response1) -> {
+				throw new RuntimeException();
 			});
 			fail("Exception was swallowed");
 		}

@@ -51,15 +51,10 @@ public class MessageChannelMetricWriterTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.channel.send(any(Message.class))).willAnswer(new Answer<Object>() {
-
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				MessageChannelMetricWriterTests.this.handler
-						.handleMessage(invocation.getArgument(0));
-				return true;
-			}
-
+		given(this.channel.send(any(Message.class))).willAnswer(invocation -> {
+			MessageChannelMetricWriterTests.this.handler
+					.handleMessage(invocation.getArgument(0));
+			return true;
 		});
 		this.writer = new MessageChannelMetricWriter(this.channel);
 		this.handler = new MetricWriterMessageHandler(this.observer);

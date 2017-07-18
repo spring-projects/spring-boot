@@ -299,16 +299,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 		@Bean
 		AuthoritiesExtractor authoritiesExtractor() {
-			return new AuthoritiesExtractor() {
-
-				@Override
-				public List<GrantedAuthority> extractAuthorities(
-						Map<String, Object> map) {
-					return AuthorityUtils
-							.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
-				}
-
-			};
+			return map -> AuthorityUtils
+					.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
 		}
 
 	}
@@ -318,14 +310,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 		@Bean
 		PrincipalExtractor principalExtractor() {
-			return new PrincipalExtractor() {
-
-				@Override
-				public Object extractPrincipal(Map<String, Object> map) {
-					return "boot";
-				}
-
-			};
+			return map -> "boot";
 		}
 
 	}
@@ -372,15 +357,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 		@Override
 		public void customize(OAuth2RestTemplate template) {
-			template.getInterceptors().add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					return execution.execute(request, body);
-				}
-
-			});
+			template.getInterceptors().add(
+					(request, body, execution) -> execution.execute(request, body));
 		}
 
 	}
@@ -434,18 +412,12 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 		@Override
 		public void customize(RestTemplate template) {
-			template.getInterceptors().add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					String payload = "{\"value\":\"FOO\"}";
-					MockClientHttpResponse response = new MockClientHttpResponse(
-							payload.getBytes(), HttpStatus.OK);
-					response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-					return response;
-				}
-
+			template.getInterceptors().add((request, body, execution) -> {
+				String payload = "{\"value\":\"FOO\"}";
+				MockClientHttpResponse response = new MockClientHttpResponse(
+						payload.getBytes(), HttpStatus.OK);
+				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+				return response;
 			});
 		}
 

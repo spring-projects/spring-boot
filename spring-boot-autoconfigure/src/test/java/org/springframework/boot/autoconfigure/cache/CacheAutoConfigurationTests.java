@@ -937,16 +937,13 @@ public class CacheAutoConfigurationTests {
 
 		@Bean
 		JCacheManagerCustomizer myCustomizer() {
-			return new JCacheManagerCustomizer() {
-				@Override
-				public void customize(javax.cache.CacheManager cacheManager) {
-					MutableConfiguration<?, ?> config = new MutableConfiguration<>();
-					config.setExpiryPolicyFactory(
-							CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
-					config.setStatisticsEnabled(true);
-					cacheManager.createCache("custom1", config);
-					cacheManager.destroyCache("bar");
-				}
+			return cacheManager -> {
+				MutableConfiguration<?, ?> config = new MutableConfiguration<>();
+				config.setExpiryPolicyFactory(
+						CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
+				config.setStatisticsEnabled(true);
+				cacheManager.createCache("custom1", config);
+				cacheManager.destroyCache("bar");
 			};
 		}
 
@@ -1025,15 +1022,7 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheResolver cacheResolver() {
-			return new CacheResolver() {
-
-				@Override
-				public Collection<? extends Cache> resolveCaches(
-						CacheOperationInvocationContext<?> context) {
-					return Collections.singleton(mock(Cache.class));
-				}
-
-			};
+			return context -> Collections.singleton(mock(Cache.class));
 
 		}
 

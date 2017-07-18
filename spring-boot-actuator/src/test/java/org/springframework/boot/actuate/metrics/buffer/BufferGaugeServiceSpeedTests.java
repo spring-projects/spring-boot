@@ -98,21 +98,11 @@ public class BufferGaugeServiceSpeedTests {
 		watch.start("readRaw" + count);
 		for (String name : names) {
 			this.gauges.forEach(Pattern.compile(name).asPredicate(),
-					new BiConsumer<String, GaugeBuffer>() {
-						@Override
-						public void accept(String name, GaugeBuffer value) {
-							err.println(name + "=" + value);
-						}
-					});
+					(name1, value) -> err.println(name1 + "=" + value));
 		}
 		final DoubleAdder total = new DoubleAdder();
 		this.gauges.forEach(Pattern.compile(".*").asPredicate(),
-				new BiConsumer<String, GaugeBuffer>() {
-					@Override
-					public void accept(String name, GaugeBuffer value) {
-						total.add(value.getValue());
-					}
-				});
+				(name, value) -> total.add(value.getValue()));
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
 		assertThat(number * threadCount < total.longValue()).isTrue();
@@ -124,19 +114,9 @@ public class BufferGaugeServiceSpeedTests {
 		double rate = number / watch.getLastTaskTimeMillis() * 1000;
 		System.err.println("Rate(" + count + ")=" + rate + ", " + watch);
 		watch.start("readReader" + count);
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> metric) {
-				err.println(metric);
-			}
-		});
+		this.reader.findAll().forEach(metric -> err.println(metric));
 		final LongAdder total = new LongAdder();
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> value) {
-				total.add(value.getValue().intValue());
-			}
-		});
+		this.reader.findAll().forEach(value -> total.add(value.getValue().intValue()));
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
 		assertThat(0 < total.longValue()).isTrue();
@@ -145,13 +125,10 @@ public class BufferGaugeServiceSpeedTests {
 	private void iterate(String taskName) throws Exception {
 		watch.start(taskName + count++);
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				for (int i = 0; i < number; i++) {
-					String name = sample[i % sample.length];
-					BufferGaugeServiceSpeedTests.this.service.submit(name, count + i);
-				}
+		Runnable task = () -> {
+			for (int i = 0; i < number; i++) {
+				String name = sample[i % sample.length];
+				BufferGaugeServiceSpeedTests.this.service.submit(name, count + i);
 			}
 		};
 		Collection<Future<?>> futures = new HashSet<>();

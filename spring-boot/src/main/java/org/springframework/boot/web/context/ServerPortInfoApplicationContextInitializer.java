@@ -54,15 +54,9 @@ public class ServerPortInfoApplicationContextInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addApplicationListener(
-				new ApplicationListener<WebServerInitializedEvent>() {
-
-					@Override
-					public void onApplicationEvent(WebServerInitializedEvent event) {
-						ServerPortInfoApplicationContextInitializer.this
-								.onApplicationEvent(event);
-					}
-
-				});
+				(WebServerInitializedEvent event) ->
+						ServerPortInfoApplicationContextInitializer
+								.this.onApplicationEvent(event));
 	}
 
 	protected void onApplicationEvent(WebServerInitializedEvent event) {

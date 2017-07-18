@@ -113,18 +113,15 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		return new Iterable<Metric<?>>() {
-			@Override
-			public Iterator<Metric<?>> iterator() {
-				Set<Metric<?>> metrics = new HashSet<>();
-				for (String name : MetricRegistryMetricReader.this.names.keySet()) {
-					Metric<?> metric = findOne(name);
-					if (metric != null) {
-						metrics.add(metric);
-					}
+		return () -> {
+			Set<Metric<?>> metrics = new HashSet<>();
+			for (String name : MetricRegistryMetricReader.this.names.keySet()) {
+				Metric<?> metric = findOne(name);
+				if (metric != null) {
+					metrics.add(metric);
 				}
-				return metrics.iterator();
 			}
+			return metrics.iterator();
 		};
 	}
 

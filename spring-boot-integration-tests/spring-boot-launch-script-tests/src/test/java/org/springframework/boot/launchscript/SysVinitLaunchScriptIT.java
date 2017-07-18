@@ -449,15 +449,9 @@ public class SysVinitLaunchScriptIT {
 			extends DockerCmdExecFactoryImpl {
 
 		private SpringBootDockerCmdExecFactory() {
-			withClientRequestFilters(new ClientRequestFilter() {
-
-				@Override
-				public void filter(ClientRequestContext requestContext)
-						throws IOException {
-					// Workaround for https://go-review.googlesource.com/#/c/3821/
-					requestContext.getHeaders().add("Connection", "close");
-				}
-
+			withClientRequestFilters((ClientRequestFilter) requestContext -> {
+				// Workaround for https://go-review.googlesource.com/#/c/3821/
+				requestContext.getHeaders().add("Connection", "close");
 			});
 		}
 

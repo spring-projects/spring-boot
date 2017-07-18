@@ -156,15 +156,10 @@ public class JettyServletWebServerFactoryTests
 	@Override
 	protected void addConnector(int port, AbstractServletWebServerFactory factory) {
 		((JettyServletWebServerFactory) factory)
-				.addServerCustomizers(new JettyServerCustomizer() {
-
-					@Override
-					public void customize(Server server) {
-						ServerConnector connector = new ServerConnector(server);
-						connector.setPort(port);
-						server.addConnector(connector);
-					}
-
+				.addServerCustomizers((JettyServerCustomizer) server -> {
+					ServerConnector connector = new ServerConnector(server);
+					connector.setPort(port);
+					server.addConnector(connector);
 				});
 	}
 
@@ -231,16 +226,13 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void wrappedHandlers() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setServerCustomizers(Arrays.asList(new JettyServerCustomizer() {
-			@Override
-			public void customize(Server server) {
-				Handler handler = server.getHandler();
-				HandlerWrapper wrapper = new HandlerWrapper();
-				wrapper.setHandler(handler);
-				HandlerCollection collection = new HandlerCollection();
-				collection.addHandler(wrapper);
-				server.setHandler(collection);
-			}
+		factory.setServerCustomizers(Arrays.asList((JettyServerCustomizer) server -> {
+			Handler handler = server.getHandler();
+			HandlerWrapper wrapper = new HandlerWrapper();
+			wrapper.setHandler(handler);
+			HandlerCollection collection = new HandlerCollection();
+			collection.addHandler(wrapper);
+			server.setHandler(collection);
 		}));
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
@@ -282,15 +274,10 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void startFailsWhenThreadPoolIsTooSmall() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.addServerCustomizers(new JettyServerCustomizer() {
-
-			@Override
-			public void customize(Server server) {
-				QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
-				threadPool.setMaxThreads(2);
-				threadPool.setMinThreads(2);
-			}
-
+		factory.addServerCustomizers((JettyServerCustomizer) server -> {
+			QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+			threadPool.setMaxThreads(2);
+			threadPool.setMinThreads(2);
 		});
 		this.thrown.expectCause(isA(IllegalStateException.class));
 		factory.getWebServer().start();

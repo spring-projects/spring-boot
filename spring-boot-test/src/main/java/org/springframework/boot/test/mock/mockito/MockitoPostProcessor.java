@@ -371,15 +371,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	public PropertyValues postProcessPropertyValues(PropertyValues pvs,
 			PropertyDescriptor[] pds, final Object bean, String beanName)
 					throws BeansException {
-		ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
-
-			@Override
-			public void doWith(Field field)
-					throws IllegalArgumentException, IllegalAccessException {
-				postProcessField(bean, field);
-			}
-
-		});
+		ReflectionUtils.doWithFields(bean.getClass(),
+				field -> postProcessField(bean, field));
 		return pvs;
 	}
 

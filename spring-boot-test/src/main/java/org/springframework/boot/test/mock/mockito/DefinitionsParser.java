@@ -60,15 +60,7 @@ class DefinitionsParser {
 
 	public void parse(Class<?> source) {
 		parseElement(source);
-		ReflectionUtils.doWithFields(source, new FieldCallback() {
-
-			@Override
-			public void doWith(Field field)
-					throws IllegalArgumentException, IllegalAccessException {
-				parseElement(field);
-			}
-
-		});
+		ReflectionUtils.doWithFields(source, field -> parseElement(field));
 	}
 
 	private void parseElement(AnnotatedElement element) {

@@ -37,18 +37,13 @@ public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 
 	@Override
 	public void increment(final Delta<?> delta) {
-		this.repository.update(delta.getName(), new Callback<RichGauge>() {
-
-			@Override
-			public RichGauge modify(RichGauge current) {
-				double value = ((Number) delta.getValue()).doubleValue();
-				if (current == null) {
-					return new RichGauge(delta.getName(), value);
-				}
-				current.set(current.getValue() + value);
-				return current;
+		this.repository.update(delta.getName(), current -> {
+			double value = ((Number) delta.getValue()).doubleValue();
+			if (current == null) {
+				return new RichGauge(delta.getName(), value);
 			}
-
+			current.set(current.getValue() + value);
+			return current;
 		});
 	}
 
@@ -56,17 +51,12 @@ public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 	public void set(Metric<?> metric) {
 		final String name = metric.getName();
 		final double value = metric.getValue().doubleValue();
-		this.repository.update(name, new Callback<RichGauge>() {
-
-			@Override
-			public RichGauge modify(RichGauge current) {
-				if (current == null) {
-					return new RichGauge(name, value);
-				}
-				current.set(value);
-				return current;
+		this.repository.update(name, current -> {
+			if (current == null) {
+				return new RichGauge(name, value);
 			}
-
+			current.set(value);
+			return current;
 		});
 	}
 

@@ -42,9 +42,7 @@ public class TestDatabaseAutoConfigurationTests {
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeansOfType(DataSource.class)).isEmpty();
-		});
+		this.contextLoader.load(context -> assertThat(context.getBeansOfType(DataSource.class)).isEmpty());
 	}
 
 	@Test

@@ -134,14 +134,7 @@ public class EndpointMvcIntegrationTests {
 
 		@Bean
 		public EndpointHandlerMappingCustomizer mappingCustomizer() {
-			return new EndpointHandlerMappingCustomizer() {
-
-				@Override
-				public void customize(EndpointHandlerMapping mapping) {
-					mapping.setInterceptors(interceptor());
-				}
-
-			};
+			return mapping -> mapping.setInterceptors(interceptor());
 		}
 
 		@Bean

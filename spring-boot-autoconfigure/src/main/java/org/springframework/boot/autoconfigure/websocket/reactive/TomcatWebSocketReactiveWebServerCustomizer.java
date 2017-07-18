@@ -35,14 +35,8 @@ public class TomcatWebSocketReactiveWebServerCustomizer
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		factory.addContextCustomizers(new TomcatContextCustomizer() {
-
-			@Override
-			public void customize(Context context) {
-				context.addApplicationListener(WsContextListener.class.getName());
-			}
-
-		});
+		factory.addContextCustomizers(
+				(TomcatContextCustomizer) context -> context.addApplicationListener(WsContextListener.class.getName()));
 	}
 
 	@Override

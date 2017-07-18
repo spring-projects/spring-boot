@@ -169,12 +169,7 @@ public class MetricExportAutoConfigurationTests {
 
 		@Bean
 		public SubscribableChannel metricsChannel() {
-			return new FixedSubscriberChannel(new MessageHandler() {
-
-				@Override
-				public void handleMessage(Message<?> message) throws MessagingException {
-				}
-
+			return new FixedSubscriberChannel(message -> {
 			});
 		}
 

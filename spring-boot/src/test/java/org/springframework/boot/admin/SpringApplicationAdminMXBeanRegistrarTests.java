@@ -76,16 +76,13 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.addListeners(new ApplicationListener<ContextRefreshedEvent>() {
-			@Override
-			public void onApplicationEvent(ContextRefreshedEvent event) {
-				try {
-					assertThat(isApplicationReady(objectName)).isFalse();
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(
-							"Could not contact spring application admin bean", ex);
-				}
+		application.addListeners((ApplicationListener<ContextRefreshedEvent>) event -> {
+			try {
+				assertThat(isApplicationReady(objectName)).isFalse();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(
+						"Could not contact spring application admin bean", ex);
 			}
 		});
 		this.context = application.run();

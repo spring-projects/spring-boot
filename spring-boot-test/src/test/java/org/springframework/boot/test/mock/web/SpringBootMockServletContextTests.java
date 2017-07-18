@@ -87,12 +87,8 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		assertThat(resource).isNotEqualTo(nullValue());
 		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
 		assertThat(file).exists().isDirectory();
-		String[] contents = file.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return !(".".equals(name) || "..".equals(name));
-			}
-		});
+		String[] contents = file.list(
+				(dir, name) -> !(".".equals(name) || "..".equals(name)));
 		assertThat(contents).isNotEqualTo(nullValue());
 		assertThat(contents.length).isEqualTo(0);
 	}

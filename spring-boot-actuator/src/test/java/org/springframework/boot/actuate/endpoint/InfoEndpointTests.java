@@ -54,14 +54,7 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 		@Bean
 		public InfoContributor infoContributor() {
-			return new InfoContributor() {
-
-				@Override
-				public void contribute(Info.Builder builder) {
-					builder.withDetail("key1", "value1");
-				}
-
-			};
+			return builder -> builder.withDetail("key1", "value1");
 		}
 
 		@Bean

@@ -370,29 +370,15 @@ public abstract class AbstractJsonMarshalTester<T> {
 		public void initFields(final Object testInstance, final M marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
-			initFields(testInstance, new ObjectFactory<M>() {
-
-				@Override
-				public M getObject() throws BeansException {
-					return marshaller;
-				}
-
-			});
+			initFields(testInstance, () -> marshaller);
 		}
 
 		public void initFields(final Object testInstance,
 				final ObjectFactory<M> marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
-			ReflectionUtils.doWithFields(testInstance.getClass(), new FieldCallback() {
-
-				@Override
-				public void doWith(Field field)
-						throws IllegalArgumentException, IllegalAccessException {
-					doWithField(field, testInstance, marshaller);
-				}
-
-			});
+			ReflectionUtils.doWithFields(testInstance.getClass(),
+					field -> doWithField(field, testInstance, marshaller));
 		}
 
 		protected void doWithField(Field field, Object test,

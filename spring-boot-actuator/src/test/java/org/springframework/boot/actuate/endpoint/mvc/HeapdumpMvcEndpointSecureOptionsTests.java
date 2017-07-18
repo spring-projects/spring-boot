@@ -110,24 +110,18 @@ public class HeapdumpMvcEndpointSecureOptionsTests {
 
 		@Override
 		protected HeapDumper createHeapDumper() {
-			return new HeapDumper() {
-
-				@Override
-				public void dumpHeap(File file, boolean live)
-						throws IOException, InterruptedException {
-					if (!TestHeapdumpMvcEndpoint.this.available) {
-						throw new HeapDumperUnavailableException("Not available", null);
-					}
-					if (TestHeapdumpMvcEndpoint.this.locked) {
-						throw new InterruptedException();
-					}
-					if (file.exists()) {
-						throw new IOException("File exists");
-					}
-					FileCopyUtils.copy(TestHeapdumpMvcEndpoint.this.heapDump.getBytes(),
-							file);
+			return (file, live) -> {
+				if (!TestHeapdumpMvcEndpoint.this.available) {
+					throw new HeapDumperUnavailableException("Not available", null);
 				}
-
+				if (TestHeapdumpMvcEndpoint.this.locked) {
+					throw new InterruptedException();
+				}
+				if (file.exists()) {
+					throw new IOException("File exists");
+				}
+				FileCopyUtils.copy(TestHeapdumpMvcEndpoint.this.heapDump.getBytes(),
+						file);
 			};
 		}
 

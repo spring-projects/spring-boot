@@ -71,14 +71,7 @@ public class MockBeanForBeanFactoryIntegrationTests {
 
 		@Override
 		public TestBean getObject() throws Exception {
-			return new TestBean() {
-
-				@Override
-				public String hello() {
-					return "normal";
-				}
-
-			};
+			return () -> "normal";
 		}
 
 		@Override

@@ -113,14 +113,7 @@ public class ClassPathFileSystemWatcherTests {
 
 		@Bean
 		public ClassPathRestartStrategy restartStrategy() {
-			return new ClassPathRestartStrategy() {
-
-				@Override
-				public boolean isRestartRequired(ChangedFile file) {
-					return false;
-				}
-
-			};
+			return file -> false;
 		}
 
 		@Bean

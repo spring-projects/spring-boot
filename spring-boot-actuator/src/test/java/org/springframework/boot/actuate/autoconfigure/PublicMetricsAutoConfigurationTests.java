@@ -144,13 +144,7 @@ public class PublicMetricsAutoConfigurationTests {
 		// Hikari won't work unless a first connection has been retrieved
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(
 				this.context.getBean("hikariDS", DataSource.class));
-		jdbcTemplate.execute(new ConnectionCallback<Void>() {
-			@Override
-			public Void doInConnection(Connection connection)
-					throws SQLException, DataAccessException {
-				return null;
-			}
-		});
+		jdbcTemplate.execute((ConnectionCallback<Void>) connection -> null);
 
 		Collection<Metric<?>> anotherMetrics = bean.metrics();
 		assertMetrics(anotherMetrics, "datasource.tomcat.active",

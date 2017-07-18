@@ -36,23 +36,15 @@ public class CounterBuffersTests {
 	@Test
 	public void inAndOut() {
 		this.buffers.increment("foo", 2);
-		this.buffers.doWith("foo", new Consumer<CounterBuffer>() {
-			@Override
-			public void accept(CounterBuffer buffer) {
-				CounterBuffersTests.this.value = buffer.getValue();
-			}
-		});
+		this.buffers.doWith("foo",
+				buffer -> CounterBuffersTests.this.value = buffer.getValue());
 		assertThat(this.value).isEqualTo(2);
 	}
 
 	@Test
 	public void getNonExistent() {
-		this.buffers.doWith("foo", new Consumer<CounterBuffer>() {
-			@Override
-			public void accept(CounterBuffer buffer) {
-				CounterBuffersTests.this.value = buffer.getValue();
-			}
-		});
+		this.buffers.doWith("foo",
+				buffer -> CounterBuffersTests.this.value = buffer.getValue());
 		assertThat(this.value).isEqualTo(0);
 	}
 

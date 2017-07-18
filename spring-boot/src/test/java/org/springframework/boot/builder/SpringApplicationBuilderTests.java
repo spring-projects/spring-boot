@@ -294,12 +294,8 @@ public class SpringApplicationBuilderTests {
 	public void initializersIncludeDefaults() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).web(WebApplicationType.NONE).initializers(
-						new ApplicationContextInitializer<ConfigurableApplicationContext>() {
-							@Override
-							public void initialize(
-									ConfigurableApplicationContext applicationContext) {
-							}
-						});
+				(ApplicationContextInitializer<ConfigurableApplicationContext>) applicationContext -> {
+				});
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(5);
 	}

@@ -90,13 +90,10 @@ public class HttpTunnelServerTests {
 	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.server = new HttpTunnelServer(this.serverConnection);
-		given(this.serverConnection.open(anyInt())).willAnswer(new Answer<ByteChannel>() {
-			@Override
-			public ByteChannel answer(InvocationOnMock invocation) throws Throwable {
-				MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
-				channel.setTimeout((Integer) invocation.getArguments()[0]);
-				return channel;
-			}
+		given(this.serverConnection.open(anyInt())).willAnswer(invocation -> {
+			MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
+			channel.setTimeout((Integer) invocation.getArguments()[0]);
+			return channel;
 		});
 		this.servletRequest = new MockHttpServletRequest();
 		this.servletRequest.setAsyncSupported(true);
@@ -311,15 +308,10 @@ public class HttpTunnelServerTests {
 				.willThrow(new IllegalArgumentException());
 		final HttpConnection connection = new HttpConnection(request, this.response);
 		final AtomicBoolean responded = new AtomicBoolean();
-		Thread connectionThread = new Thread() {
-
-			@Override
-			public void run() {
-				connection.waitForResponse();
-				responded.set(true);
-			}
-
-		};
+		Thread connectionThread = new Thread(() -> {
+			connection.waitForResponse();
+			responded.set(true);
+		});
 		connectionThread.start();
 		assertThat(responded.get()).isFalse();
 		Thread.sleep(sleepBeforeResponse);

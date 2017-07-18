@@ -183,14 +183,7 @@ public class JestAutoConfigurationTests {
 
 		@Bean
 		public HttpClientConfigBuilderCustomizer customizer() {
-			return new HttpClientConfigBuilderCustomizer() {
-
-				@Override
-				public void customize(HttpClientConfig.Builder builder) {
-					builder.gson(BuilderCustomizer.this.gson);
-				}
-
-			};
+			return builder -> builder.gson(BuilderCustomizer.this.gson);
 		}
 
 		Gson getGson() {

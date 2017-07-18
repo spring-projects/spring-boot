@@ -284,14 +284,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 
 		@Bean
 		public AuthenticationManager myAuthenticationManager() {
-			this.authenticationManager = new AuthenticationManager() {
-
-				@Override
-				public Authentication authenticate(Authentication authentication)
-						throws AuthenticationException {
-					return new TestingAuthenticationToken("foo", "bar");
-				}
-			};
+			this.authenticationManager = authentication -> new TestingAuthenticationToken("foo", "bar");
 			return this.authenticationManager;
 		}
 

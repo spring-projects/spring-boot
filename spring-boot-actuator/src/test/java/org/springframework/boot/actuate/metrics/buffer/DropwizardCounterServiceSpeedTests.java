@@ -89,14 +89,11 @@ public class DropwizardCounterServiceSpeedTests {
 	public void counters(String input) throws Exception {
 		watch.start("counters" + count++);
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				for (int i = 0; i < number; i++) {
-					String name = sample[i % sample.length];
-					DropwizardCounterServiceSpeedTests.this.counterService
-							.increment(name);
-				}
+		Runnable task = () -> {
+			for (int i = 0; i < number; i++) {
+				String name = sample[i % sample.length];
+				DropwizardCounterServiceSpeedTests.this.counterService
+						.increment(name);
 			}
 		};
 		Collection<Future<?>> futures = new HashSet<>();
@@ -110,19 +107,9 @@ public class DropwizardCounterServiceSpeedTests {
 		double rate = number / watch.getLastTaskTimeMillis() * 1000;
 		System.err.println("Counters rate(" + count + ")=" + rate + ", " + watch);
 		watch.start("read" + count);
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> metric) {
-				err.println(metric);
-			}
-		});
+		this.reader.findAll().forEach(metric -> err.println(metric));
 		final LongAdder total = new LongAdder();
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> value) {
-				total.add(value.getValue().intValue());
-			}
-		});
+		this.reader.findAll().forEach(value -> total.add(value.getValue().intValue()));
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
 		assertThat(total.longValue()).isEqualTo(number * threadCount);

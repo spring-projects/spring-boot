@@ -137,15 +137,11 @@ public class CacheStatisticsAutoConfiguration {
 
 		@Bean
 		public CacheStatisticsProvider<Cache> noOpCacheStatisticsProvider() {
-			return new CacheStatisticsProvider<Cache>() {
-				@Override
-				public CacheStatistics getCacheStatistics(CacheManager cacheManager,
-						Cache cache) {
-					if (cacheManager instanceof NoOpCacheManager) {
-						return NO_OP_STATS;
-					}
-					return null;
+			return (cacheManager, cache) -> {
+				if (cacheManager instanceof NoOpCacheManager) {
+					return NO_OP_STATS;
 				}
+				return null;
 			};
 		}
 

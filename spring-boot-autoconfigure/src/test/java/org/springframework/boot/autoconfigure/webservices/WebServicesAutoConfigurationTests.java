@@ -45,9 +45,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void defaultConfiguration() {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		});
+		this.contextLoader.load(context -> assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1));
 	}
 
 	@Test

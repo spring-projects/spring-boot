@@ -198,13 +198,9 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			libraries.addAll(createLibraries(dependencies));
 			Repackager repackager = new Repackager(file);
 			repackager.setMainClass(PackagedSpringApplicationLauncher.class.getName());
-			repackager.repackage(new Libraries() {
-
-				@Override
-				public void doWithLibraries(LibraryCallback callback) throws IOException {
-					for (Library library : libraries) {
-						callback.library(library);
-					}
+			repackager.repackage(callback -> {
+				for (Library library : libraries) {
+					callback.library(library);
 				}
 			});
 		}

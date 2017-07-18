@@ -49,15 +49,9 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	}
 
 	private void assertHasNoBeanMethods(Class<?> testClass) {
-		ReflectionUtils.doWithMethods(testClass, new MethodCallback() {
-
-			@Override
-			public void doWith(Method method) {
-				Assert.state(!AnnotatedElementUtils.isAnnotated(method, Bean.class),
-						"Test classes cannot include @Bean methods");
-			}
-
-		});
+		ReflectionUtils.doWithMethods(testClass,
+				method -> Assert.state(!AnnotatedElementUtils.isAnnotated(method, Bean.class),
+						"Test classes cannot include @Bean methods"));
 
 	}
 

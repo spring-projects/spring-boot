@@ -221,12 +221,7 @@ public class FileSystemWatcherTests {
 		File folder = this.temp.newFolder();
 		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
 		this.watcher.addSourceFolder(folder);
-		this.watcher.addListener(new FileChangeListener() {
-			@Override
-			public void onChange(Set<ChangedFiles> changeSet) {
-				listener2Changes.addAll(changeSet);
-			}
-		});
+		this.watcher.addListener(changeSet -> listener2Changes.addAll(changeSet));
 		this.watcher.start();
 		File file = touch(new File(folder, "test.txt"));
 		this.watcher.stopAfter(1);
@@ -262,14 +257,7 @@ public class FileSystemWatcherTests {
 		File file = touch(new File(folder, "file.txt"));
 		File trigger = touch(new File(folder, "trigger.txt"));
 		this.watcher.addSourceFolder(folder);
-		this.watcher.setTriggerFilter(new FileFilter() {
-
-			@Override
-			public boolean accept(File file) {
-				return file.getName().equals("trigger.txt");
-			}
-
-		});
+		this.watcher.setTriggerFilter(file1 -> file1.getName().equals("trigger.txt"));
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
 		Thread.sleep(100);
@@ -285,12 +273,8 @@ public class FileSystemWatcherTests {
 
 	private void setupWatcher(long pollingInterval, long quietPeriod) {
 		this.watcher = new FileSystemWatcher(false, pollingInterval, quietPeriod);
-		this.watcher.addListener(new FileChangeListener() {
-			@Override
-			public void onChange(Set<ChangedFiles> changeSet) {
-				FileSystemWatcherTests.this.changes.add(changeSet);
-			}
-		});
+		this.watcher.addListener(
+				changeSet -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}
 
 	private File startWithNewFolder() throws IOException {

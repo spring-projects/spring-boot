@@ -100,12 +100,9 @@ public class MetricFilterAutoConfigurationTests {
 				"/test/path");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				response.setStatus(200);
-				return null;
-			}
+		willAnswer(invocation -> {
+			response.setStatus(200);
+			return null;
 		}).given(chain).doFilter(request, response);
 		filter.doFilter(request, response, chain);
 		verify(context.getBean(CounterService.class)).increment("status.200.test.path");
@@ -364,12 +361,9 @@ public class MetricFilterAutoConfigurationTests {
 				"/test/path");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				response.setStatus(200);
-				return null;
-			}
+		willAnswer(invocation -> {
+			response.setStatus(200);
+			return null;
 		}).given(chain).doFilter(request, response);
 		filter.doFilter(request, response, chain);
 		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
@@ -395,12 +389,9 @@ public class MetricFilterAutoConfigurationTests {
 				"/test/path");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				response.setStatus(200);
-				return null;
-			}
+		willAnswer(invocation -> {
+			response.setStatus(200);
+			return null;
 		}).given(chain).doFilter(request, response);
 		filter.doFilter(request, response, chain);
 		verify(context.getBean(GaugeService.class), never()).submit(anyString(),
@@ -420,13 +411,10 @@ public class MetricFilterAutoConfigurationTests {
 				"/test/path");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				response.setStatus(200);
-				response.setCommitted(true);
-				throw new IOException();
-			}
+		willAnswer(invocation -> {
+			response.setStatus(200);
+			response.setCommitted(true);
+			throw new IOException();
 		}).given(chain).doFilter(request, response);
 		try {
 			filter.doFilter(request, response, chain);
@@ -505,16 +493,13 @@ public class MetricFilterAutoConfigurationTests {
 		@RequestMapping("create")
 		public DeferredResult<ResponseEntity<String>> create() {
 			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<>();
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						MetricFilterTestController.this.latch.await();
-						result.setResult(
-								new ResponseEntity<>("Done", HttpStatus.CREATED));
-					}
-					catch (InterruptedException ex) {
-					}
+			new Thread(() -> {
+				try {
+					MetricFilterTestController.this.latch.await();
+					result.setResult(
+							new ResponseEntity<>("Done", HttpStatus.CREATED));
+				}
+				catch (InterruptedException ex) {
 				}
 			}).start();
 			return result;
@@ -523,16 +508,13 @@ public class MetricFilterAutoConfigurationTests {
 		@RequestMapping("createFailure")
 		public DeferredResult<ResponseEntity<String>> createFailure() {
 			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<>();
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						MetricFilterTestController.this.latch.await();
-						result.setErrorResult(new Exception("It failed"));
-					}
-					catch (InterruptedException ex) {
+			new Thread(() -> {
+				try {
+					MetricFilterTestController.this.latch.await();
+					result.setErrorResult(new Exception("It failed"));
+				}
+				catch (InterruptedException ex) {
 
-					}
 				}
 			}).start();
 			return result;

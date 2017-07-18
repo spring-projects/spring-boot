@@ -57,13 +57,7 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 		// Make sure the pool is initialized
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(
 				getDataSourceMetadata().getDataSource());
-		jdbcTemplate.execute(new ConnectionCallback<Void>() {
-			@Override
-			public Void doInConnection(Connection connection)
-					throws SQLException, DataAccessException {
-				return null;
-			}
-		});
+		jdbcTemplate.execute((ConnectionCallback<Void>) connection -> null);
 		assertThat(getDataSourceMetadata().getActive()).isEqualTo(Integer.valueOf(0));
 		assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0));
 	}
@@ -72,16 +66,12 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 	public void getPoolSizeOneConnection() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(
 				getDataSourceMetadata().getDataSource());
-		jdbcTemplate.execute(new ConnectionCallback<Void>() {
-			@Override
-			public Void doInConnection(Connection connection)
-					throws SQLException, DataAccessException {
-				assertThat(getDataSourceMetadata().getActive())
-						.isEqualTo(Integer.valueOf(1));
-				assertThat(getDataSourceMetadata().getUsage())
-						.isEqualTo(Float.valueOf(0.5F));
-				return null;
-			}
+		jdbcTemplate.execute((ConnectionCallback<Void>) connection -> {
+			assertThat(getDataSourceMetadata().getActive())
+					.isEqualTo(Integer.valueOf(1));
+			assertThat(getDataSourceMetadata().getUsage())
+					.isEqualTo(Float.valueOf(0.5F));
+			return null;
 		});
 	}
 
@@ -89,25 +79,13 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 	public void getPoolSizeTwoConnections() {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(
 				getDataSourceMetadata().getDataSource());
-		jdbcTemplate.execute(new ConnectionCallback<Void>() {
-
-			@Override
-			public Void doInConnection(Connection connection)
-					throws SQLException, DataAccessException {
-				jdbcTemplate.execute(new ConnectionCallback<Void>() {
-
-					@Override
-					public Void doInConnection(Connection connection)
-							throws SQLException, DataAccessException {
-						assertThat(getDataSourceMetadata().getActive()).isEqualTo(2);
-						assertThat(getDataSourceMetadata().getUsage()).isEqualTo(1.0f);
-						return null;
-					}
-
-				});
+		jdbcTemplate.execute((ConnectionCallback<Void>) connection -> {
+			jdbcTemplate.execute((ConnectionCallback<Void>) connection1 -> {
+				assertThat(getDataSourceMetadata().getActive()).isEqualTo(2);
+				assertThat(getDataSourceMetadata().getUsage()).isEqualTo(1.0f);
 				return null;
-			}
-
+			});
+			return null;
 		});
 	}
 

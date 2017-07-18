@@ -49,23 +49,13 @@ public class SimpleInMemoryRepositoryTests {
 	@Test
 	public void updateExisting() {
 		this.repository.set("foo", "spam");
-		this.repository.update("foo", new Callback<String>() {
-			@Override
-			public String modify(String current) {
-				return "bar";
-			}
-		});
+		this.repository.update("foo", current -> "bar");
 		assertThat(this.repository.findOne("foo")).isEqualTo("bar");
 	}
 
 	@Test
 	public void updateNonexistent() {
-		this.repository.update("foo", new Callback<String>() {
-			@Override
-			public String modify(String current) {
-				return "bar";
-			}
-		});
+		this.repository.update("foo", current -> "bar");
 		assertThat(this.repository.findOne("foo")).isEqualTo("bar");
 	}
 
@@ -114,16 +104,11 @@ public class SimpleInMemoryRepositoryTests {
 
 		@Override
 		public Boolean call() throws Exception {
-			this.repository.update("foo", new Callback<Integer>() {
-
-				@Override
-				public Integer modify(Integer current) {
-					if (current == null) {
-						return RepositoryUpdate.this.delta;
-					}
-					return current + RepositoryUpdate.this.delta;
+			this.repository.update("foo", current -> {
+				if (current == null) {
+					return RepositoryUpdate.this.delta;
 				}
-
+				return current + RepositoryUpdate.this.delta;
 			});
 			return true;
 		}

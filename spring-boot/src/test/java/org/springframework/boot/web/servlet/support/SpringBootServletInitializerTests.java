@@ -97,16 +97,11 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void errorPageFilterRegistrationCanBeDisabled() throws Exception {
 		WebServer webServer = new UndertowServletWebServerFactory(0)
-				.getWebServer(new ServletContextInitializer() {
-
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
-								.createRootApplicationContext(servletContext)) {
-							assertThat(context.getBeansOfType(ErrorPageFilter.class))
-									.hasSize(0);
-						}
+				.getWebServer((ServletContextInitializer) servletContext -> {
+					try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
+							.createRootApplicationContext(servletContext)) {
+						assertThat(context.getBeansOfType(ErrorPageFilter.class))
+								.hasSize(0);
 					}
 				});
 		try {

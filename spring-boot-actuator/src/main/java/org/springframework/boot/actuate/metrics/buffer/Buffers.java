@@ -35,15 +35,10 @@ abstract class Buffers<B extends Buffer<?>> {
 
 	public void forEach(final Predicate<String> predicate,
 			final BiConsumer<String, B> consumer) {
-		this.buffers.forEach(new BiConsumer<String, B>() {
-
-			@Override
-			public void accept(String name, B value) {
-				if (predicate.test(name)) {
-					consumer.accept(name, value);
-				}
+		this.buffers.forEach((name, value) -> {
+			if (predicate.test(name)) {
+				consumer.accept(name, value);
 			}
-
 		});
 	}
 
@@ -58,12 +53,7 @@ abstract class Buffers<B extends Buffer<?>> {
 	protected final void doWith(final String name, final Consumer<B> consumer) {
 		B buffer = this.buffers.get(name);
 		if (buffer == null) {
-			buffer = this.buffers.computeIfAbsent(name, new Function<String, B>() {
-				@Override
-				public B apply(String name) {
-					return createBuffer();
-				}
-			});
+			buffer = this.buffers.computeIfAbsent(name, name1 -> createBuffer());
 		}
 		consumer.accept(buffer);
 	}

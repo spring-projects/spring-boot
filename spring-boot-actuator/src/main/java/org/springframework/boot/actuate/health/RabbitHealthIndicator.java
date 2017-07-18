@@ -46,13 +46,10 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	private String getVersion() {
-		return this.rabbitTemplate.execute(new ChannelCallback<String>() {
-			@Override
-			public String doInRabbit(Channel channel) throws Exception {
-				Map<String, Object> serverProperties = channel.getConnection()
-						.getServerProperties();
-				return serverProperties.get("version").toString();
-			}
+		return this.rabbitTemplate.execute(channel -> {
+			Map<String, Object> serverProperties = channel.getConnection()
+					.getServerProperties();
+			return serverProperties.get("version").toString();
 		});
 	}
 

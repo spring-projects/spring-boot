@@ -1306,14 +1306,7 @@ public class JsonContentAssertTests {
 	}
 
 	private AssertProvider<JsonContentAssert> forJson(final String json) {
-		return new AssertProvider<JsonContentAssert>() {
-
-			@Override
-			public JsonContentAssert assertThat() {
-				return new JsonContentAssert(JsonContentAssertTests.class, json);
-			}
-
-		};
+		return () -> new JsonContentAssert(JsonContentAssertTests.class, json);
 	}
 
 }

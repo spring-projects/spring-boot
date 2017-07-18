@@ -101,12 +101,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 			return new DetailedProgressReporter(session, System.out);
 		}
 		else if ("none".equals(progressReporter)) {
-			return new ProgressReporter() {
-
-				@Override
-				public void finished() {
-
-				}
+			return () -> {
 
 			};
 		}
