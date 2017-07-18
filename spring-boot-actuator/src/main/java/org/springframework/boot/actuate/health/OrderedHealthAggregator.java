@@ -80,7 +80,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 			return Status.UNKNOWN;
 		}
 		// Sort given Status instances by configured order
-		Collections.sort(filteredCandidates, new StatusComparator(this.statusOrder));
+		filteredCandidates.sort(new StatusComparator(this.statusOrder));
 		return filteredCandidates.get(0);
 	}
 

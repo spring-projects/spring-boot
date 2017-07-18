@@ -110,7 +110,7 @@ public class DelegatingApplicationContextInitializer implements
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void applyInitializers(ConfigurableApplicationContext context,
 			List<ApplicationContextInitializer<?>> initializers) {
-		Collections.sort(initializers, new AnnotationAwareOrderComparator());
+		initializers.sort(new AnnotationAwareOrderComparator());
 		for (ApplicationContextInitializer initializer : initializers) {
 			initializer.initialize(context);
 		}

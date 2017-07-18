@@ -60,10 +60,9 @@ class AutoConfigurationSorter {
 		// Initially sort alphabetically
 		Collections.sort(orderedClassNames);
 		// Then sort by order
-		Collections.sort(orderedClassNames, new Comparator<String>() {
+		orderedClassNames.sort(new Comparator<String>() {
 
-			@Override
-			public int compare(String o1, String o2) {
+			@Override public int compare(String o1, String o2) {
 				int i1 = classes.get(o1).getOrder();
 				int i2 = classes.get(o2).getOrder();
 				return (i1 < i2) ? -1 : (i1 > i2) ? 1 : 0;
