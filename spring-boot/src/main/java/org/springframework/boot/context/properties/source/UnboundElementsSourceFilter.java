@@ -28,7 +28,7 @@ import org.springframework.core.env.StandardEnvironment;
 /**
  * Function used to determine if a {@link ConfigurationPropertySource} should be
  * included when determining unbound elements. If the underlying {@link PropertySource}
- * is a systemEnvironment or systemProperties property source , it will not be considered
+ * is a systemEnvironment or systemProperties property source, it will not be considered
  * for unbound element failures.
  *
  * @author Madhura Bhave
