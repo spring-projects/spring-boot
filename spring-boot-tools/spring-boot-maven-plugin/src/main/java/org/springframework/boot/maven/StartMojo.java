@@ -94,11 +94,7 @@ public class StartMojo extends AbstractRunMojo {
 		try {
 			waitForSpringApplication();
 		}
-		catch (MojoExecutionException ex) {
-			runProcess.kill();
-			throw ex;
-		}
-		catch (MojoFailureException ex) {
+		catch (MojoExecutionException | MojoFailureException ex) {
 			runProcess.kill();
 			throw ex;
 		}

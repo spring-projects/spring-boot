@@ -91,10 +91,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 		try {
 			return beanFactory.getBeanNamesForType(Class.forName(type), true, false);
 		}
-		catch (ClassNotFoundException ex) {
-			// Ignore
-		}
-		catch (NoClassDefFoundError ex) {
+		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			// Ignore
 		}
 		return NO_BEANS;

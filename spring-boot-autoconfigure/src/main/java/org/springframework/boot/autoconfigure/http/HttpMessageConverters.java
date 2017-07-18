@@ -240,10 +240,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		try {
 			list.add(Class.forName(className));
 		}
-		catch (ClassNotFoundException ex) {
-			// Ignore
-		}
-		catch (NoClassDefFoundError ex) {
+		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			// Ignore
 		}
 	}
