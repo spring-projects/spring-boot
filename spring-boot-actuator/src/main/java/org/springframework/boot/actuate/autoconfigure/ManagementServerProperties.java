@@ -169,7 +169,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = new ArrayList<String>(
+		private List<String> roles = new ArrayList<>(
 				Collections.singletonList("ACTUATOR"));
 
 		/**

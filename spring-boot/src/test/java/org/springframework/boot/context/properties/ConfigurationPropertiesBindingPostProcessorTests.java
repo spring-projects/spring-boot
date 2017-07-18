@@ -444,7 +444,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext();
 		MutablePropertySources sources = this.context.getEnvironment()
 				.getPropertySources();
-		Map<String, Object> source = new LinkedHashMap<String, Object>();
+		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
 		this.context.register(PrototypePropertiesConfig.class);

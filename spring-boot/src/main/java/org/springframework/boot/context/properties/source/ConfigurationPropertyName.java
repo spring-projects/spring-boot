@@ -451,7 +451,7 @@ public final class ConfigurationPropertyName
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		List<CharSequence> elements = new ArrayList<>(10);
 		process(name, '.', (elementValue, start, end, indexed) -> {
 			if (elementValue.length() > 0) {
 				if (!indexed) {
@@ -496,7 +496,7 @@ public final class ConfigurationPropertyName
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		List<CharSequence> elements = new ArrayList<>(10);
 		process(name, separator, (elementValue, start, end, indexed) -> {
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {

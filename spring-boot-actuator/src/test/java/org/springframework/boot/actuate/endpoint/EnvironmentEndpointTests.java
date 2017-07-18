@@ -268,7 +268,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		this.context = new AnnotationConfigApplicationContext();
 		MutablePropertySources propertySources = this.context.getEnvironment()
 				.getPropertySources();
-		Map<String, Object> source = new HashMap<String, Object>();
+		Map<String, Object> source = new HashMap<>();
 		source.put("foo", Collections.singletonMap("bar", "baz"));
 		propertySources.addFirst(new MapPropertySource("test", source));
 		this.context.register(Config.class);

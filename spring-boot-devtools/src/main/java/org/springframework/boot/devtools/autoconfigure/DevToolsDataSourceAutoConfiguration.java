@@ -126,8 +126,7 @@ public class DevToolsDataSourceAutoConfiguration {
 
 			InMemoryDatabase(String urlPrefix, String... driverClassNames) {
 				this.urlPrefix = urlPrefix;
-				this.driverClassNames = new HashSet<String>(
-						Arrays.asList(driverClassNames));
+				this.driverClassNames = new HashSet<>(Arrays.asList(driverClassNames));
 			}
 
 			boolean matches(DataSourceProperties properties) {

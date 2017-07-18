@@ -73,7 +73,7 @@ public class FlywayProperties {
 	 * SQL statements to execute to initialize a connection immediately after obtaining
 	 * it.
 	 */
-	private List<String> initSqls = new ArrayList<String>();
+	private List<String> initSqls = new ArrayList<>();
 
 	public void setLocations(List<String> locations) {
 		this.locations = locations;

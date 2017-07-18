@@ -132,7 +132,7 @@ class BootZipCopyAction implements CopyAction {
 	private Spec<FileTreeElement> writeLoaderClasses(ZipArchiveOutputStream out) {
 		try (ZipInputStream in = new ZipInputStream(getClass()
 				.getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
-			Set<String> entries = new HashSet<String>();
+			Set<String> entries = new HashSet<>();
 			java.util.zip.ZipEntry entry;
 			while ((entry = in.getNextEntry()) != null) {
 				if (entry.isDirectory() && !entry.getName().startsWith("META-INF/")) {

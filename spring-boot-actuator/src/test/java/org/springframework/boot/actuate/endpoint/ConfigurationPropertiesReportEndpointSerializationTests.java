@@ -435,9 +435,9 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	public static class InitializedMapAndListProperties extends Foo {
 
-		private Map<String, Boolean> map = new HashMap<String, Boolean>();
+		private Map<String, Boolean> map = new HashMap<>();
 
-		private List<String> list = new ArrayList<String>();
+		private List<String> list = new ArrayList<>();
 
 		public Map<String, Boolean> getMap() {
 			return this.map;

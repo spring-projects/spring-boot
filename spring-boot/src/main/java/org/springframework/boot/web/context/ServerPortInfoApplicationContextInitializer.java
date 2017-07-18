@@ -88,7 +88,7 @@ public class ServerPortInfoApplicationContextInitializer
 		MutablePropertySources sources = environment.getPropertySources();
 		PropertySource<?> source = sources.get("server.ports");
 		if (source == null) {
-			source = new MapPropertySource("server.ports", new HashMap<String, Object>());
+			source = new MapPropertySource("server.ports", new HashMap<>());
 			sources.addFirst(source);
 		}
 		((Map<String, Object>) source.getSource()).put(propertyName, port);
