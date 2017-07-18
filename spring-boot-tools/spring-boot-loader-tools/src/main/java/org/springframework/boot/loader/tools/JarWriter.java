@@ -181,8 +181,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
 	private long getNestedLibraryTime(File file) {
 		try {
-			JarFile jarFile = new JarFile(file);
-			try {
+			try (JarFile jarFile = new JarFile(file)) {
 				Enumeration<JarEntry> entries = jarFile.entries();
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
@@ -190,9 +189,6 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 						return entry.getTime();
 					}
 				}
-			}
-			finally {
-				jarFile.close();
 			}
 		}
 		catch (Exception ex) {
@@ -376,12 +372,8 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		private long size;
 
 		CrcAndSize(File file) throws IOException {
-			FileInputStream inputStream = new FileInputStream(file);
-			try {
+			try (FileInputStream inputStream = new FileInputStream(file)) {
 				load(inputStream);
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 
