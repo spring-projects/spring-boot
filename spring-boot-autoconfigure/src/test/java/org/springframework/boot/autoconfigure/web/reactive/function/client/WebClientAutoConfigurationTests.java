@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -80,12 +81,15 @@ public class WebClientAutoConfigurationTests {
 	@Test
 	public void shouldGetPrototypeScopedBean() throws Exception {
 		load(WebClientCustomizerConfig.class);
+		ClientHttpResponse response = mock(ClientHttpResponse.class);
 		ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
-		given(firstConnector.connect(any(), any(), any())).willReturn(Mono.empty());
+		given(firstConnector.connect(any(), any(), any()))
+				.willReturn(Mono.just(response));
 		WebClient.Builder firstBuilder = this.context.getBean(WebClient.Builder.class);
 		firstBuilder.clientConnector(firstConnector).baseUrl("http://first.example.org");
 		ClientHttpConnector secondConnector = mock(ClientHttpConnector.class);
-		given(secondConnector.connect(any(), any(), any())).willReturn(Mono.empty());
+		given(secondConnector.connect(any(), any(), any()))
+				.willReturn(Mono.just(response));
 		WebClient.Builder secondBuilder = this.context.getBean(WebClient.Builder.class);
 		secondBuilder.clientConnector(secondConnector)
 				.baseUrl("http://second.example.org");
