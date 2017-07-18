@@ -22,8 +22,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
-import org.springframework.boot.loader.archive.Archive.Entry;
-import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * Base class for executable archive {@link Launcher}s.

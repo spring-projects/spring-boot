@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * Auto-configuration for Json testers.

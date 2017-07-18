@@ -17,7 +17,6 @@
 package org.springframework.boot.loader.tools;
 
 import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 /**
  * Utilities for working with signal handling.

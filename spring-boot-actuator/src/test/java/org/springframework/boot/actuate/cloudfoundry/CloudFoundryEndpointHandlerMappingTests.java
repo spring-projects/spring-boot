@@ -26,7 +26,6 @@ import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMapp
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;

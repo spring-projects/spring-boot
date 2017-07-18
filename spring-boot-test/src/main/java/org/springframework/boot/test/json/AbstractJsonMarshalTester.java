@@ -28,7 +28,6 @@ import java.lang.reflect.Field;
 
 import org.assertj.core.api.Assertions;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
@@ -38,7 +37,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * Base class for AssertJ based JSON marshal testers. Exposes specific Asserts following a

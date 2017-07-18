@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.Consumer;
 
 import org.junit.BeforeClass;
 import org.junit.experimental.theories.DataPoints;
@@ -34,7 +33,6 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.metrics.GaugeService;
-import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;

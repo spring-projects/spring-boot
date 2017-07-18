@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.metrics.reader;
 
 import java.beans.PropertyDescriptor;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

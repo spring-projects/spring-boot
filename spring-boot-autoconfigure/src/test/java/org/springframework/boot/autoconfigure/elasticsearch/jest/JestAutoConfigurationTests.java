@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
-import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;

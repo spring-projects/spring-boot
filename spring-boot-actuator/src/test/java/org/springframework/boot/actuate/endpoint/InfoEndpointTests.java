@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

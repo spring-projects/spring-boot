@@ -16,13 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 

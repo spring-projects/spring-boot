@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.metrics.rich;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository;
-import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 

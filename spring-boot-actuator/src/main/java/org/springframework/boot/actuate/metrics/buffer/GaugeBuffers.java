@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
-import java.util.function.Consumer;
-
 /**
  * Fast writes to in-memory metrics store using {@link GaugeBuffer}.
  *

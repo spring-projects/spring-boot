@@ -18,7 +18,6 @@ package org.springframework.boot.cli.infrastructure;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

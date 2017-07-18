@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.websocket.reactive;
 
-import org.apache.catalina.Context;
 import org.apache.tomcat.websocket.server.WsContextListener;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;

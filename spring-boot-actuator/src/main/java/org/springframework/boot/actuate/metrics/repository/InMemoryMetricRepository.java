@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository;
-import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 
 /**

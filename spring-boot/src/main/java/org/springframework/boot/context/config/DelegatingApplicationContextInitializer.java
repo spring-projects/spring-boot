@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;

@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.metrics.buffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 

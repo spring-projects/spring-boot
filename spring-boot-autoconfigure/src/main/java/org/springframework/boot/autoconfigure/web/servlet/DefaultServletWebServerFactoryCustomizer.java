@@ -23,10 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
-import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
-import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;

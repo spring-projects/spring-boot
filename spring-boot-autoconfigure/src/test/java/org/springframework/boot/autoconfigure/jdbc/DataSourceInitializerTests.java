@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 import javax.sql.DataSource;

@@ -50,7 +50,6 @@ import javax.servlet.ServletException;
 
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
-import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;

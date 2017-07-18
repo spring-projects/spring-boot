@@ -27,7 +27,6 @@ import javax.cache.configuration.Configuration;
 import javax.cache.configuration.OptionalFeature;
 import javax.cache.spi.CachingProvider;
 
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.ArgumentMatchers.any;
