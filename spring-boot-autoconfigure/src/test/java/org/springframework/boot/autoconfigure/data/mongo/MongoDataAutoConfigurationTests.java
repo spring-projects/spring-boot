@@ -135,9 +135,6 @@ public class MongoDataAutoConfigurationTests {
 			fail("Create FieldNamingStrategy interface should fail");
 		}
 		// We seem to have an inconsistent exception, accept either
-		catch (UnsatisfiedDependencyException ex) {
-			// Expected
-		}
 		catch (BeanCreationException ex) {
 			// Expected
 		}

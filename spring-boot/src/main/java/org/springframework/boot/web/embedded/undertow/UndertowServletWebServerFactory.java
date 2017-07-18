@@ -279,10 +279,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 						Sequence.of(ssl.getCiphers()));
 			}
 		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException(ex);
-		}
-		catch (KeyManagementException ex) {
+		catch (NoSuchAlgorithmException | KeyManagementException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}

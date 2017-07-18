@@ -273,13 +273,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 						+ elapsedTime + " ms");
 			}
 		}
-		catch (RuntimeException ex) {
-			logger.error("Context initialization failed", ex);
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
-			throw ex;
-		}
-		catch (Error ex) {
+		catch (RuntimeException | Error ex) {
 			logger.error("Context initialization failed", ex);
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
