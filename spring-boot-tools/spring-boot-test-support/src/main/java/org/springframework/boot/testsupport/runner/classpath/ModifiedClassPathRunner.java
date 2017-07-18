@@ -100,7 +100,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private URL[] extractUrls(URLClassLoader classLoader) throws Exception {
-		List<URL> extractedUrls = new ArrayList<URL>();
+		List<URL> extractedUrls = new ArrayList<>();
 		for (URL url : classLoader.getURLs()) {
 			if (isSurefireBooterJar(url)) {
 				extractedUrls.addAll(extractUrlsFromManifestClassPath(url));
@@ -117,7 +117,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private List<URL> extractUrlsFromManifestClassPath(URL booterJar) throws Exception {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		for (String entry : getClassPath(booterJar)) {
 			urls.add(new URL(entry));
 		}
@@ -133,7 +133,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private URL[] processUrls(URL[] urls, Class<?> testClass) throws Exception {
 		ClassPathEntryFilter filter = new ClassPathEntryFilter(testClass);
-		List<URL> processedUrls = new ArrayList<URL>();
+		List<URL> processedUrls = new ArrayList<>();
 		processedUrls.addAll(getAdditionalUrls(testClass));
 		for (URL url : urls) {
 			if (!filter.isExcluded(url)) {
@@ -173,7 +173,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
 		DependencyResult result = repositorySystem.resolveDependencies(session,
 				dependencyRequest);
-		List<URL> resolvedArtifacts = new ArrayList<URL>();
+		List<URL> resolvedArtifacts = new ArrayList<>();
 		for (ArtifactResult artifact : result.getArtifactResults()) {
 			resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
 		}
@@ -181,7 +181,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private List<Dependency> createDependencies(String[] allCoordinates) {
-		List<Dependency> dependencies = new ArrayList<Dependency>();
+		List<Dependency> dependencies = new ArrayList<>();
 		for (String coordinate : allCoordinates) {
 			dependencies.add(new Dependency(new DefaultArtifact(coordinate), null));
 		}
@@ -254,8 +254,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 		private List<FrameworkMethod> wrapFrameworkMethods(
 				List<FrameworkMethod> methods) {
-			List<FrameworkMethod> wrapped = new ArrayList<FrameworkMethod>(
-					methods.size());
+			List<FrameworkMethod> wrapped = new ArrayList<>(methods.size());
 			for (FrameworkMethod frameworkMethod : methods) {
 				wrapped.add(new ModifiedClassPathFrameworkMethod(
 						frameworkMethod.getMethod()));

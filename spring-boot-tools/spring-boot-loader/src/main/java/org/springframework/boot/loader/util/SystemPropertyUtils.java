@@ -66,7 +66,7 @@ public abstract class SystemPropertyUtils {
 		if (text == null) {
 			return text;
 		}
-		return parseStringValue(null, text, text, new HashSet<String>());
+		return parseStringValue(null, text, text, new HashSet<>());
 	}
 
 	/**
@@ -83,7 +83,7 @@ public abstract class SystemPropertyUtils {
 		if (text == null) {
 			return text;
 		}
-		return parseStringValue(properties, text, text, new HashSet<String>());
+		return parseStringValue(properties, text, text, new HashSet<>());
 	}
 
 	private static String parseStringValue(Properties properties, String value,

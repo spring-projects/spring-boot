@@ -120,7 +120,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void redirectContextRootIsNotConfiguredByDefault() throws Exception {
-		bind(new HashMap<String, String>());
+		bind(new HashMap<>());
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getRedirectContextRoot()).isNull();
 	}
@@ -164,7 +164,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeJettyAccessLog() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.accesslog.enabled", "true");
 		map.put("server.jetty.accesslog.filename", "foo.txt");
 		map.put("server.jetty.accesslog.file-date-format", "yyyymmdd");

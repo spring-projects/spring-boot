@@ -40,7 +40,7 @@ class PomCondition extends Condition<File> {
 	private Set<String> notExpectedContents;
 
 	PomCondition() {
-		this(new HashSet<String>(), new HashSet<String>());
+		this(new HashSet<>(), new HashSet<>());
 	}
 
 	private PomCondition(Set<String> expectedContents, Set<String> notExpectedContents) {

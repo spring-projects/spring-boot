@@ -488,8 +488,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	private ResourceManager getDocumentRootResourceManager() {
 		File root = getCanonicalDocumentRoot();
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
-		List<URL> resourceJarUrls = new ArrayList<URL>();
-		List<ResourceManager> resourceManagers = new ArrayList<ResourceManager>();
+		List<URL> resourceJarUrls = new ArrayList<>();
+		List<ResourceManager> resourceManagers = new ArrayList<>();
 		ResourceManager rootResourceManager = root.isDirectory()
 				? new FileResourceManager(root, 0) : new JarResourceManager(root);
 		resourceManagers.add(rootResourceManager);

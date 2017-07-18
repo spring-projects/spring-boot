@@ -134,7 +134,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 			AnnotationMetadata metadata) {
 		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<>();
 		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
-		collectAnnotations(source, annotations, new HashSet<Class<?>>());
+		collectAnnotations(source, annotations, new HashSet<>());
 		return Collections.unmodifiableMap(annotations);
 	}
 

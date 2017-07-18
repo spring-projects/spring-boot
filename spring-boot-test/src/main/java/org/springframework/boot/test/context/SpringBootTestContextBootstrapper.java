@@ -219,7 +219,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			ContextConfiguration configuration) {
 		ContextConfigurationAttributes attributes = new ContextConfigurationAttributes(
 				candidateConfig.getTestClass(), configuration);
-		Set<Class<?>> configurationClasses = new HashSet<Class<?>>(
+		Set<Class<?>> configurationClasses = new HashSet<>(
 				Arrays.asList(attributes.getClasses()));
 		for (Class<?> candidate : candidateConfig.getClasses()) {
 			if (configurationClasses.contains(candidate)) {
