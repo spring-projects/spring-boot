@@ -20,6 +20,7 @@ import java.net.BindException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import reactor.ipc.netty.http.HttpResources;
 import reactor.ipc.netty.http.server.HttpServer;
 import reactor.ipc.netty.tcp.BlockingNettyContext;
 
@@ -98,6 +99,8 @@ public class NettyWebServer implements WebServer {
 	public void stop() throws WebServerException {
 		if (this.nettyContext != null) {
 			this.nettyContext.shutdown();
+			// temporary fix for gh-9146
+			this.nettyContext.getContext().onClose().doOnSuccess(aVoid -> HttpResources.reset()).block();
 			this.nettyContext = null;
 		}
 	}
