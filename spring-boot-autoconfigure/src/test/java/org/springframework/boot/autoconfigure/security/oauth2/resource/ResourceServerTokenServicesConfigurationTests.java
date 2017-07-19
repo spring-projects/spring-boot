@@ -270,18 +270,18 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.of("security.oauth2.resource.jwk.key-set-uri=http://my-auth-server/token_keys")
 				.applyTo(this.environment);
 		this.context = new SpringApplicationBuilder(JwkTokenStoreConfiguration.class,
-				ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				ResourceConfiguration.class).environment(this.environment).web(false)
+						.run();
 		assertThat(this.context.getBeansOfType(JwkTokenStore.class)).hasSize(1);
 	}
 
 	@Test
 	public void jwtTokenStoreShouldBeConditionalOnMissingBean() throws Exception {
-		TestPropertyValues
-				.of("security.oauth2.resource.jwt.keyValue=" + PUBLIC_KEY)
+		TestPropertyValues.of("security.oauth2.resource.jwt.keyValue=" + PUBLIC_KEY)
 				.applyTo(this.environment);
-		this.context = new SpringApplicationBuilder(JwtTokenStoreConfiguration.class, ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+		this.context = new SpringApplicationBuilder(JwtTokenStoreConfiguration.class,
+				ResourceConfiguration.class).environment(this.environment).web(false)
+						.run();
 		assertThat(this.context.getBeansOfType(JwtTokenStore.class)).hasSize(1);
 	}
 

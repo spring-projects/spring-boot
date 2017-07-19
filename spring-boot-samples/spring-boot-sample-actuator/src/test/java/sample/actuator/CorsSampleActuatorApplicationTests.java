@@ -51,37 +51,39 @@ public class CorsSampleActuatorApplicationTests {
 
 	@Test
 	public void sensitiveEndpointShouldReturnUnauthorized() throws Exception {
-		ResponseEntity<Map> entity = this.testRestTemplate.getForEntity("/application/env", Map.class);
+		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/application/env",
+				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void preflightRequestForInsensitiveShouldReturnOk() throws Exception {
-		RequestEntity<?> healthRequest = RequestEntity.options(new URI("/application/health"))
-				.header("Origin","http://localhost:8080")
-				.header("Access-Control-Request-Method", "GET")
-				.build();
-		ResponseEntity<Map> exchange = this.testRestTemplate.exchange(healthRequest, Map.class);
+		RequestEntity<?> healthRequest = RequestEntity
+				.options(new URI("/application/health"))
+				.header("Origin", "http://localhost:8080")
+				.header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest,
+				Map.class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void preflightRequestForSensitiveEndpointShouldReturnOk() throws Exception {
 		RequestEntity<?> entity = RequestEntity.options(new URI("/application/env"))
-				.header("Origin","http://localhost:8080")
-				.header("Access-Control-Request-Method", "GET")
-				.build();
-		ResponseEntity<Map> env = this.testRestTemplate.exchange(entity, Map.class);
+				.header("Origin", "http://localhost:8080")
+				.header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<?> env = this.testRestTemplate.exchange(entity, Map.class);
 		assertThat(env.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() throws Exception {
+	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden()
+			throws Exception {
 		RequestEntity<?> entity = RequestEntity.options(new URI("/application/health"))
-				.header("Origin","http://localhost:9095")
-				.header("Access-Control-Request-Method", "GET")
-				.build();
-		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity, byte[].class);
+				.header("Origin", "http://localhost:9095")
+				.header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity,
+				byte[].class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
