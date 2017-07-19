@@ -5121,9 +5121,12 @@ are not directly supported, use the following:
 	spring,kafka.producer.properties.baz.qux=fiz
 ----
 
-This sets the common `foo.bar` Kafka property to `baz` (applies to both producers and consumers), the consumer `fiz.buz` property to `qux` and the `baz.qux` producer property to `fiz`.
+This sets the common `foo.bar` Kafka property to `baz` (applies to both producers and
+consumers), the consumer `fiz.buz` property to `qux` and the `baz.qux` producer property
+to `fiz`.
 
-IMPORTANT: Properties set in this way will override properties that are in the subset that boot explicitly supports.
+IMPORTANT: Properties set in this way will override any configuration item that Spring
+Boot explicitly supports.
 
 [[boot-features-resttemplate]]
 == Calling REST services with '`RestTemplate`'

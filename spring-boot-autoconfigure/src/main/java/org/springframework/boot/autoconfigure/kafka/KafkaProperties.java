@@ -66,7 +66,7 @@ public class KafkaProperties {
 	 * Additional properties, common to producers and consumers, used to configure the
 	 * client.
 	 */
-	private Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new HashMap<>();
 
 	private final Consumer consumer = new Consumer();
 
@@ -98,10 +98,6 @@ public class KafkaProperties {
 
 	public Map<String, String> getProperties() {
 		return this.properties;
-	}
-
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
 	}
 
 	public Consumer getConsumer() {
@@ -270,9 +266,9 @@ public class KafkaProperties {
 		private Integer maxPollRecords;
 
 		/**
-		 * Additional properties used to configure the client.
+		 * Additional consumer-specific properties used to configure the client.
 		 */
-		private Map<String, String> properties = new HashMap<>();
+		private final Map<String, String> properties = new HashMap<>();
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -376,10 +372,6 @@ public class KafkaProperties {
 
 		public Map<String, String> getProperties() {
 			return this.properties;
-		}
-
-		public void setProperties(Map<String, String> properties) {
-			this.properties = properties;
 		}
 
 		public Map<String, Object> buildProperties() {
@@ -508,9 +500,9 @@ public class KafkaProperties {
 		private Integer retries;
 
 		/**
-		 * Additional properties used to configure the client.
+		 * Additional producer-specific properties used to configure the client.
 		 */
-		private Map<String, String> properties = new HashMap<>();
+		private final Map<String, String> properties = new HashMap<>();
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -590,10 +582,6 @@ public class KafkaProperties {
 
 		public Map<String, String> getProperties() {
 			return this.properties;
-		}
-
-		public void setProperties(Map<String, String> properties) {
-			this.properties = properties;
 		}
 
 		public Map<String, Object> buildProperties() {
