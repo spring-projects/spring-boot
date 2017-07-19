@@ -72,54 +72,39 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void proxySelector() {
-		doWithCustomUserHome(new Runnable() {
+		doWithCustomUserHome(() -> {
+			AetherGrapeEngine grapeEngine = createGrapeEngine();
 
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
+			DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
+					.getField(grapeEngine, "session");
 
-				DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
-						.getField(grapeEngine, "session");
-
-				assertThat(session.getProxySelector() instanceof CompositeProxySelector)
-						.isTrue();
-			}
-
+			assertThat(session.getProxySelector() instanceof CompositeProxySelector)
+					.isTrue();
 		});
 	}
 
 	@Test
 	public void repositoryMirrors() {
-		doWithCustomUserHome(new Runnable() {
+		doWithCustomUserHome(() -> {
+			AetherGrapeEngine grapeEngine = createGrapeEngine();
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
-						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
-				assertThat(repositories.get(0).getId()).isEqualTo("central-mirror");
-			}
+			List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
+					.getField(grapeEngine, "repositories");
+			assertThat(repositories).hasSize(1);
+			assertThat(repositories.get(0).getId()).isEqualTo("central-mirror");
 		});
 	}
 
 	@Test
 	public void repositoryAuthentication() {
-		doWithCustomUserHome(new Runnable() {
+		doWithCustomUserHome(() -> {
+			AetherGrapeEngine grapeEngine = createGrapeEngine();
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
-						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
-				Authentication authentication = repositories.get(0).getAuthentication();
-				assertThat(authentication).isNotNull();
-			}
+			List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
+					.getField(grapeEngine, "repositories");
+			assertThat(repositories).hasSize(1);
+			Authentication authentication = repositories.get(0).getAuthentication();
+			assertThat(authentication).isNotNull();
 		});
 	}
 

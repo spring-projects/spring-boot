@@ -89,14 +89,7 @@ public class LiveReloadServer {
 	 * @param port the listen port
 	 */
 	public LiveReloadServer(int port) {
-		this(port, new ThreadFactory() {
-
-			@Override
-			public Thread newThread(Runnable runnable) {
-				return new Thread(runnable);
-			}
-
-		});
+		this(port, Thread::new);
 	}
 
 	/**
@@ -121,14 +114,7 @@ public class LiveReloadServer {
 			logger.debug("Starting live reload server on port " + this.port);
 			this.serverSocket = new ServerSocket(this.port);
 			int localPort = this.serverSocket.getLocalPort();
-			this.listenThread = this.threadFactory.newThread(new Runnable() {
-
-				@Override
-				public void run() {
-					acceptConnections();
-				}
-
-			});
+			this.listenThread = this.threadFactory.newThread(this::acceptConnections);
 			this.listenThread.setDaemon(true);
 			this.listenThread.setName("Live Reload Server");
 			this.listenThread.start();

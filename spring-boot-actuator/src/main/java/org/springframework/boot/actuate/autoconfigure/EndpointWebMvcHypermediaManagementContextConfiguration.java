@@ -101,14 +101,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@Bean
 	public ManagementServletContext managementServletContext(
 			final ManagementServerProperties properties) {
-		return new ManagementServletContext() {
-
-			@Override
-			public String getContextPath() {
-				return properties.getContextPath();
-			}
-
-		};
+		return properties::getContextPath;
 	}
 
 	@ConditionalOnEnabledEndpoint("actuator")

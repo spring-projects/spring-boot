@@ -201,14 +201,7 @@ public class RemoteClientConfiguration {
 
 		@Bean
 		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
-			return new FileSystemWatcherFactory() {
-
-				@Override
-				public FileSystemWatcher getFileSystemWatcher() {
-					return newFileSystemWatcher();
-				}
-
-			};
+			return this::newFileSystemWatcher;
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
-import java.util.function.Consumer;
-
 /**
  * Fast writes to in-memory metrics store using {@link CounterBuffer}.
  *
@@ -27,26 +25,16 @@ import java.util.function.Consumer;
 public class CounterBuffers extends Buffers<CounterBuffer> {
 
 	public void increment(final String name, final long delta) {
-		doWith(name, new Consumer<CounterBuffer>() {
-
-			@Override
-			public void accept(CounterBuffer buffer) {
-				buffer.setTimestamp(System.currentTimeMillis());
-				buffer.add(delta);
-			}
-
+		doWith(name, buffer -> {
+			buffer.setTimestamp(System.currentTimeMillis());
+			buffer.add(delta);
 		});
 	}
 
 	public void reset(final String name) {
-		doWith(name, new Consumer<CounterBuffer>() {
-
-			@Override
-			public void accept(CounterBuffer buffer) {
-				buffer.setTimestamp(System.currentTimeMillis());
-				buffer.reset();
-			}
-
+		doWith(name, buffer -> {
+			buffer.setTimestamp(System.currentTimeMillis());
+			buffer.reset();
 		});
 	}
 

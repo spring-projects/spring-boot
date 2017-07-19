@@ -73,14 +73,7 @@ public class ObjectContentAssertTests {
 	}
 
 	private AssertProvider<ObjectContentAssert<Object>> forObject(final Object source) {
-		return new AssertProvider<ObjectContentAssert<Object>>() {
-
-			@Override
-			public ObjectContentAssert<Object> assertThat() {
-				return new ObjectContentAssert<>(source);
-			}
-
-		};
+		return () -> new ObjectContentAssert<>(source);
 	}
 
 }

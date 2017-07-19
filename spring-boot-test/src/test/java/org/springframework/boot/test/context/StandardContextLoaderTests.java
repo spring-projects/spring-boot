@@ -73,9 +73,7 @@ public class StandardContextLoaderTests {
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			this.contextLoader.systemProperty(key, "newValue").load(context -> {
-				assertThat(System.getProperties().getProperty(key)).isEqualTo("newValue");
-			});
+			this.contextLoader.systemProperty(key, "newValue").load(context -> assertThat(System.getProperties().getProperty(key)).isEqualTo("newValue"));
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 		}
 		finally {
@@ -88,9 +86,7 @@ public class StandardContextLoaderTests {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		this.contextLoader.systemProperty(key, "value").systemProperty(key, null)
-				.load(context -> {
-					assertThat(System.getProperties().containsKey(key)).isFalse();
-				});
+				.load(context -> assertThat(System.getProperties().containsKey(key)).isFalse());
 	}
 
 	@Test
@@ -197,9 +193,7 @@ public class StandardContextLoaderTests {
 	@Test
 	public void assertionErrorsAreAvailableAsIs() {
 		try {
-			this.contextLoader.load(context -> {
-				fail("This is expected");
-			});
+			this.contextLoader.load(context -> fail("This is expected"));
 		}
 		catch (AssertionError ex) {
 			assertThat(ex.getMessage()).isEqualTo("This is expected");

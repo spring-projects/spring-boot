@@ -50,7 +50,6 @@ import javax.servlet.ServletException;
 
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
-import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;
@@ -279,10 +278,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 						Sequence.of(ssl.getCiphers()));
 			}
 		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException(ex);
-		}
-		catch (KeyManagementException ex) {
+		catch (NoSuchAlgorithmException | KeyManagementException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -418,14 +414,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
-		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
-
-			@Override
-			public HttpHandler wrap(HttpHandler handler) {
-				return createAccessLogHandler(handler);
-			}
-
-		});
+		deploymentInfo.addInitialHandlerChainWrapper(this::createAccessLogHandler);
 	}
 
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
@@ -488,8 +477,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	private ResourceManager getDocumentRootResourceManager() {
 		File root = getCanonicalDocumentRoot();
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
-		List<URL> resourceJarUrls = new ArrayList<URL>();
-		List<ResourceManager> resourceManagers = new ArrayList<ResourceManager>();
+		List<URL> resourceJarUrls = new ArrayList<>();
+		List<ResourceManager> resourceManagers = new ArrayList<>();
 		ResourceManager rootResourceManager = root.isDirectory()
 				? new FileResourceManager(root, 0) : new JarResourceManager(root);
 		resourceManagers.add(rootResourceManager);

@@ -21,10 +21,8 @@ import java.util.Map;
 
 import org.openqa.selenium.WebDriver;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.context.ApplicationContext;
@@ -116,23 +114,17 @@ class WebDriverScope implements Scope {
 		if (beanFactory.getRegisteredScope(NAME) == null) {
 			beanFactory.registerScope(NAME, new WebDriverScope());
 		}
-		context.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
-
-			@Override
-			public void postProcessBeanFactory(
-					ConfigurableListableBeanFactory beanFactory) throws BeansException {
-				for (String beanClass : BEAN_CLASSES) {
-					for (String beanName : beanFactory.getBeanNamesForType(
-							ClassUtils.resolveClassName(beanClass, null))) {
-						BeanDefinition definition = beanFactory
-								.getBeanDefinition(beanName);
-						if (!StringUtils.hasLength(definition.getScope())) {
-							definition.setScope(NAME);
-						}
+		context.addBeanFactoryPostProcessor(beanFactory1 -> {
+			for (String beanClass : BEAN_CLASSES) {
+				for (String beanName : beanFactory1.getBeanNamesForType(
+						ClassUtils.resolveClassName(beanClass, null))) {
+					BeanDefinition definition = beanFactory1
+							.getBeanDefinition(beanName);
+					if (!StringUtils.hasLength(definition.getScope())) {
+						definition.setScope(NAME);
 					}
 				}
 			}
-
 		});
 	}
 

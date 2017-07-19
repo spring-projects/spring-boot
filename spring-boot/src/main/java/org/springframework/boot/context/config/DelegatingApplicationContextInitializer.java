@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -110,7 +109,7 @@ public class DelegatingApplicationContextInitializer implements
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void applyInitializers(ConfigurableApplicationContext context,
 			List<ApplicationContextInitializer<?>> initializers) {
-		Collections.sort(initializers, new AnnotationAwareOrderComparator());
+		initializers.sort(new AnnotationAwareOrderComparator());
 		for (ApplicationContextInitializer initializer : initializers) {
 			initializer.initialize(context);
 		}

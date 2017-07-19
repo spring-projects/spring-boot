@@ -56,10 +56,8 @@ public class WebTestClientAutoConfiguration {
 		Collection<CodecCustomizer> codecCustomizers = applicationContext
 				.getBeansOfType(CodecCustomizer.class).values();
 		if (!CollectionUtils.isEmpty(codecCustomizers)) {
-			builder.exchangeStrategies(ExchangeStrategies.builder().codecs((codecs) -> {
-				codecCustomizers
-						.forEach((codecCustomizer) -> codecCustomizer.customize(codecs));
-			}).build());
+			builder.exchangeStrategies(ExchangeStrategies.builder().codecs((codecs) -> codecCustomizers
+					.forEach((codecCustomizer) -> codecCustomizer.customize(codecs))).build());
 		}
 	}
 

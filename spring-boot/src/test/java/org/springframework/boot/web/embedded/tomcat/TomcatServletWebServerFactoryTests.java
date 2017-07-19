@@ -316,24 +316,19 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
-		doWithBlockedPort(new BlockedPortAction() {
+		doWithBlockedPort(port -> {
+			TomcatServletWebServerFactory factory = getFactory();
+			factory.setPort(port);
 
-			@Override
-			public void run(int port) {
-				TomcatServletWebServerFactory factory = getFactory();
-				factory.setPort(port);
-
-				try {
-					TomcatServletWebServerFactoryTests.this.webServer = factory
-							.getWebServer();
-					TomcatServletWebServerFactoryTests.this.webServer.start();
-					fail();
-				}
-				catch (WebServerException ex) {
-					// Ignore
-				}
+			try {
+				TomcatServletWebServerFactoryTests.this.webServer = factory
+						.getWebServer();
+				TomcatServletWebServerFactoryTests.this.webServer.start();
+				fail();
 			}
-
+			catch (WebServerException ex) {
+				// Ignore
+			}
 		});
 	}
 

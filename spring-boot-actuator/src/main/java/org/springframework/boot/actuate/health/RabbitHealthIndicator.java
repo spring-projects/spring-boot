@@ -18,9 +18,6 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Map;
 
-import com.rabbitmq.client.Channel;
-
-import org.springframework.amqp.rabbit.core.ChannelCallback;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.util.Assert;
 
@@ -46,13 +43,10 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	private String getVersion() {
-		return this.rabbitTemplate.execute(new ChannelCallback<String>() {
-			@Override
-			public String doInRabbit(Channel channel) throws Exception {
-				Map<String, Object> serverProperties = channel.getConnection()
-						.getServerProperties();
-				return serverProperties.get("version").toString();
-			}
+		return this.rabbitTemplate.execute(channel -> {
+			Map<String, Object> serverProperties = channel.getConnection()
+					.getServerProperties();
+			return serverProperties.get("version").toString();
 		});
 	}
 

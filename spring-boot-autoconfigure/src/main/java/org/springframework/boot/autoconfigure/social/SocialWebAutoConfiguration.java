@@ -140,12 +140,7 @@ public class SocialWebAutoConfiguration {
 
 		@Override
 		public UserIdSource getUserIdSource() {
-			return new UserIdSource() {
-				@Override
-				public String getUserId() {
-					return "anonymous";
-				}
-			};
+			return () -> "anonymous";
 		}
 
 	}

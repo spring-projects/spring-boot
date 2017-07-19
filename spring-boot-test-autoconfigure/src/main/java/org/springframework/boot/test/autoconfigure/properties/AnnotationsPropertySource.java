@@ -60,7 +60,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private Map<String, Object> getProperties(Class<?> source) {
 		Map<String, Object> properties = new LinkedHashMap<>();
-		collectProperties(source, source, properties, new HashSet<Class<?>>());
+		collectProperties(source, source, properties, new HashSet<>());
 		return Collections.unmodifiableMap(properties);
 	}
 

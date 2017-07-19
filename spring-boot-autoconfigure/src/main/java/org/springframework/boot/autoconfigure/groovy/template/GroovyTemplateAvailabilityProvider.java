@@ -41,7 +41,7 @@ public class GroovyTemplateAvailabilityProvider
 	static final class GroovyTemplateAvailabilityProperties
 			extends TemplateAvailabilityProperties {
 
-		private List<String> resourceLoaderPath = new ArrayList<String>(
+		private List<String> resourceLoaderPath = new ArrayList<>(
 				Arrays.asList(GroovyTemplateProperties.DEFAULT_RESOURCE_LOADER_PATH));
 
 		GroovyTemplateAvailabilityProperties() {

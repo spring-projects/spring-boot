@@ -89,7 +89,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
-		Map<String, PropertySource<?>> map = new LinkedHashMap<String, PropertySource<?>>();
+		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		for (PropertySource<?> source : getPropertySources()) {
 			extract("", map, source);
 		}

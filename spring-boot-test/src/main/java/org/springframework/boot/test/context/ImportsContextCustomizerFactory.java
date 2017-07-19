@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.context;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,6 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
  * {@link ContextCustomizerFactory} to allow {@code @Import} annotations to be used
@@ -49,15 +47,9 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	}
 
 	private void assertHasNoBeanMethods(Class<?> testClass) {
-		ReflectionUtils.doWithMethods(testClass, new MethodCallback() {
-
-			@Override
-			public void doWith(Method method) {
-				Assert.state(!AnnotatedElementUtils.isAnnotated(method, Bean.class),
-						"Test classes cannot include @Bean methods");
-			}
-
-		});
+		ReflectionUtils.doWithMethods(testClass,
+				method -> Assert.state(!AnnotatedElementUtils.isAnnotated(method, Bean.class),
+						"Test classes cannot include @Bean methods"));
 
 	}
 

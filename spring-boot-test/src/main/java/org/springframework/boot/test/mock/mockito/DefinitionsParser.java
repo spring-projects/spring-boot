@@ -29,7 +29,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,15 +59,7 @@ class DefinitionsParser {
 
 	public void parse(Class<?> source) {
 		parseElement(source);
-		ReflectionUtils.doWithFields(source, new FieldCallback() {
-
-			@Override
-			public void doWith(Field field)
-					throws IllegalArgumentException, IllegalAccessException {
-				parseElement(field);
-			}
-
-		});
+		ReflectionUtils.doWithFields(source, this::parseElement);
 	}
 
 	private void parseElement(AnnotatedElement element) {

@@ -160,7 +160,7 @@ public class GradleBuild implements TestRule {
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
-		List<String> allArguments = new ArrayList<String>();
+		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PpluginClasspath=" + pluginClasspath());
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");

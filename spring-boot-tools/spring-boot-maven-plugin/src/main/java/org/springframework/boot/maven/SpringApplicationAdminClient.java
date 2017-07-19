@@ -73,10 +73,7 @@ class SpringApplicationAdminClient {
 			throw new MojoExecutionException("Failed to retrieve Ready attribute",
 					ex.getCause());
 		}
-		catch (MBeanException ex) {
-			throw new MojoExecutionException(ex.getMessage(), ex);
-		}
-		catch (IOException ex) {
+		catch (MBeanException | IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 	}

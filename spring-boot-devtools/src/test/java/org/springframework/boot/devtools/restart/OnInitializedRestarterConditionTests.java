@@ -67,14 +67,7 @@ public class OnInitializedRestarterConditionTests {
 
 	@Test
 	public void initialized() throws Exception {
-		Thread thread = new Thread() {
-
-			@Override
-			public void run() {
-				TestInitialized.main();
-			};
-
-		};
+		Thread thread = new Thread(TestInitialized::main);
 		thread.start();
 		synchronized (wait) {
 			wait.wait();

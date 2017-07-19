@@ -119,12 +119,7 @@ public class Shell {
 	}
 
 	private void attachSignalHandler() {
-		SignalUtils.attachSignalHandler(new Runnable() {
-			@Override
-			public void run() {
-				handleSigInt();
-			}
-		});
+		SignalUtils.attachSignalHandler(this::handleSigInt);
 	}
 
 	/**

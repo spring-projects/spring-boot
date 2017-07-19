@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
-import java.util.function.Consumer;
-
 /**
  * Fast writes to in-memory metrics store using {@link GaugeBuffer}.
  *
@@ -27,12 +25,9 @@ import java.util.function.Consumer;
 public class GaugeBuffers extends Buffers<GaugeBuffer> {
 
 	public void set(final String name, final double value) {
-		doWith(name, new Consumer<GaugeBuffer>() {
-			@Override
-			public void accept(GaugeBuffer buffer) {
-				buffer.setTimestamp(System.currentTimeMillis());
-				buffer.setValue(value);
-			}
+		doWith(name, buffer -> {
+			buffer.setTimestamp(System.currentTimeMillis());
+			buffer.setValue(value);
 		});
 	}
 

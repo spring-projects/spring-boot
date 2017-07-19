@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -230,12 +228,7 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(new RequestMatcher() {
-				@Override
-				public boolean matches(HttpServletRequest request) {
-					return false;
-				}
-			});
+			http.requestMatcher(request -> false);
 		}
 
 	}

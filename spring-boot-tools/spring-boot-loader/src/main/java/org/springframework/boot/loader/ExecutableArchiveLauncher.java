@@ -22,8 +22,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
-import org.springframework.boot.loader.archive.Archive.Entry;
-import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * Base class for executable archive {@link Launcher}s.
@@ -69,14 +67,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
 		List<Archive> archives = new ArrayList<>(
-				this.archive.getNestedArchives(new EntryFilter() {
-
-					@Override
-					public boolean matches(Entry entry) {
-						return isNestedArchive(entry);
-					}
-
-				}));
+				this.archive.getNestedArchives(this::isNestedArchive));
 		postProcessClassPathArchives(archives);
 		return archives;
 	}

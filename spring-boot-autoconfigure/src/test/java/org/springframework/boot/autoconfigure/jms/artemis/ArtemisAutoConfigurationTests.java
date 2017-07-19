@@ -23,7 +23,6 @@ import java.util.UUID;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
@@ -47,7 +46,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
@@ -232,13 +230,8 @@ public class ArtemisAutoConfigurationTests {
 				.load(context -> {
 
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-					jmsTemplate.send("TestQueue", new MessageCreator() {
-						@Override
-						public Message createMessage(Session session)
-								throws JMSException {
-							return session.createTextMessage(msgId);
-						}
-					});
+					jmsTemplate.send("TestQueue",
+							session -> session.createTextMessage(msgId));
 				});
 
 		// Start the server again and check if our message is still here
@@ -255,26 +248,24 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void severalEmbeddedBrokers() {
 		this.contextLoader.config(EmptyConfiguration.class)
-				.env("spring.artemis.embedded.queues=Queue1").load(rootContext -> {
-					this.contextLoader.env("spring.artemis.embedded.queues=Queue2")
-							.load(anotherContext -> {
-						ArtemisProperties properties = rootContext
-								.getBean(ArtemisProperties.class);
-						ArtemisProperties anotherProperties = anotherContext
-								.getBean(ArtemisProperties.class);
-						assertThat(
-								properties.getEmbedded().getServerId() < anotherProperties
-										.getEmbedded().getServerId()).isTrue();
-						DestinationChecker checker = new DestinationChecker(
-								anotherContext);
-						checker.checkQueue("Queue1", true);
-						checker.checkQueue("Queue2", true);
-						DestinationChecker anotherChecker = new DestinationChecker(
-								anotherContext);
-						anotherChecker.checkQueue("Queue2", true);
-						anotherChecker.checkQueue("Queue1", true);
-					});
-				});
+				.env("spring.artemis.embedded.queues=Queue1").load(rootContext -> this.contextLoader.env("spring.artemis.embedded.queues=Queue2")
+						.load(anotherContext -> {
+					ArtemisProperties properties = rootContext
+							.getBean(ArtemisProperties.class);
+					ArtemisProperties anotherProperties = anotherContext
+							.getBean(ArtemisProperties.class);
+					assertThat(
+							properties.getEmbedded().getServerId() < anotherProperties
+									.getEmbedded().getServerId()).isTrue();
+					DestinationChecker checker = new DestinationChecker(
+							anotherContext);
+					checker.checkQueue("Queue1", true);
+					checker.checkQueue("Queue2", true);
+					DestinationChecker anotherChecker = new DestinationChecker(
+							anotherContext);
+					anotherChecker.checkQueue("Queue2", true);
+					anotherChecker.checkQueue("Queue1", true);
+				}));
 	}
 
 	@Test
@@ -282,26 +273,24 @@ public class ArtemisAutoConfigurationTests {
 		this.contextLoader.config(EmptyConfiguration.class)
 				.env("spring.artemis.embedded.serverId=93",
 						"spring.artemis.embedded.queues=Queue1")
-				.load(context -> {
-					this.contextLoader.config(EmptyConfiguration.class).env(
-							"spring.artemis.mode=embedded",
-							"spring.artemis.embedded.serverId=93", /*
-																	 * Connect to the
-																	 * "main" broker
-																	 */
-							"spring.artemis.embedded.enabled=false" /*
-																	 * do not start a
-																	 * specific one
-																	 */)
-							.load(anotherContext -> {
-						DestinationChecker checker = new DestinationChecker(context);
-						checker.checkQueue("Queue1", true);
+				.load(context -> this.contextLoader.config(EmptyConfiguration.class).env(
+						"spring.artemis.mode=embedded",
+						"spring.artemis.embedded.serverId=93", /*
+																 * Connect to the
+																 * "main" broker
+																 */
+						"spring.artemis.embedded.enabled=false" /*
+																 * do not start a
+																 * specific one
+																 */)
+						.load(anotherContext -> {
+					DestinationChecker checker = new DestinationChecker(context);
+					checker.checkQueue("Queue1", true);
 
-						DestinationChecker anotherChecker = new DestinationChecker(
-								anotherContext);
-						anotherChecker.checkQueue("Queue1", true);
-					});
-				});
+					DestinationChecker anotherChecker = new DestinationChecker(
+							anotherContext);
+					anotherChecker.checkQueue("Queue1", true);
+				}));
 	}
 
 	private TransportConfiguration assertInVmConnectionFactory(
@@ -353,25 +342,22 @@ public class ArtemisAutoConfigurationTests {
 
 		public void checkDestination(final String name, final boolean pubSub,
 				final boolean shouldExist) {
-			this.jmsTemplate.execute(new SessionCallback<Void>() {
-				@Override
-				public Void doInJms(Session session) throws JMSException {
-					try {
-						Destination destination = DestinationChecker.this.destinationResolver
-								.resolveDestinationName(session, name, pubSub);
-						if (!shouldExist) {
-							throw new IllegalStateException("Destination '" + name
-									+ "' was not expected but got " + destination);
-						}
+			this.jmsTemplate.execute((SessionCallback<Void>) session -> {
+				try {
+					Destination destination = DestinationChecker.this.destinationResolver
+							.resolveDestinationName(session, name, pubSub);
+					if (!shouldExist) {
+						throw new IllegalStateException("Destination '" + name
+								+ "' was not expected but got " + destination);
 					}
-					catch (JMSException e) {
-						if (shouldExist) {
-							throw new IllegalStateException("Destination '" + name
-									+ "' was expected but got " + e.getMessage());
-						}
-					}
-					return null;
 				}
+				catch (JMSException e) {
+					if (shouldExist) {
+						throw new IllegalStateException("Destination '" + name
+								+ "' was expected but got " + e.getMessage());
+					}
+				}
+				return null;
 			});
 		}
 
@@ -425,13 +411,9 @@ public class ArtemisAutoConfigurationTests {
 
 		@Bean
 		public ArtemisConfigurationCustomizer myArtemisCustomize() {
-			return new ArtemisConfigurationCustomizer() {
-				@Override
-				public void customize(
-						org.apache.activemq.artemis.core.config.Configuration configuration) {
-					configuration.setClusterPassword("Foobar");
-					configuration.setName("customFooBar");
-				}
+			return configuration -> {
+				configuration.setClusterPassword("Foobar");
+				configuration.setName("customFooBar");
 			};
 		}
 

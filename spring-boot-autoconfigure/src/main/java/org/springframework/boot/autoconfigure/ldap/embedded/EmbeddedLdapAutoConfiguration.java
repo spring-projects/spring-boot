@@ -181,8 +181,7 @@ public class EmbeddedLdapAutoConfiguration {
 	private Map<String, Object> getLdapPorts(MutablePropertySources sources) {
 		PropertySource<?> propertySource = sources.get(PROPERTY_SOURCE_NAME);
 		if (propertySource == null) {
-			propertySource = new MapPropertySource(PROPERTY_SOURCE_NAME,
-					new HashMap<String, Object>());
+			propertySource = new MapPropertySource(PROPERTY_SOURCE_NAME, new HashMap<>());
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();

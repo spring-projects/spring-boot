@@ -23,7 +23,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -35,9 +34,6 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
-import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -80,13 +76,7 @@ public class JobLauncherCommandLineRunnerTests {
 		PlatformTransactionManager transactionManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		this.steps = new StepBuilderFactory(jobRepository, transactionManager);
-		this.step = this.steps.get("step").tasklet(new Tasklet() {
-			@Override
-			public RepeatStatus execute(StepContribution contribution,
-					ChunkContext chunkContext) throws Exception {
-				return null;
-			}
-		}).build();
+		this.step = this.steps.get("step").tasklet((contribution, chunkContext) -> null).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
 		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher,
@@ -115,12 +105,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecution() throws Exception {
 		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
+				.start(this.steps.get("step").tasklet((contribution, chunkContext) -> {
+					throw new RuntimeException("Planned");
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
@@ -130,12 +116,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecutionOnNonRestartableJob() throws Exception {
 		this.job = this.jobs.get("job").preventRestart()
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
+				.start(this.steps.get("step").tasklet((contribution, chunkContext) -> {
+					throw new RuntimeException("Planned");
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
@@ -147,12 +129,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
 		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
+				.start(this.steps.get("step").tasklet((contribution, chunkContext) -> {
+					throw new RuntimeException("Planned");
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
 				.addLong("foo", 2L, false).toJobParameters();

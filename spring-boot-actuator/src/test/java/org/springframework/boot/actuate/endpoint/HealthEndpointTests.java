@@ -61,13 +61,7 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
 		@Bean
 		public HealthIndicator statusHealthIndicator() {
-			return new HealthIndicator() {
-
-				@Override
-				public Health health() {
-					return new Health.Builder().status("FINE").build();
-				}
-			};
+			return () -> new Health.Builder().status("FINE").build();
 		}
 
 		@Bean

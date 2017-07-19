@@ -101,12 +101,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 		@Bean
 		public MetricsEndpoint endpoint() {
 			final Metric<Float> metric = new Metric<>("a", 0.5f);
-			PublicMetrics metrics = new PublicMetrics() {
-				@Override
-				public Collection<Metric<?>> metrics() {
-					return Collections.<Metric<?>>singleton(metric);
-				}
-			};
+			PublicMetrics metrics = () -> Collections.<Metric<?>>singleton(metric);
 			return new MetricsEndpoint(metrics);
 		}
 

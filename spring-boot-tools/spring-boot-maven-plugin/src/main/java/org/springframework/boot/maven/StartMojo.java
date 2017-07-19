@@ -94,11 +94,7 @@ public class StartMojo extends AbstractRunMojo {
 		try {
 			waitForSpringApplication();
 		}
-		catch (MojoExecutionException ex) {
-			runProcess.kill();
-			throw ex;
-		}
-		catch (MojoFailureException ex) {
+		catch (MojoExecutionException | MojoFailureException ex) {
 			runProcess.kill();
 			throw ex;
 		}
@@ -232,14 +228,7 @@ public class StartMojo extends AbstractRunMojo {
 		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(
 				connection, this.jmxName);
 		try {
-			execute(this.wait, this.maxAttempts, new Callable<Boolean>() {
-
-				@Override
-				public Boolean call() throws Exception {
-					return (client.isReady() ? true : null);
-				}
-
-			});
+			execute(this.wait, this.maxAttempts, () -> (client.isReady() ? true : null));
 		}
 		catch (ReflectionException ex) {
 			throw new MojoExecutionException("Unable to retrieve 'ready' attribute",

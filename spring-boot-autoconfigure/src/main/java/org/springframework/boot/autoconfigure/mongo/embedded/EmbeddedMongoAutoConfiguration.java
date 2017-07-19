@@ -179,8 +179,7 @@ public class EmbeddedMongoAutoConfiguration {
 	private Map<String, Object> getMongoPorts(MutablePropertySources sources) {
 		PropertySource<?> propertySource = sources.get("mongo.ports");
 		if (propertySource == null) {
-			propertySource = new MapPropertySource("mongo.ports",
-					new HashMap<String, Object>());
+			propertySource = new MapPropertySource("mongo.ports", new HashMap<>());
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();

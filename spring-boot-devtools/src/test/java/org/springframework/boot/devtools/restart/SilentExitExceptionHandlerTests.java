@@ -81,12 +81,7 @@ public class SilentExitExceptionHandlerTests {
 		private Throwable thrown;
 
 		TestThread() {
-			setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-				@Override
-				public void uncaughtException(Thread t, Throwable e) {
-					TestThread.this.thrown = e;
-				}
-			});
+			setUncaughtExceptionHandler((t, e) -> TestThread.this.thrown = e);
 		}
 
 		public Throwable getThrown() {
@@ -119,21 +114,16 @@ public class SilentExitExceptionHandlerTests {
 		@Override
 		protected Thread[] getAllThreads() {
 			final CountDownLatch threadRunning = new CountDownLatch(1);
-			Thread daemonThread = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					synchronized (TestSilentExitExceptionHandler.this.monitor) {
-						threadRunning.countDown();
-						try {
-							TestSilentExitExceptionHandler.this.monitor.wait();
-						}
-						catch (InterruptedException ex) {
-							Thread.currentThread().interrupt();
-						}
+			Thread daemonThread = new Thread(() -> {
+				synchronized (TestSilentExitExceptionHandler.this.monitor) {
+					threadRunning.countDown();
+					try {
+						TestSilentExitExceptionHandler.this.monitor.wait();
+					}
+					catch (InterruptedException ex) {
+						Thread.currentThread().interrupt();
 					}
 				}
-
 			});
 			daemonThread.setDaemon(true);
 			daemonThread.start();

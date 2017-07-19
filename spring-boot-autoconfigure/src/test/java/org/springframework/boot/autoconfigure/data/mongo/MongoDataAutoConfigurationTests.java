@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
@@ -135,9 +134,6 @@ public class MongoDataAutoConfigurationTests {
 			fail("Create FieldNamingStrategy interface should fail");
 		}
 		// We seem to have an inconsistent exception, accept either
-		catch (UnsatisfiedDependencyException ex) {
-			// Expected
-		}
 		catch (BeanCreationException ex) {
 			// Expected
 		}

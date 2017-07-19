@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
-import javax.sql.DataSource;
-
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -41,16 +39,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
-			return new DataSourcePoolMetadataProvider() {
-				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
-					if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
-						return new TomcatDataSourcePoolMetadata(
-								(org.apache.tomcat.jdbc.pool.DataSource) dataSource);
-					}
-					return null;
+			return dataSource -> {
+				if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
+					return new TomcatDataSourcePoolMetadata(
+							(org.apache.tomcat.jdbc.pool.DataSource) dataSource);
 				}
+				return null;
 			};
 		}
 
@@ -62,16 +56,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
-			return new DataSourcePoolMetadataProvider() {
-				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
-					if (dataSource instanceof HikariDataSource) {
-						return new HikariDataSourcePoolMetadata(
-								(HikariDataSource) dataSource);
-					}
-					return null;
+			return dataSource -> {
+				if (dataSource instanceof HikariDataSource) {
+					return new HikariDataSourcePoolMetadata(
+							(HikariDataSource) dataSource);
 				}
+				return null;
 			};
 		}
 
@@ -83,16 +73,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
-			return new DataSourcePoolMetadataProvider() {
-				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
-					if (dataSource instanceof BasicDataSource) {
-						return new CommonsDbcp2DataSourcePoolMetadata(
-								(BasicDataSource) dataSource);
-					}
-					return null;
+			return dataSource -> {
+				if (dataSource instanceof BasicDataSource) {
+					return new CommonsDbcp2DataSourcePoolMetadata(
+							(BasicDataSource) dataSource);
 				}
+				return null;
 			};
 		}
 

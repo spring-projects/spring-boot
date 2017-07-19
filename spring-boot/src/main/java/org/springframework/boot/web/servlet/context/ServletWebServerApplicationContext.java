@@ -203,12 +203,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 * @see #prepareWebApplicationContext(ServletContext)
 	 */
 	private org.springframework.boot.web.servlet.ServletContextInitializer getSelfInitializer() {
-		return new ServletContextInitializer() {
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				selfInitialize(servletContext);
-			}
-		};
+		return this::selfInitialize;
 	}
 
 	private void selfInitialize(ServletContext servletContext) throws ServletException {
@@ -273,13 +268,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 						+ elapsedTime + " ms");
 			}
 		}
-		catch (RuntimeException ex) {
-			logger.error("Context initialization failed", ex);
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
-			throw ex;
-		}
-		catch (Error ex) {
+		catch (RuntimeException | Error ex) {
 			logger.error("Context initialization failed", ex);
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);

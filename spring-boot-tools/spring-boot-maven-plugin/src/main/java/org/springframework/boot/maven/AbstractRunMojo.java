@@ -371,9 +371,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			addDependencies(urls);
 			return urls.toArray(new URL[urls.size()]);
 		}
-		catch (MalformedURLException ex) {
-			throw new MojoExecutionException("Unable to build classpath", ex);
-		}
 		catch (IOException ex) {
 			throw new MojoExecutionException("Unable to build classpath", ex);
 		}

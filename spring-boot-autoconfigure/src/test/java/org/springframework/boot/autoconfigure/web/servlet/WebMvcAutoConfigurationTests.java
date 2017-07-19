@@ -133,10 +133,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void handlerMappingsCreated() {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeanNamesForType(HandlerMapping.class).length)
-					.isEqualTo(7);
-		});
+		this.contextLoader.load(context -> assertThat(context.getBeanNamesForType(HandlerMapping.class).length)
+				.isEqualTo(7));
 	}
 
 	@Test
@@ -296,9 +294,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void noLocaleResolver() throws Exception {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeansOfType(LocaleResolver.class)).isEmpty();
-		});
+		this.contextLoader.load(context -> assertThat(context.getBeansOfType(LocaleResolver.class)).isEmpty());
 	}
 
 	@Test
@@ -371,20 +367,16 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void noMessageCodesResolver() {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBean(WebMvcAutoConfigurationAdapter.class)
-					.getMessageCodesResolver()).isNull();
-		});
+		this.contextLoader.load(context -> assertThat(context.getBean(WebMvcAutoConfigurationAdapter.class)
+				.getMessageCodesResolver()).isNull());
 	}
 
 	@Test
 	public void overrideMessageCodesFormat() {
 		this.contextLoader
 				.env("spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
-		this.contextLoader.load(context -> {
-			assertThat(context.getBean(WebMvcAutoConfigurationAdapter.class)
-					.getMessageCodesResolver()).isNotNull();
-		});
+		this.contextLoader.load(context -> assertThat(context.getBean(WebMvcAutoConfigurationAdapter.class)
+				.getMessageCodesResolver()).isNotNull());
 	}
 
 	@Test
@@ -410,10 +402,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customViewResolver() {
-		this.contextLoader.config(CustomViewResolver.class).load(context -> {
-			assertThat(context.getBean("viewResolver"))
-					.isInstanceOf(MyViewResolver.class);
-		});
+		this.contextLoader.config(CustomViewResolver.class).load(context -> assertThat(context.getBean("viewResolver"))
+				.isInstanceOf(MyViewResolver.class));
 	}
 
 	@Test
@@ -443,10 +433,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void faviconMappingUsesStaticLocations() {
 		this.contextLoader.env("spring.resources.static-locations=classpath:/static");
-		this.contextLoader.load(context -> {
-			assertThat(getFaviconMappingLocations(context).get("/**/favicon.ico"))
-					.hasSize(2);
-		});
+		this.contextLoader.load(context -> assertThat(getFaviconMappingLocations(context).get("/**/favicon.ico"))
+				.hasSize(2));
 	}
 
 	@Test
@@ -492,10 +480,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void httpPutFormContentFilterIsAutoConfigured() {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
-					.hasSize(1);
-		});
+		this.contextLoader.load(context -> assertThat(context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
+				.hasSize(1));
 	}
 
 	@Test
@@ -510,37 +496,29 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void httpPutFormContentFilterCanBeDisabled() throws Exception {
 		this.contextLoader.env("spring.mvc.formcontent.putfilter.enabled=false");
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeansOfType(HttpPutFormContentFilter.class)).isEmpty();
-		});
+		this.contextLoader.load(context -> assertThat(context.getBeansOfType(HttpPutFormContentFilter.class)).isEmpty());
 	}
 
 	@Test
 	public void customConfigurableWebBindingInitializer() {
 		this.contextLoader.config(CustomConfigurableWebBindingInitializer.class);
-		this.contextLoader.load(context -> {
-			assertThat(context.getBean(RequestMappingHandlerAdapter.class)
-					.getWebBindingInitializer())
-							.isInstanceOf(CustomWebBindingInitializer.class);
-		});
+		this.contextLoader.load(context -> assertThat(context.getBean(RequestMappingHandlerAdapter.class)
+				.getWebBindingInitializer())
+						.isInstanceOf(CustomWebBindingInitializer.class));
 	}
 
 	@Test
 	public void customRequestMappingHandlerMapping() {
 		this.contextLoader.config(CustomRequestMappingHandlerMapping.class);
-		this.contextLoader.load(context -> {
-			assertThat(context.getBean(RequestMappingHandlerMapping.class))
-					.isInstanceOf(MyRequestMappingHandlerMapping.class);
-		});
+		this.contextLoader.load(context -> assertThat(context.getBean(RequestMappingHandlerMapping.class))
+				.isInstanceOf(MyRequestMappingHandlerMapping.class));
 	}
 
 	@Test
 	public void customRequestMappingHandlerAdapter() {
 		this.contextLoader.config(CustomRequestMappingHandlerAdapter.class);
-		this.contextLoader.load(context -> {
-			assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
-		});
+		this.contextLoader.load(context -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.isInstanceOf(MyRequestMappingHandlerAdapter.class));
 	}
 
 	@Test
@@ -555,18 +533,14 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void defaultLogResolvedException() {
-		this.contextLoader.load(context -> {
-			assertExceptionResolverWarnLoggers(context,
-					warnLogger -> assertThat(warnLogger).isNull());
-		});
+		this.contextLoader.load(context -> assertExceptionResolverWarnLoggers(context,
+				warnLogger -> assertThat(warnLogger).isNull()));
 	}
 
 	@Test
 	public void customLogResolvedException() {
-		this.contextLoader.env("spring.mvc.log-resolved-exception:true").load(context -> {
-			assertExceptionResolverWarnLoggers(context,
-					warnLogger -> assertThat(warnLogger).isNotNull());
-		});
+		this.contextLoader.env("spring.mvc.log-resolved-exception:true").load(context -> assertExceptionResolverWarnLoggers(context,
+				warnLogger -> assertThat(warnLogger).isNotNull()));
 	}
 
 	@Test
@@ -843,10 +817,8 @@ public class WebMvcAutoConfigurationTests {
 	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping) {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
 		if (mapping instanceof SimpleUrlHandlerMapping) {
-			((SimpleUrlHandlerMapping) mapping).getHandlerMap().forEach((key, value) -> {
-				mappingLocations.put(key, (List<Resource>) ReflectionTestUtils
-						.getField(value, "locations"));
-			});
+			((SimpleUrlHandlerMapping) mapping).getHandlerMap().forEach((key, value) -> mappingLocations.put(key, (List<Resource>) ReflectionTestUtils
+					.getField(value, "locations")));
 		}
 		return mappingLocations;
 	}

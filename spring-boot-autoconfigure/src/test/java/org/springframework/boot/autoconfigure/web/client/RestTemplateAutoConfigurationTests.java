@@ -154,13 +154,8 @@ public class RestTemplateAutoConfigurationTests {
 		}
 
 		private void breakBuilderOnNextCall(RestTemplateBuilder builder) {
-			builder.additionalCustomizers(new RestTemplateCustomizer() {
-
-				@Override
-				public void customize(RestTemplate restTemplate) {
-					throw new IllegalStateException();
-				}
-
+			builder.additionalCustomizers((RestTemplateCustomizer) restTemplate -> {
+				throw new IllegalStateException();
 			});
 		}
 

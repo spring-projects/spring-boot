@@ -26,7 +26,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -105,25 +104,22 @@ public class CliTester implements TestRule {
 			String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
-		return Executors.newSingleThreadExecutor().submit(new Callable<T>() {
-			@Override
-			public T call() throws Exception {
-				ClassLoader loader = Thread.currentThread().getContextClassLoader();
-				System.setProperty("server.port", "0");
-				System.setProperty("spring.application.class.name",
-						"org.springframework.boot.cli.CliTesterSpringApplication");
-				System.setProperty("portfile",
-						new File("target/server.port").getAbsolutePath());
-				try {
-					command.run(sources);
-					return command;
-				}
-				finally {
-					System.clearProperty("server.port");
-					System.clearProperty("spring.application.class.name");
-					System.clearProperty("portfile");
-					Thread.currentThread().setContextClassLoader(loader);
-				}
+		return Executors.newSingleThreadExecutor().submit(() -> {
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			System.setProperty("server.port", "0");
+			System.setProperty("spring.application.class.name",
+					"org.springframework.boot.cli.CliTesterSpringApplication");
+			System.setProperty("portfile",
+					new File("target/server.port").getAbsolutePath());
+			try {
+				command.run(sources);
+				return command;
+			}
+			finally {
+				System.clearProperty("server.port");
+				System.clearProperty("spring.application.class.name");
+				System.clearProperty("portfile");
+				Thread.currentThread().setContextClassLoader(loader);
 			}
 		});
 	}

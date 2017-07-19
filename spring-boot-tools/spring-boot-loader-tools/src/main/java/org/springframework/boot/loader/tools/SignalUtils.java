@@ -17,7 +17,6 @@
 package org.springframework.boot.loader.tools;
 
 import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 /**
  * Utilities for working with signal handling.
@@ -39,12 +38,7 @@ public final class SignalUtils {
 	 * @param runnable the runnable to call on SIGINT.
 	 */
 	public static void attachSignalHandler(final Runnable runnable) {
-		Signal.handle(SIG_INT, new SignalHandler() {
-			@Override
-			public void handle(Signal signal) {
-				runnable.run();
-			}
-		});
+		Signal.handle(SIG_INT, signal -> runnable.run());
 	}
 
 }

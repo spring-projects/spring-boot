@@ -62,17 +62,14 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 			return SHUTDOWN_MESSAGE;
 		}
 		finally {
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(500L);
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					ShutdownEndpoint.this.context.close();
+			Thread thread = new Thread(() -> {
+				try {
+					Thread.sleep(500L);
 				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				ShutdownEndpoint.this.context.close();
 			});
 			thread.setContextClassLoader(getClass().getClassLoader());
 			thread.start();

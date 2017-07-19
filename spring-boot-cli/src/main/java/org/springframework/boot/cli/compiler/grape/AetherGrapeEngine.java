@@ -101,12 +101,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 			return new DetailedProgressReporter(session, System.out);
 		}
 		else if ("none".equals(progressReporter)) {
-			return new ProgressReporter() {
-
-				@Override
-				public void finished() {
-
-				}
+			return () -> {
 
 			};
 		}
@@ -131,10 +126,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 				classLoader.addURL(file.toURI().toURL());
 			}
 		}
-		catch (ArtifactResolutionException ex) {
-			throw new DependencyResolutionFailedException(ex);
-		}
-		catch (MalformedURLException ex) {
+		catch (ArtifactResolutionException | MalformedURLException ex) {
 			throw new DependencyResolutionFailedException(ex);
 		}
 		return null;

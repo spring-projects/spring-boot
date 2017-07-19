@@ -53,9 +53,7 @@ public class HttpHandlerAutoConfigurationTests {
 
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
-		this.contextLoader.autoConfig(WebFluxAutoConfiguration.class).load(context -> {
-			assertThat(context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1);
-		});
+		this.contextLoader.autoConfig(WebFluxAutoConfiguration.class).load(context -> assertThat(context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1));
 	}
 
 	@Configuration

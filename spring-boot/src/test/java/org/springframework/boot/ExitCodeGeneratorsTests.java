@@ -103,16 +103,11 @@ public class ExitCodeGeneratorsTests {
 
 	private ExitCodeExceptionMapper mockMapper(final Class<?> exceptionType,
 			final int exitCode) {
-		return new ExitCodeExceptionMapper() {
-
-			@Override
-			public int getExitCode(Throwable exception) {
-				if (exceptionType.isInstance(exception)) {
-					return exitCode;
-				}
-				return 0;
+		return exception -> {
+			if (exceptionType.isInstance(exception)) {
+				return exitCode;
 			}
-
+			return 0;
 		};
 	}
 

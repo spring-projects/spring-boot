@@ -88,15 +88,10 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 
 		@Bean
 		public ApplicationListener<ContextClosedEvent> listener() {
-			return new ApplicationListener<ContextClosedEvent>() {
-
-				@Override
-				public void onApplicationEvent(ContextClosedEvent event) {
-					Config.this.threadContextClassLoader = Thread.currentThread()
-							.getContextClassLoader();
-					Config.this.latch.countDown();
-				}
-
+			return event -> {
+				Config.this.threadContextClassLoader = Thread.currentThread()
+						.getContextClassLoader();
+				Config.this.latch.countDown();
 			};
 
 		}

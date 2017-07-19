@@ -41,14 +41,7 @@ public class MetricRegistryMetricReaderTests {
 
 	@Test
 	public void nonNumberGaugesAreTolerated() {
-		this.metricRegistry.register("test", new Gauge<Set<String>>() {
-
-			@Override
-			public Set<String> getValue() {
-				return new HashSet<>();
-			}
-
-		});
+		this.metricRegistry.register("test", (Gauge<Set<String>>) HashSet::new);
 		assertThat(this.metricReader.findOne("test")).isNull();
 		this.metricRegistry.remove("test");
 		assertThat(this.metricReader.findOne("test")).isNull();
@@ -57,14 +50,7 @@ public class MetricRegistryMetricReaderTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void numberGauge() {
-		this.metricRegistry.register("test", new Gauge<Number>() {
-
-			@Override
-			public Number getValue() {
-				return Integer.valueOf(5);
-			}
-
-		});
+		this.metricRegistry.register("test", (Gauge<Number>) () -> Integer.valueOf(5));
 		Metric<Integer> metric = (Metric<Integer>) this.metricReader.findOne("test");
 		assertThat(metric.getValue()).isEqualTo(Integer.valueOf(5));
 		this.metricRegistry.remove("test");

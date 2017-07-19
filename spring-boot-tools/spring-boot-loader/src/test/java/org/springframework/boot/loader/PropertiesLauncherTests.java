@@ -266,7 +266,7 @@ public class PropertiesLauncherTests {
 	}
 
 	private List<Archive> archives() throws Exception {
-		List<Archive> archives = new ArrayList<Archive>();
+		List<Archive> archives = new ArrayList<>();
 		String path = System.getProperty("java.class.path");
 		for (String url : path.split(File.pathSeparator)) {
 			archives.add(archive(url));

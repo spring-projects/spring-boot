@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.health;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -80,7 +79,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 			return Status.UNKNOWN;
 		}
 		// Sort given Status instances by configured order
-		Collections.sort(filteredCandidates, new StatusComparator(this.statusOrder));
+		filteredCandidates.sort(new StatusComparator(this.statusOrder));
 		return filteredCandidates.get(0);
 	}
 

@@ -158,7 +158,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @return the new instance
 	 */
 	public JacksonTester<T> forView(Class<?> view) {
-		return new JacksonTester<T>(this.getResourceLoadClass(), this.getType(),
+		return new JacksonTester<>(this.getResourceLoadClass(), this.getType(),
 				this.objectMapper, view);
 	}
 

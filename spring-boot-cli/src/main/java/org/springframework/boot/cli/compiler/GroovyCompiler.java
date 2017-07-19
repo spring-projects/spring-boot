@@ -124,7 +124,7 @@ public class GroovyCompiler {
 				.load(SpringBootAstTransformation.class)) {
 			this.transformations.add(transformation);
 		}
-		Collections.sort(this.transformations, AnnotationAwareOrderComparator.INSTANCE);
+		this.transformations.sort(AnnotationAwareOrderComparator.INSTANCE);
 	}
 
 	/**

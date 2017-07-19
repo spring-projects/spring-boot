@@ -255,10 +255,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					ClassUtils.forName(type, classLoader), considerHierarchy);
 			return result;
 		}
-		catch (ClassNotFoundException ex) {
-			return Collections.emptySet();
-		}
-		catch (NoClassDefFoundError ex) {
+		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			return Collections.emptySet();
 		}
 	}

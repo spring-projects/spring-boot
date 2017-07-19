@@ -427,9 +427,7 @@ public class ConfigFileApplicationListenerTests {
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(
 				new SpringApplication(), new String[0],
 				new AnnotationConfigApplicationContext());
-		withDebugLogging(() -> {
-			this.initializer.onApplicationEvent(event);
-		});
+		withDebugLogging(() -> this.initializer.onApplicationEvent(event));
 		String log = this.out.toString();
 
 		// First make sure that each profile got processed only once

@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 import javax.sql.DataSource;
@@ -350,14 +349,8 @@ public class DataSourceInitializerTests {
 		@Override
 		public Resource[] getResources(String locationPattern) throws IOException {
 			Resource[] resources = this.resolver.getResources(locationPattern);
-			Arrays.sort(resources, new Comparator<Resource>() {
-
-				@Override
-				public int compare(Resource r1, Resource r2) {
-					return r2.getFilename().compareTo(r1.getFilename());
-				}
-
-			});
+			Arrays.sort(resources,
+					(r1, r2) -> r2.getFilename().compareTo(r1.getFilename()));
 			return resources;
 		}
 
