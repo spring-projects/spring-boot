@@ -27,7 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -45,44 +46,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions("hazelcast-client-*.jar")
 public class HazelcastAutoConfigurationServerTests {
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(HazelcastAutoConfiguration.class);
+	private final ApplicationContextTester context = new ApplicationContextTester()
+			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void defaultConfigFile() throws IOException {
 		// hazelcast.xml present in root classpath
-		this.contextLoader.load(context -> {
-			HazelcastInstance hazelcastInstance = context
-					.getBean(HazelcastInstance.class);
-			assertThat(hazelcastInstance.getConfig().getConfigurationUrl())
+		this.context.run((loaded) -> {
+			Config config = loaded.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getConfigurationUrl())
 					.isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
 		});
 	}
 
 	@Test
 	public void systemProperty() throws IOException {
-		this.contextLoader
-				.systemProperty(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY,
-						"classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
-				.load(context -> {
-
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					Map<String, QueueConfig> queueConfigs = hazelcastInstance.getConfig()
-							.getQueueConfigs();
-					assertThat(queueConfigs).hasSize(1).containsKey("foobar");
+		this.context
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
+				.run((loaded) -> {
+					Config config = loaded.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getQueueConfigs().keySet()).containsOnly("foobar");
 				});
 	}
 
 	@Test
 	public void explicitConfigFile() throws IOException {
-		this.contextLoader
-				.env("spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
+		this.context.withPropertyValues(
+				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
 						+ "hazelcast-specific.xml")
-				.load(context -> {
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					assertThat(hazelcastInstance.getConfig().getConfigurationFile())
+				.run((loaded) -> {
+					Config config = loaded.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getConfigurationFile())
 							.isEqualTo(new ClassPathResource(
 									"org/springframework/boot/autoconfigure/hazelcast"
 											+ "/hazelcast-specific.xml").getFile());
@@ -91,54 +86,53 @@ public class HazelcastAutoConfigurationServerTests {
 
 	@Test
 	public void explicitConfigUrl() throws IOException {
-		this.contextLoader.env("spring.hazelcast.config=hazelcast-default.xml")
-				.load(context -> {
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					assertThat(hazelcastInstance.getConfig().getConfigurationUrl())
-							.isEqualTo(new ClassPathResource("hazelcast-default.xml")
-									.getURL());
+		this.context.withPropertyValues("spring.hazelcast.config=hazelcast-default.xml")
+				.run((loaded) -> {
+					Config config = loaded.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getConfigurationUrl()).isEqualTo(
+							new ClassPathResource("hazelcast-default.xml").getURL());
 				});
 	}
 
 	@Test
 	public void unknownConfigFile() {
-		this.contextLoader.env("spring.hazelcast.config=foo/bar/unknown.xml").loadAndFail(
-				BeanCreationException.class,
-				ex -> assertThat(ex.getMessage()).contains("foo/bar/unknown.xml"));
+		this.context.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
+				.run((loaded) -> {
+					assertThat(loaded).getFailure()
+							.isInstanceOf(BeanCreationException.class)
+							.hasMessageContaining("foo/bar/unknown.xml");
+				});
 	}
 
 	@Test
 	public void configInstanceWithName() {
 		Config config = new Config("my-test-instance");
-		HazelcastInstance existingHazelcastInstance = Hazelcast
-				.newHazelcastInstance(config);
+		HazelcastInstance existing = Hazelcast.newHazelcastInstance(config);
 		try {
-			this.contextLoader.config(HazelcastConfigWithName.class)
-					.env("spring.hazelcast.config=this-is-ignored.xml").load(context -> {
-						HazelcastInstance hazelcastInstance = context
+			this.context.withUserConfiguration(HazelcastConfigWithName.class)
+					.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+					.run(loaded -> {
+						HazelcastInstance hazelcast = (loaded)
 								.getBean(HazelcastInstance.class);
-						assertThat(hazelcastInstance.getConfig().getInstanceName())
+						assertThat(hazelcast.getConfig().getInstanceName())
 								.isEqualTo("my-test-instance");
 						// Should reuse any existing instance by default.
-						assertThat(hazelcastInstance)
-								.isEqualTo(existingHazelcastInstance);
+						assertThat(hazelcast).isEqualTo(existing);
 					});
 		}
 		finally {
-			existingHazelcastInstance.shutdown();
+			existing.shutdown();
 		}
 	}
 
 	@Test
 	public void configInstanceWithoutName() {
-		this.contextLoader.config(HazelcastConfigNoName.class)
-				.env("spring.hazelcast.config=this-is-ignored.xml").load(context -> {
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					Map<String, QueueConfig> queueConfigs = hazelcastInstance.getConfig()
-							.getQueueConfigs();
-					assertThat(queueConfigs).hasSize(1).containsKey("another-queue");
+		this.context.withUserConfiguration(HazelcastConfigNoName.class)
+				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+				.run((loaded) -> {
+					Config config = loaded.getBean(HazelcastInstance.class).getConfig();
+					Map<String, QueueConfig> queueConfigs = config.getQueueConfigs();
+					assertThat(queueConfigs.keySet()).containsOnly("another-queue");
 				});
 	}
 

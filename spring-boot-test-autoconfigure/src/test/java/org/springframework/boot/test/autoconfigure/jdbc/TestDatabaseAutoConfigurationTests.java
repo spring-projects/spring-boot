@@ -20,7 +20,8 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,29 +38,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TestDatabaseAutoConfigurationTests {
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(TestDatabaseAutoConfiguration.class);
+	private final ApplicationContextTester context = new ApplicationContextTester()
+			.withConfiguration(
+					AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeansOfType(DataSource.class)).isEmpty();
-		});
+		this.context
+				.run((loaded) -> assertThat(loaded).doesNotHaveBean(DataSource.class));
 	}
 
 	@Test
 	public void replaceWithUniqueDatabase() {
-		this.contextLoader.config(ExistingDataSourceConfiguration.class).load(context -> {
-			DataSource datasource = context.getBean(DataSource.class);
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
-			jdbcTemplate.execute("create table example (id int, name varchar);");
-			this.contextLoader.load(anotherContext -> {
-				DataSource anotherDatasource = anotherContext.getBean(DataSource.class);
-				JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(anotherDatasource);
-				anotherJdbcTemplate
-						.execute("create table example (id int, name varchar);");
-			});
-		});
+		this.context.withUserConfiguration(ExistingDataSourceConfiguration.class)
+				.run((loaded) -> {
+					DataSource datasource = loaded.getBean(DataSource.class);
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
+					jdbcTemplate.execute("create table example (id int, name varchar);");
+					this.context.run((secondContext) -> {
+						DataSource anotherDatasource = secondContext
+								.getBean(DataSource.class);
+						JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(
+								anotherDatasource);
+						anotherJdbcTemplate
+								.execute("create table example (id int, name varchar);");
+					});
+				});
 	}
 
 	@Configuration

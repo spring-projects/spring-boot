@@ -22,8 +22,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -43,31 +44,32 @@ import static org.mockito.Mockito.mock;
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar", "derby-*.jar" })
 public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.config(ExistingDataSourceConfiguration.class)
-			.autoConfig(TestDatabaseAutoConfiguration.class);
+	private final ApplicationContextTester context = new ApplicationContextTester()
+			.withUserConfiguration(ExistingDataSourceConfiguration.class)
+			.withConfiguration(
+					AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void applyAnyReplace() {
-		this.contextLoader.loadAndFail(BeanCreationException.class, ex -> {
-			String message = ex.getMessage();
-			assertThat(message).contains(
-					"Failed to replace DataSource with an embedded database for tests.");
-			assertThat(message).contains(
-					"If you want an embedded database please put a supported one on the "
-							+ "classpath");
-			assertThat(message).contains(
-					"or tune the replace attribute of @AutoconfigureTestDatabase.");
+		this.context.run((loaded) -> {
+			assertThat(loaded).getFailure().isInstanceOf(BeanCreationException.class)
+					.hasMessageContaining(
+							"Failed to replace DataSource with an embedded database for tests.")
+					.hasMessageContaining(
+							"If you want an embedded database please put a supported one on the classpath")
+					.hasMessageContaining(
+							"or tune the replace attribute of @AutoconfigureTestDatabase.");
 		});
 	}
 
 	@Test
 	public void applyNoReplace() {
-		this.contextLoader.env("spring.test.database.replace=NONE").load(context -> {
-			assertThat(context.getBeansOfType(DataSource.class)).hasSize(1);
-			assertThat(context.getBean(DataSource.class))
-					.isSameAs(context.getBean("myCustomDataSource"));
-		});
+		this.context.withPropertyValues("spring.test.database.replace=NONE")
+				.run((loaded) -> {
+					assertThat(loaded).hasSingleBean(DataSource.class);
+					assertThat(loaded).getBean(DataSource.class)
+							.isSameAs(loaded.getBean("myCustomDataSource"));
+				});
 	}
 
 	@Configuration

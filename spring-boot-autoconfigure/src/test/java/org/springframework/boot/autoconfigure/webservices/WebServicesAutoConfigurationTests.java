@@ -16,14 +16,17 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
+import java.util.Collection;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.ServletWebContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.WebApplicationContextTester;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,52 +40,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class WebServicesAutoConfigurationTests {
 
-	private final ServletWebContextLoader contextLoader = ContextLoader.servletWeb()
-			.autoConfig(WebServicesAutoConfiguration.class);
+	private final WebApplicationContextTester context = new WebApplicationContextTester()
+			.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void defaultConfiguration() {
-		this.contextLoader.load(context -> {
-			assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		});
+		this.context.run((loaded) -> assertThat(loaded)
+				.hasSingleBean(ServletRegistrationBean.class));
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
-		this.contextLoader.env("spring.webservices.path=invalid")
-				.loadAndFail(BeanCreationException.class, (ex) -> {
-					System.out.println(ex.getMessage());
-					assertThat(ex.getMessage()).contains(
-							"Failed to bind properties under 'spring.webservices'");
+		this.context.withPropertyValues("spring.webservices.path=invalid")
+				.run((loaded) -> {
+					assertThat(loaded).getFailure()
+							.isInstanceOf(BeanCreationException.class)
+							.hasMessageContaining(
+									"Failed to bind properties under 'spring.webservices'");
 				});
 	}
 
 	@Test
 	public void customPath() {
-		this.contextLoader.env("spring.webservices.path=/valid").load(context -> {
-			ServletRegistrationBean<?> servletRegistrationBean = context
-					.getBean(ServletRegistrationBean.class);
-			assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
-		});
+		this.context.withPropertyValues("spring.webservices.path=/valid")
+				.run((loaded) -> assertThat(getUrlMappings(loaded)).contains("/valid/*"));
 	}
 
 	@Test
 	public void customPathWithTrailingSlash() {
-		this.contextLoader.env("spring.webservices.path=/valid/").load(context -> {
-			ServletRegistrationBean<?> servletRegistrationBean = context
-					.getBean(ServletRegistrationBean.class);
-			assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
-		});
+		this.context.withPropertyValues("spring.webservices.path=/valid/")
+				.run((loaded) -> assertThat(getUrlMappings(loaded)).contains("/valid/*"));
 	}
 
 	@Test
 	public void customLoadOnStartup() {
-		this.contextLoader.env("spring.webservices.servlet.load-on-startup=1")
-				.load(context -> {
-					ServletRegistrationBean<?> registrationBean = context
+		this.context.withPropertyValues("spring.webservices.servlet.load-on-startup=1")
+				.run((loaded) -> {
+					ServletRegistrationBean<?> registrationBean = loaded
 							.getBean(ServletRegistrationBean.class);
 					assertThat(ReflectionTestUtils.getField(registrationBean,
 							"loadOnStartup")).isEqualTo(1);
@@ -91,15 +88,22 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customInitParameters() {
-		this.contextLoader.env("spring.webservices.servlet.init.key1=value1",
-				"spring.webservices.servlet.init.key2=value2").load(context -> {
-					ServletRegistrationBean<?> registrationBean = context
-							.getBean(ServletRegistrationBean.class);
-					assertThat(registrationBean.getInitParameters()).containsEntry("key1",
-							"value1");
-					assertThat(registrationBean.getInitParameters()).containsEntry("key2",
-							"value2");
-				});
+		this.context
+				.withPropertyValues("spring.webservices.servlet.init.key1=value1",
+						"spring.webservices.servlet.init.key2=value2")
+				.run(loaded -> assertThat(
+						getServletRegistrationBean(loaded).getInitParameters())
+								.containsEntry("key1", "value1")
+								.containsEntry("key2", "value2"));
+	}
+
+	private Collection<String> getUrlMappings(ApplicationContext loaded) {
+		return getServletRegistrationBean(loaded).getUrlMappings();
+	}
+
+	private ServletRegistrationBean<?> getServletRegistrationBean(
+			ApplicationContext loaded) {
+		return loaded.getBean(ServletRegistrationBean.class);
 	}
 
 }
