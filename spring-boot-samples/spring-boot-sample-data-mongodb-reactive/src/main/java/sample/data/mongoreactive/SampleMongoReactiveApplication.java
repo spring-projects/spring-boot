@@ -27,39 +27,39 @@ import reactor.core.publisher.Mono;
 @SpringBootApplication
 public class SampleMongoReactiveApplication implements CommandLineRunner {
 
-    @Autowired
-    private ReactiveCustomerRepository repository;
+	@Autowired
+	private ReactiveCustomerRepository repository;
 
-    public void run(String... args) throws Exception {
-        System.out.println("Deleting all Customers");
-        this.repository.deleteAll().then().subscribe();
+	public void run(String... args) throws Exception {
+		System.out.println("Deleting all Customers");
+		this.repository.deleteAll().then().subscribe();
 
-        // save a couple of customers
-        this.repository.saveAll(
-                Flux.just(new Customer("Alice", "Smith"), new Customer("Bob", "Smith")))
-                .then().subscribe();
+		// save a couple of customers
+		this.repository.saveAll(
+				Flux.just(new Customer("Alice", "Smith"), new Customer("Bob", "Smith")))
+				.then().subscribe();
 
-        // fetch all customers
-        System.out.println("Customers found with findAll():");
-        System.out.println("-------------------------------");
+		// fetch all customers
+		System.out.println("Customers found with findAll():");
+		System.out.println("-------------------------------");
 
-        repository.findAll().subscribe(System.out::println);
+		repository.findAll().subscribe(System.out::println);
 
-        System.out.println();
+		System.out.println();
 
-        // fetch an individual customer
-        System.out.println("Customer found with findByFirstName('Alice'):");
-        System.out.println("--------------------------------");
-        this.repository.findByFirstName(Mono.just("Alice")).log()
-                .subscribe(System.out::println);
+		// fetch an individual customer
+		System.out.println("Customer found with findByFirstName('Alice'):");
+		System.out.println("--------------------------------");
+		this.repository.findByFirstName(Mono.just("Alice")).log()
+				.subscribe(System.out::println);
 
-        System.out.println("Customers found with findByLastName('Smith'):");
-        System.out.println("--------------------------------");
-        this.repository.findByLastName(Mono.just("Smith")).log()
-                .subscribe(System.out::println);
-    }
+		System.out.println("Customers found with findByLastName('Smith'):");
+		System.out.println("--------------------------------");
+		this.repository.findByLastName(Mono.just("Smith")).log()
+				.subscribe(System.out::println);
+	}
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(SampleMongoReactiveApplication.class, args);
-    }
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleMongoReactiveApplication.class, args);
+	}
 }
