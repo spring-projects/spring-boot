@@ -342,20 +342,7 @@ code.
 
 [source,java,indent=0]
 ----
-	@SpringBootApplication
-	public class ExitCodeApplication {
-
-		public static void main(String[] args) {
-			System.exit(SpringApplication.exit(
-					SpringApplication.run(ExitCodeApplication.class, args)));
-		}
-
-		@Bean
-		public ExitCodeGenerator exitCodeGenerator(){
-			return () -> 42;
-		}
-
-	}
+include::{code-examples}/ExitCodeApplication.java[tag=example]
 ----
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions. When such an
