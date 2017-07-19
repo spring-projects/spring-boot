@@ -62,6 +62,17 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
+	public void customActiveMQConnectionFactoryConfiguration() {
+		load(EmptyConfiguration.class,
+				"spring.activemq.properties.nonBlockingRedelivery:true",
+				"spring.activemq.properties.producer-window-size:10");
+		ActiveMQConnectionFactory connectionFactory = this.context
+				.getBean(ActiveMQConnectionFactory.class);
+		assertThat(connectionFactory.isNonBlockingRedelivery()).isTrue();
+		assertThat(connectionFactory.getProducerWindowSize()).isEqualTo(10);
+	}
+
+	@Test
 	public void customPooledConnectionFactoryConfiguration() {
 		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true",
 				"spring.activemq.pool.maxConnections:256",
