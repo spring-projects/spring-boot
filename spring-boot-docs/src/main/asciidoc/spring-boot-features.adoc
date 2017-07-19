@@ -561,7 +561,8 @@ Config locations are searched in reverse order. By default, the configured locat
 
 When custom config locations are configured, they are used in addition to the default
 locations. Custom locations are searched before the default locations. For example,
-if custom locations `classpath:/custom-config/,file:./custom-config/` are configured, the search order becomes:
+if custom locations `classpath:/custom-config/,file:./custom-config/` are configured,
+the search order becomes:
 
 1. `file:./custom-config/`
 2. `classpath:custom-config/`
