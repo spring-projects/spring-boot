@@ -16,26 +16,26 @@
 
 package org.springframework.boot.test.context;
 
-import org.springframework.context.ApplicationContext;
+import org.junit.Test;
+
+import org.springframework.context.ConfigurableApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * Callback interface used to process an {@link ApplicationContext} with the ability to
- * throw a (checked) exception.
+ * Tests for {@link AssertableApplicationContext}.
  *
- * @author Stephane Nicoll
- * @author Andy Wilkinson
- * @param <C> The application context type
- * @since 2.0.0
- * @see AbstractApplicationContextTester
+ * @author Phillip Webb
+ * @see AssertProviderApplicationContextTests
  */
-@FunctionalInterface
-public interface ContextConsumer<C extends ApplicationContext> {
+public class AssertableApplicationContextTests {
 
-	/**
-	 * Performs this operation on the supplied {@code context}.
-	 * @param context the application context to consume
-	 * @throws Throwable any exception that might occur in assertions
-	 */
-	void accept(C context) throws Throwable;
+	@Test
+	public void getShouldReturnProxy() {
+		AssertableApplicationContext context = AssertableApplicationContext
+				.get(() -> mock(ConfigurableApplicationContext.class));
+		assertThat(context).isInstanceOf(ConfigurableApplicationContext.class);
+	}
 
 }
