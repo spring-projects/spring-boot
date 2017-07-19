@@ -5117,20 +5117,16 @@ are not directly supported, use the following:
 [source,properties,indent=0]
 ----
 	spring.kafka.properties.foo.bar=baz
+	spring.kafka.consumer.properties.fiz.buz=qux
+	spring,kafka.producer.properties.baz.qux=fiz
 ----
 
-This sets the common `foo.bar` Kafka property to `baz`.
+This sets the common `foo.bar` Kafka property to `baz` (applies to both producers and
+consumers), the consumer `fiz.buz` property to `qux` and the `baz.qux` producer property
+to `fiz`.
 
-These properties will be shared by both the consumer and producer factory beans.
-If you wish to customize these components with different properties, such as to use a
-different metrics reader for each, you can override the bean definitions, as follows:
-
-[source,java,indent=0]
-----
-include::{code-examples}/kafka/KafkaSpecialProducerConsumerConfigExample.java[tag=configuration]
-----
-
-
+IMPORTANT: Properties set in this way will override any configuration item that Spring
+Boot explicitly supports.
 
 [[boot-features-resttemplate]]
 == Calling REST services with '`RestTemplate`'
