@@ -168,7 +168,7 @@ class AutoConfigurationSorter {
 		}
 
 		private int getOrder() {
-			if (this.autoConfigurationMetadata.wasProcessed(this.className)) {
+			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getInteger(this.className,
 						"AutoConfigureOrder", Ordered.LOWEST_PRECEDENCE);
 			}
@@ -179,7 +179,7 @@ class AutoConfigurationSorter {
 		}
 
 		private Set<String> readBefore() {
-			if (this.autoConfigurationMetadata.wasProcessed(this.className)) {
+			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureBefore", Collections.<String>emptySet());
 			}
@@ -187,11 +187,16 @@ class AutoConfigurationSorter {
 		}
 
 		private Set<String> readAfter() {
-			if (this.autoConfigurationMetadata.wasProcessed(this.className)) {
+			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureAfter", Collections.<String>emptySet());
 			}
 			return getAnnotationValue(AutoConfigureAfter.class);
+		}
+
+		private boolean wasProcessed() {
+			return (this.autoConfigurationMetadata != null
+					&& this.autoConfigurationMetadata.wasProcessed(this.className));
 		}
 
 		private Set<String> getAnnotationValue(Class<?> annotation) {
