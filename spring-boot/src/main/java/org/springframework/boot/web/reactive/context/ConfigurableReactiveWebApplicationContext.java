@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Interface to provide configuration for a reactive web application.
@@ -24,12 +24,13 @@ import org.springframework.context.ApplicationContext;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public interface ReactiveWebApplicationContext extends ApplicationContext {
+public interface ConfigurableReactiveWebApplicationContext
+		extends ConfigurableApplicationContext, ReactiveWebApplicationContext {
 
 	/**
-	 * Return the namespace for this reactive web application context, if any.
-	 * @return the namespace or {@code null}
+	 * Set the namespace for this reactive web application context.
+	 * @param namespace the namespace for the context
 	 */
-	String getNamespace();
+	void setNamespace(String namespace);
 
 }
