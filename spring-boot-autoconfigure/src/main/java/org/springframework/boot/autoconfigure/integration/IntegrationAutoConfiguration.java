@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.integration;
 
 import javax.management.MBeanServer;
+import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -25,17 +26,20 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.gateway.GatewayProxyFactoryBean;
+import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
@@ -48,10 +52,13 @@ import org.springframework.util.StringUtils;
  * @author Artem Bilan
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Vedran Pavic
+ * @author Madhura Bhave
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(EnableIntegration.class)
+@EnableConfigurationProperties(IntegrationProperties.class)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 public class IntegrationAutoConfiguration {
 
@@ -76,7 +83,7 @@ public class IntegrationAutoConfiguration {
 
 		private BeanFactory beanFactory;
 
-		private RelaxedPropertyResolver propertyResolver;
+		private Environment environment;
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -85,21 +92,20 @@ public class IntegrationAutoConfiguration {
 
 		@Override
 		public void setEnvironment(Environment environment) {
-			this.propertyResolver = new RelaxedPropertyResolver(environment,
-					"spring.jmx.");
+			this.environment = environment;
 		}
 
 		@Bean
 		public IntegrationMBeanExporter integrationMbeanExporter() {
 			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
-			String defaultDomain = this.propertyResolver.getProperty("default-domain");
+			String defaultDomain = this.environment
+					.getProperty("spring.jmx.default-domain");
 			if (StringUtils.hasLength(defaultDomain)) {
 				exporter.setDefaultDomain(defaultDomain);
 			}
-			String server = this.propertyResolver.getProperty("server", "mbeanServer");
-			if (StringUtils.hasLength(server)) {
-				exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
-			}
+			String serverBean = this.environment.getProperty("spring.jmx.server",
+					"mbeanServer");
+			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
 			return exporter;
 		}
 
@@ -128,6 +134,26 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanAutoConfiguration {
+
+	}
+
+	/**
+	 * Integration JDBC configuration.
+	 */
+	@Configuration
+	@ConditionalOnClass(JdbcMessageStore.class)
+	@ConditionalOnSingleCandidate(DataSource.class)
+	protected static class IntegrationJdbcConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "spring.integration.jdbc.initializer", name = "enabled")
+		public IntegrationDatabaseInitializer integrationDatabaseInitializer(
+				DataSource dataSource, ResourceLoader resourceLoader,
+				IntegrationProperties properties) {
+			return new IntegrationDatabaseInitializer(dataSource, resourceLoader,
+					properties);
+		}
 
 	}
 

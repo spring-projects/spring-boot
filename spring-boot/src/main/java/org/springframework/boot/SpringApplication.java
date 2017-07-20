@@ -40,9 +40,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.diagnostics.FailureAnalyzers;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -55,8 +55,6 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -67,21 +65,20 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
- * Classes that can be used to bootstrap and launch a Spring application from a Java main
+ * Class that can be used to bootstrap and launch a Spring application from a Java main
  * method. By default class will perform the following steps to bootstrap your
  * application:
  *
@@ -94,7 +91,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <li>Trigger any {@link CommandLineRunner} beans</li>
  * </ul>
  *
- * In most circumstances the static {@link #run(Object, String[])} method can be called
+ * In most circumstances the static {@link #run(Class, String[])} method can be called
  * directly from your {@literal main} method to bootstrap your application:
  *
  * <pre class="code">
@@ -116,33 +113,28 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *
  * <pre class="code">
  * public static void main(String[] args) throws Exception {
- *   SpringApplication app = new SpringApplication(MyApplication.class);
- *   // ... customize app settings here
- *   app.run(args)
+ *   SpringApplication application = new SpringApplication(MyApplication.class);
+ *   // ... customize application settings here
+ *   application.run(args)
  * }
  * </pre>
  *
  * {@link SpringApplication}s can read beans from a variety of different sources. It is
  * generally recommended that a single {@code @Configuration} class is used to bootstrap
- * your application, however, any of the following sources can also be used:
- *
+ * your application, however, you may also set {@link #getSources() sources} from:
  * <ul>
- * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}
- * </li>
- * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
- * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
- * <li>{@link Package} - A Java package to be scanned by
- * {@link ClassPathBeanDefinitionScanner}</li>
- * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
- * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
- * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
+ * <li>The fully qualified class name to be loaded by
+ * {@link AnnotatedBeanDefinitionReader}</li>
+ * <li>The location of an XML resource to be loaded by {@link XmlBeanDefinitionReader}, or
+ * a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
+ * <li>The name of a package to be scanned by {@link ClassPathBeanDefinitionScanner}</li>
  * </ul>
  *
  * Configuration properties are also bound to the {@link SpringApplication}. This makes it
- * possible to set {@link SpringApplication} properties dynamically, like the sources
- * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
- * ("spring.main.web_environment=true") or the flag to switch off the banner
- * ("spring.main.show_banner=false").
+ * possible to set {@link SpringApplication} properties dynamically, like additional
+ * sources ("spring.main.sources" - a CSV list) the flag to indicate a web environment
+ * ("spring.main.web-application-type=none") or the flag to switch off the banner
+ * ("spring.main.banner-mode=off").
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -154,9 +146,10 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Michael Simons
  * @author Madhura Bhave
  * @author Brian Clozel
- * @see #run(Object, String[])
- * @see #run(Object[], String[])
- * @see #SpringApplication(Object...)
+ * @author Ethan Rubinson
+ * @see #run(Class, String[])
+ * @see #run(Class[], String[])
+ * @see #SpringApplication(Class...)
  */
 public class SpringApplication {
 
@@ -171,18 +164,18 @@ public class SpringApplication {
 	 * The class name of application context that will be used by default for web
 	 * environments.
 	 */
-	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
+	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework.boot."
+			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
 	/**
-	 * The class name of application context that will be used by default for
-	 * reactive web environments.
+	 * The class name of application context that will be used by default for reactive web
+	 * environments.
 	 */
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.context.embedded.ReactiveWebApplicationContext";
+			+ "boot.web.reactive.context.ReactiveWebServerApplicationContext";
 
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.reactive.DispatcherHandler";
@@ -200,23 +193,13 @@ public class SpringApplication {
 	 */
 	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
 
-	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
-
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
-
-	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
-
-	static {
-		Set<String> names = new HashSet<String>();
-		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
-		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
-		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
-		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
-	}
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
-	private final Set<Object> sources = new LinkedHashSet<Object>();
+	private Set<Class<?>> primarySources;
+
+	private Set<String> sources = new LinkedHashSet<>();
 
 	private Class<?> mainApplicationClass;
 
@@ -248,41 +231,37 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private Set<String> additionalProfiles = new HashSet<String>();
+	private Set<String> additionalProfiles = new HashSet<>();
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
-	 * beans from the specified sources (see {@link SpringApplication class-level}
+	 * beans from the specified primary sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
-	 * @param sources the bean sources
-	 * @see #run(Object, String[])
-	 * @see #SpringApplication(ResourceLoader, Object...)
+	 * @param primarySources the primary bean sources
+	 * @see #run(Class, String[])
+	 * @see #SpringApplication(ResourceLoader, Class...)
+	 * @see #setSources(Set)
 	 */
-	public SpringApplication(Object... sources) {
-		initialize(sources);
+	public SpringApplication(Class<?>... primarySources) {
+		this(null, primarySources);
 	}
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
-	 * beans from the specified sources (see {@link SpringApplication class-level}
+	 * beans from the specified primary sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
 	 * @param resourceLoader the resource loader to use
-	 * @param sources the bean sources
-	 * @see #run(Object, String[])
-	 * @see #SpringApplication(ResourceLoader, Object...)
+	 * @param primarySources the primary bean sources
+	 * @see #run(Class, String[])
+	 * @see #setSources(Set)
 	 */
-	public SpringApplication(ResourceLoader resourceLoader, Object... sources) {
-		this.resourceLoader = resourceLoader;
-		initialize(sources);
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void initialize(Object[] sources) {
-		if (sources != null && sources.length > 0) {
-			this.sources.addAll(Arrays.asList(sources));
-		}
+	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+		this.resourceLoader = resourceLoader;
+		Assert.notNull(primarySources, "PrimarySources must not be null");
+		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = deduceWebApplication();
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
@@ -328,7 +307,7 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
-		FailureAnalyzers analyzers = null;
+		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
@@ -338,10 +317,11 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
-			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
-			analyzers = new FailureAnalyzers(context);
+			exceptionReporters = getSpringFactoriesInstances(
+					SpringBootExceptionReporter.class,
+					new Class[] { ConfigurableApplicationContext.class }, context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
 			refreshContext(context);
@@ -355,7 +335,7 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, listeners, analyzers, ex);
+			handleRunFailure(context, listeners, exceptionReporters, ex);
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -367,10 +347,12 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
-		if (isWebEnvironment(environment)
-				&& this.webApplicationType == WebApplicationType.NONE) {
-			environment = convertToStandardEnvironment(environment);
+		bindToSpringApplication(environment);
+		if (this.webApplicationType == WebApplicationType.NONE) {
+			environment = new EnvironmentConverter(getClassLoader())
+					.convertToStandardEnvironmentIfNecessary(environment);
 		}
+		ConfigurationPropertySources.attach(environment);
 		return environment;
 	}
 
@@ -394,7 +376,7 @@ public class SpringApplication {
 		}
 
 		// Load the sources
-		Set<Object> sources = getSources();
+		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
 		load(context, sources.toArray(new Object[sources.size()]));
 		listeners.contextLoaded(context);
@@ -423,15 +405,15 @@ public class SpringApplication {
 				SpringApplicationRunListener.class, types, this, args));
 	}
 
-	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type) {
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
 
-	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type,
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// Use names and ensure unique to protect against duplicates
-		Set<String> names = new LinkedHashSet<String>(
+		Set<String> names = new LinkedHashSet<>(
 				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes,
 				classLoader, args, names);
@@ -443,7 +425,7 @@ public class SpringApplication {
 	private <T> List<T> createSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, ClassLoader classLoader, Object[] args,
 			Set<String> names) {
-		List<T> instances = new ArrayList<T>(names.size());
+		List<T> instances = new ArrayList<>(names.size());
 		for (String name : names) {
 			try {
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
@@ -488,40 +470,6 @@ public class SpringApplication {
 		configureProfiles(environment, args);
 	}
 
-	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
-		try {
-			Class<?> webEnvironmentClass = ClassUtils
-					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
-			return (webEnvironmentClass.isInstance(environment));
-		}
-		catch (Throwable ex) {
-			return false;
-		}
-	}
-
-	private ConfigurableEnvironment convertToStandardEnvironment(
-			ConfigurableEnvironment environment) {
-		StandardEnvironment result = new StandardEnvironment();
-		removeAllPropertySources(result.getPropertySources());
-		result.setActiveProfiles(environment.getActiveProfiles());
-		for (PropertySource<?> propertySource : environment.getPropertySources()) {
-			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
-				result.getPropertySources().addLast(propertySource);
-			}
-		}
-		return result;
-	}
-
-	private void removeAllPropertySources(MutablePropertySources propertySources) {
-		Set<String> names = new HashSet<String>();
-		for (PropertySource<?> propertySource : propertySources) {
-			names.add(propertySource.getName());
-		}
-		for (String name : names) {
-			propertySources.remove(name);
-		}
-	}
-
 	/**
 	 * Add, remove or re-order any {@link PropertySource}s in this application's
 	 * environment.
@@ -542,7 +490,7 @@ public class SpringApplication {
 				PropertySource<?> source = sources.get(name);
 				CompositePropertySource composite = new CompositePropertySource(name);
 				composite.addPropertySource(new SimpleCommandLinePropertySource(
-						name + "-" + args.hashCode(), args));
+						"springApplicationCommandLineArgs", args));
 				composite.addPropertySource(source);
 				sources.replace(name, composite);
 			}
@@ -564,7 +512,7 @@ public class SpringApplication {
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
 		environment.getActiveProfiles(); // ensure they are initialized
 		// But these ones should go first (last wins in a property key clash)
-		Set<String> profiles = new LinkedHashSet<String>(this.additionalProfiles);
+		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 	}
@@ -572,9 +520,8 @@ public class SpringApplication {
 	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
 		if (System.getProperty(
 				CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME) == null) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"spring.beaninfo.");
-			Boolean ignore = resolver.getProperty("ignore", Boolean.class, Boolean.TRUE);
+			Boolean ignore = environment.getProperty("spring.beaninfo.ignore",
+					Boolean.class, Boolean.TRUE);
 			System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME,
 					ignore.toString());
 		}
@@ -585,16 +532,10 @@ public class SpringApplication {
 	 * @param environment the environment to bind
 	 */
 	protected void bindToSpringApplication(ConfigurableEnvironment environment) {
-		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<>(
-				this);
-		ConversionService conversionService = new DefaultConversionService();
-		binder.setTargetName("spring.main");
-		binder.setConversionService(conversionService);
-		binder.setPropertySources(environment.getPropertySources());
 		try {
-			binder.bindPropertiesToTarget();
+			Binder.get(environment).bind("spring.main", Bindable.ofInstance(this));
 		}
-		catch (BindException ex) {
+		catch (Exception ex) {
 			throw new IllegalStateException("Cannot bind to SpringApplication", ex);
 		}
 	}
@@ -625,14 +566,14 @@ public class SpringApplication {
 		if (contextClass == null) {
 			try {
 				switch (this.webApplicationType) {
-					case SERVLET:
-						contextClass = Class.forName(DEFAULT_WEB_CONTEXT_CLASS);
-						break;
-					case REACTIVE:
-						contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
-						break;
-					default:
-						contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);
+				case SERVLET:
+					contextClass = Class.forName(DEFAULT_WEB_CONTEXT_CLASS);
+					break;
+				case REACTIVE:
+					contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
+					break;
+				default:
+					contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);
 				}
 			}
 			catch (ClassNotFoundException ex) {
@@ -820,11 +761,11 @@ public class SpringApplication {
 	}
 
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
-		List<Object> runners = new ArrayList<Object>();
+		List<Object> runners = new ArrayList<>();
 		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
 		runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
-		for (Object runner : new LinkedHashSet<Object>(runners)) {
+		for (Object runner : new LinkedHashSet<>(runners)) {
 			if (runner instanceof ApplicationRunner) {
 				callRunner((ApplicationRunner) runner, args);
 			}
@@ -853,7 +794,8 @@ public class SpringApplication {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
-			SpringApplicationRunListeners listeners, FailureAnalyzers analyzers,
+			SpringApplicationRunListeners listeners,
+			Collection<SpringBootExceptionReporter> exceptionReporters,
 			Throwable exception) {
 		try {
 			try {
@@ -861,7 +803,7 @@ public class SpringApplication {
 				listeners.finished(context, exception);
 			}
 			finally {
-				reportFailure(analyzers, exception);
+				reportFailure(exceptionReporters, exception);
 				if (context != null) {
 					context.close();
 				}
@@ -873,11 +815,14 @@ public class SpringApplication {
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
 
-	private void reportFailure(FailureAnalyzers analyzers, Throwable failure) {
+	private void reportFailure(Collection<SpringBootExceptionReporter> exceptionReporters,
+			Throwable failure) {
 		try {
-			if (analyzers != null && analyzers.analyzeAndReport(failure)) {
-				registerLoggedException(failure);
-				return;
+			for (SpringBootExceptionReporter reporter : exceptionReporters) {
+				if (reporter.reportException(failure)) {
+					registerLoggedException(failure);
+					return;
+				}
 			}
 		}
 		catch (Throwable ex) {
@@ -1090,7 +1035,7 @@ public class SpringApplication {
 	 * @param defaultProperties some {@link Properties}
 	 */
 	public void setDefaultProperties(Properties defaultProperties) {
-		this.defaultProperties = new HashMap<String, Object>();
+		this.defaultProperties = new HashMap<>();
 		for (Object key : Collections.list(defaultProperties.propertyNames())) {
 			this.defaultProperties.put((String) key, defaultProperties.get(key));
 		}
@@ -1102,7 +1047,7 @@ public class SpringApplication {
 	 * @param profiles the additional profiles to set
 	 */
 	public void setAdditionalProfiles(String... profiles) {
-		this.additionalProfiles = new LinkedHashSet<String>(Arrays.asList(profiles));
+		this.additionalProfiles = new LinkedHashSet<>(Arrays.asList(profiles));
 	}
 
 	/**
@@ -1123,29 +1068,67 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Add additional items to the primary sources that will be added to an
+	 * ApplicationContext when {@link #run(String...)} is called.
+	 * <p>
+	 * The sources here are added to those that were set in the constructor. Most users
+	 * should consider using {@link #getSources()}/{@link #setSources(Set)} rather than
+	 * calling this method.
+	 * @param additionalPrimarySources the additional primary sources to add
+	 * @see #SpringApplication(Class...)
+	 * @see #getSources()
+	 * @see #setSources(Set)
+	 * @see #getAllSources()
+	 */
+	public void addPrimarySources(Collection<Class<?>> additionalPrimarySources) {
+		this.primarySources.addAll(additionalPrimarySources);
+	}
+
+	/**
 	 * Returns a mutable set of the sources that will be added to an ApplicationContext
 	 * when {@link #run(String...)} is called.
-	 * @return the sources the application sources.
-	 * @see #SpringApplication(Object...)
+	 * <p>
+	 * Sources set here will be used in addition to any primary sources set in the
+	 * constructor.
+	 * @return the application sources.
+	 * @see #SpringApplication(Class...)
+	 * @see #getAllSources()
 	 */
-	public Set<Object> getSources() {
+	public Set<String> getSources() {
 		return this.sources;
 	}
 
 	/**
-	 * The sources that will be used to create an ApplicationContext. A valid source is
-	 * one of: a class, class name, package, package name, or an XML resource location.
-	 * Can also be set using constructors and static convenience methods (e.g.
-	 * {@link #run(Object[], String[])}).
+	 * Set additional sources that will be used to create an ApplicationContext. A source
+	 * can be: a class name, package name, or an XML resource location.
 	 * <p>
-	 * NOTE: sources defined here will be used in addition to any sources specified on
-	 * construction.
-	 * @param sources the sources to set
-	 * @see #SpringApplication(Object...)
+	 * Sources set here will be used in addition to any primary sources set in the
+	 * constructor.
+	 * @param sources the application sources to set
+	 * @see #SpringApplication(Class...)
+	 * @see #getAllSources()
 	 */
-	public void setSources(Set<Object> sources) {
+	public void setSources(Set<String> sources) {
 		Assert.notNull(sources, "Sources must not be null");
-		this.sources.addAll(sources);
+		this.sources = new LinkedHashSet<>(sources);
+	}
+
+	/**
+	 * Return an immutable set of all the sources that will be added to an
+	 * ApplicationContext when {@link #run(String...)} is called. This method combines any
+	 * primary sources specified in the constructor with any additional ones that have
+	 * been {@link #setSources(Set) explicitly set}.
+	 * @return an immutable set of all sources
+	 */
+	public Set<Object> getAllSources() {
+		Set<Object> allSources = new LinkedHashSet<>();
+		if (!CollectionUtils.isEmpty(this.primarySources)) {
+			allSources.addAll(this.primarySources);
+		}
+		if (!CollectionUtils.isEmpty(this.sources)) {
+			allSources.addAll(this.sources);
+		}
+		return Collections.unmodifiableSet(allSources);
 	}
 
 	/**
@@ -1187,7 +1170,7 @@ public class SpringApplication {
 	 */
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
-		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		this.initializers = new ArrayList<>();
 		this.initializers.addAll(initializers);
 	}
 
@@ -1215,7 +1198,7 @@ public class SpringApplication {
 	 * @param listeners the listeners to set
 	 */
 	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
-		this.listeners = new ArrayList<ApplicationListener<?>>();
+		this.listeners = new ArrayList<>();
 		this.listeners.addAll(listeners);
 	}
 
@@ -1241,23 +1224,25 @@ public class SpringApplication {
 	/**
 	 * Static helper that can be used to run a {@link SpringApplication} from the
 	 * specified source using default settings.
-	 * @param source the source to load
+	 * @param primarySource the primary source to load
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
-	public static ConfigurableApplicationContext run(Object source, String... args) {
-		return run(new Object[] { source }, args);
+	public static ConfigurableApplicationContext run(Class<?> primarySource,
+			String... args) {
+		return run(new Class<?>[] { primarySource }, args);
 	}
 
 	/**
 	 * Static helper that can be used to run a {@link SpringApplication} from the
 	 * specified sources using default settings and user supplied arguments.
-	 * @param sources the sources to load
+	 * @param primarySources the primary sources to load
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
-	public static ConfigurableApplicationContext run(Object[] sources, String[] args) {
-		return new SpringApplication(sources).run(args);
+	public static ConfigurableApplicationContext run(Class<?>[] primarySources,
+			String[] args) {
+		return new SpringApplication(primarySources).run(args);
 	}
 
 	/**
@@ -1265,15 +1250,15 @@ public class SpringApplication {
 	 * application sources are defined via a {@literal --spring.main.sources} command line
 	 * argument.
 	 * <p>
-	 * Most developers will want to define their own main method can call the
-	 * {@link #run(Object, String...) run} method instead.
+	 * Most developers will want to define their own main method and call the
+	 * {@link #run(Class, String...) run} method instead.
 	 * @param args command line arguments
 	 * @throws Exception if the application cannot be started
-	 * @see SpringApplication#run(Object[], String[])
-	 * @see SpringApplication#run(Object, String...)
+	 * @see SpringApplication#run(Class[], String[])
+	 * @see SpringApplication#run(Class, String...)
 	 */
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(new Object[0], args);
+		SpringApplication.run(new Class<?>[0], args);
 	}
 
 	/**
@@ -1322,10 +1307,10 @@ public class SpringApplication {
 	}
 
 	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
-		List<E> list = new ArrayList<E>();
+		List<E> list = new ArrayList<>();
 		list.addAll(elements);
 		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
-		return new LinkedHashSet<E>(list);
+		return new LinkedHashSet<>(list);
 	}
 
 }

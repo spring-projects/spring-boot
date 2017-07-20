@@ -73,7 +73,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * If you are using the
  * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest}
  * annotation, a {@link TestRestTemplate} is automatically available and can be
- * {@code @Autowired} into you test. If you need customizations (for example to adding
+ * {@code @Autowired} into your test. If you need customizations (for example to adding
  * additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
  *
  * @author Dave Syer
@@ -148,7 +148,7 @@ public class TestRestTemplate {
 		if (interceptors == null) {
 			interceptors = Collections.emptyList();
 		}
-		interceptors = new ArrayList<ClientHttpRequestInterceptor>(interceptors);
+		interceptors = new ArrayList<>(interceptors);
 		Iterator<ClientHttpRequestInterceptor> iterator = interceptors.iterator();
 		while (iterator.hasNext()) {
 			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
@@ -1063,7 +1063,7 @@ public class TestRestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(
 				HttpClientOption[] httpClientOptions) {
-			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
+			Set<HttpClientOption> options = new HashSet<>(
 					Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
 					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);

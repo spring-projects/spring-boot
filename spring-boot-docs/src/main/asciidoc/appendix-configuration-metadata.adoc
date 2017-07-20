@@ -205,23 +205,30 @@ contain the following attributes:
 |===
 |Name | Type |Purpose
 
+|`level`
+|String
+|The level of deprecation, can be either `warning` (default) or `error`. When a property
+ has a `warning` deprecation level it should still be bound in the environment. When it
+ has an `error` deprecation level however, the property is no longer managed and will not
+ be bound.
+
 |`reason`
-| String
-| A short description of the reason why the property was deprecated. May be omitted if no
-  reason is available. It is recommended that descriptions are a short paragraphs,
-  with the first line providing a concise summary. The last line in the description should
-  end with a period (`.`).
+|String
+|A short description of the reason why the property was deprecated. May be omitted if no
+ reason is available. It is recommended that descriptions are a short paragraphs,
+ with the first line providing a concise summary. The last line in the description should
+ end with a period (`.`).
 
 |`replacement`
-| String
-| The full name of the property that is _replacing_ this deprecated property. May be omitted
-  if there is no replacement for this property.
+|String
+|The full name of the property that is _replacing_ this deprecated property. May be omitted
+ if there is no replacement for this property.
 |===
 
-NOTE: Prior to Spring Boot 1.3, a single `deprecated` boolean attribute can be used instead of
-the `deprecation` element. This is still supported in a deprecated fashion and should no longer
-be used. If no reason and replacement are available, an empty `deprecation` object should be
-set.
+NOTE: Prior to Spring Boot 1.3, a single `deprecated` boolean attribute can be used
+instead of the `deprecation` element. This is still supported in a deprecated fashion and
+should no longer be used. If no reason and replacement are available, an empty
+`deprecation` object should be set.
 
 Deprecation can also be specified declaratively in code by adding the
 `@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated
@@ -252,10 +259,15 @@ was renamed to `app.foo.name`
 	}
 ----
 
+NOTE: There is no way to set a `level` as `warning` is always assumed since code is still
+handling the property.
+
 The code above makes sure that the deprecated property still works (delegating
 to the `name` property behind the scenes). Once the `getTarget` and `setTarget`
 methods can be removed from your public API, the automatic deprecation hint in the
-meta-data will go away as well.
+meta-data will go away as well. If you want to keep a hint, adding manual meta-data with
+an `error` deprecation level ensures that users are still informed about that property and
+is particularly useful when a `replacement` is provided.
 
 
 
@@ -719,7 +731,7 @@ an optional dependency, for example with Maven you would add:
 	</dependency>
 ----
 
-With Gradle, you can use the https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin[propdeps-plugin]
+With Gradle, you can use the https://github.com/spring-gradle-plugins/propdeps-plugin[propdeps-plugin]
 and specify:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]

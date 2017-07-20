@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,6 +134,20 @@ public class JarURLConnectionTests {
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		assertThat(JarURLConnection.get(url, nested).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
+	public void getContentLengthReturnsLengthOfUnderlyingEntry() throws Exception {
+		URL url = new URL(new URL("jar", null, -1,
+				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");
+		assertThat(url.openConnection().getContentLength()).isEqualTo(1);
+	}
+
+	@Test
+	public void getContentLengthLongReturnsLengthOfUnderlyingEntry() throws Exception {
+		URL url = new URL(new URL("jar", null, -1,
+				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");
+		assertThat(url.openConnection().getContentLengthLong()).isEqualTo(1);
 	}
 
 	private String getAbsolutePath() {

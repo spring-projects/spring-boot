@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ import static org.assertj.core.api.Assertions.offset;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Raja Kolli
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CacheStatisticsAutoConfigurationTests {
@@ -217,7 +218,7 @@ public class CacheStatisticsAutoConfigurationTests {
 			javax.cache.CacheManager cacheManager = Caching
 					.getCachingProvider(HazelcastCachingProvider.class.getName())
 					.getCacheManager();
-			MutableConfiguration<Object, Object> config = new MutableConfiguration<Object, Object>();
+			MutableConfiguration<Object, Object> config = new MutableConfiguration<>();
 			config.setStatisticsEnabled(true);
 			cacheManager.createCache("books", config);
 			cacheManager.createCache("speakers", config);
@@ -270,12 +271,8 @@ public class CacheStatisticsAutoConfigurationTests {
 		@Bean
 		public EmbeddedCacheManager embeddedCacheManager() throws IOException {
 			Resource resource = new ClassPathResource("cache/test-infinispan.xml");
-			InputStream in = resource.getInputStream();
-			try {
+			try (InputStream in = resource.getInputStream()) {
 				return new DefaultCacheManager(in);
-			}
-			finally {
-				in.close();
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationDelegate;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
+import org.springframework.data.util.Streamable;
 
 /**
  * Base {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data
@@ -55,26 +56,27 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader,
-				this.environment).registerRepositoriesIn(registry,
+		new RepositoryConfigurationDelegate(getConfigurationSource(registry),
+				this.resourceLoader, this.environment).registerRepositoriesIn(registry,
 						getRepositoryConfigurationExtension());
 	}
 
-	private AnnotationRepositoryConfigurationSource getConfigurationSource() {
+	private AnnotationRepositoryConfigurationSource getConfigurationSource(
+			BeanDefinitionRegistry beanDefinitionRegistry) {
 		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
 				getConfiguration(), true);
 		return new AnnotationRepositoryConfigurationSource(metadata, getAnnotation(),
-				this.resourceLoader, this.environment) {
+				this.resourceLoader, this.environment, beanDefinitionRegistry) {
 			@Override
-			public java.lang.Iterable<String> getBasePackages() {
+			public Streamable<String> getBasePackages() {
 				return AbstractRepositoryConfigurationSourceSupport.this
 						.getBasePackages();
 			}
 		};
 	}
 
-	protected Iterable<String> getBasePackages() {
-		return AutoConfigurationPackages.get(this.beanFactory);
+	protected Streamable<String> getBasePackages() {
+		return Streamable.of(AutoConfigurationPackages.get(this.beanFactory));
 	}
 
 	/**

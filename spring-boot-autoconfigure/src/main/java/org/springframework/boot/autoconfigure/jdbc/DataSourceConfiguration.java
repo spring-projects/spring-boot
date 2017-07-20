@@ -77,7 +77,12 @@ abstract class DataSourceConfiguration {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
 		public HikariDataSource dataSource(DataSourceProperties properties) {
-			return createDataSource(properties, HikariDataSource.class);
+			HikariDataSource dataSource = createDataSource(properties,
+					HikariDataSource.class);
+			if (properties.getName() != null) {
+				dataSource.setPoolName(properties.getName());
+			}
+			return dataSource;
 		}
 
 	}

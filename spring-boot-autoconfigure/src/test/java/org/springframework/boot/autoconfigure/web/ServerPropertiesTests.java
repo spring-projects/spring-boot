@@ -24,8 +24,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,18 +48,14 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testAddressBinding() throws Exception {
-		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.address", "127.0.0.1")));
-		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		bind("server.address", "127.0.0.1");
 		assertThat(this.properties.getAddress())
 				.isEqualTo(InetAddress.getByName("127.0.0.1"));
 	}
 
 	@Test
 	public void testPortBinding() throws Exception {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.port", "9000")));
+		bind("server.port", "9000");
 		assertThat(this.properties.getPort().intValue()).isEqualTo(9000);
 	}
 
@@ -68,54 +66,44 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testServerHeader() throws Exception {
-		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.server-header", "Custom Server")));
+		bind("server.server-header", "Custom Server");
 		assertThat(this.properties.getServerHeader()).isEqualTo("Custom Server");
 	}
 
 	@Test
 	public void testConnectionTimeout() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.connection-timeout", "60000");
-		bindProperties(map);
+		bind("server.connection-timeout", "60000");
 		assertThat(this.properties.getConnectionTimeout()).isEqualTo(60000);
 	}
 
 	@Test
 	public void testServletPathAsMapping() throws Exception {
-		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servlet.path", "/foo/*")));
-		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		bind("server.servlet.path", "/foo/*");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testServletPathAsPrefix() throws Exception {
-		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servlet.path", "/foo")));
-		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		bind("server.servlet.path", "/foo");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testTomcatBinding() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");
 		map.put("server.tomcat.accesslog.prefix", "foo");
 		map.put("server.tomcat.accesslog.rotate", "false");
 		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
 		map.put("server.tomcat.accesslog.request-attributes-enabled", "true");
 		map.put("server.tomcat.accesslog.suffix", "-bar.log");
-		map.put("server.tomcat.protocol_header", "X-Forwarded-Protocol");
-		map.put("server.tomcat.remote_ip_header", "Remote-Ip");
-		map.put("server.tomcat.internal_proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
-		map.put("server.tomcat.background_processor_delay", "10");
-		bindProperties(map);
+		map.put("server.tomcat.protocol-header", "X-Forwarded-Protocol");
+		map.put("server.tomcat.remote-ip-header", "Remote-Ip");
+		map.put("server.tomcat.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		map.put("server.tomcat.background-processor-delay", "10");
+		bind(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getAccesslog().getPattern()).isEqualTo("%h %t '%r' %s %b");
 		assertThat(tomcat.getAccesslog().getPrefix()).isEqualTo("foo");
@@ -132,61 +120,72 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void redirectContextRootIsNotConfiguredByDefault() throws Exception {
-		bindProperties(new HashMap<String, String>());
+		bind(new HashMap<String, String>());
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getRedirectContextRoot()).isNull();
 	}
 
 	@Test
 	public void testTrailingSlashOfContextPathIsRemoved() {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servlet.contextPath", "/foo/")));
+		bind("server.servlet.context-path", "/foo/");
 		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testSlashOfContextPathIsDefaultValue() {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servlet.contextPath", "/")));
+		bind("server.servlet.context-path", "/");
 		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("");
 	}
 
 	@Test
 	public void testCustomizeUriEncoding() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.tomcat.uriEncoding", "US-ASCII");
-		bindProperties(map);
+		bind("server.tomcat.uri-encoding", "US-ASCII");
 		assertThat(this.properties.getTomcat().getUriEncoding())
 				.isEqualTo(Charset.forName("US-ASCII"));
 	}
 
 	@Test
 	public void testCustomizeHeaderSize() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.maxHttpHeaderSize", "9999");
-		bindProperties(map);
+		bind("server.max-http-header-size", "9999");
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
 	}
 
 	@Test
 	public void testCustomizeJettyAcceptors() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.jetty.acceptors", "10");
-		bindProperties(map);
+		bind("server.jetty.acceptors", "10");
 		assertThat(this.properties.getJetty().getAcceptors()).isEqualTo(10);
 	}
 
 	@Test
 	public void testCustomizeJettySelectors() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.jetty.selectors", "10");
-		bindProperties(map);
+		bind("server.jetty.selectors", "10");
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
 	}
 
-	private void bindProperties(Map<String, String> map) {
-		new RelaxedDataBinder(this.properties, "server")
-				.bind(new MutablePropertyValues(map));
+	@Test
+	public void testCustomizeJettyAccessLog() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.jetty.accesslog.enabled", "true");
+		map.put("server.jetty.accesslog.filename", "foo.txt");
+		map.put("server.jetty.accesslog.file-date-format", "yyyymmdd");
+		map.put("server.jetty.accesslog.retention-period", "4");
+		map.put("server.jetty.accesslog.append", "true");
+		bind(map);
+		ServerProperties.Jetty jetty = this.properties.getJetty();
+		assertThat(jetty.getAccesslog().isEnabled()).isEqualTo(true);
+		assertThat(jetty.getAccesslog().getFilename()).isEqualTo("foo.txt");
+		assertThat(jetty.getAccesslog().getFileDateFormat()).isEqualTo("yyyymmdd");
+		assertThat(jetty.getAccesslog().getRetentionPeriod()).isEqualTo(4);
+		assertThat(jetty.getAccesslog().isAppend()).isEqualTo(true);
+	}
+
+	private void bind(String name, String value) {
+		bind(Collections.singletonMap(name, value));
+	}
+
+	private void bind(Map<String, String> map) {
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(map);
+		new Binder(source).bind("server", Bindable.ofInstance(this.properties));
 	}
 
 }

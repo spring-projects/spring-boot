@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class OverrideSourcesTests {
 
 	@Test
 	public void beanInjectedToMainConfiguration() {
-		this.context = SpringApplication.run(new Object[] { MainConfiguration.class },
+		this.context = SpringApplication.run(new Class<?>[] { MainConfiguration.class },
 				new String[] { "--spring.main.web_environment=false" });
 		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("foo");
 	}
@@ -54,7 +54,7 @@ public class OverrideSourcesTests {
 	@Test
 	public void primaryBeanInjectedProvingSourcesNotOverridden() {
 		this.context = SpringApplication.run(
-				new Object[] { MainConfiguration.class, TestConfiguration.class },
+				new Class<?>[] { MainConfiguration.class, TestConfiguration.class },
 				new String[] { "--spring.main.web_environment=false",
 						"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });
 		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("bar");

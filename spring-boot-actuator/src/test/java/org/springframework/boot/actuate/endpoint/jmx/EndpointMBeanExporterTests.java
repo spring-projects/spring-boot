@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ public class EndpointMBeanExporterTests {
 
 	@Test
 	public void testRegistrationWithDifferentDomainAndIdentity() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("domain", "test-domain");
 		properties.put("ensureUniqueRuntimeObjectNames", true);
 		this.context = new GenericApplicationContext();
@@ -174,7 +174,7 @@ public class EndpointMBeanExporterTests {
 	@Test
 	public void testRegistrationWithDifferentDomainAndIdentityAndStaticNames()
 			throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("domain", "test-domain");
 		properties.put("ensureUniqueRuntimeObjectNames", true);
 		Properties staticNames = new Properties();
@@ -342,7 +342,7 @@ public class EndpointMBeanExporterTests {
 
 		@Override
 		public Map<String, Object> invoke() {
-			Map<String, Object> result = new LinkedHashMap<String, Object>();
+			Map<String, Object> result = new LinkedHashMap<>();
 			result.put("date", new Date());
 			return result;
 		}

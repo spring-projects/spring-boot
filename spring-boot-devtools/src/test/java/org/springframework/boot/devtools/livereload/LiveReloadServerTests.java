@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PingMessage;
@@ -56,14 +55,14 @@ public class LiveReloadServerTests {
 	private static final String HANDSHAKE = "{command: 'hello', "
 			+ "protocols: ['http://livereload.com/protocols/official-7']}";
 
-	private int port = SocketUtils.findAvailableTcpPort();
+	private int port;
 
 	private MonitoredLiveReloadServer server;
 
 	@Before
 	public void setUp() throws Exception {
-		this.server = new MonitoredLiveReloadServer(this.port);
-		this.server.start();
+		this.server = new MonitoredLiveReloadServer(0);
+		this.port = this.server.start();
 	}
 
 	@After
@@ -156,7 +155,7 @@ public class LiveReloadServerTests {
 	 */
 	private static class MonitoredLiveReloadServer extends LiveReloadServer {
 
-		private final List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+		private final List<ConnectionClosedException> closedExceptions = new ArrayList<>();
 
 		private final Object monitor = new Object();
 
@@ -172,7 +171,7 @@ public class LiveReloadServerTests {
 
 		public List<ConnectionClosedException> getClosedExceptions() {
 			synchronized (this.monitor) {
-				return new ArrayList<ConnectionClosedException>(this.closedExceptions);
+				return new ArrayList<>(this.closedExceptions);
 			}
 		}
 
@@ -207,7 +206,7 @@ public class LiveReloadServerTests {
 
 		private final CountDownLatch helloLatch = new CountDownLatch(2);
 
-		private final List<String> messages = new ArrayList<String>();
+		private final List<String> messages = new ArrayList<>();
 
 		private int pongCount;
 

@@ -34,8 +34,8 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
  * @since 2.0.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor extends
-		AbstractDependsOnBeanFactoryPostProcessor {
+public class ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor
+		extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(
 			String... dependsOn) {

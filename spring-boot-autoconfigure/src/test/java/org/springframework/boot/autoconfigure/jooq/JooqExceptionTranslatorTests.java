@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,8 @@ public class JooqExceptionTranslatorTests {
 				new Object[] { SQLDialect.POSTGRES, sqlException("03000") },
 				new Object[] { SQLDialect.POSTGRES_9_3, sqlException("03000") },
 				new Object[] { SQLDialect.POSTGRES_9_4, sqlException("03000") },
-				new Object[] { SQLDialect.POSTGRES_9_5, sqlException("03000") } };
+				new Object[] { SQLDialect.POSTGRES_9_5, sqlException("03000") },
+				new Object[] { SQLDialect.SQLITE, sqlException("21000") } };
 	}
 
 	private static SQLException sqlException(String sqlState) {

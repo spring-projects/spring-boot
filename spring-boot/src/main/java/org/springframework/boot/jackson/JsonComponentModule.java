@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jackson;
 
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -78,8 +79,9 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
-			if (JsonSerializer.class.isAssignableFrom(innerClass)
-					|| JsonDeserializer.class.isAssignableFrom(innerClass)) {
+			if (!Modifier.isAbstract(innerClass.getModifiers())
+					&& (JsonSerializer.class.isAssignableFrom(innerClass)
+							|| JsonDeserializer.class.isAssignableFrom(innerClass))) {
 				try {
 					addJsonBean(innerClass.newInstance());
 				}

@@ -1,7 +1,6 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.0.BUILD-SNAPSHOT'
-		springLoadedVersion = '1.2.4.RELEASE'
 	}
 	repositories {
 		// NOTE: You should declare only repositories that you need here
@@ -13,24 +12,14 @@ buildscript {
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath("org.springframework:springloaded:${springLoadedVersion}")
 	}
 }
 
-
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
-springBoot {
-    classifier = 'exec'
-}
-
-jar {
-	baseName = 'spring-boot-sample-web-ui'
-	version =  '0.0.0'
-}
+version = springBootVersion
 
 repositories {
 	// NOTE: You should declare only repositories that you need here
@@ -42,9 +31,7 @@ repositories {
 }
 
 dependencies {
+	compile("org.springframework.boot:spring-boot-starter-web")
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-	compile("org.hibernate:hibernate-validator")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
-
-task wrapper(type: Wrapper) { gradleVersion = '1.6' }

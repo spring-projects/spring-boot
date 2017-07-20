@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -52,8 +51,6 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		assertThat(this.context.getBean(DataSourceTransactionManager.class)).isNotNull();
-		assertThat(this.context.getBean(AbstractTransactionManagementConfiguration.class))
-				.isNotNull();
 	}
 
 	@Test
@@ -68,8 +65,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 
 	@Test
 	public void testManualConfiguration() throws Exception {
-		this.context.register(SwitchTransactionsOn.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
 		this.context.refresh();
@@ -79,8 +75,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 
 	@Test
 	public void testExistingTransactionManager() {
-		this.context.register(SwitchTransactionsOn.class,
-				TransactionManagerConfiguration.class,
+		this.context.register(TransactionManagerConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
@@ -99,8 +94,6 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(PlatformTransactionManager.class))
 				.isEmpty();
-		assertThat(this.context.getBean(AbstractTransactionManagementConfiguration.class))
-				.isNotNull();
 	}
 
 	@Test
@@ -117,9 +110,10 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	@Test
 	public void testCustomizeDataSourceTransactionManagerUsingProperties()
 			throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+		TestPropertyValues
+				.of("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
@@ -128,11 +122,6 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 				.getBean(DataSourceTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
-	}
-
-	@EnableTransactionManagement
-	protected static class SwitchTransactionsOn {
-
 	}
 
 	@Configuration

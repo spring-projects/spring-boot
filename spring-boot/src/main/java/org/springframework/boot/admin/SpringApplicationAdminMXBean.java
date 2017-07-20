@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.admin;
 
 /**
- * A MBean contract to control and monitor a running {@code SpringApplication} via JMX.
+ * An MBean contract to control and monitor a running {@code SpringApplication} via JMX.
  * Intended for internal use only.
  *
  * @author Stephane Nicoll
@@ -33,8 +33,8 @@ public interface SpringApplicationAdminMXBean {
 	boolean isReady();
 
 	/**
-	 * Specify if the application runs in an embedded web container. Can return
-	 * {@code null} if that information is not yet available. It is preferable to wait for
+	 * Specify if the application runs in an embedded web container. Return {@code false}
+	 * on a web application that hasn't fully started yet, so it is preferable to wait for
 	 * the application to be {@link #isReady() ready}.
 	 * @return {@code true} if the application runs in an embedded web container
 	 * @see #isReady()

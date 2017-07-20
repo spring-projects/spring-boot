@@ -18,13 +18,14 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>..</main.basedir>
+		<main.basedir>${basedir}/..</main.basedir>
 		<disable.checks>false</disable.checks>
 		<java.version>1.8</java.version>
 		<aether.version>1.0.2.v20150114</aether.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
+		<spock.version>1.0-groovy-2.4</spock.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -70,14 +71,9 @@
 				<version>0.0.20131108.vaadin1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-all</artifactId>
-				<version>4.0.38.Final</version>
-			</dependency>
-			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>1.0.0.RELEASE</version>
+				<version>1.0.3.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -85,14 +81,14 @@
 				<version>2.11</version>
 			</dependency>
 			<dependency>
-				<groupId>net.bytebuddy</groupId>
-				<artifactId>byte-buddy</artifactId>
-				<version>1.6.0</version>
-			</dependency>
-			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
 				<artifactId>jopt-simple</artifactId>
 				<version>4.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.14</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ivy</groupId>
@@ -205,41 +201,6 @@
 				<version>${aether.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services-groovy</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-core</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-java</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-platform-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-plugins</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-runtime</artifactId>
 				<version>1.0.4</version>
@@ -248,6 +209,22 @@
 				<groupId>org.sonatype.plexus</groupId>
 				<artifactId>plexus-build-api</artifactId>
 				<version>0.0.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.spockframework</groupId>
+				<artifactId>spock-core</artifactId>
+				<version>${spock.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.spockframework</groupId>
+				<artifactId>spock-spring</artifactId>
+				<version>${spock.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>
@@ -301,7 +278,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>7.1.1</version>
+							<version>7.6</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -332,11 +309,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.15</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
@@ -502,10 +474,10 @@
 							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 							<headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
-							<propertyExpansion>checkstyle.build.directory=${project.build.directory}</propertyExpansion>
+							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
+							<failOnViolation>true</failOnViolation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
 						</configuration>
 						<goals>
@@ -598,14 +570,12 @@
 						<java.awt.headless>true</java.awt.headless>
 					</systemPropertyVariables>
 					<argLine>-Xmx1024m</argLine>
+					<trimStackTrace>false</trimStackTrace>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -615,33 +585,6 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<configuration>
-					<skip>${disable.checks}</skip>
-					<signature>
-						<groupId>org.codehaus.mojo.signature</groupId>
-						<artifactId>java18</artifactId>
-						<version>1.0</version>
-					</signature>
-					<annotations>
-						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
-					</annotations>
-					<excludeDependencies>
-						<excludeDependency>org.glassfish.hk2.external:asm-all-repackaged</excludeDependency>
-					</excludeDependencies>
-				</configuration>
-				<executions>
-					<execution>
-						<id>enforce-java-6</id>
-						<phase>test</phase>
-						<goals>
-							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Date;
 
 import org.junit.Test;
@@ -27,7 +32,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanConfiguration;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanWithBeanMethodArgumentsConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -171,7 +176,7 @@ public class ConditionalOnMissingBeanTests {
 		this.context.register(FactoryBeanWithBeanMethodArgumentsConfiguration.class,
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "theValue:foo");
+		TestPropertyValues.of("theValue:foo").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBean(ExampleBean.class).toString())
 				.isEqualTo("fromFactory");
@@ -283,6 +288,15 @@ public class ConditionalOnMissingBeanTests {
 		child.setParent(this.context);
 		child.refresh();
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
+	}
+
+	@Test
+	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
+		this.context.register(ConcreteFactoryBeanConfiguration.class,
+				OnAnnotationWithFactoryBeanConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(1);
 	}
 
 	@Configuration
@@ -501,6 +515,17 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
+	@ConditionalOnMissingBean(annotation = TestAnnotation.class)
+	protected static class OnAnnotationWithFactoryBeanConfiguration {
+
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+
+	}
+
+	@Configuration
 	@EnableScheduling
 	protected static class FooConfiguration {
 
@@ -554,6 +579,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
+	@TestAnnotation
 	public static class ExampleBean {
 
 		private String value;
@@ -620,6 +646,13 @@ public class ConditionalOnMissingBeanTests {
 		public boolean isSingleton() {
 			return false;
 		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public @interface TestAnnotation {
 
 	}
 

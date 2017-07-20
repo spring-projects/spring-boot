@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ public class ArtifactsLibrariesTests {
 		given(artifact2.getBaseVersion()).willReturn("1.0");
 		given(artifact2.getFile()).willReturn(new File("a"));
 		given(artifact2.getArtifactHandler()).willReturn(this.artifactHandler);
-		this.artifacts = new LinkedHashSet<Artifact>(Arrays.asList(artifact1, artifact2));
+		this.artifacts = new LinkedHashSet<>(Arrays.asList(artifact1, artifact2));
 		this.libs = new ArtifactsLibraries(this.artifacts, null, mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback, times(2)).library(this.libraryCaptor.capture());

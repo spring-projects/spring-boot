@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,7 +38,6 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
-import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -48,6 +46,7 @@ import org.springframework.util.Assert;
  * @author Tommy Ludwig
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.4.0
  */
 @Configuration
@@ -56,9 +55,9 @@ import org.springframework.util.Assert;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class,
-		RedisAutoConfiguration.class })
-@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class })
+		JdbcTemplateAutoConfiguration.class, RedisAutoConfiguration.class })
+@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class,
+		SessionRepositoryFilterConfiguration.class })
 public class SessionAutoConfiguration {
 
 	/**
@@ -97,11 +96,15 @@ public class SessionAutoConfiguration {
 		@PostConstruct
 		public void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
-			if (storeType != StoreType.NONE) {
-				Assert.notNull(this.sessionRepositoryProvider.getIfAvailable(),
-						"No session repository could be auto-configured, check your "
-								+ "configuration (session store type is '" + storeType
-								+ "')");
+			if (storeType != StoreType.NONE
+					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
+				if (storeType != null) {
+					throw new IllegalArgumentException("No session repository could be "
+							+ "auto-configured, check your configuration (session store "
+							+ "type is '" + storeType.name().toLowerCase() + "')");
+				}
+				throw new IllegalArgumentException("No Spring Session store is "
+						+ "configured: set the 'spring.session.store-type' property");
 			}
 		}
 

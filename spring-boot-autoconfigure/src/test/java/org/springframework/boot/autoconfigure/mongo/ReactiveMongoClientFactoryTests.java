@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 
 import com.mongodb.MongoCredential;
@@ -28,17 +29,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ReactiveMongoClientFactory}.
  *
  * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 public class ReactiveMongoClientFactoryTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
 	public void portCanBeCustomized() throws UnknownHostException {
@@ -131,8 +141,35 @@ public class ReactiveMongoClientFactoryTests {
 		createMongoClient(properties);
 	}
 
+	@Test
+	public void uriIsIgnoredInEmbeddedMode() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://mongo.example.com:1234/mydb");
+		this.environment.setProperty("local.mongo.port", "4000");
+		MongoClient client = createMongoClient(properties, this.environment);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "localhost", 4000);
+	}
+
+	@Test
+	public void customizerIsInvoked() {
+		MongoProperties properties = new MongoProperties();
+		MongoClientSettingsBuilderCustomizer customizer = mock(
+				MongoClientSettingsBuilderCustomizer.class);
+		createMongoClient(properties, this.environment, customizer);
+		verify(customizer).customize(any(MongoClientSettings.Builder.class));
+	}
+
 	private MongoClient createMongoClient(MongoProperties properties) {
-		return new ReactiveMongoClientFactory(properties, null).createMongoClient(null);
+		return createMongoClient(properties, this.environment);
+	}
+
+	private MongoClient createMongoClient(MongoProperties properties,
+			Environment environment,
+			MongoClientSettingsBuilderCustomizer... customizers) {
+		return new ReactiveMongoClientFactory(properties, environment,
+				Arrays.asList(customizers)).createMongoClient(null);
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {

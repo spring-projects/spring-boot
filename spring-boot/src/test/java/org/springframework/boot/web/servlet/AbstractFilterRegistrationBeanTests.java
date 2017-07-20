@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
 import org.junit.Before;
@@ -50,13 +49,6 @@ import static org.mockito.Mockito.verify;
  */
 public abstract class AbstractFilterRegistrationBeanTests {
 
-	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
-			DispatcherType.ASYNC);
-
-	private static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
-			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -79,8 +71,8 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("mockFilter"), getExpectedFilter());
 		verify(this.registration).setAsyncSupported(true);
-		verify(this.registration).addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false,
-				"/*");
+		verify(this.registration).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), false, "/*");
 	}
 
 	@Test
@@ -90,9 +82,9 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.setAsyncSupported(false);
 		bean.setInitParameters(Collections.singletonMap("a", "b"));
 		bean.addInitParameter("c", "d");
-		bean.setUrlPatterns(new LinkedHashSet<String>(Arrays.asList("/a", "/b")));
+		bean.setUrlPatterns(new LinkedHashSet<>(Arrays.asList("/a", "/b")));
 		bean.addUrlPatterns("/c");
-		bean.setServletNames(new LinkedHashSet<String>(Arrays.asList("s1", "s2")));
+		bean.setServletNames(new LinkedHashSet<>(Arrays.asList("s1", "s2")));
 		bean.addServletNames("s3");
 		bean.setServletRegistrationBeans(
 				Collections.singleton(mockServletRegistration("s4")));
@@ -101,14 +93,14 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("test"), getExpectedFilter());
 		verify(this.registration).setAsyncSupported(false);
-		Map<String, String> expectedInitParameters = new HashMap<String, String>();
+		Map<String, String> expectedInitParameters = new HashMap<>();
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		verify(this.registration).setInitParameters(expectedInitParameters);
-		verify(this.registration).addMappingForUrlPatterns(NON_ASYNC_DISPATCHER_TYPES,
-				true, "/a", "/b", "/c");
-		verify(this.registration).addMappingForServletNames(NON_ASYNC_DISPATCHER_TYPES,
-				true, "s4", "s5", "s1", "s2", "s3");
+		verify(this.registration).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), true, "/a", "/b", "/c");
+		verify(this.registration).addMappingForServletNames(
+				EnumSet.of(DispatcherType.REQUEST), true, "s4", "s5", "s1", "s2", "s3");
 	}
 
 	@Test
@@ -158,8 +150,8 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.setServletRegistrationBeans(new LinkedHashSet<ServletRegistrationBean<?>>(
 				Arrays.asList(mockServletRegistration("b"))));
 		bean.onStartup(this.servletContext);
-		verify(this.registration).addMappingForServletNames(ASYNC_DISPATCHER_TYPES, false,
-				"b");
+		verify(this.registration).addMappingForServletNames(
+				EnumSet.of(DispatcherType.REQUEST), false, "b");
 	}
 
 	@Test
@@ -228,7 +220,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 			ServletRegistrationBean<?>... servletRegistrationBeans);
 
 	protected final ServletRegistrationBean<?> mockServletRegistration(String name) {
-		ServletRegistrationBean<?> bean = new ServletRegistrationBean<Servlet>();
+		ServletRegistrationBean<?> bean = new ServletRegistrationBean<>();
 		bean.setName(name);
 		return bean;
 	}

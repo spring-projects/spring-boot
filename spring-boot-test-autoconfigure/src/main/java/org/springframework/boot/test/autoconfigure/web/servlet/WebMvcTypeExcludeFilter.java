@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
@@ -29,6 +29,7 @@ import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBea
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -45,7 +46,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
-		Set<Class<?>> includes = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> includes = new LinkedHashSet<>();
 		includes.add(ControllerAdvice.class);
 		includes.add(JsonComponent.class);
 		includes.add(WebMvcConfigurer.class);
@@ -53,6 +54,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(FilterRegistrationBean.class);
 		includes.add(DelegatingFilterProxyRegistrationBean.class);
 		includes.add(HandlerMethodArgumentResolver.class);
+		includes.add(HttpMessageConverter.class);
 		includes.add(ErrorAttributes.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	};
@@ -60,7 +62,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_CONTROLLER;
 
 	static {
-		Set<Class<?>> includes = new LinkedHashSet<Class<?>>(DEFAULT_INCLUDES);
+		Set<Class<?>> includes = new LinkedHashSet<>(DEFAULT_INCLUDES);
 		includes.add(Controller.class);
 		DEFAULT_INCLUDES_AND_CONTROLLER = Collections.unmodifiableSet(includes);
 	}
@@ -103,7 +105,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<Class<?>>(Arrays.asList(this.annotation.controllers()));
+		return new LinkedHashSet<>(Arrays.asList(this.annotation.controllers()));
 	}
 
 }

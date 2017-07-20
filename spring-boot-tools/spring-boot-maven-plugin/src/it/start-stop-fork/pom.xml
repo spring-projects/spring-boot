@@ -7,12 +7,15 @@
 	<version>0.0.1.BUILD-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>@java.version@</maven.compiler.source>
+		<maven.compiler.target>@java.version@</maven.compiler.target>
 	</properties>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>@build-helper-maven-plugin.version@</version>
 				<executions>
 					<execution>
 						<id>reserve-jmx-port</id>

@@ -77,6 +77,10 @@
 		<module name="com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck">
 			<property name="processJavadoc" value="true" />
 		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck">
+			<property name="file" value="${main.basedir}/spring-boot-parent/src/checkstyle/import-control.xml" />
+			<property name="path" value="^.*[\\/]src[\\/]main[\\/].*$" />
+		</module>
 		<module name="com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderCheck">
 			<property name="groups" value="java,/^javax?\./,*,org.springframework" />
 			<property name="ordered" value="true" />

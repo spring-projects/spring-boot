@@ -1,0 +1,17 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+
+if (project.hasProperty('applyWarPlugin')) {
+	apply plugin: 'war'
+}
+
+task('taskExists') {
+	doFirst {
+		println "$taskName exists = ${tasks.findByName(taskName) != null}"
+	}
+}

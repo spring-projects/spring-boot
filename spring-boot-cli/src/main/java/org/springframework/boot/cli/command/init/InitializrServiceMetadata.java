@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,12 +68,12 @@ class InitializrServiceMetadata {
 	}
 
 	InitializrServiceMetadata(ProjectType defaultProjectType) {
-		this.dependencies = new HashMap<String, Dependency>();
-		this.projectTypes = new MetadataHolder<String, ProjectType>();
+		this.dependencies = new HashMap<>();
+		this.projectTypes = new MetadataHolder<>();
 		this.projectTypes.getContent().put(defaultProjectType.getId(),
 				defaultProjectType);
 		this.projectTypes.setDefaultItem(defaultProjectType);
-		this.defaults = new HashMap<String, String>();
+		this.defaults = new HashMap<>();
 	}
 
 	/**
@@ -128,7 +128,7 @@ class InitializrServiceMetadata {
 
 	private Map<String, Dependency> parseDependencies(JSONObject root)
 			throws JSONException {
-		Map<String, Dependency> result = new HashMap<String, Dependency>();
+		Map<String, Dependency> result = new HashMap<>();
 		if (!root.has(DEPENDENCIES_EL)) {
 			return result;
 		}
@@ -143,7 +143,7 @@ class InitializrServiceMetadata {
 
 	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root)
 			throws JSONException {
-		MetadataHolder<String, ProjectType> result = new MetadataHolder<String, ProjectType>();
+		MetadataHolder<String, ProjectType> result = new MetadataHolder<>();
 		if (!root.has(TYPE_EL)) {
 			return result;
 		}
@@ -163,7 +163,7 @@ class InitializrServiceMetadata {
 	}
 
 	private Map<String, String> parseDefaults(JSONObject root) throws JSONException {
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 		Iterator<?> keys = root.keys();
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
@@ -202,7 +202,7 @@ class InitializrServiceMetadata {
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String action = getStringValue(object, ACTION_ATTRIBUTE, null);
 		boolean defaultType = id.equals(defaultId);
-		Map<String, String> tags = new HashMap<String, String>();
+		Map<String, String> tags = new HashMap<>();
 		if (object.has("tags")) {
 			JSONObject jsonTags = object.getJSONObject("tags");
 			tags.putAll(parseStringItems(jsonTags));
@@ -216,7 +216,7 @@ class InitializrServiceMetadata {
 	}
 
 	private Map<String, String> parseStringItems(JSONObject json) throws JSONException {
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 		for (Iterator<?> iterator = json.keys(); iterator.hasNext();) {
 			String key = (String) iterator.next();
 			Object value = json.get(key);
@@ -234,7 +234,7 @@ class InitializrServiceMetadata {
 		private T defaultItem;
 
 		private MetadataHolder() {
-			this.content = new HashMap<K, T>();
+			this.content = new HashMap<>();
 		}
 
 		public Map<K, T> getContent() {

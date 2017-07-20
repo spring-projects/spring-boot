@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -64,6 +63,7 @@ import org.springframework.web.cors.CorsConfiguration;
  * @author Dave Syer
  * @author Ben Hale
  * @author Vedran Pavic
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @ManagementContextConfiguration
@@ -158,10 +158,13 @@ public class EndpointWebMvcManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnBean(HealthEndpoint.class)
+	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint("health")
-	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
+	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate,
+			ManagementServerProperties managementServerProperties) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate,
-				this.managementServerProperties.getSecurity().isEnabled());
+				this.managementServerProperties.getSecurity().isEnabled(),
+				managementServerProperties.getSecurity().getRoles());
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint
 					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
@@ -222,8 +225,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 				return ConditionOutcome
 						.match(message.found("logging.path").items(config));
 			}
-			config = new RelaxedPropertyResolver(environment, "endpoints.logfile.")
-					.getProperty("external-file");
+			config = environment.getProperty("endpoints.logfile.external-file");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match(
 						message.found("endpoints.logfile.external-file").items(config));

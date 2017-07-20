@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -141,7 +141,7 @@ public class ProjectInfoAutoConfigurationTests {
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
 				ProjectInfoAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(context, environment);
+		TestPropertyValues.of(environment).applyTo(context);
 		context.refresh();
 		this.context = context;
 	}

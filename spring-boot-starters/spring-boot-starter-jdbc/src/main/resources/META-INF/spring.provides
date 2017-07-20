@@ -1,1 +1,1 @@
-provides: spring-jdbc,spring-tx,tomcat-jdbc
+provides: spring-jdbc,spring-tx,HikariCP

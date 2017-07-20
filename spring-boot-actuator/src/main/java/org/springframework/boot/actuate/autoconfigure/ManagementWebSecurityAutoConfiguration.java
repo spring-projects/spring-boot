@@ -224,7 +224,7 @@ public class ManagementWebSecurityAutoConfiguration {
 				http.requestMatcher(matcher);
 				// ... but permitAll() for the non-sensitive ones
 				configurePermittedRequests(http.authorizeRequests());
-				http.httpBasic().authenticationEntryPoint(entryPoint);
+				http.httpBasic().authenticationEntryPoint(entryPoint).and().cors();
 				// No cookies for management endpoints by default
 				http.csrf().disable();
 				http.sessionManagement()
@@ -295,7 +295,7 @@ public class ManagementWebSecurityAutoConfiguration {
 				return NO_PATHS;
 			}
 			Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
-			Set<String> paths = new LinkedHashSet<String>(endpoints.size());
+			Set<String> paths = new LinkedHashSet<>(endpoints.size());
 			for (MvcEndpoint endpoint : endpoints) {
 				if (isIncluded(endpoint)) {
 					String path = endpointHandlerMapping.getPath(endpoint.getPath());
@@ -361,10 +361,11 @@ public class ManagementWebSecurityAutoConfiguration {
 		private RequestMatcher createDelegate() {
 			ServerProperties server = this.contextResolver.getApplicationContext()
 					.getBean(ServerProperties.class);
-			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+			List<RequestMatcher> matchers = new ArrayList<>();
 			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
-				matchers.add(new AntPathRequestMatcher(server.getServlet().getPath(path)));
+				matchers.add(
+						new AntPathRequestMatcher(server.getServlet().getPath(path)));
 			}
 			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
 		}

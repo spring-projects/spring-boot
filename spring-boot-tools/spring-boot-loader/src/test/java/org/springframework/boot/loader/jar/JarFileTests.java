@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -467,6 +467,15 @@ public class JarFileTests {
 				System.setProperty(PROTOCOL_HANDLER, original);
 			}
 		}
+	}
+
+	@Test
+	public void jarFileCanBeDeletedOnceItHasBeenClosed() throws Exception {
+		File temp = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(temp);
+		JarFile jf = new JarFile(temp);
+		jf.close();
+		assertThat(temp.delete()).isTrue();
 	}
 
 }

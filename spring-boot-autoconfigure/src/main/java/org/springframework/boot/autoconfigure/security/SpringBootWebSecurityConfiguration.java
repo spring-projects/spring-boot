@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers.ContentSecurityPolicyMode;
-import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorController;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -143,17 +143,6 @@ public class SpringBootWebSecurityConfiguration {
 		}
 	}
 
-	public static List<String> getIgnored(SecurityProperties security) {
-		List<String> ignored = new ArrayList<String>(security.getIgnored());
-		if (ignored.isEmpty()) {
-			ignored.addAll(DEFAULT_IGNORED);
-		}
-		else if (ignored.contains("none")) {
-			ignored.remove("none");
-		}
-		return ignored;
-	}
-
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER)
 	private static class IgnoredPathsWebSecurityConfigurerAdapter
@@ -201,7 +190,7 @@ public class SpringBootWebSecurityConfiguration {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
 			String[] paths = this.server.getServlet().getPathsArray(ignored);
-			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+			List<RequestMatcher> matchers = new ArrayList<>();
 			if (!ObjectUtils.isEmpty(paths)) {
 				for (String pattern : paths) {
 					matchers.add(new AntPathRequestMatcher(pattern, null));
@@ -213,7 +202,7 @@ public class SpringBootWebSecurityConfiguration {
 		}
 
 		private List<String> getIgnored(SecurityProperties security) {
-			List<String> ignored = new ArrayList<String>(security.getIgnored());
+			List<String> ignored = new ArrayList<>(security.getIgnored());
 			if (ignored.isEmpty()) {
 				ignored.addAll(DEFAULT_IGNORED);
 			}
@@ -293,7 +282,7 @@ public class SpringBootWebSecurityConfiguration {
 		}
 
 		private String[] getSecureApplicationPaths() {
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			for (String path : this.security.getBasic().getPath()) {
 				path = (path == null ? "" : path.trim());
 				if (path.equals("/**")) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ package org.springframework.boot.configurationprocessor.metadata;
  * @since 1.2.0
  * @see ConfigurationMetadata
  */
-public class ItemMetadata implements Comparable<ItemMetadata> {
+public final class ItemMetadata implements Comparable<ItemMetadata> {
 
 	private ItemType itemType;
 
@@ -143,11 +143,59 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		return string.toString();
 	}
 
-	protected final void buildToStringProperty(StringBuilder string, String property,
+	protected void buildToStringProperty(StringBuilder string, String property,
 			Object value) {
 		if (value != null) {
 			string.append(" ").append(property).append(":").append(value);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		ItemMetadata other = (ItemMetadata) o;
+		boolean result = true;
+		result = result && nullSafeEquals(this.itemType, other.itemType);
+		result = result && nullSafeEquals(this.name, other.name);
+		result = result && nullSafeEquals(this.type, other.type);
+		result = result && nullSafeEquals(this.description, other.description);
+		result = result && nullSafeEquals(this.sourceType, other.sourceType);
+		result = result && nullSafeEquals(this.sourceMethod, other.sourceMethod);
+		result = result && nullSafeEquals(this.defaultValue, other.defaultValue);
+		result = result && nullSafeEquals(this.deprecation, other.deprecation);
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = nullSafeHashCode(this.itemType);
+		result = 31 * result + nullSafeHashCode(this.name);
+		result = 31 * result + nullSafeHashCode(this.type);
+		result = 31 * result + nullSafeHashCode(this.description);
+		result = 31 * result + nullSafeHashCode(this.sourceType);
+		result = 31 * result + nullSafeHashCode(this.sourceMethod);
+		result = 31 * result + nullSafeHashCode(this.defaultValue);
+		result = 31 * result + nullSafeHashCode(this.deprecation);
+		return result;
+	}
+
+	private boolean nullSafeEquals(Object o1, Object o2) {
+		if (o1 == o2) {
+			return true;
+		}
+		if (o1 == null || o2 == null) {
+			return false;
+		}
+		return o1.equals(o2);
+	}
+
+	private int nullSafeHashCode(Object o) {
+		return (o == null ? 0 : o.hashCode());
 	}
 
 	@Override

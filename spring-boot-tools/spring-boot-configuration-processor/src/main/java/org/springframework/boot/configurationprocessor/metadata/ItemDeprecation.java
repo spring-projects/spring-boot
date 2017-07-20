@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,20 @@ public class ItemDeprecation {
 
 	private String replacement;
 
+	private String level;
+
 	public ItemDeprecation() {
+		this(null, null);
 	}
 
 	public ItemDeprecation(String reason, String replacement) {
+		this(reason, replacement, null);
+	}
+
+	public ItemDeprecation(String reason, String replacement, String level) {
 		this.reason = reason;
 		this.replacement = replacement;
+		this.level = level;
 	}
 
 	public String getReason() {
@@ -52,10 +60,19 @@ public class ItemDeprecation {
 		this.replacement = replacement;
 	}
 
+	public String getLevel() {
+		return this.level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
 	@Override
 	public String toString() {
 		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
-				+ "replacement='" + this.replacement + '\'' + '}';
+				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
+				+ this.level + '\'' + '}';
 	}
 
 	@Override
@@ -68,13 +85,15 @@ public class ItemDeprecation {
 		}
 		ItemDeprecation other = (ItemDeprecation) o;
 		return nullSafeEquals(this.reason, other.reason)
-				&& nullSafeEquals(this.replacement, other.replacement);
+				&& nullSafeEquals(this.replacement, other.replacement)
+				&& nullSafeEquals(this.level, other.level);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = nullSafeHashCode(this.reason);
 		result = 31 * result + nullSafeHashCode(this.replacement);
+		result = 31 * result + nullSafeHashCode(this.level);
 		return result;
 	}
 

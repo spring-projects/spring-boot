@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ import org.springframework.util.Assert;
  */
 public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer {
 
-	private final SessionProperties.Jdbc properties;
+	private final JdbcSessionProperties properties;
 
 	public JdbcSessionDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, SessionProperties properties) {
+			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
 		super(dataSource, resourceLoader);
-		Assert.notNull(properties, "SessionProperties must not be null");
-		this.properties = properties.getJdbc();
+		Assert.notNull(properties, "JdbcSessionProperties must not be null");
+		this.properties = properties;
 	}
 
 	@Override

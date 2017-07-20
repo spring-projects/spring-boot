@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,25 @@ package org.springframework.boot.autoconfigure.transaction;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,8 +68,9 @@ public class TransactionAutoConfigurationTests {
 
 	@Test
 	public void singleTransactionManager() {
-		load(DataSourceAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class);
+		load(new Class<?>[] { DataSourceAutoConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class },
+				"spring.datasource.initialize:false");
 		PlatformTransactionManager transactionManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		TransactionTemplate transactionTemplate = this.context
@@ -93,15 +102,56 @@ public class TransactionAutoConfigurationTests {
 		List<?> field = (List<?>) ReflectionTestUtils.getField(customizers,
 				"customizers");
 		assertThat(field).hasSize(1).first().isInstanceOf(TransactionProperties.class);
-
 	}
 
-	private void load(Class<?>... configs) {
+	@Test
+	public void transactionNotManagedWithNoTransactionManager() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(TransactionalService.class).isTransactionActive())
+				.isFalse();
+	}
+
+	@Test
+	public void transactionManagerUsesCglibByDefault() {
+		load(TransactionManagersConfiguration.class);
+		assertThat(this.context.getBean(AnotherServiceImpl.class).isTransactionActive())
+				.isTrue();
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
+				.hasSize(1);
+	}
+
+	@Test
+	public void transactionManagerCanBeConfiguredToJdkProxy() {
+		load(TransactionManagersConfiguration.class,
+				"spring.aop.proxy-target-class=false");
+		assertThat(this.context.getBean(AnotherService.class).isTransactionActive())
+				.isTrue();
+		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
+				.hasSize(0);
+	}
+
+	@Test
+	public void customEnableTransactionManagementTakesPrecedence() {
+		load(new Class<?>[] { CustomTransactionManagementConfiguration.class,
+				TransactionManagersConfiguration.class },
+				"spring.aop.proxy-target-class=true");
+		assertThat(this.context.getBean(AnotherService.class).isTransactionActive())
+				.isTrue();
+		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
+				.hasSize(0);
+	}
+
+	private void load(Class<?> config, String... environment) {
+		load(new Class<?>[] { config }, environment);
+	}
+
+	private void load(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(TransactionAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(applicationContext,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
 		this.context = applicationContext;
 	}
@@ -137,6 +187,76 @@ public class TransactionAutoConfigurationTests {
 		@Bean
 		public PlatformTransactionManager transactionManagerFoo() {
 			return mock(PlatformTransactionManager.class);
+		}
+
+	}
+
+	@Configuration
+	static class BaseConfiguration {
+
+		@Bean
+		public TransactionalService transactionalService() {
+			return new TransactionalServiceImpl();
+		}
+
+		@Bean
+		public AnotherServiceImpl anotherService() {
+			return new AnotherServiceImpl();
+		}
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class TransactionManagersConfiguration {
+
+		@Bean
+		public DataSourceTransactionManager transactionManager() {
+			return new DataSourceTransactionManager(dataSource());
+		}
+
+		@Bean
+		public DataSource dataSource() {
+			return DataSourceBuilder.create()
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+					.url("jdbc:hsqldb:mem:tx").username("sa").build();
+		}
+
+	}
+
+	@Configuration
+	@EnableTransactionManagement(proxyTargetClass = false)
+	static class CustomTransactionManagementConfiguration {
+
+	}
+
+	interface TransactionalService {
+
+		@Transactional
+		boolean isTransactionActive();
+
+	}
+
+	static class TransactionalServiceImpl implements TransactionalService {
+
+		@Override
+		public boolean isTransactionActive() {
+			return TransactionSynchronizationManager.isActualTransactionActive();
+		}
+
+	}
+
+	interface AnotherService {
+
+		boolean isTransactionActive();
+
+	}
+
+	static class AnotherServiceImpl implements AnotherService {
+
+		@Override
+		@Transactional
+		public boolean isTransactionActive() {
+			return TransactionSynchronizationManager.isActualTransactionActive();
 		}
 
 	}

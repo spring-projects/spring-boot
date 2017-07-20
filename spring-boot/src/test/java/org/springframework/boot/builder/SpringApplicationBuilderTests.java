@@ -284,7 +284,8 @@ public class SpringApplicationBuilderTests {
 	@Test
 	public void initializersCreatedOnceForChild() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
-				ExampleConfig.class).child(ChildConfig.class).web(WebApplicationType.NONE);
+				ExampleConfig.class).child(ChildConfig.class)
+						.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(5);
 	}
@@ -301,6 +302,16 @@ public class SpringApplicationBuilderTests {
 						});
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(5);
+	}
+
+	@Test
+	public void sourcesWithBoundSources() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.web(WebApplicationType.NONE).sources(ExampleConfig.class)
+				.properties("spring.main.sources=" + ChildConfig.class.getName());
+		this.context = application.run();
+		this.context.getBean(ExampleConfig.class);
+		this.context.getBean(ChildConfig.class);
 	}
 
 	@Configuration

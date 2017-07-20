@@ -50,7 +50,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -126,8 +126,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@ConditionalOnBean(DocsMvcEndpoint.class)
 	@ConditionalOnMissingBean(CurieProvider.class)
 	@ConditionalOnProperty(prefix = "endpoints.docs.curies", name = "enabled", matchIfMissing = false)
-	public DefaultCurieProvider curieProvider(
-			ManagementServerProperties management, DocsMvcEndpoint endpoint) {
+	public DefaultCurieProvider curieProvider(ManagementServerProperties management,
+			DocsMvcEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
 				+ "/#spring_boot_actuator__{rel}";
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
@@ -229,7 +229,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 		private final List<RequestMappingHandlerAdapter> handlerAdapters;
 
-		private final Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
+		private final Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<>();
 
 		MvcEndpointAdvice(List<RequestMappingHandlerAdapter> handlerAdapters) {
 			this.handlerAdapters = handlerAdapters;
@@ -248,9 +248,9 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private void configureHttpMessageConverter(
 				HttpMessageConverter<?> messageConverter) {
 			if (messageConverter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
+				List<MediaType> supportedMediaTypes = new ArrayList<>(
 						messageConverter.getSupportedMediaTypes());
-				supportedMediaTypes.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON);
+				supportedMediaTypes.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON);
 				((AbstractHttpMessageConverter<?>) messageConverter)
 						.setSupportedMediaTypes(supportedMediaTypes);
 			}

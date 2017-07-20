@@ -20,15 +20,15 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfigurationTests.WebSecurity;
 import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfigurationEarlyInitializationTests.ConverterBean;
 import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfigurationEarlyInitializationTests.DeserializerBean;
 import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfigurationEarlyInitializationTests.ExampleController;
 import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfigurationEarlyInitializationTests.JacksonModuleBean;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
@@ -44,16 +44,11 @@ public class SecurityFilterAutoConfigurationTests {
 	@Test
 	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration()
 			throws Exception {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.setServletContext(new MockServletContext());
-		try {
+		try (AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext()) {
+			context.setServletContext(new MockServletContext());
 			context.register(Config.class);
 			context.refresh();
 		}
-		finally {
-			context.close();
-		}
-
 	}
 
 	@Configuration

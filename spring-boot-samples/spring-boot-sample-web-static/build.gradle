@@ -15,17 +15,12 @@ buildscript {
 	}
 }
 
-
-apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
-apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'war'
 
-war {
-	baseName = 'spring-boot-sample-web-static'
-	version =  '0.0.0'
-}
+version = springBootVersion
+group = 'org.springframework.boot'
 
 repositories {
 	// NOTE: You should declare only repositories that you need here
@@ -36,10 +31,6 @@ repositories {
 	maven { url "http://repo.spring.io/snapshot" }
 }
 
-configurations {
-	providedRuntime
-}
-
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web")
 	compile("org.webjars:bootstrap:3.0.3")
@@ -47,5 +38,3 @@ dependencies {
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
-
-task wrapper(type: Wrapper) { gradleVersion = '1.6' }

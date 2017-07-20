@@ -1,0 +1,13 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+apply plugin: 'war'
+
+bootWar {
+	mainClass = 'com.example.ExampleApplication'
+}

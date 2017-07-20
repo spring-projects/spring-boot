@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -45,26 +47,48 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @ConditionalOnClass({ DataSource.class, JdbcTemplate.class })
 @ConditionalOnSingleCandidate(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@EnableConfigurationProperties(JdbcProperties.class)
 public class JdbcTemplateAutoConfiguration {
 
-	private final DataSource dataSource;
+	@Configuration
+	static class JdbcTemplateConfiguration {
 
-	public JdbcTemplateAutoConfiguration(DataSource dataSource) {
-		this.dataSource = dataSource;
+		private final DataSource dataSource;
+
+		private final JdbcProperties properties;
+
+		JdbcTemplateConfiguration(DataSource dataSource, JdbcProperties properties) {
+			this.dataSource = dataSource;
+			this.properties = properties;
+		}
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean(JdbcOperations.class)
+		public JdbcTemplate jdbcTemplate() {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
+			JdbcProperties.Template template = this.properties.getTemplate();
+			jdbcTemplate.setFetchSize(template.getFetchSize());
+			jdbcTemplate.setMaxRows(template.getMaxRows());
+			jdbcTemplate.setQueryTimeout(template.getQueryTimeout());
+			return jdbcTemplate;
+		}
+
 	}
 
-	@Bean
-	@Primary
-	@ConditionalOnMissingBean(JdbcOperations.class)
-	public JdbcTemplate jdbcTemplate() {
-		return new JdbcTemplate(this.dataSource);
-	}
+	@Configuration
+	@Import(JdbcTemplateConfiguration.class)
+	static class NamedParameterJdbcTemplateConfiguration {
 
-	@Bean
-	@Primary
-	@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-	public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-		return new NamedParameterJdbcTemplate(this.dataSource);
+		@Bean
+		@Primary
+		@ConditionalOnSingleCandidate(JdbcTemplate.class)
+		@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
+		public NamedParameterJdbcTemplate namedParameterJdbcTemplate(
+				JdbcTemplate jdbcTemplate) {
+			return new NamedParameterJdbcTemplate(jdbcTemplate);
+		}
+
 	}
 
 }

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
-
 import javax.annotation.PreDestroy;
 
 import com.mongodb.MongoClient;
@@ -68,7 +66,7 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoClient mongo() throws UnknownHostException {
+	public MongoClient mongo() {
 		this.mongo = this.factory.createMongoClient(this.options);
 		return this.mongo;
 	}

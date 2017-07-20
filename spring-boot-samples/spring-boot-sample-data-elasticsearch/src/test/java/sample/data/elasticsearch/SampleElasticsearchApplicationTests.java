@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package sample.data.elasticsearch;
 
 import java.io.File;
 
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,9 +46,28 @@ public class SampleElasticsearchApplicationTests {
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
+		try {
+			new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
+		}
+		catch (Exception ex) {
+			if (!elasticsearchRunning(ex)) {
+				return;
+			}
+			throw ex;
+		}
 		String output = this.outputCapture.toString();
 		assertThat(output).contains("firstName='Alice', lastName='Smith'");
+	}
+
+	private boolean elasticsearchRunning(Exception ex) {
+		Throwable candidate = ex;
+		while (candidate != null) {
+			if (candidate instanceof NoNodeAvailableException) {
+				return false;
+			}
+			candidate = candidate.getCause();
+		}
+		return true;
 	}
 
 	static class SkipOnWindows implements TestRule {

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
 import java.util.List;
 
 import com.mongodb.MongoClient;
@@ -30,6 +29,8 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,8 +48,10 @@ public class MongoClientFactoryTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	private MockEnvironment environment = new MockEnvironment();
+
 	@Test
-	public void portCanBeCustomized() throws UnknownHostException {
+	public void portCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
 		MongoClient client = createMongoClient(properties);
@@ -58,7 +61,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void hostCanBeCustomized() throws UnknownHostException {
+	public void hostCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
 		MongoClient client = createMongoClient(properties);
@@ -68,7 +71,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void credentialsCanBeCustomized() throws UnknownHostException {
+	public void credentialsCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
@@ -78,7 +81,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void databaseCanBeCustomized() throws UnknownHostException {
+	public void databaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setDatabase("foo");
 		properties.setUsername("user");
@@ -89,7 +92,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void authenticationDatabaseCanBeCustomized() throws UnknownHostException {
+	public void authenticationDatabaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setAuthenticationDatabase("foo");
 		properties.setUsername("user");
@@ -100,7 +103,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCanBeCustomized() throws UnknownHostException {
+	public void uriCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
 				+ "mongo2.example.com:23456/test");
@@ -115,7 +118,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCannotBeSetWithCredentials() throws UnknownHostException {
+	public void uriCannotBeSetWithCredentials() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
@@ -127,7 +130,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCannotBeSetWithHostPort() throws UnknownHostException {
+	public void uriCannotBeSetWithHostPort() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setHost("localhost");
@@ -138,9 +141,24 @@ public class MongoClientFactoryTests {
 		createMongoClient(properties);
 	}
 
-	private MongoClient createMongoClient(MongoProperties properties)
-			throws UnknownHostException {
-		return new MongoClientFactory(properties, null).createMongoClient(null);
+	@Test
+	public void uriIsIgnoredInEmbeddedMode() {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://mongo.example.com:1234/mydb");
+		this.environment.setProperty("local.mongo.port", "4000");
+		MongoClient client = createMongoClient(properties, this.environment);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "localhost", 4000);
+	}
+
+	private MongoClient createMongoClient(MongoProperties properties) {
+		return createMongoClient(properties, null);
+	}
+
+	private MongoClient createMongoClient(MongoProperties properties,
+			Environment environment) {
+		return new MongoClientFactory(properties, environment).createMongoClient(null);
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {

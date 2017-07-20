@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.config.DriverConfiguration;
+import org.neo4j.ogm.config.Configuration.Builder;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,6 +32,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Michael Hunger
  * @author Vince Bickers
+ * @author Aurélien Leboulanger
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.data.neo4j")
@@ -43,7 +42,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	static final String HTTP_DRIVER = "org.neo4j.ogm.drivers.http.driver.HttpDriver";
 
-	static final String DEFAULT_HTTP_URI = "http://localhost:7474";
+	static final String DEFAULT_BOLT_URI = "bolt://localhost:7687";
 
 	static final String BOLT_DRIVER = "org.neo4j.ogm.drivers.bolt.driver.BoltDriver";
 
@@ -63,9 +62,9 @@ public class Neo4jProperties implements ApplicationContextAware {
 	private String password;
 
 	/**
-	 * Compiler to use.
+	 * Auto index mode.
 	 */
-	private String compiler;
+	private AutoIndexMode autoIndex = AutoIndexMode.NONE;
 
 	private final Embedded embedded = new Embedded();
 
@@ -95,12 +94,12 @@ public class Neo4jProperties implements ApplicationContextAware {
 		this.password = password;
 	}
 
-	public String getCompiler() {
-		return this.compiler;
+	public AutoIndexMode getAutoIndex() {
+		return this.autoIndex;
 	}
 
-	public void setCompiler(String compiler) {
-		this.compiler = compiler;
+	public void setAutoIndex(AutoIndexMode autoIndex) {
+		this.autoIndex = autoIndex;
 	}
 
 	public Embedded getEmbedded() {
@@ -117,62 +116,29 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 * @return a configuration
 	 */
 	public Configuration createConfiguration() {
-		Configuration configuration = new Configuration();
-		configureDriver(configuration.driverConfiguration());
-		if (this.compiler != null) {
-			configuration.compilerConfiguration().setCompilerClassName(this.compiler);
-		}
-		return configuration;
+		Builder builder = new Builder();
+		configure(builder);
+		return builder.build();
 	}
 
-	private void configureDriver(DriverConfiguration driverConfiguration) {
+	private void configure(Builder builder) {
 		if (this.uri != null) {
-			configureDriverFromUri(driverConfiguration, this.uri);
+			builder.uri(this.uri);
 		}
 		else {
-			configureDriverWithDefaults(driverConfiguration);
+			configureUriWithDefaults(builder);
 		}
 		if (this.username != null && this.password != null) {
-			driverConfiguration.setCredentials(this.username, this.password);
+			builder.credentials(this.username, this.password);
 		}
+		builder.autoIndex(this.getAutoIndex().getName());
 	}
 
-	private void configureDriverFromUri(DriverConfiguration driverConfiguration,
-			String uri) {
-		driverConfiguration.setDriverClassName(deduceDriverFromUri());
-		driverConfiguration.setURI(uri);
-	}
-
-	private String deduceDriverFromUri() {
-		try {
-			URI uri = new URI(this.uri);
-			String scheme = uri.getScheme();
-			if (scheme == null || scheme.equals("file")) {
-				return EMBEDDED_DRIVER;
-			}
-			if ("http".equals(scheme)) {
-				return HTTP_DRIVER;
-			}
-			if ("bolt".equals(scheme)) {
-				return BOLT_DRIVER;
-			}
-			throw new IllegalArgumentException(
-					"Could not deduce driver to use based on URI '" + uri + "'");
+	private void configureUriWithDefaults(Builder builder) {
+		if (!getEmbedded().isEnabled()
+				|| !ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
+			builder.uri(DEFAULT_BOLT_URI);
 		}
-		catch (URISyntaxException ex) {
-			throw new IllegalArgumentException(
-					"Invalid URI for spring.data.neo4j.uri '" + this.uri + "'", ex);
-		}
-	}
-
-	private void configureDriverWithDefaults(DriverConfiguration driverConfiguration) {
-		if (getEmbedded().isEnabled()
-				&& ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
-			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
-			return;
-		}
-		driverConfiguration.setDriverClassName(HTTP_DRIVER);
-		driverConfiguration.setURI(DEFAULT_HTTP_URI);
 	}
 
 	public static class Embedded {

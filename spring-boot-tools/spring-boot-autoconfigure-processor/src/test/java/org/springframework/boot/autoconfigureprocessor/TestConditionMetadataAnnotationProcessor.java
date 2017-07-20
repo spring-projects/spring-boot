@@ -62,14 +62,10 @@ public class TestConditionMetadataAnnotationProcessor
 		if (!file.exists()) {
 			return null;
 		}
-		FileInputStream inputStream = new FileInputStream(file);
-		try {
+		try (FileInputStream inputStream = new FileInputStream(file)) {
 			Properties properties = new Properties();
 			properties.load(inputStream);
 			return properties;
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.junit.Test;
 
+import org.springframework.boot.testsupport.assertj.Matched;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.endsWith;
 
 /**
  * Tests for {@link ResourceProperties}.
@@ -50,6 +53,18 @@ public class ResourcePropertiesTests {
 	public void resourceChainDisabled() {
 		this.properties.getChain().setEnabled(false);
 		assertThat(this.properties.getChain().getEnabled()).isFalse();
+	}
+
+	@Test
+	public void defaultStaticLocationsAllEndWithTrailingSlash() {
+		assertThat(this.properties.getStaticLocations()).are(Matched.by(endsWith("/")));
+	}
+
+	@Test
+	public void customStaticLocationsAreNormalizedToEndWithTrailingSlash() {
+		this.properties.setStaticLocations(new String[] { "/foo", "/bar", "/baz/" });
+		String[] actual = this.properties.getStaticLocations();
+		assertThat(actual).containsExactly("/foo/", "/bar/", "/baz/");
 	}
 
 }

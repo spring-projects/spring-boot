@@ -18,11 +18,9 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -31,8 +29,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -48,7 +46,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
@@ -61,26 +58,25 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Configuration for an OAuth2 resource server.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnMissingBean(AuthorizationServerEndpointsConfiguration.class)
 public class ResourceServerTokenServicesConfiguration {
-
-	private static final Log logger = LogFactory
-			.getLog(ResourceServerTokenServicesConfiguration.class);
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -93,7 +89,7 @@ public class ResourceServerTokenServicesConfiguration {
 	}
 
 	@Configuration
-	@Conditional(NotJwtTokenCondition.class)
+	@Conditional(RemoteTokenCondition.class)
 	protected static class RemoteTokenServicesConfiguration {
 
 		@Configuration
@@ -215,30 +211,58 @@ public class ResourceServerTokenServicesConfiguration {
 	}
 
 	@Configuration
+	@Conditional(JwkCondition.class)
+	protected static class JwkTokenStoreConfiguration {
+
+		private final ResourceServerProperties resource;
+
+		public JwkTokenStoreConfiguration(ResourceServerProperties resource) {
+			this.resource = resource;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(ResourceServerTokenServices.class)
+		public DefaultTokenServices jwkTokenServices(TokenStore jwkTokenStore) {
+			DefaultTokenServices services = new DefaultTokenServices();
+			services.setTokenStore(jwkTokenStore);
+			return services;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(TokenStore.class)
+		public TokenStore jwkTokenStore() {
+			return new JwkTokenStore(this.resource.getJwk().getKeySetUri());
+		}
+	}
+
+	@Configuration
 	@Conditional(JwtTokenCondition.class)
 	protected static class JwtTokenServicesConfiguration {
-
-		private RestTemplate keyUriRestTemplate = new RestTemplate();
 
 		private final ResourceServerProperties resource;
 
 		private final List<JwtAccessTokenConverterConfigurer> configurers;
 
+		private final List<JwtAccessTokenConverterRestTemplateCustomizer> customizers;
+
 		public JwtTokenServicesConfiguration(ResourceServerProperties resource,
-				ObjectProvider<List<JwtAccessTokenConverterConfigurer>> configurers) {
+				ObjectProvider<List<JwtAccessTokenConverterConfigurer>> configurers,
+				ObjectProvider<List<JwtAccessTokenConverterRestTemplateCustomizer>> customizers) {
 			this.resource = resource;
 			this.configurers = configurers.getIfAvailable();
+			this.customizers = customizers.getIfAvailable();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(ResourceServerTokenServices.class)
-		public DefaultTokenServices jwtTokenServices() {
+		public DefaultTokenServices jwtTokenServices(TokenStore jwtTokenStore) {
 			DefaultTokenServices services = new DefaultTokenServices();
-			services.setTokenStore(jwtTokenStore());
+			services.setTokenStore(jwtTokenStore);
 			return services;
 		}
 
 		@Bean
+		@ConditionalOnMissingBean(TokenStore.class)
 		public TokenStore jwtTokenStore() {
 			return new JwtTokenStore(jwtTokenEnhancer());
 		}
@@ -248,13 +272,7 @@ public class ResourceServerTokenServicesConfiguration {
 			JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
 			String keyValue = this.resource.getJwt().getKeyValue();
 			if (!StringUtils.hasText(keyValue)) {
-				try {
-					keyValue = getKeyFromServer();
-				}
-				catch (ResourceAccessException ex) {
-					logger.warn("Failed to fetch token key (you may need to refresh "
-							+ "when the auth server is back)");
-				}
+				keyValue = getKeyFromServer();
 			}
 			if (StringUtils.hasText(keyValue) && !keyValue.startsWith("-----BEGIN")) {
 				converter.setSigningKey(keyValue);
@@ -272,16 +290,23 @@ public class ResourceServerTokenServicesConfiguration {
 		}
 
 		private String getKeyFromServer() {
+			RestTemplate keyUriRestTemplate = new RestTemplate();
+			if (!CollectionUtils.isEmpty(this.customizers)) {
+				for (JwtAccessTokenConverterRestTemplateCustomizer customizer : this.customizers) {
+					customizer.customize(keyUriRestTemplate);
+				}
+			}
 			HttpHeaders headers = new HttpHeaders();
 			String username = this.resource.getClientId();
 			String password = this.resource.getClientSecret();
 			if (username != null && password != null) {
-				byte[] token = Base64.encode((username + ":" + password).getBytes());
+				byte[] token = Base64.getEncoder()
+						.encode((username + ":" + password).getBytes());
 				headers.add("Authorization", "Basic " + new String(token));
 			}
-			HttpEntity<Void> request = new HttpEntity<Void>(headers);
+			HttpEntity<Void> request = new HttpEntity<>(headers);
 			String url = this.resource.getJwt().getKeyUri();
-			return (String) this.keyUriRestTemplate
+			return (String) keyUriRestTemplate
 					.exchange(url, HttpMethod.GET, request, Map.class).getBody()
 					.get("value");
 		}
@@ -296,18 +321,19 @@ public class ResourceServerTokenServicesConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth TokenInfo Condition");
 			Environment environment = context.getEnvironment();
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"security.oauth2.resource.");
-			Boolean preferTokenInfo = resolver.getProperty("prefer-token-info",
-					Boolean.class);
+			Boolean preferTokenInfo = environment.getProperty(
+					"security.oauth2.resource.prefer-token-info", Boolean.class);
 			if (preferTokenInfo == null) {
 				preferTokenInfo = environment
 						.resolvePlaceholders("${OAUTH2_RESOURCE_PREFERTOKENINFO:true}")
 						.equals("true");
 			}
-			String tokenInfoUri = resolver.getProperty("token-info-uri");
-			String userInfoUri = resolver.getProperty("user-info-uri");
-			if (!StringUtils.hasLength(userInfoUri)) {
+			String tokenInfoUri = environment
+					.getProperty("security.oauth2.resource.token-info-uri");
+			String userInfoUri = environment
+					.getProperty("security.oauth2.resource.user-info-uri");
+			if (!StringUtils.hasLength(userInfoUri)
+					&& !StringUtils.hasLength(tokenInfoUri)) {
 				return ConditionOutcome
 						.match(message.didNotFind("user-info-uri property").atAll());
 			}
@@ -327,16 +353,37 @@ public class ResourceServerTokenServicesConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth JWT Condition");
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), "security.oauth2.resource.jwt.");
-			String keyValue = resolver.getProperty("key-value");
-			String keyUri = resolver.getProperty("key-uri");
+			Environment environment = context.getEnvironment();
+			String keyValue = environment
+					.getProperty("security.oauth2.resource.jwt.key-value");
+			String keyUri = environment
+					.getProperty("security.oauth2.resource.jwt.key-uri");
 			if (StringUtils.hasText(keyValue) || StringUtils.hasText(keyUri)) {
 				return ConditionOutcome
 						.match(message.foundExactly("provided public key"));
 			}
 			return ConditionOutcome
 					.noMatch(message.didNotFind("provided public key").atAll());
+		}
+
+	}
+
+	private static class JwkCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("OAuth JWK Condition");
+			Environment environment = context.getEnvironment();
+			String keyUri = environment
+					.getProperty("security.oauth2.resource.jwk.key-set-uri");
+			if (StringUtils.hasText(keyUri)) {
+				return ConditionOutcome
+						.match(message.foundExactly("provided jwk key set URI"));
+			}
+			return ConditionOutcome
+					.noMatch(message.didNotFind("key jwk set URI not provided").atAll());
 		}
 
 	}
@@ -354,17 +401,21 @@ public class ResourceServerTokenServicesConfiguration {
 
 	}
 
-	private static class NotJwtTokenCondition extends SpringBootCondition {
+	private static class RemoteTokenCondition extends NoneNestedConditions {
 
-		private JwtTokenCondition jwtTokenCondition = new JwtTokenCondition();
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			return ConditionOutcome
-					.inverse(this.jwtTokenCondition.getMatchOutcome(context, metadata));
+		RemoteTokenCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
+		@Conditional(JwtTokenCondition.class)
+		static class HasJwtConfiguration {
+
+		}
+
+		@Conditional(JwkCondition.class)
+		static class HasJwkConfiguration {
+
+		}
 	}
 
 	static class AcceptJsonRequestInterceptor implements ClientHttpRequestInterceptor {

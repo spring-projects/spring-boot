@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,9 @@ class JsonConverter {
 		if (deprecation != null) {
 			jsonObject.put("deprecated", true); // backward compatibility
 			JSONObject deprecationJsonObject = new JSONObject();
+			if (deprecation.getLevel() != null) {
+				deprecationJsonObject.put("level", deprecation.getLevel());
+			}
 			if (deprecation.getReason() != null) {
 				deprecationJsonObject.put("reason", deprecation.getReason());
 			}

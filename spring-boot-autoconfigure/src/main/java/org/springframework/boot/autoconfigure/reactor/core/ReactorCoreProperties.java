@@ -47,5 +47,7 @@ public class ReactorCoreProperties {
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
+
 	}
+
 }

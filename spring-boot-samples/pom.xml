@@ -71,6 +71,7 @@
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-property-validation</module>
+		<module>spring-boot-sample-quartz</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
 		<module>spring-boot-sample-secure-oauth2-actuator</module>
@@ -85,7 +86,6 @@
 		<module>spring-boot-sample-tomcat-jsp</module>
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
-		<module>spring-boot-sample-tomcat80-ssl</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>
@@ -101,6 +101,7 @@
 		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-ui</module>
+		<module>spring-boot-sample-webflux</module>
 		<module>spring-boot-sample-websocket-jetty</module>
 		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>

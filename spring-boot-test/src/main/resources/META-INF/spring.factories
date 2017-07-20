@@ -3,7 +3,9 @@ org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.context.ImportsContextCustomizerFactory,\
 org.springframework.boot.test.context.SpringBootTestContextCustomizerFactory,\
 org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory,\
-org.springframework.boot.test.mock.mockito.MockitoContextCustomizerFactory
+org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory,\
+org.springframework.boot.test.mock.mockito.MockitoContextCustomizerFactory,\
+org.springframework.boot.test.web.reactive.WebTestClientContextCustomizerFactory
 
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\

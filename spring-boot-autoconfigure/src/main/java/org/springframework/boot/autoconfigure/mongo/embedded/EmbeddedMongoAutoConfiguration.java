@@ -161,7 +161,6 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	private void setEmbeddedPort(int port) {
-		this.properties.setPort(port);
 		setPortProperty(this.context, port);
 	}
 
@@ -236,8 +235,8 @@ public class EmbeddedMongoAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class,
 			ReactiveMongoClientFactoryBean.class })
-	protected static class EmbeddedReactiveMongoDependencyConfiguration extends
-			ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
+	protected static class EmbeddedReactiveMongoDependencyConfiguration
+			extends ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
 
 		public EmbeddedReactiveMongoDependencyConfiguration() {
 			super("embeddedMongoServer");

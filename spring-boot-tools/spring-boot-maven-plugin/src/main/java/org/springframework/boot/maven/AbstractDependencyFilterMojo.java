@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -44,7 +45,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * {@code classifier} property.
 	 * @since 1.2
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.includes")
 	private List<Include> includes;
 
 	/**
@@ -53,21 +54,21 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * {@code classifier} property.
 	 * @since 1.1
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.excludes")
 	private List<Exclude> excludes;
 
 	/**
 	 * Comma separated list of groupId names to exclude (exact match).
 	 * @since 1.1
 	 */
-	@Parameter(property = "excludeGroupIds", defaultValue = "")
+	@Parameter(property = "spring-boot.excludeGroupIds", defaultValue = "")
 	private String excludeGroupIds;
 
 	/**
 	 * Comma separated list of artifact names to exclude (exact match).
 	 * @since 1.1
 	 */
-	@Parameter(property = "excludeArtifactIds", defaultValue = "")
+	@Parameter(property = "spring-boot.excludeArtifactIds", defaultValue = "")
 	private String excludeArtifactIds;
 
 	protected void setExcludes(List<Exclude> excludes) {
@@ -86,14 +87,15 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		this.excludeArtifactIds = excludeArtifactIds;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
 			FilterArtifacts filters) throws MojoExecutionException {
 		try {
-			return filters.filter(dependencies);
+			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);
+			filtered.retainAll(filters.filter(dependencies));
+			return filtered;
 		}
-		catch (ArtifactFilterException e) {
-			throw new MojoExecutionException(e.getMessage(), e);
+		catch (ArtifactFilterException ex) {
+			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 	}
 

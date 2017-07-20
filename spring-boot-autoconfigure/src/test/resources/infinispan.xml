@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="urn:infinispan:config:7.1 http://www.infinispan.org/schemas/infinispan-config-7.1.xsd"
-            xmlns="urn:infinispan:config:7.1">
+<infinispan>
 
 	<!-- ************************************** -->
 	<!-- Corresponds to @Cacheable("cache-name") -->
 	<!-- ************************************** -->
 	<cache-container default-cache="default">
+		<local-cache name="default"/>
 		<local-cache name="foo"/>
 		<local-cache name="bar" />
 	</cache-container>

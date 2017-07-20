@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-mustache</artifactId>
 	<name>Spring Boot Mustache Starter</name>
-	<description>Starter for building MVC web applications using Mustache views</description>
+	<description>Starter for building web applications using Mustache views</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -21,10 +21,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.samskivert</groupId>

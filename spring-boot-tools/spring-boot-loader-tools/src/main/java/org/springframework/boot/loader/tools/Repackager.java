@@ -25,9 +25,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -60,7 +61,7 @@ public class Repackager {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<MainClassTimeoutWarningListener>();
+	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
 	private String mainClass;
 
@@ -184,12 +185,8 @@ public class Repackager {
 		}
 		destination.delete();
 		try {
-			JarFile jarFileSource = new JarFile(workingSource);
-			try {
+			try (JarFile jarFileSource = new JarFile(workingSource)) {
 				repackage(jarFileSource, destination, libraries, launchScript);
-			}
-			finally {
-				jarFileSource.close();
 			}
 		}
 		finally {
@@ -221,23 +218,18 @@ public class Repackager {
 	}
 
 	private boolean alreadyRepackaged() throws IOException {
-		JarFile jarFile = new JarFile(this.source);
-		try {
+		try (JarFile jarFile = new JarFile(this.source)) {
 			Manifest manifest = jarFile.getManifest();
 			return (manifest != null && manifest.getMainAttributes()
 					.getValue(BOOT_VERSION_ATTRIBUTE) != null);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
 	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
 			LaunchScript launchScript) throws IOException {
-		JarWriter writer = new JarWriter(destination, launchScript);
-		try {
-			final List<Library> unpackLibraries = new ArrayList<Library>();
-			final List<Library> standardLibraries = new ArrayList<Library>();
+		try (JarWriter writer = new JarWriter(destination, launchScript)) {
+			final List<Library> unpackLibraries = new ArrayList<>();
+			final List<Library> standardLibraries = new ArrayList<>();
 			libraries.doWithLibraries(new LibraryCallback() {
 
 				@Override
@@ -256,21 +248,13 @@ public class Repackager {
 			});
 			repackage(sourceJar, writer, unpackLibraries, standardLibraries);
 		}
-		finally {
-			try {
-				writer.close();
-			}
-			catch (Exception ex) {
-				// Ignore
-			}
-		}
 	}
 
 	private void repackage(JarFile sourceJar, JarWriter writer,
 			final List<Library> unpackLibraries, final List<Library> standardLibraries)
 					throws IOException {
 		writer.writeManifest(buildManifest(sourceJar));
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 		writeNestedLibraries(unpackLibraries, seen, writer);
 		if (this.layout instanceof RepackagingLayout) {
 			writer.writeEntries(sourceJar, new RenamingEntryTransformer(
@@ -309,12 +293,8 @@ public class Repackager {
 
 	private boolean isZip(File file) {
 		try {
-			FileInputStream fileInputStream = new FileInputStream(file);
-			try {
+			try (FileInputStream fileInputStream = new FileInputStream(file)) {
 				return isZip(fileInputStream);
-			}
-			finally {
-				fileInputStream.close();
 			}
 		}
 		catch (IOException ex) {
@@ -428,7 +408,7 @@ public class Repackager {
 		}
 
 		@Override
-		public JarEntry transform(JarEntry entry) {
+		public JarArchiveEntry transform(JarArchiveEntry entry) {
 			if (entry.getName().equals("META-INF/INDEX.LIST")) {
 				return null;
 			}
@@ -437,7 +417,8 @@ public class Repackager {
 					|| entry.getName().startsWith("BOOT-INF/")) {
 				return entry;
 			}
-			JarEntry renamedEntry = new JarEntry(this.namePrefix + entry.getName());
+			JarArchiveEntry renamedEntry = new JarArchiveEntry(
+					this.namePrefix + entry.getName());
 			renamedEntry.setTime(entry.getTime());
 			renamedEntry.setSize(entry.getSize());
 			renamedEntry.setMethod(entry.getMethod());

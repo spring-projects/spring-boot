@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -66,8 +66,7 @@ public class H2ConsoleAutoConfigurationTests {
 	@Test
 	public void propertyCanEnableConsole() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.h2.console.enabled:true");
+		TestPropertyValues.of("spring.h2.console.enabled:true").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		ServletRegistrationBean<?> registrationBean = this.context
@@ -81,18 +80,20 @@ public class H2ConsoleAutoConfigurationTests {
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Path must start with /");
+		this.thrown.expectMessage("Failed to bind properties under 'spring.h2.console'");
 		this.context.register(H2ConsoleAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.h2.console.enabled:true", "spring.h2.console.path:custom");
+		TestPropertyValues
+				.of("spring.h2.console.enabled:true", "spring.h2.console.path:custom")
+				.applyTo(this.context);
 		this.context.refresh();
 	}
 
 	@Test
 	public void customPathWithTrailingSlash() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.h2.console.enabled:true", "spring.h2.console.path:/custom/");
+		TestPropertyValues
+				.of("spring.h2.console.enabled:true", "spring.h2.console.path:/custom/")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		ServletRegistrationBean<?> servletRegistrationBean = this.context
@@ -103,8 +104,9 @@ public class H2ConsoleAutoConfigurationTests {
 	@Test
 	public void customPath() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.h2.console.enabled:true", "spring.h2.console.path:/custom");
+		TestPropertyValues
+				.of("spring.h2.console.enabled:true", "spring.h2.console.path:/custom")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		ServletRegistrationBean<?> servletRegistrationBean = this.context
@@ -115,9 +117,11 @@ public class H2ConsoleAutoConfigurationTests {
 	@Test
 	public void customInitParameters() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.h2.console.enabled:true", "spring.h2.console.settings.trace=true",
-				"spring.h2.console.settings.webAllowOthers=true");
+		TestPropertyValues
+				.of("spring.h2.console.enabled:true",
+						"spring.h2.console.settings.trace=true",
+						"spring.h2.console.settings.webAllowOthers=true")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		ServletRegistrationBean<?> registrationBean = this.context

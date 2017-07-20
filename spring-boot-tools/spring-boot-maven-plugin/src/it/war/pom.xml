@@ -8,6 +8,8 @@
 	<packaging>war</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>@java.version@</maven.compiler.source>
+		<maven.compiler.target>@java.version@</maven.compiler.target>
 	</properties>
 	<build>
 		<plugins>
@@ -26,9 +28,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.3</version>
+				<version>@maven-war-plugin.version@</version>
 				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<archive>
 						<manifestEntries>
 							<Not-Used>Foo</Not-Used>

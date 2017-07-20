@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import javax.annotation.PostConstruct;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.beans.BeansException;
@@ -28,17 +30,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 /**
  * Configuration properties for OAuth2 Resources.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "security.oauth2.resource")
-public class ResourceServerProperties implements Validator, BeanFactoryAware {
+public class ResourceServerProperties implements BeanFactoryAware {
 
 	@JsonIgnore
 	private final String clientId;
@@ -77,6 +81,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	private String tokenType = DefaultOAuth2AccessToken.BEARER_TYPE;
 
 	private Jwt jwt = new Jwt();
+
+	private Jwk jwk = new Jwk();
 
 	/**
 	 * The order of the filter chain used to authenticate tokens. Default puts it after
@@ -158,6 +164,14 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		this.jwt = jwt;
 	}
 
+	public Jwk getJwk() {
+		return this.jwk;
+	}
+
+	public void setJwk(Jwk jwk) {
+		this.jwk = jwk;
+	}
+
 	public String getClientId() {
 		return this.clientId;
 	}
@@ -174,13 +188,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		this.filterOrder = filterOrder;
 	}
 
-	@Override
-	public boolean supports(Class<?> clazz) {
-		return ResourceServerProperties.class.isAssignableFrom(clazz);
-	}
-
-	@Override
-	public void validate(Object target, Errors errors) {
+	@PostConstruct
+	public void validate() {
 		if (countBeans(AuthorizationServerEndpointsConfiguration.class) > 0) {
 			// If we are an authorization server we don't need remote resource token
 			// services
@@ -191,35 +200,50 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			// resource token services
 			return;
 		}
-		ResourceServerProperties resource = (ResourceServerProperties) target;
-		if (StringUtils.hasText(this.clientId)) {
-			if (!StringUtils.hasText(this.clientSecret)) {
-				if (!StringUtils.hasText(resource.getUserInfoUri())) {
-					errors.rejectValue("userInfoUri", "missing.userInfoUri",
-							"Missing userInfoUri (no client secret available)");
-				}
-			}
-			else {
-				if (isPreferTokenInfo()
-						&& !StringUtils.hasText(resource.getTokenInfoUri())) {
-					if (StringUtils.hasText(getJwt().getKeyUri())
-							|| StringUtils.hasText(getJwt().getKeyValue())) {
-						// It's a JWT decoder
-						return;
-					}
-					if (!StringUtils.hasText(resource.getUserInfoUri())) {
-						errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
-								"Missing tokenInfoUri and userInfoUri and there is no "
-										+ "JWT verifier key");
-					}
-				}
-			}
+		if (!StringUtils.hasText(this.clientId)) {
+			return;
+		}
+		try {
+			doValidate();
+		}
+		catch (BindException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
 	private int countBeans(Class<?> type) {
 		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type,
 				true, false).length;
+	}
+
+	private void doValidate() throws BindException {
+		BindingResult errors = new BeanPropertyBindingResult(this,
+				"resourceServerProperties");
+		boolean jwtConfigPresent = StringUtils.hasText(this.jwt.getKeyUri())
+				|| StringUtils.hasText(this.jwt.getKeyValue());
+		boolean jwkConfigPresent = StringUtils.hasText(this.jwk.getKeySetUri());
+		if (jwtConfigPresent && jwkConfigPresent) {
+			errors.reject("ambiguous.keyUri",
+					"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should"
+							+ " be configured.");
+		}
+		if (!jwtConfigPresent && !jwkConfigPresent) {
+			if (!StringUtils.hasText(this.userInfoUri)
+					&& !StringUtils.hasText(this.tokenInfoUri)) {
+				errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
+						"Missing tokenInfoUri and userInfoUri and there is no "
+								+ "JWT verifier key");
+			}
+			if (StringUtils.hasText(this.tokenInfoUri) && isPreferTokenInfo()) {
+				if (!StringUtils.hasText(this.clientSecret)) {
+					errors.rejectValue("clientSecret", "missing.clientSecret",
+							"Missing client secret");
+				}
+			}
+		}
+		if (errors.hasErrors()) {
+			throw new BindException(errors);
+		}
 	}
 
 	public class Jwt {
@@ -250,23 +274,26 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		}
 
 		public String getKeyUri() {
-			if (this.keyUri != null) {
-				return this.keyUri;
-			}
-			if (ResourceServerProperties.this.userInfoUri != null
-					&& ResourceServerProperties.this.userInfoUri.endsWith("/userinfo")) {
-				return ResourceServerProperties.this.userInfoUri.replace("/userinfo",
-						"/token_key");
-			}
-			if (ResourceServerProperties.this.tokenInfoUri != null
-					&& ResourceServerProperties.this.tokenInfoUri
-							.endsWith("/check_token")) {
-				return ResourceServerProperties.this.tokenInfoUri.replace("/check_token",
-						"/token_key");
-			}
-			return null;
+			return this.keyUri;
 		}
 
+	}
+
+	public class Jwk {
+
+		/**
+		 * The URI to get verification keys to verify the JWT token. This can be set when
+		 * the authorization server returns a set of verification keys.
+		 */
+		private String keySetUri;
+
+		public String getKeySetUri() {
+			return this.keySetUri;
+		}
+
+		public void setKeySetUri(String keySetUri) {
+			this.keySetUri = keySetUri;
+		}
 	}
 
 }

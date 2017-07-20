@@ -18,12 +18,14 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,28 +36,54 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TraceWebFilterAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class TraceWebFilterAutoConfigurationTests {
 
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void configureFilter() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
-				TraceRepositoryAutoConfiguration.class,
-				TraceWebFilterAutoConfiguration.class);
-		assertThat(context.getBean(WebRequestTraceFilter.class)).isNotNull();
-		context.close();
+		load();
+		assertThat(this.context.getBean(WebRequestTraceFilter.class)).isNotNull();
 	}
 
 	@Test
 	public void overrideTraceFilter() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				CustomTraceFilterConfig.class, PropertyPlaceholderAutoConfiguration.class,
+		load(CustomTraceFilterConfig.class);
+		WebRequestTraceFilter filter = this.context.getBean(WebRequestTraceFilter.class);
+		assertThat(filter).isInstanceOf(TestWebRequestTraceFilter.class);
+	}
+
+	@Test
+	public void skipsFilterIfPropertyDisabled() throws Exception {
+		load("endpoints.trace.filter.enabled:false");
+		assertThat(this.context.getBeansOfType(WebRequestTraceFilter.class).size())
+				.isEqualTo(0);
+	}
+
+	private void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(environment).applyTo(context);
+		if (config != null) {
+			context.register(config);
+		}
+		context.register(PropertyPlaceholderAutoConfiguration.class,
 				TraceRepositoryAutoConfiguration.class,
 				TraceWebFilterAutoConfiguration.class);
-		WebRequestTraceFilter filter = context.getBean(WebRequestTraceFilter.class);
-		assertThat(filter).isInstanceOf(TestWebRequestTraceFilter.class);
-		context.close();
+		context.refresh();
+		this.context = context;
 	}
 
 	@Configuration

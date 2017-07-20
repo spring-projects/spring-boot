@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class OpenTsdbGaugeWriterTests {
 
 	@Test
 	public void postSuccessfullyOnFlush() {
-		this.writer.set(new Metric<Double>("foo", 2.4));
+		this.writer.set(new Metric<>("foo", 2.4));
 		given(this.restTemplate.postForEntity(anyString(), any(Object.class), anyMap()))
 				.willReturn(emptyResponse());
 		this.writer.flush();
@@ -64,13 +64,13 @@ public class OpenTsdbGaugeWriterTests {
 		given(this.restTemplate.postForEntity(anyString(), any(Object.class), anyMap()))
 				.willReturn(emptyResponse());
 		this.writer.setBufferSize(0);
-		this.writer.set(new Metric<Double>("foo", 2.4));
+		this.writer.set(new Metric<>("foo", 2.4));
 		verify(this.restTemplate).postForEntity(anyString(), any(Object.class), anyMap());
 	}
 
 	@SuppressWarnings("rawtypes")
 	private ResponseEntity<Map> emptyResponse() {
-		return new ResponseEntity<Map>(Collections.emptyMap(), HttpStatus.OK);
+		return new ResponseEntity<>(Collections.emptyMap(), HttpStatus.OK);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

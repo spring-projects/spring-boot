@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -71,9 +71,10 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.schemaAction:RECREATE_DROP_UNUSED",
-				"spring.data.cassandra.keyspaceName:boot_test");
+		TestPropertyValues
+				.of("spring.data.cassandra.schemaAction=recreate_drop_unused",
+						"spring.data.cassandra.keyspaceName=boot_test")
+				.applyTo(this.context);
 		this.context.register(CassandraAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class);
 		this.context.refresh();
@@ -83,13 +84,9 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		Session session = this.cassandra.getCluster().connect();
-		try {
+		try (Session session = this.cassandra.getCluster().connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
-		}
-		finally {
-			session.close();
 		}
 	}
 

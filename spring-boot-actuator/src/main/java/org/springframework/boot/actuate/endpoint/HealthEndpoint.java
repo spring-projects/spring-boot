@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,12 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 		return this.timeToLive;
 	}
 
-	public void setTimeToLive(long ttl) {
-		this.timeToLive = ttl;
+	/**
+	 * Set the time to live for cached results.
+	 * @param timeToLive the time to live in milliseconds
+	 */
+	public void setTimeToLive(long timeToLive) {
+		this.timeToLive = timeToLive;
 	}
 
 	/**

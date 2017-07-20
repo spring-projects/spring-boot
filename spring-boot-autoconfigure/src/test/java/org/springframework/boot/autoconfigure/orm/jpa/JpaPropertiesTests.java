@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.vendor.Database;
@@ -108,17 +108,17 @@ public class JpaPropertiesTests {
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
 		assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 	}
 
 	@Test
-	public void useNewIdGeneratorMappingsTrue() throws Exception {
+	public void useNewIdGeneratorMappingsFalse() throws Exception {
 		JpaProperties properties = load(
-				"spring.jpa.hibernate.use-new-id-generator-mappings:true");
+				"spring.jpa.hibernate.use-new-id-generator-mappings:false");
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
 		assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
 	}
 
 	@Test
@@ -177,7 +177,7 @@ public class JpaPropertiesTests {
 
 	private JpaProperties load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.register(TestConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

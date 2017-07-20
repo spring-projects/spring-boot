@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,19 +160,15 @@ public class JarFile extends java.util.jar.JarFile {
 				manifest = new JarFile(this.getRootJarFile()).getManifest();
 			}
 			else {
-				InputStream inputStream = getInputStream(MANIFEST_NAME,
-						ResourceAccess.ONCE);
-				if (inputStream == null) {
-					return null;
-				}
-				try {
+				try (InputStream inputStream = getInputStream(MANIFEST_NAME,
+						ResourceAccess.ONCE)) {
+					if (inputStream == null) {
+						return null;
+					}
 					manifest = new Manifest(inputStream);
 				}
-				finally {
-					inputStream.close();
-				}
 			}
-			this.manifest = new SoftReference<Manifest>(manifest);
+			this.manifest = new SoftReference<>(manifest);
 		}
 		return manifest;
 	}
@@ -247,7 +243,7 @@ public class JarFile extends java.util.jar.JarFile {
 		try {
 			return createJarFileFromEntry(entry);
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			throw new IOException(
 					"Unable to open nested jar file '" + entry.getName() + "'", ex);
 		}
@@ -298,6 +294,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public void close() throws IOException {
+		super.close();
 		this.rootFile.close();
 	}
 
@@ -335,9 +332,8 @@ public class JarFile extends java.util.jar.JarFile {
 		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
 		// happening that often.
 		try {
-			JarInputStream inputStream = new JarInputStream(
-					getData().getInputStream(ResourceAccess.ONCE));
-			try {
+			try (JarInputStream inputStream = new JarInputStream(
+					getData().getInputStream(ResourceAccess.ONCE))) {
 				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
 				while (certEntry != null) {
 					inputStream.closeEntry();
@@ -347,9 +343,6 @@ public class JarFile extends java.util.jar.JarFile {
 					setCertificates(getJarEntry(certEntry.getName()), certEntry);
 					certEntry = inputStream.getNextJarEntry();
 				}
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 		catch (IOException ex) {

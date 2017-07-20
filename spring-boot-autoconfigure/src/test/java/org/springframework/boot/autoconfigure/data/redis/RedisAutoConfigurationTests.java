@@ -20,16 +20,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import redis.clients.jedis.Jedis;
 
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,15 +44,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christoph Strobl
  * @author Eddú Meléndez
  * @author Marco Aust
+ * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 public class RedisAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
 
 	@After
 	public void close() {
@@ -60,7 +59,7 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRedisConfiguration() throws Exception {
+	public void testDefaultRedisConfiguration() {
 		load();
 		assertThat(this.context.getBean("redisTemplate", RedisOperations.class))
 				.isNotNull();
@@ -68,115 +67,143 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOverrideRedisConfiguration() throws Exception {
-		load("spring.redis.host:foo", "spring.redis.database:1");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
-				.isEqualTo("foo");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getDatabase())
-				.isEqualTo(1);
+	public void testOverrideRedisConfiguration() {
+		load("spring.redis.host:foo", "spring.redis.database:1",
+				"spring.redis.lettuce.shutdown-timeout:500");
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.getHostName()).isEqualTo("foo");
+		assertThat(cf.getDatabase()).isEqualTo(1);
+		assertThat(cf.getPassword()).isNull();
+		assertThat(cf.isUseSsl()).isFalse();
+		assertThat(cf.getShutdownTimeout()).isEqualTo(500);
 	}
 
 	@Test
-	public void testOverrideUrlRedisConfiguration() throws Exception {
-		load("spring.redis.host:foo", "spring.redis.password:xyz",
-				"spring.redis.port:1000", "spring.redis.ssl:true",
+	public void testCustomizeRedisConfiguration() {
+		load(CustomConfiguration.class);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.isUseSsl()).isTrue();
+	}
+
+	@Test
+	public void testRedisUrlConfiguration() throws Exception {
+		load("spring.redis.host:foo",
 				"spring.redis.url:redis://user:password@example:33");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
-				.isEqualTo("example");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPort())
-				.isEqualTo(33);
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPassword())
-				.isEqualTo("password");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).isUseSsl())
-				.isEqualTo(true);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.getHostName()).isEqualTo("example");
+		assertThat(cf.getPort()).isEqualTo(33);
+		assertThat(cf.getPassword()).isEqualTo("password");
+		assertThat(cf.isUseSsl()).isFalse();
+	}
+
+	@Test
+	public void testOverrideUrlRedisConfiguration() {
+		load("spring.redis.host:foo", "spring.redis.password:xyz",
+				"spring.redis.port:1000", "spring.redis.ssl:false",
+				"spring.redis.url:rediss://user:password@example:33");
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.getHostName()).isEqualTo("example");
+		assertThat(cf.getPort()).isEqualTo(33);
+		assertThat(cf.getPassword()).isEqualTo("password");
+		assertThat(cf.isUseSsl()).isTrue();
 	}
 
 	@Test
 	public void testRedisConfigurationWithPool() throws Exception {
-		load("spring.redis.host:foo", "spring.redis.pool.max-idle:1");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
-				.isEqualTo("foo");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
-				.getMaxIdle()).isEqualTo(1);
+		load("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
+				"spring.redis.lettuce.pool.max-idle:4",
+				"spring.redis.lettuce.pool.max-active:16",
+				"spring.redis.lettuce.pool.max-wait:2000",
+				"spring.redis.lettuce.shutdown-timeout:1000");
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(getDefaultLettucePool(cf).getHostName()).isEqualTo("foo");
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMinIdle()).isEqualTo(1);
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxIdle()).isEqualTo(4);
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxTotal()).isEqualTo(16);
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxWaitMillis())
+				.isEqualTo(2000);
+		assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
 	}
 
 	@Test
 	public void testRedisConfigurationWithTimeout() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
-				.isEqualTo("foo");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getTimeout())
-				.isEqualTo(100);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.getHostName()).isEqualTo("foo");
+		assertThat(cf.getTimeout()).isEqualTo(100);
 	}
 
 	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		if (isAtLeastOneNodeAvailable(sentinels)) {
-			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
-					+ StringUtils.collectionToCommaDelimitedString(sentinels));
-			assertThat(this.context.getBean(JedisConnectionFactory.class)
-					.isRedisSentinelAware()).isTrue();
-		}
+		load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
+				+ StringUtils.collectionToCommaDelimitedString(sentinels));
+		assertThat(this.context.getBean(LettuceConnectionFactory.class)
+				.isRedisSentinelAware()).isTrue();
+	}
+
+	@Test
+	public void testRedisConfigurationWithSentinelAndPassword() throws Exception {
+		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
+				"spring.redis.sentinel.nodes:"
+						+ StringUtils.collectionToCommaDelimitedString(sentinels));
+		assertThat(this.context.getBean(LettuceConnectionFactory.class).getPassword())
+				.isEqualTo("password");
 	}
 
 	@Test
 	public void testRedisConfigurationWithCluster() throws Exception {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
-		if (isAtLeastOneNodeAvailable(clusterNodes)) {
-			load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-					"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
-			assertThat(this.context.getBean(JedisConnectionFactory.class)
-					.getClusterConnection()).isNotNull();
-		}
+		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
+		assertThat(this.context.getBean(LettuceConnectionFactory.class)
+				.getClusterConnection()).isNotNull();
 	}
 
-	private boolean isAtLeastOneNodeAvailable(List<String> nodes) {
-		for (String node : nodes) {
-			if (isAvailable(node)) {
-				return true;
-			}
-		}
-
-		return false;
+	@Test
+	public void testRedisConfigurationWithClusterAndPassword() throws Exception {
+		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		load("spring.redis.password=password",
+				"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
+		assertThat(this.context.getBean(LettuceConnectionFactory.class).getPassword())
+				.isEqualTo("password");
 	}
 
-	private boolean isAvailable(String node) {
-		Jedis jedis = null;
-		try {
-			String[] hostAndPort = node.split(":");
-			jedis = new Jedis(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
-			jedis.connect();
-			jedis.ping();
-			return true;
-		}
-		catch (Exception ex) {
-			return false;
-		}
-		finally {
-			if (jedis != null) {
-				try {
-					jedis.disconnect();
-					jedis.close();
-				}
-				catch (Exception ex) {
-					// Continue
-				}
-			}
-		}
+	private DefaultLettucePool getDefaultLettucePool(LettuceConnectionFactory factory) {
+		return (DefaultLettucePool) ReflectionTestUtils.getField(factory, "pool");
 	}
 
 	private void load(String... environment) {
-		this.context = doLoad(environment);
+		load(null, environment);
 	}
 
-	private AnnotationConfigApplicationContext doLoad(String... environment) {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-		applicationContext.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		applicationContext.refresh();
-		return applicationContext;
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(environment).applyTo(ctx);
+		if (config != null) {
+			ctx.register(config);
+		}
+		ctx.register(RedisAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
+	}
+
+	@Configuration
+	static class CustomConfiguration {
+
+		@Bean
+		LettuceClientConfigurationBuilderCustomizer customizer() {
+			return LettuceClientConfigurationBuilder::useSsl;
+		}
+
 	}
 
 }

@@ -26,11 +26,11 @@ import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfigur
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpointContextPathTests.Config;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpointContextPathTests.ContextPathListener;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -71,8 +71,8 @@ public class JolokiaMvcEndpointContextPathTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
-				"foo:bar");
+		TestPropertyValues.of("foo:bar")
+				.applyTo((ConfigurableApplicationContext) this.context);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class JolokiaMvcEndpointContextPathTests {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext context) {
-			EnvironmentTestUtils.addEnvironment(context, "management.contextPath:/admin");
+			TestPropertyValues.of("management.contextPath:/admin").applyTo(context);
 		}
 
 	}

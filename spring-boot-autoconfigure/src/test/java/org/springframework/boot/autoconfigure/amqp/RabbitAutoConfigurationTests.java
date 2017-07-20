@@ -30,6 +30,7 @@ import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -44,7 +45,7 @@ import org.springframework.amqp.rabbit.support.ValueExpression;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -293,33 +294,110 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRabbitListenerContainerFactoryWithCustomSettings() {
+	public void testSimpleRabbitListenerContainerFactoryWithCustomSettings() {
 		load(new Class<?>[] { MessageConvertersConfiguration.class,
 				MessageRecoverersConfiguration.class },
-				"spring.rabbitmq.listener.retry.enabled:true",
-				"spring.rabbitmq.listener.retry.maxAttempts:4",
-				"spring.rabbitmq.listener.retry.initialInterval:2000",
-				"spring.rabbitmq.listener.retry.multiplier:1.5",
-				"spring.rabbitmq.listener.retry.maxInterval:5000",
-				"spring.rabbitmq.listener.autoStartup:false",
-				"spring.rabbitmq.listener.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.concurrency:5",
-				"spring.rabbitmq.listener.maxConcurrency:10",
-				"spring.rabbitmq.listener.prefetch:40",
-				"spring.rabbitmq.listener.defaultRequeueRejected:false",
-				"spring.rabbitmq.listener.idleEventInterval:5",
-				"spring.rabbitmq.listener.transactionSize:20");
+				"spring.rabbitmq.listener.simple.retry.enabled:true",
+				"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
+				"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
+				"spring.rabbitmq.listener.simple.retry.multiplier:1.5",
+				"spring.rabbitmq.listener.simple.retry.maxInterval:5000",
+				"spring.rabbitmq.listener.simple.autoStartup:false",
+				"spring.rabbitmq.listener.simple.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.prefetch:40",
+				"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.simple.idleEventInterval:5",
+				"spring.rabbitmq.listener.simple.transactionSize:20");
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
+		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
+		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+		checkCommonProps(dfa);
+	}
+
+	@Test
+	public void testDirectRabbitListenerContainerFactoryWithCustomSettings() {
+		load(new Class<?>[] { MessageConvertersConfiguration.class,
+				MessageRecoverersConfiguration.class },
+				"spring.rabbitmq.listener.type:direct",
+				"spring.rabbitmq.listener.direct.retry.enabled:true",
+				"spring.rabbitmq.listener.direct.retry.maxAttempts:4",
+				"spring.rabbitmq.listener.direct.retry.initialInterval:2000",
+				"spring.rabbitmq.listener.direct.retry.multiplier:1.5",
+				"spring.rabbitmq.listener.direct.retry.maxInterval:5000",
+				"spring.rabbitmq.listener.direct.autoStartup:false",
+				"spring.rabbitmq.listener.direct.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.direct.prefetch:40",
+				"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.direct.idleEventInterval:5");
+		DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
+				.getBean("rabbitListenerContainerFactory",
+						DirectRabbitListenerContainerFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
+		checkCommonProps(dfa);
+	}
+
+	@Test
+	public void testRabbitListenerContainerFactoryConfigurersAreAvailable() {
+		load(TestConfiguration.class, "spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.prefetch:40",
+				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.direct.prefetch:40");
+		assertThat(this.context
+				.getBeansOfType(SimpleRabbitListenerContainerFactoryConfigurer.class))
+						.hasSize(1);
+		assertThat(this.context
+				.getBeansOfType(DirectRabbitListenerContainerFactoryConfigurer.class))
+						.hasSize(1);
+	}
+
+	@Test
+	public void testSimpleRabbitListenerContainerFactoryConfigurerUsesConfig() {
+		load(TestConfiguration.class, "spring.rabbitmq.listener.type:direct", // listener
+																				// type is
+																				// irrelevant
+				"spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.prefetch:40");
+		SimpleRabbitListenerContainerFactoryConfigurer configurer = this.context
+				.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
+		SimpleRabbitListenerContainerFactory factory = mock(
+				SimpleRabbitListenerContainerFactory.class);
+		configurer.configure(factory, mock(ConnectionFactory.class));
+		verify(factory).setConcurrentConsumers(5);
+		verify(factory).setMaxConcurrentConsumers(10);
+		verify(factory).setPrefetchCount(40);
+	}
+
+	@Test
+	public void testDirectRabbitListenerContainerFactoryConfigurerUsesConfig() {
+		load(TestConfiguration.class, "spring.rabbitmq.listener.type:simple", // listener
+																				// type is
+																				// irrelevant
+				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.direct.prefetch:40");
+		DirectRabbitListenerContainerFactoryConfigurer configurer = this.context
+				.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);
+		DirectRabbitListenerContainerFactory factory = mock(
+				DirectRabbitListenerContainerFactory.class);
+		configurer.configure(factory, mock(ConnectionFactory.class));
+		verify(factory).setConsumersPerQueue(5);
+		verify(factory).setPrefetchCount(40);
+	}
+
+	private void checkCommonProps(DirectFieldAccessor dfa) {
 		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(Boolean.FALSE);
 		assertThat(dfa.getPropertyValue("acknowledgeMode"))
 				.isEqualTo(AcknowledgeMode.MANUAL);
-		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
-		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
 		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
-		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
 		assertThat(dfa.getPropertyValue("messageConverter"))
 				.isSameAs(this.context.getBean("myMessageConverter"));
 		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
@@ -419,7 +497,7 @@ public class RabbitAutoConfigurationTests {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(RabbitAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
 		this.context = applicationContext;
 	}

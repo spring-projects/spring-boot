@@ -60,7 +60,7 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 
 	private T servlet;
 
-	private Set<String> urlMappings = new LinkedHashSet<String>();
+	private Set<String> urlMappings = new LinkedHashSet<>();
 
 	private boolean alwaysMapUrl = true;
 
@@ -125,7 +125,7 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	 */
 	public void setUrlMappings(Collection<String> urlMappings) {
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
-		this.urlMappings = new LinkedHashSet<String>(urlMappings);
+		this.urlMappings = new LinkedHashSet<>(urlMappings);
 	}
 
 	/**

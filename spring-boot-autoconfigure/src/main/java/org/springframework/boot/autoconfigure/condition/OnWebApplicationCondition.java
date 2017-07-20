@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -27,8 +27,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * {@link Condition} that checks for the presence or absence of
@@ -77,16 +77,16 @@ class OnWebApplicationCondition extends SpringBootCondition {
 						message.because(servletOutcome.getMessage()));
 			}
 			ConditionOutcome reactiveOutcome = isReactiveWebApplication(context);
-			if (reactiveOutcome.isMatch() && required)  {
+			if (reactiveOutcome.isMatch() && required) {
 				return new ConditionOutcome(reactiveOutcome.isMatch(),
 						message.because(reactiveOutcome.getMessage()));
 			}
-			boolean finalOutcome = (required ?
-					servletOutcome.isMatch() && reactiveOutcome.isMatch() :
-					servletOutcome.isMatch() || reactiveOutcome.isMatch());
-			return new ConditionOutcome(finalOutcome, message.because(
-					servletOutcome.getMessage()).append("and").append(
-							reactiveOutcome.getMessage()));
+			boolean finalOutcome = (required
+					? servletOutcome.isMatch() && reactiveOutcome.isMatch()
+					: servletOutcome.isMatch() || reactiveOutcome.isMatch());
+			return new ConditionOutcome(finalOutcome,
+					message.because(servletOutcome.getMessage()).append("and")
+							.append(reactiveOutcome.getMessage()));
 		}
 	}
 
@@ -102,9 +102,9 @@ class OnWebApplicationCondition extends SpringBootCondition {
 				return ConditionOutcome.match(message.foundExactly("'session' scope"));
 			}
 		}
-		if (context.getEnvironment() instanceof StandardServletEnvironment) {
+		if (context.getEnvironment() instanceof ConfigurableWebEnvironment) {
 			return ConditionOutcome
-					.match(message.foundExactly("StandardServletEnvironment"));
+					.match(message.foundExactly("ConfigurableWebEnvironment"));
 		}
 		if (context.getResourceLoader() instanceof WebApplicationContext) {
 			return ConditionOutcome.match(message.foundExactly("WebApplicationContext"));
@@ -115,16 +115,16 @@ class OnWebApplicationCondition extends SpringBootCondition {
 	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
 		if (context.getResourceLoader() instanceof ReactiveWebApplicationContext) {
-			return ConditionOutcome.match(
-					message.foundExactly("ReactiveWebApplicationContext"));
+			return ConditionOutcome
+					.match(message.foundExactly("ReactiveWebApplicationContext"));
 		}
-		return ConditionOutcome.noMatch(message.because(
-				"not a reactive web application"));
+		return ConditionOutcome
+				.noMatch(message.because("not a reactive web application"));
 	}
 
 	private Type deduceType(AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(
-				ConditionalOnWebApplication.class.getName());
+		Map<String, Object> attributes = metadata
+				.getAnnotationAttributes(ConditionalOnWebApplication.class.getName());
 		if (attributes != null) {
 			return (Type) attributes.get("type");
 		}

@@ -39,7 +39,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  */
 final class JarURLConnection extends java.net.JarURLConnection {
 
-	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
+	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
 
 	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
 			"Jar file or entry not found");
@@ -187,6 +187,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public int getContentLength() {
+		long length = getContentLengthLong();
+		if (length > Integer.MAX_VALUE) {
+			return -1;
+		}
+		return (int) length;
+	}
+
+	@Override
+	public long getContentLengthLong() {
 		if (this.jarFile == null) {
 			return -1;
 		}

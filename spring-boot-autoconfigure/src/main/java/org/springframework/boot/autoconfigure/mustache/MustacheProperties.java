@@ -30,7 +30,7 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
-	public static final String DEFAULT_SUFFIX = ".html";
+	public static final String DEFAULT_SUFFIX = ".mustache";
 
 	/**
 	 * Prefix to apply to template names.

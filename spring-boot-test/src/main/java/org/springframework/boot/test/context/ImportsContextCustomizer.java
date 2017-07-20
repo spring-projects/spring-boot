@@ -231,7 +231,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		private static final Set<AnnotationFilter> ANNOTATION_FILTERS;
 
 		static {
-			Set<AnnotationFilter> filters = new HashSet<AnnotationFilter>();
+			Set<AnnotationFilter> filters = new HashSet<>();
 			filters.add(new JavaLangAnnotationFilter());
 			filters.add(new KotlinAnnotationFilter());
 			filters.add(new SpockAnnotationFilter());
@@ -241,8 +241,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		private final Set<Object> key;
 
 		ContextCustomizerKey(Class<?> testClass) {
-			Set<Annotation> annotations = new HashSet<Annotation>();
-			Set<Class<?>> seen = new HashSet<Class<?>>();
+			Set<Annotation> annotations = new HashSet<>();
+			Set<Class<?>> seen = new HashSet<>();
 			collectClassAnnotations(testClass, annotations, seen);
 			Set<Object> determinedImports = determineImports(annotations, testClass);
 			this.key = Collections.<Object>unmodifiableSet(
@@ -284,7 +284,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		private Set<Object> determineImports(Set<Annotation> annotations,
 				Class<?> testClass) {
-			Set<Object> determinedImports = new LinkedHashSet<Object>();
+			Set<Object> determinedImports = new LinkedHashSet<>();
 			AnnotationMetadata testClassMetadata = new StandardAnnotationMetadata(
 					testClass);
 			for (Annotation annotation : annotations) {
@@ -401,8 +401,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public boolean isIgnored(Annotation annotation) {
-			return annotation.annotationType().getName()
-					.startsWith("org.spockframework.");
+			return annotation.annotationType().getName().startsWith("org.spockframework.")
+					|| annotation.annotationType().getName().startsWith("spock.");
 		}
 
 	}

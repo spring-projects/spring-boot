@@ -29,6 +29,22 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
+ * already contained in the {@link BeanFactory}. When placed on a {@code @Bean} method,
+ * the bean class default to the return type of the factory method:
+ *
+ * <pre class="code">
+ * &#064;Configuration
+ * public class MyAutoConfiguration {
+ *
+ *     &#064;ConditionalOnBean
+ *     &#064;Bean
+ *     public MyService myService() {
+ *         ...
+ *     }
+ *
+ * }</pre>
+ * <p>
+ * In the sample above the condition will match if a bean of type {@code MyService} is
  * already contained in the {@link BeanFactory}.
  * <p>
  * The condition can only match the bean definitions that have been processed by the

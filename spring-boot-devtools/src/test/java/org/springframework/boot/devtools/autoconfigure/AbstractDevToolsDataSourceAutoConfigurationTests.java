@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefiniti
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -95,21 +95,30 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return statement;
 	}
 
+	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
+		return this.createContext(null, classes);
+	}
+
 	protected final ConfigurableApplicationContext createContext(String driverClassName,
 			Class<?>... classes) {
+		return this.createContext(driverClassName, null, classes);
+	}
+
+	protected final ConfigurableApplicationContext createContext(String driverClassName,
+			String url, Class<?>... classes) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(classes);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		if (driverClassName != null) {
-			EnvironmentTestUtils.addEnvironment(context,
-					"spring.datasource.driver-class-name:" + driverClassName);
+			TestPropertyValues
+					.of("spring.datasource.driver-class-name:" + driverClassName)
+					.applyTo(context);
+		}
+		if (url != null) {
+			TestPropertyValues.of("spring.datasource.url:" + url).applyTo(context);
 		}
 		context.refresh();
 		return context;
-	}
-
-	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
-		return this.createContext(null, classes);
 	}
 
 	@Configuration

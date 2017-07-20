@@ -23,6 +23,10 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+		</dependency>
 		<!-- Provided -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -38,11 +42,6 @@
 		<dependency>
 			<groupId>org.zeroturnaround</groupId>
 			<artifactId>zt-zip</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>springloaded</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -103,17 +102,6 @@
 							<Spring-Boot-Commit-Id>${git.commit.id}</Spring-Boot-Commit-Id>
 						</manifestEntries>
 					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<configuration>
-					<annotations>
-						<annotation>org.springframework.boot.loader.tools.UsesUnsafeJava</annotation>
-						<annotation>org.springframework.lang.UsesJava7</annotation>
-						<annotation>org.springframework.lang.UsesJava8</annotation>
-					</annotations>
 				</configuration>
 			</plugin>
 		</plugins>
