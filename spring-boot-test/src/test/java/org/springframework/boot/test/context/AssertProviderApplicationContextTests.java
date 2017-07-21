@@ -64,7 +64,7 @@ public class AssertProviderApplicationContextTests {
 	}
 
 	@Test
-	public void getWhenTypeIsNullShouldThrowExecption() throws Exception {
+	public void getWhenTypeIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
 		AssertProviderApplicationContext.get(null, ApplicationContext.class,

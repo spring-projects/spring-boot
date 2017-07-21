@@ -98,7 +98,7 @@ public abstract class Configurations {
 	protected abstract Configurations merge(Set<Class<?>> mergedClasses);
 
 	/**
-	 * Return the classes from all the specified configurations in the oder that they
+	 * Return the classes from all the specified configurations in the order that they
 	 * would be registered.
 	 * @param configurations the source configuration
 	 * @return configuration classes in registration order
@@ -108,7 +108,7 @@ public abstract class Configurations {
 	}
 
 	/**
-	 * Return the classes from all the specified configurations in the oder that they
+	 * Return the classes from all the specified configurations in the order that they
 	 * would be registered.
 	 * @param configurations the source configuration
 	 * @return configuration classes in registration order

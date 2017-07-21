@@ -670,7 +670,7 @@ public class KafkaProperties {
 			SINGLE,
 
 			/**
-			 * Invokes the endpoint with a batch of ConsumerRecord.
+			 * Invokes the endpoint with a batch of ConsumerRecords.
 			 */
 			BATCH;
 
