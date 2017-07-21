@@ -112,4 +112,7 @@ do as they were designed before this was clarified.
 | http://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
 
+| Spring Content
+| https://github.com/paulcwarren/spring-content/
+
 |===
