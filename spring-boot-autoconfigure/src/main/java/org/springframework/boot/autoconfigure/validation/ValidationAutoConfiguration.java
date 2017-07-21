@@ -29,6 +29,7 @@ import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -60,7 +61,7 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public static MethodValidationPostProcessor methodValidationPostProcessor(
-			Environment environment, Validator validator) {
+			Environment environment, @Lazy Validator validator) {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
 		processor.setProxyTargetClass(determineProxyTargetClass(environment));
 		processor.setValidator(validator);
