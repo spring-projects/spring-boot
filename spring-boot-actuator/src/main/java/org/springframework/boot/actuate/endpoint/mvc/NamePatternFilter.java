@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ abstract class NamePatternFilter<T> {
 	}
 
 	public Map<String, Object> getResults(String name) {
-		Pattern pattern = getRegexPattern(name);
-		if (pattern == null) { // this is not a regex
+		Pattern pattern = compilePatternIfNecessary(name);
+		if (pattern == null) {
 			Object value = getValue(this.source, name);
 			Map<String, Object> result = new HashMap<String, Object>();
 			result.put(name, value);
@@ -60,13 +60,13 @@ abstract class NamePatternFilter<T> {
 
 	}
 
-	private Pattern getRegexPattern(String name) {
+	private Pattern compilePatternIfNecessary(String name) {
 		for (String part : REGEX_PARTS) {
 			if (name.contains(part)) {
 				try {
 					return Pattern.compile(name);
 				}
-				catch (PatternSyntaxException e) {
+				catch (PatternSyntaxException ex) {
 					return null;
 				}
 			}
