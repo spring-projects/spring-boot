@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Conditional;
  * {@link Conditional} that only matches when the specified bean classes and/or names are
  * not already contained in the {@link BeanFactory}.
  * <p>
- * When placed on a {@code @Bean} method, the bean class default to the return type of the
+ * When placed on a {@code @Bean} method, the bean class defaults to the return type of the
  * factory method:
  *
  * <pre class="code">
