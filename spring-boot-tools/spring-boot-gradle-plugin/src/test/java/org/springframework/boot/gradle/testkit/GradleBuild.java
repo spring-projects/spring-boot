@@ -156,7 +156,7 @@ public class GradleBuild implements TestRule {
 		FileCopyUtils.copy(scriptContent,
 				new FileWriter(new File(this.projectDir, "build.gradle")));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.forwardOutput();
+				.withDebug(true);
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
