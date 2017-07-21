@@ -243,7 +243,7 @@ public class SpringApplicationBuilder {
 	 * Create a sibling application (one with the same parent). A side effect of calling
 	 * this method is that the current application (and its parent) are started without
 	 * any arguments if they are not already running. To supply arguments when starting
-	 * the current application and its parent use {@link #sibling(Object[], String...)}
+	 * the current application and its parent use {@link #sibling(Class[], String...)}
 	 * instead.
 	 * @param sources the sources for the application (Spring configuration)
 	 * @return the new sibling builder
