@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +38,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Base for testing classes that extends {@link AbstractReactiveWebServerFactory}.
@@ -100,6 +102,19 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.flatMap(response -> response.bodyToMono(String.class));
 		assertThat(result.block()).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
+	}
+
+	@Test
+	public void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() throws Exception {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		factory.setPort(0);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		factory.setPort(this.webServer.getPort());
+		this.thrown.expect(PortInUseException.class);
+		this.thrown.expectMessage(
+				equalTo("Port " + this.webServer.getPort() + " is already in use"));
+		factory.getWebServer(new EchoHandler()).start();
 	}
 
 	protected WebClient getWebClient() {
