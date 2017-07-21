@@ -951,8 +951,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in an array
 	 */
 	@SuppressWarnings("unchecked")
-	public <E> ListAssert<E> extractingJsonPathArrayValue(
-			CharSequence expression, Object... args) {
+	public <E> ListAssert<E> extractingJsonPathArrayValue(CharSequence expression,
+			Object... args) {
 		return Assertions.assertThat(
 				extractingJsonPathValue(expression, args, List.class, "an array"));
 	}
@@ -962,14 +962,14 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expression the {@link JsonPath} expression
 	 * @param args arguments to parameterize the {@code JsonPath} expression with, using
 	 * @param <K> key type
-	 * @param <V> value type
-	 * formatting specifiers defined in {@link String#format(String, Object...)}
+	 * @param <V> value type formatting specifiers defined in
+	 * {@link String#format(String, Object...)}
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a map
 	 */
 	@SuppressWarnings("unchecked")
-	public <K, V> MapAssert<K, V> extractingJsonPathMapValue(
-			CharSequence expression, Object... args) {
+	public <K, V> MapAssert<K, V> extractingJsonPathMapValue(CharSequence expression,
+			Object... args) {
 		return Assertions.assertThat(
 				extractingJsonPathValue(expression, args, Map.class, "a map"));
 	}

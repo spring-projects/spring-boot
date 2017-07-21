@@ -37,6 +37,7 @@ import org.springframework.test.util.JsonPathExpectationsHelper;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link JsonContentAssert}. Some tests here are based on Spring Framework
@@ -1252,7 +1253,7 @@ public class JsonContentAssertTests {
 	@Test
 	public void extractingJsonPathMapValue() throws Exception {
 		assertThat(forJson(TYPES)).extractingJsonPathMapValue("@.colorMap")
-				.containsEntry("red", "rojo");
+				.contains(entry("red", "rojo"));
 	}
 
 	@Test
