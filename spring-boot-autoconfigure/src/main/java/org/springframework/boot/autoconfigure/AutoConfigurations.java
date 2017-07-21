@@ -31,7 +31,7 @@ import org.springframework.util.ClassUtils;
 /**
  * {@link Configurations} representing auto-configuration {@code @Configuration} classes.
  *
- * @author Philip Webb
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public class AutoConfigurations extends Configurations implements Ordered {

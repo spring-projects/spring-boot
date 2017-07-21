@@ -55,7 +55,7 @@ import org.springframework.util.ReflectionUtils;
  * <pre class="code">
  * &#064;Test
  * public someTest() {
- *     this.contex.withPropertyValues("spring.foo=biz").run((loaded) -&gt; {
+ *     this.context.withPropertyValues("spring.foo=biz").run((loaded) -&gt; {
  *         assertThat(loaded).containsSingleBean(MyBean.class);
  *         // other assertions
  *     });
@@ -73,8 +73,8 @@ import org.springframework.util.ReflectionUtils;
  * further checks are required on the cause of the failure: <pre class="code">
  * &#064;Test
  * public someTest() {
- *     this.contex.withPropertyValues("spring.foo=fails").run((loaded) -&gt; {
- *         assertThat(loaded).getFailure().hasCauseInstanceOf(BadPropertyExcepton.class);
+ *     this.context.withPropertyValues("spring.foo=fails").run((loaded) -&gt; {
+ *         assertThat(loaded).getFailure().hasCauseInstanceOf(BadPropertyException.class);
  *         // other assertions
  *     });
  * }</pre>
