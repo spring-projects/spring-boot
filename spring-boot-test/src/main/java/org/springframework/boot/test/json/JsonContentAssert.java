@@ -961,9 +961,9 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * Extract the map value at the given JSON path for further object assertions.
 	 * @param expression the {@link JsonPath} expression
 	 * @param args arguments to parameterize the {@code JsonPath} expression with, using
+	 * formatting specifiers defined in {@link String#format(String, Object...)}
 	 * @param <K> key type
-	 * @param <V> value type formatting specifiers defined in
-	 * {@link String#format(String, Object...)}
+	 * @param <V> value type
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a map
 	 */
