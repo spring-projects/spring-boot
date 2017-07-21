@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.validation.constraints.Min;
@@ -30,15 +27,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigurationTests.CustomValidatorConfiguration.TestBeanPostProcessor;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.validation.beanvalidation.CustomValidatorBean;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
@@ -204,13 +198,6 @@ public class ValidationAutoConfigurationTests {
 						.getPropertyValue("validator"));
 	}
 
-	@Test
-	public void methodValidationPostProcessorValidatorDependencyDoesNotTriggerEarlyInitialization() {
-		load(CustomValidatorConfiguration.class);
-		assertThat(this.context.getBean(TestBeanPostProcessor.class).postProcessed)
-				.contains("someService");
-	}
-
 	private boolean isPrimaryBean(String beanName) {
 		return this.context.getBeanDefinition(beanName).isPrimary();
 	}
@@ -333,55 +320,6 @@ public class ValidationAutoConfigurationTests {
 			return new MethodValidationPostProcessor();
 		}
 
-	}
-
-	@Configuration
-	static class CustomValidatorConfiguration {
-
-		CustomValidatorConfiguration(SomeService someService) {
-
-		}
-
-		@Bean
-		Validator customValidator() {
-			return new CustomValidatorBean();
-		}
-
-		@Bean
-		static TestBeanPostProcessor testBeanPostProcessor() {
-			return new TestBeanPostProcessor();
-		}
-
-		@Configuration
-		static class SomeServiceConfiguration {
-
-			@Bean
-			public SomeService someService() {
-				return new SomeService();
-			}
-
-		}
-
-		static class SomeService {
-
-		}
-
-		static class TestBeanPostProcessor implements BeanPostProcessor {
-
-			private Set<String> postProcessed = new HashSet<String>();
-
-			@Override
-			public Object postProcessAfterInitialization(Object bean, String name) {
-				this.postProcessed.add(name);
-				return bean;
-			}
-
-			@Override
-			public Object postProcessBeforeInitialization(Object bean, String name) {
-				return bean;
-			}
-
-		}
 	}
 
 }
