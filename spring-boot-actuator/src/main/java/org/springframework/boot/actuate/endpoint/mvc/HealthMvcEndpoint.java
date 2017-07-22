@@ -165,7 +165,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	private Health getHealth(HttpServletRequest request, Principal principal) {
 		Health currentHealth = getCurrentHealth();
 		if (exposeHealthDetails(request, principal)) {
-			return this.cachedHealth.health;
+			return currentHealth;
 		}
 		return Health.status(currentHealth.getStatus()).build();
 	}
