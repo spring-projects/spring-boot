@@ -55,16 +55,17 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader,
-				this.environment).registerRepositoriesIn(registry,
+		new RepositoryConfigurationDelegate(getConfigurationSource(registry),
+				this.resourceLoader, this.environment).registerRepositoriesIn(registry,
 						getRepositoryConfigurationExtension());
 	}
 
-	private AnnotationRepositoryConfigurationSource getConfigurationSource() {
+	private AnnotationRepositoryConfigurationSource getConfigurationSource(
+			BeanDefinitionRegistry registry) {
 		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
 				getConfiguration(), true);
 		return new AnnotationRepositoryConfigurationSource(metadata, getAnnotation(),
-				this.resourceLoader, this.environment) {
+				this.resourceLoader, this.environment, registry) {
 			@Override
 			public java.lang.Iterable<String> getBasePackages() {
 				return AbstractRepositoryConfigurationSourceSupport.this
