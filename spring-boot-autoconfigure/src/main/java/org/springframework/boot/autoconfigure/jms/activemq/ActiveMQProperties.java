@@ -53,6 +53,24 @@ public class ActiveMQProperties {
 	 */
 	private String password;
 
+	/**
+	 * Time to wait, in milliseconds, before considering a close complete.
+	 */
+	private int closeTimeout = 15000;
+
+	/**
+	 * Do not stop message delivery before re-delivering messages from a rolled back
+	 * transaction. This implies that message order will not be preserved when this is
+	 * enabled.
+	 */
+	private boolean nonBlockingRedelivery = false;
+
+	/**
+	 * Time to wait, in milliseconds, on Message sends for a response. Set it to 0 to
+	 * indicate to wait forever.
+	 */
+	private int sendTimeout = 0;
+
 	private Pool pool = new Pool();
 
 	private Packages packages = new Packages();
@@ -87,6 +105,30 @@ public class ActiveMQProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public int getCloseTimeout() {
+		return this.closeTimeout;
+	}
+
+	public void setCloseTimeout(int closeTimeout) {
+		this.closeTimeout = closeTimeout;
+	}
+
+	public boolean isNonBlockingRedelivery() {
+		return this.nonBlockingRedelivery;
+	}
+
+	public void setNonBlockingRedelivery(boolean nonBlockingRedelivery) {
+		this.nonBlockingRedelivery = nonBlockingRedelivery;
+	}
+
+	public int getSendTimeout() {
+		return this.sendTimeout;
+	}
+
+	public void setSendTimeout(int sendTimeout) {
+		this.sendTimeout = sendTimeout;
 	}
 
 	public Pool getPool() {

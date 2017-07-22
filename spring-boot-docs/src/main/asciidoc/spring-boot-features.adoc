@@ -4460,9 +4460,10 @@ accordingly:
 	spring.activemq.pool.max-connections=50
 ----
 
-See
+TIP: See
 {sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
-for more of the supported options.
+for more of the supported options. You can also register an arbitrary number of beans
+implementing `ActiveMQConnectionFactoryCustomizer` for more advanced customizations.
 
 By default, ActiveMQ creates a destination if it does not exist yet, so destinations are
 resolved against their provided names.
