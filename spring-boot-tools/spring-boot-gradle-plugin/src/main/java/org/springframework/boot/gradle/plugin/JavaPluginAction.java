@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -41,6 +42,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun;
  */
 final class JavaPluginAction implements PluginApplicationAction {
 
+	private static final String PARAMETERS_COMPILER_ARG = "-parameters";
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
 	JavaPluginAction(SinglePublishedArtifact singlePublishedArtifact) {
@@ -60,6 +62,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		configureArtifactPublication(project, bootJar);
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
+		configureParametersCompilerArg(project);
 	}
 
 	private void disableJarTask(Project project) {
@@ -121,4 +124,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 				}));
 	}
 
+	private void configureParametersCompilerArg(Project project) {
+		project.getTasks().withType(JavaCompile.class, compile -> {
+			final List<String> compilerArgs = compile.getOptions().getCompilerArgs();
+			if (!compilerArgs.contains(PARAMETERS_COMPILER_ARG)) {
+				compilerArgs.add(PARAMETERS_COMPILER_ARG);
+			}
+		});
+	}
 }
