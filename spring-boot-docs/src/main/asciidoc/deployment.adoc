@@ -72,15 +72,18 @@ At this point `cf` will start uploading your application:
 	Uploading acloudyspringtime... *OK*
 	Preparing to start acloudyspringtime... *OK*
 	-----> Downloaded app package (*8.9M*)
-	-----> Java Buildpack source: system
-	-----> Downloading Open JDK 1.7.0_51 from .../x86_64/openjdk-1.7.0_51.tar.gz (*1.8s*)
-	       Expanding Open JDK to .java-buildpack/open_jdk (*1.2s*)
-	-----> Downloading Spring Auto Reconfiguration from  0.8.7 .../auto-reconfiguration-0.8.7.jar (*0.1s*)
-	-----> Uploading droplet (*44M*)
+	-----> Java Buildpack Version: v3.12 (offline) | https://github.com/cloudfoundry/java-buildpack.git#6f25b7e
+	-----> Downloading Open Jdk JRE 1.8.0_121 from https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/openjdk-1.8.0_121.tar.gz (found in cache)
+	       Expanding Open Jdk JRE to .java-buildpack/open_jdk_jre (1.6s)
+	-----> Downloading Open JDK Like Memory Calculator 2.0.2_RELEASE from https://java-buildpack.cloudfoundry.org/memory-calculator/trusty/x86_64/memory-calculator-2.0.2_RELEASE.tar.gz (found in cache)
+	       Memory Settings: -Xss349K -Xmx681574K -XX:MaxMetaspaceSize=104857K -Xms681574K -XX:MetaspaceSize=104857K
+	-----> Downloading Container Certificate Trust Store 1.0.0_RELEASE from https://java-buildpack.cloudfoundry.org/container-certificate-trust-store/container-certificate-trust-store-1.0.0_RELEASE.jar (found in cache)
+	       Adding certificates to .java-buildpack/container_certificate_trust_store/truststore.jks (0.6s)
+	-----> Downloading Spring Auto Reconfiguration 1.10.0_RELEASE from https://java-buildpack.cloudfoundry.org/auto-reconfiguration/auto-reconfiguration-1.10.0_RELEASE.jar (found in cache)
 	Checking status of app 'acloudyspringtime'...
 	  0 of 1 instances running (1 starting)
 	  ...
-	  0 of 1 instances running (1 down)
+	  0 of 1 instances running (1 starting)
 	  ...
 	  0 of 1 instances running (1 starting)
 	  ...
@@ -170,16 +173,6 @@ Spring Boot makes `-D` arguments available as properties accessible from a Sprin
 `Environment` instance. The `server.port` configuration property is fed to the embedded
 Tomcat, Jetty or Undertow instance which then uses it when it starts up. The `$PORT`
 environment variable is assigned to us by the Heroku PaaS.
-
-Heroku by default will use Java 1.8. This is fine as long as your Maven or Gradle build
-is set to use the same version (Maven users can use the java.version property). If you
-want to use JDK 1.7, create a new file adjacent to your `pom.xml` and `Procfile`,
-called `system.properties`. In this file add the following:
-
-[indent=0]
-----
-	java.runtime.version=1.7
-----
 
 This should be everything you need. The most common workflow for Heroku deployments is to
 `git push` the code to production.

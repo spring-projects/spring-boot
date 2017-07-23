@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletWebRequest;
 
 /**
  * Special {@link MvcEndpoint} for handling "/error" path when the management servlet is
@@ -45,9 +45,8 @@ public class ManagementErrorEndpoint {
 
 	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
-	public Map<String, Object> invoke() {
-		return this.errorAttributes.getErrorAttributes(
-				RequestContextHolder.currentRequestAttributes(), false);
+	public Map<String, Object> invoke(ServletWebRequest request) {
+		return this.errorAttributes.getErrorAttributes(request, false);
 	}
 
 }

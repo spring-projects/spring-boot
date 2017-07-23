@@ -44,7 +44,7 @@ public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 		if (StringUtils.hasText(managementServletContext.getContextPath())) {
 			return "";
 		}
-		return "/actuator";
+		return "/application";
 	}
 
 	@ActuatorGetMapping

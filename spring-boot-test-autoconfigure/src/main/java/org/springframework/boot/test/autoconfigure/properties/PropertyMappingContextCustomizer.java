@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,8 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		public Object postProcessBeforeInitialization(Object bean, String beanName)
 				throws BeansException {
 			Class<?> beanClass = bean.getClass();
-			Set<Class<?>> components = new LinkedHashSet<Class<?>>();
-			Set<Class<?>> propertyMappings = new LinkedHashSet<Class<?>>();
+			Set<Class<?>> components = new LinkedHashSet<>();
+			Set<Class<?>> propertyMappings = new LinkedHashSet<>();
 			while (beanClass != null) {
 				for (Annotation annotation : AnnotationUtils.getAnnotations(beanClass)) {
 					if (isAnnotated(annotation, Component.class)) {

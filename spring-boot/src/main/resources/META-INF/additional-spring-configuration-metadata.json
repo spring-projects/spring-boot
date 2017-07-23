@@ -171,10 +171,18 @@
     "description": "Sources (class name, package name or XML resource location) to include in the ApplicationContext."
   },
   {
+    "name": "spring.main.web-application-type",
+    "type": "org.springframework.boot.WebApplicationType",
+    "sourceType": "org.springframework.boot.SpringApplication",
+    "description": "Flag to explicitly request a specific type of web application. Auto-detected based on the classpath if not set."
+  },
+  {
     "name": "spring.main.web-environment",
     "type": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.SpringApplication",
-    "description": "Run the application in a web environment (auto-detected by default)."
+    "description": "Run the application in a web environment (auto-detected by default).",
+    "deprecated": true,
+    "deprecation": {"replacement": "spring.main.web-application-type"}
   },
   {
     "name": "spring.output.ansi.enabled",

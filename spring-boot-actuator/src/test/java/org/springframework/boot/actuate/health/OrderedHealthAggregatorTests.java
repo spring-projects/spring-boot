@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class OrderedHealthAggregatorTests {
 
 	@Test
 	public void defaultOrder() {
-		Map<String, Health> healths = new HashMap<String, Health>();
+		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
@@ -54,7 +54,7 @@ public class OrderedHealthAggregatorTests {
 	public void customOrder() {
 		this.healthAggregator.setStatusOrder(Status.UNKNOWN, Status.UP,
 				Status.OUT_OF_SERVICE, Status.DOWN);
-		Map<String, Health> healths = new HashMap<String, Health>();
+		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
@@ -65,7 +65,7 @@ public class OrderedHealthAggregatorTests {
 
 	@Test
 	public void defaultOrderWithCustomStatus() {
-		Map<String, Health> healths = new HashMap<String, Health>();
+		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
@@ -79,7 +79,7 @@ public class OrderedHealthAggregatorTests {
 	public void customOrderWithCustomStatus() {
 		this.healthAggregator.setStatusOrder(
 				Arrays.asList("DOWN", "OUT_OF_SERVICE", "UP", "UNKNOWN", "CUSTOM"));
-		Map<String, Health> healths = new HashMap<String, Health>();
+		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());

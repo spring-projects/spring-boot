@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import java.lang.annotation.Annotation;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -31,6 +31,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * {@code defaults} name or individually via the name of the element.
  *
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
 abstract class OnEnabledEndpointElementCondition extends SpringBootCondition {
 
@@ -59,10 +60,10 @@ abstract class OnEnabledEndpointElementCondition extends SpringBootCondition {
 
 	protected ConditionOutcome getEndpointOutcome(ConditionContext context,
 			String endpointName) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), this.prefix + endpointName + ".");
-		if (resolver.containsProperty("enabled")) {
-			boolean match = resolver.getProperty("enabled", Boolean.class, true);
+		Environment environment = context.getEnvironment();
+		String enabledProperty = this.prefix + endpointName + ".enabled";
+		if (environment.containsProperty(enabledProperty)) {
+			boolean match = environment.getProperty(enabledProperty, Boolean.class, true);
 			return new ConditionOutcome(match,
 					ConditionMessage.forCondition(this.annotationType).because(
 							this.prefix + endpointName + ".enabled is " + match));
@@ -71,9 +72,8 @@ abstract class OnEnabledEndpointElementCondition extends SpringBootCondition {
 	}
 
 	protected ConditionOutcome getDefaultEndpointsOutcome(ConditionContext context) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), this.prefix + "defaults.");
-		boolean match = Boolean.valueOf(resolver.getProperty("enabled", "true"));
+		boolean match = Boolean.valueOf(context.getEnvironment()
+				.getProperty(this.prefix + "defaults.enabled", "true"));
 		return new ConditionOutcome(match,
 				ConditionMessage.forCondition(this.annotationType).because(
 						this.prefix + "defaults.enabled is considered " + match));

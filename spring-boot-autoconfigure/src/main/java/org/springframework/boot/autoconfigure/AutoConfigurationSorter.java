@@ -56,7 +56,7 @@ class AutoConfigurationSorter {
 	public List<String> getInPriorityOrder(Collection<String> classNames) {
 		final AutoConfigurationClasses classes = new AutoConfigurationClasses(
 				this.metadataReaderFactory, this.autoConfigurationMetadata, classNames);
-		List<String> orderedClassNames = new ArrayList<String>(classNames);
+		List<String> orderedClassNames = new ArrayList<>(classNames);
 		// Initially sort alphabetically
 		Collections.sort(orderedClassNames);
 		// Then sort by order
@@ -77,13 +77,13 @@ class AutoConfigurationSorter {
 
 	private List<String> sortByAnnotation(AutoConfigurationClasses classes,
 			List<String> classNames) {
-		List<String> toSort = new ArrayList<String>(classNames);
-		Set<String> sorted = new LinkedHashSet<String>();
-		Set<String> processing = new LinkedHashSet<String>();
+		List<String> toSort = new ArrayList<>(classNames);
+		Set<String> sorted = new LinkedHashSet<>();
+		Set<String> processing = new LinkedHashSet<>();
 		while (!toSort.isEmpty()) {
 			doSortByAfterAnnotation(classes, toSort, sorted, processing, null);
 		}
-		return new ArrayList<String>(sorted);
+		return new ArrayList<>(sorted);
 	}
 
 	private void doSortByAfterAnnotation(AutoConfigurationClasses classes,
@@ -106,7 +106,7 @@ class AutoConfigurationSorter {
 
 	private static class AutoConfigurationClasses {
 
-		private final Map<String, AutoConfigurationClass> classes = new HashMap<String, AutoConfigurationClass>();
+		private final Map<String, AutoConfigurationClass> classes = new HashMap<>();
 
 		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				AutoConfigurationMetadata autoConfigurationMetadata,
@@ -122,7 +122,7 @@ class AutoConfigurationSorter {
 		}
 
 		public Set<String> getClassesRequestedAfter(String className) {
-			Set<String> rtn = new LinkedHashSet<String>();
+			Set<String> rtn = new LinkedHashSet<>();
 			rtn.addAll(get(className).getAfter());
 			for (Map.Entry<String, AutoConfigurationClass> entry : this.classes
 					.entrySet()) {
@@ -168,7 +168,7 @@ class AutoConfigurationSorter {
 		}
 
 		private int getOrder() {
-			if (this.autoConfigurationMetadata.wasProcessed(this.className)) {
+			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getInteger(this.className,
 						"AutoConfigureOrder", Ordered.LOWEST_PRECEDENCE);
 			}
@@ -179,7 +179,7 @@ class AutoConfigurationSorter {
 		}
 
 		private Set<String> readBefore() {
-			if (this.autoConfigurationMetadata.wasProcessed(this.className)) {
+			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureBefore", Collections.<String>emptySet());
 			}
@@ -187,11 +187,16 @@ class AutoConfigurationSorter {
 		}
 
 		private Set<String> readAfter() {
-			if (this.autoConfigurationMetadata.wasProcessed(this.className)) {
+			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureAfter", Collections.<String>emptySet());
 			}
 			return getAnnotationValue(AutoConfigureAfter.class);
+		}
+
+		private boolean wasProcessed() {
+			return (this.autoConfigurationMetadata != null
+					&& this.autoConfigurationMetadata.wasProcessed(this.className));
 		}
 
 		private Set<String> getAnnotationValue(Class<?> annotation) {
@@ -200,7 +205,7 @@ class AutoConfigurationSorter {
 			if (attributes == null) {
 				return Collections.emptySet();
 			}
-			Set<String> value = new LinkedHashSet<String>();
+			Set<String> value = new LinkedHashSet<>();
 			Collections.addAll(value, (String[]) attributes.get("value"));
 			Collections.addAll(value, (String[]) attributes.get("name"));
 			return value;

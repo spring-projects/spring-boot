@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.metrics.Metric;
@@ -41,19 +40,9 @@ import org.springframework.util.MultiValueMap;
  */
 public class CachePublicMetrics implements PublicMetrics {
 
-	@Autowired
-	private Map<String, CacheManager> cacheManagers;
+	private final Map<String, CacheManager> cacheManagers;
 
-	@Autowired
-	private Collection<CacheStatisticsProvider<?>> statisticsProviders;
-
-	/**
-	 * Create a new {@link CachePublicMetrics} instance.
-	 * @deprecated as of 1.5.4 in favor of {@link #CachePublicMetrics(Map, Collection)}
-	 */
-	@Deprecated
-	public CachePublicMetrics() {
-	}
+	private final Collection<CacheStatisticsProvider<?>> statisticsProviders;
 
 	/**
 	 * Create a new {@link CachePublicMetrics} instance.
@@ -68,7 +57,7 @@ public class CachePublicMetrics implements PublicMetrics {
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Collection<Metric<?>> metrics = new HashSet<Metric<?>>();
+		Collection<Metric<?>> metrics = new HashSet<>();
 		for (Map.Entry<String, List<CacheManagerBean>> entry : getCacheManagerBeans()
 				.entrySet()) {
 			addMetrics(metrics, entry.getKey(), entry.getValue());
@@ -77,7 +66,7 @@ public class CachePublicMetrics implements PublicMetrics {
 	}
 
 	private MultiValueMap<String, CacheManagerBean> getCacheManagerBeans() {
-		MultiValueMap<String, CacheManagerBean> cacheManagerNamesByCacheName = new LinkedMultiValueMap<String, CacheManagerBean>();
+		MultiValueMap<String, CacheManagerBean> cacheManagerNamesByCacheName = new LinkedMultiValueMap<>();
 		for (Map.Entry<String, CacheManager> entry : this.cacheManagers.entrySet()) {
 			for (String cacheName : entry.getValue().getCacheNames()) {
 				cacheManagerNamesByCacheName.add(cacheName,

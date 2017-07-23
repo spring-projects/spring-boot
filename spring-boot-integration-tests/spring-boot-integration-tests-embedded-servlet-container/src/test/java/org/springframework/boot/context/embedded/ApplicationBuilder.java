@@ -22,10 +22,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -56,19 +54,14 @@ class ApplicationBuilder {
 
 	private final String container;
 
-	private final String containerVersion;
-
-	ApplicationBuilder(TemporaryFolder temp, String packaging, String container,
-			String containerVersion) {
+	ApplicationBuilder(TemporaryFolder temp, String packaging, String container) {
 		this.temp = temp;
 		this.packaging = packaging;
 		this.container = container;
-		this.containerVersion = containerVersion;
 	}
 
 	File buildApplication() throws Exception {
-		File containerFolder = new File(this.temp.getRoot(),
-				this.container + "-" + this.containerVersion);
+		File containerFolder = new File(this.temp.getRoot(), this.container);
 		if (containerFolder.exists()) {
 			return new File(containerFolder, "app/target/app-0.0.1." + this.packaging);
 		}
@@ -105,33 +98,16 @@ class ApplicationBuilder {
 
 	private void writePom(File appFolder, File resourcesJar)
 			throws FileNotFoundException, IOException {
-		Map<String, Object> context = new HashMap<String, Object>();
+		Map<String, Object> context = new HashMap<>();
 		context.put("packaging", this.packaging);
 		context.put("container", this.container);
 		context.put("bootVersion", Versions.getBootVersion());
 		context.put("resourcesJarPath", resourcesJar.getAbsolutePath());
-		context.put("containerVersion",
-				"current".equals(this.containerVersion) ? ""
-						: String.format("<%s.version>%s</%s.version>", this.container,
-								this.containerVersion, this.container));
-		context.put("additionalDependencies", getAdditionalDependencies());
 		FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
 		Mustache.compiler().escapeHTML(false)
 				.compile(new FileReader("src/test/resources/pom-template.xml"))
 				.execute(context, out);
 		out.close();
-	}
-
-	private List<Map<String, String>> getAdditionalDependencies() {
-		List<Map<String, String>> additionalDependencies = new ArrayList<Map<String, String>>();
-		if ("tomcat".equals(this.container) && !"current".equals(this.containerVersion)) {
-			Map<String, String> juli = new HashMap<String, String>();
-			juli.put("groupId", "org.apache.tomcat");
-			juli.put("artifactId", "tomcat-juli");
-			juli.put("version", "${tomcat.version}");
-			additionalDependencies.add(juli);
-		}
-		return additionalDependencies;
 	}
 
 	private void copyApplicationSource(File appFolder) throws IOException {

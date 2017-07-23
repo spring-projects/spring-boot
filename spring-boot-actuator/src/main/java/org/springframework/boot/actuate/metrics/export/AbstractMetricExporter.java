@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public abstract class AbstractMetricExporter implements Exporter, Closeable, Flu
 
 	private void exportGroups() {
 		for (String group : groups()) {
-			Collection<Metric<?>> values = new ArrayList<Metric<?>>();
+			Collection<Metric<?>> values = new ArrayList<>();
 			for (Metric<?> metric : next(group)) {
 				Date timestamp = metric.getTimestamp();
 				if (canExportTimestamp(timestamp)) {

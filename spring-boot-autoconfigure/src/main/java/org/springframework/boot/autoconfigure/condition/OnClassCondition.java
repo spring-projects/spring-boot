@@ -157,7 +157,7 @@ class OnClassCondition extends SpringBootCondition
 			Class<?> annotationType) {
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(annotationType.getName(), true);
-		List<String> candidates = new ArrayList<String>();
+		List<String> candidates = new ArrayList<>();
 		if (attributes == null) {
 			return Collections.emptyList();
 		}
@@ -176,7 +176,7 @@ class OnClassCondition extends SpringBootCondition
 
 	private List<String> getMatches(Collection<String> candidates, MatchType matchType,
 			ClassLoader classLoader) {
-		List<String> matches = new ArrayList<String>(candidates.size());
+		List<String> matches = new ArrayList<>(candidates.size());
 		for (String candidate : candidates) {
 			if (matchType.matches(candidate, classLoader)) {
 				matches.add(candidate);
@@ -306,7 +306,7 @@ class OnClassCondition extends SpringBootCondition
 					this.autoConfigurationMetadata);
 		}
 
-		private ConditionOutcome[] getOutcomes(final String[] autoConfigurationClasses,
+		private ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 				int start, int end, AutoConfigurationMetadata autoConfigurationMetadata) {
 			ConditionOutcome[] outcomes = new ConditionOutcome[end - start];
 			for (int i = start; i < end; i++) {

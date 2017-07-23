@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.5.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot</artifactId>
@@ -36,12 +36,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
-			<artifactId>transactions-jms</artifactId>
+			<artifactId>transactions-jdbc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
-			<artifactId>transactions-jdbc</artifactId>
+			<artifactId>transactions-jms</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -65,8 +65,18 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.samskivert</groupId>
+			<artifactId>jmustache</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.sendgrid</groupId>
 			<artifactId>sendgrid-java</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -76,7 +86,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>jms-api</artifactId>
+			<artifactId>javax.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -156,7 +166,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
+			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -187,11 +197,6 @@
 		<dependency>
 			<groupId>org.jboss.narayana.jts</groupId>
 			<artifactId>narayana-jts-integration</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -227,6 +232,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -277,8 +287,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -342,19 +352,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

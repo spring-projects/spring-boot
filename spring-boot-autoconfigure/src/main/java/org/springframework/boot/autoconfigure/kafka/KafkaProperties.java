@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -53,7 +54,7 @@ public class KafkaProperties {
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
 	 * connection to the Kafka cluster.
 	 */
-	private List<String> bootstrapServers = new ArrayList<String>(
+	private List<String> bootstrapServers = new ArrayList<>(
 			Collections.singletonList("localhost:9092"));
 
 	/**
@@ -62,9 +63,10 @@ public class KafkaProperties {
 	private String clientId;
 
 	/**
-	 * Additional properties used to configure the client.
+	 * Additional properties, common to producers and consumers, used to configure the
+	 * client.
 	 */
-	private Map<String, String> properties = new HashMap<String, String>();
+	private final Map<String, String> properties = new HashMap<>();
 
 	private final Consumer consumer = new Consumer();
 
@@ -73,6 +75,8 @@ public class KafkaProperties {
 	private final Listener listener = new Listener();
 
 	private final Ssl ssl = new Ssl();
+
+	private final Jaas jaas = new Jaas();
 
 	private final Template template = new Template();
 
@@ -96,10 +100,6 @@ public class KafkaProperties {
 		return this.properties;
 	}
 
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
-	}
-
 	public Consumer getConsumer() {
 		return this.consumer;
 	}
@@ -116,12 +116,16 @@ public class KafkaProperties {
 		return this.ssl;
 	}
 
+	public Jaas getJaas() {
+		return this.jaas;
+	}
+
 	public Template getTemplate() {
 		return this.template;
 	}
 
 	private Map<String, Object> buildCommonProperties() {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
 					this.bootstrapServers);
@@ -261,6 +265,11 @@ public class KafkaProperties {
 		 */
 		private Integer maxPollRecords;
 
+		/**
+		 * Additional consumer-specific properties used to configure the client.
+		 */
+		private final Map<String, String> properties = new HashMap<>();
+
 		public Ssl getSsl() {
 			return this.ssl;
 		}
@@ -361,8 +370,12 @@ public class KafkaProperties {
 			this.maxPollRecords = maxPollRecords;
 		}
 
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
 		public Map<String, Object> buildProperties() {
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			if (this.autoCommitInterval != null) {
 				properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
 						this.autoCommitInterval);
@@ -428,6 +441,7 @@ public class KafkaProperties {
 				properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
 						this.maxPollRecords);
 			}
+			properties.putAll(this.properties);
 			return properties;
 		}
 
@@ -484,6 +498,11 @@ public class KafkaProperties {
 		 * When greater than zero, enables retrying of failed sends.
 		 */
 		private Integer retries;
+
+		/**
+		 * Additional producer-specific properties used to configure the client.
+		 */
+		private final Map<String, String> properties = new HashMap<>();
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -561,8 +580,12 @@ public class KafkaProperties {
 			this.retries = retries;
 		}
 
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
 		public Map<String, Object> buildProperties() {
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			if (this.acks != null) {
 				properties.put(ProducerConfig.ACKS_CONFIG, this.acks);
 			}
@@ -614,6 +637,7 @@ public class KafkaProperties {
 				properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
 						this.valueSerializer);
 			}
+			properties.putAll(this.properties);
 			return properties;
 		}
 
@@ -637,6 +661,25 @@ public class KafkaProperties {
 	}
 
 	public static class Listener {
+
+		public enum Type {
+
+			/**
+			 * Invokes the endpoint with one ConsumerRecord at a time.
+			 */
+			SINGLE,
+
+			/**
+			 * Invokes the endpoint with a batch of ConsumerRecords.
+			 */
+			BATCH;
+
+		}
+
+		/**
+		 * Listener type.
+		 */
+		private Type type = Type.SINGLE;
 
 		/**
 		 * Listener AckMode; see the spring-kafka documentation.
@@ -664,6 +707,14 @@ public class KafkaProperties {
 		 * "COUNT_TIME".
 		 */
 		private Long ackTime;
+
+		public Type getType() {
+			return this.type;
+		}
+
+		public void setType(Type type) {
+			this.type = type;
+		}
 
 		public AckMode getAckMode() {
 			return this.ackMode;
@@ -772,6 +823,65 @@ public class KafkaProperties {
 
 		public void setTruststorePassword(String truststorePassword) {
 			this.truststorePassword = truststorePassword;
+		}
+
+	}
+
+	public static class Jaas {
+
+		/**
+		 * Enable JAAS configuration.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Login module.
+		 */
+		private String loginModule = "com.sun.security.auth.module.Krb5LoginModule";
+
+		/**
+		 * Control flag for login configuration.
+		 */
+		private KafkaJaasLoginModuleInitializer.ControlFlag controlFlag = KafkaJaasLoginModuleInitializer.ControlFlag.REQUIRED;
+
+		/**
+		 * Additional JAAS options.
+		 */
+		private final Map<String, String> options = new HashMap<>();
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getLoginModule() {
+			return this.loginModule;
+		}
+
+		public void setLoginModule(String loginModule) {
+			this.loginModule = loginModule;
+		}
+
+		public KafkaJaasLoginModuleInitializer.ControlFlag getControlFlag() {
+			return this.controlFlag;
+		}
+
+		public void setControlFlag(
+				KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
+			this.controlFlag = controlFlag;
+		}
+
+		public Map<String, String> getOptions() {
+			return this.options;
+		}
+
+		public void setOptions(Map<String, String> options) {
+			if (options != null) {
+				this.options.putAll(options);
+			}
 		}
 
 	}

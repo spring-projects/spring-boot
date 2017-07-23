@@ -16,8 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,11 +30,8 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.core.Authentication;
@@ -54,17 +53,14 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthMvcEndpointTests {
 
-	private static final PropertySource<?> SECURITY_ROLES = new MapPropertySource("test",
-			Collections.<String, Object>singletonMap("management.security.roles",
-					"HERO"));
+	private static final List<String> SECURITY_ROLES = new ArrayList<>(
+			Arrays.asList("HERO"));
 
 	private HttpServletRequest request = new MockHttpServletRequest();
 
 	private HealthEndpoint endpoint = null;
 
 	private HealthMvcEndpoint mvc = null;
-
-	private MockEnvironment environment;
 
 	private HttpServletRequest defaultUser = createAuthenticationRequest("ROLE_ACTUATOR");
 
@@ -81,8 +77,6 @@ public class HealthMvcEndpointTests {
 		this.endpoint = mock(HealthEndpoint.class);
 		given(this.endpoint.isEnabled()).willReturn(true);
 		this.mvc = new HealthMvcEndpoint(this.endpoint);
-		this.environment = new MockEnvironment();
-		this.mvc.setEnvironment(this.environment);
 	}
 
 	@Test
@@ -123,7 +117,7 @@ public class HealthMvcEndpointTests {
 	public void customMappingWithRelaxedName() {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().outOfService().build());
-		this.mvc.setStatusMapping(Collections.singletonMap("out-of-service",
+		this.mvc.setStatusMapping(Collections.singletonMap("out-OF-serVice",
 				HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke(this.request, null);
 		assertThat(result instanceof ResponseEntity).isTrue();
@@ -165,7 +159,7 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void rightAuthorityPresentShouldExposeDetails() throws Exception {
-		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		this.mvc = new HealthMvcEndpoint(this.endpoint, true, SECURITY_ROLES);
 		Authentication principal = mock(Authentication.class);
 		Set<SimpleGrantedAuthority> authorities = Collections
 				.singleton(new SimpleGrantedAuthority("HERO"));
@@ -180,7 +174,7 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void customRolePresentShouldExposeDetails() {
-		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		this.mvc = new HealthMvcEndpoint(this.endpoint, true, SECURITY_ROLES);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.hero, null);
@@ -191,7 +185,7 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void customRoleShouldNotExposeDetailsForDefaultRole() {
-		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		this.mvc = new HealthMvcEndpoint(this.endpoint, true, SECURITY_ROLES);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.defaultUser, null);

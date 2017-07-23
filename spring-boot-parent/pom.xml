@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.5.5.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>
@@ -17,13 +18,14 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>..</main.basedir>
+		<main.basedir>${basedir}/..</main.basedir>
 		<disable.checks>false</disable.checks>
-		<java.version>1.6</java.version>
+		<java.version>1.8</java.version>
 		<aether.version>1.0.2.v20150114</aether.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
+		<spock.version>1.0-groovy-2.4</spock.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -43,7 +45,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test-support</artifactId>
-				<version>1.5.5.BUILD-SNAPSHOT</version>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
 
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
@@ -52,11 +54,6 @@
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.17</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>18.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.squareup.okhttp</groupId>
@@ -74,11 +71,6 @@
 				<version>0.0.20131108.vaadin1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-all</artifactId>
-				<version>4.0.38.Final</version>
-			</dependency>
-			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
 				<version>1.0.3.RELEASE</version>
@@ -89,14 +81,14 @@
 				<version>2.11</version>
 			</dependency>
 			<dependency>
-				<groupId>net.bytebuddy</groupId>
-				<artifactId>byte-buddy</artifactId>
-				<version>1.5.4</version>
-			</dependency>
-			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
 				<artifactId>jopt-simple</artifactId>
 				<version>4.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.14</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ivy</groupId>
@@ -209,41 +201,6 @@
 				<version>${aether.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services-groovy</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-core</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-java</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-platform-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-plugins</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-runtime</artifactId>
 				<version>1.0.4</version>
@@ -252,6 +209,22 @@
 				<groupId>org.sonatype.plexus</groupId>
 				<artifactId>plexus-build-api</artifactId>
 				<version>0.0.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.spockframework</groupId>
+				<artifactId>spock-core</artifactId>
+				<version>${spock.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.spockframework</groupId>
+				<artifactId>spock-spring</artifactId>
+				<version>${spock.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>
@@ -305,7 +278,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>7.1.1</version>
+							<version>7.6</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -336,11 +309,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.15</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
@@ -506,7 +474,7 @@
 							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 							<headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
-							<propertyExpansion>checkstyle.build.directory=${project.build.directory}</propertyExpansion>
+							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
 							<failOnViolation>true</failOnViolation>
@@ -608,9 +576,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -620,35 +585,6 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<configuration>
-					<skip>${disable.checks}</skip>
-					<signature>
-						<groupId>org.codehaus.mojo.signature</groupId>
-						<artifactId>java16</artifactId>
-						<version>1.1</version>
-					</signature>
-					<annotations>
-						<annotation>org.springframework.lang.UsesJava8</annotation>
-						<annotation>org.springframework.lang.UsesJava7</annotation>
-						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
-					</annotations>
-					<excludeDependencies>
-						<excludeDependency>org.glassfish.hk2.external:asm-all-repackaged</excludeDependency>
-					</excludeDependencies>
-				</configuration>
-				<executions>
-					<execution>
-						<id>enforce-java-6</id>
-						<phase>test</phase>
-						<goals>
-							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -686,6 +622,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -743,6 +687,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -819,6 +771,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>

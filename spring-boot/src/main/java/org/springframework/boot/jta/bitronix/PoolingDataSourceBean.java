@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.lang.UsesJava7;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,7 +49,7 @@ import org.springframework.util.StringUtils;
 public class PoolingDataSourceBean extends PoolingDataSource
 		implements BeanNameAware, InitializingBean {
 
-	private static final ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<PoolingDataSourceBean>();
+	private static final ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<>();
 
 	private XADataSource dataSource;
 
@@ -111,7 +110,6 @@ public class PoolingDataSourceBean extends PoolingDataSource
 	}
 
 	@Override
-	@UsesJava7
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		try {
 			return ((DataSource) this).getParentLogger();
@@ -168,7 +166,6 @@ public class PoolingDataSourceBean extends PoolingDataSource
 		}
 
 		@Override
-		@UsesJava7
 		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 			return this.dataSource.getParentLogger();
 		}

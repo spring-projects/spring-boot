@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public final class PackagedSpringApplicationLauncher {
 		new SpringApplicationLauncher(classLoader).launch(getSources(classLoader), args);
 	}
 
-	private Object[] getSources(URLClassLoader classLoader) throws Exception {
+	private Class<?>[] getSources(URLClassLoader classLoader) throws Exception {
 		Enumeration<URL> urls = classLoader.getResources("META-INF/MANIFEST.MF");
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();

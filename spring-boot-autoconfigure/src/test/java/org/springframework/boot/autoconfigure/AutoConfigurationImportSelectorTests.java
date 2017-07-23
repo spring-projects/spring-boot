@@ -59,7 +59,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private List<AutoConfigurationImportFilter> filters = new ArrayList<AutoConfigurationImportFilter>();
+	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
@@ -269,7 +269,7 @@ public class AutoConfigurationImportSelectorTests {
 	private static class TestAutoConfigurationImportFilter
 			implements AutoConfigurationImportFilter, BeanFactoryAware {
 
-		private final Set<String> nonMatching = new HashSet<String>();
+		private final Set<String> nonMatching = new HashSet<>();
 
 		private BeanFactory beanFactory;
 

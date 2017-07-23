@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 			new HalBrowserLocation("classpath:/META-INF/spring-data-rest/hal-browser/",
 					"index.html"),
 			new HalBrowserLocation(
-					"classpath:/META-INF/resources/webjars/hal-browser/9f96c74/",
+					"classpath:/META-INF/resources/webjars/hal-browser/3325375/",
 					"browser.html") };
 
 	private HalBrowserLocation location;
@@ -156,7 +156,7 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 				throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			List<String> pathSegments = new ArrayList<String>(ServletUriComponentsBuilder
+			List<String> pathSegments = new ArrayList<>(ServletUriComponentsBuilder
 					.fromRequest(request).build().getPathSegments());
 			pathSegments.remove(pathSegments.size() - 1);
 			String initial = "/"

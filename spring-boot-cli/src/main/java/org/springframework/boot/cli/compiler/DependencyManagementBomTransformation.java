@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class DependencyManagementBomTransformation
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 100;
 
 	private static final Set<String> DEPENDENCY_MANAGEMENT_BOM_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(new HashSet<String>(
-					Arrays.asList(DependencyManagementBom.class.getName(),
+			.unmodifiableSet(
+					new HashSet<>(Arrays.asList(DependencyManagementBom.class.getName(),
 							DependencyManagementBom.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;
@@ -106,14 +106,14 @@ public class DependencyManagementBomTransformation
 		Map<String, String> dependency = null;
 		List<ConstantExpression> constantExpressions = getConstantExpressions(
 				valueExpression);
-		List<Map<String, String>> dependencies = new ArrayList<Map<String, String>>(
+		List<Map<String, String>> dependencies = new ArrayList<>(
 				constantExpressions.size());
 		for (ConstantExpression expression : constantExpressions) {
 			Object value = expression.getValue();
 			if (value instanceof String) {
 				String[] components = ((String) expression.getValue()).split(":");
 				if (components.length == 3) {
-					dependency = new HashMap<String, String>();
+					dependency = new HashMap<>();
 					dependency.put("group", components[0]);
 					dependency.put("module", components[1]);
 					dependency.put("version", components[2]);
@@ -143,7 +143,7 @@ public class DependencyManagementBomTransformation
 
 	private List<ConstantExpression> getConstantExpressions(
 			ListExpression valueExpression) {
-		List<ConstantExpression> expressions = new ArrayList<ConstantExpression>();
+		List<ConstantExpression> expressions = new ArrayList<>();
 		for (Expression expression : valueExpression.getExpressions()) {
 			if (expression instanceof ConstantExpression
 					&& ((ConstantExpression) expression).getValue() instanceof String) {
@@ -213,7 +213,7 @@ public class DependencyManagementBomTransformation
 		@Override
 		public ModelSource resolveModel(String groupId, String artifactId, String version)
 				throws UnresolvableModelException {
-			Map<String, String> dependency = new HashMap<String, String>();
+			Map<String, String> dependency = new HashMap<>();
 			dependency.put("group", groupId);
 			dependency.put("module", artifactId);
 			dependency.put("version", version);

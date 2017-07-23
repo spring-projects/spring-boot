@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,9 +158,6 @@ public class HttpTunnelServer {
 		catch (ConnectException ex) {
 			httpConnection.respond(HttpStatus.GONE);
 		}
-		catch (RemoteDebugNotRunningException ex) {
-			httpConnection.respond(HttpStatus.SERVICE_UNAVAILABLE);
-		}
 	}
 
 	/**
@@ -227,7 +224,7 @@ public class HttpTunnelServer {
 		public ServerThread(ByteChannel targetServer) {
 			Assert.notNull(targetServer, "TargetServer must not be null");
 			this.targetServer = targetServer;
-			this.httpConnections = new ArrayDeque<HttpConnection>(2);
+			this.httpConnections = new ArrayDeque<>(2);
 			this.payloadForwarder = new HttpTunnelPayloadForwarder(targetServer);
 		}
 

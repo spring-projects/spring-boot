@@ -212,7 +212,7 @@ public class DefaultLaunchScriptTests {
 	}
 
 	private Map<?, ?> createProperties(String... pairs) {
-		Map<Object, Object> properties = new HashMap<Object, Object>();
+		Map<Object, Object> properties = new HashMap<>();
 		for (String pair : pairs) {
 			String[] keyValue = pair.split(":");
 			properties.put(keyValue[0], keyValue[1]);

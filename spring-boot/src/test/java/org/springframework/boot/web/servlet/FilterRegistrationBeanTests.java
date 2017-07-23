@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import javax.servlet.Filter;
 
 import org.junit.Test;
 
-import org.springframework.boot.testutil.MockFilter;
+import org.springframework.boot.web.servlet.mock.MockFilter;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -36,7 +36,7 @@ public class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanT
 
 	@Test
 	public void setFilter() throws Exception {
-		FilterRegistrationBean bean = new FilterRegistrationBean();
+		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
 		bean.setFilter(this.filter);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter("mockFilter", this.filter);
@@ -44,7 +44,7 @@ public class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanT
 
 	@Test
 	public void setFilterMustNotBeNull() throws Exception {
-		FilterRegistrationBean bean = new FilterRegistrationBean();
+		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Filter must not be null");
 		bean.onStartup(this.servletContext);
@@ -54,20 +54,20 @@ public class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanT
 	public void constructFilterMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Filter must not be null");
-		new FilterRegistrationBean(null);
+		new FilterRegistrationBean<>(null);
 	}
 
 	@Test
 	public void createServletRegistrationBeanMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletRegistrationBeans must not be null");
-		new FilterRegistrationBean(this.filter, (ServletRegistrationBean[]) null);
+		new FilterRegistrationBean<>(this.filter, (ServletRegistrationBean[]) null);
 	}
 
 	@Override
-	protected AbstractFilterRegistrationBean createFilterRegistrationBean(
-			ServletRegistrationBean... servletRegistrationBeans) {
-		return new FilterRegistrationBean(this.filter, servletRegistrationBeans);
+	protected AbstractFilterRegistrationBean<MockFilter> createFilterRegistrationBean(
+			ServletRegistrationBean<?>... servletRegistrationBeans) {
+		return new FilterRegistrationBean<>(this.filter, servletRegistrationBeans);
 	}
 
 	@Override

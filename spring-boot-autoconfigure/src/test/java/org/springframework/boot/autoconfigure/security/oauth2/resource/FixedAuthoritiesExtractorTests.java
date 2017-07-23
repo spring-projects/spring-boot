@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class FixedAuthoritiesExtractorTests {
 
 	private FixedAuthoritiesExtractor extractor = new FixedAuthoritiesExtractor();
 
-	private Map<String, Object> map = new LinkedHashMap<String, Object>();
+	private Map<String, Object> map = new LinkedHashMap<>();
 
 	@Test
 	public void authorities() {
@@ -75,7 +75,7 @@ public class FixedAuthoritiesExtractorTests {
 
 	@Test
 	public void authoritiesAsListOfMapsWithStandardKey() {
-		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<>();
 		map.put("role", "ROLE_ADMIN");
 		map.put("extra", "value");
 		this.map.put("authorities", Arrays.asList(map));
@@ -93,7 +93,7 @@ public class FixedAuthoritiesExtractorTests {
 
 	@Test
 	public void authoritiesAsListOfMapsWithMultipleNonStandardKeys() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("any", "ROLE_ADMIN");
 		map.put("foo", "bar");
 		this.map.put("authorities", Arrays.asList(map));

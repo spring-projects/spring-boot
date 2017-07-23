@@ -64,12 +64,9 @@ public class MetadataStore {
 
 	public void writeMetadata(ConfigurationMetadata metadata) throws IOException {
 		if (!metadata.getItems().isEmpty()) {
-			OutputStream outputStream = createMetadataResource().openOutputStream();
-			try {
+			try (OutputStream outputStream = createMetadataResource()
+					.openOutputStream()) {
 				new JsonMarshaller().write(metadata, outputStream);
-			}
-			finally {
-				outputStream.close();
 			}
 		}
 	}

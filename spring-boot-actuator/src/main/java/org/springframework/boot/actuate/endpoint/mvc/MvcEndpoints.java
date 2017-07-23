@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 
 	private ApplicationContext applicationContext;
 
-	private final Set<MvcEndpoint> endpoints = new HashSet<MvcEndpoint>();
+	private final Set<MvcEndpoint> endpoints = new HashSet<>();
 
 	private Set<Class<?>> customTypes;
 
@@ -77,7 +77,7 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 	}
 
 	private Set<Class<?>> findEndpointClasses(Collection<MvcEndpoint> existing) {
-		Set<Class<?>> types = new HashSet<Class<?>>();
+		Set<Class<?>> types = new HashSet<>();
 		for (MvcEndpoint endpoint : existing) {
 			Class<?> type = endpoint.getEndpointType();
 			if (type != null) {
@@ -99,7 +99,7 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 	 */
 	@SuppressWarnings("unchecked")
 	public <E extends MvcEndpoint> Set<E> getEndpoints(Class<E> type) {
-		Set<E> result = new HashSet<E>(this.endpoints.size());
+		Set<E> result = new HashSet<>(this.endpoints.size());
 		for (MvcEndpoint candidate : this.endpoints) {
 			if (type.isInstance(candidate)) {
 				result.add((E) candidate);

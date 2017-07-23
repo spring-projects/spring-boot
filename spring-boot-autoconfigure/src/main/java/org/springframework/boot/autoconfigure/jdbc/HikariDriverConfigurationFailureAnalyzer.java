@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of a Hikari configuration
@@ -26,14 +27,14 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * @author Stephane Nicoll
  */
 class HikariDriverConfigurationFailureAnalyzer
-		extends AbstractFailureAnalyzer<IllegalStateException> {
+		extends AbstractFailureAnalyzer<CannotGetJdbcConnectionException> {
 
-	private static final String EXPECTED_MESSAGE = "both driverClassName and "
-			+ "dataSourceClassName are specified, one or the other should be used";
+	private static final String EXPECTED_MESSAGE = "Failed to obtain JDBC Connection:"
+			+ " cannot use driverClassName and dataSourceClassName together.";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
-			IllegalStateException cause) {
+			CannotGetJdbcConnectionException cause) {
 		if (!EXPECTED_MESSAGE.equals(cause.getMessage())) {
 			return null;
 		}

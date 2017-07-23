@@ -32,7 +32,7 @@ import org.json.JSONObject;
 @SuppressWarnings("rawtypes")
 class JSONOrderedObject extends JSONObject {
 
-	private Set<String> keys = new LinkedHashSet<String>();
+	private Set<String> keys = new LinkedHashSet<>();
 
 	@Override
 	public JSONObject put(String key, Object value) throws JSONException {

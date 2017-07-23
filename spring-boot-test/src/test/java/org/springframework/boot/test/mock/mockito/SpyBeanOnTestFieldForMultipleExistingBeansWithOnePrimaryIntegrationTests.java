@@ -50,7 +50,7 @@ public class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegration
 	@Test
 	public void testSpying() throws Exception {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say two");
-		assertThat(new MockUtil().getMockName(this.spy).toString()).isEqualTo("two");
+		assertThat(MockUtil.getMockName(this.spy).toString()).isEqualTo("two");
 		verify(this.spy).greeting();
 	}
 

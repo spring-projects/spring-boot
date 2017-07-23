@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 package org.springframework.boot.autoconfigure.sendgrid;
 
+import com.sendgrid.Client;
 import com.sendgrid.SendGrid;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -35,11 +34,12 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Maciej Walkowiak
  * @author Patrick Bray
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(SendGrid.class)
-@Conditional(SendGridAutoConfiguration.SendGridPropertyCondition.class)
+@ConditionalOnProperty(prefix = "spring.sendgrid", value = "api-key")
 @EnableConfigurationProperties(SendGridProperties.class)
 public class SendGridAutoConfiguration {
 
@@ -52,39 +52,13 @@ public class SendGridAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(SendGrid.class)
 	public SendGrid sendGrid() {
-		SendGrid sendGrid = createSendGrid();
 		if (this.properties.isProxyConfigured()) {
 			HttpHost proxy = new HttpHost(this.properties.getProxy().getHost(),
 					this.properties.getProxy().getPort());
-			sendGrid.setClient(HttpClientBuilder.create().setProxy(proxy)
-					.setUserAgent("sendgrid/" + sendGrid.getVersion() + ";java").build());
+			return new SendGrid(this.properties.getApiKey(),
+					new Client(HttpClientBuilder.create().setProxy(proxy).build()));
 		}
-		return sendGrid;
-	}
-
-	private SendGrid createSendGrid() {
-		if (this.properties.getApiKey() != null) {
-			return new SendGrid(this.properties.getApiKey());
-		}
-		return new SendGrid(this.properties.getUsername(), this.properties.getPassword());
-	}
-
-	static class SendGridPropertyCondition extends AnyNestedCondition {
-
-		SendGridPropertyCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "username")
-		static class SendGridUserProperty {
-
-		}
-
-		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "api-key")
-		static class SendGridApiKeyProperty {
-
-		}
-
+		return new SendGrid(this.properties.getApiKey());
 	}
 
 }

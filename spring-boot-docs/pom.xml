@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.5.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-docs</artifactId>
@@ -124,12 +124,22 @@
 		</dependency>
 		<dependency>
 			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast-spring</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -158,11 +168,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>de.flapdoodle.embed</groupId>
 			<artifactId>de.flapdoodle.embed.mongo</artifactId>
 			<optional>true</optional>
@@ -173,8 +178,13 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.spring</groupId>
-			<artifactId>reactor-spring-context</artifactId>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -211,7 +221,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>jms-api</artifactId>
+			<artifactId>javax.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -248,21 +258,45 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-client</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-jms-pool</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
@@ -305,6 +339,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jdbc</artifactId>
 			<optional>true</optional>
@@ -333,22 +372,6 @@
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-templates</artifactId>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.cli</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.shell</artifactId>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<artifactId>groovy-all</artifactId>
-					<groupId>org.codehaus.groovy</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -432,7 +455,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
+			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -451,8 +474,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
+			<groupId>org.influxdb</groupId>
+			<artifactId>influxdb-java</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -468,6 +491,21 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-async</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-reactivestreams</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -527,6 +565,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -562,6 +605,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-jdbc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jmx</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -582,7 +630,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
+			<artifactId>spring-session-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -697,12 +745,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
-			<artifactId>thymeleaf-spring4</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-conditionalcomments</artifactId>
+			<artifactId>thymeleaf-spring5</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -731,12 +774,6 @@
 			<optional>true</optional>
 		</dependency>
 		<!-- Test dependencies -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot</artifactId>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-support</artifactId>
@@ -783,8 +820,8 @@
 										<link>http://docs.oracle.com/javase/7/docs/api/</link>
 										<link>http://docs.oracle.com/javaee/7/api/</link>
 										<link>http://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
-										<link>http://docs.spring.io/autorepo/docs/spring-security/${spring-security.version}/apidocs/</link>
-										<link>http://tomcat.apache.org/tomcat-8.0-doc/api/</link>
+										<link>http://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
+										<link>http://tomcat.apache.org/tomcat-8.5-doc/api/</link>
 										<link>http://download.eclipse.org/jetty/stable-9/apidocs/</link>
 										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
 									</links>
@@ -833,6 +870,15 @@
 											<outputDirectory>
 												${project.build.directory}/contents/maven-plugin
 											</outputDirectory>
+											<excludes>META-INF/**</excludes>
+										</artifactItem>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-gradle-plugin</artifactId>
+											<version>${project.version}</version>
+											<classifier>docs</classifier>
+											<type>zip</type>
+											<outputDirectory>${project.build.directory}/contents/gradle-plugin</outputDirectory>
 											<excludes>META-INF/**</excludes>
 										</artifactItem>
 									</artifactItems>
@@ -1202,7 +1248,7 @@
 											<lowercase />
 										</stringutil>
 										<var name="github-tag" value="v${project.version}" />
-										<propertyregex property="github-tag" override="true" input="${github-tag}" regexp=".*SNAPSHOT" replace="1.5.x" />
+										<propertyregex property="github-tag" override="true" input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
 									</target>
 								</configuration>
 							</execution>

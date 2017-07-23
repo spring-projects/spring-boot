@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
@@ -45,7 +44,6 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerUtils;
-import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -63,6 +61,7 @@ import static org.assertj.core.api.Assertions.offset;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Raja Kolli
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CacheStatisticsAutoConfigurationTests {
@@ -107,14 +106,6 @@ public class CacheStatisticsAutoConfigurationTests {
 		load(InfinispanConfig.class);
 		CacheStatisticsProvider provider = this.context.getBean(
 				"infinispanCacheStatisticsProvider", CacheStatisticsProvider.class);
-		doTestCoreStatistics(provider, true);
-	}
-
-	@Test
-	public void basicGuavaCacheStatistics() {
-		load(GuavaConfig.class);
-		CacheStatisticsProvider provider = this.context
-				.getBean("guavaCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, true);
 	}
 
@@ -227,7 +218,7 @@ public class CacheStatisticsAutoConfigurationTests {
 			javax.cache.CacheManager cacheManager = Caching
 					.getCachingProvider(HazelcastCachingProvider.class.getName())
 					.getCacheManager();
-			MutableConfiguration<Object, Object> config = new MutableConfiguration<Object, Object>();
+			MutableConfiguration<Object, Object> config = new MutableConfiguration<>();
 			config.setStatisticsEnabled(true);
 			cacheManager.createCache("books", config);
 			cacheManager.createCache("speakers", config);
@@ -280,26 +271,9 @@ public class CacheStatisticsAutoConfigurationTests {
 		@Bean
 		public EmbeddedCacheManager embeddedCacheManager() throws IOException {
 			Resource resource = new ClassPathResource("cache/test-infinispan.xml");
-			InputStream in = resource.getInputStream();
-			try {
+			try (InputStream in = resource.getInputStream()) {
 				return new DefaultCacheManager(in);
 			}
-			finally {
-				in.close();
-			}
-		}
-
-	}
-
-	@Configuration
-	static class GuavaConfig {
-
-		@Bean
-		public GuavaCacheManager cacheManager() throws IOException {
-			GuavaCacheManager cacheManager = new GuavaCacheManager();
-			cacheManager.setCacheBuilder(CacheBuilder.newBuilder().recordStats());
-			cacheManager.setCacheNames(Arrays.asList("books", "speakers"));
-			return cacheManager;
 		}
 
 	}

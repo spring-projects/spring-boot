@@ -36,8 +36,8 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
-import org.springframework.boot.junit.compiler.TestCompiler;
-import org.springframework.boot.junit.compiler.TestCompiler.TestCompilationTask;
+import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.boot.testsupport.compiler.TestCompiler.TestCompilationTask;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -63,7 +63,7 @@ public class TestProject {
 
 	private TestCompiler compiler;
 
-	private Set<File> sourceFiles = new LinkedHashSet<File>();
+	private Set<File> sourceFiles = new LinkedHashSet<>();
 
 	public TestProject(TemporaryFolder tempFolder, Class<?>... classes)
 			throws IOException {
@@ -74,7 +74,7 @@ public class TestProject {
 				return TestProject.this.sourceFolder;
 			}
 		};
-		Set<Class<?>> contents = new HashSet<Class<?>>(Arrays.asList(classes));
+		Set<Class<?>> contents = new HashSet<>(Arrays.asList(classes));
 		contents.addAll(Arrays.asList(ALWAYS_INCLUDE));
 		copySources(contents);
 	}

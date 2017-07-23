@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,12 +37,13 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
-import org.springframework.lang.UsesJava7;
+import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
+import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.UnixStat;
 
 /**
  * Writes JAR content, ensuring valid directory entries are always create and duplicate
@@ -51,15 +52,15 @@ import org.springframework.lang.UsesJava7;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class JarWriter implements LoaderClassesWriter {
+public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
 
-	private final JarOutputStream jarOutput;
+	private final JarArchiveOutputStream jarOutput;
 
-	private final Set<String> writtenEntries = new HashSet<String>();
+	private final Set<String> writtenEntries = new HashSet<>();
 
 	/**
 	 * Create a new {@link JarWriter} instance.
@@ -85,14 +86,14 @@ public class JarWriter implements LoaderClassesWriter {
 			fileOutputStream.write(launchScript.toByteArray());
 			setExecutableFilePermission(file);
 		}
-		this.jarOutput = new JarOutputStream(fileOutputStream);
+		this.jarOutput = new JarArchiveOutputStream(fileOutputStream);
+		this.jarOutput.setEncoding("UTF-8");
 	}
 
-	@UsesJava7
 	private void setExecutableFilePermission(File file) {
 		try {
 			Path path = file.toPath();
-			Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>(
+			Set<PosixFilePermission> permissions = new HashSet<>(
 					Files.getPosixFilePermissions(path));
 			permissions.add(PosixFilePermission.OWNER_EXECUTE);
 			Files.setPosixFilePermissions(path, permissions);
@@ -108,7 +109,7 @@ public class JarWriter implements LoaderClassesWriter {
 	 * @throws IOException of the manifest cannot be written
 	 */
 	public void writeManifest(final Manifest manifest) throws IOException {
-		JarEntry entry = new JarEntry("META-INF/MANIFEST.MF");
+		JarArchiveEntry entry = new JarArchiveEntry("META-INF/MANIFEST.MF");
 		writeEntry(entry, new EntryWriter() {
 			@Override
 			public void write(OutputStream outputStream) throws IOException {
@@ -130,24 +131,25 @@ public class JarWriter implements LoaderClassesWriter {
 			throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
-			JarEntry entry = entries.nextElement();
-			ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
-					jarFile.getInputStream(entry));
-			try {
-				if (inputStream.hasZipHeader() && entry.getMethod() != ZipEntry.STORED) {
-					new CrcAndSize(inputStream).setupStoredEntry(entry);
-					inputStream.close();
-					inputStream = new ZipHeaderPeekInputStream(
-							jarFile.getInputStream(entry));
-				}
+			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
+			setUpStoredEntryIfNecessary(jarFile, entry);
+			try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
+					jarFile.getInputStream(entry))) {
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
-				JarEntry transformedEntry = entryTransformer.transform(entry);
+				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
 				if (transformedEntry != null) {
 					writeEntry(transformedEntry, entryWriter);
 				}
 			}
-			finally {
-				inputStream.close();
+		}
+	}
+
+	private void setUpStoredEntryIfNecessary(JarFile jarFile, JarArchiveEntry entry)
+			throws IOException {
+		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
+				jarFile.getInputStream(entry))) {
+			if (inputStream.hasZipHeader() && entry.getMethod() != ZipEntry.STORED) {
+				new CrcAndSize(inputStream).setupStoredEntry(entry);
 			}
 		}
 	}
@@ -160,7 +162,7 @@ public class JarWriter implements LoaderClassesWriter {
 	 */
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
-		JarEntry entry = new JarEntry(entryName);
+		JarArchiveEntry entry = new JarArchiveEntry(entryName);
 		writeEntry(entry, new InputStreamEntryWriter(inputStream, true));
 	}
 
@@ -173,7 +175,7 @@ public class JarWriter implements LoaderClassesWriter {
 	public void writeNestedLibrary(String destination, Library library)
 			throws IOException {
 		File file = library.getFile();
-		JarEntry entry = new JarEntry(destination + library.getName());
+		JarArchiveEntry entry = new JarArchiveEntry(destination + library.getName());
 		entry.setTime(getNestedLibraryTime(file));
 		if (library.isUnpackRequired()) {
 			entry.setComment("UNPACK:" + FileUtils.sha1Hash(file));
@@ -227,7 +229,8 @@ public class JarWriter implements LoaderClassesWriter {
 		JarEntry entry;
 		while ((entry = inputStream.getNextJarEntry()) != null) {
 			if (entry.getName().endsWith(".class")) {
-				writeEntry(entry, new InputStreamEntryWriter(inputStream, false));
+				writeEntry(new JarArchiveEntry(entry),
+						new InputStreamEntryWriter(inputStream, false));
 			}
 		}
 		inputStream.close();
@@ -237,6 +240,7 @@ public class JarWriter implements LoaderClassesWriter {
 	 * Close the writer.
 	 * @throws IOException if the file cannot be closed
 	 */
+	@Override
 	public void close() throws IOException {
 		this.jarOutput.close();
 	}
@@ -248,24 +252,29 @@ public class JarWriter implements LoaderClassesWriter {
 	 * @param entryWriter the entry writer or {@code null} if there is no content
 	 * @throws IOException in case of I/O errors
 	 */
-	private void writeEntry(JarEntry entry, EntryWriter entryWriter) throws IOException {
+	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter)
+			throws IOException {
 		String parent = entry.getName();
 		if (parent.endsWith("/")) {
 			parent = parent.substring(0, parent.length() - 1);
+			entry.setUnixMode(UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
+		}
+		else {
+			entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
 		}
 		if (parent.lastIndexOf("/") != -1) {
 			parent = parent.substring(0, parent.lastIndexOf("/") + 1);
 			if (parent.length() > 0) {
-				writeEntry(new JarEntry(parent), null);
+				writeEntry(new JarArchiveEntry(parent), null);
 			}
 		}
 
 		if (this.writtenEntries.add(entry.getName())) {
-			this.jarOutput.putNextEntry(entry);
+			this.jarOutput.putArchiveEntry(entry);
 			if (entryWriter != null) {
 				entryWriter.write(this.jarOutput);
 			}
-			this.jarOutput.closeEntry();
+			this.jarOutput.closeArchiveEntry();
 		}
 	}
 
@@ -394,7 +403,7 @@ public class JarWriter implements LoaderClassesWriter {
 			}
 		}
 
-		public void setupStoredEntry(JarEntry entry) {
+		public void setupStoredEntry(JarArchiveEntry entry) {
 			entry.setSize(this.size);
 			entry.setCompressedSize(this.size);
 			entry.setCrc(this.crc.getValue());
@@ -409,7 +418,7 @@ public class JarWriter implements LoaderClassesWriter {
 	 */
 	interface EntryTransformer {
 
-		JarEntry transform(JarEntry jarEntry);
+		JarArchiveEntry transform(JarArchiveEntry jarEntry);
 
 	}
 
@@ -419,7 +428,7 @@ public class JarWriter implements LoaderClassesWriter {
 	private static final class IdentityEntryTransformer implements EntryTransformer {
 
 		@Override
-		public JarEntry transform(JarEntry jarEntry) {
+		public JarArchiveEntry transform(JarArchiveEntry jarEntry) {
 			return jarEntry;
 		}
 

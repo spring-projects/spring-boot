@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -89,7 +89,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void idOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, this.property + ".id:myid");
+		TestPropertyValues.of(this.property + ".id:myid").applyTo(this.context);
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().getId()).isEqualTo("myid");
@@ -110,7 +110,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isSensitiveOverrideWithGlobal() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("endpoint.sensitive", this.sensitive);
 		properties.put(this.property + ".sensitive", String.valueOf(!this.sensitive));
 		PropertySource<?> propertySource = new MapPropertySource("test", properties);
@@ -163,7 +163,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isOptIn() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		Map<String, Object> source = new HashMap<String, Object>();
+		Map<String, Object> source = new HashMap<>();
 		source.put("endpoints.enabled", false);
 		source.put(this.property + ".enabled", true);
 		PropertySource<?> propertySource = new MapPropertySource("test", source);

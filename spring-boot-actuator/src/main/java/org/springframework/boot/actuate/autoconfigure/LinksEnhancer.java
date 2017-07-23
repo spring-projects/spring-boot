@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class LinksEnhancer {
 			resource.add(linkTo(LinksEnhancer.class).slash(this.rootPath + self)
 					.withSelfRel());
 		}
-		MultiValueMap<String, String> added = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> added = new LinkedMultiValueMap<>();
 		for (MvcEndpoint endpoint : this.endpoints.getEndpoints()) {
 			if (!endpoint.getPath().equals(self)) {
 				String rel = getRel(endpoint);

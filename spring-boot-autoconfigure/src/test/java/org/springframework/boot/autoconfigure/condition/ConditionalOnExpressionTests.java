@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConditionalOnExpression}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class ConditionalOnExpressionTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testResourceExists() {
+	public void expressionIsTrue() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("foo")).isTrue();
@@ -42,8 +43,15 @@ public class ConditionalOnExpressionTests {
 	}
 
 	@Test
-	public void testResourceNotExists() {
+	public void expressionIsFalse() {
 		this.context.register(MissingConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	public void expressionIsNull() {
+		this.context.register(NullConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
@@ -62,6 +70,17 @@ public class ConditionalOnExpressionTests {
 	@Configuration
 	@ConditionalOnExpression("true")
 	protected static class BasicConfiguration {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnExpression("true ? null : false")
+	protected static class NullConfiguration {
 
 		@Bean
 		public String foo() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,9 +67,9 @@ public class ClassPathFileSystemWatcherTests {
 	@Test
 	public void configuredWithRestartStrategy() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		File folder = this.temp.newFolder();
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		urls.add(new URL("http://spring.io"));
 		urls.add(folder.toURI().toURL());
 		properties.put("urls", urls);
@@ -132,7 +132,7 @@ public class ClassPathFileSystemWatcherTests {
 
 	public static class Listener implements ApplicationListener<ClassPathChangedEvent> {
 
-		private List<ClassPathChangedEvent> events = new ArrayList<ClassPathChangedEvent>();
+		private List<ClassPathChangedEvent> events = new ArrayList<>();
 
 		@Override
 		public void onApplicationEvent(ClassPathChangedEvent event) {

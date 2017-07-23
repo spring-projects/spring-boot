@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,24 +42,12 @@ class ContentContainingCondition extends Condition<File> {
 
 	@Override
 	public boolean matches(File value) {
-		Reader reader = null;
-		try {
-			reader = new FileReader(value);
+		try (Reader reader = new FileReader(value)) {
 			String content = FileCopyUtils.copyToString(reader);
 			return content.contains(this.toContain);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
-		}
-		finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				}
-				catch (IOException ex) {
-					// Ignore
-				}
-			}
 		}
 	}
 

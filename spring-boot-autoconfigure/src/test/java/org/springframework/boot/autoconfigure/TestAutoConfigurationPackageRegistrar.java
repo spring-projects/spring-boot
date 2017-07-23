@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 
@@ -29,7 +27,6 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class TestAutoConfigurationPackageRegistrar
 		implements ImportBeanDefinitionRegistrar {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,11 @@ public class GenericConfig<T> {
 		private String name;
 
 		@NestedConfigurationProperty
-		private final Bar<String> bar = new Bar<String>();
+		private final Bar<String> bar = new Bar<>();
 
-		private final Map<String, Bar<Integer>> stringToBar = new HashMap<String, Bar<Integer>>();
+		private final Map<String, Bar<Integer>> stringToBar = new HashMap<>();
 
-		private final Map<String, Integer> stringToInteger = new HashMap<String, Integer>();
+		private final Map<String, Integer> stringToInteger = new HashMap<>();
 
 		public String getName() {
 			return this.name;
@@ -75,7 +75,7 @@ public class GenericConfig<T> {
 		private String name;
 
 		@NestedConfigurationProperty
-		private final Biz<String> biz = new Biz<String>();
+		private final Biz<String> biz = new Biz<>();
 
 		public String getName() {
 			return this.name;

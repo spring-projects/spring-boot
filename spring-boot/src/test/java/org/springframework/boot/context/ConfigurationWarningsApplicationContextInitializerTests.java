@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWith
 import org.springframework.boot.context.configwarnings.orgspring.InOrgSpringPackageConfiguration;
 import org.springframework.boot.context.configwarnings.real.InRealButScanningProblemPackages;
 import org.springframework.boot.context.configwarnings.real.InRealPackageConfiguration;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +52,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 			+ "start due to a @ComponentScan of 'org.springframework'.";
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void logWarningInDefaultPackage() {
@@ -112,17 +112,11 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	}
 
 	private void load(Class<?> configClass) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		new TestConfigurationWarningsApplicationContextInitializer().initialize(context);
-		context.register(configClass);
-		try {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			new TestConfigurationWarningsApplicationContextInitializer()
+					.initialize(context);
+			context.register(configClass);
 			context.refresh();
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		finally {
-			context.close();
 		}
 	}
 
@@ -149,7 +143,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 		protected Set<String> getComponentScanningPackages(
 				BeanDefinitionRegistry registry) {
 			Set<String> scannedPackages = super.getComponentScanningPackages(registry);
-			Set<String> result = new LinkedHashSet<String>();
+			Set<String> result = new LinkedHashSet<>();
 			for (String scannedPackage : scannedPackages) {
 				if (scannedPackage.endsWith("dflt")) {
 					result.add("");

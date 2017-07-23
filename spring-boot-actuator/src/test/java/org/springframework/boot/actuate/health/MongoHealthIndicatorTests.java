@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
-import com.mongodb.CommandResult;
 import com.mongodb.MongoException;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 
@@ -65,7 +65,7 @@ public class MongoHealthIndicatorTests {
 
 	@Test
 	public void mongoIsUp() throws Exception {
-		CommandResult commandResult = mock(CommandResult.class);
+		Document commandResult = mock(Document.class);
 		given(commandResult.getString("version")).willReturn("2.6.4");
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
 		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(commandResult);

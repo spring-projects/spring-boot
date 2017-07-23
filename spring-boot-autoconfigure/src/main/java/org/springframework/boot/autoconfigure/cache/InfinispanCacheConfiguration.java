@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Raja Kolli
  * @since 1.3.0
  */
 @Configuration
@@ -88,12 +89,8 @@ public class InfinispanCacheConfiguration {
 		Resource location = this.cacheProperties
 				.resolveConfigLocation(this.cacheProperties.getInfinispan().getConfig());
 		if (location != null) {
-			InputStream in = location.getInputStream();
-			try {
+			try (InputStream in = location.getInputStream()) {
 				return new DefaultCacheManager(in);
-			}
-			finally {
-				in.close();
 			}
 		}
 		return new DefaultCacheManager();

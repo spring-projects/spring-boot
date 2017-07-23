@@ -21,8 +21,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
@@ -45,11 +46,11 @@ public class OAuth2RestOperationsConfigurationTests {
 
 	@Test
 	public void clientIdConditionMatches() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.client.client-id=acme");
+		TestPropertyValues.of("security.oauth2.client.client-id=acme")
+				.applyTo(this.environment);
 		this.context = new SpringApplicationBuilder(
 				OAuth2RestOperationsConfiguration.class).environment(this.environment)
-						.web(false).run();
+						.web(WebApplicationType.NONE).run();
 		assertThat(this.context.getBean(OAuth2RestOperationsConfiguration.class))
 				.isNotNull();
 	}
@@ -58,7 +59,7 @@ public class OAuth2RestOperationsConfigurationTests {
 	public void clientIdConditionDoesNotMatch() throws Exception {
 		this.context = new SpringApplicationBuilder(
 				OAuth2RestOperationsConfiguration.class).environment(this.environment)
-						.web(false).run();
+						.web(WebApplicationType.NONE).run();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(OAuth2RestOperationsConfiguration.class);
 	}

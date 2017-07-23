@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 
 	@Test
 	public void simpleRepository() throws IOException {
-		InputStream foo = getInputStreamFor("foo");
-		try {
+		try (InputStream foo = getInputStreamFor("foo")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder
 					.create(foo).build();
 			validateFoo(repo);
@@ -50,15 +49,11 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 					"spring.foo.counter");
 			assertThat(repo.getAllProperties()).hasSize(3);
 		}
-		finally {
-			foo.close();
-		}
 	}
 
 	@Test
 	public void hintsOnMaps() throws IOException {
-		InputStream map = getInputStreamFor("map");
-		try {
+		try (InputStream map = getInputStreamFor("map")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder
 					.create(map).build();
 			validateMap(repo);
@@ -67,16 +62,12 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 					"spring.map.keys", "spring.map.values");
 			assertThat(repo.getAllProperties()).hasSize(4);
 		}
-		finally {
-			map.close();
-		}
 	}
 
 	@Test
 	public void severalRepositoriesNoConflict() throws IOException {
-		InputStream foo = getInputStreamFor("foo");
-		InputStream bar = getInputStreamFor("bar");
-		try {
+		try (InputStream foo = getInputStreamFor("foo");
+				InputStream bar = getInputStreamFor("bar")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder
 					.create(foo, bar).build();
 			validateFoo(repo);
@@ -87,17 +78,12 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 					"spring.bar.counter");
 			assertThat(repo.getAllProperties()).hasSize(6);
 		}
-		finally {
-			foo.close();
-			bar.close();
-		}
 	}
 
 	@Test
 	public void repositoryWithRoot() throws IOException {
-		InputStream foo = getInputStreamFor("foo");
-		InputStream root = getInputStreamFor("root");
-		try {
+		try (InputStream foo = getInputStreamFor("foo");
+				InputStream root = getInputStreamFor("root")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder
 					.create(foo, root).build();
 			validateFoo(repo);
@@ -107,17 +93,12 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 					"spring.foo.counter", "spring.root.name", "spring.root2.name");
 			assertThat(repo.getAllProperties()).hasSize(5);
 		}
-		finally {
-			foo.close();
-			root.close();
-		}
 	}
 
 	@Test
 	public void severalRepositoriesIdenticalGroups() throws IOException {
-		InputStream foo = getInputStreamFor("foo");
-		InputStream foo2 = getInputStreamFor("foo2");
-		try {
+		try (InputStream foo = getInputStreamFor("foo");
+				InputStream foo2 = getInputStreamFor("foo2")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder
 					.create(foo, foo2).build();
 			assertThat(repo.getAllGroups()).hasSize(1);
@@ -132,16 +113,11 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 					"spring.foo.counter", "spring.foo.enabled", "spring.foo.type");
 			assertThat(repo.getAllProperties()).hasSize(5);
 		}
-		finally {
-			foo.close();
-			foo2.close();
-		}
 	}
 
 	@Test
 	public void emptyGroups() throws IOException {
-		InputStream in = getInputStreamFor("empty-groups");
-		try {
+		try (InputStream in = getInputStreamFor("empty-groups")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder
 					.create(in).build();
 			validateEmptyGroup(repo);
@@ -149,16 +125,12 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 			contains(repo.getAllProperties(), "name", "title");
 			assertThat(repo.getAllProperties()).hasSize(2);
 		}
-		finally {
-			in.close();
-		}
 	}
 
 	@Test
 	public void builderInstancesAreIsolated() throws IOException {
-		InputStream foo = getInputStreamFor("foo");
-		InputStream bar = getInputStreamFor("bar");
-		try {
+		try (InputStream foo = getInputStreamFor("foo");
+				InputStream bar = getInputStreamFor("bar")) {
 			ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder
 					.create();
 			ConfigurationMetadataRepository firstRepo = builder.withJsonResource(foo)
@@ -174,10 +146,6 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 			assertThat(firstRepo.getAllProperties()).hasSize(3);
 			assertThat(secondRepo.getAllGroups()).hasSize(2);
 			assertThat(secondRepo.getAllProperties()).hasSize(6);
-		}
-		finally {
-			foo.close();
-			bar.close();
 		}
 	}
 

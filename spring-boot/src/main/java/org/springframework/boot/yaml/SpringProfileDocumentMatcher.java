@@ -25,14 +25,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -47,20 +45,18 @@ import org.springframework.util.StringUtils;
  * @author Matt Benson
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	private String[] activeProfiles = new String[0];
-
-	public SpringProfileDocumentMatcher() {
-	}
 
 	public SpringProfileDocumentMatcher(String... profiles) {
 		addActiveProfiles(profiles);
 	}
 
 	public void addActiveProfiles(String... profiles) {
-		LinkedHashSet<String> set = new LinkedHashSet<String>(
+		LinkedHashSet<String> set = new LinkedHashSet<>(
 				Arrays.asList(this.activeProfiles));
 		Collections.addAll(set, profiles);
 		this.activeProfiles = set.toArray(new String[set.size()]);
@@ -68,7 +64,16 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	@Override
 	public MatchStatus matches(Properties properties) {
-		List<String> profiles = extractSpringProfiles(properties);
+		return matches(extractSpringProfiles(properties));
+	}
+
+	protected List<String> extractSpringProfiles(Properties properties) {
+		Binder binder = new Binder(new MapConfigurationPropertySource(properties));
+		return binder.bind("spring.profiles", Bindable.of(String[].class))
+				.map(Arrays::asList).orElse(Collections.emptyList());
+	}
+
+	private MatchStatus matches(List<String> profiles) {
 		ProfilesMatcher profilesMatcher = getProfilesMatcher();
 		Set<String> negative = extractProfiles(profiles, ProfileType.NEGATIVE);
 		Set<String> positive = extractProfiles(profiles, ProfileType.POSITIVE);
@@ -83,28 +88,17 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 		return profilesMatcher.matches(positive);
 	}
 
-	private List<String> extractSpringProfiles(Properties properties) {
-		SpringProperties springProperties = new SpringProperties();
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
-		PropertyValues propertyValues = new PropertySourcesPropertyValues(
-				propertySources);
-		new RelaxedDataBinder(springProperties, "spring").bind(propertyValues);
-		List<String> profiles = springProperties.getProfiles();
-		return profiles;
-	}
-
 	private ProfilesMatcher getProfilesMatcher() {
 		return this.activeProfiles.length == 0 ? new EmptyProfilesMatcher()
 				: new ActiveProfilesMatcher(
-						new HashSet<String>(Arrays.asList(this.activeProfiles)));
+						new HashSet<>(Arrays.asList(this.activeProfiles)));
 	}
 
 	private Set<String> extractProfiles(List<String> profiles, ProfileType type) {
 		if (CollectionUtils.isEmpty(profiles)) {
 			return null;
 		}
-		Set<String> extractedProfiles = new HashSet<String>();
+		Set<String> extractedProfiles = new HashSet<>();
 		for (String candidate : profiles) {
 			ProfileType candidateType = ProfileType.POSITIVE;
 			if (candidate.startsWith("!")) {
@@ -198,7 +192,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	 */
 	static class SpringProperties {
 
-		private List<String> profiles = new ArrayList<String>();
+		private List<String> profiles = new ArrayList<>();
 
 		public List<String> getProfiles() {
 			return this.profiles;

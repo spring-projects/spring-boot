@@ -16,7 +16,6 @@
 
 	<properties>
 		<resourcesJarPath>{{resourcesJarPath}}</resourcesJarPath>
-		{{containerVersion}}
 	</properties>
 
 	<dependencies>
@@ -44,13 +43,6 @@
 			<scope>system</scope>
 			<systemPath>${resourcesJarPath}</systemPath>
 		</dependency>
-	{{#additionalDependencies}}
-		<dependency>
-			<groupId>{{groupId}}</groupId>
-			<artifactId>{{artifactId}}</artifactId>
-			<version>{{version}}</version>
-		</dependency>
-	{{/additionalDependencies}}
 	</dependencies>
 
 	<build>
@@ -64,5 +56,15 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<url>https://repo.spring.io/libs-snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 </project>

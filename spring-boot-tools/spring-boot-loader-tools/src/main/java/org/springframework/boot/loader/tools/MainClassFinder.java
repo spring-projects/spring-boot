@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
@@ -119,44 +118,6 @@ public abstract class MainClassFinder {
 	}
 
 	/**
-	 * Find a single main class from the given {@code rootFolders}. A main class annotated
-	 * with an annotation with the given {@code annotationName} will be preferred over a
-	 * main class with no such annotation.
-	 * @param rootFolders the root folders to search
-	 * @param annotationName the name of the annotation that may be present on the main
-	 * class
-	 * @return the main class or {@code null}
-	 * @throws IOException if a root folder cannot be read
-	 * @since 1.5.5
-	 */
-	public static String findSingleMainClass(Collection<File> rootFolders,
-			String annotationName) throws IOException {
-		SingleMainClassCallback callback = new SingleMainClassCallback(annotationName);
-		doWithMainClasses(rootFolders, callback);
-		return callback.getMainClassName();
-	}
-
-	/**
-	 * Perform the given callback operation on all main classes from the given root
-	 * folder.
-	 * @param <T> the result type
-	 * @param rootFolders the root folders
-	 * @param callback the callback
-	 * @return the first callback result or {@code null}
-	 * @throws IOException in case of I/O errors
-	 */
-	static <T> T doWithMainClasses(Collection<File> rootFolders,
-			MainClassCallback<T> callback) throws IOException {
-		for (File rootFolder : rootFolders) {
-			T result = doWithMainClasses(rootFolder, callback);
-			if (result != null) {
-				return result;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Perform the given callback operation on all main classes from the given root
 	 * folder.
 	 * @param <T> the result type
@@ -175,13 +136,12 @@ public abstract class MainClassFinder {
 					"Invalid root folder '" + rootFolder + "'");
 		}
 		String prefix = rootFolder.getAbsolutePath() + "/";
-		Deque<File> stack = new ArrayDeque<File>();
+		Deque<File> stack = new ArrayDeque<>();
 		stack.push(rootFolder);
 		while (!stack.isEmpty()) {
 			File file = stack.pop();
 			if (file.isFile()) {
-				InputStream inputStream = new FileInputStream(file);
-				try {
+				try (InputStream inputStream = new FileInputStream(file)) {
 					ClassDescriptor classDescriptor = createClassDescriptor(inputStream);
 					if (classDescriptor != null && classDescriptor.isMainMethodFound()) {
 						String className = convertToClassName(file.getAbsolutePath(),
@@ -192,9 +152,6 @@ public abstract class MainClassFinder {
 							return result;
 						}
 					}
-				}
-				finally {
-					inputStream.close();
 				}
 			}
 			if (file.isDirectory()) {
@@ -279,9 +236,8 @@ public abstract class MainClassFinder {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
 		Collections.sort(classEntries, new ClassEntryComparator());
 		for (JarEntry entry : classEntries) {
-			InputStream inputStream = new BufferedInputStream(
-					jarFile.getInputStream(entry));
-			try {
+			try (InputStream inputStream = new BufferedInputStream(
+					jarFile.getInputStream(entry))) {
 				ClassDescriptor classDescriptor = createClassDescriptor(inputStream);
 				if (classDescriptor != null && classDescriptor.isMainMethodFound()) {
 					String className = convertToClassName(entry.getName(),
@@ -292,9 +248,6 @@ public abstract class MainClassFinder {
 						return result;
 					}
 				}
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 		return null;
@@ -314,7 +267,7 @@ public abstract class MainClassFinder {
 			String classesLocation) {
 		classesLocation = (classesLocation != null ? classesLocation : "");
 		Enumeration<JarEntry> sourceEntries = source.entries();
-		List<JarEntry> classEntries = new ArrayList<JarEntry>();
+		List<JarEntry> classEntries = new ArrayList<>();
 		while (sourceEntries.hasMoreElements()) {
 			JarEntry entry = sourceEntries.nextElement();
 			if (entry.getName().startsWith(classesLocation)
@@ -358,7 +311,7 @@ public abstract class MainClassFinder {
 
 	private static class ClassDescriptor extends ClassVisitor {
 
-		private final Set<String> annotationNames = new LinkedHashSet<String>();
+		private final Set<String> annotationNames = new LinkedHashSet<>();
 
 		private boolean mainMethodFound;
 
@@ -437,7 +390,7 @@ public abstract class MainClassFinder {
 		MainClass(String name, Set<String> annotationNames) {
 			this.name = name;
 			this.annotationNames = Collections
-					.unmodifiableSet(new HashSet<String>(annotationNames));
+					.unmodifiableSet(new HashSet<>(annotationNames));
 		}
 
 		String getName() {
@@ -485,7 +438,7 @@ public abstract class MainClassFinder {
 	private static final class SingleMainClassCallback
 			implements MainClassCallback<Object> {
 
-		private final Set<MainClass> mainClasses = new LinkedHashSet<MainClass>();
+		private final Set<MainClass> mainClasses = new LinkedHashSet<>();
 
 		private final String annotationName;
 
@@ -500,7 +453,7 @@ public abstract class MainClassFinder {
 		}
 
 		private String getMainClassName() {
-			Set<MainClass> matchingMainClasses = new LinkedHashSet<MainClass>();
+			Set<MainClass> matchingMainClasses = new LinkedHashSet<>();
 			if (this.annotationName != null) {
 				for (MainClass mainClass : this.mainClasses) {
 					if (mainClass.getAnnotationNames().contains(this.annotationName)) {

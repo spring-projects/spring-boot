@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,9 @@ class ReflectionWrapper {
 
 	private final Object instance;
 
-	ReflectionWrapper(Object instance) {
-		this.type = instance.getClass();
-		this.instance = instance;
-	}
-
 	ReflectionWrapper(String type, Object instance) {
 		this.type = findClass(instance.getClass().getClassLoader(), type);
-		this.instance = instance;
+		this.instance = this.type.cast(instance);
 	}
 
 	protected final Object getInstance() {

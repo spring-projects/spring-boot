@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration.OAuth2ClientIdCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +40,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,6 +59,7 @@ import org.springframework.util.StringUtils;
  * Configuration for OAuth2 Single Sign On REST operations.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @Configuration
@@ -94,9 +93,9 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class SessionScopedConfiguration {
 
 		@Bean
-		public FilterRegistrationBean oauth2ClientFilterRegistration(
+		public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(
 				OAuth2ClientContextFilter filter, SecurityProperties security) {
-			FilterRegistrationBean registration = new FilterRegistrationBean();
+			FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
 			registration.setFilter(filter);
 			registration.setOrder(security.getFilterOrder() - 10);
 			return registration;
@@ -161,9 +160,8 @@ public class OAuth2RestOperationsConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			PropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), "security.oauth2.client.");
-			String clientId = resolver.getProperty("client-id");
+			String clientId = context.getEnvironment()
+					.getProperty("security.oauth2.client.client-id");
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth Client ID");
 			if (StringUtils.hasLength(clientId)) {

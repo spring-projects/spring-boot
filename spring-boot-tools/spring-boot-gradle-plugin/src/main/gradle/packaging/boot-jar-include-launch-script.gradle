@@ -1,0 +1,20 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'java'
+
+bootJar {
+	mainClass 'com.example.ExampleApplication'
+}
+
+// tag::include-launch-script[]
+bootJar {
+	launchScript {
+		included = true
+	}
+}
+// end::include-launch-script[]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.condition.OnBeanCondition.BeanTypeDeductionException;
-import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,20 +49,22 @@ public class OnBeanConditionTypeDeductionFailureTests {
 			fail("Context refresh was successful");
 		}
 		catch (Exception ex) {
-			Throwable beanTypeDeductionException = findBeanTypeDeductionException(ex);
+			Throwable beanTypeDeductionException = findNestedCause(ex,
+					BeanTypeDeductionException.class);
 			assertThat(beanTypeDeductionException)
 					.hasMessage("Failed to deduce bean type for "
 							+ OnMissingBeanConfiguration.class.getName()
 							+ ".objectMapper");
-			assertThat(beanTypeDeductionException)
-					.hasCauseInstanceOf(NoClassDefFoundError.class);
+			assertThat(findNestedCause(beanTypeDeductionException,
+					NoClassDefFoundError.class)).isNotNull();
+
 		}
 	}
 
-	private Throwable findBeanTypeDeductionException(Throwable ex) {
+	private Throwable findNestedCause(Throwable ex, Class<? extends Throwable> target) {
 		Throwable candidate = ex;
 		while (candidate != null) {
-			if (candidate instanceof BeanTypeDeductionException) {
+			if (target.isInstance(candidate)) {
 				return candidate;
 			}
 			candidate = candidate.getCause();

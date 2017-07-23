@@ -90,7 +90,7 @@ public class BeansEndpoint extends AbstractEndpoint<List<Object>>
 		}
 
 		private Set<ConfigurableApplicationContext> getContextHierarchy() {
-			Set<ConfigurableApplicationContext> contexts = new LinkedHashSet<ConfigurableApplicationContext>();
+			Set<ConfigurableApplicationContext> contexts = new LinkedHashSet<>();
 			ApplicationContext context = this.leafContext;
 			while (context != null) {
 				contexts.add(asConfigurableContext(context));

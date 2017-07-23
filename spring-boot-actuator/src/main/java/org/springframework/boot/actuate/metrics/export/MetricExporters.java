@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,13 +40,13 @@ public class MetricExporters implements SchedulingConfigurer, Closeable {
 
 	private MetricReader reader;
 
-	private Map<String, GaugeWriter> writers = new HashMap<String, GaugeWriter>();
+	private Map<String, GaugeWriter> writers = new HashMap<>();
 
 	private final MetricExportProperties properties;
 
-	private final Map<String, Exporter> exporters = new HashMap<String, Exporter>();
+	private final Map<String, Exporter> exporters = new HashMap<>();
 
-	private final Set<String> closeables = new HashSet<String>();
+	private final Set<String> closeables = new HashSet<>();
 
 	public MetricExporters(MetricExportProperties properties) {
 		this.properties = properties;

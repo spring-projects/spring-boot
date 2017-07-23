@@ -337,8 +337,23 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (hasAnnotation(field, nestedConfigurationPropertyAnnotation())) {
 			return true;
 		}
-		return this.typeUtils.isEnclosedIn(returnType, element)
+		return (isParentTheSame(returnType, element))
 				&& returnType.getKind() != ElementKind.ENUM;
+	}
+
+	private boolean isParentTheSame(Element returnType, TypeElement element) {
+		if (returnType == null || element == null) {
+			return false;
+		}
+		return getTopLevelType(returnType).equals(getTopLevelType(element));
+	}
+
+	private Element getTopLevelType(Element element) {
+		if ((element.getEnclosingElement() == null)
+				|| !(element.getEnclosingElement() instanceof TypeElement)) {
+			return element;
+		}
+		return getTopLevelType(element.getEnclosingElement());
 	}
 
 	private boolean isDeprecated(Element element) {
@@ -386,7 +401,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
 				.getElementValues().entrySet()) {
 			values.put(entry.getKey().getSimpleName().toString(),

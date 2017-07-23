@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ import org.mockito.stubbing.Answer;
 import org.springframework.boot.cli.testutil.SystemProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 
 /**
  * Tests for {@link SettingsXmlRepositorySystemSessionAutoConfiguration}.
@@ -85,7 +85,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 							public LocalRepositoryManager answer(
 									InvocationOnMock invocation) throws Throwable {
 								LocalRepository localRepository = invocation
-										.getArgumentAt(1, LocalRepository.class);
+										.getArgument(1);
 								return new SimpleLocalRepositoryManagerFactory()
 										.newInstance(session, localRepository);
 							}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class CloudFoundryDiscoveryMvcEndpoint extends AbstractMvcEndpoint {
 	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, Map<String, Link>> links(HttpServletRequest request) {
-		Map<String, Link> links = new LinkedHashMap<String, Link>();
+		Map<String, Link> links = new LinkedHashMap<>();
 		String url = request.getRequestURL().toString();
 		if (url.endsWith("/")) {
 			url = url.substring(0, url.length() - 1);

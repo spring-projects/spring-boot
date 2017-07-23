@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.5.5.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
@@ -17,7 +17,7 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<java.version>1.6</java.version>
+		<java.version>1.8</java.version>
 		<resource.delimiter>@</resource.delimiter> <!-- delimiter that doesn't clash with Spring ${} placeholders -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -104,7 +104,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<configuration>
-						<failOnMissingWebXml>false</failOnMissingWebXml>
 						<archive>
 							<manifest>
 								<mainClass>${start-class}</mainClass>
@@ -123,7 +122,6 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.6</version>
 					<configuration>
 						<delimiters>
 							<delimiter>${resource.delimiter}</delimiter>
@@ -171,7 +169,7 @@
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-maven-plugin</artifactId>
-							<version>1.5.5.BUILD-SNAPSHOT</version>
+							<version>2.0.0.BUILD-SNAPSHOT</version>
 						</dependency>
 					</dependencies>
 					<configuration>

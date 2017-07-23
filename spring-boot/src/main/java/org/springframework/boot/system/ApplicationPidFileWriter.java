@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.ApplicationPid;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -57,6 +56,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Tomasz Przybyla
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 public class ApplicationPidFileWriter
@@ -69,7 +69,7 @@ public class ApplicationPidFileWriter
 	private static final List<Property> FILE_PROPERTIES;
 
 	static {
-		List<Property> properties = new ArrayList<Property>();
+		List<Property> properties = new ArrayList<>();
 		properties.add(new SpringProperty("spring.pid.", "file"));
 		properties.add(new SpringProperty("spring.", "pidfile"));
 		properties.add(new SystemProperty("PIDFILE"));
@@ -79,7 +79,7 @@ public class ApplicationPidFileWriter
 	private static final List<Property> FAIL_ON_WRITE_ERROR_PROPERTIES;
 
 	static {
-		List<Property> properties = new ArrayList<Property>();
+		List<Property> properties = new ArrayList<>();
 		properties.add(new SpringProperty("spring.pid.", "fail-on-write-error"));
 		properties.add(new SystemProperty("PID_FAIL_ON_WRITE_ERROR"));
 		FAIL_ON_WRITE_ERROR_PROPERTIES = Collections.unmodifiableList(properties);
@@ -221,8 +221,7 @@ public class ApplicationPidFileWriter
 			if (environment == null) {
 				return null;
 			}
-			return new RelaxedPropertyResolver(environment, this.prefix)
-					.getProperty(this.key);
+			return environment.getProperty(this.prefix + this.key);
 		}
 
 		private Environment getEnvironment(SpringApplicationEvent event) {

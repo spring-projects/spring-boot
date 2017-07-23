@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,9 +43,10 @@ import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingSt
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.mapping.BasicMongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
-import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -84,8 +85,7 @@ public class MongoDataAutoConfigurationTests {
 	@Test
 	public void gridFsTemplateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.gridFsDatabase:grid");
+		TestPropertyValues.of("spring.data.mongodb.gridFsDatabase:grid");
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
@@ -165,16 +165,17 @@ public class MongoDataAutoConfigurationTests {
 				MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoMappingContext context = this.context.getBean(MongoMappingContext.class);
-		MongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
-		assertThat(entity.getPersistentProperty("date").isEntity()).isFalse();
+		BasicMongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
+		MongoPersistentProperty dateProperty = entity.getPersistentProperty("date");
+		assertThat(dateProperty.isEntity()).isFalse();
 	}
 
 	public void testFieldNamingStrategy(String strategy,
 			Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
 		if (strategy != null) {
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.data.mongodb.field-naming-strategy:" + strategy);
+			TestPropertyValues.of("spring.data.mongodb.field-naming-strategy:" + strategy)
+					.applyTo(this.context);
 		}
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
@@ -198,8 +199,8 @@ public class MongoDataAutoConfigurationTests {
 	static class CustomConversionsConfig {
 
 		@Bean
-		public CustomConversions customConversions() {
-			return new CustomConversions(Arrays.asList(new MyConverter()));
+		public MongoCustomConversions customConversions() {
+			return new MongoCustomConversions(Arrays.asList(new MyConverter()));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class EntityManagerFactoryBuilder {
 			URL persistenceUnitRootLocation) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
-		this.jpaProperties = new LinkedHashMap<String, Object>(jpaProperties);
+		this.jpaProperties = new LinkedHashMap<>(jpaProperties);
 		this.persistenceUnitRootLocation = persistenceUnitRootLocation;
 	}
 
@@ -111,7 +111,7 @@ public class EntityManagerFactoryBuilder {
 
 		private String persistenceUnit;
 
-		private Map<String, Object> properties = new HashMap<String, Object>();
+		private Map<String, Object> properties = new HashMap<>();
 
 		private boolean jta;
 
@@ -135,7 +135,7 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder packages(Class<?>... basePackageClasses) {
-			Set<String> packages = new HashSet<String>();
+			Set<String> packages = new HashSet<>();
 			for (Class<?> type : basePackageClasses) {
 				packages.add(ClassUtils.getPackageName(type));
 			}
@@ -220,6 +220,7 @@ public class EntityManagerFactoryBuilder {
 	/**
 	 * A callback for new entity manager factory beans created by a Builder.
 	 */
+	@FunctionalInterface
 	public interface EntityManagerFactoryBeanCallback {
 
 		void execute(LocalContainerEntityManagerFactoryBean factory);

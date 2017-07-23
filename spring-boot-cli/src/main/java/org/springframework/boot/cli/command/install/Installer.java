@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.springframework.util.SystemPropertyUtils;
  * Shared logic for the {@link InstallCommand} and {@link UninstallCommand}.
  *
  * @author Andy Wilkinson
- * @since 1.2.0
  */
 class Installer {
 
@@ -82,12 +81,8 @@ class Installer {
 	}
 
 	private void saveInstallCounts() throws IOException {
-		FileWriter writer = new FileWriter(getInstalled());
-		try {
+		try (FileWriter writer = new FileWriter(getInstalled())) {
 			this.installCounts.store(writer, null);
-		}
-		finally {
-			writer.close();
 		}
 	}
 

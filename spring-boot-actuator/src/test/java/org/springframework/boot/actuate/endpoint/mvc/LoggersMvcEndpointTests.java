@@ -27,11 +27,10 @@ import org.mockito.Mockito;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -65,11 +64,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Ben Hale
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(properties = "management.security.enabled=false")
 public class LoggersMvcEndpointTests {
+
+	private static final String PATH = "/application/loggers";
 
 	@Autowired
 	private WebApplicationContext context;
@@ -100,47 +102,47 @@ public class LoggersMvcEndpointTests {
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
 		String expected = "{\"levels\":[\"OFF\",\"FATAL\",\"ERROR\",\"WARN\",\"INFO\",\"DEBUG\",\"TRACE\"],"
 				+ "\"loggers\":{\"ROOT\":{\"configuredLevel\":null,\"effectiveLevel\":\"DEBUG\"}}}";
-		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
+		this.mvc.perform(get(PATH + "")).andExpect(status().isOk())
 				.andExpect(content().json(expected));
 	}
 
 	@Test
 	public void getLoggersWhenDisabledShouldReturnNotFound() throws Exception {
 		this.context.getBean(LoggersEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/loggers")).andExpect(status().isNotFound());
+		this.mvc.perform(get(PATH + "")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void getLoggerShouldReturnLogLevels() throws Exception {
 		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
-		this.mvc.perform(get("/loggers/ROOT")).andExpect(status().isOk())
+		this.mvc.perform(get(PATH + "/ROOT")).andExpect(status().isOk())
 				.andExpect(content().string(equalTo(
-						"{\"configuredLevel\":null," + "\"effectiveLevel\":\"DEBUG\"}")));
+						"{\"configuredLevel\":null,\"effectiveLevel\":\"DEBUG\"}")));
 	}
 
 	@Test
 	public void getLoggersRootWhenDisabledShouldReturnNotFound() throws Exception {
 		this.context.getBean(LoggersEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/loggers/ROOT")).andExpect(status().isNotFound());
+		this.mvc.perform(get(PATH + "/ROOT")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void getLoggersWhenLoggerNotFoundShouldReturnNotFound() throws Exception {
-		this.mvc.perform(get("/loggers/com.does.not.exist"))
+		this.mvc.perform(get(PATH + "/com.does.not.exist"))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	public void contentTypeForGetDefaultsToActuatorV1Json() throws Exception {
-		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
+	public void contentTypeForGetDefaultsToActuatorV2Json() throws Exception {
+		this.mvc.perform(get(PATH + "")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void contentTypeForGetCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/loggers").header(HttpHeaders.ACCEPT,
+		this.mvc.perform(get(PATH + "").header(HttpHeaders.ACCEPT,
 				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
@@ -148,23 +150,25 @@ public class LoggersMvcEndpointTests {
 
 	@Test
 	public void setLoggerUsingApplicationJsonShouldSetLogLevel() throws Exception {
-		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
+		this.mvc.perform(post(PATH + "/ROOT").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"configuredLevel\":\"debug\"}"))
+				.andExpect(status().isNoContent());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@Test
-	public void setLoggerUsingActuatorV1JsonShouldSetLogLevel() throws Exception {
-		this.mvc.perform(post("/loggers/ROOT")
-				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON)
-				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
+	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() throws Exception {
+		this.mvc.perform(post(PATH + "/ROOT")
+				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON)
+				.content("{\"configuredLevel\":\"debug\"}"))
+				.andExpect(status().isNoContent());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@Test
 	public void setLoggerWhenDisabledShouldReturnNotFound() throws Exception {
 		this.context.getBean(LoggersEndpoint.class).setEnabled(false);
-		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+		this.mvc.perform(post(PATH + "/ROOT").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"configuredLevel\":\"DEBUG\"}"))
 				.andExpect(status().isNotFound());
 		verifyZeroInteractions(this.loggingSystem);
@@ -172,10 +176,25 @@ public class LoggersMvcEndpointTests {
 
 	@Test
 	public void setLoggerWithWrongLogLevel() throws Exception {
-		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+		this.mvc.perform(post(PATH + "/ROOT").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"configuredLevel\":\"other\"}"))
 				.andExpect(status().is4xxClientError());
 		verifyZeroInteractions(this.loggingSystem);
+	}
+
+	@Test
+	public void setLoggerWithNullLogLevel() throws Exception {
+		this.mvc.perform(post(PATH + "/ROOT").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"configuredLevel\": null}"))
+				.andExpect(status().isNoContent());
+		verify(this.loggingSystem).setLogLevel("ROOT", null);
+	}
+
+	@Test
+	public void setLoggerWithNoLogLevel() throws Exception {
+		this.mvc.perform(post(PATH + "/ROOT").contentType(MediaType.APPLICATION_JSON)
+				.content("{}")).andExpect(status().isNoContent());
+		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
 	@Test
@@ -183,16 +202,15 @@ public class LoggersMvcEndpointTests {
 			throws Exception {
 		given(this.loggingSystem.getLoggerConfiguration("com.png"))
 				.willReturn(new LoggerConfiguration("com.png", null, LogLevel.DEBUG));
-		this.mvc.perform(get("/loggers/com.png")).andExpect(status().isOk())
+		this.mvc.perform(get(PATH + "/com.png")).andExpect(status().isOk())
 				.andExpect(content().string(equalTo(
-						"{\"configuredLevel\":null," + "\"effectiveLevel\":\"DEBUG\"}")));
+						"{\"configuredLevel\":null,\"effectiveLevel\":\"DEBUG\"}")));
 	}
 
 	@Configuration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	public static class TestConfiguration {
 
 		@Bean

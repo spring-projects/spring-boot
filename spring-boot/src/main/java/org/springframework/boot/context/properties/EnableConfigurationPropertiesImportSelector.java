@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -78,7 +79,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 				String prefix = extractPrefix(type);
 				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
 						: type.getName());
-				if (!registry.containsBeanDefinition(name)) {
+				if (!containsBeanDefinition((ConfigurableListableBeanFactory) registry,
+						name)) {
 					registerBeanDefinition(registry, type, name);
 				}
 			}
@@ -94,7 +96,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 		}
 
 		private List<Class<?>> collectClasses(List<Object> list) {
-			ArrayList<Class<?>> result = new ArrayList<Class<?>>();
+			ArrayList<Class<?>> result = new ArrayList<>();
 			for (Object object : list) {
 				for (Object value : (Object[]) object) {
 					if (value instanceof Class && value != void.class) {
@@ -117,6 +119,23 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			Assert.notNull(properties,
 					"No " + ConfigurationProperties.class.getSimpleName()
 							+ " annotation found on  '" + type.getName() + "'.");
+		}
+
+		private boolean containsBeanDefinition(
+				ConfigurableListableBeanFactory beanFactory, String name) {
+
+			boolean result = beanFactory.containsBeanDefinition(name);
+			if (result) {
+				return true;
+			}
+			if (beanFactory
+					.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
+				return containsBeanDefinition(
+						(ConfigurableListableBeanFactory) beanFactory
+								.getParentBeanFactory(),
+						name);
+			}
+			return false;
 		}
 
 	}

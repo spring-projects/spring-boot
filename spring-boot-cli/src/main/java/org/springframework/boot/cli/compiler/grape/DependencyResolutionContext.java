@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@ import org.springframework.boot.cli.compiler.dependencies.DependencyManagementAr
  */
 public class DependencyResolutionContext {
 
-	private final Map<String, Dependency> managedDependencyByGroupAndArtifact = new HashMap<String, Dependency>();
+	private final Map<String, Dependency> managedDependencyByGroupAndArtifact = new HashMap<>();
 
-	private final List<Dependency> managedDependencies = new ArrayList<Dependency>();
+	private final List<Dependency> managedDependencies = new ArrayList<>();
 
 	private DependencyManagement dependencyManagement = null;
 
@@ -90,7 +90,7 @@ public class DependencyResolutionContext {
 	public void addDependencyManagement(DependencyManagement dependencyManagement) {
 		for (org.springframework.boot.cli.compiler.dependencies.Dependency dependency : dependencyManagement
 				.getDependencies()) {
-			List<Exclusion> aetherExclusions = new ArrayList<Exclusion>();
+			List<Exclusion> aetherExclusions = new ArrayList<>();
 			for (org.springframework.boot.cli.compiler.dependencies.Dependency.Exclusion exclusion : dependency
 					.getExclusions()) {
 				aetherExclusions.add(new Exclusion(exclusion.getGroupId(),

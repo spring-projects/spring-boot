@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
  */
 public class InMemoryMetricRepository implements MetricRepository {
 
-	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
+	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<>();
 
 	public void setValues(ConcurrentNavigableMap<String, Metric<?>> values) {
 		this.metrics.setValues(values);
@@ -48,10 +48,10 @@ public class InMemoryMetricRepository implements MetricRepository {
 			@Override
 			public Metric<?> modify(Metric<?> current) {
 				if (current != null) {
-					return new Metric<Long>(metricName,
-							current.increment(amount).getValue(), timestamp);
+					return new Metric<>(metricName, current.increment(amount).getValue(),
+							timestamp);
 				}
-				return new Metric<Long>(metricName, (long) amount, timestamp);
+				return new Metric<>(metricName, (long) amount, timestamp);
 			}
 
 		});

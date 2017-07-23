@@ -61,7 +61,7 @@ class JsonReader {
 
 	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root)
 			throws Exception {
-		List<ConfigurationMetadataSource> result = new ArrayList<ConfigurationMetadataSource>();
+		List<ConfigurationMetadataSource> result = new ArrayList<>();
 		if (!root.has("groups")) {
 			return result;
 		}
@@ -75,7 +75,7 @@ class JsonReader {
 
 	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root)
 			throws Exception {
-		List<ConfigurationMetadataItem> result = new ArrayList<ConfigurationMetadataItem>();
+		List<ConfigurationMetadataItem> result = new ArrayList<>();
 		if (!root.has("properties")) {
 			return result;
 		}
@@ -89,7 +89,7 @@ class JsonReader {
 
 	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root)
 			throws Exception {
-		List<ConfigurationMetadataHint> result = new ArrayList<ConfigurationMetadataHint>();
+		List<ConfigurationMetadataHint> result = new ArrayList<>();
 		if (!root.has("hints")) {
 			return result;
 		}

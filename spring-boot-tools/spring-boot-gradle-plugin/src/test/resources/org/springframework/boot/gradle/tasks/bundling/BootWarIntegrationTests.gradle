@@ -1,0 +1,16 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+
+bootWar {
+	mainClass = 'com.example.Application'
+	launchScript {
+		included = project.hasProperty('includeLaunchScript') ? includeLaunchScript : false
+		properties 'prop' : project.hasProperty('launchScriptProperty') ? launchScriptProperty : 'default'
+	}
+}

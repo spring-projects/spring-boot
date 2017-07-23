@@ -34,8 +34,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -113,7 +111,7 @@ public abstract class AutoConfigurationPackages {
 			ConstructorArgumentValues constructorArguments, String[] packageNames) {
 		String[] existing = (String[]) constructorArguments
 				.getIndexedArgumentValue(0, String[].class).getValue();
-		Set<String> merged = new LinkedHashSet<String>();
+		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));
 		return merged.toArray(new String[merged.size()]);
@@ -123,7 +121,6 @@ public abstract class AutoConfigurationPackages {
 	 * {@link ImportBeanDefinitionRegistrar} to store the base package from the importing
 	 * configuration.
 	 */
-	@Order(Ordered.HIGHEST_PRECEDENCE)
 	static class Registrar implements ImportBeanDefinitionRegistrar, DeterminableImports {
 
 		@Override
@@ -184,7 +181,7 @@ public abstract class AutoConfigurationPackages {
 		private boolean loggedBasePackageInfo;
 
 		BasePackages(String... names) {
-			List<String> packages = new ArrayList<String>();
+			List<String> packages = new ArrayList<>();
 			for (String name : names) {
 				if (StringUtils.hasText(name)) {
 					packages.add(name);

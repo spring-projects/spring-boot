@@ -182,6 +182,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.health.neo4j.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Neo4j health check.",
+    "defaultValue": true
+  },
+  {
     "name": "management.info.build.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable build info.",
@@ -280,27 +286,6 @@
     "providers": [
       {
         "name": "any"
-      }
-    ]
-  },
-  {
-    "name": "management.shell.auth.type",
-    "values": [
-      {
-        "value": "simple",
-        "description": "Use a simple user/password based authentication."
-      },
-      {
-        "value": "spring",
-        "description": "Integrate with Spring Security."
-      },
-      {
-        "value": "key",
-        "description": "Use a Key-based authentication."
-      },
-      {
-        "value": "jaas",
-        "description": "Use JAAS authentication."
       }
     ]
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,12 +102,8 @@ public class FileUtilsTests {
 	@Test
 	public void hash() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		OutputStream outputStream = new FileOutputStream(file);
-		try {
+		try (OutputStream outputStream = new FileOutputStream(file)) {
 			outputStream.write(new byte[] { 1, 2, 3 });
-		}
-		finally {
-			outputStream.close();
 		}
 		assertThat(FileUtils.sha1Hash(file))
 				.isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");

@@ -71,7 +71,7 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 		try {
 			LogLevel logLevel = getLogLevel(configuration);
 			this.delegate.setLogLevel(name, logLevel);
-			return ResponseEntity.ok().build();
+			return ResponseEntity.noContent().build();
 		}
 		catch (IllegalArgumentException ex) {
 			return ResponseEntity.badRequest().build();

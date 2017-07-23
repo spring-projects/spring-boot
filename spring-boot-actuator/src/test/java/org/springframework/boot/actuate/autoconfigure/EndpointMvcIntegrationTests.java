@@ -40,17 +40,17 @@ import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -72,7 +72,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "foo.bar=baz")
 @DirtiesContext
 @TestPropertySource(properties = "management.security.enabled=false")
 public class EndpointMvcIntegrationTests {
@@ -86,23 +86,23 @@ public class EndpointMvcIntegrationTests {
 	@Test
 	public void envEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port + "/env/user.dir", String.class);
-		assertThat(body).isNotNull().contains("spring-boot-actuator");
+				"http://localhost:" + this.port + "/application/env/foo.bar",
+				String.class);
+		assertThat(body).isNotNull().contains("\"baz\"");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
 	@Test
 	public void healthEndpointNotHidden() throws InterruptedException {
-		String body = new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port + "/health", String.class);
+		String body = new TestRestTemplate().getForObject(
+				"http://localhost:" + this.port + "/application/health", String.class);
 		assertThat(body).isNotNull().contains("status");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
 	@Configuration
 	@MinimalWebConfiguration
-	@Import({ ManagementServerPropertiesAutoConfiguration.class,
-			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	@RestController
 	protected static class Application {
@@ -154,11 +154,10 @@ public class EndpointMvcIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, ValidationAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

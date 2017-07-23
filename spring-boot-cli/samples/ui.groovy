@@ -1,6 +1,6 @@
 package app
 
-@Grab("thymeleaf-spring4")
+@Grab("thymeleaf-spring5")
 @Controller
 class Example {
 

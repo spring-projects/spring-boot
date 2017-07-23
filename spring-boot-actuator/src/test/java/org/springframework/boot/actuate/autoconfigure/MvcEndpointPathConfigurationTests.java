@@ -50,10 +50,9 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
@@ -118,10 +117,11 @@ public class MvcEndpointPathConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(TestConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints." + this.endpointName + ".path" + ":/custom/path",
-				"endpoints." + this.endpointName + ".enabled:true",
-				"logging.file:target/test.log");
+		TestPropertyValues
+				.of("endpoints." + this.endpointName + ".path" + ":/custom/path",
+						"endpoints." + this.endpointName + ".enabled:true",
+						"logging.file:target/test.log")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(getConfiguredPath()).isEqualTo("/custom/path");
 	}
@@ -143,9 +143,7 @@ public class MvcEndpointPathConfigurationTests {
 
 	@Configuration
 	@ImportAutoConfiguration({ EndpointAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, AuditAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class })
 
 	protected static class TestConfiguration {

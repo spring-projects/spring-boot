@@ -3,6 +3,8 @@ databaseChangeLog:
       id: 1
       author: dsyer
       changes:
+        - createSequence:
+            sequenceName: hibernate_sequence
         - createTable:
             tableName: city
             columns:

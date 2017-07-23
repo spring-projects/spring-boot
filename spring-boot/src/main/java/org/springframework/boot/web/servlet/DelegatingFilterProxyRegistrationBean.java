@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,8 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * @see FilterRegistrationBean
  * @see DelegatingFilterProxy
  */
-public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistrationBean
+public class DelegatingFilterProxyRegistrationBean
+		extends AbstractFilterRegistrationBean<DelegatingFilterProxy>
 		implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
@@ -66,7 +67,7 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
 	 */
 	public DelegatingFilterProxyRegistrationBean(String targetBeanName,
-			ServletRegistrationBean... servletRegistrationBeans) {
+			ServletRegistrationBean<?>... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
 		Assert.hasLength(targetBeanName, "TargetBeanName must not be null or empty");
 		this.targetBeanName = targetBeanName;
@@ -84,7 +85,7 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	}
 
 	@Override
-	public Filter getFilter() {
+	public DelegatingFilterProxy getFilter() {
 		return new DelegatingFilterProxy(this.targetBeanName,
 				getWebApplicationContext()) {
 

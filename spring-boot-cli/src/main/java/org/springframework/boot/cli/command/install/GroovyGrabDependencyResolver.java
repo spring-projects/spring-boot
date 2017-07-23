@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
- * @since 1.2.0
  */
 class GroovyGrabDependencyResolver implements DependencyResolver {
 
@@ -50,7 +49,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	public List<File> resolve(List<String> artifactIdentifiers)
 			throws CompilationFailedException, IOException {
 		GroovyCompiler groovyCompiler = new GroovyCompiler(this.configuration);
-		List<File> artifactFiles = new ArrayList<File>();
+		List<File> artifactFiles = new ArrayList<>();
 		if (!artifactIdentifiers.isEmpty()) {
 			List<URL> initialUrls = getClassPathUrls(groovyCompiler);
 			groovyCompiler.compile(createSources(artifactIdentifiers));
@@ -64,23 +63,19 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	}
 
 	private List<URL> getClassPathUrls(GroovyCompiler compiler) {
-		return new ArrayList<URL>(Arrays.asList(compiler.getLoader().getURLs()));
+		return new ArrayList<>(Arrays.asList(compiler.getLoader().getURLs()));
 	}
 
 	private String createSources(List<String> artifactIdentifiers) throws IOException {
 		File file = File.createTempFile("SpringCLIDependency", ".groovy");
 		file.deleteOnExit();
-		OutputStreamWriter stream = new OutputStreamWriter(new FileOutputStream(file),
-				"UTF-8");
-		try {
+		try (OutputStreamWriter stream = new OutputStreamWriter(
+				new FileOutputStream(file), "UTF-8")) {
 			for (String artifactIdentifier : artifactIdentifiers) {
 				stream.write("@Grab('" + artifactIdentifier + "')");
 			}
 			// Dummy class to force compiler to do grab
 			stream.write("class Installer {}");
-		}
-		finally {
-			stream.close();
 		}
 		// Windows paths get tricky unless you work with URI
 		return file.getAbsoluteFile().toURI().toString();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ public final class GenericBomAstTransformationTests {
 	private List<String> getValue() {
 		Expression expression = findAnnotation().getMember("value");
 		if (expression instanceof ListExpression) {
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			for (Expression ex : ((ListExpression) expression).getExpressions()) {
 				list.add((String) ((ConstantExpression) ex).getValue());
 			}

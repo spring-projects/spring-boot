@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.validation.BindException;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
 public class EnableConfigurationPropertiesTests {
 
@@ -95,30 +96,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testNestedSystemPropertiesBindingWithUnderscore() {
-		this.context.register(NestedConfiguration.class);
-		System.setProperty("name", "foo");
-		System.setProperty("nested_name", "bar");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
-		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
-		assertThat(this.context.getBean(NestedProperties.class).nested.name)
-				.isEqualTo("bar");
-	}
-
-	@Test
-	public void testNestedOsEnvironmentVariableWithUnderscore() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"NAME=foo", "NESTED_NAME=bar");
-		this.context.register(NestedConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
-		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
-		assertThat(this.context.getBean(NestedProperties.class).nested.name)
-				.isEqualTo("bar");
-	}
-
-	@Test
 	public void testStrictPropertiesBinding() {
 		removeSystemProperties();
 		this.context.register(StrictTestConfiguration.class);
@@ -134,32 +111,9 @@ public class EnableConfigurationPropertiesTests {
 	public void testPropertiesEmbeddedBinding() {
 		this.context.register(EmbeddedTestConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"spring_foo_name=foo");
+				"spring.foo.name=foo");
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(EmbeddedTestProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void testOsEnvironmentVariableEmbeddedBinding() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"SPRING_FOO_NAME=foo");
-		this.context.register(EmbeddedTestConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(EmbeddedTestProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void testIgnoreNestedPropertiesBinding() {
-		removeSystemProperties();
-		this.context.register(IgnoreNestedTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo", "nested.name=bar");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(IgnoreNestedTestProperties.class))
 				.hasSize(1);
 		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
@@ -182,19 +136,6 @@ public class EnableConfigurationPropertiesTests {
 		IgnoredIfInvalidButNotValidatedTestProperties bean = this.context
 				.getBean(IgnoredIfInvalidButNotValidatedTestProperties.class);
 		assertThat(bean.getDescription()).isNull();
-	}
-
-	@Test
-	@Deprecated
-	public void testNoExceptionOnValidation() {
-		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
-		this.context.refresh();
-		assertThat(this.context
-				.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class))
-						.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -241,7 +182,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testCollectionPropertiesBindingWithOver256Elements() {
 		this.context.register(TestConfiguration.class);
-		List<String> pairs = new ArrayList<String>();
+		List<String> pairs = new ArrayList<>();
 		pairs.add("name:foo");
 		for (int i = 0; i < 1000; i++) {
 			pairs.add("list[" + i + "]:" + i);
@@ -305,16 +246,19 @@ public class EnableConfigurationPropertiesTests {
 	public void testBindingWithParentContext() {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
 		parent.register(TestConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(parent, "name=parent");
 		parent.refresh();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
 		this.context.setParent(parent);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"name=child");
 		this.context.register(TestConfiguration.class, TestConsumer.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
-				.isEqualTo(1);
+				.isEqualTo(0);
 		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
-		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
+		assertThat(this.context.getBean(TestConsumer.class).getName())
+				.isEqualTo("parent");
+		parent.close();
 	}
 
 	@Test
@@ -330,15 +274,6 @@ public class EnableConfigurationPropertiesTests {
 				.isEqualTo(0);
 		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
 		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
-	}
-
-	@Test
-	public void testUnderscoresInPrefix() throws Exception {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"spring_test_external_val=baz");
-		this.context.register(SystemExampleConfig.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(SystemEnvVar.class).getVal()).isEqualTo("baz");
 	}
 
 	@Test
@@ -434,12 +369,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
-	protected static class IgnoreNestedTestConfiguration {
-
-	}
-
-	@Configuration
 	@EnableConfigurationProperties(ExceptionIfInvalidTestProperties.class)
 	protected static class ExceptionIfInvalidTestConfiguration {
 
@@ -448,13 +377,6 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@EnableConfigurationProperties(IgnoredIfInvalidButNotValidatedTestProperties.class)
 	protected static class IgnoredIfInvalidButNotValidatedTestConfiguration {
-
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
-	@Deprecated
-	protected static class NoExceptionIfInvalidTestConfiguration {
 
 	}
 
@@ -640,7 +562,7 @@ public class EnableConfigurationPropertiesTests {
 
 		private int[] array;
 
-		private final List<Integer> list = new ArrayList<Integer>();
+		private List<Integer> list = new ArrayList<>();
 
 		// No getter - you should be able to bind to a write-only bean
 
@@ -660,6 +582,10 @@ public class EnableConfigurationPropertiesTests {
 			return this.list;
 		}
 
+		public void setList(List<Integer> list) {
+			this.list = list;
+		}
+
 	}
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
@@ -669,11 +595,6 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(prefix = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
-
-	}
-
-	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
-	protected static class IgnoreNestedTestProperties extends TestProperties {
 
 	}
 
@@ -697,24 +618,6 @@ public class EnableConfigurationPropertiesTests {
 	@ConfigurationProperties
 	protected static class IgnoredIfInvalidButNotValidatedTestProperties
 			extends TestProperties {
-
-		@NotNull
-		private String description;
-
-		public String getDescription() {
-			return this.description;
-		}
-
-		public void setDescription(String description) {
-			this.description = description;
-		}
-
-	}
-
-	@ConfigurationProperties(exceptionIfInvalid = false)
-	@Validated
-	@Deprecated
-	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull
 		private String description;

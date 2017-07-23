@@ -59,7 +59,7 @@ public class WebServicesProperties {
 		/**
 		 * Servlet init parameters to pass to Spring Web Services.
 		 */
-		private Map<String, String> init = new HashMap<String, String>();
+		private Map<String, String> init = new HashMap<>();
 
 		/**
 		 * Load on startup priority of the Spring Web Services servlet.

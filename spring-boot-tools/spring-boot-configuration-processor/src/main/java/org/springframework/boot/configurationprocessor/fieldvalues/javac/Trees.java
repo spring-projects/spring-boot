@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import javax.lang.model.element.Element;
 final class Trees extends ReflectionWrapper {
 
 	private Trees(Object instance) {
-		super(instance);
+		super("com.sun.source.util.Trees", instance);
 	}
 
 	public Tree getTree(Element element) throws Exception {

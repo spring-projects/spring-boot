@@ -52,27 +52,27 @@ public class HypermediaEndpointDocumentation {
 	@Test
 	public void beans() throws Exception {
 		this.mockMvc
-				.perform(get("/beans")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+				.perform(get("/application/beans")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("beans/hypermedia"));
 	}
 
 	@Test
 	public void metrics() throws Exception {
 		this.mockMvc
-				.perform(get("/metrics")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+				.perform(get("/application/metrics")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$._links.self.href")
-						.value("http://localhost:8080/metrics"))
+						.value("http://localhost:8080/application/metrics"))
 				.andDo(document("metrics/hypermedia"));
 	}
 
 	@Test
 	public void home() throws Exception {
 		this.mockMvc
-				.perform(get("/actuator")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+				.perform(get("/application")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("admin"));
 	}
 

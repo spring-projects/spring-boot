@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,12 +81,8 @@ public class ApplicationPid {
 	public void write(File file) throws IOException {
 		Assert.state(this.pid != null, "No PID available");
 		createParentFolder(file);
-		FileWriter writer = new FileWriter(file);
-		try {
+		try (FileWriter writer = new FileWriter(file)) {
 			writer.append(this.pid);
-		}
-		finally {
-			writer.close();
 		}
 	}
 

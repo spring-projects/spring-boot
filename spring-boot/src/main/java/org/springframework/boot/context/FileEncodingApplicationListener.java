@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package org.springframework.boot.context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * An {@link ApplicationListener} that halts application startup if the system file
@@ -42,6 +42,7 @@ import org.springframework.core.Ordered;
  * character-encoding value (e.g. "en_GB.UTF-8").
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  */
 public class FileEncodingApplicationListener
 		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
@@ -56,26 +57,25 @@ public class FileEncodingApplicationListener
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				event.getEnvironment(), "spring.");
-		if (resolver.containsProperty("mandatoryFileEncoding")) {
-			String encoding = System.getProperty("file.encoding");
-			String desired = resolver.getProperty("mandatoryFileEncoding");
-			if (encoding != null && !desired.equalsIgnoreCase(encoding)) {
-				logger.error("System property 'file.encoding' is currently '" + encoding
-						+ "'. It should be '" + desired
-						+ "' (as defined in 'spring.mandatoryFileEncoding').");
-				logger.error("Environment variable LANG is '" + System.getenv("LANG")
-						+ "'. You could use a locale setting that matches encoding='"
-						+ desired + "'.");
-				logger.error("Environment variable LC_ALL is '" + System.getenv("LC_ALL")
-						+ "'. You could use a locale setting that matches encoding='"
-						+ desired + "'.");
-				throw new IllegalStateException(
-						"The Java Virtual Machine has not been configured to use the "
-								+ "desired default character encoding (" + desired
-								+ ").");
-			}
+		ConfigurableEnvironment environment = event.getEnvironment();
+		if (!environment.containsProperty("spring.mandatory-file-encoding")) {
+			return;
+		}
+		String encoding = System.getProperty("file.encoding");
+		String desired = environment.getProperty("spring.mandatory-file-encoding");
+		if (encoding != null && !desired.equalsIgnoreCase(encoding)) {
+			logger.error("System property 'file.encoding' is currently '" + encoding
+					+ "'. It should be '" + desired
+					+ "' (as defined in 'spring.mandatoryFileEncoding').");
+			logger.error("Environment variable LANG is '" + System.getenv("LANG")
+					+ "'. You could use a locale setting that matches encoding='"
+					+ desired + "'.");
+			logger.error("Environment variable LC_ALL is '" + System.getenv("LC_ALL")
+					+ "'. You could use a locale setting that matches encoding='"
+					+ desired + "'.");
+			throw new IllegalStateException(
+					"The Java Virtual Machine has not been configured to use the "
+							+ "desired default character encoding (" + desired + ").");
 		}
 	}
 

@@ -27,13 +27,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,35 +78,35 @@ public class MetricsMvcEndpointTests {
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/metrics")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"foo\":1")));
 	}
 
 	@Test
-	public void homeContentTypeDefaultsToActuatorV1Json() throws Exception {
-		this.mvc.perform(get("/metrics")).andExpect(status().isOk())
+	public void homeContentTypeDefaultsToActuatorV2Json() throws Exception {
+		this.mvc.perform(get("/application/metrics")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void homeContentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/metrics").header(HttpHeaders.ACCEPT,
+		this.mvc.perform(get("/application/metrics").header(HttpHeaders.ACCEPT,
 				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test
-	public void specificMetricContentTypeDefaultsToActuatorV1Json() throws Exception {
-		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
+	public void specificMetricContentTypeDefaultsToActuatorV2Json() throws Exception {
+		this.mvc.perform(get("/application/metrics/foo")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void specificMetricContentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/metrics/foo").header(HttpHeaders.ACCEPT,
+		this.mvc.perform(get("/application/metrics/foo").header(HttpHeaders.ACCEPT,
 				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
@@ -116,65 +115,68 @@ public class MetricsMvcEndpointTests {
 	@Test
 	public void homeWhenDisabled() throws Exception {
 		this.context.getBean(MetricsEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/metrics")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/metrics")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void specificMetric() throws Exception {
-		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/foo")).andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"foo\":1}")));
 	}
 
 	@Test
 	public void specificMetricWithNameThatCouldBeMistakenForAPathExtension()
 			throws Exception {
-		this.mvc.perform(get("/metrics/bar.png")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/bar.png")).andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"bar.png\":1}")));
 	}
 
 	@Test
 	public void specificMetricWhenDisabled() throws Exception {
 		this.context.getBean(MetricsEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/metrics/foo")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/metrics/foo"))
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void specificMetricThatDoesNotExist() throws Exception {
-		this.mvc.perform(get("/metrics/bar")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/metrics/bar"))
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void regexAll() throws Exception {
-		String expected = "\"foo\":1,\"bar.png\":1,\"group1.a\":1,\"group1.b\":1"
-				+ ",\"group2.a\":1,\"group2_a\":1";
-		this.mvc.perform(get("/metrics/.*")).andExpect(status().isOk())
+		String expected = "\"foo\":1,\"bar.png\":1,\"group1.a\":1,\"group1.b\":1,"
+				+ "\"group2.a\":1,\"group2_a\":1";
+		this.mvc.perform(get("/application/metrics/.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroupDot() throws Exception {
 		String expected = "\"group1.a\":1,\"group1.b\":1,\"group2.a\":1";
-		this.mvc.perform(get("/metrics/group[0-9]+\\..*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/group[0-9]+\\..*"))
+				.andExpect(status().isOk())
 				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroup1() throws Exception {
 		String expected = "\"group1.a\":1,\"group1.b\":1";
-		this.mvc.perform(get("/metrics/group1\\..*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/group1\\..*"))
+				.andExpect(status().isOk())
 				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void specificMetricWithDot() throws Exception {
-		this.mvc.perform(get("/metrics/group2.a")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/group2.a")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("1")));
 	}
 
 	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	@Configuration
 	public static class TestConfiguration {
 
@@ -184,13 +186,13 @@ public class MetricsMvcEndpointTests {
 
 				@Override
 				public Collection<Metric<?>> metrics() {
-					ArrayList<Metric<?>> metrics = new ArrayList<Metric<?>>();
-					metrics.add(new Metric<Integer>("foo", 1));
-					metrics.add(new Metric<Integer>("bar.png", 1));
-					metrics.add(new Metric<Integer>("group1.a", 1));
-					metrics.add(new Metric<Integer>("group1.b", 1));
-					metrics.add(new Metric<Integer>("group2.a", 1));
-					metrics.add(new Metric<Integer>("group2_a", 1));
+					ArrayList<Metric<?>> metrics = new ArrayList<>();
+					metrics.add(new Metric<>("foo", 1));
+					metrics.add(new Metric<>("bar.png", 1));
+					metrics.add(new Metric<>("group1.a", 1));
+					metrics.add(new Metric<>("group1.b", 1));
+					metrics.add(new Metric<>("group2.a", 1));
+					metrics.add(new Metric<>("group2_a", 1));
 					metrics.add(new Metric<Integer>("baz", null));
 					return Collections.unmodifiableList(metrics);
 				}

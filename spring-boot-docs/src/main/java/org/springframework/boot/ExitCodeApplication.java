@@ -30,12 +30,7 @@ public class ExitCodeApplication {
 
 	@Bean
 	public ExitCodeGenerator exitCodeGenerator() {
-		return new ExitCodeGenerator() {
-			@Override
-			public int getExitCode() {
-				return 42;
-			}
-		};
+		return () -> 42;
 	}
 
 	public static void main(String[] args) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,7 +57,7 @@ public class UserInfoTokenServicesTests {
 
 	private OAuth2RestOperations template = mock(OAuth2RestOperations.class);
 
-	private Map<String, Object> map = new LinkedHashMap<String, Object>();
+	private Map<String, Object> map = new LinkedHashMap<>();
 
 	@SuppressWarnings("rawtypes")
 	@Before

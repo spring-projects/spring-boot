@@ -22,17 +22,16 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -73,7 +72,8 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/mappings")).andExpect(content().string(startsWith("{\"")));
+		mockMvc.perform(get("/application/mappings"))
+				.andExpect(content().string(startsWith("{\"")));
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DefaultConfiguration.class);
 		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/beans.cmd")).andExpect(status().isNotFound());
+		mockMvc.perform(get("/application/beans.cmd")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/beans.json")).andExpect(status().isOk());
+		mockMvc.perform(get("/application/beans.json")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -116,8 +116,8 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/info")).andExpect(status().isOk());
-		mockMvc.perform(get("/actuator")).andExpect(status().isOk());
+		mockMvc.perform(get("/application/info")).andExpect(status().isOk());
+		mockMvc.perform(get("/application")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -125,8 +125,8 @@ public class MvcEndpointIntegrationTests {
 			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		TestPropertyValues.of("management.context-path:/management")
+				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/info")).andExpect(status().isOk());
 		mockMvc.perform(get("/management")).andExpect(status().isOk());
@@ -137,7 +137,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/beans")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/application/beans")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -145,8 +145,8 @@ public class MvcEndpointIntegrationTests {
 			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		TestPropertyValues.of("management.context-path:/management")
+				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isUnauthorized());
 	}
@@ -158,8 +158,8 @@ public class MvcEndpointIntegrationTests {
 				new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		TestPropertyValues.of("management.context-path:/management")
+				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isForbidden());
 	}
@@ -171,8 +171,8 @@ public class MvcEndpointIntegrationTests {
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		TestPropertyValues.of("management.context-path:/management")
+				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
 	}
@@ -181,9 +181,8 @@ public class MvcEndpointIntegrationTests {
 	public void endpointSecurityCanBeDisabledWithCustomContextPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management",
-				"management.security.enabled:false");
+		TestPropertyValues.of("management.context-path:/management",
+				"management.security.enabled:false").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
 	}
@@ -192,10 +191,9 @@ public class MvcEndpointIntegrationTests {
 	public void endpointSecurityCanBeDisabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.security.enabled:false");
+		TestPropertyValues.of("management.security.enabled:false").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/beans")).andExpect(status().isOk());
+		mockMvc.perform(get("/application/beans")).andExpect(status().isOk());
 	}
 
 	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
@@ -203,10 +201,10 @@ public class MvcEndpointIntegrationTests {
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(configuration);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.serialization.indent-output:true");
+		TestPropertyValues.of("spring.jackson.serialization.indent-output:true")
+				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/mappings"))
+		mockMvc.perform(get("/application/mappings"))
 				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
 
@@ -231,7 +229,6 @@ public class MvcEndpointIntegrationTests {
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			AuditAutoConfiguration.class })
 	static class DefaultConfiguration {

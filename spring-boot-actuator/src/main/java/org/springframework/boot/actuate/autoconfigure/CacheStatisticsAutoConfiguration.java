@@ -44,7 +44,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.ehcache.EhCacheCache;
-import org.springframework.cache.guava.GuavaCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -115,18 +114,6 @@ public class CacheStatisticsAutoConfiguration {
 		@Bean
 		public CaffeineCacheStatisticsProvider caffeineCacheStatisticsProvider() {
 			return new CaffeineCacheStatisticsProvider();
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass({ com.google.common.cache.Cache.class, GuavaCache.class })
-	@Deprecated
-	static class GuavaCacheStatisticsConfiguration {
-
-		@Bean
-		public org.springframework.boot.actuate.cache.GuavaCacheStatisticsProvider guavaCacheStatisticsProvider() {
-			return new org.springframework.boot.actuate.cache.GuavaCacheStatisticsProvider();
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	public MetricsEndpoint(Collection<PublicMetrics> publicMetrics) {
 		super("metrics");
 		Assert.notNull(publicMetrics, "PublicMetrics must not be null");
-		this.publicMetrics = new ArrayList<PublicMetrics>(publicMetrics);
+		this.publicMetrics = new ArrayList<>(publicMetrics);
 		AnnotationAwareOrderComparator.sort(this.publicMetrics);
 	}
 
@@ -69,8 +69,8 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	@Override
 	public Map<String, Object> invoke() {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		List<PublicMetrics> metrics = new ArrayList<PublicMetrics>(this.publicMetrics);
+		Map<String, Object> result = new LinkedHashMap<>();
+		List<PublicMetrics> metrics = new ArrayList<>(this.publicMetrics);
 		for (PublicMetrics publicMetric : metrics) {
 			try {
 				for (Metric<?> metric : publicMetric.metrics()) {

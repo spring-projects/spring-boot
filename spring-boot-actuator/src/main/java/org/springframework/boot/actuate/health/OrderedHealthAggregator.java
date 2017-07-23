@@ -69,7 +69,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 	@Override
 	protected Status aggregateStatus(List<Status> candidates) {
 		// Only sort those status instances that we know about
-		List<Status> filteredCandidates = new ArrayList<Status>();
+		List<Status> filteredCandidates = new ArrayList<>();
 		for (Status candidate : candidates) {
 			if (this.statusOrder.contains(candidate.getCode())) {
 				filteredCandidates.add(candidate);

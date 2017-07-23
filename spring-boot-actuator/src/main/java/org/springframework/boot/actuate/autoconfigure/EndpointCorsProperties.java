@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,23 +34,23 @@ public class EndpointCorsProperties {
 	 * Comma-separated list of origins to allow. '*' allows all origins. When not set,
 	 * CORS support is disabled.
 	 */
-	private List<String> allowedOrigins = new ArrayList<String>();
+	private List<String> allowedOrigins = new ArrayList<>();
 
 	/**
 	 * Comma-separated list of methods to allow. '*' allows all methods. When not set,
 	 * defaults to GET.
 	 */
-	private List<String> allowedMethods = new ArrayList<String>();
+	private List<String> allowedMethods = new ArrayList<>();
 
 	/**
 	 * Comma-separated list of headers to allow in a request. '*' allows all headers.
 	 */
-	private List<String> allowedHeaders = new ArrayList<String>();
+	private List<String> allowedHeaders = new ArrayList<>();
 
 	/**
 	 * Comma-separated list of headers to include in a response.
 	 */
-	private List<String> exposedHeaders = new ArrayList<String>();
+	private List<String> exposedHeaders = new ArrayList<>();
 
 	/**
 	 * Set whether credentials are supported. When not set, credentials are not supported.

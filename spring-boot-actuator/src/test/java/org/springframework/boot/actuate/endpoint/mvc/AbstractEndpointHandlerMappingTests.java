@@ -44,7 +44,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	public void securityInterceptorShouldBePresentForNonCorsRequest() throws Exception {
 		HandlerInterceptor securityInterceptor = mock(HandlerInterceptor.class);
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.setSecurityInterceptor(securityInterceptor);
@@ -56,7 +56,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	@Test
 	public void securityInterceptorIfNullShouldNotBeAdded() throws Exception {
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
@@ -69,7 +69,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 			throws Exception {
 		HandlerInterceptor securityInterceptor = mock(HandlerInterceptor.class);
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.setSecurityInterceptor(securityInterceptor);
@@ -85,7 +85,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	public void pathNotMappedWhenGetPathReturnsNull() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<MvcEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Arrays.<MvcEndpoint>asList(endpoint, other));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();

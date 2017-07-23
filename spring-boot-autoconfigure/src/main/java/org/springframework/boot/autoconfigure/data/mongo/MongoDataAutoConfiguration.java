@@ -22,6 +22,7 @@ import java.util.Collections;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
@@ -43,11 +44,11 @@ import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -105,7 +106,7 @@ public class MongoDataAutoConfiguration {
 	@ConditionalOnMissingBean(MongoConverter.class)
 	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory,
 			MongoMappingContext context, BeanFactory beanFactory,
-			CustomConversions conversions) {
+			MongoCustomConversions conversions) {
 		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
 		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
 				context);
@@ -116,14 +117,14 @@ public class MongoDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MongoMappingContext mongoMappingContext(BeanFactory beanFactory,
-			CustomConversions conversions) throws ClassNotFoundException {
+			MongoCustomConversions conversions) throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
 		context.setInitialEntitySet(new EntityScanner(this.applicationContext)
 				.scan(Document.class, Persistent.class));
 		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
 			context.setFieldNamingStrategy(
-					(FieldNamingStrategy) BeanUtils.instantiate(strategyClass));
+					(FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
 		}
 		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;
@@ -140,8 +141,8 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CustomConversions mongoCustomConversions() {
-		return new CustomConversions(Collections.emptyList());
+	public MongoCustomConversions mongoCustomConversions() {
+		return new MongoCustomConversions(Collections.emptyList());
 	}
 
 	/**
@@ -162,7 +163,7 @@ public class MongoDataAutoConfiguration {
 		}
 
 		@Override
-		public DB getDb() throws DataAccessException {
+		public MongoDatabase getDb() throws DataAccessException {
 			String gridFsDatabase = this.properties.getGridFsDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.mongoDbFactory.getDb(gridFsDatabase);
@@ -171,13 +172,18 @@ public class MongoDataAutoConfiguration {
 		}
 
 		@Override
-		public DB getDb(String dbName) throws DataAccessException {
+		public MongoDatabase getDb(String dbName) throws DataAccessException {
 			return this.mongoDbFactory.getDb(dbName);
 		}
 
 		@Override
 		public PersistenceExceptionTranslator getExceptionTranslator() {
 			return this.mongoDbFactory.getExceptionTranslator();
+		}
+
+		@Override
+		public DB getLegacyDb() {
+			return this.mongoDbFactory.getLegacyDb();
 		}
 
 	}

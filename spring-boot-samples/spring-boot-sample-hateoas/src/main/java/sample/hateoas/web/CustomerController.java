@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,17 +48,16 @@ public class CustomerController {
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<Resources<Customer>> showCustomers() {
-		Resources<Customer> resources = new Resources<Customer>(
-				this.repository.findAll());
+		Resources<Customer> resources = new Resources<>(this.repository.findAll());
 		resources.add(this.entityLinks.linkToCollectionResource(Customer.class));
-		return new ResponseEntity<Resources<Customer>>(resources, HttpStatus.OK);
+		return new ResponseEntity<>(resources, HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<Resource<Customer>> showCustomer(@PathVariable Long id) {
-		Resource<Customer> resource = new Resource<Customer>(this.repository.findOne(id));
+		Resource<Customer> resource = new Resource<>(this.repository.findOne(id));
 		resource.add(this.entityLinks.linkToSingleResource(Customer.class, id));
-		return new ResponseEntity<Resource<Customer>>(resource, HttpStatus.OK);
+		return new ResponseEntity<>(resource, HttpStatus.OK);
 	}
 
 }

@@ -40,7 +40,7 @@ public class FlywayProperties {
 	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
 	 * use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<String>(
+	private List<String> locations = new ArrayList<>(
 			Collections.singletonList("db/migration"));
 
 	/**

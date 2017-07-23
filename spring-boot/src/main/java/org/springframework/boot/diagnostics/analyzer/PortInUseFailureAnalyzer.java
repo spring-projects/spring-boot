@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.web.server.PortInUseException;
 
 /**
  * A {@code FailureAnalyzer} that performs analysis of failures caused by a
@@ -31,7 +31,7 @@ class PortInUseFailureAnalyzer extends AbstractFailureAnalyzer<PortInUseExceptio
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, PortInUseException cause) {
 		return new FailureAnalysis(
-				"Embedded servlet container failed to start. Port " + cause.getPort()
+				"Web server failed to start. Port " + cause.getPort()
 						+ " was already in use.",
 				"Identify and stop the process that's listening on port "
 						+ cause.getPort() + " or configure this "

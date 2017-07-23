@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	private static Set<String> LOG_CONFIGURATION_MESSAGES;
 
 	static {
-		Set<String> messages = new HashSet<String>();
+		Set<String> messages = new HashSet<>();
 		messages.add("Logback configuration error detected");
 		LOG_CONFIGURATION_MESSAGES = Collections.unmodifiableSet(messages);
 	}
@@ -44,7 +44,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
 	private final UncaughtExceptionHandler parent;
 
-	private final List<Throwable> loggedExceptions = new ArrayList<Throwable>();
+	private final List<Throwable> loggedExceptions = new ArrayList<>();
 
 	private int exitCode = 0;
 

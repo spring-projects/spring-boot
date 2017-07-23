@@ -57,13 +57,13 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	private static final Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
 
-	private static final Map<Class<?>, Set<String>> numberKeys = new ConcurrentHashMap<Class<?>, Set<String>>();
+	private static final Map<Class<?>, Set<String>> numberKeys = new ConcurrentHashMap<>();
 
 	private final Object monitor = new Object();
 
-	private final Map<String, String> names = new ConcurrentHashMap<String, String>();
+	private final Map<String, String> names = new ConcurrentHashMap<>();
 
-	private final MultiValueMap<String, String> reverse = new LinkedMultiValueMap<String, String>();
+	private final MultiValueMap<String, String> reverse = new LinkedMultiValueMap<>();
 
 	private final MetricRegistry registry;
 
@@ -89,7 +89,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 		if (metric instanceof Gauge) {
 			Object value = ((Gauge<?>) metric).getValue();
 			if (value instanceof Number) {
-				return new Metric<Number>(metricName, (Number) value);
+				return new Metric<>(metricName, (Number) value);
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("Ignoring gauge '" + name + "' (" + metric
@@ -105,10 +105,10 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 					value = TimeUnit.MILLISECONDS.convert(value.longValue(),
 							TimeUnit.NANOSECONDS);
 				}
-				return new Metric<Number>(metricName, value);
+				return new Metric<>(metricName, value);
 			}
 		}
-		return new Metric<Number>(metricName, getMetric(metric, metricName));
+		return new Metric<>(metricName, getMetric(metric, metricName));
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 		return new Iterable<Metric<?>>() {
 			@Override
 			public Iterator<Metric<?>> iterator() {
-				Set<Metric<?>> metrics = new HashSet<Metric<?>>();
+				Set<Metric<?>> metrics = new HashSet<>();
 				for (String name : MetricRegistryMetricReader.this.names.keySet()) {
 					Metric<?> metric = findOne(name);
 					if (metric != null) {
@@ -236,7 +236,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 	private static Set<String> getNumberKeys(Object metric) {
 		Set<String> result = numberKeys.get(metric.getClass());
 		if (result == null) {
-			result = new HashSet<String>();
+			result = new HashSet<>();
 		}
 		if (result.isEmpty()) {
 			for (PropertyDescriptor descriptor : BeanUtils

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,8 +167,7 @@ public class JobLauncherCommandLineRunner
 	}
 
 	private void removeNonIdentifying(Map<String, JobParameter> parameters) {
-		HashMap<String, JobParameter> copy = new HashMap<String, JobParameter>(
-				parameters);
+		HashMap<String, JobParameter> copy = new HashMap<>(parameters);
 		for (Map.Entry<String, JobParameter> parameter : copy.entrySet()) {
 			if (!parameter.getValue().isIdentifying()) {
 				parameters.remove(parameter.getKey());
@@ -178,7 +177,7 @@ public class JobLauncherCommandLineRunner
 
 	private JobParameters merge(JobParameters parameters,
 			Map<String, JobParameter> additionals) {
-		Map<String, JobParameter> merged = new HashMap<String, JobParameter>();
+		Map<String, JobParameter> merged = new HashMap<>();
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals);
 		parameters = new JobParameters(merged);

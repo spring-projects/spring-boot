@@ -1,0 +1,78 @@
+[[reacting-to-other-plugins]]
+== Reacting to other plugins
+
+When another plugin is applied the Spring Boot plugin reacts by making various changes
+to the project's configuration. This section describes those changes.
+
+[[reacting-to-other-plugins-java]]
+=== Reacting to the Java plugin
+
+When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring Boot
+plugin:
+
+1. Creates a {boot-jar-javadoc}[`BootJar`] task named `bootJar` that will create an
+   executable, fat jar for the project. The jar will contain everything on the runtime
+   classpath of the main source set; classes are packaged in `BOOT-INF/classes` and jars
+   are packaged in `BOOT-INF/lib`
+2. Configures the `assemble` task to depend on the `bootJar` task.
+3. Disables the `jar` task.
+4. Creates a {boot-run-javadoc}[`BootRun`] task named `bootRun` that can be used to run
+   your application.
+5. Creates a configuration named `bootArchives` that contains the artifact produced by
+   the `bootJar` task.
+6. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
+
+
+
+[[reacting-to-other-plugins-war]]
+=== Reacting to the war plugin
+
+When Gradle's {war-plugin}[`war` plugin] is applied to a project, the Spring Boot plugin:
+
+1. Creates a {boot-war-javadoc}[`BootWar`] task named `bootWar` that will create an
+   executable, fat war for the project. In addition to the standard packaging, everything
+   in the `providedRuntime` configuration will be packaged in `WEB-INF/lib-provided`.
+2. Configures the `assemble` task to depend on the `bootWar` task.
+3. Disables the `war` task.
+4. Configures the `bootArchives` configuration to contain the artifact produced by the
+   `bootWar` task.
+
+
+
+[[reacting-to-other-plugins-dependency-management]]
+=== Reacting to the dependency management plugin
+
+When the {dependency-management-plugin}[`io.spring.dependency-management` plugin] is
+applied to a project, the Spring Boot plugin will automatically import the
+`spring-boot-dependencies` bom.
+
+
+
+[[reacting-to-other-plugins-application]]
+=== Reacting to the application plugin
+
+When Gradle's {application-plugin}[`application` plugin] is applied to a project, the
+Spring Boot plugin:
+
+1. Creates a `CreateStartScripts` task named `bootStartScripts` that will creates scripts
+   that launch the artifact in the `bootArchives` configuration using `java -jar`.
+2. Creates a new distribution named `boot` and configures it to contain the artifact in
+   the `bootArchives` configuration in its `lib` directory and the start scripts in its
+   `bin` directory.
+3. Configures the `bootRun` task to use the `mainClassName` property as a convention for
+   its `main` property.
+4. Configures the `bootRun` task to use the `applicationDefaultJvmArgs` property as a
+   convention for its `jvmArgs` property.
+5. Configures the `bootJar` task to use the `mainClassName` property as a convention for
+   the `Start-Class` entry in its manifest.
+6. Configures the `bootWar` task to use the `mainClassName` property as a convention for
+   the `Start-Class` entry in its manifest.
+
+
+
+[[reacting-to-other-plugins-maven]]
+=== Reacting to the Maven plugin
+
+When Gradle's {maven-plugin}[`maven` plugin] is applied to a project, the Spring Boot
+plugin will configure the `uploadBootArchives` `Upload` task to ensure that no
+dependencies are declared in the pom that it generates.

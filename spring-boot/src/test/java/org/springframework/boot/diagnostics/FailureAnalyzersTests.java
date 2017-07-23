@@ -28,7 +28,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -78,7 +78,7 @@ public class FailureAnalyzersTests {
 	private void analyzeAndReport(String factoriesName, Throwable failure) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		ClassLoader classLoader = new CustomSpringFactoriesClassLoader(factoriesName);
-		new FailureAnalyzers(context, classLoader).analyzeAndReport(failure);
+		new FailureAnalyzers(context, classLoader).reportException(failure);
 	}
 
 	static class BasicFailureAnalyzer implements FailureAnalyzer {

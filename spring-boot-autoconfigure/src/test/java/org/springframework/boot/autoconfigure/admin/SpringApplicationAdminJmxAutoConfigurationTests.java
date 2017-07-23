@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,14 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -119,49 +119,39 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	@Test
 	public void registerWithSimpleWebApp() throws Exception {
 		this.context = new SpringApplicationBuilder()
-				.sources(EmbeddedServletContainerAutoConfiguration.class,
-						ServerPropertiesAutoConfiguration.class,
+				.sources(ServletWebServerFactoryAutoConfiguration.class,
 						DispatcherServletAutoConfiguration.class,
 						JmxAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class)
 				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
-		assertThat(this.context).isInstanceOf(EmbeddedWebApplicationContext.class);
+		assertThat(this.context).isInstanceOf(ServletWebServerApplicationContext.class);
 		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName(),
 				"EmbeddedWebApplication")).isEqualTo(Boolean.TRUE);
-		int expected = ((EmbeddedWebApplicationContext) this.context)
-				.getEmbeddedServletContainer().getPort();
+		int expected = ((ServletWebServerApplicationContext) this.context).getWebServer()
+				.getPort();
 		String actual = getProperty(createDefaultObjectName(), "local.server.port");
 		assertThat(actual).isEqualTo(String.valueOf(expected));
 	}
 
 	@Test
 	public void onlyRegisteredOnceWhenThereIsAChildContext() throws Exception {
-		SpringApplicationBuilder parentBuilder = new SpringApplicationBuilder().web(false)
-				.sources(JmxAutoConfiguration.class,
+		SpringApplicationBuilder parentBuilder = new SpringApplicationBuilder()
+				.web(WebApplicationType.NONE).sources(JmxAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class);
 		SpringApplicationBuilder childBuilder = parentBuilder
 				.child(JmxAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class)
-				.web(false);
-		ConfigurableApplicationContext parent = null;
-		ConfigurableApplicationContext child = null;
+				.web(WebApplicationType.NONE);
 
-		try {
-			parent = parentBuilder.run("--" + ENABLE_ADMIN_PROP);
-			child = childBuilder.run("--" + ENABLE_ADMIN_PROP);
+		try (ConfigurableApplicationContext parent = parentBuilder
+				.run("--" + ENABLE_ADMIN_PROP);
+				ConfigurableApplicationContext child = childBuilder
+						.run("--" + ENABLE_ADMIN_PROP)) {
 			BeanFactoryUtils.beanOfType(parent.getBeanFactory(),
 					SpringApplicationAdminMXBeanRegistrar.class);
 			this.thrown.expect(NoSuchBeanDefinitionException.class);
 			BeanFactoryUtils.beanOfType(child.getBeanFactory(),
 					SpringApplicationAdminMXBeanRegistrar.class);
-		}
-		finally {
-			if (parent != null) {
-				parent.close();
-			}
-			if (child != null) {
-				child.close();
-			}
 		}
 	}
 
@@ -185,7 +175,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	private void load(String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.register(JmxAutoConfiguration.class,
 				SpringApplicationAdminJmxAutoConfiguration.class);
 		applicationContext.refresh();

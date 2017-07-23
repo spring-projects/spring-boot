@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public abstract class Launcher {
 	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		List<URL> urls = new ArrayList<URL>(archives.size());
+		List<URL> urls = new ArrayList<>(archives.size());
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}

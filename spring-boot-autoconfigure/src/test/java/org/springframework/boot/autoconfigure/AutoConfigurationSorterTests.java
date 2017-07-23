@@ -183,7 +183,7 @@ public class AutoConfigurationSorterTests {
 	}
 
 	private String merge(Class<?>[] value, String[] name) {
-		Set<String> items = new LinkedHashSet<String>();
+		Set<String> items = new LinkedHashSet<>();
 		for (Class<?> type : value) {
 			items.add(type.getName());
 		}

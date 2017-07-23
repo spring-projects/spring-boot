@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class JmxMetricWriter implements MetricWriter {
 
 	private static final Log logger = LogFactory.getLog(JmxMetricWriter.class);
 
-	private final ConcurrentMap<String, MetricValue> values = new ConcurrentHashMap<String, MetricValue>();
+	private final ConcurrentMap<String, MetricValue> values = new ConcurrentHashMap<>();
 
 	private final MBeanExporter exporter;
 
@@ -72,7 +72,7 @@ public class JmxMetricWriter implements MetricWriter {
 
 	@ManagedOperation
 	public void increment(String name, long value) {
-		increment(new Delta<Long>(name, value));
+		increment(new Delta<>(name, value));
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class JmxMetricWriter implements MetricWriter {
 
 	@ManagedOperation
 	public void set(String name, double value) {
-		set(new Metric<Double>(name, value));
+		set(new Metric<>(name, value));
 	}
 
 	@Override

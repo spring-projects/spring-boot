@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.ApplicationContextTestUtils;
@@ -50,7 +51,7 @@ public class ShutdownParentEndpointTests {
 	@Test
 	public void shutdownChild() throws Exception {
 		this.context = new SpringApplicationBuilder(Config.class).child(Empty.class)
-				.web(false).run();
+				.web(WebApplicationType.NONE).run();
 		CountDownLatch latch = this.context.getBean(Config.class).latch;
 		assertThat((String) getEndpointBean().invoke().get("message"))
 				.startsWith("Shutting down");
@@ -61,7 +62,7 @@ public class ShutdownParentEndpointTests {
 	@Test
 	public void shutdownParent() throws Exception {
 		this.context = new SpringApplicationBuilder(Empty.class).child(Config.class)
-				.web(false).run();
+				.web(WebApplicationType.NONE).run();
 		CountDownLatch latch = this.context.getBean(Config.class).latch;
 		assertThat((String) getEndpointBean().invoke().get("message"))
 				.startsWith("Shutting down");

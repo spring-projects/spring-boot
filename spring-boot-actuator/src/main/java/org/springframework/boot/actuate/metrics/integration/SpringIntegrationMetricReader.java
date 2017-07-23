@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.integration.support.management.MessageHandlerMetrics;
 import org.springframework.integration.support.management.MessageSourceMetrics;
 import org.springframework.integration.support.management.PollableChannelManagement;
 import org.springframework.integration.support.management.Statistics;
-import org.springframework.lang.UsesJava7;
 
 /**
  * A {@link MetricReader} for Spring Integration metrics (as provided by
@@ -38,7 +37,6 @@ import org.springframework.lang.UsesJava7;
  * @author Artem Bilan
  * @since 1.3.0
  */
-@UsesJava7
 public class SpringIntegrationMetricReader implements MetricReader {
 
 	private final IntegrationManagementConfigurer configurer;
@@ -54,16 +52,16 @@ public class SpringIntegrationMetricReader implements MetricReader {
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		List<Metric<?>> result = new ArrayList<Metric<?>>();
+		List<Metric<?>> result = new ArrayList<>();
 		String[] channelNames = this.configurer.getChannelNames();
 		String[] handlerNames = this.configurer.getHandlerNames();
 		String[] sourceNames = this.configurer.getSourceNames();
 		addChannelMetrics(result, channelNames);
 		addHandlerMetrics(result, handlerNames);
 		addSourceMetrics(result, sourceNames);
-		result.add(new Metric<Integer>("integration.handlerCount", handlerNames.length));
-		result.add(new Metric<Integer>("integration.channelCount", channelNames.length));
-		result.add(new Metric<Integer>("integration.sourceCount", sourceNames.length));
+		result.add(new Metric<>("integration.handlerCount", handlerNames.length));
+		result.add(new Metric<>("integration.channelCount", channelNames.length));
+		result.add(new Metric<>("integration.sourceCount", sourceNames.length));
 		return result;
 	}
 
@@ -77,10 +75,10 @@ public class SpringIntegrationMetricReader implements MetricReader {
 			MessageChannelMetrics metrics) {
 		String prefix = "integration.channel." + name;
 		result.addAll(getStatistics(prefix + ".errorRate", metrics.getErrorRate()));
-		result.add(new Metric<Long>(prefix + ".sendCount", metrics.getSendCountLong()));
+		result.add(new Metric<>(prefix + ".sendCount", metrics.getSendCountLong()));
 		result.addAll(getStatistics(prefix + ".sendRate", metrics.getSendRate()));
 		if (metrics instanceof PollableChannelManagement) {
-			result.add(new Metric<Long>(prefix + ".receiveCount",
+			result.add(new Metric<>(prefix + ".receiveCount",
 					((PollableChannelManagement) metrics).getReceiveCountLong()));
 		}
 	}
@@ -96,7 +94,7 @@ public class SpringIntegrationMetricReader implements MetricReader {
 		String prefix = "integration.handler." + name;
 		result.addAll(getStatistics(prefix + ".duration", metrics.getDuration()));
 		long activeCount = metrics.getActiveCountLong();
-		result.add(new Metric<Long>(prefix + ".activeCount", activeCount));
+		result.add(new Metric<>(prefix + ".activeCount", activeCount));
 	}
 
 	private void addSourceMetrics(List<Metric<?>> result, String[] names) {
@@ -108,17 +106,17 @@ public class SpringIntegrationMetricReader implements MetricReader {
 	private void addSourceMetrics(List<Metric<?>> result, String name,
 			MessageSourceMetrics sourceMetrics) {
 		String prefix = "integration.source." + name;
-		result.add(new Metric<Long>(prefix + ".messageCount",
+		result.add(new Metric<>(prefix + ".messageCount",
 				sourceMetrics.getMessageCountLong()));
 	}
 
 	private Collection<? extends Metric<?>> getStatistics(String name, Statistics stats) {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-		metrics.add(new Metric<Double>(name + ".mean", stats.getMean()));
-		metrics.add(new Metric<Double>(name + ".max", stats.getMax()));
-		metrics.add(new Metric<Double>(name + ".min", stats.getMin()));
-		metrics.add(new Metric<Double>(name + ".stdev", stats.getStandardDeviation()));
-		metrics.add(new Metric<Long>(name + ".count", stats.getCountLong()));
+		List<Metric<?>> metrics = new ArrayList<>();
+		metrics.add(new Metric<>(name + ".mean", stats.getMean()));
+		metrics.add(new Metric<>(name + ".max", stats.getMax()));
+		metrics.add(new Metric<>(name + ".min", stats.getMin()));
+		metrics.add(new Metric<>(name + ".stdev", stats.getStandardDeviation()));
+		metrics.add(new Metric<>(name + ".count", stats.getCountLong()));
 		return metrics;
 	}
 

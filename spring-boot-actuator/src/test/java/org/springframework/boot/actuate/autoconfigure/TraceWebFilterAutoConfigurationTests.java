@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,7 +75,7 @@ public class TraceWebFilterAutoConfigurationTests {
 
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, environment);
+		TestPropertyValues.of(environment).applyTo(context);
 		if (config != null) {
 			context.register(config);
 		}

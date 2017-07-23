@@ -81,8 +81,7 @@ public class SpyDefinitionTests {
 		MockCreationSettings<?> settings = MockitoApi.get().getMockSettings(spy);
 		assertThat(spy).isInstanceOf(ExampleService.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
-		assertThat(settings.getDefaultAnswer())
-				.isEqualTo(Answers.CALLS_REAL_METHODS.get());
+		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.CALLS_REAL_METHODS);
 		assertThat(MockReset.get(spy)).isEqualTo(MockReset.BEFORE);
 	}
 

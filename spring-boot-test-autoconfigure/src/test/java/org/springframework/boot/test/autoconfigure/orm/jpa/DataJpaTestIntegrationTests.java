@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +43,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@TestPropertySource(properties = "spring.jpa.hibernate.use-new-id-generator-mappings=false")
 public class DataJpaTestIntegrationTests {
 
 	@Rule

@@ -43,7 +43,7 @@
     "name": "spring.aop.proxy-target-class",
     "type": "java.lang.Boolean",
     "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
-    "defaultValue": false
+    "defaultValue": true
   },
   {
     "name": "spring.application.admin.enabled",
@@ -85,6 +85,12 @@
     "defaultValue": "none"
   },
   {
+    "name": "spring.data.cassandra.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra reactive repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.couchbase.consistency",
     "defaultValue": "read-your-own-writes"
   },
@@ -116,6 +122,12 @@
     "name": "spring.data.ldap.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable LDAP repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.mongodb.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Mongo reactive repositories.",
     "defaultValue": true
   },
   {
@@ -314,6 +326,14 @@
     "defaultValue": true
   },
   {
+    "name": "spring.kafka.jaas.control-flag",
+    "defaultValue": "required"
+  },
+  {
+    "name": "spring.kafka.listener.type",
+    "defaultValue": "single"
+  },
+  {
     "name": "spring.mobile.devicedelegatingviewresolver.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable device view resolver.",
@@ -342,6 +362,10 @@
     "defaultValue": "accept-header"
   },
   {
+    "name": "spring.quartz.job-store-type",
+    "defaultValue": "memory"
+  },
+  {
     "name": "spring.rabbitmq.cache.connection.mode",
     "defaultValue": "channel"
   },
@@ -350,72 +374,6 @@
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
     "defaultValue": true
-  },
-  {
-    "name": "spring.rabbitmq.listener.retry.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Whether or not publishing retries are enabled.",
-    "sourceType": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$ListenerRetry",
-    "defaultValue": false,
-    "deprecated": true,
-    "deprecation": {
-      "replacement": "spring.rabbitmq.listener.simple.retry.enabled"
-    }
-  },
-  {
-    "name": "spring.rabbitmq.listener.retry.initial-interval",
-    "type": "java.lang.Long",
-    "description": "Interval between the first and second attempt to publish or deliver a message.",
-    "sourceType": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$ListenerRetry",
-    "defaultValue": 1000,
-    "deprecated": true,
-    "deprecation": {
-      "replacement": "spring.rabbitmq.listener.simple.retry.initial-interval"
-    }
-  },
-  {
-    "name": "spring.rabbitmq.listener.retry.max-attempts",
-    "type": "java.lang.Integer",
-    "description": "Maximum number of attempts to publish or deliver a message.",
-    "sourceType": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$ListenerRetry",
-    "defaultValue": 3,
-    "deprecated": true,
-    "deprecation": {
-      "replacement": "spring.rabbitmq.listener.simple.retry.max-attempts"
-    }
-  },
-  {
-    "name": "spring.rabbitmq.listener.retry.max-interval",
-    "type": "java.lang.Long",
-    "description": "Maximum interval between attempts.",
-    "sourceType": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$ListenerRetry",
-    "defaultValue": 10000,
-    "deprecated": true,
-    "deprecation": {
-      "replacement": "spring.rabbitmq.listener.simple.retry.max-interval"
-    }
-  },
-  {
-    "name": "spring.rabbitmq.listener.retry.multiplier",
-    "type": "java.lang.Double",
-    "description": "A multiplier to apply to the previous retry interval.",
-    "sourceType": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$ListenerRetry",
-    "defaultValue": 1,
-    "deprecated": true,
-    "deprecation": {
-      "replacement": "spring.rabbitmq.listener.simple.retry.multiplier"
-    }
-  },
-  {
-    "name": "spring.rabbitmq.listener.retry.stateless",
-    "type": "java.lang.Boolean",
-    "description": "Whether or not retries are stateless or stateful.",
-    "sourceType": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$ListenerRetry",
-    "defaultValue": true,
-    "deprecated": true,
-    "deprecation": {
-      "replacement": "spring.rabbitmq.listener.simple.retry.stateless"
-    }
   },
   {
     "name": "spring.session.hazelcast.flush-mode",
@@ -444,7 +402,7 @@
     ]
   },
   {
-    "name": "server.jsp-servlet.class-name",
+    "name": "server.servlet.jsp.class-name",
     "providers": [
       {
         "name": "class-reference",

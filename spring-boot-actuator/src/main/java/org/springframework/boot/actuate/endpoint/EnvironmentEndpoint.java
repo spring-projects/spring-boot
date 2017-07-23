@@ -58,7 +58,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	@Override
 	public Map<String, Object> invoke() {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("profiles", getEnvironment().getActiveProfiles());
 		PropertyResolver resolver = getResolver();
 		for (Entry<String, PropertySource<?>> entry : getPropertySourcesAsMap()
@@ -67,7 +67,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 			String sourceName = entry.getKey();
 			if (source instanceof EnumerablePropertySource) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				Map<String, Object> properties = new LinkedHashMap<String, Object>();
+				Map<String, Object> properties = new LinkedHashMap<>();
 				for (String name : enumerable.getPropertyNames()) {
 					Object resolved = resolver.getProperty(name, Object.class);
 					properties.put(name, sanitize(name, resolved));

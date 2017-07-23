@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class HealthMvcEndpointProperties {
 	 * Mapping of health statuses to HttpStatus codes. By default, registered health
 	 * statuses map to sensible defaults (i.e. UP maps to 200).
 	 */
-	private Map<String, HttpStatus> mapping = new HashMap<String, HttpStatus>();
+	private Map<String, HttpStatus> mapping = new HashMap<>();
 
 	public Map<String, HttpStatus> getMapping() {
 		return this.mapping;

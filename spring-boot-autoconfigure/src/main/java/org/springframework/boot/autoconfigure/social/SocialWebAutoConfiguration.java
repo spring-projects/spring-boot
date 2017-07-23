@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 
-import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -30,8 +30,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -71,7 +72,7 @@ public class SocialWebAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	protected static class SocialAutoConfigurationAdapter
 			extends SocialConfigurerAdapter {
 
@@ -133,7 +134,7 @@ public class SocialWebAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnMissingClass("org.springframework.security.core.context.SecurityContextHolder")
 	protected static class AnonymousUserIdSourceConfig extends SocialConfigurerAdapter {
 
@@ -151,7 +152,7 @@ public class SocialWebAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass(SecurityContextHolder.class)
 	protected static class AuthenticationUserIdSourceConfig
 			extends SocialConfigurerAdapter {
@@ -164,7 +165,7 @@ public class SocialWebAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(SpringResourceResourceResolver.class)
+	@ConditionalOnClass(SpringTemplateEngine.class)
 	protected static class SpringSocialThymeleafConfig {
 
 		@Bean

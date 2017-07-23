@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.TomcatLegacyCookieProcessorExample.LegacyCookieProcessorConfiguration;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,10 +40,10 @@ public class TomcatLegacyCookieProcessorExampleTests {
 
 	@Test
 	public void cookieProcessorIsCustomized() {
-		EmbeddedWebApplicationContext applicationContext = (EmbeddedWebApplicationContext) new SpringApplication(
+		ServletWebServerApplicationContext applicationContext = (ServletWebServerApplicationContext) new SpringApplication(
 				TestConfiguration.class, LegacyCookieProcessorConfiguration.class).run();
-		Context context = (Context) ((TomcatEmbeddedServletContainer) applicationContext
-				.getEmbeddedServletContainer()).getTomcat().getHost().findChildren()[0];
+		Context context = (Context) ((TomcatWebServer) applicationContext.getWebServer())
+				.getTomcat().getHost().findChildren()[0];
 		assertThat(context.getCookieProcessor())
 				.isInstanceOf(LegacyCookieProcessor.class);
 	}
@@ -50,13 +52,13 @@ public class TomcatLegacyCookieProcessorExampleTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory tomcatFactory() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory tomcatFactory() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor postProcessor() {
-			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		public WebServerFactoryCustomizerBeanPostProcessor postProcessor() {
+			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
 	}
