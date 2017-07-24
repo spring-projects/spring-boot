@@ -110,9 +110,26 @@ public class ActiveMQProperties {
 		private boolean enabled;
 
 		/**
-		 * Maximum number of pooled connections.
+		 * Block when a connection is requested and the pool is full. Set it to false to
+		 * throw a "JMSException" instead.
 		 */
-		private int maxConnections = 1;
+		private boolean blockIfFull = true;
+
+		/**
+		 * Blocking period, in milliseconds, before throwing an exception if the pool
+		 * is still full.
+		 */
+		private long blockIfFullTimeout = -1;
+
+		/**
+		 * Create a connection on startup. Can be used to warm-up the pool on startup.
+		 */
+		private boolean createConnectionOnStartup = true;
+
+		/**
+		 * Connection expiration timeout in milliseconds.
+		 */
+		private long expiryTimeout = 0;
 
 		/**
 		 * Connection idle timeout in milliseconds.
@@ -120,9 +137,31 @@ public class ActiveMQProperties {
 		private int idleTimeout = 30000;
 
 		/**
-		 * Connection expiration timeout in milliseconds.
+		 * Maximum number of pooled connections.
 		 */
-		private long expiryTimeout = 0;
+		private int maxConnections = 1;
+
+		/**
+		 * Maximum number of active sessions per connection.
+		 */
+		private int maximumActiveSessionPerConnection = 500;
+
+		/**
+		 * Reset the connection when a "JMXException" occurs.
+		 */
+		private boolean reconnectOnException = true;
+
+		/**
+		 * Time to sleep, in milliseconds, between runs of the idle connection eviction
+		 * thread. When negative, no idle connection eviction thread runs.
+		 */
+		private long timeBetweenExpirationCheck = -1;
+
+		/**
+		 * Use only one anonymous "MessageProducer" instance. Set it to false to create
+		 * one "MessageProducer" every time one is required.
+		 */
+		private boolean useAnonymousProducers = true;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -132,12 +171,36 @@ public class ActiveMQProperties {
 			this.enabled = enabled;
 		}
 
-		public int getMaxConnections() {
-			return this.maxConnections;
+		public boolean isBlockIfFull() {
+			return this.blockIfFull;
 		}
 
-		public void setMaxConnections(int maxConnections) {
-			this.maxConnections = maxConnections;
+		public void setBlockIfFull(boolean blockIfFull) {
+			this.blockIfFull = blockIfFull;
+		}
+
+		public long getBlockIfFullTimeout() {
+			return this.blockIfFullTimeout;
+		}
+
+		public void setBlockIfFullTimeout(long blockIfFullTimeout) {
+			this.blockIfFullTimeout = blockIfFullTimeout;
+		}
+
+		public boolean isCreateConnectionOnStartup() {
+			return this.createConnectionOnStartup;
+		}
+
+		public void setCreateConnectionOnStartup(boolean createConnectionOnStartup) {
+			this.createConnectionOnStartup = createConnectionOnStartup;
+		}
+
+		public long getExpiryTimeout() {
+			return this.expiryTimeout;
+		}
+
+		public void setExpiryTimeout(long expiryTimeout) {
+			this.expiryTimeout = expiryTimeout;
 		}
 
 		public int getIdleTimeout() {
@@ -148,12 +211,44 @@ public class ActiveMQProperties {
 			this.idleTimeout = idleTimeout;
 		}
 
-		public long getExpiryTimeout() {
-			return this.expiryTimeout;
+		public int getMaxConnections() {
+			return this.maxConnections;
 		}
 
-		public void setExpiryTimeout(long expiryTimeout) {
-			this.expiryTimeout = expiryTimeout;
+		public void setMaxConnections(int maxConnections) {
+			this.maxConnections = maxConnections;
+		}
+
+		public int getMaximumActiveSessionPerConnection() {
+			return this.maximumActiveSessionPerConnection;
+		}
+
+		public void setMaximumActiveSessionPerConnection(int maximumActiveSessionPerConnection) {
+			this.maximumActiveSessionPerConnection = maximumActiveSessionPerConnection;
+		}
+
+		public boolean isReconnectOnException() {
+			return this.reconnectOnException;
+		}
+
+		public void setReconnectOnException(boolean reconnectOnException) {
+			this.reconnectOnException = reconnectOnException;
+		}
+
+		public long getTimeBetweenExpirationCheck() {
+			return this.timeBetweenExpirationCheck;
+		}
+
+		public void setTimeBetweenExpirationCheck(long timeBetweenExpirationCheck) {
+			this.timeBetweenExpirationCheck = timeBetweenExpirationCheck;
+		}
+
+		public boolean isUseAnonymousProducers() {
+			return this.useAnonymousProducers;
+		}
+
+		public void setUseAnonymousProducers(boolean useAnonymousProducers) {
+			this.useAnonymousProducers = useAnonymousProducers;
 		}
 
 	}
