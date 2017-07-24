@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -456,6 +457,19 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		PrototypeBean second = this.context.getBean(PrototypeBean.class);
 		assertThat(second.getOne()).isEqualTo("bar");
 		assertThat(second.getTwo()).isEqualTo("baz");
+	}
+
+	@Test
+	public void javaTimeDurationCanBeBound() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		sources.addFirst(new MapPropertySource("test",
+				Collections.singletonMap("test.duration", "PT1M")));
+		this.context.register(DurationProperty.class);
+		this.context.refresh();
+		Duration duration = this.context.getBean(DurationProperty.class).getDuration();
+		assertThat(duration.getSeconds()).isEqualTo(60);
 	}
 
 	private void assertBindingFailure(int errorCount) {
@@ -966,6 +980,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				return this.value;
 			}
 
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class DurationProperty {
+
+		private Duration duration;
+
+		public Duration getDuration() {
+			return this.duration;
+		}
+
+		public void setDuration(Duration duration) {
+			this.duration = duration;
 		}
 
 	}
