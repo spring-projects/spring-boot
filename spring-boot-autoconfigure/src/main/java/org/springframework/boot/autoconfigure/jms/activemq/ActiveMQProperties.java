@@ -158,8 +158,8 @@ public class ActiveMQProperties {
 		private boolean blockIfFull = true;
 
 		/**
-		 * Blocking period, in milliseconds, before throwing an exception if the pool
-		 * is still full.
+		 * Blocking period, in milliseconds, before throwing an exception if the pool is
+		 * still full.
 		 */
 		private long blockIfFullTimeout = -1;
 
@@ -265,7 +265,8 @@ public class ActiveMQProperties {
 			return this.maximumActiveSessionPerConnection;
 		}
 
-		public void setMaximumActiveSessionPerConnection(int maximumActiveSessionPerConnection) {
+		public void setMaximumActiveSessionPerConnection(
+				int maximumActiveSessionPerConnection) {
 			this.maximumActiveSessionPerConnection = maximumActiveSessionPerConnection;
 		}
 
