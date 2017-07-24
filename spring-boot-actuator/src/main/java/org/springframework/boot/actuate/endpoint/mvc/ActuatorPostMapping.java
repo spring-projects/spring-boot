@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 		MediaType.APPLICATION_JSON_VALUE }, produces = {
 				ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON_VALUE,
 				MediaType.APPLICATION_JSON_VALUE })
-@interface ActuatorPostMapping {
+public @interface ActuatorPostMapping {
 
 	/**
 	 * Alias for {@link RequestMapping#value}.
