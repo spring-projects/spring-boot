@@ -1143,7 +1143,7 @@ type `HttpMessageConverters` (always available if you use the default MVC config
 which has some useful methods to access the default and user-enhanced message converters
 (useful, for example if you want to manually inject them into a custom `RestTemplate`).
 
-As in normal MVC usage, any `WebMvcConfigurerAdapter` beans that you provide can also
+As in normal MVC usage, any `WebMvcConfigurer` beans that you provide can also
 contribute converters by overriding the `configureMessageConverters` method, but unlike
 with normal MVC, you can supply only additional converters that you need (because Spring
 Boot uses the same mechanism to contribute its defaults). Finally, if you opt-out of the
