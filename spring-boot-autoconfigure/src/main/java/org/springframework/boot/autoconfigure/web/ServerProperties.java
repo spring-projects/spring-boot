@@ -865,6 +865,7 @@ public class ServerProperties
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 
 				@Override
+				@SuppressWarnings("deprecation")
 				public void customize(Connector connector) {
 					ProtocolHandler handler = connector.getProtocolHandler();
 					if (handler instanceof AbstractProtocol) {

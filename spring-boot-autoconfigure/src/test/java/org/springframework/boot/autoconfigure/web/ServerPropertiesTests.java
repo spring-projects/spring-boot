@@ -528,7 +528,7 @@ public class ServerPropertiesTests {
 		embeddedContainer.start();
 		try {
 			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
-					.getProtocolHandler()).getBacklog()).isEqualTo(10);
+					.getProtocolHandler()).getAcceptCount()).isEqualTo(10);
 		}
 		finally {
 			embeddedContainer.stop();
