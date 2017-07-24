@@ -60,11 +60,23 @@ class ActiveMQConnectionFactoryConfiguration {
 			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(
 					new ActiveMQConnectionFactoryFactory(properties)
 							.createConnectionFactory(ActiveMQConnectionFactory.class));
-
 			ActiveMQProperties.Pool pool = properties.getPool();
-			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
-			pooledConnectionFactory.setIdleTimeout(pool.getIdleTimeout());
+			pooledConnectionFactory.setBlockIfSessionPoolIsFull(pool.isBlockIfFull());
+			pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
+					pool.getBlockIfFullTimeout());
+			pooledConnectionFactory.setCreateConnectionOnStartup(
+					pool.isCreateConnectionOnStartup());
 			pooledConnectionFactory.setExpiryTimeout(pool.getExpiryTimeout());
+			pooledConnectionFactory.setIdleTimeout(pool.getIdleTimeout());
+			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
+			pooledConnectionFactory.setMaximumActiveSessionPerConnection(
+					pool.getMaximumActiveSessionPerConnection());
+			pooledConnectionFactory.setReconnectOnException(
+					pool.isReconnectOnException());
+			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
+					pool.getTimeBetweenExpirationCheck());
+			pooledConnectionFactory.setUseAnonymousProducers(
+					pool.isUseAnonymousProducers());
 			return pooledConnectionFactory;
 		}
 

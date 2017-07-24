@@ -34,6 +34,78 @@
     "defaultValue": true
   },
   {
+    "name": "spring.activemq.pool.configuration.block-if-session-pool-is-full",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.block-if-full"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.block-if-session-pool-is-full-timeout",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.block-if-full-timeout"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.connection-factory",
+    "deprecation": {
+      "reason": "This third party property cannot be set via the Environment."
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.create-connection-on-startup",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.create-connection-on-startup"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.expiry-timeout",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.expiry-timeout"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.idle-timeout",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.idle-timeout"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.max-connections",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.max-connections"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.maximum-active-session-per-connection",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.maximum-active-session-per-connection"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.properties",
+    "deprecation": {
+      "reason": "This third party property cannot be set via the Environment."
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.reconnect-on-exception",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.reconnect-on-exception"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.time-between-expiration-check-millis",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.time-between-expiration-check"
+    }
+  },
+  {
+    "name": "spring.activemq.pool.configuration.use-anonymous-producers",
+    "deprecation": {
+      "replacement": "spring.activemq.pool.use-anonymous-producers"
+    }
+  },
+  {
     "name": "spring.aop.auto",
     "type": "java.lang.Boolean",
     "description": "Add @EnableAspectJAutoProxy.",

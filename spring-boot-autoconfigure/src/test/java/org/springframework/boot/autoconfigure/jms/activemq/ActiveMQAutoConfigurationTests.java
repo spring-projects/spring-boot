@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,24 +62,93 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPooledConnectionFactoryConfiguration() {
-		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true",
-				"spring.activemq.pool.maxConnections:256",
-				"spring.activemq.pool.idleTimeout:512",
-				"spring.activemq.pool.expiryTimeout:4096",
-				"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
-				"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048");
-		ConnectionFactory connectionFactory = this.context
-				.getBean(ConnectionFactory.class);
-		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
-		PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
-		assertThat(pooledConnectionFactory.getMaxConnections()).isEqualTo(256);
-		assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
-		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection())
+	public void defaultsPooledConnectionFactoryAreApplied() {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled=true");
+		assertThat(this.context.getBeansOfType(PooledConnectionFactory.class)).hasSize(1);
+		PooledConnectionFactory connectionFactory = this.context.getBean(
+				PooledConnectionFactory.class);
+		PooledConnectionFactory defaultFactory = new PooledConnectionFactory();
+		assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isEqualTo(
+				defaultFactory.isBlockIfSessionPoolIsFull());
+		assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout()).isEqualTo(
+				defaultFactory.getBlockIfSessionPoolIsFullTimeout());
+		assertThat(connectionFactory.isCreateConnectionOnStartup()).isEqualTo(
+				defaultFactory.isCreateConnectionOnStartup());
+		assertThat(connectionFactory.getExpiryTimeout()).isEqualTo(
+				defaultFactory.getExpiryTimeout());
+		assertThat(connectionFactory.getIdleTimeout()).isEqualTo(
+				defaultFactory.getIdleTimeout());
+		assertThat(connectionFactory.getMaxConnections()).isEqualTo(
+				defaultFactory.getMaxConnections());
+		assertThat(connectionFactory.getMaximumActiveSessionPerConnection()).isEqualTo(
+				defaultFactory.getMaximumActiveSessionPerConnection());
+		assertThat(connectionFactory.isReconnectOnException()).isEqualTo(
+				defaultFactory.isReconnectOnException());
+		assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis()).isEqualTo(
+				defaultFactory.getTimeBetweenExpirationCheckMillis());
+		assertThat(connectionFactory.isUseAnonymousProducers()).isEqualTo(
+				defaultFactory.isUseAnonymousProducers());
+	}
+
+	@Test
+	public void customPooledConnectionFactoryAreApplied() {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled=true",
+				"spring.activemq.pool.blockIfFull=false",
+				"spring.activemq.pool.blockIfFullTimeout=64",
+				"spring.activemq.pool.createConnectionOnStartup=false",
+				"spring.activemq.pool.expiryTimeout=4096",
+				"spring.activemq.pool.idleTimeout=512",
+				"spring.activemq.pool.maxConnections=256",
+				"spring.activemq.pool.maximumActiveSessionPerConnection=1024",
+				"spring.activemq.pool.reconnectOnException=false",
+				"spring.activemq.pool.timeBetweenExpirationCheck=2048",
+				"spring.activemq.pool.useAnonymousProducers=false");
+		assertThat(this.context.getBeansOfType(PooledConnectionFactory.class)).hasSize(1);
+		PooledConnectionFactory connectionFactory = this.context.getBean(
+				PooledConnectionFactory.class);
+		assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isEqualTo(false);
+		assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout()).isEqualTo(64);
+		assertThat(connectionFactory.isCreateConnectionOnStartup()).isEqualTo(false);
+		assertThat(connectionFactory.getExpiryTimeout()).isEqualTo(4096);
+		assertThat(connectionFactory.getIdleTimeout()).isEqualTo(512);
+		assertThat(connectionFactory.getMaxConnections()).isEqualTo(256);
+		assertThat(connectionFactory.getMaximumActiveSessionPerConnection())
 				.isEqualTo(1024);
-		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis())
+		assertThat(connectionFactory.isReconnectOnException()).isEqualTo(false);
+		assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis())
 				.isEqualTo(2048);
-		assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
+		assertThat(connectionFactory.isUseAnonymousProducers()).isEqualTo(false);
+	}
+
+	@Test
+	@Deprecated
+	public void customPooledConnectionFactoryOnTargetInstanceAreApplied() {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled=true",
+				"spring.activemq.pool.configuration.blockIfSessionPoolIsFull=false",
+				"spring.activemq.pool.configuration.blockIfSessionPoolIsFullTimeout=64",
+				"spring.activemq.pool.configuration.createConnectionOnStartup=false",
+				"spring.activemq.pool.expiryTimeout=4096",
+				"spring.activemq.pool.idleTimeout=512",
+				"spring.activemq.pool.maxConnections=256",
+				"spring.activemq.pool.configuration.maximumActiveSessionPerConnection=1024",
+				"spring.activemq.pool.configuration.reconnectOnException=false",
+				"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis=2048",
+				"spring.activemq.pool.configuration.useAnonymousProducers=false");
+		assertThat(this.context.getBeansOfType(PooledConnectionFactory.class)).hasSize(1);
+		PooledConnectionFactory connectionFactory = this.context.getBean(
+				PooledConnectionFactory.class);
+		assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isEqualTo(false);
+		assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout()).isEqualTo(64);
+		assertThat(connectionFactory.isCreateConnectionOnStartup()).isEqualTo(false);
+		assertThat(connectionFactory.getExpiryTimeout()).isEqualTo(4096);
+		assertThat(connectionFactory.getIdleTimeout()).isEqualTo(512);
+		assertThat(connectionFactory.getMaxConnections()).isEqualTo(256);
+		assertThat(connectionFactory.getMaximumActiveSessionPerConnection())
+				.isEqualTo(1024);
+		assertThat(connectionFactory.isReconnectOnException()).isEqualTo(false);
+		assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis())
+				.isEqualTo(2048);
+		assertThat(connectionFactory.isUseAnonymousProducers()).isEqualTo(false);
 	}
 
 	@Test

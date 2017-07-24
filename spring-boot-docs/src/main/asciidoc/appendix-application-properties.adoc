@@ -843,11 +843,17 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.user= # Login user of the broker.
 	spring.activemq.packages.trust-all=false # Trust all packages.
 	spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
-	spring.activemq.pool.configuration.*= # See PooledConnectionFactory.
-	spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created instead of a regular ConnectionFactory.
-	spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
-	spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
-	spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
+	spring.activemq.pool.block-if-full=true # Block when a connection is requested and the pool is full. Set it to false to throw a "JMSException" instead.
+    spring.activemq.pool.block-if-full-timeout=-1 # Blocking period, in milliseconds, before throwing an exception if the pool is still full.
+    spring.activemq.pool.create-connection-on-startup=true # Create a connection on startup. Can be used to warm-up the pool on startup.
+    spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created instead of a regular ConnectionFactory.
+    spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
+    spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
+    spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
+    spring.activemq.pool.maximum-active-session-per-connection=500 # Maximum number of active sessions per connection.
+    spring.activemq.pool.reconnect-on-exception=true # Reset the connection when a "JMXException" occurs.
+    spring.activemq.pool.time-between-expiration-check=-1 # Time to sleep, in milliseconds, between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
+    spring.activemq.pool.use-anonymous-producers=true # Use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.
 
 	# ARTEMIS ({sc-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.{sc-ext}[ArtemisProperties])
 	spring.artemis.embedded.cluster-password= # Cluster password. Randomly generated on startup by default.
