@@ -3,6 +3,32 @@
 <import-control pkg="org.springframework.boot">
 	<allow pkg=".*" regex="true" />
 
+	<subpackage name="autoconfigure">
+		<subpackage name="web">
+			<disallow pkg="org.springframework.boot.web" />
+			<disallow pkg="org.springframework.web.servlet" />
+			<disallow pkg="org.springframework.web.reactive" />
+			<disallow pkg="javax.servlet" />
+			<allow pkg="org.springframework.boot.web.server" />
+			<allow pkg="org.springframework.boot.web.servlet.server" />
+			<subpackage name="client">
+				<allow pkg="org.springframework.boot.web.client" />
+			</subpackage>
+			<subpackage name="servlet">
+				<allow pkg="javax.servlet" />
+				<allow pkg="org.springframework.boot.web.embedded" />
+				<allow pkg="org.springframework.boot.web.servlet" />
+				<allow pkg="org.springframework.web.servlet" />
+			</subpackage>
+			<subpackage name="reactive">
+				<allow pkg="org.springframework.boot.web.codec" />
+				<allow pkg="org.springframework.boot.web.embedded" />
+				<allow pkg="org.springframework.boot.web.reactive" />
+				<allow pkg="org.springframework.web.reactive" />
+			</subpackage>
+		</subpackage>
+	</subpackage>
+
 	<!-- Logging -->
 	<subpackage name="logging">
 		<disallow pkg="org.springframework.context" />
