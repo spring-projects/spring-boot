@@ -107,11 +107,17 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected static class EchoHandler implements HttpHandler {
+
+		public EchoHandler() {
+
+		}
+
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			response.setStatusCode(HttpStatus.OK);
 			return response.writeWith(request.getBody());
 		}
+
 	}
 
 }

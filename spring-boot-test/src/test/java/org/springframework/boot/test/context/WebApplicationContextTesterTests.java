@@ -16,25 +16,31 @@
 
 package org.springframework.boot.test.context;
 
+import org.junit.Test;
+
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * Specialized callback interface used in tests to process a running
- * {@link ConfigurableWebApplicationContext} with the ability to throw a (checked)
- * exception.
+ * Tests for {@link WebApplicationContextTester}.
  *
  * @author Stephane Nicoll
- * @see ContextConsumer
- * @since 2.0.0
+ * @author Phillip Webb
  */
-@FunctionalInterface
-public interface WebMvcContextConsumer {
+public class WebApplicationContextTesterTests extends
+		AbstractApplicationContextTesterTests<WebApplicationContextTester, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
-	/**
-	 * Performs this operation on the supplied {@code context}.
-	 * @param context the application context to consume
-	 * @throws Throwable any exception that might occur in assertions
-	 */
-	void accept(ConfigurableWebApplicationContext context) throws Throwable;
+	@Test
+	public void contextShouldHaveMockServletContext() throws Exception {
+		get().run((loaded) -> assertThat(loaded.getServletContext())
+				.isInstanceOf(MockServletContext.class));
+	}
+
+	@Override
+	protected WebApplicationContextTester get() {
+		return new WebApplicationContextTester();
+	}
 
 }

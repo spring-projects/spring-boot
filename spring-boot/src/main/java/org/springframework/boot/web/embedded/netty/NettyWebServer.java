@@ -17,6 +17,8 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.net.BindException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +26,7 @@ import reactor.ipc.netty.http.HttpResources;
 import reactor.ipc.netty.http.server.HttpServer;
 import reactor.ipc.netty.tcp.BlockingNettyContext;
 
+import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
@@ -35,6 +38,7 @@ import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
  *
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  * @since 2.0.0
  */
 public class NettyWebServer implements WebServer {
@@ -61,7 +65,11 @@ public class NettyWebServer implements WebServer {
 			}
 			catch (Exception ex) {
 				if (findBindException(ex) != null) {
-					// throw new PortInUseException();
+					SocketAddress address = this.reactorServer.options().getAddress();
+					if (address instanceof InetSocketAddress) {
+						throw new PortInUseException(
+								((InetSocketAddress) address).getPort());
+					}
 				}
 				throw new WebServerException("Unable to start Netty", ex);
 			}
@@ -100,7 +108,8 @@ public class NettyWebServer implements WebServer {
 		if (this.nettyContext != null) {
 			this.nettyContext.shutdown();
 			// temporary fix for gh-9146
-			this.nettyContext.getContext().onClose().doOnSuccess(aVoid -> HttpResources.reset()).block();
+			this.nettyContext.getContext().onClose()
+					.doOnSuccess(aVoid -> HttpResources.reset()).block();
 			this.nettyContext = null;
 		}
 	}

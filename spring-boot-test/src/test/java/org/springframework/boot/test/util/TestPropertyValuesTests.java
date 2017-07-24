@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestPropertyValues}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 public class TestPropertyValuesTests {
 
@@ -93,6 +94,49 @@ public class TestPropertyValuesTests {
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");
+	}
+
+	@Test
+	public void applyToSystemPropertiesShouldSetSystemProperties() throws Exception {
+		TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
+			assertThat(System.getProperty("foo")).isEqualTo("bar");
+			return null;
+		});
+	}
+
+	@Test
+	public void applyToSystemPropertiesShouldRestoreSystemProperties() throws Exception {
+		System.setProperty("foo", "bar1");
+		System.clearProperty("baz");
+		try {
+			TestPropertyValues.of("foo=bar2", "baz=bing").applyToSystemProperties(() -> {
+				assertThat(System.getProperty("foo")).isEqualTo("bar2");
+				assertThat(System.getProperty("baz")).isEqualTo("bing");
+				return null;
+			});
+			assertThat(System.getProperty("foo")).isEqualTo("bar1");
+			assertThat(System.getProperties()).doesNotContainKey("baz");
+		}
+		finally {
+			System.clearProperty("foo");
+		}
+	}
+
+	@Test
+	public void applyToSystemPropertiesWhenValueIsNullShouldRemoveProperty()
+			throws Exception {
+		System.setProperty("foo", "bar1");
+		try {
+			TestPropertyValues.ofPair("foo", null).applyToSystemProperties(() -> {
+				assertThat(System.getProperties()).doesNotContainKey("foo");
+				return null;
+			});
+			assertThat(System.getProperty("foo")).isEqualTo("bar1");
+			assertThat(System.getProperties()).doesNotContainKey("baz");
+		}
+		finally {
+			System.clearProperty("foo");
+		}
 	}
 
 }

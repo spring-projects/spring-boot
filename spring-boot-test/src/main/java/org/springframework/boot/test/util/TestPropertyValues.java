@@ -16,29 +16,36 @@
 
 package org.springframework.boot.test.util;
 
-import java.util.HashMap;
+import java.io.Closeable;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+
+import com.google.common.collect.Streams;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
- * Test utilities for adding properties to the environment. The type of
- * {@link PropertySource} to be added can be specified by {@link Type}.
+ * Test utilities for adding properties. Properties can be applied to a Spring
+ * {@link Environment} or to the {@link System#getProperties() system environment}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public final class TestPropertyValues {
 
-	private final Map<String, Object> properties = new HashMap<>();
+	private final Map<String, Object> properties = new LinkedHashMap<>();
 
 	private TestPropertyValues(String[] pairs) {
 		addProperties(pairs);
@@ -46,11 +53,21 @@ public final class TestPropertyValues {
 
 	private void addProperties(String[] pairs) {
 		for (String pair : pairs) {
-			int index = getSeparatorIndex(pair);
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
-			this.properties.put(key.trim(), value.trim());
+			and(pair);
 		}
+	}
+
+	/**
+	 * Builder method to append another property pair the underlying map of properties.
+	 * @param pair The property pair to add
+	 * @return the existing instance of {@link TestPropertyValues}
+	 */
+	public TestPropertyValues and(String pair) {
+		int index = getSeparatorIndex(pair);
+		String key = pair.substring(0, index > 0 ? index : pair.length());
+		String value = index > 0 ? pair.substring(index + 1) : "";
+		and(key.trim(), value.trim());
+		return this;
 	}
 
 	private int getSeparatorIndex(String pair) {
@@ -67,12 +84,16 @@ public final class TestPropertyValues {
 
 	/**
 	 * Builder method to append another property to the underlying map of properties.
-	 * @param key The property key
+	 * @param name The property name
 	 * @param value The property value
 	 * @return the existing instance of {@link TestPropertyValues}
 	 */
-	public TestPropertyValues and(String key, String value) {
-		this.properties.put(key, value);
+	public TestPropertyValues and(String name, String value) {
+		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(value)) {
+			return this;
+		}
+		Assert.hasLength(name, "Name must not be empty");
+		this.properties.put(name, value);
 		return this;
 	}
 
@@ -120,6 +141,25 @@ public final class TestPropertyValues {
 		ConfigurationPropertySources.attach(environment);
 	}
 
+	/**
+	 * Add the properties to the {@link System#getProperties() system properties} for the
+	 * duration of the {@code call}, restoring previous values then the call completes.
+	 * @param <T> the result type
+	 * @param call the call to make
+	 * @return the result of the call
+	 */
+	public <T> T applyToSystemProperties(Callable<T> call) {
+		try (SystemPropertiesHandler handler = new SystemPropertiesHandler()) {
+			return call.call();
+		}
+		catch (RuntimeException ex) {
+			throw ex;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private void addToSources(MutablePropertySources sources, Type type, String name) {
 		if (sources.contains(name)) {
@@ -134,6 +174,41 @@ public final class TestPropertyValues {
 				? new MapPropertySource(name, this.properties)
 				: new SystemEnvironmentPropertySource(name, this.properties));
 		sources.addFirst(source);
+	}
+
+	/**
+	 * Return a new empty {@link TestPropertyValues} instance.
+	 * @return an empty instance
+	 */
+	public static TestPropertyValues empty() {
+		return of();
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
+	 * given property pair.
+	 * @param name the property name
+	 * @param value the property value
+	 * @return the new instance
+	 */
+
+	public static TestPropertyValues ofPair(String name, String value) {
+		return of().and(name, value);
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
+	 * given property pairs. Name-value pairs can be specified with colon (":") or equals
+	 * ("=") separators.
+	 * @param pairs The key value pairs for properties that need to be added to the
+	 * environment
+	 * @return the new instance
+	 */
+	public static TestPropertyValues of(Iterable<String> pairs) {
+		if (pairs == null) {
+			return of();
+		}
+		return of(Streams.stream(pairs).toArray(String[]::new));
 	}
 
 	/**
@@ -171,6 +246,42 @@ public final class TestPropertyValues {
 
 		public Class<? extends MapPropertySource> getSourceClass() {
 			return this.sourceClass;
+		}
+
+	}
+
+	/**
+	 * Handler to apply and restore system properties.
+	 */
+	private class SystemPropertiesHandler implements Closeable {
+
+		private final Map<String, Object> properties;
+
+		private final Map<String, String> previous;
+
+		SystemPropertiesHandler() {
+			this.properties = new LinkedHashMap<>(TestPropertyValues.this.properties);
+			this.previous = apply(this.properties);
+		}
+
+		private Map<String, String> apply(Map<String, ?> properties) {
+			Map<String, String> previous = new LinkedHashMap<>();
+			properties.forEach((name, value) -> previous.put(name,
+					setOrClear(name, (String) value)));
+			return previous;
+		}
+
+		@Override
+		public void close() {
+			this.previous.forEach(this::setOrClear);
+		};
+
+		private String setOrClear(String name, String value) {
+			Assert.notNull(name, "Name must not be null");
+			if (value == null) {
+				return (String) System.getProperties().remove(name);
+			}
+			return (String) System.getProperties().setProperty(name, value);
 		}
 
 	}

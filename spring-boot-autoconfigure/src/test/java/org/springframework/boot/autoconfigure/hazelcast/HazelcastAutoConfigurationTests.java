@@ -18,10 +18,12 @@ package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
 
+import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
 import org.junit.Test;
 
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,16 +35,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HazelcastAutoConfigurationTests {
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(HazelcastAutoConfiguration.class);
+	private final ApplicationContextTester context = new ApplicationContextTester()
+			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void defaultConfigFile() throws IOException {
 		// no hazelcast-client.xml and hazelcast.xml is present in root classpath
-		this.contextLoader.load(context -> {
-			HazelcastInstance hazelcastInstance = context
-					.getBean(HazelcastInstance.class);
-			assertThat(hazelcastInstance.getConfig().getConfigurationUrl())
+		this.context.run((loaded) -> {
+			Config config = loaded.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getConfigurationUrl())
 					.isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
 		});
 	}

@@ -16,7 +16,10 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
 
 import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.commons.logging.Log;
@@ -42,6 +45,16 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 
 	public TomcatEmbeddedWebappClassLoader(ClassLoader parent) {
 		super(parent);
+	}
+
+	@Override
+	public URL findResource(String name) {
+		return null;
+	}
+
+	@Override
+	public Enumeration<URL> findResources(String name) throws IOException {
+		return Collections.emptyEnumeration();
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devtools.tunnel.server;
+package org.springframework.boot.test.context;
+
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Exception thrown to indicate that remote debug is not running.
+ * Tests for {@link ApplicationContextTester}.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Phillip Webb
  */
-class RemoteDebugNotRunningException extends RuntimeException {
+public class ApplicationContextTesterTests extends
+		AbstractApplicationContextTesterTests<ApplicationContextTester, ConfigurableApplicationContext, AssertableApplicationContext> {
+
+	@Override
+	protected ApplicationContextTester get() {
+		return new ApplicationContextTester();
+	}
 
 }

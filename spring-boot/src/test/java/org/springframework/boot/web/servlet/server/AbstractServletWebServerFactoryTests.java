@@ -58,7 +58,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.http.client.HttpClient;
@@ -775,8 +777,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void compression() throws Exception {
+	public void compressionOfResposeToGetRequest() throws Exception {
 		assertThat(doTestCompression(10000, null, null)).isTrue();
+	}
+
+	@Test
+	public void compressionOfResposeToPostRequest() throws Exception {
+		assertThat(doTestCompression(10000, null, null, HttpMethod.POST)).isTrue();
 	}
 
 	@Test
@@ -991,12 +998,18 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
 			String[] excludedUserAgents) throws Exception {
+		return doTestCompression(contentSize, mimeTypes, excludedUserAgents,
+				HttpMethod.GET);
+	}
+
+	private boolean doTestCompression(int contentSize, String[] mimeTypes,
+			String[] excludedUserAgents, HttpMethod method) throws Exception {
 		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,
 				excludedUserAgents);
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
 		Map<String, InputStreamFactory> contentDecoderMap = Collections
 				.singletonMap("gzip", (InputStreamFactory) inputStreamFactory);
-		String response = getResponse(getLocalUrl("/test.txt"),
+		String response = getResponse(getLocalUrl("/test.txt"), method,
 				new HttpComponentsClientHttpRequestFactory(
 						HttpClientBuilder.create().setUserAgent("testUserAgent")
 								.setContentDecoderRegistry(contentDecoderMap).build()));
@@ -1004,15 +1017,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return inputStreamFactory.wasCompressionUsed();
 	}
 
-	protected String setUpFactoryForCompression(int contentSize, String[] mimeTypes,
+	private String setUpFactoryForCompression(int contentSize, String[] mimeTypes,
 			String[] excludedUserAgents) throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		String testContent = new String(chars);
 		AbstractServletWebServerFactory factory = getFactory();
-		FileCopyUtils.copy(testContent,
-				new FileWriter(this.temporaryFolder.newFile("test.txt")));
-		factory.setDocumentRoot(this.temporaryFolder.getRoot());
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		if (mimeTypes != null) {
@@ -1022,6 +1032,20 @@ public abstract class AbstractServletWebServerFactoryTests {
 			compression.setExcludedUserAgents(excludedUserAgents);
 		}
 		factory.setCompression(compression);
+		factory.addInitializers(
+				new ServletRegistrationBean<HttpServlet>(new HttpServlet() {
+
+					@Override
+					protected void service(HttpServletRequest req,
+							HttpServletResponse resp)
+									throws ServletException, IOException {
+						resp.setContentType("text/plain");
+						resp.setContentLength(testContent.length());
+						resp.getWriter().write(testContent);
+						resp.getWriter().flush();
+					}
+
+				}, "/test.txt"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		return testContent;

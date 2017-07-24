@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.web.reactive.context;
 
-import java.util.function.Supplier;
-
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * A {@link ContextLoader} that simulates a {@link GenericReactiveWebApplicationContext}
- * which can be useful to test components that require a reactive web application.
+ * Interface to provide configuration for a reactive web application.
  *
- * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public final class ReactiveWebContextLoader extends
-		AbstractContextLoader<GenericReactiveWebApplicationContext, ReactiveWebContextLoader> {
+public interface ConfigurableReactiveWebApplicationContext
+		extends ConfigurableApplicationContext, ReactiveWebApplicationContext {
 
-	ReactiveWebContextLoader(
-			Supplier<GenericReactiveWebApplicationContext> contextSupplier) {
-		super(contextSupplier);
-	}
+	/**
+	 * Set the namespace for this reactive web application context.
+	 * @param namespace the namespace for the context
+	 */
+	void setNamespace(String namespace);
 
 }

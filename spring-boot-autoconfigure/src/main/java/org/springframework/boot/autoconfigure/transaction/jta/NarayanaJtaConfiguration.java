@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
+import org.jboss.narayana.jta.jms.TransactionHelper;
 import org.jboss.tm.XAResourceRecoveryRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -118,6 +119,7 @@ public class NarayanaJtaConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public NarayanaRecoveryManagerBean narayanaRecoveryManager(
 			RecoveryManagerService recoveryManagerService) {
 		return new NarayanaRecoveryManagerBean(recoveryManagerService);
@@ -150,7 +152,7 @@ public class NarayanaJtaConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(Message.class)
+	@ConditionalOnClass({ Message.class, TransactionHelper.class })
 	static class NarayanaJtaJmsConfiguration {
 
 		@Bean

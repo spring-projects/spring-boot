@@ -16,8 +16,13 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import org.junit.Test;
+
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.PortInUseException;
+
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Tests for {@link NettyReactiveWebServerFactory}.
@@ -30,6 +35,19 @@ public class NettyReactiveWebServerFactoryTests
 	@Override
 	protected AbstractReactiveWebServerFactory getFactory() {
 		return new NettyReactiveWebServerFactory(0);
+	}
+
+	@Test
+	public void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() throws Exception {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		factory.setPort(0);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		factory.setPort(this.webServer.getPort());
+		this.thrown.expect(PortInUseException.class);
+		this.thrown.expectMessage(
+				equalTo("Port " + this.webServer.getPort() + " is already in use"));
+		factory.getWebServer(new EchoHandler()).start();
 	}
 
 }

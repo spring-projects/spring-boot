@@ -33,8 +33,9 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class GenericReactiveWebApplicationContext extends
-		AnnotationConfigApplicationContext implements ReactiveWebApplicationContext {
+public class GenericReactiveWebApplicationContext
+		extends AnnotationConfigApplicationContext
+		implements ConfigurableReactiveWebApplicationContext {
 
 	private String namespace;
 

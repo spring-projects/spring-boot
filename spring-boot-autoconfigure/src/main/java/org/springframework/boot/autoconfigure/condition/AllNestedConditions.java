@@ -43,9 +43,11 @@ import org.springframework.context.annotation.Condition;
  * }
  * </pre>
  * <p>
- * The {@link ConfigurationPhase} should be specified according to the conditions that
- * are defined. In the example above, all conditions are static and can be evaluated
- * early so {@code PARSE_CONFIGURATION} is a right fit.
+ * The
+ * {@link org.springframework.context.annotation.ConfigurationCondition.ConfigurationPhase
+ * ConfigurationPhase} should be specified according to the conditions that are defined.
+ * In the example above, all conditions are static and can be evaluated early so
+ * {@code PARSE_CONFIGURATION} is a right fit.
  *
  * @author Phillip Webb
  * @since 1.3.0

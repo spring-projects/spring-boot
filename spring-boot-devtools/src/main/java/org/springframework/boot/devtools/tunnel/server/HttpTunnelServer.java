@@ -158,9 +158,6 @@ public class HttpTunnelServer {
 		catch (ConnectException ex) {
 			httpConnection.respond(HttpStatus.GONE);
 		}
-		catch (RemoteDebugNotRunningException ex) {
-			httpConnection.respond(HttpStatus.SERVICE_UNAVAILABLE);
-		}
 	}
 
 	/**

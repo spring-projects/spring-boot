@@ -16,23 +16,20 @@
 
 package org.springframework.boot.test.context;
 
-import java.util.function.Supplier;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 
 /**
- * A {@link ContextLoader} that simulates a standard, non web environment.
+ * Tests for {@link ReactiveWebApplicationContextTester}.
  *
  * @author Stephane Nicoll
- * @author Andy Wilkinson
- * @since 2.0.0
+ * @author Phillip Webb
  */
-public class StandardContextLoader extends
-		AbstractContextLoader<AnnotationConfigApplicationContext, StandardContextLoader> {
+public class ReactiveWebApplicationContextTesterTests extends
+		AbstractApplicationContextTesterTests<ReactiveWebApplicationContextTester, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
-	public StandardContextLoader(
-			Supplier<AnnotationConfigApplicationContext> contextSupplier) {
-		super(contextSupplier);
+	@Override
+	protected ReactiveWebApplicationContextTester get() {
+		return new ReactiveWebApplicationContextTester();
 	}
 
 }

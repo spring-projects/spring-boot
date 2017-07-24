@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -229,6 +230,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		Compression compression = getCompression();
 		handler.setMinGzipSize(compression.getMinResponseSize());
 		handler.setIncludedMimeTypes(compression.getMimeTypes());
+		for (HttpMethod httpMethod : HttpMethod.values()) {
+			handler.addIncludedMethods(httpMethod.name());
+		}
 		if (compression.getExcludedUserAgents() != null) {
 			handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
 		}
@@ -581,8 +585,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be applied
-	 * to the {@link Server} before the it is created.
+	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
+	 * applied to the {@link Server} before the it is created.
 	 * @return the {@link JettyServerCustomizer}s
 	 */
 	public Collection<JettyServerCustomizer> getServerCustomizers() {
