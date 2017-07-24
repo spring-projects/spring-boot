@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,6 @@ public class Handler extends URLStreamHandler {
 		rootFileCache = new SoftReference<Map<File, JarFile>>(null);
 	}
 
-	private final Logger logger = Logger.getLogger(getClass().getName());
-
 	private final JarFile jarFile;
 
 	private URLStreamHandler fallbackHandler;
@@ -105,14 +103,26 @@ public class Handler extends URLStreamHandler {
 		}
 		catch (Exception ex) {
 			if (reason instanceof IOException) {
-				this.logger.log(Level.FINEST, "Unable to open fallback handler", ex);
+				log(false, "Unable to open fallback handler", ex);
 				throw (IOException) reason;
 			}
-			this.logger.log(Level.WARNING, "Unable to open fallback handler", ex);
+			log(true, "Unable to open fallback handler", ex);
 			if (reason instanceof RuntimeException) {
 				throw (RuntimeException) reason;
 			}
 			throw new IllegalStateException(reason);
+		}
+	}
+
+	private void log(boolean warning, String message, Exception cause) {
+		try {
+			Logger.getLogger(getClass().getName())
+					.log((warning ? Level.WARNING : Level.FINEST), message, cause);
+		}
+		catch (Exception ex) {
+			if (warning) {
+				System.err.println("WARNING: " + message);
+			}
 		}
 	}
 
