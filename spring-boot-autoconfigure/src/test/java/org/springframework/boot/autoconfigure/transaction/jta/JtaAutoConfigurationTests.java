@@ -44,7 +44,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurationTests.CustomNarayanaRecoveryManagerConfiguration.CustomNarayanaRecoveryManagerBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
@@ -357,14 +356,14 @@ public class JtaAutoConfigurationTests {
 			return new CustomNarayanaRecoveryManagerBean(recoveryManagerService);
 		}
 
-		static final class CustomNarayanaRecoveryManagerBean
-				extends NarayanaRecoveryManagerBean {
+	}
 
-			private CustomNarayanaRecoveryManagerBean(
-					RecoveryManagerService recoveryManagerService) {
-				super(recoveryManagerService);
-			}
+	static final class CustomNarayanaRecoveryManagerBean
+			extends NarayanaRecoveryManagerBean {
 
+		private CustomNarayanaRecoveryManagerBean(
+				RecoveryManagerService recoveryManagerService) {
+			super(recoveryManagerService);
 		}
 
 	}
