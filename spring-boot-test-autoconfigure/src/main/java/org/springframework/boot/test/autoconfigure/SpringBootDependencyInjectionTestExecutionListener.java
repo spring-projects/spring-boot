@@ -44,11 +44,15 @@ public class SpringBootDependencyInjectionTestExecutionListener
 			super.prepareTestInstance(testContext);
 		}
 		catch (Exception ex) {
-			ApplicationContext context = testContext.getApplicationContext();
-			if (context instanceof ConfigurableApplicationContext) {
-				ConditionEvaluationReport report = ConditionEvaluationReport
-						.get(((ConfigurableApplicationContext) context).getBeanFactory());
-				System.err.println(new ConditionEvaluationReportMessage(report));
+			try {
+				ApplicationContext context = testContext.getApplicationContext();
+				if (context instanceof ConfigurableApplicationContext) {
+					ConditionEvaluationReport report = ConditionEvaluationReport
+							.get(((ConfigurableApplicationContext) context).getBeanFactory());
+					System.err.println(new ConditionEvaluationReportMessage(report));
+				}
+			}
+			catch (Exception ignore) {
 			}
 			throw ex;
 		}
