@@ -43,6 +43,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurationTests.CustomNarayanaRecoveryManagerConfiguration.CustomNarayanaRecoveryManagerBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
@@ -54,6 +55,7 @@ import org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean;
 import org.springframework.boot.jta.bitronix.PoolingDataSourceBean;
 import org.springframework.boot.jta.narayana.NarayanaBeanFactoryPostProcessor;
 import org.springframework.boot.jta.narayana.NarayanaConfigurationBean;
+import org.springframework.boot.jta.narayana.NarayanaRecoveryManagerBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -284,6 +286,16 @@ public class JtaAutoConfigurationTests {
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
+	@Test
+	public void narayanaRecoveryManagerBeanCanBeCustomized() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomNarayanaRecoveryManagerConfiguration.class,
+				JtaProperties.class, NarayanaJtaConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(NarayanaRecoveryManagerBean.class))
+				.isInstanceOf(CustomNarayanaRecoveryManagerBean.class);
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(JtaProperties.class)
 	public static class JtaPropertiesConfiguration {
@@ -322,6 +334,27 @@ public class JtaAutoConfigurationTests {
 		public DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
+		}
+
+	}
+
+	@Configuration
+	public static class CustomNarayanaRecoveryManagerConfiguration {
+
+		@Bean
+		public NarayanaRecoveryManagerBean customRecoveryManagerBean(
+				RecoveryManagerService recoveryManagerService) {
+			return new CustomNarayanaRecoveryManagerBean(recoveryManagerService);
+		}
+
+		static final class CustomNarayanaRecoveryManagerBean
+				extends NarayanaRecoveryManagerBean {
+
+			private CustomNarayanaRecoveryManagerBean(
+					RecoveryManagerService recoveryManagerService) {
+				super(recoveryManagerService);
+			}
+
 		}
 
 	}
