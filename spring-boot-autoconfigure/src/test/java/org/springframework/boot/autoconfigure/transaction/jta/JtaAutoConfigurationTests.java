@@ -31,6 +31,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
+import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
@@ -51,6 +52,8 @@ import org.springframework.boot.jta.atomikos.AtomikosProperties;
 import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
 import org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean;
 import org.springframework.boot.jta.bitronix.PoolingDataSourceBean;
+import org.springframework.boot.jta.narayana.NarayanaBeanFactoryPostProcessor;
+import org.springframework.boot.jta.narayana.NarayanaConfigurationBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -134,6 +137,20 @@ public class JtaAutoConfigurationTests {
 		this.context.getBean(XAConnectionFactoryWrapper.class);
 		this.context.getBean(BitronixDependentBeanFactoryPostProcessor.class);
 		this.context.getBean(JtaTransactionManager.class);
+	}
+
+	@Test
+	public void narayanaSanityCheck() throws Exception {
+		this.context = new AnnotationConfigApplicationContext(JtaProperties.class,
+				NarayanaJtaConfiguration.class);
+		this.context.getBean(NarayanaConfigurationBean.class);
+		this.context.getBean(UserTransaction.class);
+		this.context.getBean(TransactionManager.class);
+		this.context.getBean(XADataSourceWrapper.class);
+		this.context.getBean(XAConnectionFactoryWrapper.class);
+		this.context.getBean(NarayanaBeanFactoryPostProcessor.class);
+		this.context.getBean(JtaTransactionManager.class);
+		this.context.getBean(RecoveryManagerService.class);
 	}
 
 	@Test
