@@ -421,13 +421,15 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void unboundElementsFromSystemEnvironmentShouldNotThrowException() throws Exception {
+	public void unboundElementsFromSystemEnvironmentShouldNotThrowException()
+			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		ConfigurableEnvironment env = this.context.getEnvironment();
 		MutablePropertySources propertySources = env.getPropertySources();
 		propertySources.addFirst(new MapPropertySource("test",
 				Collections.singletonMap("com.example.foo", 5)));
-		propertySources.addLast(new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+		propertySources.addLast(new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("COM_EXAMPLE_OTHER", "10")));
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
