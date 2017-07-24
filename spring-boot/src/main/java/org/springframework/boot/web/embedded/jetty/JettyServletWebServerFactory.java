@@ -18,8 +18,11 @@ package org.springframework.boot.web.embedded.jetty;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -389,12 +392,14 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private void configureDocumentRoot(WebAppContext handler) {
 		File root = getValidDocumentRoot();
-		root = (root != null ? root : createTempDir("jetty-docbase"));
+		File docBase = (root != null ? root : createTempDir("jetty-docbase"));
 		try {
 			List<Resource> resources = new ArrayList<>();
+			Resource rootResource = docBase.isDirectory()
+					? Resource.newResource(docBase.getCanonicalFile())
+					: JarResource.newJarResource(Resource.newResource(docBase));
 			resources.add(
-					root.isDirectory() ? Resource.newResource(root.getCanonicalFile())
-							: JarResource.newJarResource(Resource.newResource(root)));
+					root == null ? rootResource : new LoaderHidingResource(rootResource));
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				// Jetty 9.2 and earlier do not support nested jars. See
@@ -715,6 +720,95 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				response.setHeader(SERVER_HEADER, this.value);
 			}
 			super.handle(target, baseRequest, request, response);
+		}
+
+	}
+
+	private static final class LoaderHidingResource extends Resource {
+
+		private final Resource delegate;
+
+		private LoaderHidingResource(Resource delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Resource addPath(String path) throws IOException, MalformedURLException {
+			if (path.startsWith("/org/springframework/boot")) {
+				return null;
+			}
+			return this.delegate.addPath(path);
+		}
+
+		@Override
+		public boolean isContainedIn(Resource resource) throws MalformedURLException {
+			return this.delegate.isContainedIn(resource);
+		}
+
+		@Override
+		public void close() {
+			close();
+		}
+
+		@Override
+		public boolean exists() {
+			return this.delegate.exists();
+		}
+
+		@Override
+		public boolean isDirectory() {
+			return this.delegate.isDirectory();
+		}
+
+		@Override
+		public long lastModified() {
+			return this.delegate.lastModified();
+		}
+
+		@Override
+		public long length() {
+			return this.delegate.length();
+		}
+
+		@Override
+		@Deprecated
+		public URL getURL() {
+			return this.delegate.getURL();
+		}
+
+		@Override
+		public File getFile() throws IOException {
+			return this.delegate.getFile();
+		}
+
+		@Override
+		public String getName() {
+			return this.delegate.getName();
+		}
+
+		@Override
+		public InputStream getInputStream() throws IOException {
+			return this.delegate.getInputStream();
+		}
+
+		@Override
+		public ReadableByteChannel getReadableByteChannel() throws IOException {
+			return this.delegate.getReadableByteChannel();
+		}
+
+		@Override
+		public boolean delete() throws SecurityException {
+			return this.delegate.delete();
+		}
+
+		@Override
+		public boolean renameTo(Resource dest) throws SecurityException {
+			return this.delegate.renameTo(dest);
+		}
+
+		@Override
+		public String[] list() {
+			return this.delegate.list();
 		}
 
 	}
