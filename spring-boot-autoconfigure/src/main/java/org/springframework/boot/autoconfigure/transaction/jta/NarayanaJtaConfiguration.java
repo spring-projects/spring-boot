@@ -23,6 +23,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
+import org.jboss.narayana.jta.jms.TransactionHelper;
 import org.jboss.tm.XAResourceRecoveryRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -150,7 +151,7 @@ public class NarayanaJtaConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(Message.class)
+	@ConditionalOnClass({ Message.class, TransactionHelper.class })
 	static class NarayanaJtaJmsConfiguration {
 
 		@Bean
