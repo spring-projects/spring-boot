@@ -62,7 +62,7 @@ public class WebClientAutoConfiguration {
 			customizers = new ArrayList<>(customizers);
 			AnnotationAwareOrderComparator.sort(customizers);
 			customizers
-					.forEach(customizer -> customizer.customize(this.webClientBuilder));
+					.forEach((customizer) -> customizer.customize(this.webClientBuilder));
 		}
 	}
 

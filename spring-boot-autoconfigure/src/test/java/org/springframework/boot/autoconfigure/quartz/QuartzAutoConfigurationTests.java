@@ -331,7 +331,7 @@ public class QuartzAutoConfigurationTests {
 
 		@Bean
 		public SchedulerFactoryBeanCustomizer customizer() {
-			return schedulerFactoryBean -> schedulerFactoryBean
+			return (schedulerFactoryBean) -> schedulerFactoryBean
 					.setTaskExecutor(yetAnotherExecutor());
 		}
 
@@ -342,7 +342,7 @@ public class QuartzAutoConfigurationTests {
 
 		@Bean
 		public SchedulerFactoryBeanCustomizer customizer() {
-			return schedulerFactoryBean -> schedulerFactoryBean
+			return (schedulerFactoryBean) -> schedulerFactoryBean
 					.setSchedulerName("fooScheduler");
 		}
 

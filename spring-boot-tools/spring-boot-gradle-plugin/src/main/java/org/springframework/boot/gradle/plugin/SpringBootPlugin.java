@@ -19,10 +19,9 @@ package org.springframework.boot.gradle.plugin;
 import java.util.Arrays;
 import java.util.List;
 
+import net.bytebuddy.build.Plugin;
 import org.gradle.api.GradleException;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
@@ -96,19 +95,19 @@ public class SpringBootPlugin implements Plugin<Project> {
 				new DependencyManagementPluginAction(), new ApplicationPluginAction());
 		for (PluginApplicationAction action : actions) {
 			project.getPlugins().withType(action.getPluginClass(),
-					plugin -> action.execute(project));
+					(plugin) -> action.execute(project));
 		}
 	}
 
 	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
 		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
-		project.getConfigurations().all(configuration -> configuration.getIncoming()
-				.afterResolve(resolvableDependencies -> unresolvedDependenciesAnalyzer
+		project.getConfigurations().all((configuration) -> configuration.getIncoming()
+				.afterResolve((resolvableDependencies) -> unresolvedDependenciesAnalyzer
 						.analyze(configuration.getResolvedConfiguration()
 								.getLenientConfiguration()
 								.getUnresolvedModuleDependencies())));
 		project.getGradle().buildFinished(
-				buildResult -> unresolvedDependenciesAnalyzer.buildFinished(project));
+				(buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
 
 }

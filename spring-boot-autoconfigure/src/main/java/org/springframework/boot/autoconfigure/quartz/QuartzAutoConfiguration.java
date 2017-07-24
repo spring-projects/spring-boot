@@ -136,7 +136,7 @@ public class QuartzAutoConfiguration {
 		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(
 				QuartzProperties properties, DataSource dataSource,
 				ObjectProvider<PlatformTransactionManager> transactionManager) {
-			return schedulerFactoryBean -> {
+			return (schedulerFactoryBean) -> {
 				if (properties.getJobStoreType() == JobStoreType.JDBC) {
 					schedulerFactoryBean.setDataSource(dataSource);
 					PlatformTransactionManager txManager = transactionManager

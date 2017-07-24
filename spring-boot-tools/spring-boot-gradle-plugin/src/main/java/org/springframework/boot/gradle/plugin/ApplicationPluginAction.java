@@ -23,7 +23,6 @@ import java.io.StringWriter;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
@@ -59,7 +58,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		((TemplateBasedScriptGenerator) bootStartScripts.getWindowsStartScriptGenerator())
 				.setTemplate(project.getResources().getText()
 						.fromString(loadResource("/windowsStartScript.txt")));
-		project.getConfigurations().all(configuration -> {
+		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
 				distribution.getContents()
 						.with(project.copySpec().into("lib")

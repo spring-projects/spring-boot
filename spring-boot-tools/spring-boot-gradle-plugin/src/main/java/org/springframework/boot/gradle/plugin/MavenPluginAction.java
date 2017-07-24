@@ -16,8 +16,6 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import org.gradle.api.Action;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.maven.MavenResolver;
 import org.gradle.api.plugins.MavenPlugin;
@@ -43,16 +41,16 @@ final class MavenPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
-		project.getTasks().withType(Upload.class, upload -> {
+		project.getTasks().withType(Upload.class, (upload) -> {
 			if (this.uploadTaskName.equals(upload.getName())) {
-				project.afterEvaluate(evaluated -> clearConfigurationMappings(upload));
+				project.afterEvaluate((evaluated) -> clearConfigurationMappings(upload));
 			}
 		});
 	}
 
 	private void clearConfigurationMappings(Upload upload) {
 		upload.getRepositories().withType(MavenResolver.class,
-				resolver -> resolver.getPom().getScopeMappings().getMappings().clear());
+				(resolver) -> resolver.getPom().getScopeMappings().getMappings().clear());
 	}
 
 }

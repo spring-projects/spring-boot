@@ -19,16 +19,17 @@ package org.springframework.boot.gradle.dsl;
 import java.io.File;
 import java.util.concurrent.Callable;
 
-import org.gradle.api.Action;
+import javax.swing.Action;
+
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfoProperties;
+import org.springframework.boot.loader.tools.Layouts.Jar;
 
 /**
  * Entry point to Spring Boot's Gradle DSL.
@@ -78,10 +79,10 @@ public class SpringBootExtension {
 				BuildInfo.class);
 		bootBuildInfo.setGroup(BasePlugin.BUILD_GROUP);
 		bootBuildInfo.setDescription("Generates a META-INF/build-info.properties file.");
-		this.project.getPlugins().withType(JavaPlugin.class, plugin -> {
+		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
 			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
 					.dependsOn(bootBuildInfo);
-			this.project.afterEvaluate(evaluated -> {
+			this.project.afterEvaluate((evaluated) -> {
 				BuildInfoProperties properties = bootBuildInfo.getProperties();
 				if (properties.getArtifact() == null) {
 					properties.setArtifact(determineArtifactBaseName());

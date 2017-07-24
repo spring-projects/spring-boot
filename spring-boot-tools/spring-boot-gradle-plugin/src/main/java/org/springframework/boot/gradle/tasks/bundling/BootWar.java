@@ -20,15 +20,17 @@ import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
-import org.gradle.api.Action;
+import javax.swing.Action;
+import javax.swing.text.DefaultEditorKit.CopyAction;
+
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
-import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.bundling.War;
+
+import org.springframework.boot.loader.tools.Layouts.War;
 
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.
@@ -50,7 +52,7 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public BootWar() {
 		getWebInf().into("lib-provided",
-				copySpec -> copySpec
+				(copySpec) -> copySpec
 						.from((Callable<Iterable<File>>) () -> this.providedClasspath == null
 								? Collections.emptyList() : this.providedClasspath));
 	}

@@ -109,7 +109,7 @@ public class NettyWebServer implements WebServer {
 			this.nettyContext.shutdown();
 			// temporary fix for gh-9146
 			this.nettyContext.getContext().onClose()
-					.doOnSuccess(aVoid -> HttpResources.reset()).block();
+					.doOnSuccess((o) -> HttpResources.reset()).block();
 			this.nettyContext = null;
 		}
 	}

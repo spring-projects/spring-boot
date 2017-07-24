@@ -51,7 +51,7 @@ public class AutoConfigurations extends Configurations implements Ordered {
 				.collect(Collectors.toCollection(ArrayList::new));
 		List<String> sorted = SORTER.getInPriorityOrder(names);
 		return sorted.stream()
-				.map(className -> ClassUtils.resolveClassName(className, null))
+				.map((className) -> ClassUtils.resolveClassName(className, null))
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 

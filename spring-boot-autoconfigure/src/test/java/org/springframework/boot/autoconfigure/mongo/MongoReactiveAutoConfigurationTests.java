@@ -157,7 +157,7 @@ public class MongoReactiveAutoConfigurationTests {
 
 		@Bean
 		public MongoClientSettingsBuilderCustomizer customizer() {
-			return clientSettingsBuilder -> clientSettingsBuilder
+			return (clientSettingsBuilder) -> clientSettingsBuilder
 					.applicationName("overridden-name");
 		}
 

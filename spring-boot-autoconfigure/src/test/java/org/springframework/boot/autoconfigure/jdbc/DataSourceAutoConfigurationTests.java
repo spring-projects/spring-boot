@@ -66,8 +66,7 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testDefaultDataSourceExists() throws Exception {
-		this.context
-				.run((loaded) -> assertThat(loaded).hasSingleBean(DataSource.class));
+		this.context.run((loaded) -> assertThat(loaded).hasSingleBean(DataSource.class));
 	}
 
 	@Test
@@ -110,7 +109,7 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void hikariValidatesConnectionByDefault() throws Exception {
 		assertDataSource(HikariDataSource.class,
-				Collections.singletonList("org.apache.tomcat"), dataSource ->
+				Collections.singletonList("org.apache.tomcat"), (dataSource) ->
 				// Use Connection#isValid()
 				assertThat(dataSource.getConnectionTestQuery()).isNull());
 	}

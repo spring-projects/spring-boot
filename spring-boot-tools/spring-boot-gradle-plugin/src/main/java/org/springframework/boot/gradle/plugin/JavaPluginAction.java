@@ -19,8 +19,6 @@ package org.springframework.boot.gradle.plugin;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
-import org.gradle.api.Action;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
@@ -113,8 +111,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureUtf8Encoding(Project project) {
-		project.afterEvaluate(
-				evaluated -> evaluated.getTasks().withType(JavaCompile.class, compile -> {
+		project.afterEvaluate(evaluated -> evaluated.getTasks()
+				.withType(JavaCompile.class, (compile) -> {
 					if (compile.getOptions().getEncoding() == null) {
 						compile.getOptions().setEncoding("UTF-8");
 					}

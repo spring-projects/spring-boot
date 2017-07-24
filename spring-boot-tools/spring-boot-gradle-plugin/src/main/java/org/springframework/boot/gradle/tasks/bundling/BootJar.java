@@ -20,14 +20,16 @@ import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
-import org.gradle.api.Action;
+import javax.swing.Action;
+import javax.swing.text.DefaultEditorKit.CopyAction;
+
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
-import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
-import org.gradle.api.tasks.bundling.Jar;
+
+import org.springframework.boot.loader.tools.Layouts.Jar;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -55,7 +57,7 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
-		return copySpec -> copySpec
+		return (copySpec) -> copySpec
 				.from((Callable<Iterable<File>>) () -> this.classpath == null
 						? Collections.emptyList() : this.classpath.filter(filter));
 

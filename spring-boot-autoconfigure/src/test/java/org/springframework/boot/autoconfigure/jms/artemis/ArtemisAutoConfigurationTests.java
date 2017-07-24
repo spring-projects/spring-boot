@@ -277,7 +277,7 @@ public class ArtemisAutoConfigurationTests {
 									"spring.artemis.embedded.serverId=93",
 									// Do not start a specific one
 									"spring.artemis.embedded.enabled=false")
-							.run(secondContext -> {
+							.run((secondContext) -> {
 						DestinationChecker firstChecker = new DestinationChecker(first);
 						firstChecker.checkQueue("Queue1", true);
 						DestinationChecker secondChecker = new DestinationChecker(

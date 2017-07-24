@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
 public abstract class Configurations {
 
 	private static final Comparator<Object> COMPARATOR = OrderComparator.INSTANCE
-			.thenComparing(o -> o.getClass().getName());
+			.thenComparing((other) -> other.getClass().getName());
 
 	private Set<Class<?>> classes;
 
@@ -117,7 +117,7 @@ public abstract class Configurations {
 		List<Configurations> orderedConfigurations = new ArrayList<>(configurations);
 		orderedConfigurations.sort(COMPARATOR);
 		List<Configurations> collated = collate(orderedConfigurations);
-		return collated.stream().flatMap(c -> c.getClasses().stream())
+		return collated.stream().flatMap((c) -> c.getClasses().stream())
 				.collect(Collectors.toCollection(LinkedHashSet::new))
 				.toArray(new Class<?>[0]);
 	}

@@ -225,7 +225,7 @@ public class ActiveMQAutoConfigurationTests {
 
 		@Bean
 		public ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
-			return factory -> {
+			return (factory) -> {
 				factory.setBrokerURL(
 						"vm://localhost?useJmx=false&broker.persistent=false");
 				factory.setUserName("foobar");

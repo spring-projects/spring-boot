@@ -112,9 +112,10 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.other", "baz");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		NoUnboundElementsBindHandler handler = new NoUnboundElementsBindHandler(BindHandler.DEFAULT, (configurationPropertySource -> false));
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				handler).get();
+		NoUnboundElementsBindHandler handler = new NoUnboundElementsBindHandler(
+				BindHandler.DEFAULT, ((configurationPropertySource) -> false));
+		Example bound = this.binder.bind("example", Bindable.of(Example.class), handler)
+				.get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 

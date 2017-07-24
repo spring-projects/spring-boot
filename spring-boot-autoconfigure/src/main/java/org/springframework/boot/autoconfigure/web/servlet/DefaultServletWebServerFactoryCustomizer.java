@@ -646,7 +646,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		private static void customizeAccessLog(JettyServletWebServerFactory factory,
 				final ServerProperties.Jetty.Accesslog properties) {
-			factory.addServerCustomizers(server -> {
+			factory.addServerCustomizers((server) -> {
 				NCSARequestLog log = new NCSARequestLog();
 				if (properties.getFilename() != null) {
 					log.setFilename(properties.getFilename());

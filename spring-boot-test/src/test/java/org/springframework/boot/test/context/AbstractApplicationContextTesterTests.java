@@ -51,7 +51,7 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
-		get().withSystemProperties(key + "=value").run(loaded -> {
+		get().withSystemProperties(key + "=value").run((loaded) -> {
 			assertThat(System.getProperties()).containsEntry(key, "value");
 		});
 		assertThat(System.getProperties().containsKey(key)).isFalse();
@@ -63,7 +63,7 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		get().withSystemProperties(key + "=value")
-				.withUserConfiguration(FailingConfig.class).run(loaded -> {
+				.withUserConfiguration(FailingConfig.class).run((loaded) -> {
 					assertThat(loaded).hasFailed();
 				});
 		assertThat(System.getProperties().containsKey(key)).isFalse();
@@ -76,7 +76,7 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			get().withSystemProperties(key + "=newValue").run(loaded -> {
+			get().withSystemProperties(key + "=newValue").run((loaded) -> {
 				assertThat(System.getProperties()).containsEntry(key, "newValue");
 			});
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
@@ -93,7 +93,7 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			get().withSystemProperty(key, null).run(loaded -> {
+			get().withSystemProperty(key, null).run((loaded) -> {
 				assertThat(System.getProperties()).doesNotContainKey(key);
 			});
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
@@ -106,7 +106,7 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 	@Test
 	public void runWithMultiplePropertyValuesShouldAllAllValues() throws Exception {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.bar=2")
-				.run(loaded -> {
+				.run((loaded) -> {
 					Environment environment = loaded.getEnvironment();
 					assertThat(environment.getProperty("test.foo")).isEqualTo("1");
 					assertThat(environment.getProperty("test.bar")).isEqualTo("2");
@@ -117,7 +117,7 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 	public void runWithPropertyValuesWhenHasExistingShouldReplaceValue()
 			throws Exception {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.foo=2")
-				.run(loaded -> {
+				.run((loaded) -> {
 					Environment environment = loaded.getEnvironment();
 					assertThat(environment.getProperty("test.foo")).isEqualTo("2");
 				});
