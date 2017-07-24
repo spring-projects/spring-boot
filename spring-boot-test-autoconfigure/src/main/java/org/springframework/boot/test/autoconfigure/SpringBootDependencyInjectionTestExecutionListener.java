@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,22 @@ public class SpringBootDependencyInjectionTestExecutionListener
 			super.prepareTestInstance(testContext);
 		}
 		catch (Exception ex) {
+			outputConditionEvaluationReport(testContext);
+			throw ex;
+		}
+	}
+
+	private void outputConditionEvaluationReport(TestContext testContext) {
+		try {
 			ApplicationContext context = testContext.getApplicationContext();
 			if (context instanceof ConfigurableApplicationContext) {
 				ConditionEvaluationReport report = ConditionEvaluationReport
 						.get(((ConfigurableApplicationContext) context).getBeanFactory());
 				System.err.println(new ConditionEvaluationReportMessage(report));
 			}
-			throw ex;
+		}
+		catch (Exception ex) {
+			// Allow original failure to be reported
 		}
 	}
 
