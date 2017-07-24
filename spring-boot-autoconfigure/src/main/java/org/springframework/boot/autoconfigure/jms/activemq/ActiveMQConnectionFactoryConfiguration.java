@@ -49,8 +49,8 @@ class ActiveMQConnectionFactoryConfiguration {
 	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
 		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.getIfAvailable()).createConnectionFactory(
-						ActiveMQConnectionFactory.class);
+				factoryCustomizers.getIfAvailable())
+						.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 	@ConditionalOnClass(PooledConnectionFactory.class)
@@ -67,21 +67,21 @@ class ActiveMQConnectionFactoryConfiguration {
 									ActiveMQConnectionFactory.class));
 			ActiveMQProperties.Pool pool = properties.getPool();
 			pooledConnectionFactory.setBlockIfSessionPoolIsFull(pool.isBlockIfFull());
-			pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
-					pool.getBlockIfFullTimeout());
-			pooledConnectionFactory.setCreateConnectionOnStartup(
-					pool.isCreateConnectionOnStartup());
+			pooledConnectionFactory
+					.setBlockIfSessionPoolIsFullTimeout(pool.getBlockIfFullTimeout());
+			pooledConnectionFactory
+					.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
 			pooledConnectionFactory.setExpiryTimeout(pool.getExpiryTimeout());
 			pooledConnectionFactory.setIdleTimeout(pool.getIdleTimeout());
 			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
 			pooledConnectionFactory.setMaximumActiveSessionPerConnection(
 					pool.getMaximumActiveSessionPerConnection());
-			pooledConnectionFactory.setReconnectOnException(
-					pool.isReconnectOnException());
+			pooledConnectionFactory
+					.setReconnectOnException(pool.isReconnectOnException());
 			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
 					pool.getTimeBetweenExpirationCheck());
-			pooledConnectionFactory.setUseAnonymousProducers(
-					pool.isUseAnonymousProducers());
+			pooledConnectionFactory
+					.setUseAnonymousProducers(pool.isUseAnonymousProducers());
 			return pooledConnectionFactory;
 		}
 

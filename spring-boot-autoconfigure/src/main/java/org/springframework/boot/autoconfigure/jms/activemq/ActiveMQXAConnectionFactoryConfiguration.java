@@ -54,7 +54,7 @@ class ActiveMQXAConnectionFactoryConfiguration {
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
 				properties, factoryCustomizers.getIfAvailable())
-				.createConnectionFactory(ActiveMQXAConnectionFactory.class);
+						.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
 
@@ -64,8 +64,8 @@ class ActiveMQXAConnectionFactoryConfiguration {
 			ActiveMQProperties properties,
 			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
 		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.getIfAvailable()).createConnectionFactory(
-						ActiveMQConnectionFactory.class);
+				factoryCustomizers.getIfAvailable())
+						.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 }

@@ -40,37 +40,38 @@ public class ActiveMQPropertiesTests {
 
 	@Test
 	public void getBrokerUrlIsInMemoryByDefault() {
-		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo(
-				DEFAULT_EMBEDDED_BROKER_URL);
+		assertThat(createFactory(this.properties).determineBrokerUrl())
+				.isEqualTo(DEFAULT_EMBEDDED_BROKER_URL);
 	}
 
 	@Test
 	public void getBrokerUrlUseExplicitBrokerUrl() {
 		this.properties.setBrokerUrl("vm://foo-bar");
-		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo(
-				"vm://foo-bar");
+		assertThat(createFactory(this.properties).determineBrokerUrl())
+				.isEqualTo("vm://foo-bar");
 	}
 
 	@Test
 	public void getBrokerUrlWithInMemorySetToFalse() {
 		this.properties.setInMemory(false);
-		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo(
-				DEFAULT_NETWORK_BROKER_URL);
+		assertThat(createFactory(this.properties).determineBrokerUrl())
+				.isEqualTo(DEFAULT_NETWORK_BROKER_URL);
 	}
 
 	@Test
 	public void getExplicitBrokerUrlAlwaysWins() {
 		this.properties.setBrokerUrl("vm://foo-bar");
 		this.properties.setInMemory(false);
-		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo(
-				"vm://foo-bar");
+		assertThat(createFactory(this.properties).determineBrokerUrl())
+				.isEqualTo("vm://foo-bar");
 	}
 
 	@Test
 	public void setTrustAllPackages() {
 		this.properties.getPackages().setTrustAll(true);
-		assertThat(createFactory(this.properties).createConnectionFactory(
-				ActiveMQConnectionFactory.class).isTrustAllPackages()).isEqualTo(true);
+		assertThat(createFactory(this.properties)
+				.createConnectionFactory(ActiveMQConnectionFactory.class)
+				.isTrustAllPackages()).isEqualTo(true);
 	}
 
 	@Test
@@ -84,7 +85,8 @@ public class ActiveMQPropertiesTests {
 		assertThat(factory.getTrustedPackages().get(0)).isEqualTo("trusted.package");
 	}
 
-	private ActiveMQConnectionFactoryFactory createFactory(ActiveMQProperties properties) {
+	private ActiveMQConnectionFactoryFactory createFactory(
+			ActiveMQProperties properties) {
 		return new ActiveMQConnectionFactoryFactory(properties,
 				Collections.<ActiveMQConnectionFactoryCustomizer>emptyList());
 	}
