@@ -116,6 +116,27 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 						DispatcherType.ERROR, DispatcherType.REQUEST);
 	}
 
+	@Test
+	public void filterOrderCanBeCustomized() {
+		load("spring.session.store-type=hash-map",
+				"spring.session.servlet.filter-order=123");
+		FilterRegistrationBean<?> registration = this.context
+				.getBean(FilterRegistrationBean.class);
+		assertThat(registration.getOrder()).isEqualTo(123);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void filterDispatcherTypesCanBeCustomized() {
+		load("spring.session.store-type=hash-map",
+				"spring.session.servlet.filter-dispatcher-types=error, request");
+		FilterRegistrationBean<?> registration = this.context
+				.getBean(FilterRegistrationBean.class);
+		assertThat((EnumSet<DispatcherType>) ReflectionTestUtils.getField(registration,
+				"dispatcherTypes")).containsOnly(DispatcherType.ERROR,
+						DispatcherType.REQUEST);
+	}
+
 	@Configuration
 	static class SessionRepositoryConfiguration {
 

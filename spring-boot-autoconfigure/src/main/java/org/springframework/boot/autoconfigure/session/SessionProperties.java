@@ -16,9 +16,14 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.session.web.http.SessionRepositoryFilter;
 
 /**
  * Configuration properties for Spring Session.
@@ -37,6 +42,8 @@ public class SessionProperties {
 	private StoreType storeType;
 
 	private Integer timeout;
+
+	private Servlet servlet = new Servlet();
 
 	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
 		ServerProperties properties = serverProperties.getIfUnique();
@@ -58,6 +65,48 @@ public class SessionProperties {
 	 */
 	public Integer getTimeout() {
 		return this.timeout;
+	}
+
+	public Servlet getServlet() {
+		return this.servlet;
+	}
+
+	public void setServlet(Servlet servlet) {
+		this.servlet = servlet;
+	}
+
+	/**
+	 * Servlet-related properties.
+	 */
+	public static class Servlet {
+
+		/**
+		 * Session repository filter order.
+		 */
+		private int filterOrder = SessionRepositoryFilter.DEFAULT_ORDER;
+
+		/**
+		 * Session repository filter dispatcher types.
+		 */
+		private Set<String> filterDispatcherTypes = new HashSet<>(
+				Arrays.asList("ASYNC", "ERROR", "REQUEST"));
+
+		public int getFilterOrder() {
+			return this.filterOrder;
+		}
+
+		public void setFilterOrder(int filterOrder) {
+			this.filterOrder = filterOrder;
+		}
+
+		public Set<String> getFilterDispatcherTypes() {
+			return this.filterDispatcherTypes;
+		}
+
+		public void setFilterDispatcherTypes(Set<String> filterDispatcherTypes) {
+			this.filterDispatcherTypes = filterDispatcherTypes;
+		}
+
 	}
 
 }

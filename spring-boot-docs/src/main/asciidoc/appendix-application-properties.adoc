@@ -193,6 +193,8 @@ content into your application; rather pick only the properties that you need.
 	server.session.cookie.path= # Path of the session cookie.
 	server.session.cookie.secure= # "Secure" flag for the session cookie.
 	server.session.persistent=false # Persist session data between restarts.
+	server.session.servlet.filter-order=-2147483598 # Session repository filter order.
+	server.session.servlet.filter-dispatcher-types=ASYNC, ERROR, REQUEST # Session repository filter dispatcher types.
 	server.session.store-dir= # Directory used to store session data.
 	server.session.timeout= # Session timeout in seconds.
 	server.session.tracking-modes= # Session tracking modes (one or more of the following: "cookie", "url", "ssl").
