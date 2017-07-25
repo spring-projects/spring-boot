@@ -32,9 +32,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -70,50 +67,31 @@ public abstract class MockServletWebServer {
 		try {
 			this.servletContext = mock(ServletContext.class);
 			given(this.servletContext.addServlet(anyString(), (Servlet) any()))
-					.willAnswer(new Answer<ServletRegistration.Dynamic>() {
-						@Override
-						public ServletRegistration.Dynamic answer(
-								InvocationOnMock invocation) throws Throwable {
-							RegisteredServlet registeredServlet = new RegisteredServlet(
-									(Servlet) invocation.getArguments()[1]);
-							MockServletWebServer.this.registeredServlets
-									.add(registeredServlet);
-							return registeredServlet.getRegistration();
-						}
+					.willAnswer((invocation) -> {
+						RegisteredServlet registeredServlet = new RegisteredServlet(
+								(Servlet) invocation.getArguments()[1]);
+						MockServletWebServer.this.registeredServlets
+								.add(registeredServlet);
+						return registeredServlet.getRegistration();
 					});
 			given(this.servletContext.addFilter(anyString(), (Filter) any()))
-					.willAnswer(new Answer<FilterRegistration.Dynamic>() {
-						@Override
-						public FilterRegistration.Dynamic answer(
-								InvocationOnMock invocation) throws Throwable {
-							RegisteredFilter registeredFilter = new RegisteredFilter(
-									(Filter) invocation.getArguments()[1]);
-							MockServletWebServer.this.registeredFilters
-									.add(registeredFilter);
-							return registeredFilter.getRegistration();
-						}
+					.willAnswer((invocation) -> {
+						RegisteredFilter registeredFilter = new RegisteredFilter(
+								(Filter) invocation.getArguments()[1]);
+						MockServletWebServer.this.registeredFilters.add(registeredFilter);
+						return registeredFilter.getRegistration();
 					});
 			final Map<String, String> initParameters = new HashMap<>();
 			given(this.servletContext.setInitParameter(anyString(), anyString()))
-					.will(new Answer<Void>() {
-						@Override
-						public Void answer(InvocationOnMock invocation) throws Throwable {
-							initParameters.put(invocation.getArgument(0),
-									invocation.getArgument(1));
-							return null;
-						}
-
+					.will((invocation) -> {
+						initParameters.put(invocation.getArgument(0),
+								invocation.getArgument(1));
+						return null;
 					});
 			given(this.servletContext.getInitParameterNames())
 					.willReturn(Collections.enumeration(initParameters.keySet()));
-			given(this.servletContext.getInitParameter(anyString()))
-					.willAnswer(new Answer<String>() {
-						@Override
-						public String answer(InvocationOnMock invocation)
-								throws Throwable {
-							return initParameters.get(invocation.getArgument(0));
-						}
-					});
+			given(this.servletContext.getInitParameter(anyString())).willAnswer(
+					(invocation) -> initParameters.get(invocation.getArgument(0)));
 			given(this.servletContext.getAttributeNames())
 					.willReturn(MockServletWebServer.<String>emptyEnumeration());
 			given(this.servletContext.getNamedDispatcher("default"))

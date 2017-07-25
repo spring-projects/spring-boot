@@ -230,21 +230,16 @@ public class Repackager {
 		try (JarWriter writer = new JarWriter(destination, launchScript)) {
 			final List<Library> unpackLibraries = new ArrayList<>();
 			final List<Library> standardLibraries = new ArrayList<>();
-			libraries.doWithLibraries(new LibraryCallback() {
-
-				@Override
-				public void library(Library library) throws IOException {
-					File file = library.getFile();
-					if (isZip(file)) {
-						if (library.isUnpackRequired()) {
-							unpackLibraries.add(library);
-						}
-						else {
-							standardLibraries.add(library);
-						}
+			libraries.doWithLibraries((library) -> {
+				File file = library.getFile();
+				if (isZip(file)) {
+					if (library.isUnpackRequired()) {
+						unpackLibraries.add(library);
+					}
+					else {
+						standardLibraries.add(library);
 					}
 				}
-
 			});
 			repackage(sourceJar, writer, unpackLibraries, standardLibraries);
 		}

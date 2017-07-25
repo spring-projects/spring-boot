@@ -107,15 +107,12 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
 			Object attribute = getMBeanServer().getAttribute(objectName, attributeName);
 			return type.cast(attribute);
 		}
-		catch (MBeanException ex) {
+		catch (MBeanException | ReflectionException ex) {
 			throw new IllegalStateException(ex);
 		}
 		catch (AttributeNotFoundException ex) {
 			throw new IllegalStateException("Unexpected: MBean with name '" + objectName
 					+ "' " + "does not expose attribute with name " + attributeName, ex);
-		}
-		catch (ReflectionException ex) {
-			throw new IllegalStateException(ex);
 		}
 		catch (InstanceNotFoundException ex) {
 			logger.warn("Cache statistics are no longer available", ex);

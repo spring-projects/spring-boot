@@ -89,12 +89,7 @@ public class ShutdownParentEndpointTests {
 
 		@Bean
 		public ApplicationListener<ContextClosedEvent> listener() {
-			return new ApplicationListener<ContextClosedEvent>() {
-				@Override
-				public void onApplicationEvent(ContextClosedEvent event) {
-					Config.this.latch.countDown();
-				}
-			};
+			return (event) -> this.latch.countDown();
 
 		}
 

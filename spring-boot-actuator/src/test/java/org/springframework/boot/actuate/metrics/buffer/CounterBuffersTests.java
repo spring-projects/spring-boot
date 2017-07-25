@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.actuate.metrics.buffer;
-
-import java.util.function.Consumer;
 
 import org.junit.Test;
 
@@ -36,23 +34,15 @@ public class CounterBuffersTests {
 	@Test
 	public void inAndOut() {
 		this.buffers.increment("foo", 2);
-		this.buffers.doWith("foo", new Consumer<CounterBuffer>() {
-			@Override
-			public void accept(CounterBuffer buffer) {
-				CounterBuffersTests.this.value = buffer.getValue();
-			}
-		});
+		this.buffers.doWith("foo",
+				(buffer) -> CounterBuffersTests.this.value = buffer.getValue());
 		assertThat(this.value).isEqualTo(2);
 	}
 
 	@Test
 	public void getNonExistent() {
-		this.buffers.doWith("foo", new Consumer<CounterBuffer>() {
-			@Override
-			public void accept(CounterBuffer buffer) {
-				CounterBuffersTests.this.value = buffer.getValue();
-			}
-		});
+		this.buffers.doWith("foo",
+				(buffer) -> CounterBuffersTests.this.value = buffer.getValue());
 		assertThat(this.value).isEqualTo(0);
 	}
 

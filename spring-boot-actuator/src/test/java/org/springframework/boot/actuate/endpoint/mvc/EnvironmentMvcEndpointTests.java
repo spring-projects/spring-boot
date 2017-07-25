@@ -142,7 +142,7 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
 			throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
@@ -152,7 +152,7 @@ public class EnvironmentMvcEndpointTests {
 
 	@Test
 	public void nestedPathWithSensitivePlaceholderShouldSanitize() throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
@@ -165,7 +165,7 @@ public class EnvironmentMvcEndpointTests {
 	public void propertyWithTypeOtherThanStringShouldNotFail() throws Exception {
 		MutablePropertySources propertySources = ((ConfigurableEnvironment) this.context
 				.getEnvironment()).getPropertySources();
-		Map<String, Object> source = new HashMap<String, Object>();
+		Map<String, Object> source = new HashMap<>();
 		source.put("foo", Collections.singletonMap("bar", "baz"));
 		propertySources.addFirst(new MapPropertySource("test", source));
 		this.mvc.perform(get("/application/env/foo.*")).andExpect(status().isOk())

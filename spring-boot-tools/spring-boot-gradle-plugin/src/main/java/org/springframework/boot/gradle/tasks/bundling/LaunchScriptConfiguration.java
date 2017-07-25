@@ -34,7 +34,7 @@ public class LaunchScriptConfiguration implements Serializable {
 
 	private boolean included = false;
 
-	private final Map<String, String> properties = new HashMap<String, String>();
+	private final Map<String, String> properties = new HashMap<>();
 
 	private File script;
 

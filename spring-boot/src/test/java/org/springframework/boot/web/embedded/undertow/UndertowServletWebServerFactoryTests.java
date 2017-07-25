@@ -154,13 +154,8 @@ public class UndertowServletWebServerFactoryTests
 	public void defaultContextPath() throws Exception {
 		UndertowServletWebServerFactory factory = getFactory();
 		final AtomicReference<String> contextPath = new AtomicReference<>();
-		factory.addDeploymentInfoCustomizers(new UndertowDeploymentInfoCustomizer() {
-
-			@Override
-			public void customize(DeploymentInfo deploymentInfo) {
-				contextPath.set(deploymentInfo.getContextPath());
-			}
-		});
+		factory.addDeploymentInfoCustomizers(
+				(deploymentInfo) -> contextPath.set(deploymentInfo.getContextPath()));
 		this.webServer = factory.getWebServer();
 		assertThat(contextPath.get()).isEqualTo("/");
 	}
@@ -210,14 +205,8 @@ public class UndertowServletWebServerFactoryTests
 
 	@Override
 	protected void addConnector(final int port, AbstractServletWebServerFactory factory) {
-		((UndertowServletWebServerFactory) factory)
-				.addBuilderCustomizers(new UndertowBuilderCustomizer() {
-
-					@Override
-					public void customize(Builder builder) {
-						builder.addHttpListener(port, "0.0.0.0");
-					}
-				});
+		((UndertowServletWebServerFactory) factory).addBuilderCustomizers(
+				(builder) -> builder.addHttpListener(port, "0.0.0.0"));
 	}
 
 	@Test(expected = SSLHandshakeException.class)

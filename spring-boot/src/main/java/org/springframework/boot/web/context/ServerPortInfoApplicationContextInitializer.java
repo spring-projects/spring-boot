@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -54,15 +53,7 @@ public class ServerPortInfoApplicationContextInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addApplicationListener(
-				new ApplicationListener<WebServerInitializedEvent>() {
-
-					@Override
-					public void onApplicationEvent(WebServerInitializedEvent event) {
-						ServerPortInfoApplicationContextInitializer.this
-								.onApplicationEvent(event);
-					}
-
-				});
+				(WebServerInitializedEvent event) -> onApplicationEvent(event));
 	}
 
 	protected void onApplicationEvent(WebServerInitializedEvent event) {
@@ -88,7 +79,7 @@ public class ServerPortInfoApplicationContextInitializer
 		MutablePropertySources sources = environment.getPropertySources();
 		PropertySource<?> source = sources.get("server.ports");
 		if (source == null) {
-			source = new MapPropertySource("server.ports", new HashMap<String, Object>());
+			source = new MapPropertySource("server.ports", new HashMap<>());
 			sources.addFirst(source);
 		}
 		((Map<String, Object>) source.getSource()).put(propertyName, port);

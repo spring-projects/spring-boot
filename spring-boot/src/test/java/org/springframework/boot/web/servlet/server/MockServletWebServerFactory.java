@@ -67,7 +67,7 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 
 		public MockServletWebServer(ServletContextInitializer[] initializers, int port) {
 			super(Arrays.stream(initializers)
-					.map((i) -> (Initializer) (s) -> i.onStartup(s))
+					.map((initializer) -> (Initializer) initializer::onStartup)
 					.toArray(Initializer[]::new), port);
 		}
 

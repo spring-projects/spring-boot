@@ -50,7 +50,6 @@ import javax.servlet.ServletException;
 
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
-import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;
@@ -418,14 +417,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
-		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
-
-			@Override
-			public HttpHandler wrap(HttpHandler handler) {
-				return createAccessLogHandler(handler);
-			}
-
-		});
+		deploymentInfo.addInitialHandlerChainWrapper(this::createAccessLogHandler);
 	}
 
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
@@ -489,7 +481,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		File root = getValidDocumentRoot();
 		File docBase = getCanonicalDocumentRoot(root);
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
-		List<URL> resourceJarUrls = new ArrayList<URL>();
+		List<URL> resourceJarUrls = new ArrayList<>();
 		List<ResourceManager> resourceManagers = new ArrayList<ResourceManager>();
 		ResourceManager rootResourceManager = docBase.isDirectory()
 				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase);

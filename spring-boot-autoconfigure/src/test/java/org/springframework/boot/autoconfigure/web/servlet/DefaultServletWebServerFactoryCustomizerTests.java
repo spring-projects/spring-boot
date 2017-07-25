@@ -107,7 +107,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	@Test
 	public void tomcatAccessLogFileDateFormatByDefault() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.enabled", "true");
 		bindProperties(map);
 		this.customizer.customize(factory);
@@ -118,7 +118,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	@Test
 	public void tomcatAccessLogFileDateFormatCanBeRedefined() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.enabled", "true");
 		map.put("server.tomcat.accesslog.file-date-format", "yyyy-MM-dd.HH");
 		bindProperties(map);
@@ -397,7 +397,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 
 	@Test
 	public void customTomcatDisableMaxHttpPostSize() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.max-http-post-size", "-1");
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);

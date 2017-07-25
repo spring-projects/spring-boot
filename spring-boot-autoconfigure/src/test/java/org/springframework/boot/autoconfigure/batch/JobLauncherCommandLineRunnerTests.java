@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -35,9 +34,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
-import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -80,13 +77,8 @@ public class JobLauncherCommandLineRunnerTests {
 		PlatformTransactionManager transactionManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		this.steps = new StepBuilderFactory(jobRepository, transactionManager);
-		this.step = this.steps.get("step").tasklet(new Tasklet() {
-			@Override
-			public RepeatStatus execute(StepContribution contribution,
-					ChunkContext chunkContext) throws Exception {
-				return null;
-			}
-		}).build();
+		Tasklet tasklet = (contribution, chunkContext) -> null;
+		this.step = this.steps.get("step").tasklet(tasklet).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
 		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher,
@@ -115,13 +107,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecution() throws Exception {
 		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
-				}).build()).incrementer(new RunIdIncrementer()).build();
+				.start(this.steps.get("step").tasklet(throwingTasklet()).build())
+				.incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
@@ -130,13 +117,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecutionOnNonRestartableJob() throws Exception {
 		this.job = this.jobs.get("job").preventRestart()
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
-				}).build()).incrementer(new RunIdIncrementer()).build();
+				.start(this.steps.get("step").tasklet(throwingTasklet()).build())
+				.incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
 		// A failed job that is not restartable does not re-use the job params of
@@ -147,18 +129,19 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
 		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
-				}).build()).incrementer(new RunIdIncrementer()).build();
+				.start(this.steps.get("step").tasklet(throwingTasklet()).build())
+				.incrementer(new RunIdIncrementer()).build();
 		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
 				.addLong("foo", 2L, false).toJobParameters();
 		this.runner.execute(this.job, jobParameters);
 		this.runner.execute(this.job, jobParameters);
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
+	}
+
+	private Tasklet throwingTasklet() {
+		return (contribution, chunkContext) -> {
+			throw new RuntimeException("Planned");
+		};
 	}
 
 	@Configuration

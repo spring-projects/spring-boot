@@ -143,12 +143,7 @@ public class CassandraAutoConfigurationTests {
 
 		@Bean
 		public ClusterBuilderCustomizer customizer() {
-			return new ClusterBuilderCustomizer() {
-				@Override
-				public void customize(Cluster.Builder clusterBuilder) {
-					clusterBuilder.withClusterName("overridden-name");
-				}
-			};
+			return (clusterBuilder) -> clusterBuilder.withClusterName("overridden-name");
 		}
 
 	}

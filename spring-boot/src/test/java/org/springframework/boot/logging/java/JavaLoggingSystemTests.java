@@ -49,14 +49,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
-	private static final FileFilter SPRING_LOG_FILTER = new FileFilter() {
-
-		@Override
-		public boolean accept(File pathname) {
-			return pathname.getName().startsWith("spring.log");
-		}
-
-	};
+	private static final FileFilter SPRING_LOG_FILTER = (pathname) -> pathname.getName()
+			.startsWith("spring.log");
 
 	private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(
 			getClass().getClassLoader());

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
@@ -150,24 +149,17 @@ public class HeapdumpMvcEndpointTests {
 
 		@Override
 		protected HeapDumper createHeapDumper() {
-			return new HeapDumper() {
-
-				@Override
-				public void dumpHeap(File file, boolean live)
-						throws IOException, InterruptedException {
-					if (!TestHeapdumpMvcEndpoint.this.available) {
-						throw new HeapDumperUnavailableException("Not available", null);
-					}
-					if (TestHeapdumpMvcEndpoint.this.locked) {
-						throw new InterruptedException();
-					}
-					if (file.exists()) {
-						throw new IOException("File exists");
-					}
-					FileCopyUtils.copy(TestHeapdumpMvcEndpoint.this.heapDump.getBytes(),
-							file);
+			return (file, live) -> {
+				if (!TestHeapdumpMvcEndpoint.this.available) {
+					throw new HeapDumperUnavailableException("Not available", null);
 				}
-
+				if (TestHeapdumpMvcEndpoint.this.locked) {
+					throw new InterruptedException();
+				}
+				if (file.exists()) {
+					throw new IOException("File exists");
+				}
+				FileCopyUtils.copy(this.heapDump.getBytes(), file);
 			};
 		}
 

@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.metrics.rich;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository;
-import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
@@ -36,19 +35,14 @@ public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 	private final SimpleInMemoryRepository<RichGauge> repository = new SimpleInMemoryRepository<>();
 
 	@Override
-	public void increment(final Delta<?> delta) {
-		this.repository.update(delta.getName(), new Callback<RichGauge>() {
-
-			@Override
-			public RichGauge modify(RichGauge current) {
-				double value = ((Number) delta.getValue()).doubleValue();
-				if (current == null) {
-					return new RichGauge(delta.getName(), value);
-				}
-				current.set(current.getValue() + value);
-				return current;
+	public void increment(Delta<?> delta) {
+		this.repository.update(delta.getName(), (current) -> {
+			double value = ((Number) delta.getValue()).doubleValue();
+			if (current == null) {
+				return new RichGauge(delta.getName(), value);
 			}
-
+			current.set(current.getValue() + value);
+			return current;
 		});
 	}
 
@@ -56,17 +50,12 @@ public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 	public void set(Metric<?> metric) {
 		final String name = metric.getName();
 		final double value = metric.getValue().doubleValue();
-		this.repository.update(name, new Callback<RichGauge>() {
-
-			@Override
-			public RichGauge modify(RichGauge current) {
-				if (current == null) {
-					return new RichGauge(name, value);
-				}
-				current.set(value);
-				return current;
+		this.repository.update(name, (current) -> {
+			if (current == null) {
+				return new RichGauge(name, value);
 			}
-
+			current.set(value);
+			return current;
 		});
 	}
 

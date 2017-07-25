@@ -20,8 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.messaging.Message;
@@ -51,15 +49,10 @@ public class MessageChannelMetricWriterTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.channel.send(any(Message.class))).willAnswer(new Answer<Object>() {
-
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				MessageChannelMetricWriterTests.this.handler
-						.handleMessage(invocation.getArgument(0));
-				return true;
-			}
-
+		given(this.channel.send(any(Message.class))).willAnswer((invocation) -> {
+			MessageChannelMetricWriterTests.this.handler
+					.handleMessage(invocation.getArgument(0));
+			return true;
 		});
 		this.writer = new MessageChannelMetricWriter(this.channel);
 		this.handler = new MetricWriterMessageHandler(this.observer);

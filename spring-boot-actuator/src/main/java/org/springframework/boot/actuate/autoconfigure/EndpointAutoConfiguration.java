@@ -149,7 +149,7 @@ public class EndpointAutoConfiguration {
 		if (this.publicMetrics != null) {
 			publicMetrics.addAll(this.publicMetrics);
 		}
-		Collections.sort(publicMetrics, AnnotationAwareOrderComparator.INSTANCE);
+		publicMetrics.sort(AnnotationAwareOrderComparator.INSTANCE);
 		return new MetricsEndpoint(publicMetrics);
 	}
 

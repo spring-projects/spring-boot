@@ -128,32 +128,28 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	private void definePackage(final String className, final String packageName) {
 		try {
-			AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-				@Override
-				public Object run() throws ClassNotFoundException {
-					String packageEntryName = packageName.replace('.', '/') + "/";
-					String classEntryName = className.replace('.', '/') + ".class";
-					for (URL url : getURLs()) {
-						try {
-							URLConnection connection = url.openConnection();
-							if (connection instanceof JarURLConnection) {
-								JarFile jarFile = ((JarURLConnection) connection)
-										.getJarFile();
-								if (jarFile.getEntry(classEntryName) != null
-										&& jarFile.getEntry(packageEntryName) != null
-										&& jarFile.getManifest() != null) {
-									definePackage(packageName, jarFile.getManifest(),
-											url);
-									return null;
-								}
+			AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+				String packageEntryName = packageName.replace('.', '/') + "/";
+				String classEntryName = className.replace('.', '/') + ".class";
+				for (URL url : getURLs()) {
+					try {
+						URLConnection connection = url.openConnection();
+						if (connection instanceof JarURLConnection) {
+							JarFile jarFile = ((JarURLConnection) connection)
+									.getJarFile();
+							if (jarFile.getEntry(classEntryName) != null
+									&& jarFile.getEntry(packageEntryName) != null
+									&& jarFile.getManifest() != null) {
+								definePackage(packageName, jarFile.getManifest(), url);
+								return null;
 							}
 						}
-						catch (IOException ex) {
-							// Ignore
-						}
 					}
-					return null;
+					catch (IOException ex) {
+						// Ignore
+					}
 				}
+				return null;
 			}, AccessController.getContext());
 		}
 		catch (java.security.PrivilegedActionException ex) {

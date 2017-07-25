@@ -50,7 +50,6 @@ import org.springframework.security.config.annotation.authentication.configurers
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -407,14 +406,8 @@ public class SecurityAutoConfigurationTests {
 
 		@Bean
 		public AuthenticationManager myAuthenticationManager() {
-			this.authenticationManager = new AuthenticationManager() {
-
-				@Override
-				public Authentication authenticate(Authentication authentication)
-						throws AuthenticationException {
-					return new TestingAuthenticationToken("foo", "bar");
-				}
-			};
+			this.authenticationManager = (
+					authentication) -> new TestingAuthenticationToken("foo", "bar");
 			return this.authenticationManager;
 		}
 
@@ -446,14 +439,8 @@ public class SecurityAutoConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			this.authenticationManager = new AuthenticationManager() {
-				@Override
-				public Authentication authenticate(Authentication authentication)
-						throws AuthenticationException {
-					return WorkaroundSecurityCustomizer.this.builder.getOrBuild()
-							.authenticate(authentication);
-				}
-			};
+			this.authenticationManager = (authentication) -> this.builder.getOrBuild()
+					.authenticate(authentication);
 		}
 
 	}

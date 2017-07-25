@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -28,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
-import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -182,21 +180,16 @@ public class MetricsMvcEndpointTests {
 
 		@Bean
 		public MetricsEndpoint endpoint() {
-			return new MetricsEndpoint(new PublicMetrics() {
-
-				@Override
-				public Collection<Metric<?>> metrics() {
-					ArrayList<Metric<?>> metrics = new ArrayList<>();
-					metrics.add(new Metric<>("foo", 1));
-					metrics.add(new Metric<>("bar.png", 1));
-					metrics.add(new Metric<>("group1.a", 1));
-					metrics.add(new Metric<>("group1.b", 1));
-					metrics.add(new Metric<>("group2.a", 1));
-					metrics.add(new Metric<>("group2_a", 1));
-					metrics.add(new Metric<Integer>("baz", null));
-					return Collections.unmodifiableList(metrics);
-				}
-
+			return new MetricsEndpoint(() -> {
+				ArrayList<Metric<?>> metrics = new ArrayList<>();
+				metrics.add(new Metric<>("foo", 1));
+				metrics.add(new Metric<>("bar.png", 1));
+				metrics.add(new Metric<>("group1.a", 1));
+				metrics.add(new Metric<>("group1.b", 1));
+				metrics.add(new Metric<>("group2.a", 1));
+				metrics.add(new Metric<>("group2_a", 1));
+				metrics.add(new Metric<Integer>("baz", null));
+				return Collections.unmodifiableList(metrics);
 			});
 		}
 

@@ -24,10 +24,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.junit.Test;
 
@@ -93,30 +90,17 @@ public class WebRequestTraceFilterTests {
 		request.setPathInfo(url);
 		tmp.deleteOnExit();
 		request.setAuthType("authType");
-		Principal principal = new Principal() {
-
-			@Override
-			public String getName() {
-				return "principalTest";
-			}
-
-		};
+		Principal principal = () -> "principalTest";
 		request.setUserPrincipal(principal);
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
 		response.addHeader("Set-Cookie", "a=b");
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-				BufferedReader bufferedReader = request.getReader();
-				while (bufferedReader.readLine() != null) {
-					// read the contents as normal (forces cache to fill up)
-				}
-				response.getWriter().println("Goodbye, World!");
+		this.filter.doFilterInternal(request, response, (req, resp) -> {
+			BufferedReader bufferedReader = req.getReader();
+			while (bufferedReader.readLine() != null) {
+				// read the contents as normal (forces cache to fill up)
 			}
-
+			resp.getWriter().println("Goodbye, World!");
 		});
 		assertThat(this.repository.findAll()).hasSize(1);
 		Map<String, Object> trace = this.repository.findAll().iterator().next().getInfo();
@@ -146,11 +130,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-			}
+		this.filter.doFilterInternal(request, response, (req, resp) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -177,13 +157,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-			}
-
+		this.filter.doFilterInternal(request, response, (req, resp) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -199,13 +173,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilterInternal(request, response, new FilterChain() {
-
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response)
-					throws IOException, ServletException {
-			}
-
+		this.filter.doFilterInternal(request, response, (req, resp) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -279,14 +247,8 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		try {
-			this.filter.doFilterInternal(request, response, new FilterChain() {
-
-				@Override
-				public void doFilter(ServletRequest request, ServletResponse response)
-						throws IOException, ServletException {
-					throw new RuntimeException();
-				}
-
+			this.filter.doFilterInternal(request, response, (req, resp) -> {
+				throw new RuntimeException();
 			});
 			fail("Exception was swallowed");
 		}

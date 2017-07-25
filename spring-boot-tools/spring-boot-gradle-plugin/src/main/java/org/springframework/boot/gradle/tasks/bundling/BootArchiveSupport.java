@@ -46,7 +46,7 @@ class BootArchiveSupport {
 	private static final Set<String> DEFAULT_LAUNCHER_CLASSES;
 
 	static {
-		Set<String> defaultLauncherClasses = new HashSet<String>();
+		Set<String> defaultLauncherClasses = new HashSet<>();
 		defaultLauncherClasses.add("org.springframework.boot.loader.JarLauncher");
 		defaultLauncherClasses.add("org.springframework.boot.loader.PropertiesLauncher");
 		defaultLauncherClasses.add("org.springframework.boot.loader.WarLauncher");
@@ -121,7 +121,7 @@ class BootArchiveSupport {
 	}
 
 	private void configureExclusions() {
-		Set<String> excludes = new HashSet<String>();
+		Set<String> excludes = new HashSet<>();
 		if (this.excludeDevtools) {
 			excludes.add("**/spring-boot-devtools-*.jar");
 		}

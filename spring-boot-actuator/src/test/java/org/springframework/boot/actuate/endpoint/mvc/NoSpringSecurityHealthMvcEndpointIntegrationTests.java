@@ -36,7 +36,6 @@ import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -93,16 +92,10 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	private RequestPostProcessor getRequestPostProcessor() {
-		return new RequestPostProcessor() {
-
-			@Override
-			public MockHttpServletRequest postProcessRequest(
-					MockHttpServletRequest request) {
-				Principal principal = mock(Principal.class);
-				request.setUserPrincipal(principal);
-				return request;
-			}
-
+		return (request) -> {
+			Principal principal = mock(Principal.class);
+			request.setUserPrincipal(principal);
+			return request;
 		};
 	}
 
@@ -115,14 +108,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 
 		@Bean
 		public HealthIndicator testHealthIndicator() {
-			return new HealthIndicator() {
-
-				@Override
-				public Health health() {
-					return Health.up().withDetail("hello", "world").build();
-				}
-
-			};
+			return () -> Health.up().withDetail("hello", "world").build();
 		}
 
 	}

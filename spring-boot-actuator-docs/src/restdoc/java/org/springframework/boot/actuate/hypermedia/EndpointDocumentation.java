@@ -52,8 +52,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -161,32 +159,9 @@ public class EndpointDocumentation {
 
 	@Test
 	public void endpoints() throws Exception {
-		final File docs = new File("src/main/asciidoc");
-		final Map<String, Object> model = new LinkedHashMap<>();
-		final List<EndpointDoc> endpoints = new ArrayList<>();
-		model.put("endpoints", endpoints);
-		for (MvcEndpoint endpoint : getEndpoints()) {
-			final String endpointPath = (StringUtils.hasText(endpoint.getPath())
-					? endpoint.getPath() : "/");
-			if (!SKIPPED.contains(endpointPath)) {
-				String output = endpointPath.substring(1);
-				output = output.length() > 0 ? output : "./";
-				this.mockMvc
-						.perform(get("/application" + endpointPath)
-								.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
-						.andExpect(status().isOk()).andDo(document(output))
-						.andDo(new ResultHandler() {
-
-							@Override
-							public void handle(MvcResult mvcResult) throws Exception {
-								EndpointDoc endpoint = new EndpointDoc(docs,
-										endpointPath);
-								endpoints.add(endpoint);
-							}
-
-						});
-			}
-		}
+		File docs = new File("src/main/asciidoc");
+		Map<String, Object> model = new LinkedHashMap<>();
+		model.put("endpoints", getEndpointDocs(docs));
 		File file = new File(RESTDOCS_OUTPUT_DIR + "/endpoints.adoc");
 		file.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(file, "UTF-8")) {
@@ -196,16 +171,34 @@ public class EndpointDocumentation {
 		}
 	}
 
+	private List<EndpointDoc> getEndpointDocs(File docs) throws Exception {
+		final List<EndpointDoc> endpoints = new ArrayList<>();
+		for (MvcEndpoint endpoint : getEndpoints()) {
+			String path = endpoint.getPath();
+			path = (StringUtils.hasText(path) ? path : "/");
+			if (!SKIPPED.contains(path)) {
+				documentEndpoint(path);
+				endpoints.add(new EndpointDoc(docs, path));
+			}
+		}
+		return endpoints;
+	}
+
 	private Collection<? extends MvcEndpoint> getEndpoints() {
 		List<? extends MvcEndpoint> endpoints = new ArrayList<>(
 				this.mvcEndpoints.getEndpoints());
-		Collections.sort(endpoints, new Comparator<MvcEndpoint>() {
-			@Override
-			public int compare(MvcEndpoint o1, MvcEndpoint o2) {
-				return o1.getPath().compareTo(o2.getPath());
-			}
-		});
+		endpoints.sort(Comparator.comparing(MvcEndpoint::getPath));
 		return endpoints;
+	}
+
+	private String documentEndpoint(final String endpointPath) throws Exception {
+		String output = endpointPath.substring(1);
+		output = (output.length() > 0 ? output : "./");
+		this.mockMvc
+				.perform(get("/application" + endpointPath)
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
+				.andExpect(status().isOk()).andDo(document(output));
+		return output;
 	}
 
 	public static class EndpointDoc {

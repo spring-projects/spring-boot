@@ -602,14 +602,7 @@ public class LoggingApplicationListenerTests {
 
 		@Override
 		public Runnable getShutdownHandler() {
-			return new Runnable() {
-
-				@Override
-				public void run() {
-					TestShutdownHandlerLoggingSystem.shutdownLatch.countDown();
-				}
-
-			};
+			return () -> TestShutdownHandlerLoggingSystem.shutdownLatch.countDown();
 		}
 
 	}

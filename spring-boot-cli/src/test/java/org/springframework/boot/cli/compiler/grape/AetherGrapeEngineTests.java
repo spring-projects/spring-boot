@@ -72,54 +72,32 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void proxySelector() {
-		doWithCustomUserHome(new Runnable() {
+		doWithCustomUserHome(() -> {
+			AetherGrapeEngine grapeEngine = createGrapeEngine();
+			DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
+					.getField(grapeEngine, "session");
 
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
-						.getField(grapeEngine, "session");
-
-				assertThat(session.getProxySelector() instanceof CompositeProxySelector)
-						.isTrue();
-			}
-
+			assertThat(session.getProxySelector() instanceof CompositeProxySelector)
+					.isTrue();
 		});
 	}
 
 	@Test
 	public void repositoryMirrors() {
-		doWithCustomUserHome(new Runnable() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
-						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
-				assertThat(repositories.get(0).getId()).isEqualTo("central-mirror");
-			}
+		doWithCustomUserHome(() -> {
+			List<RemoteRepository> repositories = getRepositories();
+			assertThat(repositories).hasSize(1);
+			assertThat(repositories.get(0).getId()).isEqualTo("central-mirror");
 		});
 	}
 
 	@Test
 	public void repositoryAuthentication() {
-		doWithCustomUserHome(new Runnable() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
-						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
-				Authentication authentication = repositories.get(0).getAuthentication();
-				assertThat(authentication).isNotNull();
-			}
+		doWithCustomUserHome(() -> {
+			List<RemoteRepository> repositories = getRepositories();
+			assertThat(repositories).hasSize(1);
+			Authentication authentication = repositories.get(0).getAuthentication();
+			assertThat(authentication).isNotNull();
 		});
 	}
 
@@ -214,6 +192,13 @@ public class AetherGrapeEngineTests {
 		URL[] urls = this.groovyClassLoader.getURLs();
 		assertThat(urls.length).isEqualTo(1);
 		assertThat(urls[0].toExternalForm().endsWith("-sources.jar")).isTrue();
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<RemoteRepository> getRepositories() {
+		AetherGrapeEngine grapeEngine = createGrapeEngine();
+		return (List<RemoteRepository>) ReflectionTestUtils.getField(grapeEngine,
+				"repositories");
 	}
 
 	private Map<String, Object> createDependency(String group, String module,

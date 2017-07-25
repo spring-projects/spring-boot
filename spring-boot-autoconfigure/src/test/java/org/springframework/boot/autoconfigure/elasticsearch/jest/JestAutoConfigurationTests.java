@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
-import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -183,14 +182,7 @@ public class JestAutoConfigurationTests {
 
 		@Bean
 		public HttpClientConfigBuilderCustomizer customizer() {
-			return new HttpClientConfigBuilderCustomizer() {
-
-				@Override
-				public void customize(HttpClientConfig.Builder builder) {
-					builder.gson(BuilderCustomizer.this.gson);
-				}
-
-			};
+			return (builder) -> builder.gson(BuilderCustomizer.this.gson);
 		}
 
 		Gson getGson() {

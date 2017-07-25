@@ -191,7 +191,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	}
 
 	private Map<String, String[]> getParameterMapCopy(HttpServletRequest request) {
-		return new LinkedHashMap<String, String[]>(request.getParameterMap());
+		return new LinkedHashMap<>(request.getParameterMap());
 	}
 
 	/**

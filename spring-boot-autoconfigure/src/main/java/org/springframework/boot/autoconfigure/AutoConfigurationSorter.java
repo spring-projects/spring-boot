@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,15 +59,10 @@ class AutoConfigurationSorter {
 		// Initially sort alphabetically
 		Collections.sort(orderedClassNames);
 		// Then sort by order
-		Collections.sort(orderedClassNames, new Comparator<String>() {
-
-			@Override
-			public int compare(String o1, String o2) {
-				int i1 = classes.get(o1).getOrder();
-				int i2 = classes.get(o2).getOrder();
-				return (i1 < i2) ? -1 : (i1 > i2) ? 1 : 0;
-			}
-
+		orderedClassNames.sort((o1, o2) -> {
+			int i1 = classes.get(o1).getOrder();
+			int i2 = classes.get(o2).getOrder();
+			return (i1 < i2) ? -1 : (i1 > i2) ? 1 : 0;
 		});
 		// Then respect @AutoConfigureBefore @AutoConfigureAfter
 		orderedClassNames = sortByAnnotation(classes, orderedClassNames);

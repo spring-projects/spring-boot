@@ -60,7 +60,7 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		}
 
 		private List<URL> findJsonObjects() {
-			List<URL> jsonObjects = new ArrayList<URL>();
+			List<URL> jsonObjects = new ArrayList<>();
 			try {
 				Enumeration<URL> resources = getClass().getClassLoader()
 						.getResources("org/json/JSONObject.class");

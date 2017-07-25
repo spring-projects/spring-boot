@@ -28,7 +28,6 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
  * Utility class to memorize {@code @Bean} definition meta data during initialization of
@@ -82,13 +81,9 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		MetaData meta = this.beans.get(beanName);
 		final String factory = meta.getMethod();
 		Class<?> type = this.beanFactory.getType(meta.getBean());
-		ReflectionUtils.doWithMethods(type, new MethodCallback() {
-			@Override
-			public void doWith(Method method)
-					throws IllegalArgumentException, IllegalAccessException {
-				if (method.getName().equals(factory)) {
-					found.compareAndSet(null, method);
-				}
+		ReflectionUtils.doWithMethods(type, (method) -> {
+			if (method.getName().equals(factory)) {
+				found.compareAndSet(null, method);
 			}
 		});
 		return found.get();
