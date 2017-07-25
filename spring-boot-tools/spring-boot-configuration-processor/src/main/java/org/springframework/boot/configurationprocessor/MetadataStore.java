@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -110,37 +111,33 @@ public class MetadataStore {
 
 	private InputStream getAdditionalMetadataStream() throws IOException {
 		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
-				
-		File file = new File(fileObject.toUri());
-
-		if (!file.exists()) {
-			// Gradle keeps things separate
-			String path = file.getPath();
-
-			int index = path.lastIndexOf(CLASSES_FOLDER);
-			if (index >= 0) {
-				/*
-					Gradle 4 introduces a new 'java' directory which causes issues for one-to-one path mapping
-					of class locations and resources. Ensure resources can be found under '/build/resources/main'
-					rather than '/build/resources/java/main'.
-				 */
-				final String pathBeforeClassFolder = path.substring(0, index);
-				/*
-				In order to retrieve the the class output resource, we MUST pass in a relative path.
-				An empty path causes a InvalidArgumentException as it must be resolvable. In reality,
-				this means nothing since we are going to traverse upstream to its parent to locate
-				the 'main' directory.
-				 */
-				FileObject classOutputLocation = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
-				File classesFolder = new File(classOutputLocation.toUri());
-				File resourcesFolder = new File(pathBeforeClassFolder + RESOURCES_FOLDER + '/' + classesFolder.getParentFile().getName());
-				file = new File(resourcesFolder, ADDITIONAL_METADATA_PATH);
-			}
-
-		}
+		FileObject fileObject = this.environment.getFiler()
+				.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
+		File file = locateAdditionalMetadataFile(new File(fileObject.toUri()));
 		return (file.exists() ? new FileInputStream(file)
 				: fileObject.toUri().toURL().openStream());
+	}
+
+	File locateAdditionalMetadataFile(File standardLocation) throws IOException {
+		if (standardLocation.exists()) {
+			return standardLocation;
+		}
+		return new File(locateGradleResourcesFolder(standardLocation),
+				ADDITIONAL_METADATA_PATH);
+	}
+
+	private File locateGradleResourcesFolder(File standardAdditionalMetadataLocation)
+			throws FileNotFoundException {
+		String path = standardAdditionalMetadataLocation.getPath();
+		int index = path.lastIndexOf(CLASSES_FOLDER);
+		if (index < 0) {
+			throw new FileNotFoundException();
+		}
+		String buildFolderPath = path.substring(0, index);
+		File classOutputLocation = standardAdditionalMetadataLocation.getParentFile()
+				.getParentFile();
+		return new File(buildFolderPath,
+				RESOURCES_FOLDER + '/' + classOutputLocation.getName());
 	}
 
 }
