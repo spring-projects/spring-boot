@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -112,19 +113,31 @@ public class MetadataStore {
 		// Most build systems will have copied the file to the class output location
 		FileObject fileObject = this.environment.getFiler()
 				.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
-		File file = new File(fileObject.toUri());
-		if (!file.exists()) {
-			// Gradle keeps things separate
-			String path = file.getPath();
-			int index = path.lastIndexOf(CLASSES_FOLDER);
-			if (index >= 0) {
-				path = path.substring(0, index) + RESOURCES_FOLDER
-						+ path.substring(index + CLASSES_FOLDER.length());
-				file = new File(path);
-			}
-		}
+		File file = locateAdditionalMetadataFile(new File(fileObject.toUri()));
 		return (file.exists() ? new FileInputStream(file)
 				: fileObject.toUri().toURL().openStream());
+	}
+
+	File locateAdditionalMetadataFile(File standardLocation) throws IOException {
+		if (standardLocation.exists()) {
+			return standardLocation;
+		}
+		return new File(locateGradleResourcesFolder(standardLocation),
+				ADDITIONAL_METADATA_PATH);
+	}
+
+	private File locateGradleResourcesFolder(File standardAdditionalMetadataLocation)
+			throws FileNotFoundException {
+		String path = standardAdditionalMetadataLocation.getPath();
+		int index = path.lastIndexOf(CLASSES_FOLDER);
+		if (index < 0) {
+			throw new FileNotFoundException();
+		}
+		String buildFolderPath = path.substring(0, index);
+		File classOutputLocation = standardAdditionalMetadataLocation.getParentFile()
+				.getParentFile();
+		return new File(buildFolderPath,
+				RESOURCES_FOLDER + '/' + classOutputLocation.getName());
 	}
 
 }
