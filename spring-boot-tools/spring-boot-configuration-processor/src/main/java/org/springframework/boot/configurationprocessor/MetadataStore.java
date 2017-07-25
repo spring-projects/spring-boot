@@ -110,8 +110,8 @@ public class MetadataStore {
 
 	private InputStream getAdditionalMetadataStream() throws IOException {
 		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler()
-				.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
+		FileObject fileObject = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
+				
 		File file = new File(fileObject.toUri());
 
 		if (!file.exists()) {
@@ -120,16 +120,22 @@ public class MetadataStore {
 
 			int index = path.lastIndexOf(CLASSES_FOLDER);
 			if (index >= 0) {
-				File resourcesFolder = new File(path.substring(0, index) + RESOURCES_FOLDER);
-				file = new File(resourcesFolder, path.substring(index + CLASSES_FOLDER.length()));
-				if (!file.exists()) {
-					/*
+				/*
 					Gradle 4 introduces a new 'java' directory which causes issues for one-to-one path mapping
 					of class locations and resources. Ensure resources can be found under '/build/resources/main'
 					rather than '/build/resources/java/main'.
-					 */
-					file = new File(resourcesFolder, "main/" + ADDITIONAL_METADATA_PATH);
-				}
+				 */
+				final String pathBeforeClassFolder = path.substring(0, index);
+				/*
+				In order to retrieve the the class output resource, we MUST pass in a relative path.
+				An empty path causes a InvalidArgumentException as it must be resolvable. In reality,
+				this means nothing since we are going to traverse upstream to its parent to locate
+				the 'main' directory.
+				 */
+				FileObject classOutputLocation = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
+				File classesFolder = new File(classOutputLocation.toUri());
+				File resourcesFolder = new File(pathBeforeClassFolder + RESOURCES_FOLDER + '/' + classesFolder.getParentFile().getName());
+				file = new File(resourcesFolder, ADDITIONAL_METADATA_PATH);
 			}
 
 		}
