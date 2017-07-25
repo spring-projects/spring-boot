@@ -25,4 +25,5 @@ public class SampleJunitJupiterApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SampleJunitJupiterApplication.class, args);
 	}
+
 }
