@@ -16,10 +16,11 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
-import com.google.common.base.Strings;
+import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
+import org.influxdb.impl.InfluxDBImpl;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Sergey Kuptsov
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 2.0.0
  */
 @Configuration
@@ -42,19 +44,20 @@ public class InfluxDbAutoConfiguration {
 
 	private final InfluxDbProperties properties;
 
-	public InfluxDbAutoConfiguration(InfluxDbProperties properties) {
+	private final OkHttpClient.Builder builder;
+
+	public InfluxDbAutoConfiguration(InfluxDbProperties properties,
+			ObjectProvider<OkHttpClient.Builder> builder) {
 		this.properties = properties;
+		this.builder = builder.getIfAvailable(OkHttpClient.Builder::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty("spring.influx.url")
 	public InfluxDB influxDb() {
-		if (Strings.isNullOrEmpty(this.properties.getUser())) {
-			return InfluxDBFactory.connect(this.properties.getUrl());
-		}
-		return InfluxDBFactory.connect(this.properties.getUrl(),
-				this.properties.getUser(), this.properties.getPassword());
+		return new InfluxDBImpl(this.properties.getUrl(), this.properties.getUser(),
+				this.properties.getPassword(), this.builder);
 	}
 
 }

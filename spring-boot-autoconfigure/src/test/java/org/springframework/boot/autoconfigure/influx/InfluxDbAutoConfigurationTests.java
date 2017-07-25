@@ -16,12 +16,19 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
-import org.influxdb.InfluxDB;
-import org.junit.After;
-import org.junit.Test;
+import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import okhttp3.OkHttpClient;
+import org.influxdb.InfluxDB;
+import org.junit.Test;
+import retrofit2.Retrofit;
+
+import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.ApplicationContextTester;
+import org.springframework.boot.test.context.AssertableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,43 +37,76 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Sergey Kuptsov
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class InfluxDbAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void tearDown() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextTester context = new ApplicationContextTester()
+			.withConfiguration(AutoConfigurations.of(InfluxDbAutoConfiguration.class));
 
 	@Test
 	public void influxDbRequiresUrl() {
-		load();
-		assertThat(this.context.getBeansOfType(InfluxDB.class)).isEmpty();
+		this.context.run((loaded) ->
+				assertThat(loaded.getBeansOfType(InfluxDB.class)).isEmpty());
 	}
 
 	@Test
 	public void influxDbCanBeCustomized() {
-		load("spring.influx.url=http://localhost", "spring.influx.password:password",
-				"spring.influx.user:user");
-		assertThat(this.context.getBeansOfType(InfluxDB.class)).hasSize(1);
+		this.context.withPropertyValues("spring.influx.url=http://localhost",
+				"spring.influx.password:password", "spring.influx.user:user")
+				.run((loaded ->
+						assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1)));
 	}
 
 	@Test
 	public void influxDbCanBeCreatedWithoutCredentials() {
-		load("spring.influx.url=http://localhost");
-		assertThat(this.context.getBeansOfType(InfluxDB.class)).hasSize(1);
+		this.context.withPropertyValues("spring.influx.url=http://localhost")
+				.run((loaded) -> {
+					assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
+					int readTimeout = getReadTimeoutProperty(loaded);
+					assertThat(readTimeout).isEqualTo(10_000);
+				});
 	}
 
-	private void load(String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(ctx);
-		ctx.register(InfluxDbAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+	@Test
+	public void influxDbWithoutCredentialsAndOkHttpClientBuilder() {
+		this.context.withUserConfiguration(CustomOkHttpClientBuilderConfig.class)
+				.withPropertyValues("spring.influx.url=http://localhost").run((loaded) -> {
+			assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
+			int readTimeout = getReadTimeoutProperty(loaded);
+			assertThat(readTimeout).isEqualTo(30_000);
+		});
+	}
+
+	@Test
+	public void influxDbWithOkHttpClientBuilder() {
+		this.context.withUserConfiguration(CustomOkHttpClientBuilderConfig.class)
+				.withPropertyValues("spring.influx.url=http://localhost",
+						"spring.influx.password:password", "spring.influx.user:user")
+				.run((loaded) -> {
+					assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
+					int readTimeout = getReadTimeoutProperty(loaded);
+					assertThat(readTimeout).isEqualTo(30_000);
+				});
+	}
+
+	private int getReadTimeoutProperty(AssertableApplicationContext loaded) {
+		InfluxDB influxDB = loaded.getBean(InfluxDB.class);
+		Retrofit retrofit = (Retrofit) new DirectFieldAccessor(influxDB)
+				.getPropertyValue("retrofit");
+		OkHttpClient callFactory = (OkHttpClient) new DirectFieldAccessor(retrofit)
+				.getPropertyValue("callFactory");
+		return callFactory.readTimeoutMillis();
+	}
+
+	@Configuration
+	static class CustomOkHttpClientBuilderConfig {
+
+		@Bean
+		public OkHttpClient.Builder builder() {
+			return new OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS);
+		}
+
 	}
 
 }
