@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -277,12 +276,9 @@ public class EndpointAutoConfigurationTests {
 
 		@Bean
 		PublicMetrics customPublicMetrics() {
-			return new PublicMetrics() {
-				@Override
-				public Collection<Metric<?>> metrics() {
-					Metric<Integer> metric = new Metric<>("foo", 1);
-					return Collections.<Metric<?>>singleton(metric);
-				}
+			return () -> {
+				Metric<Integer> metric = new Metric<>("foo", 1);
+				return Collections.<Metric<?>>singleton(metric);
 			};
 		}
 
@@ -294,12 +290,9 @@ public class EndpointAutoConfigurationTests {
 		@Bean
 		@Order(InfoContributorAutoConfiguration.DEFAULT_ORDER - 1)
 		public InfoContributor myInfoContributor() {
-			return new InfoContributor() {
-				@Override
-				public void contribute(Info.Builder builder) {
-					builder.withDetail("name", "bar");
-					builder.withDetail("version", "1.0");
-				}
+			return (builder) -> {
+				builder.withDetail("name", "bar");
+				builder.withDetail("version", "1.0");
 			};
 		}
 

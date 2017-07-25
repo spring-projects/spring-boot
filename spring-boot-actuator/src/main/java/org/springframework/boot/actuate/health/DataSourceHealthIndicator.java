@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.IncorrectResultSetColumnCountException;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -120,13 +119,11 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	}
 
 	private String getProduct() {
-		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
-			@Override
-			public String doInConnection(Connection connection)
-					throws SQLException, DataAccessException {
-				return connection.getMetaData().getDatabaseProductName();
-			}
-		});
+		return this.jdbcTemplate.execute((ConnectionCallback<String>) this::getProduct);
+	}
+
+	private String getProduct(Connection connection) throws SQLException {
+		return connection.getMetaData().getDatabaseProductName();
 	}
 
 	protected String getValidationQuery(String product) {

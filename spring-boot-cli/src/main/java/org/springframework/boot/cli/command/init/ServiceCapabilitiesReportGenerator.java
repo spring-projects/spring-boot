@@ -94,11 +94,7 @@ class ServiceCapabilitiesReportGenerator {
 
 	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
 		ArrayList<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
-		dependencies.sort(new Comparator<Dependency>() {
-			@Override public int compare(Dependency o1, Dependency o2) {
-				return o1.getId().compareTo(o2.getId());
-			}
-		});
+		dependencies.sort(Comparator.comparing(Dependency::getId));
 		return dependencies;
 	}
 
@@ -107,15 +103,7 @@ class ServiceCapabilitiesReportGenerator {
 		report.append("Available project types:" + NEW_LINE);
 		report.append("------------------------" + NEW_LINE);
 		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(
-				new Comparator<Entry<String, ProjectType>>() {
-
-					@Override
-					public int compare(Entry<String, ProjectType> o1,
-							Entry<String, ProjectType> o2) {
-						return o1.getKey().compareTo(o2.getKey());
-					}
-
-				});
+				Comparator.comparing(Entry::getKey));
 		entries.addAll(metadata.getProjectTypes().entrySet());
 		for (Entry<String, ProjectType> entry : entries) {
 			ProjectType type = entry.getValue();

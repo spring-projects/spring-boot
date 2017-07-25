@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,14 +121,9 @@ public class ShutdownMvcEndpointTests {
 				throws BeansException {
 			ConfigurableApplicationContext mockContext = mock(
 					ConfigurableApplicationContext.class);
-			willAnswer(new Answer<Void>() {
-
-				@Override
-				public Void answer(InvocationOnMock invocation) throws Throwable {
-					TestShutdownEndpoint.this.contextCloseLatch.countDown();
-					return null;
-				}
-
+			willAnswer((invocation) -> {
+				TestShutdownEndpoint.this.contextCloseLatch.countDown();
+				return null;
 			}).given(mockContext).close();
 			super.setApplicationContext(mockContext);
 		}

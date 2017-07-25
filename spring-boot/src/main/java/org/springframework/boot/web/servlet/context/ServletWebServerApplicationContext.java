@@ -203,12 +203,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 * @see #prepareWebApplicationContext(ServletContext)
 	 */
 	private org.springframework.boot.web.servlet.ServletContextInitializer getSelfInitializer() {
-		return new ServletContextInitializer() {
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				selfInitialize(servletContext);
-			}
-		};
+		return this::selfInitialize;
 	}
 
 	private void selfInitialize(ServletContext servletContext) throws ServletException {

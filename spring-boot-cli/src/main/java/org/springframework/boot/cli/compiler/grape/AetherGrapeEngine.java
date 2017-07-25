@@ -100,19 +100,11 @@ public class AetherGrapeEngine implements GrapeEngine {
 				|| Boolean.getBoolean("groovy.grape.report.downloads")) {
 			return new DetailedProgressReporter(session, System.out);
 		}
-		else if ("none".equals(progressReporter)) {
-			return new ProgressReporter() {
-
-				@Override
-				public void finished() {
-
-				}
-
+		if ("none".equals(progressReporter)) {
+			return () -> {
 			};
 		}
-		else {
-			return new SummaryProgressReporter(session, System.out);
-		}
+		return new SummaryProgressReporter(session, System.out);
 	}
 
 	@Override

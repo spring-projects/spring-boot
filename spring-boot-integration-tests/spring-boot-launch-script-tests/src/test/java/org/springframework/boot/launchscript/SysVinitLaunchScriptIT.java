@@ -18,7 +18,6 @@ package org.springframework.boot.launchscript;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +26,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 
@@ -449,15 +446,9 @@ public class SysVinitLaunchScriptIT {
 			extends DockerCmdExecFactoryImpl {
 
 		private SpringBootDockerCmdExecFactory() {
-			withClientRequestFilters(new ClientRequestFilter() {
-
-				@Override
-				public void filter(ClientRequestContext requestContext)
-						throws IOException {
-					// Workaround for https://go-review.googlesource.com/#/c/3821/
-					requestContext.getHeaders().add("Connection", "close");
-				}
-
+			withClientRequestFilters((requestContext) -> {
+				// Workaround for https://go-review.googlesource.com/#/c/3821/
+				requestContext.getHeaders().add("Connection", "close");
 			});
 		}
 

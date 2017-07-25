@@ -28,14 +28,7 @@ public interface FailureHandler {
 	/**
 	 * {@link FailureHandler} that always aborts.
 	 */
-	FailureHandler NONE = new FailureHandler() {
-
-		@Override
-		public Outcome handle(Throwable failure) {
-			return Outcome.ABORT;
-		}
-
-	};
+	FailureHandler NONE = (failure) -> Outcome.ABORT;
 
 	/**
 	 * Handle a run failure. Implementations may block, for example to wait until specific

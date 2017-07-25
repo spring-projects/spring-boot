@@ -253,15 +253,8 @@ class OnClassCondition extends SpringBootCondition
 		private volatile ConditionOutcome[] outcomes;
 
 		private ThreadedOutcomesResolver(final OutcomesResolver outcomesResolver) {
-			this.thread = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					ThreadedOutcomesResolver.this.outcomes = outcomesResolver
-							.resolveOutcomes();
-				}
-
-			});
+			this.thread = new Thread(
+					() -> this.outcomes = outcomesResolver.resolveOutcomes());
 			this.thread.start();
 		}
 

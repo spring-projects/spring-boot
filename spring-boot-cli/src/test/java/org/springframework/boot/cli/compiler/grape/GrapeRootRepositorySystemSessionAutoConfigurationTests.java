@@ -59,21 +59,12 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 	@Test
 	public void noLocalRepositoryWhenNoGrapeRoot() {
 		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session),
-				any(LocalRepository.class)))
-						.willAnswer(new Answer<LocalRepositoryManager>() {
-
-							@Override
-							public LocalRepositoryManager answer(
-									InvocationOnMock invocation) throws Throwable {
-								LocalRepository localRepository = invocation
-										.getArgument(1);
-								return new SimpleLocalRepositoryManagerFactory()
-										.newInstance(
-												GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session,
-												localRepository);
-							}
-
-						});
+				any(LocalRepository.class))).willAnswer((invocation) -> {
+					LocalRepository localRepository = invocation.getArgument(1);
+					return new SimpleLocalRepositoryManagerFactory().newInstance(
+							GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session,
+							localRepository);
+				});
 		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session,
 				this.repositorySystem);
 		verify(this.repositorySystem, times(0))

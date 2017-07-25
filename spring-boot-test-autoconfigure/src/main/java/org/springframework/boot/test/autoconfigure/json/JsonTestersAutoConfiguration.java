@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * Auto-configuration for Json testers.
@@ -150,18 +149,10 @@ public class JsonTestersAutoConfiguration {
 			extends InstantiationAwareBeanPostProcessorAdapter {
 
 		@Override
-		public Object postProcessAfterInitialization(final Object bean, String beanName)
+		public Object postProcessAfterInitialization(Object bean, String beanName)
 				throws BeansException {
-
-			ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
-
-				@Override
-				public void doWith(Field field)
-						throws IllegalArgumentException, IllegalAccessException {
-					processField(bean, field);
-				}
-
-			});
+			ReflectionUtils.doWithFields(bean.getClass(),
+					(field) -> processField(bean, field));
 			return bean;
 		}
 

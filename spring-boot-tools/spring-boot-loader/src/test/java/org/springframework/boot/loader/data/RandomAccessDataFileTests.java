@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,8 +37,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.data.RandomAccessDataFile.FilePool;
@@ -290,17 +287,12 @@ public class RandomAccessDataFileTests {
 		ExecutorService executorService = Executors.newFixedThreadPool(20);
 		List<Future<Boolean>> results = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
-			results.add(executorService.submit(new Callable<Boolean>() {
-
-				@Override
-				public Boolean call() throws Exception {
-					InputStream subsectionInputStream = RandomAccessDataFileTests.this.file
-							.getSubsection(0, 256)
-							.getInputStream(ResourceAccess.PER_READ);
-					byte[] b = new byte[256];
-					subsectionInputStream.read(b);
-					return Arrays.equals(b, BYTES);
-				}
+			results.add(executorService.submit(() -> {
+				InputStream subsectionInputStream = RandomAccessDataFileTests.this.file
+						.getSubsection(0, 256).getInputStream(ResourceAccess.PER_READ);
+				byte[] b = new byte[256];
+				subsectionInputStream.read(b);
+				return Arrays.equals(b, BYTES);
 			}));
 		}
 		for (Future<Boolean> future : results) {
@@ -327,21 +319,15 @@ public class RandomAccessDataFileTests {
 				"filePool");
 		FilePool spiedPool = spy(filePool);
 		ReflectionTestUtils.setField(this.file, "filePool", spiedPool);
-		willAnswer(new Answer<RandomAccessFile>() {
-
-			@Override
-			public RandomAccessFile answer(InvocationOnMock invocation) throws Throwable {
-				RandomAccessFile originalFile = (RandomAccessFile) invocation
-						.callRealMethod();
-				if (Mockito.mockingDetails(originalFile).isSpy()) {
-					return originalFile;
-				}
-				RandomAccessFile spiedFile = spy(originalFile);
-				willThrow(new IOException("Seek failed")).given(spiedFile)
-						.seek(anyLong());
-				return spiedFile;
+		willAnswer((invocation) -> {
+			RandomAccessFile originalFile = (RandomAccessFile) invocation
+					.callRealMethod();
+			if (Mockito.mockingDetails(originalFile).isSpy()) {
+				return originalFile;
 			}
-
+			RandomAccessFile spiedFile = spy(originalFile);
+			willThrow(new IOException("Seek failed")).given(spiedFile).seek(anyLong());
+			return spiedFile;
 		}).given(spiedPool).acquire();
 
 		for (int i = 0; i < 5; i++) {

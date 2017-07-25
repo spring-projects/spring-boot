@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
-import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -110,28 +109,21 @@ public class InfoMvcEndpointTests {
 
 		@Bean
 		public InfoContributor beanName1() {
-			return new InfoContributor() {
-
-				@Override
-				public void contribute(Info.Builder builder) {
-					Map<String, Object> content = new LinkedHashMap<>();
-					content.put("key11", "value11");
-					content.put("key12", "value12");
-					builder.withDetail("beanName1", content);
-				}
+			return (builder) -> {
+				Map<String, Object> content = new LinkedHashMap<>();
+				content.put("key11", "value11");
+				content.put("key12", "value12");
+				builder.withDetail("beanName1", content);
 			};
 		}
 
 		@Bean
 		public InfoContributor beanName2() {
-			return new InfoContributor() {
-				@Override
-				public void contribute(Info.Builder builder) {
-					Map<String, Object> content = new LinkedHashMap<>();
-					content.put("key21", "value21");
-					content.put("key22", "value22");
-					builder.withDetail("beanName2", content);
-				}
+			return (builder) -> {
+				Map<String, Object> content = new LinkedHashMap<>();
+				content.put("key21", "value21");
+				content.put("key22", "value22");
+				builder.withDetail("beanName2", content);
 			};
 		}
 

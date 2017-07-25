@@ -350,14 +350,8 @@ public class DataSourceInitializerTests {
 		@Override
 		public Resource[] getResources(String locationPattern) throws IOException {
 			Resource[] resources = this.resolver.getResources(locationPattern);
-			Arrays.sort(resources, new Comparator<Resource>() {
-
-				@Override
-				public int compare(Resource r1, Resource r2) {
-					return r2.getFilename().compareTo(r1.getFilename());
-				}
-
-			});
+			Arrays.sort(resources,
+					Comparator.comparing(Resource::getFilename).reversed());
 			return resources;
 		}
 

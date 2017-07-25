@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.Consumer;
 
 import com.codahale.metrics.MetricRegistry;
 import org.junit.BeforeClass;
@@ -35,7 +34,6 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;
@@ -79,7 +77,7 @@ public class DropwizardCounterServiceSpeedTests {
 	@BeforeClass
 	public static void prime() throws FileNotFoundException {
 		err = new NullPrintWriter();
-		final Random random = new Random();
+		Random random = new Random();
 		for (int i = 0; i < 1000; i++) {
 			sample[i] = names[random.nextInt(names.length)];
 		}
@@ -89,14 +87,10 @@ public class DropwizardCounterServiceSpeedTests {
 	public void counters(String input) throws Exception {
 		watch.start("counters" + count++);
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				for (int i = 0; i < number; i++) {
-					String name = sample[i % sample.length];
-					DropwizardCounterServiceSpeedTests.this.counterService
-							.increment(name);
-				}
+		Runnable task = () -> {
+			for (int i = 0; i < number; i++) {
+				String name = sample[i % sample.length];
+				DropwizardCounterServiceSpeedTests.this.counterService.increment(name);
 			}
 		};
 		Collection<Future<?>> futures = new HashSet<>();
@@ -110,19 +104,9 @@ public class DropwizardCounterServiceSpeedTests {
 		double rate = number / watch.getLastTaskTimeMillis() * 1000;
 		System.err.println("Counters rate(" + count + ")=" + rate + ", " + watch);
 		watch.start("read" + count);
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> metric) {
-				err.println(metric);
-			}
-		});
-		final LongAdder total = new LongAdder();
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> value) {
-				total.add(value.getValue().intValue());
-			}
-		});
+		this.reader.findAll().forEach(err::println);
+		LongAdder total = new LongAdder();
+		this.reader.findAll().forEach((value) -> total.add(value.getValue().intValue()));
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
 		assertThat(total.longValue()).isEqualTo(number * threadCount);

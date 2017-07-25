@@ -23,10 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
-import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
-import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
@@ -47,10 +44,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
-import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
-import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -269,49 +263,34 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		private static void customizeAcceptCount(TomcatServletWebServerFactory factory,
 				final int acceptCount) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-
-				@Override
-				public void customize(Connector connector) {
-					ProtocolHandler handler = connector.getProtocolHandler();
-					if (handler instanceof AbstractProtocol) {
-						AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-						protocol.setAcceptCount(acceptCount);
-					}
+			factory.addConnectorCustomizers((connector) -> {
+				ProtocolHandler handler = connector.getProtocolHandler();
+				if (handler instanceof AbstractProtocol) {
+					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+					protocol.setAcceptCount(acceptCount);
 				}
-
 			});
 		}
 
 		private static void customizeMaxConnections(TomcatServletWebServerFactory factory,
 				final int maxConnections) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-
-				@Override
-				public void customize(Connector connector) {
-					ProtocolHandler handler = connector.getProtocolHandler();
-					if (handler instanceof AbstractProtocol) {
-						AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-						protocol.setMaxConnections(maxConnections);
-					}
+			factory.addConnectorCustomizers((connector) -> {
+				ProtocolHandler handler = connector.getProtocolHandler();
+				if (handler instanceof AbstractProtocol) {
+					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+					protocol.setMaxConnections(maxConnections);
 				}
-
 			});
 		}
 
 		private static void customizeConnectionTimeout(
 				TomcatServletWebServerFactory factory, final int connectionTimeout) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-
-				@Override
-				public void customize(Connector connector) {
-					ProtocolHandler handler = connector.getProtocolHandler();
-					if (handler instanceof AbstractProtocol) {
-						AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-						protocol.setConnectionTimeout(connectionTimeout);
-					}
+			factory.addConnectorCustomizers((connector) -> {
+				ProtocolHandler handler = connector.getProtocolHandler();
+				if (handler instanceof AbstractProtocol) {
+					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+					protocol.setConnectionTimeout(connectionTimeout);
 				}
-
 			});
 		}
 
@@ -342,16 +321,11 @@ public class DefaultServletWebServerFactoryCustomizer
 		@SuppressWarnings("rawtypes")
 		private static void customizeMaxThreads(TomcatServletWebServerFactory factory,
 				final int maxThreads) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-				@Override
-				public void customize(Connector connector) {
-
-					ProtocolHandler handler = connector.getProtocolHandler();
-					if (handler instanceof AbstractProtocol) {
-						AbstractProtocol protocol = (AbstractProtocol) handler;
-						protocol.setMaxThreads(maxThreads);
-					}
-
+			factory.addConnectorCustomizers((connector) -> {
+				ProtocolHandler handler = connector.getProtocolHandler();
+				if (handler instanceof AbstractProtocol) {
+					AbstractProtocol protocol = (AbstractProtocol) handler;
+					protocol.setMaxThreads(maxThreads);
 				}
 			});
 		}
@@ -359,16 +333,11 @@ public class DefaultServletWebServerFactoryCustomizer
 		@SuppressWarnings("rawtypes")
 		private static void customizeMinThreads(TomcatServletWebServerFactory factory,
 				final int minSpareThreads) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-				@Override
-				public void customize(Connector connector) {
-
-					ProtocolHandler handler = connector.getProtocolHandler();
-					if (handler instanceof AbstractProtocol) {
-						AbstractProtocol protocol = (AbstractProtocol) handler;
-						protocol.setMinSpareThreads(minSpareThreads);
-					}
-
+			factory.addConnectorCustomizers((connector) -> {
+				ProtocolHandler handler = connector.getProtocolHandler();
+				if (handler instanceof AbstractProtocol) {
+					AbstractProtocol protocol = (AbstractProtocol) handler;
+					protocol.setMinSpareThreads(minSpareThreads);
 				}
 			});
 		}
@@ -376,30 +345,19 @@ public class DefaultServletWebServerFactoryCustomizer
 		@SuppressWarnings("rawtypes")
 		private static void customizeMaxHttpHeaderSize(
 				TomcatServletWebServerFactory factory, final int maxHttpHeaderSize) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-
-				@Override
-				public void customize(Connector connector) {
-					ProtocolHandler handler = connector.getProtocolHandler();
-					if (handler instanceof AbstractHttp11Protocol) {
-						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-						protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
-					}
+			factory.addConnectorCustomizers((connector) -> {
+				ProtocolHandler handler = connector.getProtocolHandler();
+				if (handler instanceof AbstractHttp11Protocol) {
+					AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+					protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
 				}
-
 			});
 		}
 
 		private static void customizeMaxHttpPostSize(
 				TomcatServletWebServerFactory factory, final int maxHttpPostSize) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-
-				@Override
-				public void customize(Connector connector) {
-					connector.setMaxPostSize(maxHttpPostSize);
-				}
-
-			});
+			factory.addConnectorCustomizers(
+					(connector) -> connector.setMaxPostSize(maxHttpPostSize));
 		}
 
 		private static void customizeAccessLog(ServerProperties.Tomcat tomcatProperties,
@@ -422,14 +380,8 @@ public class DefaultServletWebServerFactoryCustomizer
 		private static void customizeRedirectContextRoot(
 				TomcatServletWebServerFactory factory,
 				final boolean redirectContextRoot) {
-			factory.addContextCustomizers(new TomcatContextCustomizer() {
-
-				@Override
-				public void customize(Context context) {
-					context.setMapperContextRootRedirectEnabled(redirectContextRoot);
-				}
-
-			});
+			factory.addContextCustomizers((context) -> context
+					.setMapperContextRootRedirectEnabled(redirectContextRoot));
 		}
 
 	}
@@ -482,39 +434,20 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		private static void customizeConnectionTimeout(
 				UndertowServletWebServerFactory factory, final int connectionTimeout) {
-			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
-				@Override
-				public void customize(Undertow.Builder builder) {
-					builder.setSocketOption(UndertowOptions.NO_REQUEST_TIMEOUT,
-							connectionTimeout);
-				}
-			});
+			factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
+					UndertowOptions.NO_REQUEST_TIMEOUT, connectionTimeout));
 		}
 
 		private static void customizeMaxHttpHeaderSize(
 				UndertowServletWebServerFactory factory, final int maxHttpHeaderSize) {
-			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
-
-				@Override
-				public void customize(Undertow.Builder builder) {
-					builder.setServerOption(UndertowOptions.MAX_HEADER_SIZE,
-							maxHttpHeaderSize);
-				}
-
-			});
+			factory.addBuilderCustomizers((builder) -> builder
+					.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
 		}
 
 		private static void customizeMaxHttpPostSize(
 				UndertowServletWebServerFactory factory, final long maxHttpPostSize) {
-			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
-
-				@Override
-				public void customize(Undertow.Builder builder) {
-					builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE,
-							maxHttpPostSize);
-				}
-
-			});
+			factory.addBuilderCustomizers((builder -> builder
+					.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize)));
 		}
 
 	}
@@ -551,19 +484,13 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		private static void customizeConnectionTimeout(
 				JettyServletWebServerFactory factory, final int connectionTimeout) {
-			factory.addServerCustomizers(new JettyServerCustomizer() {
-
-				@Override
-				public void customize(Server server) {
-					for (org.eclipse.jetty.server.Connector connector : server
-							.getConnectors()) {
-						if (connector instanceof AbstractConnector) {
-							((AbstractConnector) connector)
-									.setIdleTimeout(connectionTimeout);
-						}
+			factory.addServerCustomizers((server) -> {
+				for (org.eclipse.jetty.server.Connector connector : server
+						.getConnectors()) {
+					if (connector instanceof AbstractConnector) {
+						((AbstractConnector) connector).setIdleTimeout(connectionTimeout);
 					}
 				}
-
 			});
 		}
 

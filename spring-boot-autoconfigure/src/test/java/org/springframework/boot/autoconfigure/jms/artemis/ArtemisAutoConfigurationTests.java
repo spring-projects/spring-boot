@@ -23,7 +23,6 @@ import java.util.UUID;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
@@ -336,25 +335,22 @@ public class ArtemisAutoConfigurationTests {
 
 		public void checkDestination(final String name, final boolean pubSub,
 				final boolean shouldExist) {
-			this.jmsTemplate.execute(new SessionCallback<Void>() {
-				@Override
-				public Void doInJms(Session session) throws JMSException {
-					try {
-						Destination destination = DestinationChecker.this.destinationResolver
-								.resolveDestinationName(session, name, pubSub);
-						if (!shouldExist) {
-							throw new IllegalStateException("Destination '" + name
-									+ "' was not expected but got " + destination);
-						}
+			this.jmsTemplate.execute((SessionCallback<Void>) (session) -> {
+				try {
+					Destination destination = this.destinationResolver
+							.resolveDestinationName(session, name, pubSub);
+					if (!shouldExist) {
+						throw new IllegalStateException("Destination '" + name
+								+ "' was not expected but got " + destination);
 					}
-					catch (JMSException e) {
-						if (shouldExist) {
-							throw new IllegalStateException("Destination '" + name
-									+ "' was expected but got " + e.getMessage());
-						}
-					}
-					return null;
 				}
+				catch (JMSException ex) {
+					if (shouldExist) {
+						throw new IllegalStateException("Destination '" + name
+								+ "' was expected but got " + ex.getMessage());
+					}
+				}
+				return null;
 			});
 		}
 
@@ -408,13 +404,9 @@ public class ArtemisAutoConfigurationTests {
 
 		@Bean
 		public ArtemisConfigurationCustomizer myArtemisCustomize() {
-			return new ArtemisConfigurationCustomizer() {
-				@Override
-				public void customize(
-						org.apache.activemq.artemis.core.config.Configuration configuration) {
-					configuration.setClusterPassword("Foobar");
-					configuration.setName("customFooBar");
-				}
+			return (configuration) -> {
+				configuration.setClusterPassword("Foobar");
+				configuration.setName("customFooBar");
 			};
 		}
 

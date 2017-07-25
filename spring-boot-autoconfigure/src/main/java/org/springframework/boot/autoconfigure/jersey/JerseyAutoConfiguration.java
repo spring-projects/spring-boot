@@ -243,13 +243,10 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		public ResourceConfigCustomizer resourceConfigCustomizer(
 				final ObjectMapper objectMapper) {
 			addJaxbAnnotationIntrospectorIfPresent(objectMapper);
-			return new ResourceConfigCustomizer() {
-				@Override
-				public void customize(ResourceConfig config) {
-					config.register(JacksonFeature.class);
-					config.register(new ObjectMapperContextResolver(objectMapper),
-							ContextResolver.class);
-				}
+			return (ResourceConfig config) -> {
+				config.register(JacksonFeature.class);
+				config.register(new ObjectMapperContextResolver(objectMapper),
+						ContextResolver.class);
 			};
 		}
 

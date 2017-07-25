@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.Map;
-
-import com.rabbitmq.client.Channel;
-
-import org.springframework.amqp.rabbit.core.ChannelCallback;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.util.Assert;
 
@@ -46,14 +41,8 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	private String getVersion() {
-		return this.rabbitTemplate.execute(new ChannelCallback<String>() {
-			@Override
-			public String doInRabbit(Channel channel) throws Exception {
-				Map<String, Object> serverProperties = channel.getConnection()
-						.getServerProperties();
-				return serverProperties.get("version").toString();
-			}
-		});
+		return this.rabbitTemplate.execute((channel) -> channel.getConnection()
+				.getServerProperties().get("version").toString());
 	}
 
 }

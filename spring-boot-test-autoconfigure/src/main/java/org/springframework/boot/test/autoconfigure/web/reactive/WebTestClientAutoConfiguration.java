@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,6 +27,7 @@ import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
@@ -53,14 +55,18 @@ public class WebTestClientAutoConfiguration {
 
 	private void customizeWebTestClientCodecs(WebTestClient.Builder builder,
 			ApplicationContext applicationContext) {
-		Collection<CodecCustomizer> codecCustomizers = applicationContext
+		Collection<CodecCustomizer> customizers = applicationContext
 				.getBeansOfType(CodecCustomizer.class).values();
-		if (!CollectionUtils.isEmpty(codecCustomizers)) {
-			builder.exchangeStrategies(ExchangeStrategies.builder().codecs((codecs) -> {
-				codecCustomizers
-						.forEach((codecCustomizer) -> codecCustomizer.customize(codecs));
-			}).build());
+		if (!CollectionUtils.isEmpty(customizers)) {
+			builder.exchangeStrategies(ExchangeStrategies.builder()
+					.codecs(applyCustomizers(customizers)).build());
 		}
+	}
+
+	private Consumer<ClientCodecConfigurer> applyCustomizers(
+			Collection<CodecCustomizer> customizers) {
+		return (codecs) -> customizers
+				.forEach((customizer) -> customizer.customize(codecs));
 	}
 
 }

@@ -447,12 +447,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 		@Bean
 		public HealthIndicator customHealthIndicator() {
-			return new HealthIndicator() {
-				@Override
-				public Health health() {
-					return Health.down().build();
-				}
-			};
+			return () -> Health.down().build();
 		}
 
 	}

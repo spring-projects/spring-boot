@@ -32,14 +32,7 @@ public interface ReservoirFactory {
 	/**
 	 * Default empty {@link ReservoirFactory} implementation.
 	 */
-	ReservoirFactory NONE = new ReservoirFactory() {
-
-		@Override
-		public Reservoir getReservoir(String name) {
-			return null;
-		}
-
-	};
+	ReservoirFactory NONE = (name) -> null;
 
 	/**
 	 * Return the {@link Reservoir} instance to use or {@code null} if a custom reservoir

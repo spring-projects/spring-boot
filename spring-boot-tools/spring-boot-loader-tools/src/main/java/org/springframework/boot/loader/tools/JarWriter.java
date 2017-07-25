@@ -110,12 +110,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 */
 	public void writeManifest(final Manifest manifest) throws IOException {
 		JarArchiveEntry entry = new JarArchiveEntry("META-INF/MANIFEST.MF");
-		writeEntry(entry, new EntryWriter() {
-			@Override
-			public void write(OutputStream outputStream) throws IOException {
-				manifest.write(outputStream);
-			}
-		});
+		writeEntry(entry, manifest::write);
 	}
 
 	/**

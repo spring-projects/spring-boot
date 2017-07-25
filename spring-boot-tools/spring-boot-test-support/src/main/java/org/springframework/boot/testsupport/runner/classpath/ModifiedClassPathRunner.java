@@ -83,13 +83,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	protected Object createTest() throws Exception {
 		ModifiedClassPathTestClass testClass = (ModifiedClassPathTestClass) getTestClass();
 		return testClass.doWithModifiedClassPathThreadContextClassLoader(
-				new ModifiedClassPathTestClass.ModifiedClassPathTcclAction<Object, Exception>() {
-
-					@Override
-					public Object perform() throws Exception {
-						return ModifiedClassPathRunner.super.createTest();
-					}
-				});
+				() -> ModifiedClassPathRunner.super.createTest());
 	}
 
 	private URLClassLoader createTestClassLoader(Class<?> testClass) throws Exception {
@@ -299,15 +293,8 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 			public Object invokeExplosively(final Object target, final Object... params)
 					throws Throwable {
 				return doWithModifiedClassPathThreadContextClassLoader(
-						new ModifiedClassPathTcclAction<Object, Throwable>() {
-
-							@Override
-							public Object perform() throws Throwable {
-								return ModifiedClassPathFrameworkMethod.super.invokeExplosively(
-										target, params);
-							}
-
-						});
+						() -> ModifiedClassPathFrameworkMethod.super.invokeExplosively(
+								target, params));
 			}
 
 		}

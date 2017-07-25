@@ -32,7 +32,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,16 +75,13 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.addListeners(new ApplicationListener<ContextRefreshedEvent>() {
-			@Override
-			public void onApplicationEvent(ContextRefreshedEvent event) {
-				try {
-					assertThat(isApplicationReady(objectName)).isFalse();
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(
-							"Could not contact spring application admin bean", ex);
-				}
+		application.addListeners((ContextRefreshedEvent event) -> {
+			try {
+				assertThat(isApplicationReady(objectName)).isFalse();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(
+						"Could not contact spring application admin bean", ex);
 			}
 		});
 		this.context = application.run();

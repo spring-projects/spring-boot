@@ -61,19 +61,17 @@ public abstract class MainClassFinder {
 
 	private static final String MAIN_METHOD_NAME = "main";
 
-	private static final FileFilter CLASS_FILE_FILTER = new FileFilter() {
-		@Override
-		public boolean accept(File file) {
-			return (file.isFile() && file.getName().endsWith(DOT_CLASS));
-		}
-	};
+	private static final FileFilter CLASS_FILE_FILTER = MainClassFinder::isClassFile;
 
-	private static final FileFilter PACKAGE_FOLDER_FILTER = new FileFilter() {
-		@Override
-		public boolean accept(File file) {
-			return file.isDirectory() && !file.getName().startsWith(".");
-		}
-	};
+	private static final FileFilter PACKAGE_FOLDER_FILTER = MainClassFinder::isPackageFolder;
+
+	private static boolean isClassFile(File file) {
+		return file.isFile() && file.getName().endsWith(DOT_CLASS);
+	}
+
+	private static boolean isPackageFolder(File file) {
+		return file.isDirectory() && !file.getName().startsWith(".");
+	}
 
 	/**
 	 * Find the main class from a given folder.
@@ -82,12 +80,7 @@ public abstract class MainClassFinder {
 	 * @throws IOException if the folder cannot be read
 	 */
 	public static String findMainClass(File rootFolder) throws IOException {
-		return doWithMainClasses(rootFolder, new MainClassCallback<String>() {
-			@Override
-			public String doWith(MainClass mainClass) {
-				return mainClass.getName();
-			}
-		});
+		return doWithMainClasses(rootFolder, MainClass::getName);
 	}
 
 	/**
@@ -163,12 +156,7 @@ public abstract class MainClassFinder {
 	}
 
 	private static void pushAllSorted(Deque<File> stack, File[] files) {
-		Arrays.sort(files, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+		Arrays.sort(files, Comparator.comparing(File::getName));
 		for (File file : files) {
 			stack.push(file);
 		}
@@ -183,13 +171,7 @@ public abstract class MainClassFinder {
 	 */
 	public static String findMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {
-		return doWithMainClasses(jarFile, classesLocation,
-				new MainClassCallback<String>() {
-					@Override
-					public String doWith(MainClass mainClass) {
-						return mainClass.getName();
-					}
-				});
+		return doWithMainClasses(jarFile, classesLocation, MainClass::getName);
 	}
 
 	/**

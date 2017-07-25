@@ -19,7 +19,6 @@ package org.springframework.boot.web.servlet.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -219,16 +218,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void startBlocksUntilReadyToServe() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		final Date[] date = new Date[1];
-		this.webServer = factory.getWebServer(new ServletContextInitializer() {
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				try {
-					Thread.sleep(500);
-					date[0] = new Date();
-				}
-				catch (InterruptedException ex) {
-					throw new ServletException(ex);
-				}
+		this.webServer = factory.getWebServer((servletContext) -> {
+			try {
+				Thread.sleep(500);
+				date[0] = new Date();
+			}
+			catch (InterruptedException ex) {
+				throw new ServletException(ex);
 			}
 		});
 		this.webServer.start();
@@ -239,12 +235,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void loadOnStartAfterContextIsInitialized() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		final InitCountingServlet servlet = new InitCountingServlet();
-		this.webServer = factory.getWebServer(new ServletContextInitializer() {
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.addServlet("test", servlet).setLoadOnStartup(1);
-			}
-		});
+		this.webServer = factory.getWebServer((servletContext) -> servletContext
+				.addServlet("test", servlet).setLoadOnStartup(1));
 		assertThat(servlet.getInitCount()).isEqualTo(0);
 		this.webServer.start();
 		assertThat(servlet.getInitCount()).isEqualTo(1);
@@ -739,14 +731,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		getResponse(getLocalUrl("/session"));
 		this.webServer.stop();
-		File[] dirContents = sessionStoreDir.listFiles(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File dir, String name) {
-				return !(".".equals(name) || "..".equals(name));
-			}
-
-		});
+		File[] dirContents = sessionStoreDir
+				.listFiles((dir, name) -> !(".".equals(name) || "..".equals(name)));
 		assertThat(dirContents.length).isGreaterThan(0);
 	}
 
@@ -843,15 +829,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void rootServletContextResource() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		final AtomicReference<URL> rootResource = new AtomicReference<>();
-		this.webServer = factory.getWebServer(new ServletContextInitializer() {
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				try {
-					rootResource.set(servletContext.getResource("/"));
-				}
-				catch (MalformedURLException ex) {
-					throw new ServletException(ex);
-				}
+		this.webServer = factory.getWebServer((servletContext) -> {
+			try {
+				rootResource.set(servletContext.getResource("/"));
+			}
+			catch (MalformedURLException ex) {
+				throw new ServletException(ex);
 			}
 		});
 		this.webServer.start();
@@ -880,47 +863,37 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void portClashOfPrimaryConnectorResultsInPortInUseException()
 			throws IOException {
-		doWithBlockedPort(new BlockedPortAction() {
-
-			@Override
-			public void run(int port) {
-				try {
-					AbstractServletWebServerFactory factory = getFactory();
-					factory.setPort(port);
-					AbstractServletWebServerFactoryTests.this.webServer = factory
-							.getWebServer();
-					AbstractServletWebServerFactoryTests.this.webServer.start();
-					fail();
-				}
-				catch (RuntimeException ex) {
-					handleExceptionCausedByBlockedPort(ex, port);
-				}
+		doWithBlockedPort((port) -> {
+			try {
+				AbstractServletWebServerFactory factory = getFactory();
+				factory.setPort(port);
+				AbstractServletWebServerFactoryTests.this.webServer = factory
+						.getWebServer();
+				AbstractServletWebServerFactoryTests.this.webServer.start();
+				fail();
 			}
-
+			catch (RuntimeException ex) {
+				handleExceptionCausedByBlockedPort(ex, port);
+			}
 		});
 	}
 
 	@Test
 	public void portClashOfSecondaryConnectorResultsInPortInUseException()
 			throws IOException {
-		doWithBlockedPort(new BlockedPortAction() {
-
-			@Override
-			public void run(int port) {
-				try {
-					AbstractServletWebServerFactory factory = getFactory();
-					factory.setPort(SocketUtils.findAvailableTcpPort(40000));
-					addConnector(port, factory);
-					AbstractServletWebServerFactoryTests.this.webServer = factory
-							.getWebServer();
-					AbstractServletWebServerFactoryTests.this.webServer.start();
-					fail();
-				}
-				catch (RuntimeException ex) {
-					handleExceptionCausedByBlockedPort(ex, port);
-				}
+		doWithBlockedPort((port) -> {
+			try {
+				AbstractServletWebServerFactory factory = getFactory();
+				factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+				addConnector(port, factory);
+				AbstractServletWebServerFactoryTests.this.webServer = factory
+						.getWebServer();
+				AbstractServletWebServerFactoryTests.this.webServer.start();
+				fail();
 			}
-
+			catch (RuntimeException ex) {
+				handleExceptionCausedByBlockedPort(ex, port);
+			}
 		});
 	}
 
@@ -961,11 +934,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void faultyFilterCausesStartFailure() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.addInitializers(new ServletContextInitializer() {
-
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.addFilter("faulty", new Filter() {
+		factory.addInitializers(
+				(servletContext) -> servletContext.addFilter("faulty", new Filter() {
 
 					@Override
 					public void init(FilterConfig filterConfig) throws ServletException {
@@ -982,10 +952,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 					public void destroy() {
 					}
 
-				});
-			}
-
-		});
+				}));
 		this.thrown.expect(WebServerException.class);
 		factory.getWebServer().start();
 	}

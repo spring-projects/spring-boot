@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.cache;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,6 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
@@ -965,16 +963,13 @@ public class CacheAutoConfigurationTests {
 
 		@Bean
 		JCacheManagerCustomizer myCustomizer() {
-			return new JCacheManagerCustomizer() {
-				@Override
-				public void customize(javax.cache.CacheManager cacheManager) {
-					MutableConfiguration<?, ?> config = new MutableConfiguration<>();
-					config.setExpiryPolicyFactory(
-							CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
-					config.setStatisticsEnabled(true);
-					cacheManager.createCache("custom1", config);
-					cacheManager.destroyCache("bar");
-				}
+			return (cacheManager) -> {
+				MutableConfiguration<?, ?> config = new MutableConfiguration<>();
+				config.setExpiryPolicyFactory(
+						CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
+				config.setStatisticsEnabled(true);
+				cacheManager.createCache("custom1", config);
+				cacheManager.destroyCache("bar");
 			};
 		}
 
@@ -1053,15 +1048,7 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheResolver cacheResolver() {
-			return new CacheResolver() {
-
-				@Override
-				public Collection<? extends Cache> resolveCaches(
-						CacheOperationInvocationContext<?> context) {
-					return Collections.singleton(mock(Cache.class));
-				}
-
-			};
+			return (context) -> Collections.singleton(mock(Cache.class));
 
 		}
 

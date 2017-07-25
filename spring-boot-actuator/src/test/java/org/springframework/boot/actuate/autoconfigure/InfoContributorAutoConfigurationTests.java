@@ -190,10 +190,7 @@ public class InfoContributorAutoConfigurationTests {
 
 		@Bean
 		public InfoContributor customInfoContributor() {
-			return new InfoContributor() {
-				@Override
-				public void contribute(Info.Builder builder) {
-				}
+			return (builder) -> {
 			};
 		}
 

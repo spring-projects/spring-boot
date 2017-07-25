@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
 
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.After;
 import org.junit.Before;
@@ -313,12 +314,7 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		final AtomicReference<ApplicationContext> reference = new AtomicReference<>();
 		application.setInitializers(Arrays.asList(
-				new ApplicationContextInitializer<ConfigurableApplicationContext>() {
-					@Override
-					public void initialize(ConfigurableApplicationContext context) {
-						reference.set(context);
-					}
-				}));
+				(ApplicationContextInitializer<ConfigurableApplicationContext>) reference::set));
 		this.context = application.run("--foo=bar");
 		assertThat(this.context).isSameAs(reference.get());
 		// Custom initializers do not switch off the defaults
@@ -638,14 +634,8 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context).isNotNull();
-		assertThat(SpringApplication.exit(this.context, new ExitCodeGenerator() {
-
-			@Override
-			public int getExitCode() {
-				return 2;
-			}
-
-		})).isEqualTo(2);
+		assertThat(SpringApplication.exit(this.context, (ExitCodeGenerator) () -> 2))
+				.isEqualTo(2);
 		assertThat(listener.getExitCode()).isEqualTo(2);
 	}
 
@@ -764,14 +754,7 @@ public class SpringApplicationTests {
 				ListenerConfig.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
-		application.addListeners(new ApplicationListener<ApplicationEvent>() {
-
-			@Override
-			public void onApplicationEvent(ApplicationEvent event) {
-				events.add(event);
-			}
-
-		});
+		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
@@ -784,14 +767,7 @@ public class SpringApplicationTests {
 				ListenerConfig.class, Multicaster.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
-		application.addListeners(new ApplicationListener<ApplicationEvent>() {
-
-			@Override
-			public void onApplicationEvent(ApplicationEvent event) {
-				events.add(event);
-			}
-
-		});
+		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
@@ -857,9 +833,8 @@ public class SpringApplicationTests {
 		final ApplicationListener<ApplicationEvent> listener = mock(
 				ApplicationListener.class);
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.addInitializers((applicationContext) -> {
-			applicationContext.addApplicationListener(listener);
-		});
+		application.addInitializers((applicationContext) -> applicationContext
+				.addApplicationListener(listener));
 		try {
 			application.run();
 			fail("Run should have failed with an ApplicationContextException");
@@ -876,9 +851,8 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(
 				BrokenPostConstructConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.addInitializers((applicationContext) -> {
-			applicationContext.addApplicationListener(listener);
-		});
+		application.addInitializers((applicationContext) -> applicationContext
+				.addApplicationListener(listener));
 		try {
 			application.run();
 			fail("Run should have failed with a BeanCreationException");
@@ -944,19 +918,13 @@ public class SpringApplicationTests {
 		TestSpringApplication application = new TestSpringApplication(
 				ExampleConfig.class);
 		application.addListeners(
-				new ApplicationListener<ApplicationEnvironmentPreparedEvent>() {
-
-					@Override
-					public void onApplicationEvent(
-							ApplicationEnvironmentPreparedEvent event) {
-						assertThat(event.getEnvironment())
-								.isInstanceOf(StandardServletEnvironment.class);
-						TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-								event.getEnvironment(), "foo=bar");
-						event.getSpringApplication()
-								.setWebApplicationType(WebApplicationType.NONE);
-					}
-
+				(ApplicationListener<ApplicationEnvironmentPreparedEvent>) (event) -> {
+					Assertions.assertThat(event.getEnvironment())
+							.isInstanceOf(StandardServletEnvironment.class);
+					TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
+							event.getEnvironment(), "foo=bar");
+					event.getSpringApplication()
+							.setWebApplicationType(WebApplicationType.NONE);
 				});
 		this.context = application.run();
 		assertThat(this.context.getEnvironment())
@@ -1210,13 +1178,8 @@ public class SpringApplicationTests {
 
 		@Bean
 		public CommandLineRunner runner() {
-			return new CommandLineRunner() {
-
-				@Override
-				public void run(String... args) throws Exception {
-					throw new IllegalStateException(new ExitStatusException());
-				}
-
+			return (args) -> {
+				throw new IllegalStateException(new ExitStatusException());
 			};
 		}
 
@@ -1227,28 +1190,18 @@ public class SpringApplicationTests {
 
 		@Bean
 		public CommandLineRunner runner() {
-			return new CommandLineRunner() {
-
-				@Override
-				public void run(String... args) throws Exception {
-					throw new IllegalStateException();
-				}
-
+			return (args) -> {
+				throw new IllegalStateException();
 			};
 		}
 
 		@Bean
 		public ExitCodeExceptionMapper exceptionMapper() {
-			return new ExitCodeExceptionMapper() {
-
-				@Override
-				public int getExitCode(Throwable exception) {
-					if (exception instanceof IllegalStateException) {
-						return 11;
-					}
-					return 0;
+			return (exception) -> {
+				if (exception instanceof IllegalStateException) {
+					return 11;
 				}
-
+				return 0;
 			};
 		}
 

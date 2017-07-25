@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,21 +62,20 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 			return SHUTDOWN_MESSAGE;
 		}
 		finally {
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(500L);
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					ShutdownEndpoint.this.context.close();
-				}
-			});
+			Thread thread = new Thread(this::performShutdown);
 			thread.setContextClassLoader(getClass().getClassLoader());
 			thread.start();
 		}
+	}
+
+	private void performShutdown() {
+		try {
+			Thread.sleep(500L);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+		this.context.close();
 	}
 
 	@Override

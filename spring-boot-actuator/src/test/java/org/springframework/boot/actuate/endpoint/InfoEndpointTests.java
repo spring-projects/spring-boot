@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -54,14 +53,7 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 		@Bean
 		public InfoContributor infoContributor() {
-			return new InfoContributor() {
-
-				@Override
-				public void contribute(Info.Builder builder) {
-					builder.withDetail("key1", "value1");
-				}
-
-			};
+			return (builder) -> builder.withDetail("key1", "value1");
 		}
 
 		@Bean

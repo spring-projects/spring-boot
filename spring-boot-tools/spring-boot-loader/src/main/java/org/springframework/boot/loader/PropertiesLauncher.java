@@ -537,16 +537,11 @@ public class PropertiesLauncher extends Launcher {
 		// directories, meaning we are running from an executable JAR. We add nested
 		// entries from there with low priority (i.e. at end).
 		try {
-			lib.addAll(this.parent.getNestedArchives(new EntryFilter() {
-
-				@Override
-				public boolean matches(Entry entry) {
-					if (entry.isDirectory()) {
-						return entry.getName().equals(JarLauncher.BOOT_INF_CLASSES);
-					}
-					return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
+			lib.addAll(this.parent.getNestedArchives((entry) -> {
+				if (entry.isDirectory()) {
+					return entry.getName().equals(JarLauncher.BOOT_INF_CLASSES);
 				}
-
+				return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
 			}));
 		}
 		catch (IOException ex) {

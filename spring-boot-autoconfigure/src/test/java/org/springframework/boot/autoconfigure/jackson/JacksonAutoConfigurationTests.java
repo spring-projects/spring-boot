@@ -533,13 +533,7 @@ public class JacksonAutoConfigurationTests {
 
 		@Bean
 		public Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
-			return new Jackson2ObjectMapperBuilderCustomizer() {
-				@Override
-				public void customize(
-						Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
-					jackson2ObjectMapperBuilder.dateFormat(new MyDateFormat());
-				}
-			};
+			return (builder) -> builder.dateFormat(new MyDateFormat());
 		}
 
 	}

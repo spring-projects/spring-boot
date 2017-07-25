@@ -31,14 +31,7 @@ public interface RestartInitializer {
 	/**
 	 * {@link RestartInitializer} that doesn't return any URLs.
 	 */
-	RestartInitializer NONE = new RestartInitializer() {
-
-		@Override
-		public URL[] getInitialUrls(Thread thread) {
-			return null;
-		}
-
-	};
+	RestartInitializer NONE = (thread) -> null;
 
 	/**
 	 * Return the initial set of URLs for the {@link Restarter} or {@code null} if no

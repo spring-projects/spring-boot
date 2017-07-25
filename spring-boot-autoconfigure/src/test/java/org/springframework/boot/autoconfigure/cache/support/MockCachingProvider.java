@@ -27,9 +27,6 @@ import javax.cache.configuration.Configuration;
 import javax.cache.configuration.OptionalFeature;
 import javax.cache.spi.CachingProvider;
 
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -52,24 +49,17 @@ public class MockCachingProvider implements CachingProvider {
 		given(cacheManager.getClassLoader()).willReturn(classLoader);
 		final Map<String, Cache> caches = new HashMap<>();
 		given(cacheManager.getCacheNames()).willReturn(caches.keySet());
-		given(cacheManager.getCache(anyString())).willAnswer(new Answer<Cache>() {
-			@Override
-			public Cache answer(InvocationOnMock invocationOnMock) throws Throwable {
-				String cacheName = (String) invocationOnMock.getArguments()[0];
-				return caches.get(cacheName);
-			}
+		given(cacheManager.getCache(anyString())).willAnswer((invocation) -> {
+			String cacheName = (String) invocation.getArguments()[0];
+			return caches.get(cacheName);
 		});
 		given(cacheManager.createCache(anyString(), any(Configuration.class)))
-				.will(new Answer<Cache>() {
-					@Override
-					public Cache answer(InvocationOnMock invocationOnMock)
-							throws Throwable {
-						String cacheName = (String) invocationOnMock.getArguments()[0];
-						Cache cache = mock(Cache.class);
-						given(cache.getName()).willReturn(cacheName);
-						caches.put(cacheName, cache);
-						return cache;
-					}
+				.will((invocation) -> {
+					String cacheName = (String) invocation.getArguments()[0];
+					Cache cache = mock(Cache.class);
+					given(cache.getName()).willReturn(cacheName);
+					caches.put(cacheName, cache);
+					return cache;
 				});
 		return cacheManager;
 	}
