@@ -1519,7 +1519,7 @@ There is a catch however. Because the actual type of the connection pool is not 
 no keys are generated in the metadata for your custom `DataSource` and no completion is
 available in your IDE (The `DataSource` interface doesn't expose any property). Also, if
 you happen to have Hikari on the classpath, this basic setup will not work because Hikari
-has no `url` parameter (but a `jdbcUrl` parameter). You will have to rewrite your
+has no `url` property (but a `jdbcUrl` property). You will have to rewrite your
 configuration as follows:
 
 [source,properties,indent=0]
@@ -1585,7 +1585,7 @@ described in the previous section. You must, however, mark one of the `DataSourc
 type.
 
 If you create your own `DataSource`, the auto-configuration will back off. In the example
-below, we provide the _exact_ same features set than what the auto-configuration provides
+below, we provide the _exact_ same features set as what the auto-configuration provides
 on the primary data source:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -1618,7 +1618,7 @@ include::{code-examples}/jdbc/CompleteTwoDataSourcesExample.java[tag=configurati
 ----
 
 This final example configures two data sources on custom namespaces with the same logic
-than what Spring Boot would do in auto-configuration.
+as what Spring Boot would do in auto-configuration.
 
 
 
