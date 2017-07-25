@@ -18,9 +18,10 @@ package org.springframework.boot.actuate.endpoint;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
-
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -44,8 +45,21 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 		assertThat(getEndpointBean().invoke()).hasSize(1);
 	}
 
+	@Test
+	public void invokeDifferentDefaultSchema() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues
+			.ofPair("liquibase.defaultSchema","SOMESCHEMA")
+			.and("spring.datasource.generate-unique-name","true")
+			.and("spring.datasource.schema","classpath:/db/non-default-schema.sql")
+			.applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		assertThat(getEndpointBean().invoke()).hasSize(1);
+	}
+
 	@Configuration
-	@Import({ EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class })
+	@Import({ DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 	public static class Config {
 
 		private final SpringLiquibase liquibase;

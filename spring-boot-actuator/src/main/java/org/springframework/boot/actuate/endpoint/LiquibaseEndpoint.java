@@ -28,6 +28,7 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.integration.spring.SpringLiquibase;
+import liquibase.util.StringUtils;
 
 import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint.LiquibaseReport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -67,6 +68,10 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 				try {
 					Database database = factory
 							.findCorrectDatabaseImplementation(connection);
+					String defaultSchema = entry.getValue().getDefaultSchema();
+					if (StringUtils.trimToNull(defaultSchema) != null) {
+						database.setDefaultSchemaName(defaultSchema);
+					}
 					reports.add(new LiquibaseReport(entry.getKey(),
 							service.queryDatabaseChangeLogTable(database)));
 				}
