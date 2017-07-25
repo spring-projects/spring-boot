@@ -4278,6 +4278,9 @@ is on the classpath and the url of the database is set:
 If the connection to InfluxDB requires a user and password, you can set the
 `spring.influx.user` and `spring.influx.password` properties accordingly.
 
+InfluxDB relies on OkHttp. If you need to tune the http client `InfluxDB` uses behind the
+scenes, you can register a `OkHttpClient.Builder` bean.
+
 
 
 [[boot-features-caching]]
