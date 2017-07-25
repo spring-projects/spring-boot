@@ -763,12 +763,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void compressionOfResposeToGetRequest() throws Exception {
+	public void compressionOfResponseToGetRequest() throws Exception {
 		assertThat(doTestCompression(10000, null, null)).isTrue();
 	}
 
 	@Test
-	public void compressionOfResposeToPostRequest() throws Exception {
+	public void compressionOfResponseToPostRequest() throws Exception {
 		assertThat(doTestCompression(10000, null, null, HttpMethod.POST)).isTrue();
 	}
 
