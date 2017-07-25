@@ -20,16 +20,15 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
-import org.influxdb.impl.InfluxDBImpl;
 import org.junit.After;
 import org.junit.Test;
 import retrofit2.Retrofit;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -91,10 +90,10 @@ public class InfluxDbAutoConfigurationTests {
 
 	private int getReadTimeoutProperty() {
 		InfluxDB influxDB = this.context.getBean(InfluxDB.class);
-		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDB,
-				InfluxDBImpl.class, "retrofit");
-		OkHttpClient callFactory = (OkHttpClient) ReflectionTestUtils.getField(retrofit,
-				Retrofit.class, "callFactory");
+		Retrofit retrofit = (Retrofit) new DirectFieldAccessor(influxDB)
+				.getPropertyValue("retrofit");
+		OkHttpClient callFactory = (OkHttpClient) new DirectFieldAccessor(retrofit)
+				.getPropertyValue("callFactory");
 		return callFactory.readTimeoutMillis();
 	}
 
