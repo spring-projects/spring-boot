@@ -19,9 +19,10 @@ package org.springframework.boot.gradle.plugin;
 import java.util.Arrays;
 import java.util.List;
 
-import net.bytebuddy.build.Plugin;
 import org.gradle.api.GradleException;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
@@ -39,7 +40,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	/**
 	 * The name of the {@link Configuration} that contains Spring Boot archives.
-	 *
 	 * @since 2.0.0
 	 */
 	public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";

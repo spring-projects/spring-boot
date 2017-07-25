@@ -16,6 +16,8 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import org.gradle.api.Action;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.maven.MavenResolver;
 import org.gradle.api.plugins.MavenPlugin;

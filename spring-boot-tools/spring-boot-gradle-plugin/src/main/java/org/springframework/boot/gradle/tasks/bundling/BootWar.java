@@ -20,17 +20,15 @@ import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
-import javax.swing.Action;
-import javax.swing.text.DefaultEditorKit.CopyAction;
-
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
+import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Optional;
-
-import org.springframework.boot.loader.tools.Layouts.War;
+import org.gradle.api.tasks.bundling.War;
 
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.

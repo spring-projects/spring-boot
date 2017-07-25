@@ -20,16 +20,14 @@ import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
-import javax.swing.Action;
-import javax.swing.text.DefaultEditorKit.CopyAction;
-
+import org.gradle.api.Action;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
+import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
-
-import org.springframework.boot.loader.tools.Layouts.Jar;
+import org.gradle.api.tasks.bundling.Jar;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.

@@ -23,19 +23,18 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import javax.swing.text.DefaultEditorKit.CopyAction;
-
-import io.spring.gradle.dependencymanagement.org.apache.maven.model.PatternSet;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.file.RelativePath;
+import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
+import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
-
-import org.springframework.boot.loader.tools.Layouts.Jar;
+import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.api.tasks.util.PatternSet;
 
 /**
  * Support class for implementations of {@link BootArchive}.
