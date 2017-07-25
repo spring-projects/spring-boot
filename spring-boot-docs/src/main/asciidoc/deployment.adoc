@@ -340,7 +340,7 @@ the actual application, running on port 5000. To configure it, add the following
 ===== Best practices
 
 ====== Uploading binaries instead of sources
-By default Elastic Beanstalk uploads sources and compile them in AWS. To upload the
+By default Elastic Beanstalk uploads sources and compiles them in AWS. To upload the
 binaries instead, add the following to your `.elasticbeanstalk/config.yml` file:
 
 
@@ -368,7 +368,7 @@ command:
 
 
 ==== Summary
-This is one of the easiest way to get to AWS, but there are more things
+This is one of the easiest ways to get to AWS, but there are more things
 to cover, e.g.: how to integrate Elastic Beanstalk into any CI / CD tool, using the
 Elastic Beanstalk maven plugin instead of the CLI, etc. There is a
 https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog]
