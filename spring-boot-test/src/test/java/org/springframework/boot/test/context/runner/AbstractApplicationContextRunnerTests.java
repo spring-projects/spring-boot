@@ -95,7 +95,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			get().withSystemProperty(key, null).run((loaded) -> {
+			get().withSystemProperties(key + "=").run((loaded) -> {
 				assertThat(System.getProperties()).doesNotContainKey(key);
 			});
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");

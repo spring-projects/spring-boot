@@ -17,7 +17,6 @@
 package org.springframework.boot.test.context.runner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -99,9 +98,9 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 
 	private final Supplier<C> contextFactory;
 
-	private final TestPropertyValues environmentProperties;
+	private TestPropertyValues environmentProperties;
 
-	private final TestPropertyValues systemProperties;
+	private TestPropertyValues systemProperties;
 
 	private ClassLoader classLoader;
 
@@ -131,20 +130,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withPropertyValues(String... pairs) {
-		Arrays.stream(pairs).forEach(this.environmentProperties::and);
-		return self();
-	}
-
-	/**
-	 * Add the specified {@link Environment} property.
-	 * @param name the name of the property
-	 * @param value the value of the property
-	 * @return this instance
-	 * @see TestPropertyValues
-	 * @see #withSystemProperties(String...)
-	 */
-	public SELF withPropertyValue(String name, String value) {
-		this.environmentProperties.and(name, value);
+		this.environmentProperties = this.environmentProperties.and(pairs);
 		return self();
 	}
 
@@ -159,22 +145,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withSystemProperties(String... pairs) {
-		Arrays.stream(pairs).forEach(this.systemProperties::and);
-		return self();
-	}
-
-	/**
-	 * Add the specified {@link System} property. System properties are added before the
-	 * context is {@link #run(ContextConsumer) run} and restored when the context is
-	 * closed.
-	 * @param name the property name
-	 * @param value the property value
-	 * @return this instance
-	 * @see TestPropertyValues
-	 * @see #withSystemProperties(String...)
-	 */
-	public SELF withSystemProperty(String name, String value) {
-		this.systemProperties.and(name, value);
+		this.systemProperties = this.systemProperties.and(pairs);
 		return self();
 	}
 

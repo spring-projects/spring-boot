@@ -17,9 +17,13 @@
 package org.springframework.boot.test.util;
 
 import java.io.Closeable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Streams;
 
@@ -45,56 +49,28 @@ import org.springframework.util.StringUtils;
  */
 public final class TestPropertyValues {
 
-	private final Map<String, Object> properties = new LinkedHashMap<>();
+	private static final TestPropertyValues EMPTY = new TestPropertyValues(
+			Collections.emptyMap());
 
-	private TestPropertyValues(String[] pairs) {
-		addProperties(pairs);
-	}
+	private final Map<String, Object> properties;
 
-	private void addProperties(String[] pairs) {
-		for (String pair : pairs) {
-			and(pair);
-		}
+	private TestPropertyValues(Map<String, Object> properties) {
+		this.properties = Collections.unmodifiableMap(properties);
 	}
 
 	/**
-	 * Builder method to append another property pair the underlying map of properties.
-	 * @param pair The property pair to add
-	 * @return the existing instance of {@link TestPropertyValues}
+	 * Builder method to add more properties.
+	 * @param pairs The property pairs to add
+	 * @return a new {@link TestPropertyValues} instance
 	 */
-	public TestPropertyValues and(String pair) {
-		int index = getSeparatorIndex(pair);
-		String key = pair.substring(0, index > 0 ? index : pair.length());
-		String value = index > 0 ? pair.substring(index + 1) : "";
-		and(key.trim(), value.trim());
-		return this;
+	public TestPropertyValues and(String... pairs) {
+		return and(Arrays.stream(pairs).map(Pair::parse));
 	}
 
-	private int getSeparatorIndex(String pair) {
-		int colonIndex = pair.indexOf(":");
-		int equalIndex = pair.indexOf("=");
-		if (colonIndex == -1) {
-			return equalIndex;
-		}
-		if (equalIndex == -1) {
-			return colonIndex;
-		}
-		return Math.min(colonIndex, equalIndex);
-	}
-
-	/**
-	 * Builder method to append another property to the underlying map of properties.
-	 * @param name The property name
-	 * @param value The property value
-	 * @return the existing instance of {@link TestPropertyValues}
-	 */
-	public TestPropertyValues and(String name, String value) {
-		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(value)) {
-			return this;
-		}
-		Assert.hasLength(name, "Name must not be empty");
-		this.properties.put(name, value);
-		return this;
+	private TestPropertyValues and(Stream<Pair> pairs) {
+		Map<String, Object> properties = new LinkedHashMap<>(this.properties);
+		pairs.filter(Objects::nonNull).forEach((pair) -> pair.addTo(properties));
+		return new TestPropertyValues(properties);
 	}
 
 	/**
@@ -170,30 +146,21 @@ public final class TestPropertyValues {
 				return;
 			}
 		}
-		MapPropertySource source = (type.equals(Type.MAP)
-				? new MapPropertySource(name, this.properties)
-				: new SystemEnvironmentPropertySource(name, this.properties));
-		sources.addFirst(source);
-	}
-
-	/**
-	 * Return a new empty {@link TestPropertyValues} instance.
-	 * @return an empty instance
-	 */
-	public static TestPropertyValues empty() {
-		return of();
+		Map<String, Object> source = new LinkedHashMap<>(this.properties);
+		sources.addFirst((type.equals(Type.MAP) ? new MapPropertySource(name, source)
+				: new SystemEnvironmentPropertySource(name, source)));
 	}
 
 	/**
 	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
-	 * given property pair.
-	 * @param name the property name
-	 * @param value the property value
+	 * given property pairs. Name-value pairs can be specified with colon (":") or equals
+	 * ("=") separators.
+	 * @param pairs The key value pairs for properties that need to be added to the
+	 * environment
 	 * @return the new instance
 	 */
-
-	public static TestPropertyValues ofPair(String name, String value) {
-		return of().and(name, value);
+	public static TestPropertyValues of(String... pairs) {
+		return of(Stream.of(pairs));
 	}
 
 	/**
@@ -206,9 +173,9 @@ public final class TestPropertyValues {
 	 */
 	public static TestPropertyValues of(Iterable<String> pairs) {
 		if (pairs == null) {
-			return of();
+			return empty();
 		}
-		return of(Streams.stream(pairs).toArray(String[]::new));
+		return of(Streams.stream(pairs));
 	}
 
 	/**
@@ -219,8 +186,19 @@ public final class TestPropertyValues {
 	 * environment
 	 * @return the new instance
 	 */
-	public static TestPropertyValues of(String... pairs) {
-		return new TestPropertyValues(pairs);
+	public static TestPropertyValues of(Stream<String> pairs) {
+		if (pairs == null) {
+			return empty();
+		}
+		return empty().and(pairs.map(Pair::parse));
+	}
+
+	/**
+	 * Return a new empty {@link TestPropertyValues} instance.
+	 * @return an empty instance
+	 */
+	public static TestPropertyValues empty() {
+		return EMPTY;
 	}
 
 	/**
@@ -246,6 +224,53 @@ public final class TestPropertyValues {
 
 		public Class<? extends MapPropertySource> getSourceClass() {
 			return this.sourceClass;
+		}
+
+	}
+
+	/**
+	 * A single name value pair.
+	 */
+	public static class Pair {
+
+		private String name;
+
+		private String value;
+
+		public Pair(String name, String value) {
+			Assert.hasLength(name, "Name must not be empty");
+			this.name = name;
+			this.value = value;
+		}
+
+		public void addTo(Map<String, Object> properties) {
+			properties.put(this.name, this.value);
+		}
+
+		public static Pair parse(String pair) {
+			int index = getSeparatorIndex(pair);
+			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String value = index > 0 ? pair.substring(index + 1) : "";
+			return of(key.trim(), value.trim());
+		}
+
+		private static int getSeparatorIndex(String pair) {
+			int colonIndex = pair.indexOf(":");
+			int equalIndex = pair.indexOf("=");
+			if (colonIndex == -1) {
+				return equalIndex;
+			}
+			if (equalIndex == -1) {
+				return colonIndex;
+			}
+			return Math.min(colonIndex, equalIndex);
+		}
+
+		private static Pair of(String name, String value) {
+			if (StringUtils.isEmpty(name) && StringUtils.isEmpty(value)) {
+				return null;
+			}
+			return new Pair(name, value);
 		}
 
 	}
@@ -278,7 +303,7 @@ public final class TestPropertyValues {
 
 		private String setOrClear(String name, String value) {
 			Assert.notNull(name, "Name must not be null");
-			if (value == null) {
+			if (StringUtils.isEmpty(value)) {
 				return (String) System.getProperties().remove(name);
 			}
 			return (String) System.getProperties().setProperty(name, value);

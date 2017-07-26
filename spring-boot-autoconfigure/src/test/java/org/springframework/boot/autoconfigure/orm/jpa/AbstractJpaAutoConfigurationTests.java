@@ -213,7 +213,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			ctx.setClassLoader(classLoader);
 		}
 		TestPropertyValues.of(environment)
-				.and("spring.datasource.generate-unique-name", "true").applyTo(ctx);
+				.and("spring.datasource.generate-unique-name=true").applyTo(ctx);
 		ctx.register(TestConfiguration.class);
 		if (!ObjectUtils.isEmpty(configs)) {
 			ctx.register(configs);
