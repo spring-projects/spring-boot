@@ -134,8 +134,8 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	private Object getAssertThat(Object proxy) {
-		return new ApplicationContextAssert<ApplicationContext>(
-				(ApplicationContext) proxy, this.startupFailure);
+		return new ApplicationContextAssert<>((ApplicationContext) proxy,
+				this.startupFailure);
 	}
 
 	private boolean isCloseMethod(Method method) {

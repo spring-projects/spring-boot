@@ -156,8 +156,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be applied
-	 * to the {@link Server} before it is created.
+	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
+	 * applied to the {@link Server} before it is created.
 	 * @return the Jetty customizers
 	 */
 	public Collection<JettyServerCustomizer> getServerCustomizers() {

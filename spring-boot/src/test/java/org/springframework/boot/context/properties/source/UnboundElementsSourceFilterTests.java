@@ -44,15 +44,19 @@ public class UnboundElementsSourceFilterTests {
 	}
 
 	@Test
-	public void filterWhenSourceIsSystemEnvironmentPropertySourceShouldReturnFalse() throws Exception {
-		MockPropertySource propertySource = new MockPropertySource(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+	public void filterWhenSourceIsSystemEnvironmentPropertySourceShouldReturnFalse()
+			throws Exception {
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 		given(this.source.getUnderlyingSource()).willReturn(propertySource);
 		assertThat(this.filter.apply(this.source)).isFalse();
 	}
 
 	@Test
-	public void filterWhenSourceIsSystemPropertiesPropertySourceShouldReturnTrue() throws Exception {
-		MockPropertySource propertySource = new MockPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+	public void filterWhenSourceIsSystemPropertiesPropertySourceShouldReturnTrue()
+			throws Exception {
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 		given(this.source.getUnderlyingSource()).willReturn(propertySource);
 		assertThat(this.filter.apply(this.source)).isFalse();
 	}

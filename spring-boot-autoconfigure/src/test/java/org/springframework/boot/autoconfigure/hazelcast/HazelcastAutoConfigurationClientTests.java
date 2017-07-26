@@ -123,7 +123,7 @@ public class HazelcastAutoConfigurationClientTests {
 	}
 
 	private Condition<HazelcastInstance> nameStartingWith(String prefix) {
-		return new Condition<HazelcastInstance>((o) -> o.getName().startsWith(prefix),
+		return new Condition<>((o) -> o.getName().startsWith(prefix),
 				"Name starts with " + prefix);
 	}
 

@@ -87,8 +87,7 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void warnIfRestartDisabled() throws Exception {
 		configure("spring.devtools.remote.restart.enabled:false");
-		assertThat(this.output.toString())
-				.contains("Remote restart is disabled");
+		assertThat(this.output.toString()).contains("Remote restart is disabled");
 	}
 
 	@Test

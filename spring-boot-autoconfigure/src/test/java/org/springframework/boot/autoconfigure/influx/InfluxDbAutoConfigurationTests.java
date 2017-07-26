@@ -46,16 +46,17 @@ public class InfluxDbAutoConfigurationTests {
 
 	@Test
 	public void influxDbRequiresUrl() {
-		this.context.run((loaded) ->
-				assertThat(loaded.getBeansOfType(InfluxDB.class)).isEmpty());
+		this.context.run(
+				(loaded) -> assertThat(loaded.getBeansOfType(InfluxDB.class)).isEmpty());
 	}
 
 	@Test
 	public void influxDbCanBeCustomized() {
-		this.context.withPropertyValues("spring.influx.url=http://localhost",
-				"spring.influx.password:password", "spring.influx.user:user")
-				.run((loaded ->
-						assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1)));
+		this.context
+				.withPropertyValues("spring.influx.url=http://localhost",
+						"spring.influx.password:password", "spring.influx.user:user")
+				.run((loaded -> assertThat(loaded.getBeansOfType(InfluxDB.class))
+						.hasSize(1)));
 	}
 
 	@Test
@@ -71,11 +72,12 @@ public class InfluxDbAutoConfigurationTests {
 	@Test
 	public void influxDbWithoutCredentialsAndOkHttpClientBuilder() {
 		this.context.withUserConfiguration(CustomOkHttpClientBuilderConfig.class)
-				.withPropertyValues("spring.influx.url=http://localhost").run((loaded) -> {
-			assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
-			int readTimeout = getReadTimeoutProperty(loaded);
-			assertThat(readTimeout).isEqualTo(30_000);
-		});
+				.withPropertyValues("spring.influx.url=http://localhost")
+				.run((loaded) -> {
+					assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
+					int readTimeout = getReadTimeoutProperty(loaded);
+					assertThat(readTimeout).isEqualTo(30_000);
+				});
 	}
 
 	@Test

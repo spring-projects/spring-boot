@@ -63,8 +63,8 @@ public class Neo4jDataAutoConfigurationTests {
 	public void defaultConfiguration() {
 		this.context.withPropertyValues("spring.data.neo4j.uri=http://localhost:8989")
 				.run((loaded) -> {
-					assertThat(loaded).hasSingleBean(
-							org.neo4j.ogm.config.Configuration.class);
+					assertThat(loaded)
+							.hasSingleBean(org.neo4j.ogm.config.Configuration.class);
 					assertThat(loaded).hasSingleBean(SessionFactory.class);
 					assertThat(loaded).hasSingleBean(Neo4jTransactionManager.class);
 					assertThat(loaded).hasSingleBean(OpenSessionInViewInterceptor.class);
@@ -73,13 +73,15 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void customNeo4jTransactionManagerUsingProperties() {
-		this.context.withPropertyValues("spring.transaction.default-timeout=30",
-				"spring.transaction.rollback-on-commit-failure:true").run((loaded) -> {
-			Neo4jTransactionManager transactionManager = loaded
-					.getBean(Neo4jTransactionManager.class);
-			assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
-			assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
-		});
+		this.context
+				.withPropertyValues("spring.transaction.default-timeout=30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.run((loaded) -> {
+					Neo4jTransactionManager transactionManager = loaded
+							.getBean(Neo4jTransactionManager.class);
+					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+				});
 	}
 
 	@Test
@@ -121,8 +123,8 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void openSessionInViewInterceptorCanBeDisabled() {
 		this.context.withPropertyValues("spring.data.neo4j.open-in-view:false")
-				.run((loaded) -> assertThat(loaded).doesNotHaveBean(
-						OpenSessionInViewInterceptor.class));
+				.run((loaded) -> assertThat(loaded)
+						.doesNotHaveBean(OpenSessionInViewInterceptor.class));
 	}
 
 	@Test
@@ -130,7 +132,8 @@ public class Neo4jDataAutoConfigurationTests {
 		this.context.withUserConfiguration(EventListenerConfiguration.class)
 				.run((loaded) -> {
 					Session session = loaded.getBean(SessionFactory.class).openSession();
-					session.notifyListeners(new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
+					session.notifyListeners(
+							new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
 					verify(loaded.getBean("eventListenerOne", EventListener.class))
 							.onPreSave(any(Event.class));
 					verify(loaded.getBean("eventListenerTwo", EventListener.class))

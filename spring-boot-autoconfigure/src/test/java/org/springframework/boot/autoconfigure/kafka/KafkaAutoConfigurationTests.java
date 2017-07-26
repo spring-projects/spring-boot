@@ -126,8 +126,7 @@ public class KafkaAutoConfigurationTests {
 	public void producerProperties() {
 		load("spring.kafka.clientId=cid",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-				"spring.kafka.producer.acks=all",
-				"spring.kafka.producer.batch-size=20",
+				"spring.kafka.producer.acks=all", "spring.kafka.producer.batch-size=20",
 				"spring.kafka.producer.bootstrap-servers=bar:1234", // test override
 				"spring.kafka.producer.buffer-memory=12345",
 				"spring.kafka.producer.compression-type=gzip",

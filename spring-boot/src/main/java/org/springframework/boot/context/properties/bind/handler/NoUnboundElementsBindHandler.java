@@ -53,7 +53,8 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 		this(parent, (configurationPropertySource) -> true);
 	}
 
-	public NoUnboundElementsBindHandler(BindHandler parent, Function<ConfigurationPropertySource, Boolean> filter) {
+	public NoUnboundElementsBindHandler(BindHandler parent,
+			Function<ConfigurationPropertySource, Boolean> filter) {
 		super(parent);
 		this.filter = filter;
 	}
@@ -77,7 +78,8 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 			BindContext context) {
 		Set<ConfigurationProperty> unbound = new TreeSet<>();
 		for (ConfigurationPropertySource source : context.getSources()) {
-			if (source instanceof IterableConfigurationPropertySource && this.filter.apply(source)) {
+			if (source instanceof IterableConfigurationPropertySource
+					&& this.filter.apply(source)) {
 				collectUnbound(name, unbound,
 						(IterableConfigurationPropertySource) source);
 			}
