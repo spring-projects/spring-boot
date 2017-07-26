@@ -16,9 +16,13 @@
 
 package org.springframework.boot.test.context.runner;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -56,6 +60,25 @@ public final class WebApplicationContextRunner extends
 	public WebApplicationContextRunner(
 			Supplier<ConfigurableWebApplicationContext> contextFactory) {
 		super(contextFactory);
+	}
+
+	private WebApplicationContextRunner(
+			Supplier<ConfigurableWebApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		super(contextFactory, environmentProperties, systemProperties, classLoader,
+				parent, configurations);
+	}
+
+	@Override
+	protected WebApplicationContextRunner newInstance(
+			Supplier<ConfigurableWebApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		return new WebApplicationContextRunner(contextFactory, environmentProperties,
+				systemProperties, classLoader, parent, configurations);
 	}
 
 	/**

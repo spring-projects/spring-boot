@@ -55,7 +55,9 @@ public class TestDatabaseAutoConfigurationTests {
 					DataSource datasource = context.getBean(DataSource.class);
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
 					jdbcTemplate.execute("create table example (id int, name varchar);");
-					this.contextRunner.run((secondContext) -> {
+					this.contextRunner
+							.withUserConfiguration(ExistingDataSourceConfiguration.class)
+							.run((secondContext) -> {
 						DataSource anotherDatasource = secondContext
 								.getBean(DataSource.class);
 						JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(

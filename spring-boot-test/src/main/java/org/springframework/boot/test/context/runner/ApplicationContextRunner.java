@@ -16,9 +16,13 @@
 
 package org.springframework.boot.test.context.runner;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -52,6 +56,25 @@ public class ApplicationContextRunner extends
 	public ApplicationContextRunner(
 			Supplier<ConfigurableApplicationContext> contextFactory) {
 		super(contextFactory);
+	}
+
+	private ApplicationContextRunner(
+			Supplier<ConfigurableApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		super(contextFactory, environmentProperties, systemProperties, classLoader,
+				parent, configurations);
+	}
+
+	@Override
+	protected ApplicationContextRunner newInstance(
+			Supplier<ConfigurableApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		return new ApplicationContextRunner(contextFactory, environmentProperties,
+				systemProperties, classLoader, parent, configurations);
 	}
 
 }

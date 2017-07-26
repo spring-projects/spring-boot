@@ -17,6 +17,7 @@
 package org.springframework.boot.test.context.runner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -98,25 +99,48 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 
 	private final Supplier<C> contextFactory;
 
-	private TestPropertyValues environmentProperties;
+	private final TestPropertyValues environmentProperties;
 
-	private TestPropertyValues systemProperties;
+	private final TestPropertyValues systemProperties;
 
-	private ClassLoader classLoader;
+	private final ClassLoader classLoader;
 
-	private ApplicationContext parent;
+	private final ApplicationContext parent;
 
-	private final List<Configurations> configurations = new ArrayList<>();
+	private final List<Configurations> configurations;
 
 	/**
 	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
+		this(contextFactory, TestPropertyValues.empty(), TestPropertyValues.empty(), null,
+				null, Collections.emptyList());
+	}
+
+	/**
+	 * Create a new {@link AbstractApplicationContextRunner} instance.
+	 * @param contextFactory the factory used to create the actual context
+	 * @param environmentProperties the environment properties
+	 * @param systemProperties the system properties
+	 * @param classLoader the class loader
+	 * @param parent the parent
+	 * @param configurations the configuration
+	 */
+	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
+		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
+		Assert.notNull(systemProperties, "SystemProperties must not be null");
+		Assert.notNull(configurations, "Configurations must not be null");
 		this.contextFactory = contextFactory;
-		this.environmentProperties = TestPropertyValues.empty();
-		this.systemProperties = TestPropertyValues.empty();
+		this.environmentProperties = environmentProperties;
+		this.systemProperties = systemProperties;
+		this.classLoader = classLoader;
+		this.parent = parent;
+		this.configurations = Collections.unmodifiableList(configurations);
 	}
 
 	/**
@@ -125,13 +149,14 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * might have been specified previously.
 	 * @param pairs the key-value pairs for properties that need to be added to the
 	 * environment
-	 * @return this instance
+	 * @return a new instance with the updated property values
 	 * @see TestPropertyValues
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withPropertyValues(String... pairs) {
-		this.environmentProperties = this.environmentProperties.and(pairs);
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties.and(pairs),
+				this.systemProperties, this.classLoader, this.parent,
+				this.configurations);
 	}
 
 	/**
@@ -140,13 +165,14 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * context is {@link #run(ContextConsumer) run} and restored when the context is
 	 * closed.
 	 * @param pairs the key-value pairs for properties that need to be added to the system
-	 * @return this instance
+	 * @return a new instance with the updated system properties
 	 * @see TestPropertyValues
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withSystemProperties(String... pairs) {
-		this.systemProperties = this.systemProperties.and(pairs);
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties.and(pairs), this.classLoader, this.parent,
+				this.configurations);
 	}
 
 	/**
@@ -154,30 +180,30 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * Customizing the {@link ClassLoader} is an effective manner to hide resources from
 	 * the classpath.
 	 * @param classLoader the classloader to use (can be null to use the default)
-	 * @return this instance
+	 * @return a new instance with the updated class loader
 	 * @see HidePackagesClassLoader
 	 */
 	public SELF withClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties, classLoader, this.parent, this.configurations);
 	}
 
 	/**
 	 * Configure the {@link ConfigurableApplicationContext#setParent(ApplicationContext)
 	 * parent} of the {@link ApplicationContext}.
 	 * @param parent the parent
-	 * @return this instance
+	 * @return a new instance with the updated parent
 	 */
 	public SELF withParent(ApplicationContext parent) {
-		this.parent = parent;
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties, this.classLoader, parent, this.configurations);
 	}
 
 	/**
 	 * Register the specified user configuration classes with the
 	 * {@link ApplicationContext}.
 	 * @param configurationClasses the user configuration classes to add
-	 * @return this instance
+	 * @return a new instance with the updated configuration
 	 */
 	public SELF withUserConfiguration(Class<?>... configurationClasses) {
 		return withConfiguration(UserConfigurations.of(configurationClasses));
@@ -186,32 +212,42 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	/**
 	 * Register the specified configuration classes with the {@link ApplicationContext}.
 	 * @param configurations the configurations to add
-	 * @return this instance
+	 * @return a new instance with the updated configuration
 	 */
 	public SELF withConfiguration(Configurations configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
-		this.configurations.add(configurations);
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties, this.classLoader, this.parent,
+				add(this.configurations, configurations));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected final SELF self() {
-		return (SELF) this;
+	private <T> List<T> add(List<T> list, T element) {
+		List<T> result = new ArrayList<>(list);
+		result.add(element);
+		return result;
 	}
+
+	protected abstract SELF newInstance(Supplier<C> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
 	 * this loader. The context is consumed by the specified {@code consumer} and closed
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
+	 * @return this instance
 	 */
-	public void run(ContextConsumer<? super A> consumer) {
+	@SuppressWarnings("unchecked")
+	public SELF run(ContextConsumer<? super A> consumer) {
 		this.systemProperties.applyToSystemProperties(() -> {
 			try (A context = createAssertableContext()) {
 				accept(consumer, context);
 			}
 			return null;
 		});
+		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")

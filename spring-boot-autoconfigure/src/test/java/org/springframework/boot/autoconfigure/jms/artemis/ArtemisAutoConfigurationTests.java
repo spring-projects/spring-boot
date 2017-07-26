@@ -231,15 +231,15 @@ public class ArtemisAutoConfigurationTests {
 						"spring.artemis.embedded.dataDirectory:"
 								+ dataFolder.getAbsolutePath())
 				.run((context) -> context.getBean(JmsTemplate.class).send("TestQueue",
-						(session) -> session.createTextMessage(messageId)));
-		// Start the server again and check if our message is still here
-		this.contextRunner.run((context) -> {
-			JmsTemplate jmsTemplate2 = context.getBean(JmsTemplate.class);
-			jmsTemplate2.setReceiveTimeout(1000L);
-			Message message = jmsTemplate2.receive("TestQueue");
-			assertThat(message).isNotNull();
-			assertThat(((TextMessage) message).getText()).isEqualTo(messageId);
-		});
+						(session) -> session.createTextMessage(messageId)))
+				.run((context) -> {
+					// Start the server again and check if our message is still here
+					JmsTemplate jmsTemplate2 = context.getBean(JmsTemplate.class);
+					jmsTemplate2.setReceiveTimeout(1000L);
+					Message message = jmsTemplate2.receive("TestQueue");
+					assertThat(message).isNotNull();
+					assertThat(((TextMessage) message).getText()).isEqualTo(messageId);
+				});
 	}
 
 	@Test

@@ -16,11 +16,15 @@
 
 package org.springframework.boot.test.context.runner;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 /**
  * A {@link AbstractApplicationContextRunner ApplicationContext runner} for a
@@ -52,6 +56,26 @@ public final class ReactiveWebApplicationContextRunner extends
 	public ReactiveWebApplicationContextRunner(
 			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory) {
 		super(contextFactory);
+	}
+
+	private ReactiveWebApplicationContextRunner(
+			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		super(contextFactory, environmentProperties, systemProperties, classLoader,
+				parent, configurations);
+	}
+
+	@Override
+	protected ReactiveWebApplicationContextRunner newInstance(
+			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		return new ReactiveWebApplicationContextRunner(contextFactory,
+				environmentProperties, systemProperties, classLoader, parent,
+				configurations);
 	}
 
 }
