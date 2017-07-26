@@ -29,7 +29,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * {@link ImportBeanDefinitionRegistrar} implementations when they can determine imports
  * early. The {@link ImportSelector} and {@link ImportBeanDefinitionRegistrar} interfaces
  * are quite flexible which can make it hard to tell exactly what bean definitions they
- * will add. This interface should be used when an implementation consistently result in
+ * will add. This interface should be used when an implementation consistently results in
  * the same imports, given the same source.
  * <p>
  * Using {@link DeterminableImports} is particularly useful when working with Spring's

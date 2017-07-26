@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Primary;
 public class ConfigurableDataSourceExample {
 
 	/**
-	 * A configuration that define dedicated settings and reuse
+	 * A configuration that defines dedicated settings and reuses
 	 * {@link DataSourceProperties}.
 	 */
 	@Configuration
