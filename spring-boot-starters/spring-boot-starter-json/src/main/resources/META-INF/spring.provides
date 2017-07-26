@@ -1,1 +1,1 @@
-provides: jackson-databind,jackson-datatype-jdk8,jackson-datatype-jsr310,jackson-module-parameter-names
+provides: jackson-databind,jackson-datatype-jdk8,jackson-datatype-jsr310,jackson-module-parameter-names,jackson-module-kotlin

@@ -1,1 +1,1 @@
-provides: spring-webflux,jackson-databind
+provides: spring-webflux
