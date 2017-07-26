@@ -22,33 +22,33 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * A {@link AbstractApplicationContextTester ApplicationContext tester} for a standard,
+ * A {@link AbstractApplicationContextRunner ApplicationContext runner} for a standard,
  * non-web environment {@link ConfigurableApplicationContext}.
  * <p>
- * See {@link AbstractApplicationContextTester} for details.
+ * See {@link AbstractApplicationContextRunner} for details.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ApplicationContextTester extends
-		AbstractApplicationContextTester<ApplicationContextTester, ConfigurableApplicationContext, AssertableApplicationContext> {
+public class ApplicationContextRunner extends
+		AbstractApplicationContextRunner<ApplicationContextRunner, ConfigurableApplicationContext, AssertableApplicationContext> {
 
 	/**
-	 * Create a new {@link ApplicationContextTester} instance using an
+	 * Create a new {@link ApplicationContextRunner} instance using an
 	 * {@link AnnotationConfigApplicationContext} as the underlying source.
 	 */
-	public ApplicationContextTester() {
+	public ApplicationContextRunner() {
 		this(AnnotationConfigApplicationContext::new);
 	}
 
 	/**
-	 * Create a new {@link ApplicationContextTester} instance using the specified
+	 * Create a new {@link ApplicationContextRunner} instance using the specified
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
-	public ApplicationContextTester(
+	public ApplicationContextRunner(
 			Supplier<ConfigurableApplicationContext> contextFactory) {
 		super(contextFactory);
 	}

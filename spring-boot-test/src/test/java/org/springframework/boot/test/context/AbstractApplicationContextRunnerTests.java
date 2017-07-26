@@ -34,15 +34,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 /**
- * Abstract tests for {@link AbstractApplicationContextTester} implementations.
+ * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
  *
- * @param <T> The tester type
+ * @param <T> The runner type
  * @param <C> the context type
  * @param <A> the assertable context type
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public abstract class AbstractApplicationContextTesterTests<T extends AbstractApplicationContextTester<T, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
+public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();

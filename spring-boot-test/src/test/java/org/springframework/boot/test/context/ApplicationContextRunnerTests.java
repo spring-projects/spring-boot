@@ -16,31 +16,20 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Test;
-
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Tests for {@link WebApplicationContextTester}.
+ * Tests for {@link ApplicationContextRunner}.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class WebApplicationContextTesterTests extends
-		AbstractApplicationContextTesterTests<WebApplicationContextTester, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
-
-	@Test
-	public void contextShouldHaveMockServletContext() throws Exception {
-		get().run((loaded) -> assertThat(loaded.getServletContext())
-				.isInstanceOf(MockServletContext.class));
-	}
+public class ApplicationContextRunnerTests extends
+		AbstractApplicationContextRunnerTests<ApplicationContextRunner, ConfigurableApplicationContext, AssertableApplicationContext> {
 
 	@Override
-	protected WebApplicationContextTester get() {
-		return new WebApplicationContextTester();
+	protected ApplicationContextRunner get() {
+		return new ApplicationContextRunner();
 	}
 
 }

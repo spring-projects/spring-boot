@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.context.ApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,36 +42,39 @@ import static org.mockito.Mockito.mockingDetails;
  */
 public class ActiveMQAutoConfigurationTests {
 
-	private final ApplicationContextTester context = new ApplicationContextTester()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
 					JmsAutoConfiguration.class));
 
 	@Test
 	public void brokerIsEmbeddedByDefault() {
-		this.context.withUserConfiguration(EmptyConfiguration.class).run((loaded) -> {
-			assertThat(loaded).getBean(ConnectionFactory.class)
-					.isInstanceOf(ActiveMQConnectionFactory.class);
-			assertThat(loaded.getBean(ActiveMQConnectionFactory.class).getBrokerURL())
-					.isEqualTo("vm://localhost?broker.persistent=false");
-		});
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.run((context) -> {
+					assertThat(context).getBean(ConnectionFactory.class)
+							.isInstanceOf(ActiveMQConnectionFactory.class);
+					assertThat(context.getBean(ActiveMQConnectionFactory.class)
+							.getBrokerURL())
+									.isEqualTo("vm://localhost?broker.persistent=false");
+				});
 	}
 
 	@Test
 	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
-		this.context.withUserConfiguration(CustomConnectionFactoryConfiguration.class)
-				.run((loaded) -> assertThat(
-						mockingDetails(loaded.getBean(ConnectionFactory.class)).isMock())
+		this.contextRunner
+				.withUserConfiguration(CustomConnectionFactoryConfiguration.class)
+				.run((context) -> assertThat(
+						mockingDetails(context.getBean(ConnectionFactory.class)).isMock())
 								.isTrue());
 	}
 
 	@Test
 	public void defaultsConnectionFactoryAreApplied() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=false")
-				.run((loaded) -> {
-					assertThat(loaded.getBeansOfType(ActiveMQConnectionFactory.class))
+				.run((context) -> {
+					assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class))
 							.hasSize(1);
-					ActiveMQConnectionFactory connectionFactory = loaded
+					ActiveMQConnectionFactory connectionFactory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					ActiveMQConnectionFactory defaultFactory = new ActiveMQConnectionFactory(
 							"vm://localhost?broker.persistent=false");
@@ -94,7 +97,7 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void customConnectionFactoryAreApplied() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=false",
 						"spring.activemq.brokerUrl=vm://localhost?useJmx=false&broker.persistent=false",
 						"spring.activemq.user=foo", "spring.activemq.password=bar",
@@ -103,10 +106,10 @@ public class ActiveMQAutoConfigurationTests {
 						"spring.activemq.sendTimeout=1000",
 						"spring.activemq.packages.trust-all=false",
 						"spring.activemq.packages.trusted=com.example.acme")
-				.run((loaded) -> {
-					assertThat(loaded.getBeansOfType(ActiveMQConnectionFactory.class))
+				.run((context) -> {
+					assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class))
 							.hasSize(1);
-					ActiveMQConnectionFactory connectionFactory = loaded
+					ActiveMQConnectionFactory connectionFactory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					assertThat(connectionFactory.getUserName()).isEqualTo("foo");
 					assertThat(connectionFactory.getPassword()).isEqualTo("bar");
@@ -122,11 +125,12 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void defaultsPooledConnectionFactoryAreApplied() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.activemq.pool.enabled=true").run((loaded) -> {
-					assertThat(loaded.getBeansOfType(PooledConnectionFactory.class))
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.activemq.pool.enabled=true")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(PooledConnectionFactory.class))
 							.hasSize(1);
-					PooledConnectionFactory connectionFactory = loaded
+					PooledConnectionFactory connectionFactory = context
 							.getBean(PooledConnectionFactory.class);
 					PooledConnectionFactory defaultFactory = new PooledConnectionFactory();
 					assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
@@ -157,7 +161,7 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void customPooledConnectionFactoryAreApplied() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=true",
 						"spring.activemq.pool.blockIfFull=false",
 						"spring.activemq.pool.blockIfFullTimeout=64",
@@ -169,10 +173,10 @@ public class ActiveMQAutoConfigurationTests {
 						"spring.activemq.pool.reconnectOnException=false",
 						"spring.activemq.pool.timeBetweenExpirationCheck=2048",
 						"spring.activemq.pool.useAnonymousProducers=false")
-				.run((loaded) -> {
-					assertThat(loaded.getBeansOfType(PooledConnectionFactory.class))
+				.run((context) -> {
+					assertThat(context.getBeansOfType(PooledConnectionFactory.class))
 							.hasSize(1);
-					PooledConnectionFactory connectionFactory = loaded
+					PooledConnectionFactory connectionFactory = context
 							.getBean(PooledConnectionFactory.class);
 					assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
 							.isEqualTo(false);
@@ -196,11 +200,12 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void pooledConnectionFactoryConfiguration() throws JMSException {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.activemq.pool.enabled:true").run((loaded) -> {
-					ConnectionFactory factory = loaded.getBean(ConnectionFactory.class);
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.activemq.pool.enabled:true")
+				.run((context) -> {
+					ConnectionFactory factory = context.getBean(ConnectionFactory.class);
 					assertThat(factory).isInstanceOf(PooledConnectionFactory.class);
-					loaded.getSourceApplicationContext().close();
+					context.getSourceApplicationContext().close();
 					assertThat(factory.createConnection()).isNull();
 				});
 	}

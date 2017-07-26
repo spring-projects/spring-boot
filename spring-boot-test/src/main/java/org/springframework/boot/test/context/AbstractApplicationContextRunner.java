@@ -34,13 +34,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Tester utility design to manage the lifecycle of an {@link ApplicationContext} and
- * provide AssertJ style assertions. The test is best used as a field of a test class,
- * describing the shared configuration required for the test:
+ * Utility design to run and an {@link ApplicationContext} and provide AssertJ style
+ * assertions. The test is best used as a field of a test class, describing the shared
+ * configuration required for the test:
  *
  * <pre class="code">
  * public class MyContextTests {
- *     private final ApplicationContextTester context = new ApplicationContextTester()
+ *     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
  *             .withPropertyValues("spring.foo=bar")
  *             .withUserConfiguration(MyConfiguration.class);
  * }</pre>
@@ -55,8 +55,8 @@ import org.springframework.util.ReflectionUtils;
  * <pre class="code">
  * &#064;Test
  * public someTest() {
- *     this.context.withPropertyValues("spring.foo=biz").run((loaded) -&gt; {
- *         assertThat(loaded).containsSingleBean(MyBean.class);
+ *     this.contextRunner.withPropertyValues("spring.foo=biz").run((context) -&gt; {
+ *         assertThat(context).containsSingleBean(MyBean.class);
  *         // other assertions
  *     });
  * }</pre>
@@ -80,19 +80,19 @@ import org.springframework.util.ReflectionUtils;
  * }</pre>
  * <p>
  *
- * @param <SELF> The "self" type for this tester
+ * @param <SELF> The "self" type for this runner
  * @param <C> The context type
  * @param <A> The application context assertion provider
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
- * @see ApplicationContextTester
- * @see WebApplicationContextTester
- * @see ReactiveWebApplicationContextTester
+ * @see ApplicationContextRunner
+ * @see WebApplicationContextRunner
+ * @see ReactiveWebApplicationContextRunner
  * @see ApplicationContextAssert
  */
-abstract class AbstractApplicationContextTester<SELF extends AbstractApplicationContextTester<SELF, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
+abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
 
 	private final Supplier<C> contextFactory;
 
@@ -107,10 +107,10 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	private final List<Configurations> configurations = new ArrayList<>();
 
 	/**
-	 * Create a new {@link AbstractApplicationContextTester} instance.
+	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
 	 */
-	protected AbstractApplicationContextTester(Supplier<C> contextFactory) {
+	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
 		this.contextFactory = contextFactory;
 		this.environmentProperties = TestPropertyValues.empty();
@@ -243,7 +243,7 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	@SuppressWarnings("unchecked")
 	private A createAssertableContext() {
 		ResolvableType resolvableType = ResolvableType
-				.forClass(AbstractApplicationContextTester.class, getClass());
+				.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
 		return AssertProviderApplicationContext.get(assertType, contextType,

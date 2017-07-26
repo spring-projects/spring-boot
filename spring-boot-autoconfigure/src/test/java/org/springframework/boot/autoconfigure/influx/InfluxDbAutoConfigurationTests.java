@@ -25,7 +25,7 @@ import retrofit2.Retrofit;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.ApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextRunner;
 import org.springframework.boot.test.context.AssertableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,59 +41,60 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InfluxDbAutoConfigurationTests {
 
-	private final ApplicationContextTester context = new ApplicationContextTester()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(InfluxDbAutoConfiguration.class));
 
 	@Test
 	public void influxDbRequiresUrl() {
-		this.context.run(
-				(loaded) -> assertThat(loaded.getBeansOfType(InfluxDB.class)).isEmpty());
+		this.contextRunner
+				.run((context) -> assertThat(context.getBeansOfType(InfluxDB.class))
+						.isEmpty());
 	}
 
 	@Test
 	public void influxDbCanBeCustomized() {
-		this.context
+		this.contextRunner
 				.withPropertyValues("spring.influx.url=http://localhost",
 						"spring.influx.password:password", "spring.influx.user:user")
-				.run((loaded -> assertThat(loaded.getBeansOfType(InfluxDB.class))
+				.run(((context) -> assertThat(context.getBeansOfType(InfluxDB.class))
 						.hasSize(1)));
 	}
 
 	@Test
 	public void influxDbCanBeCreatedWithoutCredentials() {
-		this.context.withPropertyValues("spring.influx.url=http://localhost")
-				.run((loaded) -> {
-					assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
-					int readTimeout = getReadTimeoutProperty(loaded);
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					int readTimeout = getReadTimeoutProperty(context);
 					assertThat(readTimeout).isEqualTo(10_000);
 				});
 	}
 
 	@Test
 	public void influxDbWithoutCredentialsAndOkHttpClientBuilder() {
-		this.context.withUserConfiguration(CustomOkHttpClientBuilderConfig.class)
+		this.contextRunner.withUserConfiguration(CustomOkHttpClientBuilderConfig.class)
 				.withPropertyValues("spring.influx.url=http://localhost")
-				.run((loaded) -> {
-					assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
-					int readTimeout = getReadTimeoutProperty(loaded);
+				.run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					int readTimeout = getReadTimeoutProperty(context);
 					assertThat(readTimeout).isEqualTo(30_000);
 				});
 	}
 
 	@Test
 	public void influxDbWithOkHttpClientBuilder() {
-		this.context.withUserConfiguration(CustomOkHttpClientBuilderConfig.class)
+		this.contextRunner.withUserConfiguration(CustomOkHttpClientBuilderConfig.class)
 				.withPropertyValues("spring.influx.url=http://localhost",
 						"spring.influx.password:password", "spring.influx.user:user")
-				.run((loaded) -> {
-					assertThat(loaded.getBeansOfType(InfluxDB.class)).hasSize(1);
-					int readTimeout = getReadTimeoutProperty(loaded);
+				.run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					int readTimeout = getReadTimeoutProperty(context);
 					assertThat(readTimeout).isEqualTo(30_000);
 				});
 	}
 
-	private int getReadTimeoutProperty(AssertableApplicationContext loaded) {
-		InfluxDB influxDB = loaded.getBean(InfluxDB.class);
+	private int getReadTimeoutProperty(AssertableApplicationContext context) {
+		InfluxDB influxDB = context.getBean(InfluxDB.class);
 		Retrofit retrofit = (Retrofit) new DirectFieldAccessor(influxDB)
 				.getPropertyValue("retrofit");
 		OkHttpClient callFactory = (OkHttpClient) new DirectFieldAccessor(retrofit)

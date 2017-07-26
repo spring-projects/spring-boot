@@ -22,33 +22,33 @@ import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebAppl
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 
 /**
- * A {@link AbstractApplicationContextTester ApplicationContext tester} for a
+ * A {@link AbstractApplicationContextRunner ApplicationContext runner} for a
  * {@link ConfigurableReactiveWebApplicationContext}.
  * <p>
- * See {@link AbstractApplicationContextTester} for details.
+ * See {@link AbstractApplicationContextRunner} for details.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 2.0.0
  */
-public final class ReactiveWebApplicationContextTester extends
-		AbstractApplicationContextTester<ReactiveWebApplicationContextTester, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
+public final class ReactiveWebApplicationContextRunner extends
+		AbstractApplicationContextRunner<ReactiveWebApplicationContextRunner, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
 	/**
-	 * Create a new {@link ReactiveWebApplicationContextTester} instance using a
+	 * Create a new {@link ReactiveWebApplicationContextRunner} instance using a
 	 * {@link GenericReactiveWebApplicationContext} as the underlying source.
 	 */
-	public ReactiveWebApplicationContextTester() {
+	public ReactiveWebApplicationContextRunner() {
 		this(GenericReactiveWebApplicationContext::new);
 	}
 
 	/**
-	 * Create a new {@link ApplicationContextTester} instance using the specified
+	 * Create a new {@link ApplicationContextRunner} instance using the specified
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
-	public ReactiveWebApplicationContextTester(
+	public ReactiveWebApplicationContextRunner(
 			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory) {
 		super(contextFactory);
 	}

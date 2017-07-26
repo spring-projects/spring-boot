@@ -30,7 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Phillip Webb
  * @since 2.0.0
- * @see WebApplicationContextTester
+ * @see WebApplicationContextRunner
  * @see WebApplicationContext
  */
 public interface AssertableWebApplicationContext

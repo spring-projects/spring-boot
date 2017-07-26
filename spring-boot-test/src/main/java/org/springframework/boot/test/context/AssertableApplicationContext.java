@@ -30,7 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  * @author Phillip Webb
  * @since 2.0.0
- * @see ApplicationContextTester
+ * @see ApplicationContextRunner
  * @see ApplicationContext
  */
 public interface AssertableApplicationContext

@@ -19,17 +19,17 @@ package org.springframework.boot.test.context;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 
 /**
- * Tests for {@link ReactiveWebApplicationContextTester}.
+ * Tests for {@link ReactiveWebApplicationContextRunner}.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class ReactiveWebApplicationContextTesterTests extends
-		AbstractApplicationContextTesterTests<ReactiveWebApplicationContextTester, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
+public class ReactiveWebApplicationContextRunnerTests extends
+		AbstractApplicationContextRunnerTests<ReactiveWebApplicationContextRunner, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
 	@Override
-	protected ReactiveWebApplicationContextTester get() {
-		return new ReactiveWebApplicationContextTester();
+	protected ReactiveWebApplicationContextRunner get() {
+		return new ReactiveWebApplicationContextRunner();
 	}
 
 }

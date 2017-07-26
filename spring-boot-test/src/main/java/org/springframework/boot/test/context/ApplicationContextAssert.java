@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @param <C> The application context type
  * @author Phillip Webb
  * @since 2.0.0
- * @see ApplicationContextTester
+ * @see ApplicationContextRunner
  * @see AssertableApplicationContext
  */
 public class ApplicationContextAssert<C extends ApplicationContext>

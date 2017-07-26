@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.ApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,24 +38,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TestDatabaseAutoConfigurationTests {
 
-	private final ApplicationContextTester context = new ApplicationContextTester()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {
-		this.context
-				.run((loaded) -> assertThat(loaded).doesNotHaveBean(DataSource.class));
+		this.contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(DataSource.class));
 	}
 
 	@Test
 	public void replaceWithUniqueDatabase() {
-		this.context.withUserConfiguration(ExistingDataSourceConfiguration.class)
-				.run((loaded) -> {
-					DataSource datasource = loaded.getBean(DataSource.class);
+		this.contextRunner.withUserConfiguration(ExistingDataSourceConfiguration.class)
+				.run((context) -> {
+					DataSource datasource = context.getBean(DataSource.class);
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
 					jdbcTemplate.execute("create table example (id int, name varchar);");
-					this.context.run((secondContext) -> {
+					this.contextRunner.run((secondContext) -> {
 						DataSource anotherDatasource = secondContext
 								.getBean(DataSource.class);
 						JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(

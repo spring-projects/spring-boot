@@ -42,7 +42,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.context.ApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,16 +64,16 @@ public class ArtemisAutoConfigurationTests {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private final ApplicationContextTester context = new ApplicationContextTester()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
 					JmsAutoConfiguration.class));
 
 	@Test
 	public void nativeConnectionFactory() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.artemis.mode:native").run((loaded) -> {
-					JmsTemplate jmsTemplate = loaded.getBean(JmsTemplate.class);
-					ActiveMQConnectionFactory factory = loaded
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.artemis.mode:native").run((context) -> {
+					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+					ActiveMQConnectionFactory factory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					assertThat(factory).isEqualTo(jmsTemplate.getConnectionFactory());
 					assertNettyConnectionFactory(factory, "localhost", 61616);
@@ -84,11 +84,11 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void nativeConnectionFactoryCustomHost() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native",
 						"spring.artemis.host:192.168.1.144", "spring.artemis.port:9876")
-				.run((loaded) -> {
-					ActiveMQConnectionFactory factory = loaded
+				.run((context) -> {
+					ActiveMQConnectionFactory factory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					assertNettyConnectionFactory(factory, "192.168.1.144", 9876);
 				});
@@ -96,12 +96,12 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void nativeConnectionFactoryCredentials() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native",
 						"spring.artemis.user:user", "spring.artemis.password:secret")
-				.run((loaded) -> {
-					JmsTemplate jmsTemplate = loaded.getBean(JmsTemplate.class);
-					ActiveMQConnectionFactory factory = loaded
+				.run((context) -> {
+					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+					ActiveMQConnectionFactory factory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					assertThat(factory).isEqualTo(jmsTemplate.getConnectionFactory());
 					assertNettyConnectionFactory(factory, "localhost", 61616);
@@ -112,18 +112,18 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void embeddedConnectionFactory() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.artemis.mode:embedded").run((loaded) -> {
-					ArtemisProperties properties = loaded
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.artemis.mode:embedded").run((context) -> {
+					ArtemisProperties properties = context
 							.getBean(ArtemisProperties.class);
 					assertThat(properties.getMode()).isEqualTo(ArtemisMode.EMBEDDED);
-					assertThat(loaded).hasSingleBean(EmbeddedJMS.class);
-					org.apache.activemq.artemis.core.config.Configuration configuration = loaded
+					assertThat(context).hasSingleBean(EmbeddedJMS.class);
+					org.apache.activemq.artemis.core.config.Configuration configuration = context
 							.getBean(
 									org.apache.activemq.artemis.core.config.Configuration.class);
 					assertThat(configuration.isPersistenceEnabled()).isFalse();
 					assertThat(configuration.isSecurityEnabled()).isFalse();
-					ActiveMQConnectionFactory factory = loaded
+					ActiveMQConnectionFactory factory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					assertInVmConnectionFactory(factory);
 				});
@@ -132,26 +132,28 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void embeddedConnectionFactoryByDefault() {
 		// No mode is specified
-		this.context.withUserConfiguration(EmptyConfiguration.class).run((loaded) -> {
-			assertThat(loaded).hasSingleBean(EmbeddedJMS.class);
-			org.apache.activemq.artemis.core.config.Configuration configuration = loaded
-					.getBean(org.apache.activemq.artemis.core.config.Configuration.class);
-			assertThat(configuration.isPersistenceEnabled()).isFalse();
-			assertThat(configuration.isSecurityEnabled()).isFalse();
-			ActiveMQConnectionFactory factory = loaded
-					.getBean(ActiveMQConnectionFactory.class);
-			assertInVmConnectionFactory(factory);
-		});
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(EmbeddedJMS.class);
+					org.apache.activemq.artemis.core.config.Configuration configuration = context
+							.getBean(
+									org.apache.activemq.artemis.core.config.Configuration.class);
+					assertThat(configuration.isPersistenceEnabled()).isFalse();
+					assertThat(configuration.isSecurityEnabled()).isFalse();
+					ActiveMQConnectionFactory factory = context
+							.getBean(ActiveMQConnectionFactory.class);
+					assertInVmConnectionFactory(factory);
+				});
 	}
 
 	@Test
 	public void nativeConnectionFactoryIfEmbeddedServiceDisabledExplicitly() {
 		// No mode is specified
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.enabled:false")
-				.run((loaded) -> {
-					assertThat(loaded).doesNotHaveBean(EmbeddedJMS.class);
-					ActiveMQConnectionFactory factory = loaded
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(EmbeddedJMS.class);
+					ActiveMQConnectionFactory factory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					assertNettyConnectionFactory(factory, "localhost", 61616);
 				});
@@ -160,12 +162,12 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void embeddedConnectionFactoryEvenIfEmbeddedServiceDisabled() {
 		// No mode is specified
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:embedded",
 						"spring.artemis.embedded.enabled:false")
-				.run((loaded) -> {
-					assertThat(loaded.getBeansOfType(EmbeddedJMS.class)).isEmpty();
-					ActiveMQConnectionFactory connectionFactory = loaded
+				.run((context) -> {
+					assertThat(context.getBeansOfType(EmbeddedJMS.class)).isEmpty();
+					ActiveMQConnectionFactory connectionFactory = context
 							.getBean(ActiveMQConnectionFactory.class);
 					assertInVmConnectionFactory(connectionFactory);
 				});
@@ -173,11 +175,11 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void embeddedServerWithDestinations() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=Queue1,Queue2",
 						"spring.artemis.embedded.topics=Topic1")
-				.run((loaded) -> {
-					DestinationChecker checker = new DestinationChecker(loaded);
+				.run((context) -> {
+					DestinationChecker checker = new DestinationChecker(context);
 					checker.checkQueue("Queue1", true);
 					checker.checkQueue("Queue2", true);
 					checker.checkQueue("QueueWillNotBeAutoCreated", true);
@@ -188,9 +190,9 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void embeddedServerWithDestinationConfig() {
-		this.context.withUserConfiguration(DestinationConfiguration.class)
-				.run((loaded) -> {
-					DestinationChecker checker = new DestinationChecker(loaded);
+		this.contextRunner.withUserConfiguration(DestinationConfiguration.class)
+				.run((context) -> {
+					DestinationChecker checker = new DestinationChecker(context);
 					checker.checkQueue("sampleQueue", true);
 					checker.checkTopic("sampleTopic", true);
 				});
@@ -199,10 +201,10 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
 		// Ignored with custom config
-		this.context.withUserConfiguration(CustomJmsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomJmsConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=Queue1,Queue2")
-				.run((loaded) -> {
-					DestinationChecker checker = new DestinationChecker(loaded);
+				.run((context) -> {
+					DestinationChecker checker = new DestinationChecker(context);
 					checker.checkQueue("custom", true); // See CustomJmsConfiguration
 					checker.checkQueue("Queue1", true);
 					checker.checkQueue("Queue2", true);
@@ -211,8 +213,8 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void embeddedServiceWithCustomArtemisConfiguration() {
-		this.context.withUserConfiguration(CustomArtemisConfiguration.class)
-				.run((loaded) -> assertThat(loaded
+		this.contextRunner.withUserConfiguration(CustomArtemisConfiguration.class)
+				.run((context) -> assertThat(context
 						.getBean(
 								org.apache.activemq.artemis.core.config.Configuration.class)
 						.getName()).isEqualTo("customFooBar"));
@@ -223,16 +225,16 @@ public class ArtemisAutoConfigurationTests {
 		File dataFolder = this.folder.newFolder();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=TestQueue",
 						"spring.artemis.embedded.persistent:true",
 						"spring.artemis.embedded.dataDirectory:"
 								+ dataFolder.getAbsolutePath())
-				.run((loaded) -> loaded.getBean(JmsTemplate.class).send("TestQueue",
+				.run((context) -> context.getBean(JmsTemplate.class).send("TestQueue",
 						(session) -> session.createTextMessage(messageId)));
 		// Start the server again and check if our message is still here
-		this.context.run((loaded) -> {
-			JmsTemplate jmsTemplate2 = loaded.getBean(JmsTemplate.class);
+		this.contextRunner.run((context) -> {
+			JmsTemplate jmsTemplate2 = context.getBean(JmsTemplate.class);
 			jmsTemplate2.setReceiveTimeout(1000L);
 			Message message = jmsTemplate2.receive("TestQueue");
 			assertThat(message).isNotNull();
@@ -242,10 +244,10 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void severalEmbeddedBrokers() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=Queue1")
 				.run((first) -> {
-					this.context
+					this.contextRunner
 							.withPropertyValues("spring.artemis.embedded.queues=Queue2")
 							.run((second) -> {
 						ArtemisProperties firstProperties = first
@@ -266,11 +268,11 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void connectToASpecificEmbeddedBroker() {
-		this.context.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.serverId=93",
 						"spring.artemis.embedded.queues=Queue1")
 				.run((first) -> {
-					this.context.withUserConfiguration(EmptyConfiguration.class)
+					this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 							.withPropertyValues("spring.artemis.mode=embedded",
 									// Connect to the "main" broker
 									"spring.artemis.embedded.serverId=93",
