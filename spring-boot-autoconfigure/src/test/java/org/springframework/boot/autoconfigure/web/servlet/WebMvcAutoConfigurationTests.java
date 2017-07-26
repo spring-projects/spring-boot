@@ -38,9 +38,9 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
-import org.springframework.boot.test.context.AssertableWebApplicationContext;
-import org.springframework.boot.test.context.ContextConsumer;
-import org.springframework.boot.test.context.WebApplicationContextRunner;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;

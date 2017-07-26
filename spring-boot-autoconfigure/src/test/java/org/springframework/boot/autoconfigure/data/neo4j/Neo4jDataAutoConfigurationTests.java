@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.test.context.WebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import java.util.function.Supplier;
 
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -26,7 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
  * Can be used to decorate and existing servlet web application context or an application
  * context that failed to start.
  * <p>
- * See {@link AssertProviderApplicationContext} for more details.
+ * See {@link ApplicationContextAssertProvider} for more details.
  *
  * @author Phillip Webb
  * @since 2.0.0
@@ -34,7 +35,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @see WebApplicationContext
  */
 public interface AssertableWebApplicationContext
-		extends AssertProviderApplicationContext<ConfigurableWebApplicationContext>,
+		extends ApplicationContextAssertProvider<ConfigurableWebApplicationContext>,
 		WebApplicationContext {
 
 	/**
@@ -46,7 +47,7 @@ public interface AssertableWebApplicationContext
 	 */
 	static AssertableWebApplicationContext get(
 			Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
-		return AssertProviderApplicationContext.get(AssertableWebApplicationContext.class,
+		return ApplicationContextAssertProvider.get(AssertableWebApplicationContext.class,
 				ConfigurableWebApplicationContext.class, contextSupplier);
 	}
 

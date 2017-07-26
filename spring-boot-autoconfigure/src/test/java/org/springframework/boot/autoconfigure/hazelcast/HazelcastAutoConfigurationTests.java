@@ -23,7 +23,7 @@ import com.hazelcast.core.HazelcastInstance;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;

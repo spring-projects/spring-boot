@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import java.util.function.Supplier;
 
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -26,7 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * be used to decorate and existing application context or an application context that
  * failed to start.
  * <p>
- * See {@link AssertProviderApplicationContext} for more details.
+ * See {@link ApplicationContextAssertProvider} for more details.
  *
  * @author Phillip Webb
  * @since 2.0.0
@@ -34,7 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @see ApplicationContext
  */
 public interface AssertableApplicationContext
-		extends AssertProviderApplicationContext<ConfigurableApplicationContext> {
+		extends ApplicationContextAssertProvider<ConfigurableApplicationContext> {
 
 	/**
 	 * Factory method to create a new {@link AssertableApplicationContext} instance.
@@ -45,7 +46,7 @@ public interface AssertableApplicationContext
 	 */
 	static AssertableApplicationContext get(
 			Supplier<? extends ConfigurableApplicationContext> contextSupplier) {
-		return AssertProviderApplicationContext.get(AssertableApplicationContext.class,
+		return ApplicationContextAssertProvider.get(AssertableApplicationContext.class,
 				ConfigurableApplicationContext.class, contextSupplier);
 	}
 

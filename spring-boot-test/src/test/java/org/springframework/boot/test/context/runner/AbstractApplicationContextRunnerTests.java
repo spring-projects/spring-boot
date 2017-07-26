@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
 import java.util.UUID;
 
@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
+import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,10 +44,10 @@ import static org.assertj.core.api.Assertions.fail;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
+public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {

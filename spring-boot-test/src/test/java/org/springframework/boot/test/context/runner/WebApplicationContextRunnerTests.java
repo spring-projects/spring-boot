@@ -14,28 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
 import org.junit.Test;
 
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link AssertableWebApplicationContext}.
+ * Tests for {@link WebApplicationContextRunner}.
  *
+ * @author Stephane Nicoll
  * @author Phillip Webb
- * @see AssertProviderApplicationContextTests
  */
-public class AssertableWebApplicationContextTests {
+public class WebApplicationContextRunnerTests extends
+		AbstractApplicationContextRunnerTests<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
 	@Test
-	public void getShouldReturnProxy() {
-		AssertableWebApplicationContext context = AssertableWebApplicationContext
-				.get(() -> mock(ConfigurableWebApplicationContext.class));
-		assertThat(context).isInstanceOf(ConfigurableWebApplicationContext.class);
+	public void contextShouldHaveMockServletContext() throws Exception {
+		get().run((loaded) -> assertThat(loaded.getServletContext())
+				.isInstanceOf(MockServletContext.class));
+	}
+
+	@Override
+	protected WebApplicationContextRunner get() {
+		return new WebApplicationContextRunner();
 	}
 
 }

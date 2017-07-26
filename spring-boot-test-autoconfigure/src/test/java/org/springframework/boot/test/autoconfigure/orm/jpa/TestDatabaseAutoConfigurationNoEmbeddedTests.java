@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
-import org.springframework.boot.test.context.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import org.junit.Rule;
 import org.junit.Test;

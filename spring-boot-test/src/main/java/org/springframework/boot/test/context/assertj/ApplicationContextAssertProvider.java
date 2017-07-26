@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import java.io.Closeable;
 import java.lang.reflect.Proxy;
@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  * @see AssertableReactiveWebApplicationContext
  * @see ApplicationContextAssert
  */
-interface AssertProviderApplicationContext<C extends ApplicationContext> extends
+public interface ApplicationContextAssertProvider<C extends ApplicationContext> extends
 		ApplicationContext, AssertProvider<ApplicationContextAssert<C>>, Closeable {
 
 	/**
@@ -88,19 +88,19 @@ interface AssertProviderApplicationContext<C extends ApplicationContext> extends
 	void close();
 
 	/**
-	 * Factory method to create a new {@link AssertProviderApplicationContext} instance.
+	 * Factory method to create a new {@link ApplicationContextAssertProvider} instance.
 	 * @param <T> the assert provider type
 	 * @param <C> the context type
-	 * @param type the type of {@link AssertProviderApplicationContext} required (must be
+	 * @param type the type of {@link ApplicationContextAssertProvider} required (must be
 	 * an interface)
 	 * @param contextType the type of {@link ApplicationContext} being managed (must be an
 	 * interface)
 	 * @param contextSupplier a supplier that will either return a fully configured
 	 * {@link ApplicationContext} or throw an exception if the context fails to start.
-	 * @return a {@link AssertProviderApplicationContext} instance
+	 * @return a {@link ApplicationContextAssertProvider} instance
 	 */
 	@SuppressWarnings("unchecked")
-	static <T extends AssertProviderApplicationContext<C>, C extends ApplicationContext> T get(
+	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(
 			Class<T> type, Class<? extends C> contextType,
 			Supplier<? extends C> contextSupplier) {
 		Assert.notNull(type, "Type must not be null");

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +23,9 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
+import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.assertj.ApplicationContextAssert;
+import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -92,7 +95,7 @@ import org.springframework.util.ReflectionUtils;
  * @see ReactiveWebApplicationContextRunner
  * @see ApplicationContextAssert
  */
-abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
+abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	private final Supplier<C> contextFactory;
 
@@ -246,7 +249,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 				.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		return AssertProviderApplicationContext.get(assertType, contextType,
+		return ApplicationContextAssertProvider.get(assertType, contextType,
 				this::createAndLoadContext);
 	}
 

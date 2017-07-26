@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
 import java.util.function.Supplier;
 
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 
