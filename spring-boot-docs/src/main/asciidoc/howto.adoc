@@ -1693,11 +1693,17 @@ properties (with the prefix stripped) when the local `EntityManagerFactory` is c
 
 [[howto-configure-hibernate-naming-strategy]]
 === Configure Hibernate Naming Strategy
-Hibernate defines `Physical` and `Implicit` naming strategies. Spring Boot configures
-`SpringPhysicalNamingStrategy` by default. This implementation provides the same table
-structure as Hibernate 4: all dots are replaced by underscores and camel cases are
-replaced by underscores as well. By default, all table names are generated in lower case
-but it is possible to override that flag if your schema requires it.
+Hibernate uses {hibernate-documentation}#naming[two different naming strategies] to map
+names from the object model to the corresponding database names. The fully qualified class
+name of the physical and implicit strategy implementations can be configured using the
+`spring.jpa.hibernate.naming.physical-strategy` and
+`spring.jpa.hibernate.naming.implicit-strategy` properties respectively.
+
+Spring Boot configures the physical naming strategy with `SpringPhysicalNamingStrategy` by
+default. This implementation provides the same table structure as Hibernate 4: all dots
+are replaced by underscores and camel cases are replaced by underscores as well. By
+default, all table names are generated in lower case but it is possible to override that
+flag if your schema requires it.
 
 Concretely, a `TelephoneNumber` entity will be mapped to the `telephone_number` table.
 
