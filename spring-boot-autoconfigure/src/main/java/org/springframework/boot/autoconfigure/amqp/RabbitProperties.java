@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Josh Thornhill
  * @author Gary Russell
+ * @author Arnaud Cogoluègnes
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -87,6 +88,11 @@ public class RabbitProperties {
 	 * Enable publisher returns.
 	 */
 	private boolean publisherReturns;
+
+	/**
+	 * Enable metrics (if conditions are met).
+	 */
+	private boolean metrics = true;
 
 	/**
 	 * Connection timeout, in milliseconds; zero for infinite.
@@ -272,6 +278,14 @@ public class RabbitProperties {
 
 	public void setPublisherConfirms(boolean publisherConfirms) {
 		this.publisherConfirms = publisherConfirms;
+	}
+
+	public boolean isMetrics() {
+		return this.metrics;
+	}
+
+	public void setMetrics(boolean metrics) {
+		this.metrics = metrics;
 	}
 
 	public boolean isPublisherReturns() {

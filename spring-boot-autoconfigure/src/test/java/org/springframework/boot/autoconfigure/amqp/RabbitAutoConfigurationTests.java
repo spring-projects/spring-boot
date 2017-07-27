@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.codahale.metrics.MetricRegistry;
 import com.rabbitmq.client.Address;
 import org.aopalliance.aop.Advice;
 import org.junit.After;
@@ -66,6 +67,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Arnaud Cogoluègnes
  */
 public class RabbitAutoConfigurationTests {
 
@@ -475,6 +477,26 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.ssl.trustStorePassword=secret");
 	}
 
+	@Test
+	public void existingNativeConnectionFactory() {
+		load(ExistingNativeConnectionFactoryConfiguration.class);
+		assertThat(getTargetConnectionFactory().getPort()).isEqualTo(9999);
+	}
+
+	@Test
+	public void metricsAutoConfigured() {
+		load(MetricRegistryConfiguration.class);
+		com.rabbitmq.client.ConnectionFactory nativeConnectionFactory = getTargetConnectionFactory();
+		assertThat(nativeConnectionFactory.getMetricsCollector()).isNotNull();
+	}
+
+	@Test
+	public void metricsExplicitlyDisabled() {
+		load(TestConfiguration.class, "spring.rabbitmq.metrics:false");
+		com.rabbitmq.client.ConnectionFactory nativeConnectionFactory = getTargetConnectionFactory();
+		assertThat(nativeConnectionFactory.getMetricsCollector()).isNull();
+	}
+
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
@@ -597,6 +619,28 @@ public class RabbitAutoConfigurationTests {
 
 	@Configuration
 	protected static class NoEnableRabbitConfiguration {
+
+	}
+
+	@Configuration
+	protected static class MetricRegistryConfiguration {
+
+		@Bean
+		public MetricRegistry metricRegistry() {
+			return new MetricRegistry();
+		}
+
+	}
+
+	@Configuration
+	protected static class ExistingNativeConnectionFactoryConfiguration {
+
+		@Bean
+		public com.rabbitmq.client.ConnectionFactory connectionFactory() {
+			com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
+			connectionFactory.setPort(9999);
+			return connectionFactory;
+		}
 
 	}
 
