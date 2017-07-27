@@ -1,7 +1,6 @@
 plugins {
 	id 'java'
 	id 'eclipse'
-	id 'org.sonarqube' version '2.2.1'
 }
 
 repositories {
