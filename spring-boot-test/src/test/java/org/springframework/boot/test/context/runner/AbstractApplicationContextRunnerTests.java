@@ -153,7 +153,8 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 				new HidePackagesClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> {
 					try {
-						ClassUtils.forName(Gson.class.getName(), context.getClassLoader());
+						ClassUtils.forName(Gson.class.getName(),
+								context.getClassLoader());
 						fail("Should have thrown a ClassNotFoundException");
 					}
 					catch (ClassNotFoundException e) {

@@ -19,9 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import org.junit.Test;
 
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,32 +35,21 @@ public class ConditionalOnCloudPlatformTests {
 	@Test
 	public void outcomeWhenCloudfoundryPlatformNotPresentShouldNotMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformConfig.class)
-				.run(match(false));
+				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
 	public void outcomeWhenCloudfoundryPlatformPresentShouldMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformConfig.class)
 				.withPropertyValues("VCAP_APPLICATION:---")
-				.run(match(true));
+				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	public void outcomeWhenCloudfoundryPlatformPresentAndMethodTargetShouldMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformOnMethodConfig.class)
 				.withPropertyValues("VCAP_APPLICATION:---")
-				.run(match(true));
-	}
-
-	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {
-		return (context) -> {
-			if (expected) {
-				assertThat(context).hasBean("foo");
-			}
-			else {
-				assertThat(context).doesNotHaveBean("foo");
-			}
-		};
+				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration

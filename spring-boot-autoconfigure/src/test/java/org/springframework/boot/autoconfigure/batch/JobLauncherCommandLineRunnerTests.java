@@ -80,8 +80,7 @@ public class JobLauncherCommandLineRunnerTests {
 		this.step = this.steps.get("step").tasklet(tasklet).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
-		this.runner = new JobLauncherCommandLineRunner(jobLauncher,
-				this.jobExplorer);
+		this.runner = new JobLauncherCommandLineRunner(jobLauncher, this.jobExplorer);
 		this.context.getBean(BatchConfiguration.class).clear();
 	}
 

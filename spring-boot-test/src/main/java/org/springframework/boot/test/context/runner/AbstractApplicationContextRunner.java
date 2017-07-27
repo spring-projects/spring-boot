@@ -292,20 +292,13 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 			consumer.accept(context);
 		}
 		catch (Throwable ex) {
-			AnyThrow.throwUnchecked(ex);
+			rethrow(ex);
 		}
 	}
 
-	private static class AnyThrow {
-
-		static void throwUnchecked(Throwable e) {
-			AnyThrow.throwAny(e);
-		}
-
-		@SuppressWarnings("unchecked")
-		private static <E extends Throwable> void throwAny(Throwable e) throws E {
-			throw (E) e;
-		}
+	@SuppressWarnings("unchecked")
+	private <E extends Throwable> void rethrow(Throwable e) throws E {
+		throw (E) e;
 	}
 
 }

@@ -46,12 +46,12 @@ public class AopAutoConfigurationTests {
 	public void aopDisabled() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.aop.auto:false").run((context) -> {
-			TestAspect aspect = context.getBean(TestAspect.class);
-			assertThat(aspect.isCalled()).isFalse();
-			TestBean bean = context.getBean(TestBean.class);
-			bean.foo();
-			assertThat(aspect.isCalled()).isFalse();
-		});
+					TestAspect aspect = context.getBean(TestAspect.class);
+					assertThat(aspect.isCalled()).isFalse();
+					TestBean bean = context.getBean(TestBean.class);
+					bean.foo();
+					assertThat(aspect.isCalled()).isFalse();
+				});
 	}
 
 	@Test

@@ -130,9 +130,14 @@ public final class TestPropertyValues {
 			return call.call();
 		}
 		catch (Exception ex) {
-			AnyThrow.throwUnchecked(ex);
-			return null; // never reached
+			rethrow(ex);
+			throw new IllegalStateException("Original cause not rethrown", ex);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <E extends Throwable> void rethrow(Throwable e) throws E {
+		throw (E) e;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -308,18 +313,6 @@ public final class TestPropertyValues {
 			return (String) System.getProperties().setProperty(name, value);
 		}
 
-	}
-
-	private static class AnyThrow {
-
-		static void throwUnchecked(Throwable e) {
-			AnyThrow.throwAny(e);
-		}
-
-		@SuppressWarnings("unchecked")
-		private static <E extends Throwable> void throwAny(Throwable e) throws E {
-			throw (E) e;
-		}
 	}
 
 }

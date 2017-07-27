@@ -77,25 +77,29 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRabbitConfiguration() {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-			RabbitMessagingTemplate messagingTemplate = context
-					.getBean(RabbitMessagingTemplate.class);
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-			RabbitAdmin amqpAdmin = context.getBean(RabbitAdmin.class);
-			assertThat(rabbitTemplate.getConnectionFactory()).isEqualTo(connectionFactory);
-			assertThat(getMandatory(rabbitTemplate)).isFalse();
-			assertThat(messagingTemplate.getRabbitTemplate()).isEqualTo(rabbitTemplate);
-			assertThat(amqpAdmin).isNotNull();
-			assertThat(connectionFactory.getHost()).isEqualTo("localhost");
-			assertThat(dfa.getPropertyValue("publisherConfirms")).isEqualTo(false);
-			assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(false);
-			assertThat(context.containsBean("rabbitListenerContainerFactory"))
-					.as("Listener container factory should be created by default").isTrue();
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					RabbitMessagingTemplate messagingTemplate = context
+							.getBean(RabbitMessagingTemplate.class);
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+					RabbitAdmin amqpAdmin = context.getBean(RabbitAdmin.class);
+					assertThat(rabbitTemplate.getConnectionFactory())
+							.isEqualTo(connectionFactory);
+					assertThat(getMandatory(rabbitTemplate)).isFalse();
+					assertThat(messagingTemplate.getRabbitTemplate())
+							.isEqualTo(rabbitTemplate);
+					assertThat(amqpAdmin).isNotNull();
+					assertThat(connectionFactory.getHost()).isEqualTo("localhost");
+					assertThat(dfa.getPropertyValue("publisherConfirms"))
+							.isEqualTo(false);
+					assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(false);
+					assertThat(context.containsBean("rabbitListenerContainerFactory"))
+							.as("Listener container factory should be created by default")
+							.isTrue();
+				});
 	}
 
 	@Test
@@ -105,38 +109,39 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
 						"spring.rabbitmq.password:secret",
 						"spring.rabbitmq.virtual_host:/vhost",
-						"spring.rabbitmq.connection-timeout:123").run((context) -> {
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
-			assertThat(connectionFactory.getPort()).isEqualTo(9000);
-			assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
-			DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-			com.rabbitmq.client.ConnectionFactory rcf = (com.rabbitmq.client.ConnectionFactory) dfa
-					.getPropertyValue("rabbitConnectionFactory");
-			assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
-			assertThat((Address[]) dfa.getPropertyValue("addresses")).hasSize(1);
-		});
+						"spring.rabbitmq.connection-timeout:123")
+				.run((context) -> {
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
+					assertThat(connectionFactory.getPort()).isEqualTo(9000);
+					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
+					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+					com.rabbitmq.client.ConnectionFactory rcf = (com.rabbitmq.client.ConnectionFactory) dfa
+							.getPropertyValue("rabbitConnectionFactory");
+					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
+					assertThat((Address[]) dfa.getPropertyValue("addresses")).hasSize(1);
+				});
 	}
 
 	@Test
 	public void testConnectionFactoryEmptyVirtualHost() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.virtual_host:").run((context) -> {
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
-		});
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
+				});
 	}
 
 	@Test
 	public void testConnectionFactoryVirtualHostNoLeadingSlash() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.virtual_host:foo").run((context) -> {
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			assertThat(connectionFactory.getVirtualHost()).isEqualTo("foo");
-		});
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.getVirtualHost()).isEqualTo("foo");
+				});
 	}
 
 	@Test
@@ -154,37 +159,38 @@ public class RabbitAutoConfigurationTests {
 	public void testConnectionFactoryDefaultVirtualHost() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.virtual_host:/").run((context) -> {
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
-		});
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
+				});
 	}
 
 	@Test
 	public void testConnectionFactoryPublisherSettings() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.publisher-confirms=true",
-						"spring.rabbitmq.publisher-returns=true").run(context -> {
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-			assertThat(dfa.getPropertyValue("publisherConfirms")).isEqualTo(true);
-			assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(true);
-			assertThat(getMandatory(rabbitTemplate)).isTrue();
-		});
+						"spring.rabbitmq.publisher-returns=true")
+				.run(context -> {
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+					assertThat(dfa.getPropertyValue("publisherConfirms")).isEqualTo(true);
+					assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(true);
+					assertThat(getMandatory(rabbitTemplate)).isTrue();
+				});
 	}
 
 	@Test
 	public void testRabbitTemplateMessageConverters() {
-		this.contextRunner.withUserConfiguration(
-				MessageConvertersConfiguration.class).run((context) -> {
-			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-			assertThat(rabbitTemplate.getMessageConverter())
-					.isSameAs(context.getBean("myMessageConverter"));
-			DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
-			assertThat(dfa.getPropertyValue("retryTemplate")).isNull();
-		});
+		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(rabbitTemplate.getMessageConverter())
+							.isSameAs(context.getBean("myMessageConverter"));
+					DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
+					assertThat(dfa.getPropertyValue("retryTemplate")).isNull();
+				});
 	}
 
 	@Test
@@ -196,25 +202,25 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.template.retry.multiplier:1.5",
 						"spring.rabbitmq.template.retry.maxInterval:5000",
 						"spring.rabbitmq.template.receiveTimeout:123",
-						"spring.rabbitmq.template.replyTimeout:456"
-				).run((context) -> {
-			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
-			assertThat(dfa.getPropertyValue("receiveTimeout")).isEqualTo(123L);
-			assertThat(dfa.getPropertyValue("replyTimeout")).isEqualTo(456L);
-			RetryTemplate retryTemplate = (RetryTemplate) dfa
-					.getPropertyValue("retryTemplate");
-			assertThat(retryTemplate).isNotNull();
-			dfa = new DirectFieldAccessor(retryTemplate);
-			SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa
-					.getPropertyValue("retryPolicy");
-			ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
-					.getPropertyValue("backOffPolicy");
-			assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
-			assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
-			assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
-			assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
-		});
+						"spring.rabbitmq.template.replyTimeout:456")
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
+					assertThat(dfa.getPropertyValue("receiveTimeout")).isEqualTo(123L);
+					assertThat(dfa.getPropertyValue("replyTimeout")).isEqualTo(456L);
+					RetryTemplate retryTemplate = (RetryTemplate) dfa
+							.getPropertyValue("retryTemplate");
+					assertThat(retryTemplate).isNotNull();
+					dfa = new DirectFieldAccessor(retryTemplate);
+					SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa
+							.getPropertyValue("retryPolicy");
+					ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
+							.getPropertyValue("backOffPolicy");
+					assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
+					assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
+					assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
+					assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
+				});
 	}
 
 	@Test
@@ -240,15 +246,16 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testConnectionFactoryBackOff() {
-		this.contextRunner.withUserConfiguration(
-				TestConfiguration2.class).run((context) -> {
-			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			assertThat(connectionFactory).isEqualTo(rabbitTemplate.getConnectionFactory());
-			assertThat(connectionFactory.getHost()).isEqualTo("otherserver");
-			assertThat(connectionFactory.getPort()).isEqualTo(8001);
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration2.class)
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory)
+							.isEqualTo(rabbitTemplate.getConnectionFactory());
+					assertThat(connectionFactory.getHost()).isEqualTo("otherserver");
+					assertThat(connectionFactory.getPort()).isEqualTo(8001);
+				});
 	}
 
 	@Test
@@ -257,15 +264,18 @@ public class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.cache.channel.size=23",
 						"spring.rabbitmq.cache.channel.checkoutTimeout=1000",
 						"spring.rabbitmq.cache.connection.mode=CONNECTION",
-						"spring.rabbitmq.cache.connection.size=2").run((context) -> {
-			CachingConnectionFactory connectionFactory = context
-					.getBean(CachingConnectionFactory.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-			assertThat(dfa.getPropertyValue("channelCacheSize")).isEqualTo(23);
-			assertThat(dfa.getPropertyValue("cacheMode")).isEqualTo(CacheMode.CONNECTION);
-			assertThat(dfa.getPropertyValue("connectionCacheSize")).isEqualTo(2);
-			assertThat(dfa.getPropertyValue("channelCheckoutTimeout")).isEqualTo(1000L);
-		});
+						"spring.rabbitmq.cache.connection.size=2")
+				.run((context) -> {
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+					assertThat(dfa.getPropertyValue("channelCacheSize")).isEqualTo(23);
+					assertThat(dfa.getPropertyValue("cacheMode"))
+							.isEqualTo(CacheMode.CONNECTION);
+					assertThat(dfa.getPropertyValue("connectionCacheSize")).isEqualTo(2);
+					assertThat(dfa.getPropertyValue("channelCheckoutTimeout"))
+							.isEqualTo(1000L);
+				});
 	}
 
 	@Test
@@ -280,104 +290,114 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testRabbitMessagingTemplateBackOff() {
-		this.contextRunner.withUserConfiguration(
-				TestConfiguration4.class).run((context) -> {
-			RabbitMessagingTemplate messagingTemplate = context
-					.getBean(RabbitMessagingTemplate.class);
-			assertThat(messagingTemplate.getDefaultDestination()).isEqualTo("fooBar");
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration4.class)
+				.run((context) -> {
+					RabbitMessagingTemplate messagingTemplate = context
+							.getBean(RabbitMessagingTemplate.class);
+					assertThat(messagingTemplate.getDefaultDestination())
+							.isEqualTo("fooBar");
+				});
 	}
 
 	@Test
 	public void testStaticQueues() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.dynamic:false").run((context) -> {
-			// There should NOT be an AmqpAdmin bean when dynamic is switch to false
-			this.thrown.expect(NoSuchBeanDefinitionException.class);
-			this.thrown.expectMessage("No qualifying bean of type");
-			this.thrown.expectMessage(AmqpAdmin.class.getName());
-			context.getBean(AmqpAdmin.class);
-		});
+					// There should NOT be an AmqpAdmin bean when dynamic is switch to
+					// false
+					this.thrown.expect(NoSuchBeanDefinitionException.class);
+					this.thrown.expectMessage("No qualifying bean of type");
+					this.thrown.expectMessage(AmqpAdmin.class.getName());
+					context.getBean(AmqpAdmin.class);
+				});
 	}
 
 	@Test
 	public void testEnableRabbitCreateDefaultContainerFactory() {
-		this.contextRunner.withUserConfiguration(
-				EnableRabbitConfiguration.class).run((context) -> {
-			RabbitListenerContainerFactory<?> rabbitListenerContainerFactory = context
-					.getBean("rabbitListenerContainerFactory",
-							RabbitListenerContainerFactory.class);
-			assertThat(rabbitListenerContainerFactory.getClass())
-					.isEqualTo(SimpleRabbitListenerContainerFactory.class);
-		});
+		this.contextRunner.withUserConfiguration(EnableRabbitConfiguration.class)
+				.run((context) -> {
+					RabbitListenerContainerFactory<?> rabbitListenerContainerFactory = context
+							.getBean("rabbitListenerContainerFactory",
+									RabbitListenerContainerFactory.class);
+					assertThat(rabbitListenerContainerFactory.getClass())
+							.isEqualTo(SimpleRabbitListenerContainerFactory.class);
+				});
 	}
 
 	@Test
 	public void testRabbitListenerContainerFactoryBackOff() {
-		this.contextRunner.withUserConfiguration(
-				TestConfiguration5.class).run((context) -> {
-			SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
-					.getBean("rabbitListenerContainerFactory",
-							SimpleRabbitListenerContainerFactory.class);
-			rabbitListenerContainerFactory.setTxSize(10);
-			verify(rabbitListenerContainerFactory).setTxSize(10);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
-			Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
-			assertThat(adviceChain).isNull();
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration5.class)
+				.run((context) -> {
+					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+							.getBean("rabbitListenerContainerFactory",
+									SimpleRabbitListenerContainerFactory.class);
+					rabbitListenerContainerFactory.setTxSize(10);
+					verify(rabbitListenerContainerFactory).setTxSize(10);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(
+							rabbitListenerContainerFactory);
+					Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
+					assertThat(adviceChain).isNull();
+				});
 	}
 
 	@Test
 	public void testSimpleRabbitListenerContainerFactoryWithCustomSettings() {
-		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class,
-				MessageRecoverersConfiguration.class).withPropertyValues(
-				"spring.rabbitmq.listener.simple.retry.enabled:true",
-				"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
-				"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
-				"spring.rabbitmq.listener.simple.retry.multiplier:1.5",
-				"spring.rabbitmq.listener.simple.retry.maxInterval:5000",
-				"spring.rabbitmq.listener.simple.autoStartup:false",
-				"spring.rabbitmq.listener.simple.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.simple.concurrency:5",
-				"spring.rabbitmq.listener.simple.maxConcurrency:10",
-				"spring.rabbitmq.listener.simple.prefetch:40",
-				"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
-				"spring.rabbitmq.listener.simple.idleEventInterval:5",
-				"spring.rabbitmq.listener.simple.transactionSize:20").run((context) -> {
-			SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
-					.getBean("rabbitListenerContainerFactory",
-							SimpleRabbitListenerContainerFactory.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
-			assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
-			assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
-			assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
-			checkCommonProps(context, dfa);
-		});
+		this.contextRunner
+				.withUserConfiguration(MessageConvertersConfiguration.class,
+						MessageRecoverersConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.simple.retry.enabled:true",
+						"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
+						"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
+						"spring.rabbitmq.listener.simple.retry.multiplier:1.5",
+						"spring.rabbitmq.listener.simple.retry.maxInterval:5000",
+						"spring.rabbitmq.listener.simple.autoStartup:false",
+						"spring.rabbitmq.listener.simple.acknowledgeMode:manual",
+						"spring.rabbitmq.listener.simple.concurrency:5",
+						"spring.rabbitmq.listener.simple.maxConcurrency:10",
+						"spring.rabbitmq.listener.simple.prefetch:40",
+						"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
+						"spring.rabbitmq.listener.simple.idleEventInterval:5",
+						"spring.rabbitmq.listener.simple.transactionSize:20")
+				.run((context) -> {
+					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+							.getBean("rabbitListenerContainerFactory",
+									SimpleRabbitListenerContainerFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(
+							rabbitListenerContainerFactory);
+					assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
+					assertThat(dfa.getPropertyValue("maxConcurrentConsumers"))
+							.isEqualTo(10);
+					assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+					checkCommonProps(context, dfa);
+				});
 	}
 
 	@Test
 	public void testDirectRabbitListenerContainerFactoryWithCustomSettings() {
-		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class,
-				MessageRecoverersConfiguration.class).withPropertyValues(
-				"spring.rabbitmq.listener.type:direct",
-				"spring.rabbitmq.listener.direct.retry.enabled:true",
-				"spring.rabbitmq.listener.direct.retry.maxAttempts:4",
-				"spring.rabbitmq.listener.direct.retry.initialInterval:2000",
-				"spring.rabbitmq.listener.direct.retry.multiplier:1.5",
-				"spring.rabbitmq.listener.direct.retry.maxInterval:5000",
-				"spring.rabbitmq.listener.direct.autoStartup:false",
-				"spring.rabbitmq.listener.direct.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
-				"spring.rabbitmq.listener.direct.prefetch:40",
-				"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
-				"spring.rabbitmq.listener.direct.idleEventInterval:5").run((context) -> {
-			DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
-					.getBean("rabbitListenerContainerFactory",
-							DirectRabbitListenerContainerFactory.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
-			assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
-			checkCommonProps(context, dfa);
-		});
+		this.contextRunner
+				.withUserConfiguration(MessageConvertersConfiguration.class,
+						MessageRecoverersConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:direct",
+						"spring.rabbitmq.listener.direct.retry.enabled:true",
+						"spring.rabbitmq.listener.direct.retry.maxAttempts:4",
+						"spring.rabbitmq.listener.direct.retry.initialInterval:2000",
+						"spring.rabbitmq.listener.direct.retry.multiplier:1.5",
+						"spring.rabbitmq.listener.direct.retry.maxInterval:5000",
+						"spring.rabbitmq.listener.direct.autoStartup:false",
+						"spring.rabbitmq.listener.direct.acknowledgeMode:manual",
+						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+						"spring.rabbitmq.listener.direct.prefetch:40",
+						"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
+						"spring.rabbitmq.listener.direct.idleEventInterval:5")
+				.run((context) -> {
+					DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+							.getBean("rabbitListenerContainerFactory",
+									DirectRabbitListenerContainerFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(
+							rabbitListenerContainerFactory);
+					assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
+					checkCommonProps(context, dfa);
+				});
 	}
 
 	@Test
@@ -387,12 +407,13 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.listener.simple.maxConcurrency:10",
 						"spring.rabbitmq.listener.simple.prefetch:40",
 						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
-						"spring.rabbitmq.listener.direct.prefetch:40").run((context) -> {
-			assertThat(context).hasSingleBean(
-					SimpleRabbitListenerContainerFactoryConfigurer.class);
-			assertThat(context).hasSingleBean(
-					DirectRabbitListenerContainerFactoryConfigurer.class);
-		});
+						"spring.rabbitmq.listener.direct.prefetch:40")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(
+							SimpleRabbitListenerContainerFactoryConfigurer.class);
+					assertThat(context).hasSingleBean(
+							DirectRabbitListenerContainerFactoryConfigurer.class);
+				});
 	}
 
 	@Test
@@ -401,16 +422,18 @@ public class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.listener.type:direct",
 						"spring.rabbitmq.listener.simple.concurrency:5",
 						"spring.rabbitmq.listener.simple.maxConcurrency:10",
-						"spring.rabbitmq.listener.simple.prefetch:40").run((context) -> {
-			SimpleRabbitListenerContainerFactoryConfigurer configurer = context
-					.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
-			SimpleRabbitListenerContainerFactory factory = mock(
-					SimpleRabbitListenerContainerFactory.class);
-			configurer.configure(factory, mock(ConnectionFactory.class));
-			verify(factory).setConcurrentConsumers(5);
-			verify(factory).setMaxConcurrentConsumers(10);
-			verify(factory).setPrefetchCount(40);
-		});
+						"spring.rabbitmq.listener.simple.prefetch:40")
+				.run((context) -> {
+					SimpleRabbitListenerContainerFactoryConfigurer configurer = context
+							.getBean(
+									SimpleRabbitListenerContainerFactoryConfigurer.class);
+					SimpleRabbitListenerContainerFactory factory = mock(
+							SimpleRabbitListenerContainerFactory.class);
+					configurer.configure(factory, mock(ConnectionFactory.class));
+					verify(factory).setConcurrentConsumers(5);
+					verify(factory).setMaxConcurrentConsumers(10);
+					verify(factory).setPrefetchCount(40);
+				});
 	}
 
 	@Test
@@ -418,15 +441,17 @@ public class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.listener.type:simple",
 						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
-						"spring.rabbitmq.listener.direct.prefetch:40").run((context) -> {
-			DirectRabbitListenerContainerFactoryConfigurer configurer = context
-					.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);
-			DirectRabbitListenerContainerFactory factory = mock(
-					DirectRabbitListenerContainerFactory.class);
-			configurer.configure(factory, mock(ConnectionFactory.class));
-			verify(factory).setConsumersPerQueue(5);
-			verify(factory).setPrefetchCount(40);
-		});
+						"spring.rabbitmq.listener.direct.prefetch:40")
+				.run((context) -> {
+					DirectRabbitListenerContainerFactoryConfigurer configurer = context
+							.getBean(
+									DirectRabbitListenerContainerFactoryConfigurer.class);
+					DirectRabbitListenerContainerFactory factory = mock(
+							DirectRabbitListenerContainerFactory.class);
+					configurer.configure(factory, mock(ConnectionFactory.class));
+					verify(factory).setConsumersPerQueue(5);
+					verify(factory).setPrefetchCount(40);
+				});
 	}
 
 	private void checkCommonProps(AssertableApplicationContext context,
@@ -468,13 +493,13 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void enableRabbitAutomatically() throws Exception {
-		this.contextRunner.withUserConfiguration(
-				NoEnableRabbitConfiguration.class).run((context) -> {
-			assertThat(context).hasBean(
-					RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME);
-			assertThat(context).hasBean(
-					RabbitListenerConfigUtils.RABBIT_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
-		});
+		this.contextRunner.withUserConfiguration(NoEnableRabbitConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean(
+							RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME);
+					assertThat(context).hasBean(
+							RabbitListenerConfigUtils.RABBIT_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
+				});
 	}
 
 	@Test
@@ -482,7 +507,8 @@ public class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.requestedHeartbeat:20")
 				.run((context) -> {
-					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
 					assertThat(rabbitConnectionFactory.getRequestedHeartbeat())
 							.isEqualTo(20);
 				});
@@ -490,23 +516,26 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void noSslByDefault() {
-		this.contextRunner.withUserConfiguration(
-				TestConfiguration.class).run((context) -> {
-			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
-			assertThat(rabbitConnectionFactory.getSocketFactory())
-					.as("Must use default SocketFactory")
-					.isEqualTo(SocketFactory.getDefault());
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					assertThat(rabbitConnectionFactory.getSocketFactory())
+							.as("Must use default SocketFactory")
+							.isEqualTo(SocketFactory.getDefault());
+				});
 	}
 
 	@Test
 	public void enableSsl() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true").run((context) -> {
-			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
-			assertThat(rabbitConnectionFactory.getSocketFactory())
-					.as("SocketFactory must use SSL").isInstanceOf(SSLSocketFactory.class);
-		});
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					assertThat(rabbitConnectionFactory.getSocketFactory())
+							.as("SocketFactory must use SSL")
+							.isInstanceOf(SSLSocketFactory.class);
+				});
 	}
 
 	@Test
@@ -517,11 +546,13 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.ssl.keyStore=foo",
 						"spring.rabbitmq.ssl.keyStorePassword=secret",
 						"spring.rabbitmq.ssl.trustStore=bar",
-						"spring.rabbitmq.ssl.trustStorePassword=secret").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasMessageContaining("foo");
-			assertThat(context).getFailure().hasMessageContaining("does not exist");
-		});
+						"spring.rabbitmq.ssl.trustStorePassword=secret")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasMessageContaining("foo");
+					assertThat(context).getFailure()
+							.hasMessageContaining("does not exist");
+				});
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(

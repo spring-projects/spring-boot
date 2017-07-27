@@ -54,43 +54,46 @@ public class BatchAutoConfigurationWithoutJpaTests {
 
 	@Test
 	public void jdbcWithDefaultSettings() throws Exception {
-		this.contextRunner.withUserConfiguration(DefaultConfiguration.class,
-				EmbeddedDataSourceConfiguration.class).withPropertyValues(
-				"spring.datasource.generate-unique-name=true").run((context) -> {
-			assertThat(context).hasSingleBean(JobLauncher.class);
-			assertThat(context).hasSingleBean(JobExplorer.class);
-			assertThat(context).hasSingleBean(JobRepository.class);
-			assertThat(context).hasSingleBean(PlatformTransactionManager.class);
-			assertThat(context.getBean(PlatformTransactionManager.class).toString())
-					.contains("DataSourceTransactionManager");
-			assertThat(
-					context.getBean(BatchProperties.class).getInitializer().isEnabled())
-					.isTrue();
-			assertThat(new JdbcTemplate(context.getBean(DataSource.class))
-					.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
-			assertThat(
-					context.getBean(JobExplorer.class).findRunningJobExecutions("test"))
-					.isEmpty();
-			assertThat(context.getBean(JobRepository.class).getLastJobExecution("test",
-					new JobParameters())).isNull();
-		});
+		this.contextRunner
+				.withUserConfiguration(DefaultConfiguration.class,
+						EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JobLauncher.class);
+					assertThat(context).hasSingleBean(JobExplorer.class);
+					assertThat(context).hasSingleBean(JobRepository.class);
+					assertThat(context).hasSingleBean(PlatformTransactionManager.class);
+					assertThat(
+							context.getBean(PlatformTransactionManager.class).toString())
+									.contains("DataSourceTransactionManager");
+					assertThat(context.getBean(BatchProperties.class).getInitializer()
+							.isEnabled()).isTrue();
+					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
+							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
+					assertThat(context.getBean(JobExplorer.class)
+							.findRunningJobExecutions("test")).isEmpty();
+					assertThat(context.getBean(JobRepository.class)
+							.getLastJobExecution("test", new JobParameters())).isNull();
+				});
 	}
 
 	@Test
 	public void jdbcWithCustomPrefix() throws Exception {
-		this.contextRunner.withUserConfiguration(DefaultConfiguration.class,
-				EmbeddedDataSourceConfiguration.class).withPropertyValues(
-				"spring.datasource.generate-unique-name=true",
-				"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
-				"spring.batch.tablePrefix:PREFIX_").run((context) -> {
-			assertThat(new JdbcTemplate(context.getBean(DataSource.class))
-					.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
-			assertThat(
-					context.getBean(JobExplorer.class).findRunningJobExecutions("test"))
-					.isEmpty();
-			assertThat(context.getBean(JobRepository.class).getLastJobExecution("test",
-					new JobParameters())).isNull();
-		});
+		this.contextRunner
+				.withUserConfiguration(DefaultConfiguration.class,
+						EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.generate-unique-name=true",
+						"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
+						"spring.batch.tablePrefix:PREFIX_")
+				.run((context) -> {
+					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
+							.queryForList("select * from PREFIX_JOB_EXECUTION"))
+									.isEmpty();
+					assertThat(context.getBean(JobExplorer.class)
+							.findRunningJobExecutions("test")).isEmpty();
+					assertThat(context.getBean(JobRepository.class)
+							.getLastJobExecution("test", new JobParameters())).isNull();
+				});
 	}
 
 	@EnableBatchProcessing

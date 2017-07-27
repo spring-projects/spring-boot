@@ -59,7 +59,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+	private final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
@@ -70,7 +70,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 			throws MalformedObjectNameException, InstanceNotFoundException {
 		this.contextRunner.run((context) -> {
 			this.thrown.expect(InstanceNotFoundException.class);
-			this.mBeanServer.getObjectInstance(createDefaultObjectName());
+			this.server.getObjectInstance(createDefaultObjectName());
 		});
 	}
 
@@ -78,7 +78,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	public void registeredWithProperty() throws Exception {
 		this.contextRunner.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
 			ObjectName objectName = createDefaultObjectName();
-			ObjectInstance objectInstance = this.mBeanServer.getObjectInstance(objectName);
+			ObjectInstance objectInstance = this.server.getObjectInstance(objectName);
 			assertThat(objectInstance).as("Lifecycle bean should have been registered")
 					.isNotNull();
 		});
@@ -87,18 +87,20 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	@Test
 	public void registerWithCustomJmxName() throws InstanceNotFoundException {
 		String customJmxName = "org.acme:name=FooBar";
-		this.contextRunner.withSystemProperties(
-				"spring.application.admin.jmx-name=" + customJmxName)
+		this.contextRunner
+				.withSystemProperties(
+						"spring.application.admin.jmx-name=" + customJmxName)
 				.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
-			try {
-				this.mBeanServer.getObjectInstance(createObjectName(customJmxName));
-			}
-			catch (InstanceNotFoundException ex) {
-				fail("Admin MBean should have been exposed with custom name");
-			}
-			this.thrown.expect(InstanceNotFoundException.class); // Should not be exposed
-			this.mBeanServer.getObjectInstance(createDefaultObjectName());
-		});
+					try {
+						this.server.getObjectInstance(createObjectName(customJmxName));
+					}
+					catch (InstanceNotFoundException ex) {
+						fail("Admin MBean should have been exposed with custom name");
+					}
+					this.thrown.expect(InstanceNotFoundException.class); // Should not be
+																			// exposed
+					this.server.getObjectInstance(createDefaultObjectName());
+				});
 	}
 
 	@Test
@@ -110,7 +112,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 						SpringApplicationAdminJmxAutoConfiguration.class)
 				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0")) {
 			assertThat(context).isInstanceOf(ServletWebServerApplicationContext.class);
-			assertThat(this.mBeanServer.getAttribute(createDefaultObjectName(),
+			assertThat(this.server.getAttribute(createDefaultObjectName(),
 					"EmbeddedWebApplication")).isEqualTo(Boolean.TRUE);
 			int expected = ((ServletWebServerApplicationContext) context).getWebServer()
 					.getPort();
@@ -128,11 +130,10 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 				.child(JmxAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class)
 				.web(WebApplicationType.NONE);
-
 		try (ConfigurableApplicationContext parent = parentBuilder
 				.run("--" + ENABLE_ADMIN_PROP);
-			ConfigurableApplicationContext child = childBuilder
-					.run("--" + ENABLE_ADMIN_PROP)) {
+				ConfigurableApplicationContext child = childBuilder
+						.run("--" + ENABLE_ADMIN_PROP)) {
 			BeanFactoryUtils.beanOfType(parent.getBeanFactory(),
 					SpringApplicationAdminMXBeanRegistrar.class);
 			this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -155,7 +156,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	}
 
 	private String getProperty(ObjectName objectName, String key) throws Exception {
-		return (String) this.mBeanServer.invoke(objectName, "getProperty",
+		return (String) this.server.invoke(objectName, "getProperty",
 				new Object[] { key }, new String[] { String.class.getName() });
 	}
 

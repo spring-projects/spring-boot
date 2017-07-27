@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,31 +37,19 @@ public class ConditionalOnExpressionTests {
 	@Test
 	public void expressionIsTrue() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class)
-				.run(match(true));
+				.run((context) -> assertThat(context.getBean("foo")).isEqualTo("foo"));
 	}
 
 	@Test
 	public void expressionIsFalse() {
 		this.contextRunner.withUserConfiguration(MissingConfiguration.class)
-				.run(match(false));
+				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
 	public void expressionIsNull() {
 		this.contextRunner.withUserConfiguration(NullConfiguration.class)
-				.run(match(false));
-	}
-
-	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {
-		return (context) -> {
-			if (expected) {
-				assertThat(context).hasBean("foo");
-				assertThat(context.getBean("foo")).isEqualTo("foo");
-			}
-			else {
-				assertThat(context).doesNotHaveBean("foo");
-			}
-		};
+				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Configuration

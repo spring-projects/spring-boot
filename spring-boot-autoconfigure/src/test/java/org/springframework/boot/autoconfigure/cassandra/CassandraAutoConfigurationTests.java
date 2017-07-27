@@ -50,31 +50,33 @@ public class CassandraAutoConfigurationTests {
 
 	@Test
 	public void createClusterWithOverrides() {
-		this.contextRunner.withPropertyValues(
-				"spring.data.cassandra.cluster-name=testcluster").run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(context.getBean(Cluster.class).getClusterName())
-					.isEqualTo("testcluster");
-		});
+		this.contextRunner
+				.withPropertyValues("spring.data.cassandra.cluster-name=testcluster")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Cluster.class);
+					assertThat(context.getBean(Cluster.class).getClusterName())
+							.isEqualTo("testcluster");
+				});
 	}
 
 	@Test
 	public void createCustomizeCluster() {
-		this.contextRunner.withUserConfiguration(
-				MockCustomizerConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(context).hasSingleBean(ClusterBuilderCustomizer.class);
-		});
+		this.contextRunner.withUserConfiguration(MockCustomizerConfig.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Cluster.class);
+					assertThat(context).hasSingleBean(ClusterBuilderCustomizer.class);
+				});
 	}
 
 	@Test
 	public void customizerOverridesAutoConfig() {
 		this.contextRunner.withUserConfiguration(SimpleCustomizerConfig.class)
-				.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(context.getBean(Cluster.class).getClusterName())
-					.isEqualTo("overridden-name");
-		});
+				.withPropertyValues("spring.data.cassandra.cluster-name=testcluster")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Cluster.class);
+					assertThat(context.getBean(Cluster.class).getClusterName())
+							.isEqualTo("overridden-name");
+				});
 	}
 
 	@Test
@@ -96,21 +98,22 @@ public class CassandraAutoConfigurationTests {
 
 	@Test
 	public void customizePoolOptions() {
-		this.contextRunner.withPropertyValues(
-				"spring.data.cassandra.pool.idle-timeout=42",
-				"spring.data.cassandra.pool.pool-timeout=52",
-				"spring.data.cassandra.pool.heartbeat-interval=62",
-				"spring.data.cassandra.pool.max-queue-size=72").run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			PoolingOptions poolingOptions = context.getBean(Cluster.class)
-					.getConfiguration().getPoolingOptions();
-			assertThat(poolingOptions.getIdleTimeoutSeconds()).isEqualTo(42);
-			assertThat(poolingOptions.getPoolTimeoutMillis()).isEqualTo(52);
-			assertThat(poolingOptions.getHeartbeatIntervalSeconds()).isEqualTo(62);
-			assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(72);
-		});
+		this.contextRunner
+				.withPropertyValues("spring.data.cassandra.pool.idle-timeout=42",
+						"spring.data.cassandra.pool.pool-timeout=52",
+						"spring.data.cassandra.pool.heartbeat-interval=62",
+						"spring.data.cassandra.pool.max-queue-size=72")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Cluster.class);
+					PoolingOptions poolingOptions = context.getBean(Cluster.class)
+							.getConfiguration().getPoolingOptions();
+					assertThat(poolingOptions.getIdleTimeoutSeconds()).isEqualTo(42);
+					assertThat(poolingOptions.getPoolTimeoutMillis()).isEqualTo(52);
+					assertThat(poolingOptions.getHeartbeatIntervalSeconds())
+							.isEqualTo(62);
+					assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(72);
+				});
 	}
-
 
 	@Configuration
 	static class MockCustomizerConfig {

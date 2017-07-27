@@ -27,9 +27,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -77,22 +75,26 @@ public class ConditionalOnJndiTests {
 
 	@Test
 	public void jndiNotAvailable() {
-		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class,
-				JndiConditionConfiguration.class).run(match(false));
+		this.contextRunner
+				.withUserConfiguration(JndiAvailableConfiguration.class,
+						JndiConditionConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	public void jndiAvailable() {
 		setupJndi();
-		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class,
-				JndiConditionConfiguration.class).run(match(true));
+		this.contextRunner
+				.withUserConfiguration(JndiAvailableConfiguration.class,
+						JndiConditionConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
 	public void jndiLocationNotBound() {
 		setupJndi();
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
-				.run(match(false));
+				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
@@ -100,7 +102,7 @@ public class ConditionalOnJndiTests {
 		setupJndi();
 		TestableInitialContextFactory.bind("java:/FooManager", new Object());
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
-				.run(match(true));
+				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
@@ -122,17 +124,6 @@ public class ConditionalOnJndiTests {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
 				TestableInitialContextFactory.class.getName());
-	}
-
-	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {
-		return (context) -> {
-			if (expected) {
-				assertThat(context).hasSingleBean(String.class);
-			}
-			else {
-				assertThat(context).doesNotHaveBean(String.class);
-			}
-		};
 	}
 
 	private AnnotatedTypeMetadata mockMetaData(String... value) {
