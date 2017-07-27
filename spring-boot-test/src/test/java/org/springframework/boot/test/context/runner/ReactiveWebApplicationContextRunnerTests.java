@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 
 /**
- * Tests for {@link ApplicationContextTester}.
+ * Tests for {@link ReactiveWebApplicationContextRunner}.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class ApplicationContextTesterTests extends
-		AbstractApplicationContextTesterTests<ApplicationContextTester, ConfigurableApplicationContext, AssertableApplicationContext> {
+public class ReactiveWebApplicationContextRunnerTests extends
+		AbstractApplicationContextRunnerTests<ReactiveWebApplicationContextRunner, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
 	@Override
-	protected ApplicationContextTester get() {
-		return new ApplicationContextTester();
+	protected ReactiveWebApplicationContextRunner get() {
+		return new ReactiveWebApplicationContextRunner();
 	}
 
 }

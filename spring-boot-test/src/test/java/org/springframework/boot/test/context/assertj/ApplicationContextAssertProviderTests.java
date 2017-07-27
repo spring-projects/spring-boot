@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import java.util.function.Supplier;
 
@@ -34,12 +34,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link AssertProviderApplicationContext} and
+ * Tests for {@link ApplicationContextAssertProvider} and
  * {@link AssertProviderApplicationContextInvocationHandler}.
  *
  * @author Phillip Webb
  */
-public class AssertProviderApplicationContextTests {
+public class ApplicationContextAssertProviderTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -67,7 +67,7 @@ public class AssertProviderApplicationContextTests {
 	public void getWhenTypeIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
-		AssertProviderApplicationContext.get(null, ApplicationContext.class,
+		ApplicationContextAssertProvider.get(null, ApplicationContext.class,
 				this.mockContextSupplier);
 	}
 
@@ -75,7 +75,7 @@ public class AssertProviderApplicationContextTests {
 	public void getWhenTypeIsClassShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
-		AssertProviderApplicationContext.get(null, ApplicationContext.class,
+		ApplicationContextAssertProvider.get(null, ApplicationContext.class,
 				this.mockContextSupplier);
 	}
 
@@ -83,7 +83,7 @@ public class AssertProviderApplicationContextTests {
 	public void getWhenContextTypeIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must be an interface");
-		AssertProviderApplicationContext.get(
+		ApplicationContextAssertProvider.get(
 				TestAssertProviderApplicationContextClass.class, ApplicationContext.class,
 				this.mockContextSupplier);
 	}
@@ -92,7 +92,7 @@ public class AssertProviderApplicationContextTests {
 	public void getWhenContextTypeIsClassShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ContextType must not be null");
-		AssertProviderApplicationContext.get(TestAssertProviderApplicationContext.class,
+		ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
 				null, this.mockContextSupplier);
 	}
 
@@ -100,14 +100,14 @@ public class AssertProviderApplicationContextTests {
 	public void getWhenSupplierIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ContextType must be an interface");
-		AssertProviderApplicationContext.get(TestAssertProviderApplicationContext.class,
+		ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
 				StaticApplicationContext.class, this.mockContextSupplier);
 	}
 
 	@Test
 	public void getWhenContextStartsShouldReturnProxyThatCallsRealMethods()
 			throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.mockContextSupplier);
 		assertThat((Object) context).isNotNull();
 		context.getBean("foo");
@@ -117,7 +117,7 @@ public class AssertProviderApplicationContextTests {
 	@Test
 	public void getWhenContextFailsShouldReturnProxyThatThrowsExceptions()
 			throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
 		assertThat((Object) context).isNotNull();
 		expectStartupFailure();
@@ -127,14 +127,14 @@ public class AssertProviderApplicationContextTests {
 	@Test
 	public void getSourceContextWhenContextStartsShouldReturnSourceContext()
 			throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.mockContextSupplier);
 		assertThat(context.getSourceApplicationContext()).isSameAs(this.mockContext);
 	}
 
 	@Test
 	public void getSourceContextWhenContextFailsShouldThrowException() throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
 		expectStartupFailure();
 		context.getSourceApplicationContext();
@@ -143,7 +143,7 @@ public class AssertProviderApplicationContextTests {
 	@Test
 	public void getSourceContextOfTypeWhenContextStartsShouldReturnSourceContext()
 			throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.mockContextSupplier);
 		assertThat(context.getSourceApplicationContext(ApplicationContext.class))
 				.isSameAs(this.mockContext);
@@ -152,7 +152,7 @@ public class AssertProviderApplicationContextTests {
 	@Test
 	public void getSourceContextOfTypeWhenContextFailsToStartShouldThrowException()
 			throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
 		expectStartupFailure();
 		context.getSourceApplicationContext(ApplicationContext.class);
@@ -160,7 +160,7 @@ public class AssertProviderApplicationContextTests {
 
 	@Test
 	public void getStartupFailureWhenContextStartsShouldReturnNull() throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.mockContextSupplier);
 		assertThat(context.getStartupFailure()).isNull();
 	}
@@ -168,14 +168,14 @@ public class AssertProviderApplicationContextTests {
 	@Test
 	public void getStartupFailureWhenContextFailsToStartShouldReturnException()
 			throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
 		assertThat(context.getStartupFailure()).isEqualTo(this.startupFailure);
 	}
 
 	@Test
 	public void assertThatWhenContextStartsShouldReturnAssertions() throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.mockContextSupplier);
 		ApplicationContextAssert<ApplicationContext> contextAssert = assertThat(context);
 		assertThat(contextAssert.getApplicationContext()).isSameAs(context);
@@ -184,7 +184,7 @@ public class AssertProviderApplicationContextTests {
 
 	@Test
 	public void assertThatWhenContextFailsShouldReturnAssertions() throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
 		ApplicationContextAssert<ApplicationContext> contextAssert = assertThat(context);
 		assertThat(contextAssert.getApplicationContext()).isSameAs(context);
@@ -193,7 +193,7 @@ public class AssertProviderApplicationContextTests {
 
 	@Test
 	public void toStringWhenContextStartsShouldReturnSimpleString() throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.mockContextSupplier);
 		assertThat(context.toString())
 				.startsWith(
@@ -204,7 +204,7 @@ public class AssertProviderApplicationContextTests {
 	@Test
 	public void toStringWhenContextFailsToStartShouldReturnSimpleString()
 			throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
 		assertThat(context.toString()).isEqualTo("Unstarted application context "
 				+ "org.springframework.context.ApplicationContext"
@@ -213,7 +213,7 @@ public class AssertProviderApplicationContextTests {
 
 	@Test
 	public void closeShouldCloseContext() throws Exception {
-		AssertProviderApplicationContext<ApplicationContext> context = get(
+		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.mockContextSupplier);
 		context.close();
 		verify(this.mockContext).close();
@@ -225,15 +225,15 @@ public class AssertProviderApplicationContextTests {
 		this.thrown.expectCause(equalTo(this.startupFailure));
 	}
 
-	private AssertProviderApplicationContext<ApplicationContext> get(
+	private ApplicationContextAssertProvider<ApplicationContext> get(
 			Supplier<ApplicationContext> contextSupplier) {
-		return AssertProviderApplicationContext.get(
+		return ApplicationContextAssertProvider.get(
 				TestAssertProviderApplicationContext.class, ApplicationContext.class,
 				contextSupplier);
 	}
 
 	private interface TestAssertProviderApplicationContext
-			extends AssertProviderApplicationContext<ApplicationContext> {
+			extends ApplicationContextAssertProvider<ApplicationContext> {
 
 	}
 

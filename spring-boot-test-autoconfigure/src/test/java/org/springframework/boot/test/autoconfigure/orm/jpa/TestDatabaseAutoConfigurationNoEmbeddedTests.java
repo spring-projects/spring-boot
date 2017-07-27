@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
-import org.springframework.boot.test.context.ApplicationContextTester;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,15 +44,15 @@ import static org.mockito.Mockito.mock;
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar", "derby-*.jar" })
 public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
-	private final ApplicationContextTester context = new ApplicationContextTester()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(ExistingDataSourceConfiguration.class)
 			.withConfiguration(
 					AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void applyAnyReplace() {
-		this.context.run((loaded) -> {
-			assertThat(loaded).getFailure().isInstanceOf(BeanCreationException.class)
+		this.contextRunner.run((context) -> {
+			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
 					.hasMessageContaining(
 							"Failed to replace DataSource with an embedded database for tests.")
 					.hasMessageContaining(
@@ -64,11 +64,11 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
 	@Test
 	public void applyNoReplace() {
-		this.context.withPropertyValues("spring.test.database.replace=NONE")
-				.run((loaded) -> {
-					assertThat(loaded).hasSingleBean(DataSource.class);
-					assertThat(loaded).getBean(DataSource.class)
-							.isSameAs(loaded.getBean("myCustomDataSource"));
+		this.contextRunner.withPropertyValues("spring.test.database.replace=NONE")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DataSource.class);
+					assertThat(context).getBean(DataSource.class)
+							.isSameAs(context.getBean("myCustomDataSource"));
 				});
 	}
 

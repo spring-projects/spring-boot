@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * {@link InvocationHandler} used by {@link AssertProviderApplicationContext} generated
+ * {@link InvocationHandler} used by {@link ApplicationContextAssertProvider} generated
  * proxies.
  *
  * @author Phillip Webb

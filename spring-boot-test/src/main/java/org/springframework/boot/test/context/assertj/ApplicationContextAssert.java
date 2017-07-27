@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractObjectArrayAssert;
@@ -25,19 +25,20 @@ import org.assertj.core.api.MapAssert;
 import org.assertj.core.error.BasicErrorMessageFactory;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * AspectJ {@link org.assertj.core.api.Assert assertions} that can be applied to an
+ * AssertJ {@link org.assertj.core.api.Assert assertions} that can be applied to an
  * {@link ApplicationContext}.
  *
  * @param <C> The application context type
  * @author Phillip Webb
  * @since 2.0.0
- * @see ApplicationContextTester
+ * @see ApplicationContextRunner
  * @see AssertableApplicationContext
  */
 public class ApplicationContextAssert<C extends ApplicationContext>

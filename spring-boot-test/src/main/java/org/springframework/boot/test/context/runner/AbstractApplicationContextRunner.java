@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
+import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.assertj.ApplicationContextAssert;
+import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -34,13 +37,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Tester utility design to manage the lifecycle of an {@link ApplicationContext} and
- * provide AssertJ style assertions. The test is best used as a field of a test class,
- * describing the shared configuration required for the test:
+ * Utility design to run and an {@link ApplicationContext} and provide AssertJ style
+ * assertions. The test is best used as a field of a test class, describing the shared
+ * configuration required for the test:
  *
  * <pre class="code">
  * public class MyContextTests {
- *     private final ApplicationContextTester context = new ApplicationContextTester()
+ *     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
  *             .withPropertyValues("spring.foo=bar")
  *             .withUserConfiguration(MyConfiguration.class);
  * }</pre>
@@ -55,8 +58,8 @@ import org.springframework.util.ReflectionUtils;
  * <pre class="code">
  * &#064;Test
  * public someTest() {
- *     this.context.withPropertyValues("spring.foo=biz").run((loaded) -&gt; {
- *         assertThat(loaded).containsSingleBean(MyBean.class);
+ *     this.contextRunner.withPropertyValues("spring.foo=biz").run((context) -&gt; {
+ *         assertThat(context).containsSingleBean(MyBean.class);
  *         // other assertions
  *     });
  * }</pre>
@@ -80,19 +83,19 @@ import org.springframework.util.ReflectionUtils;
  * }</pre>
  * <p>
  *
- * @param <SELF> The "self" type for this tester
+ * @param <SELF> The "self" type for this runner
  * @param <C> The context type
  * @param <A> The application context assertion provider
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
- * @see ApplicationContextTester
- * @see WebApplicationContextTester
- * @see ReactiveWebApplicationContextTester
+ * @see ApplicationContextRunner
+ * @see WebApplicationContextRunner
+ * @see ReactiveWebApplicationContextRunner
  * @see ApplicationContextAssert
  */
-abstract class AbstractApplicationContextTester<SELF extends AbstractApplicationContextTester<SELF, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
+abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	private final Supplier<C> contextFactory;
 
@@ -100,21 +103,44 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 
 	private final TestPropertyValues systemProperties;
 
-	private ClassLoader classLoader;
+	private final ClassLoader classLoader;
 
-	private ApplicationContext parent;
+	private final ApplicationContext parent;
 
-	private final List<Configurations> configurations = new ArrayList<>();
+	private final List<Configurations> configurations;
 
 	/**
-	 * Create a new {@link AbstractApplicationContextTester} instance.
+	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
 	 */
-	protected AbstractApplicationContextTester(Supplier<C> contextFactory) {
+	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
+		this(contextFactory, TestPropertyValues.empty(), TestPropertyValues.empty(), null,
+				null, Collections.emptyList());
+	}
+
+	/**
+	 * Create a new {@link AbstractApplicationContextRunner} instance.
+	 * @param contextFactory the factory used to create the actual context
+	 * @param environmentProperties the environment properties
+	 * @param systemProperties the system properties
+	 * @param classLoader the class loader
+	 * @param parent the parent
+	 * @param configurations the configuration
+	 */
+	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
+		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
+		Assert.notNull(systemProperties, "SystemProperties must not be null");
+		Assert.notNull(configurations, "Configurations must not be null");
 		this.contextFactory = contextFactory;
-		this.environmentProperties = TestPropertyValues.empty();
-		this.systemProperties = TestPropertyValues.empty();
+		this.environmentProperties = environmentProperties;
+		this.systemProperties = systemProperties;
+		this.classLoader = classLoader;
+		this.parent = parent;
+		this.configurations = Collections.unmodifiableList(configurations);
 	}
 
 	/**
@@ -123,26 +149,14 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * might have been specified previously.
 	 * @param pairs the key-value pairs for properties that need to be added to the
 	 * environment
-	 * @return this instance
+	 * @return a new instance with the updated property values
 	 * @see TestPropertyValues
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withPropertyValues(String... pairs) {
-		Arrays.stream(pairs).forEach(this.environmentProperties::and);
-		return self();
-	}
-
-	/**
-	 * Add the specified {@link Environment} property.
-	 * @param name the name of the property
-	 * @param value the value of the property
-	 * @return this instance
-	 * @see TestPropertyValues
-	 * @see #withSystemProperties(String...)
-	 */
-	public SELF withPropertyValue(String name, String value) {
-		this.environmentProperties.and(name, value);
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties.and(pairs),
+				this.systemProperties, this.classLoader, this.parent,
+				this.configurations);
 	}
 
 	/**
@@ -151,28 +165,14 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * context is {@link #run(ContextConsumer) run} and restored when the context is
 	 * closed.
 	 * @param pairs the key-value pairs for properties that need to be added to the system
-	 * @return this instance
+	 * @return a new instance with the updated system properties
 	 * @see TestPropertyValues
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withSystemProperties(String... pairs) {
-		Arrays.stream(pairs).forEach(this.systemProperties::and);
-		return self();
-	}
-
-	/**
-	 * Add the specified {@link System} property. System properties are added before the
-	 * context is {@link #run(ContextConsumer) run} and restored when the context is
-	 * closed.
-	 * @param name the property name
-	 * @param value the property value
-	 * @return this instance
-	 * @see TestPropertyValues
-	 * @see #withSystemProperties(String...)
-	 */
-	public SELF withSystemProperty(String name, String value) {
-		this.systemProperties.and(name, value);
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties.and(pairs), this.classLoader, this.parent,
+				this.configurations);
 	}
 
 	/**
@@ -180,30 +180,30 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * Customizing the {@link ClassLoader} is an effective manner to hide resources from
 	 * the classpath.
 	 * @param classLoader the classloader to use (can be null to use the default)
-	 * @return this instance
+	 * @return a new instance with the updated class loader
 	 * @see HidePackagesClassLoader
 	 */
 	public SELF withClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties, classLoader, this.parent, this.configurations);
 	}
 
 	/**
 	 * Configure the {@link ConfigurableApplicationContext#setParent(ApplicationContext)
 	 * parent} of the {@link ApplicationContext}.
 	 * @param parent the parent
-	 * @return this instance
+	 * @return a new instance with the updated parent
 	 */
 	public SELF withParent(ApplicationContext parent) {
-		this.parent = parent;
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties, this.classLoader, parent, this.configurations);
 	}
 
 	/**
 	 * Register the specified user configuration classes with the
 	 * {@link ApplicationContext}.
 	 * @param configurationClasses the user configuration classes to add
-	 * @return this instance
+	 * @return a new instance with the updated configuration
 	 */
 	public SELF withUserConfiguration(Class<?>... configurationClasses) {
 		return withConfiguration(UserConfigurations.of(configurationClasses));
@@ -212,41 +212,51 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	/**
 	 * Register the specified configuration classes with the {@link ApplicationContext}.
 	 * @param configurations the configurations to add
-	 * @return this instance
+	 * @return a new instance with the updated configuration
 	 */
 	public SELF withConfiguration(Configurations configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
-		this.configurations.add(configurations);
-		return self();
+		return newInstance(this.contextFactory, this.environmentProperties,
+				this.systemProperties, this.classLoader, this.parent,
+				add(this.configurations, configurations));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected final SELF self() {
-		return (SELF) this;
+	private <T> List<T> add(List<T> list, T element) {
+		List<T> result = new ArrayList<>(list);
+		result.add(element);
+		return result;
 	}
+
+	protected abstract SELF newInstance(Supplier<C> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
 	 * this loader. The context is consumed by the specified {@code consumer} and closed
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
+	 * @return this instance
 	 */
-	public void run(ContextConsumer<? super A> consumer) {
+	@SuppressWarnings("unchecked")
+	public SELF run(ContextConsumer<? super A> consumer) {
 		this.systemProperties.applyToSystemProperties(() -> {
 			try (A context = createAssertableContext()) {
 				accept(consumer, context);
 			}
 			return null;
 		});
+		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	private A createAssertableContext() {
 		ResolvableType resolvableType = ResolvableType
-				.forClass(AbstractApplicationContextTester.class, getClass());
+				.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		return AssertProviderApplicationContext.get(assertType, contextType,
+		return ApplicationContextAssertProvider.get(assertType, contextType,
 				this::createAndLoadContext);
 	}
 

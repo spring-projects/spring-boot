@@ -104,8 +104,8 @@ public class HikariDataSourceConfigurationTests {
 
 	private void load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).and("spring.datasource.initialize", "false")
-				.and("spring.datasource.type", HikariDataSource.class.getName())
+		TestPropertyValues.of(environment).and("spring.datasource.initialize=false")
+				.and("spring.datasource.type=" + HikariDataSource.class.getName())
 				.applyTo(ctx);
 		ctx.register(DataSourceAutoConfiguration.class);
 		ctx.refresh();

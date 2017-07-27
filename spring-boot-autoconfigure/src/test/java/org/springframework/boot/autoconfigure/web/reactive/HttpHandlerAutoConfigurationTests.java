@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.ReactiveWebApplicationContextTester;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -39,24 +39,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpHandlerAutoConfigurationTests {
 
-	private final ReactiveWebApplicationContextTester context = new ReactiveWebApplicationContextTester()
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class));
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {
-		this.context.withUserConfiguration(CustomHttpHandler.class).run((loaded) -> {
-			assertThat(loaded).hasSingleBean(HttpHandler.class);
-			assertThat(loaded).getBean(HttpHandler.class)
-					.isSameAs(loaded.getBean("customHttpHandler"));
-		});
+		this.contextRunner.withUserConfiguration(CustomHttpHandler.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HttpHandler.class);
+					assertThat(context).getBean(HttpHandler.class)
+							.isSameAs(context.getBean("customHttpHandler"));
+				});
 	}
 
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
-		this.context
+		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.run((loaded) -> {
-					assertThat(loaded).hasSingleBean(HttpHandler.class);
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HttpHandler.class);
 				});
 	}
 

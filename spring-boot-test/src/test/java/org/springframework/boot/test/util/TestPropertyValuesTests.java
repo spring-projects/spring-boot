@@ -89,8 +89,8 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void andShouldChainAndAddSingleKeyValue() throws Exception {
-		TestPropertyValues.of("foo.bar=baz").and("hello.world", "hi")
-				.and("bling.blah", "bing").applyTo(this.environment, Type.MAP);
+		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing")
+				.applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");
@@ -127,7 +127,7 @@ public class TestPropertyValuesTests {
 			throws Exception {
 		System.setProperty("foo", "bar1");
 		try {
-			TestPropertyValues.ofPair("foo", null).applyToSystemProperties(() -> {
+			TestPropertyValues.of("foo").applyToSystemProperties(() -> {
 				assertThat(System.getProperties()).doesNotContainKey("foo");
 				return null;
 			});

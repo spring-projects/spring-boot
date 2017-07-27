@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link AssertableReactiveWebApplicationContext}.
  *
  * @author Phillip Webb
- * @see AssertProviderApplicationContextTests
+ * @see ApplicationContextAssertProviderTests
  */
 public class AssertableReactiveWebApplicationContextTests {
 

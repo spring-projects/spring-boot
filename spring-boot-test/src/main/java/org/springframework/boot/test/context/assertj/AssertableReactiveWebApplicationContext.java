@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.assertj;
 
 import java.util.function.Supplier;
 
@@ -26,7 +26,7 @@ import org.springframework.boot.web.reactive.context.ReactiveWebApplicationConte
  * assertions. Can be used to decorate and existing reactive web application context or an
  * application context that failed to start.
  * <p>
- * See {@link AssertProviderApplicationContext} for more details.
+ * See {@link ApplicationContextAssertProvider} for more details.
  *
  * @author Phillip Webb
  * @since 2.0.0
@@ -34,7 +34,7 @@ import org.springframework.boot.web.reactive.context.ReactiveWebApplicationConte
  * @see ReactiveWebApplicationContext
  */
 public interface AssertableReactiveWebApplicationContext extends
-		AssertProviderApplicationContext<ConfigurableReactiveWebApplicationContext>,
+		ApplicationContextAssertProvider<ConfigurableReactiveWebApplicationContext>,
 		ReactiveWebApplicationContext {
 
 	/**
@@ -47,7 +47,7 @@ public interface AssertableReactiveWebApplicationContext extends
 	 */
 	static AssertableReactiveWebApplicationContext get(
 			Supplier<? extends ConfigurableReactiveWebApplicationContext> contextSupplier) {
-		return AssertProviderApplicationContext.get(
+		return ApplicationContextAssertProvider.get(
 				AssertableReactiveWebApplicationContext.class,
 				ConfigurableReactiveWebApplicationContext.class, contextSupplier);
 	}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
 import java.util.UUID;
 
@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
+import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,18 +36,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 /**
- * Abstract tests for {@link AbstractApplicationContextTester} implementations.
+ * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
  *
- * @param <T> The tester type
+ * @param <T> The runner type
  * @param <C> the context type
  * @param <A> the assertable context type
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public abstract class AbstractApplicationContextTesterTests<T extends AbstractApplicationContextTester<T, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
+public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
@@ -93,7 +95,7 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			get().withSystemProperty(key, null).run((loaded) -> {
+			get().withSystemProperties(key + "=").run((loaded) -> {
 				assertThat(System.getProperties()).doesNotContainKey(key);
 			});
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");

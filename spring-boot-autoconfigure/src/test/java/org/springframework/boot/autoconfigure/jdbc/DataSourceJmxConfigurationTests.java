@@ -130,7 +130,7 @@ public class DataSourceJmxConfigurationTests {
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		String jdbcUrl = "jdbc:hsqldb:mem:test-" + UUID.randomUUID().toString();
-		TestPropertyValues.of(environment).and("spring.datasource.url", jdbcUrl)
+		TestPropertyValues.of(environment).and("spring.datasource.url=" + jdbcUrl)
 				.applyTo(context);
 		if (config != null) {
 			context.register(config);

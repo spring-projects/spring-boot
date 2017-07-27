@@ -14,47 +14,71 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import org.springframework.boot.context.annotation.Configurations;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
- * A {@link AbstractApplicationContextTester ApplicationContext tester} for a Servlet
+ * A {@link AbstractApplicationContextRunner ApplicationContext runner} for a Servlet
  * based {@link ConfigurableWebApplicationContext}.
  * <p>
- * See {@link AbstractApplicationContextTester} for details.
+ * See {@link AbstractApplicationContextRunner} for details.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 2.0.0
  */
-public final class WebApplicationContextTester extends
-		AbstractApplicationContextTester<WebApplicationContextTester, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
+public final class WebApplicationContextRunner extends
+		AbstractApplicationContextRunner<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
 	/**
-	 * Create a new {@link WebApplicationContextTester} instance using an
+	 * Create a new {@link WebApplicationContextRunner} instance using an
 	 * {@link AnnotationConfigWebApplicationContext} with a {@link MockServletContext} as
 	 * the underlying source.
 	 * @see #withMockServletContext(Supplier)
 	 */
-	public WebApplicationContextTester() {
+	public WebApplicationContextRunner() {
 		this(withMockServletContext(AnnotationConfigWebApplicationContext::new));
 	}
 
 	/**
-	 * Create a new {@link WebApplicationContextTester} instance using the specified
+	 * Create a new {@link WebApplicationContextRunner} instance using the specified
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
-	public WebApplicationContextTester(
+	public WebApplicationContextRunner(
 			Supplier<ConfigurableWebApplicationContext> contextFactory) {
 		super(contextFactory);
+	}
+
+	private WebApplicationContextRunner(
+			Supplier<ConfigurableWebApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		super(contextFactory, environmentProperties, systemProperties, classLoader,
+				parent, configurations);
+	}
+
+	@Override
+	protected WebApplicationContextRunner newInstance(
+			Supplier<ConfigurableWebApplicationContext> contextFactory,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+			ClassLoader classLoader, ApplicationContext parent,
+			List<Configurations> configurations) {
+		return new WebApplicationContextRunner(contextFactory, environmentProperties,
+				systemProperties, classLoader, parent, configurations);
 	}
 
 	/**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.context.runner;
 
 import org.springframework.context.ApplicationContext;
 
@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
  * @author Andy Wilkinson
  * @param <C> The application context type
  * @since 2.0.0
- * @see AbstractApplicationContextTester
+ * @see AbstractApplicationContextRunner
  */
 @FunctionalInterface
 public interface ContextConsumer<C extends ApplicationContext> {
