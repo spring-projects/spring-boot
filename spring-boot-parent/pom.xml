@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.5.6.BUILD-SNAPSHOT</version>
+		<version>1.5.7.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>
@@ -43,7 +43,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test-support</artifactId>
-				<version>1.5.6.BUILD-SNAPSHOT</version>
+				<version>1.5.7.BUILD-SNAPSHOT</version>
 			</dependency>
 
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
