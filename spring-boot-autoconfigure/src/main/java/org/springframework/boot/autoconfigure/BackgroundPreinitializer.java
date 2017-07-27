@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.validation.Validation;
 
 import org.apache.catalina.mbeans.MBeanFactory;
@@ -40,8 +42,16 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 public class BackgroundPreinitializer
 		implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
+	private static final AtomicBoolean preinitalizationStarted = new AtomicBoolean(false);
+
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+		if (preinitalizationStarted.compareAndSet(false, true)) {
+			performPreinitialization();
+		}
+	}
+
+	private void performPreinitialization() {
 		try {
 			Thread thread = new Thread(new Runnable() {
 
