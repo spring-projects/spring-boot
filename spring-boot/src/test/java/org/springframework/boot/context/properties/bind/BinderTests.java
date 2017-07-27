@@ -19,7 +19,9 @@ package org.springframework.boot.context.properties.bind;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.assertj.core.matcher.AssertionMatcher;
 import org.junit.Before;
@@ -237,6 +239,19 @@ public class BinderTests {
 		this.binder.bind("foo", target);
 	}
 
+	@Test
+	public void nestedMapsShouldNotBindToNull() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "one");
+		source.put("foo.foos.foo1.value", "two");
+		source.put("foo.foos.foo2.value", "three");
+		this.sources.add(source);
+		BindResult<Foo> foo = this.binder.bind("foo", Foo.class);
+		assertThat(foo.get().getValue()).isNotNull();
+		assertThat(foo.get().getFoos().get("foo1").getValue()).isEqualTo("two");
+		assertThat(foo.get().getFoos().get("foo2").getValue()).isEqualTo("three");
+	}
+
 	public static class JavaBean {
 
 		private String value;
@@ -260,6 +275,26 @@ public class BinderTests {
 	public enum ExampleEnum {
 
 		FOO_BAR, BAR_BAZ, BAZ_BOO
+
+	}
+
+	static class Foo {
+
+		private String value;
+
+		private Map<String, Foo> foos = new LinkedHashMap<>();
+
+		public Map<String, Foo> getFoos() {
+			return this.foos;
+		}
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
 
 	}
 
