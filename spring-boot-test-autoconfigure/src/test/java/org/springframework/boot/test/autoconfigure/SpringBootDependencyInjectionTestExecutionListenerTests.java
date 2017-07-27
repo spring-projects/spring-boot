@@ -85,7 +85,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		IllegalStateException originalFailure = new IllegalStateException();
 		given(testContext.getTestInstance()).willThrow(originalFailure);
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		given(testContext.getApplicationContext()).willThrow(new RuntimeException());
 		this.thrown.expect(is(originalFailure));
 		this.reportListener.prepareTestInstance(testContext);

@@ -261,8 +261,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.of("security.oauth2.resource.jwk.key-set-uri=http://my-auth-server/token_keys")
 				.applyTo(this.environment);
 		this.context = new SpringApplicationBuilder(JwkTokenStoreConfiguration.class,
-				ResourceConfiguration.class).environment(this.environment).web(false)
-						.run();
+				ResourceConfiguration.class).environment(this.environment)
+						.web(WebApplicationType.NONE).run();
 		assertThat(this.context.getBeansOfType(JwkTokenStore.class)).hasSize(1);
 	}
 
@@ -271,8 +271,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 		TestPropertyValues.of("security.oauth2.resource.jwt.keyValue=" + PUBLIC_KEY)
 				.applyTo(this.environment);
 		this.context = new SpringApplicationBuilder(JwtTokenStoreConfiguration.class,
-				ResourceConfiguration.class).environment(this.environment).web(false)
-						.run();
+				ResourceConfiguration.class).environment(this.environment)
+						.web(WebApplicationType.NONE).run();
 		assertThat(this.context.getBeansOfType(JwtTokenStore.class)).hasSize(1);
 	}
 

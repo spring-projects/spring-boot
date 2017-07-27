@@ -60,6 +60,7 @@ public class JsonContentTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void assertThatShouldReturnJsonContentAssert() throws Exception {
 		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON);
 		assertThat(content.assertThat()).isInstanceOf(JsonContentAssert.class);

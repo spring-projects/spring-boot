@@ -117,8 +117,8 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	/**
 	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
-	 * {@link Undertow.Builder}. Calling this method will replace any existing
-	 * customizers.
+	 * {@link io.undertow.Undertow.Builder Builder}. Calling this method will replace any
+	 * existing customizers.
 	 * @param customizers the customizers to set
 	 */
 	public void setBuilderCustomizers(
@@ -129,7 +129,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	/**
 	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
-	 * applied to the Undertow {@link Undertow.Builder} .
+	 * applied to the Undertow {@link io.undertow.Undertow.Builder Builder}.
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
@@ -138,7 +138,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
-	 * Undertow {@link Undertow.Builder}.
+	 * Undertow {@link io.undertow.Undertow.Builder Builder}.
 	 * @param customizers the customizers to add
 	 */
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {

@@ -175,11 +175,6 @@ public class RemoteDevToolsAutoConfigurationTests {
 		assertThat(this.response.getStatus()).isEqualTo(200);
 	}
 
-	private void assertTunnelInvoked(boolean value) {
-		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked)
-				.isEqualTo(value);
-	}
-
 	private void assertRestartInvoked(boolean value) {
 		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked)
 				.isEqualTo(value);
@@ -211,8 +206,6 @@ public class RemoteDevToolsAutoConfigurationTests {
 	 */
 	static class MockHttpTunnelServer extends HttpTunnelServer {
 
-		private boolean invoked;
-
 		MockHttpTunnelServer(TargetServerConnection serverConnection) {
 			super(serverConnection);
 		}
@@ -220,7 +213,6 @@ public class RemoteDevToolsAutoConfigurationTests {
 		@Override
 		public void handle(ServerHttpRequest request, ServerHttpResponse response)
 				throws IOException {
-			this.invoked = true;
 		}
 
 	}

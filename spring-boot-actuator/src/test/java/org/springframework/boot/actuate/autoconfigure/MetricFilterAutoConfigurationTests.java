@@ -93,20 +93,25 @@ public class MetricFilterAutoConfigurationTests {
 	public void recordsHttpInteractions() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, MetricFilterAutoConfiguration.class);
-		Filter filter = context.getBean(Filter.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
-				"/test/path");
-		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
-		willAnswer((invocation) -> {
-			response.setStatus(200);
-			return null;
-		}).given(chain).doFilter(request, response);
-		filter.doFilter(request, response, chain);
-		verify(context.getBean(CounterService.class)).increment("status.200.test.path");
-		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
-				anyDouble());
-		context.close();
+		try {
+			Filter filter = context.getBean(Filter.class);
+			MockHttpServletRequest request = new MockHttpServletRequest("GET",
+					"/test/path");
+			MockHttpServletResponse response = new MockHttpServletResponse();
+			FilterChain chain = mock(FilterChain.class);
+			willAnswer((invocation) -> {
+				response.setStatus(200);
+				return null;
+			}).given(chain).doFilter(request, response);
+			filter.doFilter(request, response, chain);
+			verify(context.getBean(CounterService.class))
+					.increment("status.200.test.path");
+			verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
+					anyDouble());
+		}
+		finally {
+			context.close();
+		}
 	}
 
 	@Test
@@ -355,9 +360,8 @@ public class MetricFilterAutoConfigurationTests {
 				.applyTo(context);
 		context.refresh();
 		Filter filter = context.getBean(Filter.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
-				"/test/path");
-		final MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/test/path");
+		MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
 		willAnswer((invocation) -> {
 			response.setStatus(200);
@@ -383,9 +387,8 @@ public class MetricFilterAutoConfigurationTests {
 				"endpoints.metrics.filter.counter-submissions=").applyTo(context);
 		context.refresh();
 		Filter filter = context.getBean(Filter.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
-				"/test/path");
-		final MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/test/path");
+		MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
 		willAnswer((invocation) -> {
 			response.setStatus(200);
@@ -402,28 +405,32 @@ public class MetricFilterAutoConfigurationTests {
 	public void whenExceptionIsThrownResponseStatusIsUsedWhenResponseHasBeenCommitted()
 			throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(Config.class, MetricFilterAutoConfiguration.class);
-		context.refresh();
-		Filter filter = context.getBean(Filter.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
-				"/test/path");
-		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
-		willAnswer((invocation) -> {
-			response.setStatus(200);
-			response.setCommitted(true);
-			throw new IOException();
-		}).given(chain).doFilter(request, response);
 		try {
-			filter.doFilter(request, response, chain);
-			fail();
+			context.register(Config.class, MetricFilterAutoConfiguration.class);
+			context.refresh();
+			Filter filter = context.getBean(Filter.class);
+			MockHttpServletRequest request = new MockHttpServletRequest("GET",
+					"/test/path");
+			MockHttpServletResponse response = new MockHttpServletResponse();
+			FilterChain chain = mock(FilterChain.class);
+			willAnswer((invocation) -> {
+				response.setStatus(200);
+				response.setCommitted(true);
+				throw new IOException();
+			}).given(chain).doFilter(request, response);
+			try {
+				filter.doFilter(request, response, chain);
+				fail();
+			}
+			catch (IOException ex) {
+				// Continue
+			}
+			verify(context.getBean(CounterService.class))
+					.increment(eq("status.200.test.path"));
 		}
-		catch (IOException ex) {
-			// Continue
+		finally {
+			context.close();
 		}
-		verify(context.getBean(CounterService.class))
-				.increment(eq("status.200.test.path"));
-		context.close();
 	}
 
 	@Configuration

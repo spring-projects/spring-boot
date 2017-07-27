@@ -46,7 +46,7 @@ public class UnboundElementsSourceFilter
 	public Boolean apply(ConfigurationPropertySource configurationPropertySource) {
 		Object underlyingSource = configurationPropertySource.getUnderlyingSource();
 		if (underlyingSource instanceof PropertySource) {
-			String name = ((PropertySource) underlyingSource).getName();
+			String name = ((PropertySource<?>) underlyingSource).getName();
 			return !BENIGN_PROPERTY_SOURCE_NAMES.contains(name);
 
 		}

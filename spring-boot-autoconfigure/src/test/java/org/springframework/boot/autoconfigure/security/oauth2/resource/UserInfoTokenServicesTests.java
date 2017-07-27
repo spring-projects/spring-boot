@@ -59,7 +59,6 @@ public class UserInfoTokenServicesTests {
 
 	private Map<String, Object> map = new LinkedHashMap<>();
 
-	@SuppressWarnings("rawtypes")
 	@Before
 	public void init() {
 		this.resource.setClientId("foo");
