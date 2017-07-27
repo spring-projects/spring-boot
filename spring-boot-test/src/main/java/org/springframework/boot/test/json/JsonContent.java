@@ -53,7 +53,11 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	}
 
 	/**
-	 * Use {@link org.assertj.core.api.Assertions#assertThat AspectJ's assertThat} instead
+	 * Use AssertJ's {@link org.assertj.core.api.Assertions#assertThat assertThat}
+	 * instead.
+	 *
+	 * @deprecated in favor of AssertJ's {@link org.assertj.core.api.Assertions#assertThat
+	 * assertThat}
 	 */
 	@Override
 	@Deprecated
