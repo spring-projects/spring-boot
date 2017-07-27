@@ -52,7 +52,11 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 		this.json = json;
 	}
 
+	/**
+	 * Use {@link org.assertj.core.api.Assertions#assertThat AspectJ's assertThat} instead
+	 */
 	@Override
+	@Deprecated
 	public JsonContentAssert assertThat() {
 		return new JsonContentAssert(this.resourceLoadClass, this.json);
 	}
