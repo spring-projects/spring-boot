@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.validation.Validation;
@@ -23,6 +24,9 @@ import javax.validation.Validation;
 import org.apache.catalina.mbeans.MBeanFactory;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
@@ -40,14 +44,27 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
 public class BackgroundPreinitializer
-		implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+		implements ApplicationListener<SpringApplicationEvent> {
 
 	private static final AtomicBoolean preinitalizationStarted = new AtomicBoolean(false);
 
+	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
+
 	@Override
-	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		if (preinitalizationStarted.compareAndSet(false, true)) {
-			performPreinitialization();
+	public void onApplicationEvent(SpringApplicationEvent event) {
+		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+			if (preinitalizationStarted.compareAndSet(false, true)) {
+				performPreinitialization();
+			}
+		}
+		if (event instanceof ApplicationReadyEvent
+				|| event instanceof ApplicationFailedEvent) {
+			try {
+				preinitializationComplete.await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 
@@ -62,6 +79,7 @@ public class BackgroundPreinitializer
 					runSafely(new ValidationInitializer());
 					runSafely(new JacksonInitializer());
 					runSafely(new ConversionServiceInitializer());
+					preinitializationComplete.countDown();
 				}
 
 				public void runSafely(Runnable runnable) {
@@ -80,6 +98,7 @@ public class BackgroundPreinitializer
 			// This will fail on GAE where creating threads is prohibited. We can safely
 			// continue but startup will be slightly slower as the initialization will now
 			// happen on the main thread.
+			preinitializationComplete.countDown();
 		}
 	}
 
