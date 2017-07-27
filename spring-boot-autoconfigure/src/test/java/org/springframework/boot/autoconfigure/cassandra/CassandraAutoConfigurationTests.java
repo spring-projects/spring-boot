@@ -18,12 +18,10 @@ package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PoolingOptions;
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,95 +36,81 @@ import static org.mockito.Mockito.mock;
  */
 public class CassandraAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void tearDown() throws Exception {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
 
 	@Test
 	public void createClusterWithDefault() {
-		load();
-		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		Cluster cluster = this.context.getBean(Cluster.class);
-		assertThat(cluster.getClusterName()).startsWith("cluster");
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Cluster.class);
+			assertThat(context.getBean(Cluster.class).getClusterName())
+					.startsWith("cluster");
+		});
 	}
 
 	@Test
 	public void createClusterWithOverrides() {
-		load("spring.data.cassandra.cluster-name=testcluster");
-		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		Cluster cluster = this.context.getBean(Cluster.class);
-		assertThat(cluster.getClusterName()).isEqualTo("testcluster");
+		this.contextRunner.withPropertyValues(
+				"spring.data.cassandra.cluster-name=testcluster").run((context) -> {
+			assertThat(context).hasSingleBean(Cluster.class);
+			assertThat(context.getBean(Cluster.class).getClusterName())
+					.isEqualTo("testcluster");
+		});
 	}
 
 	@Test
 	public void createCustomizeCluster() {
-		load(MockCustomizerConfig.class);
-		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		assertThat(
-				this.context.getBeanNamesForType(ClusterBuilderCustomizer.class).length)
-						.isEqualTo(1);
+		this.contextRunner.withUserConfiguration(
+				MockCustomizerConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(Cluster.class);
+			assertThat(context).hasSingleBean(ClusterBuilderCustomizer.class);
+		});
 	}
 
 	@Test
 	public void customizerOverridesAutoConfig() {
-		load(SimpleCustomizerConfig.class,
-				"spring.data.cassandra.cluster-name=testcluster");
-		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		Cluster cluster = this.context.getBean(Cluster.class);
-		assertThat(cluster.getClusterName()).isEqualTo("overridden-name");
+		this.contextRunner.withUserConfiguration(SimpleCustomizerConfig.class)
+				.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
+			assertThat(context).hasSingleBean(Cluster.class);
+			assertThat(context.getBean(Cluster.class).getClusterName())
+					.isEqualTo("overridden-name");
+		});
 	}
 
 	@Test
 	public void defaultPoolOptions() {
-		load();
-		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		PoolingOptions poolingOptions = this.context.getBean(Cluster.class)
-				.getConfiguration().getPoolingOptions();
-		assertThat(poolingOptions.getIdleTimeoutSeconds())
-				.isEqualTo(PoolingOptions.DEFAULT_IDLE_TIMEOUT_SECONDS);
-		assertThat(poolingOptions.getPoolTimeoutMillis())
-				.isEqualTo(PoolingOptions.DEFAULT_POOL_TIMEOUT_MILLIS);
-		assertThat(poolingOptions.getHeartbeatIntervalSeconds())
-				.isEqualTo(PoolingOptions.DEFAULT_HEARTBEAT_INTERVAL_SECONDS);
-		assertThat(poolingOptions.getMaxQueueSize())
-				.isEqualTo(PoolingOptions.DEFAULT_MAX_QUEUE_SIZE);
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Cluster.class);
+			PoolingOptions poolingOptions = context.getBean(Cluster.class)
+					.getConfiguration().getPoolingOptions();
+			assertThat(poolingOptions.getIdleTimeoutSeconds())
+					.isEqualTo(PoolingOptions.DEFAULT_IDLE_TIMEOUT_SECONDS);
+			assertThat(poolingOptions.getPoolTimeoutMillis())
+					.isEqualTo(PoolingOptions.DEFAULT_POOL_TIMEOUT_MILLIS);
+			assertThat(poolingOptions.getHeartbeatIntervalSeconds())
+					.isEqualTo(PoolingOptions.DEFAULT_HEARTBEAT_INTERVAL_SECONDS);
+			assertThat(poolingOptions.getMaxQueueSize())
+					.isEqualTo(PoolingOptions.DEFAULT_MAX_QUEUE_SIZE);
+		});
 	}
 
 	@Test
 	public void customizePoolOptions() {
-		load("spring.data.cassandra.pool.idle-timeout=42",
+		this.contextRunner.withPropertyValues(
+				"spring.data.cassandra.pool.idle-timeout=42",
 				"spring.data.cassandra.pool.pool-timeout=52",
 				"spring.data.cassandra.pool.heartbeat-interval=62",
-				"spring.data.cassandra.pool.max-queue-size=72");
-		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		PoolingOptions poolingOptions = this.context.getBean(Cluster.class)
-				.getConfiguration().getPoolingOptions();
-		assertThat(poolingOptions.getIdleTimeoutSeconds()).isEqualTo(42);
-		assertThat(poolingOptions.getPoolTimeoutMillis()).isEqualTo(52);
-		assertThat(poolingOptions.getHeartbeatIntervalSeconds()).isEqualTo(62);
-		assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(72);
+				"spring.data.cassandra.pool.max-queue-size=72").run((context) -> {
+			assertThat(context).hasSingleBean(Cluster.class);
+			PoolingOptions poolingOptions = context.getBean(Cluster.class)
+					.getConfiguration().getPoolingOptions();
+			assertThat(poolingOptions.getIdleTimeoutSeconds()).isEqualTo(42);
+			assertThat(poolingOptions.getPoolTimeoutMillis()).isEqualTo(52);
+			assertThat(poolingOptions.getHeartbeatIntervalSeconds()).isEqualTo(62);
+			assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(72);
+		});
 	}
 
-	private void load(String... environment) {
-		load(null, environment);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		if (config != null) {
-			ctx.register(config);
-		}
-		ctx.register(PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class);
-		TestPropertyValues.of(environment).applyTo(ctx);
-		ctx.refresh();
-		this.context = ctx;
-	}
 
 	@Configuration
 	static class MockCustomizerConfig {

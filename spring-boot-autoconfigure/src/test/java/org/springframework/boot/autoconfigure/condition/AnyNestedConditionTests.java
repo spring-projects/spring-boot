@@ -18,8 +18,9 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -37,40 +38,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AnyNestedConditionTests {
 
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
+
 	@Test
 	public void neither() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class);
-		assertThat(context.containsBean("myBean")).isFalse();
-		context.close();
+		this.contextRunner.withUserConfiguration(Config.class).run(match(false));
 	}
 
 	@Test
 	public void propertyA() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class, "a:a");
-		assertThat(context.containsBean("myBean")).isTrue();
-		context.close();
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a")
+				.run(match(true));
 	}
 
 	@Test
 	public void propertyB() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class, "b:b");
-		assertThat(context.containsBean("myBean")).isTrue();
-		context.close();
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("b:b")
+				.run(match(true));
 	}
 
 	@Test
 	public void both() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class, "a:a", "b:b");
-		assertThat(context.containsBean("myBean")).isTrue();
-		context.close();
+		this.contextRunner.withUserConfiguration(Config.class)
+				.withPropertyValues("a:a", "b:b").run(match(true));
 	}
 
-	private AnnotationConfigApplicationContext load(Class<?> config, String... env) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(env).applyTo(context);
-		context.register(config);
-		context.refresh();
-		return context;
+	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {
+		return (context) -> {
+			if (expected) {
+				assertThat(context).hasBean("myBean");
+			}
+			else {
+				assertThat(context).doesNotHaveBean("myBean");
+			}
+		};
 	}
 
 	@Configuration

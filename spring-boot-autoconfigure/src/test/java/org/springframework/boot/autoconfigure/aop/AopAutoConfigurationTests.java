@@ -18,11 +18,12 @@ package org.springframework.boot.autoconfigure.aop;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -38,73 +39,66 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AopAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class));
 
 	@Test
 	public void aopDisabled() {
-		load(TestConfiguration.class, "spring.aop.auto:false");
-		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertThat(aspect.isCalled()).isFalse();
-		TestBean bean = this.context.getBean(TestBean.class);
-		bean.foo();
-		assertThat(aspect.isCalled()).isFalse();
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.aop.auto:false").run((context) -> {
+			TestAspect aspect = context.getBean(TestAspect.class);
+			assertThat(aspect.isCalled()).isFalse();
+			TestBean bean = context.getBean(TestBean.class);
+			bean.foo();
+			assertThat(aspect.isCalled()).isFalse();
+		});
 	}
 
 	@Test
 	public void aopWithDefaultSettings() {
-		load(TestConfiguration.class);
-		testProxyTargetClassEnabled();
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run(proxyTargetClassEnabled());
 	}
 
 	@Test
 	public void aopWithEnabledProxyTargetClass() {
-		load(TestConfiguration.class, "spring.aop.proxy-target-class:true");
-		testProxyTargetClassEnabled();
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.aop.proxy-target-class:true")
+				.run(proxyTargetClassEnabled());
 	}
 
 	@Test
 	public void aopWithDisabledProxyTargetClass() {
-		load(TestConfiguration.class, "spring.aop.proxy-target-class:false");
-		testProxyTargetClassDisabled();
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.aop.proxy-target-class:false")
+				.run(proxyTargetClassDisabled());
 	}
 
 	@Test
 	public void aopWithCustomConfiguration() {
-		load(CustomTestConfiguration.class);
-		testProxyTargetClassEnabled();
+		this.contextRunner.withUserConfiguration(CustomTestConfiguration.class)
+				.run(proxyTargetClassEnabled());
 	}
 
-	private void testProxyTargetClassEnabled() {
-		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertThat(aspect.isCalled()).isFalse();
-		TestBean bean = this.context.getBean(TestBean.class);
-		bean.foo();
-		assertThat(aspect.isCalled()).isTrue();
+	private ContextConsumer<AssertableApplicationContext> proxyTargetClassEnabled() {
+		return (context) -> {
+			TestAspect aspect = context.getBean(TestAspect.class);
+			assertThat(aspect.isCalled()).isFalse();
+			TestBean bean = context.getBean(TestBean.class);
+			bean.foo();
+			assertThat(aspect.isCalled()).isTrue();
+		};
 	}
 
-	private void testProxyTargetClassDisabled() {
-		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertThat(aspect.isCalled()).isFalse();
-		TestInterface bean = this.context.getBean(TestInterface.class);
-		bean.foo();
-		assertThat(aspect.isCalled()).isTrue();
-		assertThat(this.context.getBeansOfType(TestBean.class)).isEmpty();
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(config);
-		TestPropertyValues.of(environment).applyTo(ctx);
-		ctx.register(AopAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+	private ContextConsumer<AssertableApplicationContext> proxyTargetClassDisabled() {
+		return (context) -> {
+			TestAspect aspect = context.getBean(TestAspect.class);
+			assertThat(aspect.isCalled()).isFalse();
+			TestInterface bean = context.getBean(TestInterface.class);
+			bean.foo();
+			assertThat(aspect.isCalled()).isTrue();
+			assertThat(context).doesNotHaveBean(TestBean.class);
+		};
 	}
 
 	@EnableAspectJAutoProxy(proxyTargetClass = true)

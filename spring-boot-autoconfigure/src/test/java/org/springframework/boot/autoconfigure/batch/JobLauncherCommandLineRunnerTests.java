@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,13 +52,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JobLauncherCommandLineRunnerTests {
 
-	private JobLauncherCommandLineRunner runner;
-
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	private JobExplorer jobExplorer;
+	private JobLauncherCommandLineRunner runner;
 
-	private JobLauncher jobLauncher;
+	private JobExplorer jobExplorer;
 
 	private JobBuilderFactory jobs;
 
@@ -72,7 +71,7 @@ public class JobLauncherCommandLineRunnerTests {
 		this.context.register(BatchConfiguration.class);
 		this.context.refresh();
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);
-		this.jobLauncher = this.context.getBean(JobLauncher.class);
+		JobLauncher jobLauncher = this.context.getBean(JobLauncher.class);
 		this.jobs = new JobBuilderFactory(jobRepository);
 		PlatformTransactionManager transactionManager = this.context
 				.getBean(PlatformTransactionManager.class);
@@ -81,9 +80,14 @@ public class JobLauncherCommandLineRunnerTests {
 		this.step = this.steps.get("step").tasklet(tasklet).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
-		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher,
+		this.runner = new JobLauncherCommandLineRunner(jobLauncher,
 				this.jobExplorer);
 		this.context.getBean(BatchConfiguration.class).clear();
+	}
+
+	@After
+	public void closeContext() {
+		this.context.close();
 	}
 
 	@Test

@@ -27,9 +27,9 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -51,7 +51,7 @@ public class ConditionalOnJndiTests {
 
 	private String initialContextFactory;
 
-	private ConfigurableApplicationContext context;
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	private MockableOnJndi condition = new MockableOnJndi();
 
@@ -72,38 +72,35 @@ public class ConditionalOnJndiTests {
 		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
 		}
-		if (this.context != null) {
-			this.context.close();
-		}
 		Thread.currentThread().setContextClassLoader(this.threadContextClassLoader);
 	}
 
 	@Test
 	public void jndiNotAvailable() {
-		load(JndiAvailableConfiguration.class);
-		assertPresent(false);
+		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class,
+				JndiConditionConfiguration.class).run(match(false));
 	}
 
 	@Test
 	public void jndiAvailable() {
 		setupJndi();
-		load(JndiAvailableConfiguration.class);
-		assertPresent(true);
+		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class,
+				JndiConditionConfiguration.class).run(match(true));
 	}
 
 	@Test
 	public void jndiLocationNotBound() {
 		setupJndi();
-		load(JndiConditionConfiguration.class);
-		assertPresent(false);
+		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
+				.run(match(false));
 	}
 
 	@Test
 	public void jndiLocationBound() {
 		setupJndi();
 		TestableInitialContextFactory.bind("java:/FooManager", new Object());
-		load(JndiConditionConfiguration.class);
-		assertPresent(true);
+		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
+				.run(match(true));
 	}
 
 	@Test
@@ -127,17 +124,15 @@ public class ConditionalOnJndiTests {
 				TestableInitialContextFactory.class.getName());
 	}
 
-	private void assertPresent(boolean expected) {
-		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(applicationContext);
-		applicationContext.register(config);
-		applicationContext.register(JndiConditionConfiguration.class);
-		applicationContext.refresh();
-		this.context = applicationContext;
+	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {
+		return (context) -> {
+			if (expected) {
+				assertThat(context).hasSingleBean(String.class);
+			}
+			else {
+				assertThat(context).doesNotHaveBean(String.class);
+			}
+		};
 	}
 
 	private AnnotatedTypeMetadata mockMetaData(String... value) {

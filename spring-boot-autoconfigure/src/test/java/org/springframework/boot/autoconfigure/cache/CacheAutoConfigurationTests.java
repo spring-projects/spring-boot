@@ -144,7 +144,7 @@ public class CacheAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SpecificCacheResolverConfiguration.class)
 				.withPropertyValues("spring.cache.type=simple").run((context) -> {
 					getCacheManager(context, ConcurrentMapCacheManager.class);
-					assertThat(context).getBeans(CacheResolver.class).hasSize(1);
+					assertThat(context).hasSingleBean(CacheResolver.class);
 				});
 	}
 
@@ -656,8 +656,7 @@ public class CacheAutoConfigurationTests {
 							.getCacheManager();
 					assertThat(jCacheManager).isInstanceOf(
 							com.hazelcast.cache.HazelcastCacheManager.class);
-					assertThat(context.getBeansOfType(HazelcastInstance.class))
-							.hasSize(1);
+					assertThat(context).hasSingleBean(HazelcastInstance.class);
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);
 					assertThat(((com.hazelcast.cache.HazelcastCacheManager) jCacheManager)

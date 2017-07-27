@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,28 +34,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConditionalOnExpressionTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
 	public void expressionIsTrue() {
-		this.context.register(BasicConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isTrue();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+		this.contextRunner.withUserConfiguration(BasicConfiguration.class)
+				.run(match(true));
 	}
 
 	@Test
 	public void expressionIsFalse() {
-		this.context.register(MissingConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isFalse();
+		this.contextRunner.withUserConfiguration(MissingConfiguration.class)
+				.run(match(false));
 	}
 
 	@Test
 	public void expressionIsNull() {
-		this.context.register(NullConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isFalse();
+		this.contextRunner.withUserConfiguration(NullConfiguration.class)
+				.run(match(false));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {
+		return (context) -> {
+			if (expected) {
+				assertThat(context).hasBean("foo");
+				assertThat(context.getBean("foo")).isEqualTo("foo");
+			}
+			else {
+				assertThat(context).doesNotHaveBean("foo");
+			}
+		};
 	}
 
 	@Configuration
