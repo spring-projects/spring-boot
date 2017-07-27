@@ -34,7 +34,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility design to run and an {@link ApplicationContext} and provide AssertJ style
@@ -293,7 +292,19 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 			consumer.accept(context);
 		}
 		catch (Throwable ex) {
-			ReflectionUtils.rethrowRuntimeException(ex);
+			AnyThrow.throwUnchecked(ex);
+		}
+	}
+
+	private static class AnyThrow {
+
+		static void throwUnchecked(Throwable e) {
+			AnyThrow.throwAny(e);
+		}
+
+		@SuppressWarnings("unchecked")
+		private static <E extends Throwable> void throwAny(Throwable e) throws E {
+			throw (E) e;
 		}
 	}
 

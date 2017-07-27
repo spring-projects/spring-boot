@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public final class TestPropertyValues {
@@ -128,11 +129,9 @@ public final class TestPropertyValues {
 		try (SystemPropertiesHandler handler = new SystemPropertiesHandler()) {
 			return call.call();
 		}
-		catch (RuntimeException ex) {
-			throw ex;
-		}
 		catch (Exception ex) {
-			throw new IllegalStateException(ex);
+			AnyThrow.throwUnchecked(ex);
+			return null; // never reached
 		}
 	}
 
@@ -309,6 +308,18 @@ public final class TestPropertyValues {
 			return (String) System.getProperties().setProperty(name, value);
 		}
 
+	}
+
+	private static class AnyThrow {
+
+		static void throwUnchecked(Throwable e) {
+			AnyThrow.throwAny(e);
+		}
+
+		@SuppressWarnings("unchecked")
+		private static <E extends Throwable> void throwAny(Throwable e) throws E {
+			throw (E) e;
+		}
 	}
 
 }

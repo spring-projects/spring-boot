@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context.runner;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import com.google.gson.Gson;
@@ -161,7 +162,20 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 				});
 	}
 
+	@Test
+	public void thrownRuleWorksWithCheckedException() {
+		get().run((context) -> {
+			this.thrown.expect(IOException.class);
+			this.thrown.expectMessage("Expected message");
+			throwCheckedException("Expected message");
+		});
+	}
+
 	protected abstract T get();
+
+	private static void throwCheckedException(String message) throws IOException {
+		throw new IOException(message);
+	}
 
 	@Configuration
 	static class FailingConfig {
