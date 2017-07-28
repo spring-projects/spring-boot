@@ -48,7 +48,10 @@ final class MainClassConvention implements Callable<Object> {
 	@Override
 	public Object call() throws Exception {
 		if (this.project.hasProperty("mainClassName")) {
-			return this.project.property("mainClassName");
+			Object mainClassName = this.project.property("mainClassName");
+			if (mainClassName != null) {
+				return mainClassName;
+			}
 		}
 		return resolveMainClass();
 	}

@@ -44,10 +44,7 @@ public class BootRunIntegrationTests {
 
 	@Test
 	public void basicExecution() throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
-		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
+		copyApplication();
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -58,10 +55,7 @@ public class BootRunIntegrationTests {
 
 	@Test
 	public void sourceResourcesCanBeUsed() throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
-		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
+		copyApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("1. " + urlOf("src/main/resources"));
@@ -79,12 +73,29 @@ public class BootRunIntegrationTests {
 	}
 
 	@Test
+	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
+		copyApplication();
+		BuildResult result = this.gradleBuild.build("echoMainClassName");
+		assertThat(result.task(":echoMainClassName").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput())
+				.contains("Main class name = com.example.BootRunApplication");
+	}
+
+	@Test
 	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoJvmArguments");
 		assertThat(result.task(":echoJvmArguments").getOutcome())
 				.isEqualTo(TaskOutcome.UP_TO_DATE);
 		assertThat(result.getOutput())
 				.contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
+	}
+
+	private void copyApplication() throws IOException {
+		File output = new File(this.gradleBuild.getProjectDir(),
+				"src/main/java/com/example");
+		output.mkdirs();
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
 	}
 
 	private String urlOf(String path) throws IOException {
