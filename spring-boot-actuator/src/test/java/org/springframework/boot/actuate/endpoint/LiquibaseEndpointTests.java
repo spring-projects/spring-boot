@@ -16,16 +16,20 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import javax.sql.DataSource;
+
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,16 +54,14 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 	public void invokeWithCustomSchema() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.default-schema=CUSTOMSCHEMA",
-				"spring.datasource.generate-unique-name=true",
-				"spring.datasource.schema=classpath:/db/create-custom-schema.sql");
-		this.context.register(Config.class);
+				"liquibase.default-schema=CUSTOMSCHEMA");
+		this.context.register(CustomSchemaConfig.class);
 		this.context.refresh();
 		assertThat(getEndpointBean().invoke()).hasSize(1);
 	}
 
 	@Configuration
-	@Import({ DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class })
+	@Import({ EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class })
 	public static class Config {
 
 		private final SpringLiquibase liquibase;
@@ -71,6 +73,18 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 		@Bean
 		public LiquibaseEndpoint endpoint() {
 			return new LiquibaseEndpoint(this.liquibase);
+		}
+
+	}
+
+	@Configuration
+	@Import(Config.class)
+	public static class CustomSchemaConfig {
+
+		@Autowired
+		public void initializeSchema(DataSource dataSource) {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			jdbcTemplate.execute("CREATE SCHEMA CUSTOMSCHEMA");
 		}
 
 	}
