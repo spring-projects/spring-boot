@@ -53,12 +53,13 @@ public class SpringBootTestWithAutoConfigureJsonTestersTests {
 	private GsonTester<ExampleBasicObject> gsonTester;
 
 	@Autowired
-	JsonbTester<ExampleBasicObject> jsonbTester;
+	private JsonbTester<ExampleBasicObject> jsonbTester;
 
 	@Test
 	public void contextLoads() {
 		assertThat(this.basicJson).isNotNull();
 		assertThat(this.jacksonTester).isNotNull();
+		assertThat(this.jsonbTester).isNotNull();
 		assertThat(this.gsonTester).isNotNull();
 	}
 
