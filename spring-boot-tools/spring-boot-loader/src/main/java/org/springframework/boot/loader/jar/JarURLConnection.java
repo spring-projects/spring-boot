@@ -36,6 +36,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Rostyslav Dudka
  */
 final class JarURLConnection extends java.net.JarURLConnection {
 
@@ -130,7 +131,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			if (spec.endsWith(SEPARATOR)) {
 				spec = spec.substring(0, spec.length() - SEPARATOR.length());
 			}
-			if (spec.indexOf(SEPARATOR) == -1) {
+			if (!spec.contains(SEPARATOR)) {
 				return new URL(spec);
 			}
 			return new URL("jar:" + spec);
@@ -232,6 +233,24 @@ final class JarURLConnection extends java.net.JarURLConnection {
 					this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
 		}
 		return this.permission;
+	}
+
+	@Override
+	public long getLastModified() {
+		int defaultTime = 0;
+		if (this.jarFile == null) {
+			return defaultTime;
+		}
+		try {
+			if (this.jarEntryName.isEmpty()) {
+				return defaultTime;
+			}
+			JarEntry entry = getJarEntry();
+			return (entry == null ? defaultTime : entry.getTime());
+		}
+		catch (IOException ex) {
+			return defaultTime;
+		}
 	}
 
 	static void setUseFastExceptions(boolean useFastExceptions) {
