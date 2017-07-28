@@ -572,7 +572,6 @@
   },
   {
     "name": "spring.http.converters.preferred-json-mapper",
-    "defaultValue" : "jackson",
     "values": [
       {
         "value": "gson"
