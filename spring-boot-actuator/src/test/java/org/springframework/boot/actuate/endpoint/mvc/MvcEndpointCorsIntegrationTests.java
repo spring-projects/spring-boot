@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -56,7 +56,8 @@ public class MvcEndpointCorsIntegrationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
-				JolokiaAutoConfiguration.class, WebMvcAutoConfiguration.class);
+				JolokiaManagementContextConfiguration.class,
+				WebMvcAutoConfiguration.class);
 	}
 
 	@Test
@@ -157,18 +158,6 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allow-credentials:false").applyTo(this.context);
 		performAcceptedCorsRequest().andExpect(
 				header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
-	}
-
-	@Test
-	public void jolokiaEndpointUsesGlobalCorsConfiguration() throws Exception {
-		TestPropertyValues.of("endpoints.cors.allowed-origins:foo.example.com")
-				.applyTo(this.context);
-		createMockMvc()
-				.perform(options("/application/jolokia")
-						.header("Origin", "bar.example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-				.andExpect(status().isForbidden());
-		performAcceptedCorsRequest("/application/jolokia");
 	}
 
 	private MockMvc createMockMvc() {
