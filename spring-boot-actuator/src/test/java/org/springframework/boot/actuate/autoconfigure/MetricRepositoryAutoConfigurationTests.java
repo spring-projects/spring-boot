@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.metrics.buffer.BufferGaugeService;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
-import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,7 +69,7 @@ public class MetricRepositoryAutoConfigurationTests {
 	public void dropwizardInstalledIfPresent() {
 		this.context = new AnnotationConfigApplicationContext(
 				MetricsDropwizardAutoConfiguration.class,
-				MetricRepositoryAutoConfiguration.class, AopAutoConfiguration.class);
+				MetricRepositoryAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
 		assertThat(gaugeService).isNotNull();
 		gaugeService.submit("foo", 2.7);
