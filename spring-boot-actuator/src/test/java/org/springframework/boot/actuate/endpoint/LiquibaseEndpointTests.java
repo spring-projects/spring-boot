@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ package org.springframework.boot.actuate.endpoint;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,13 +47,12 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 	}
 
 	@Test
-	public void invokeDifferentDefaultSchema() throws Exception {
+	public void invokeWithCustomSchema() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-			.ofPair("liquibase.defaultSchema","SOMESCHEMA")
-			.and("spring.datasource.generate-unique-name","true")
-			.and("spring.datasource.schema","classpath:/db/non-default-schema.sql")
-			.applyTo(this.context);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.default-schema=CUSTOMSCHEMA",
+				"spring.datasource.generate-unique-name=true",
+				"spring.datasource.schema=classpath:/db/create-custom-schema.sql");
 		this.context.register(Config.class);
 		this.context.refresh();
 		assertThat(getEndpointBean().invoke()).hasSize(1);

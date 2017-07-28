@@ -28,11 +28,11 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.integration.spring.SpringLiquibase;
-import liquibase.util.StringUtils;
 
 import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint.LiquibaseReport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Endpoint} to expose liquibase info.
@@ -69,7 +69,7 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 					Database database = factory
 							.findCorrectDatabaseImplementation(connection);
 					String defaultSchema = entry.getValue().getDefaultSchema();
-					if (StringUtils.trimToNull(defaultSchema) != null) {
+					if (StringUtils.hasText(defaultSchema)) {
 						database.setDefaultSchemaName(defaultSchema);
 					}
 					reports.add(new LiquibaseReport(entry.getKey(),
