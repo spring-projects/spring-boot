@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Rostyslav Dudka
  */
 public class JarURLConnectionTests {
 
@@ -148,6 +149,14 @@ public class JarURLConnectionTests {
 		URL url = new URL(new URL("jar", null, -1,
 				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");
 		assertThat(url.openConnection().getContentLengthLong()).isEqualTo(1);
+	}
+
+	@Test
+	public void getLastModifiedReturnsLastModifiedTimeOfJarEntry() throws Exception {
+		URL url = new URL("jar:file:" + getAbsolutePath() + "!/1.dat");
+		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
+		assertThat(connection.getLastModified())
+				.isEqualTo(connection.getJarEntry().getTime());
 	}
 
 	private String getAbsolutePath() {
