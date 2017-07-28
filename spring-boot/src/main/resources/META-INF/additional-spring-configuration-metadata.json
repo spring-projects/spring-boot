@@ -1,7 +1,7 @@
 {"groups": [
   {
     "name": "logging",
-    "type": "org.springframework.boot.logging.LoggingApplicationListener"
+    "type": "org.springframework.boot.context.logging.LoggingApplicationListener"
   }
 ],"properties": [
   {
@@ -47,65 +47,65 @@
     "name": "debug",
     "type": "java.lang.Boolean",
     "description": "Enable debug logs.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
     "defaultValue": false
   },
   {
     "name": "logging.config",
     "type": "java.lang.String",
     "description": "Location of the logging configuration file.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.exception-conversion-word",
     "type": "java.lang.String",
     "description": "Conversion word used when logging exceptions.",
     "defaultValue": "%wEx",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.file",
     "type": "java.lang.String",
     "description": "Name of the log file. Names can be an exact location or relative to the current directory.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.level",
     "type": "java.util.Map<java.lang.String,java.lang.String>",
     "description": "Log levels severity mapping. Use 'root' for the root logger.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.pattern.console",
     "type": "java.lang.String",
     "description": "Appender pattern for output to the console. Only supported with the default logback setup.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
     "defaultValue": "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.file",
     "type": "java.lang.String",
     "description": "Appender pattern for output to the file. Only supported with the default logback setup.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
     "defaultValue": "%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.level",
     "type": "java.lang.String",
     "description": "Appender pattern for log level (default %5p). Only supported with the default logback setup.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.path",
     "type": "java.lang.String",
     "description": "Directory where log files are written.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.register-shutdown-hook",
     "type": "java.lang.Boolean",
     "description": "Register a shutdown hook for the logging system when it is initialized.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "spring.mandatory-file-encoding",
@@ -218,7 +218,7 @@
     "name": "trace",
     "type": "java.lang.Boolean",
     "description": "Enable trace logs.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
     "defaultValue": false
   }
 ],"hints": [
