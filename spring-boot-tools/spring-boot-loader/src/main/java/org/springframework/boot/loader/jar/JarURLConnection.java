@@ -131,7 +131,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			if (spec.endsWith(SEPARATOR)) {
 				spec = spec.substring(0, spec.length() - SEPARATOR.length());
 			}
-			if (!spec.contains(SEPARATOR)) {
+			if (spec.indexOf(SEPARATOR) == -1) {
 				return new URL(spec);
 			}
 			return new URL("jar:" + spec);
@@ -238,13 +238,10 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public long getLastModified() {
 		int defaultTime = 0;
-		if (this.jarFile == null) {
+		if (this.jarFile == null || this.jarEntryName.isEmpty()) {
 			return defaultTime;
 		}
 		try {
-			if (this.jarEntryName.isEmpty()) {
-				return defaultTime;
-			}
 			JarEntry entry = getJarEntry();
 			return (entry == null ? defaultTime : entry.getTime());
 		}
