@@ -58,7 +58,7 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 	private final Jsonb jsonb;
 
 	/**
-	 * Create a new uninitialized {@link GsonTester} instance.
+	 * Create a new uninitialized {@link JsonbTester} instance.
 	 * @param jsonb the Jsonb instance
 	 */
 	protected JsonbTester(Jsonb jsonb) {
@@ -93,7 +93,7 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 	 * Utility method to initialize {@link JsonbTester} fields. See {@link JsonbTester
 	 * class-level documentation} for example usage.
 	 * @param testInstance the test instance
-	 * @param jsonb the Gson instance
+	 * @param jsonb the Jsonb instance
 	 */
 	public static void initFields(Object testInstance, Jsonb jsonb) {
 		new JsonbFieldInitializer().initFields(testInstance, jsonb);
@@ -103,7 +103,7 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 	 * Utility method to initialize {@link JsonbTester} fields. See {@link JsonbTester
 	 * class-level documentation} for example usage.
 	 * @param testInstance the test instance
-	 * @param jsonb an object factory to create the Gson instance
+	 * @param jsonb an object factory to create the Jsonb instance
 	 */
 	public static void initFields(Object testInstance, ObjectFactory<Jsonb> jsonb) {
 		new JsonbTester.JsonbFieldInitializer().initFields(testInstance, jsonb);
