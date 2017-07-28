@@ -298,10 +298,11 @@ public class Binder {
 		}
 		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
 				name.append(propertyName), propertyTarget, handler, context);
-		if (context.isProcessingName(name)) {
+		Class<?> type = target.getType().resolve();
+		if (context.hasBoundBean(type)) {
 			return null;
 		}
-		return context.withName(name, () -> {
+		return context.withBean(type, () -> {
 			Stream<?> boundBeans = BEAN_BINDERS.stream()
 					.map((b) -> b.bind(name, target, context, propertyBinder));
 			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
@@ -352,7 +353,7 @@ public class Binder {
 		private final List<ConfigurationPropertySource> source = Arrays
 				.asList((ConfigurationPropertySource) null);
 
-		private final Deque<ConfigurationPropertyName> names = new ArrayDeque<>();
+		private final Deque<Class<?>> beans = new ArrayDeque<>();
 
 		private ConfigurationProperty configurationProperty;
 
@@ -384,13 +385,13 @@ public class Binder {
 			}
 		}
 
-		public <T> T withName(ConfigurationPropertyName name, Supplier<T> supplier) {
-			this.names.push(name);
+		public <T> T withBean(Class<?> bean, Supplier<T> supplier) {
+			this.beans.push(bean);
 			try {
 				return withIncreasedDepth(supplier);
 			}
 			finally {
-				this.names.pop();
+				this.beans.pop();
 			}
 		}
 
@@ -420,8 +421,8 @@ public class Binder {
 			return StreamSupport.stream(Binder.this.sources.spliterator(), false);
 		}
 
-		public boolean isProcessingName(ConfigurationPropertyName name) {
-			return this.names.contains(name);
+		public boolean hasBoundBean(Class<?> bean) {
+			return this.beans.contains(bean);
 		}
 
 		@Override
