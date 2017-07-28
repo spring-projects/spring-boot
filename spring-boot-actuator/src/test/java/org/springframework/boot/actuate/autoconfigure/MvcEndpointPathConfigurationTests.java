@@ -36,7 +36,6 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AuditEventsMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.DocsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
@@ -44,7 +43,6 @@ import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
@@ -90,7 +88,6 @@ public class MvcEndpointPathConfigurationTests {
 				new Object[] { "beans", BeansEndpoint.class },
 				new Object[] { "configprops",
 						ConfigurationPropertiesReportEndpoint.class },
-				new Object[] { "docs", DocsMvcEndpoint.class },
 				new Object[] { "dump", DumpEndpoint.class },
 				new Object[] { "env", EnvironmentMvcEndpoint.class },
 				new Object[] { "flyway", FlywayEndpoint.class },
@@ -167,11 +164,6 @@ public class MvcEndpointPathConfigurationTests {
 		@Bean
 		public LiquibaseEndpoint liquibase() {
 			return new LiquibaseEndpoint(new SpringLiquibase());
-		}
-
-		@Bean
-		public DocsMvcEndpoint docs(ManagementServletContext managementServletContext) {
-			return new DocsMvcEndpoint(managementServletContext);
 		}
 
 	}

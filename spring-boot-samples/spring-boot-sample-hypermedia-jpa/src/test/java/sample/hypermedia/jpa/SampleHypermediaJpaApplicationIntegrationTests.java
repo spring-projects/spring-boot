@@ -60,14 +60,6 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 	}
 
 	@Test
-	public void docs() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/admin/docs/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
-		System.err.println(response.getResponse().getContentAsString());
-	}
-
-	@Test
 	public void browser() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andReturn();

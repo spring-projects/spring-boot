@@ -144,11 +144,6 @@ If you are using Spring MVC, the following additional endpoints can also be used
 |===
 | ID | Description | Sensitive Default
 
-|`docs`
-|Displays documentation, including example requests and responses, for the Actuator's
-endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
-|false
-
 |`heapdump`
 |Returns a GZip compressed `hprof` heap dump file.
 |true
