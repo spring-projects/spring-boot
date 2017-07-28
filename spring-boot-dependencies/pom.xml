@@ -2455,6 +2455,11 @@
 				<version>${snakeyaml.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.eclipse</groupId>
+				<artifactId>yasson</artifactId>
+				<version>${javax-jsonb.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>redis.clients</groupId>
 				<artifactId>jedis</artifactId>
 				<version>${jedis.version}</version>

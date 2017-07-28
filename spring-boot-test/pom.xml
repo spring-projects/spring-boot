@@ -155,7 +155,6 @@
 		<dependency>
 			<groupId>org.eclipse</groupId>
 			<artifactId>yasson</artifactId>
-			<version>${javax-jsonb.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
