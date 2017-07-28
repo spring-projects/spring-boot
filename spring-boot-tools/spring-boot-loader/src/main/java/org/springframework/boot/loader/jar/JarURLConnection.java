@@ -237,16 +237,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public long getLastModified() {
-		int defaultTime = 0;
 		if (this.jarFile == null || this.jarEntryName.isEmpty()) {
-			return defaultTime;
+			return 0;
 		}
 		try {
 			JarEntry entry = getJarEntry();
-			return (entry == null ? defaultTime : entry.getTime());
+			return (entry == null ? 0 : entry.getTime());
 		}
 		catch (IOException ex) {
-			return defaultTime;
+			return 0;
 		}
 	}
 
