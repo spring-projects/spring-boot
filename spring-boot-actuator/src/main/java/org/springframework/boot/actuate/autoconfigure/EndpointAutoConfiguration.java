@@ -41,6 +41,7 @@ import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
+import org.springframework.boot.actuate.endpoint.ScheduledTaskEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
@@ -183,6 +184,13 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
 		return new ConfigurationPropertiesReportEndpoint();
+	}
+
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ScheduledTaskEndpoint scheduledTaskEndpoint() {
+		return new ScheduledTaskEndpoint();
 	}
 
 	@Configuration
