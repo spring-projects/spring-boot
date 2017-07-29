@@ -358,18 +358,20 @@ Here is a typical layout:
 ----
 	com
 	 +- example
-	     +- myproject
+	     +- myApplication
 	         +- Application.java
 	         |
-	         +- domain
+	         +- customer
 	         |   +- Customer.java
-	         |   +- CustomerRepository.java
+	         |   +- CustomerController.java
+			 |	 +- CustomerService.java
+			 |   +- CustomerRepository.java
 	         |
-	         +- service
-	         |   +- CustomerService.java
-	         |
-	         +- web
-	             +- CustomerController.java
+	         +- order
+			 |	 +- Order.java
+	         |   +- OrderController.java
+			 |	 +- OrderService.java
+			 |	 +- OrderRepository.java
 ----
 
 The `Application.java` file would declare the `main` method, along with the basic
