@@ -89,6 +89,7 @@ public class RequestMappingEndpointTests {
 		assertThat(map.get("bean")).isEqualTo("scopedTarget.mapping");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void beanMethodMappings() {
 		StaticApplicationContext context = new StaticApplicationContext();
@@ -99,14 +100,21 @@ public class RequestMappingEndpointTests {
 		context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
 		this.endpoint.setApplicationContext(context);
 		Map<String, Object> result = this.endpoint.invoke();
-		assertThat(result).hasSize(1);
-		assertThat(result.keySet().iterator().next().contains("/dump")).isTrue();
-		@SuppressWarnings("unchecked")
-		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
-				.next();
-		assertThat(handler.containsKey("method")).isTrue();
+		assertThat(result).hasSize(2);
+		assertThat(result.keySet())
+				.filteredOn((key) -> key.contains("/dump || /dump.json"))
+				.hasOnlyOneElementSatisfying((key) -> {
+					assertThat((Map<String, Object>) result.get(key))
+							.containsOnlyKeys("bean", "method");
+				});
+		assertThat(result.keySet()).filteredOn((key) -> key.contains(" || /.json"))
+				.hasOnlyOneElementSatisfying((key) -> {
+					assertThat((Map<String, Object>) result.get(key))
+							.containsOnlyKeys("bean", "method");
+				});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void concreteMethodMappings() {
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
@@ -116,12 +124,18 @@ public class RequestMappingEndpointTests {
 		this.endpoint.setMethodMappings(
 				Collections.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
-		assertThat(result).hasSize(1);
-		assertThat(result.keySet().iterator().next().contains("/dump")).isTrue();
-		@SuppressWarnings("unchecked")
-		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
-				.next();
-		assertThat(handler.containsKey("method")).isTrue();
+		assertThat(result).hasSize(2);
+		assertThat(result.keySet())
+				.filteredOn((key) -> key.contains("/dump || /dump.json"))
+				.hasOnlyOneElementSatisfying((key) -> {
+					assertThat((Map<String, Object>) result.get(key))
+							.containsOnlyKeys("method");
+				});
+		assertThat(result.keySet()).filteredOn((key) -> key.contains(" || /.json"))
+				.hasOnlyOneElementSatisfying((key) -> {
+					assertThat((Map<String, Object>) result.get(key))
+							.containsOnlyKeys("method");
+				});
 	}
 
 	@Configuration

@@ -62,6 +62,8 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 		assertThat(mapping.getHandler(request("GET", "/b")).getHandler())
 				.isEqualTo(new HandlerMethod(endpointB, this.method));
 		assertThat(mapping.getHandler(request("GET", "/c"))).isNull();
+		assertThat((((HandlerMethod) mapping.getHandler(request("GET", "/")).getHandler())
+				.getMethod().getName())).isEqualTo("links");
 	}
 
 	@Test
@@ -77,7 +79,12 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 				.getHandler()).isEqualTo(new HandlerMethod(endpointA, this.method));
 		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
 				.getHandler()).isEqualTo(new HandlerMethod(endpointB, this.method));
-		assertThat(mapping.getHandler(request("GET", "/a"))).isNull();
+		assertThat(
+				(((HandlerMethod) mapping.getHandler(request("GET", "/a")).getHandler())
+						.getMethod().getName())).isEqualTo("links");
+		assertThat(
+				(((HandlerMethod) mapping.getHandler(request("GET", "/a/")).getHandler())
+						.getMethod().getName())).isEqualTo("links");
 	}
 
 	@Test(expected = HttpRequestMethodNotSupportedException.class)

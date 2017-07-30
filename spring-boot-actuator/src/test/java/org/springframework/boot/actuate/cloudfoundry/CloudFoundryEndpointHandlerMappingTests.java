@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMappingTests;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
-import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -52,13 +51,6 @@ public class CloudFoundryEndpointHandlerMappingTests
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
 				Collections.singleton(testMvcEndpoint), null, null);
 		assertThat(handlerMapping.getPath(testMvcEndpoint)).isEqualTo("/a");
-	}
-
-	@Test
-	public void doesNotRegisterHalJsonMvcEndpoint() throws Exception {
-		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
-				Collections.singleton(new TestHalJsonMvcEndpoint()), null, null);
-		assertThat(handlerMapping.getEndpoints()).hasSize(0);
 	}
 
 	@Test
@@ -110,14 +102,6 @@ public class CloudFoundryEndpointHandlerMappingTests
 
 		TestMvcEndpoint(TestEndpoint delegate) {
 			super(delegate);
-		}
-
-	}
-
-	private static class TestHalJsonMvcEndpoint extends HalJsonMvcEndpoint {
-
-		TestHalJsonMvcEndpoint() {
-			super(() -> "");
 		}
 
 	}

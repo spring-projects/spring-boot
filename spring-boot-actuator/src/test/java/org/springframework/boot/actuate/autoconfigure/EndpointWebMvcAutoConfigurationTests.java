@@ -45,7 +45,6 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
@@ -437,7 +436,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.refresh();
 		// /health, /metrics, /loggers, /env, /actuator, /heapdump, /auditevents
 		// (/shutdown is disabled by default)
-		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(7);
+		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(6);
 	}
 
 	@Test
@@ -497,18 +496,6 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.applyTo(this.applicationContext);
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(ShutdownMvcEndpoint.class))
-				.hasSize(1);
-	}
-
-	@Test
-	public void actuatorEndpointEnabledIndividually() {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
-		TestPropertyValues
-				.of("endpoints.enabled:false", "endpoints.actuator.enabled:true")
-				.applyTo(this.applicationContext);
-		this.applicationContext.refresh();
-		assertThat(this.applicationContext.getBeansOfType(HalJsonMvcEndpoint.class))
 				.hasSize(1);
 	}
 

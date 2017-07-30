@@ -46,11 +46,6 @@
 		<module>spring-boot-sample-devtools</module>
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
-		<module>spring-boot-sample-hypermedia</module>
-		<module>spring-boot-sample-hypermedia-gson</module>
-		<module>spring-boot-sample-hypermedia-jpa</module>
-		<module>spring-boot-sample-hypermedia-ui</module>
-		<module>spring-boot-sample-hypermedia-ui-secure</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jersey</module>
 		<module>spring-boot-sample-jersey1</module>

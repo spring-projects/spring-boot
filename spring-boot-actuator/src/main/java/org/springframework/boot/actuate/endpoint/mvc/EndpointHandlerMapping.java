@@ -17,9 +17,17 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -61,6 +69,69 @@ public class EndpointHandlerMapping extends AbstractEndpointHandlerMapping<MvcEn
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints,
 			CorsConfiguration corsConfiguration) {
 		super(endpoints, corsConfiguration);
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+		detectHandlerMethods(new EndpointLinksMvcEndpoint(
+				getEndpoints().stream().filter(NamedMvcEndpoint.class::isInstance)
+						.map(NamedMvcEndpoint.class::cast).collect(Collectors.toSet())));
+	}
+
+	/**
+	 * {@link MvcEndpoint} to provide HAL-formatted links to all the
+	 * {@link NamedMvcEndpoint named endpoints}.
+	 *
+	 * @author Madhura Bhave
+	 * @author Andy Wilkinson
+	 */
+	private static final class EndpointLinksMvcEndpoint extends AbstractMvcEndpoint {
+
+		private final Set<NamedMvcEndpoint> endpoints;
+
+		private EndpointLinksMvcEndpoint(Set<NamedMvcEndpoint> endpoints) {
+			super("", false);
+			this.endpoints = endpoints;
+		}
+
+		@ResponseBody
+		@ActuatorGetMapping
+		public Map<String, Map<String, Link>> links(HttpServletRequest request) {
+			Map<String, Link> links = new LinkedHashMap<>();
+			String url = request.getRequestURL().toString();
+			if (url.endsWith("/")) {
+				url = url.substring(0, url.length() - 1);
+			}
+			links.put("self", Link.withHref(url));
+			for (NamedMvcEndpoint endpoint : this.endpoints) {
+				links.put(endpoint.getName(),
+						Link.withHref(url + "/" + endpoint.getName()));
+			}
+			return Collections.singletonMap("_links", links);
+		}
+
+	}
+
+	/**
+	 * Details for a link in the HAL response.
+	 */
+	static final class Link {
+
+		private final String href;
+
+		private Link(String href) {
+			this.href = href;
+		}
+
+		public String getHref() {
+			return this.href;
+		}
+
+		static Link withHref(Object href) {
+			return new Link(href.toString());
+		}
+
 	}
 
 }

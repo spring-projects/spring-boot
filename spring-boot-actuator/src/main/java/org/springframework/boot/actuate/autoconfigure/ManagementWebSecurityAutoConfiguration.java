@@ -29,6 +29,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -379,7 +380,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			if (endpointHandlerMapping == null) {
 				// Maybe there are actually no endpoints (e.g. management.port=-1)
 				endpointHandlerMapping = new EndpointHandlerMapping(
-						Collections.<MvcEndpoint>emptySet());
+						Collections.<NamedMvcEndpoint>emptySet());
 			}
 			return endpointHandlerMapping;
 		}

@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpointSecurityInterceptor;
+import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.actuate.servlet.MockServletWebServerFactory;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -138,7 +138,7 @@ public class JolokiaAutoConfigurationTests {
 
 		@Bean
 		public EndpointHandlerMapping endpointHandlerMapping(
-				Collection<? extends MvcEndpoint> endpoints) {
+				Collection<NamedMvcEndpoint> endpoints) {
 			EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints);
 			mapping.setSecurityInterceptor(new MvcEndpointSecurityInterceptor(false,
 					Collections.<String>emptyList()));

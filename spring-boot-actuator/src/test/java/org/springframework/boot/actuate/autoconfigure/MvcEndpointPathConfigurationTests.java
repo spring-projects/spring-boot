@@ -38,7 +38,6 @@ import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AuditEventsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
@@ -82,7 +81,7 @@ public class MvcEndpointPathConfigurationTests {
 
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
-		return new Object[] { new Object[] { "actuator", HalJsonMvcEndpoint.class },
+		return new Object[] {
 				new Object[] { "auditevents", AuditEventsMvcEndpoint.class },
 				new Object[] { "autoconfig", AutoConfigurationReportEndpoint.class },
 				new Object[] { "beans", BeansEndpoint.class },

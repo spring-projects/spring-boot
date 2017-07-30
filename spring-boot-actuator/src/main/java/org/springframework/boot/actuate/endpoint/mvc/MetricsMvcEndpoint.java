@@ -44,7 +44,6 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
 	@ActuatorGetMapping("/{name:.*}")
 	@ResponseBody
-	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
 		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's

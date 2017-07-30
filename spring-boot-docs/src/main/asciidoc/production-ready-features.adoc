@@ -69,11 +69,6 @@ The following technology agnostic endpoints are available:
 |===
 | ID | Description | Sensitive Default
 
-|`actuator`
-|Provides a hypermedia-based "`discovery page`" for the other endpoints. Requires Spring
-HATEOAS to be on the classpath.
-|true
-
 |`auditevents`
 |Exposes audit events information for the current application.
 |true
@@ -207,24 +202,13 @@ For example, to mark _all_ endpoints as sensitive except `info`:
 
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for actuator MVC endpoints
-If `endpoints.hypermedia.enabled` is set to `true` and
-http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
-through the `spring-boot-starter-hateoas` or if you are using
-http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
-from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added
-with links to all the endpoints. The "`discovery page`" is available on `/application` by
-default. It is implemented as an endpoint, allowing properties to be used to configure
-its path (`endpoints.actuator.path`) and whether or not it is enabled
-(`endpoints.actuator.enabled`).
+A "`discovery page`" is added with links to all the endpoints. The "`discovery page`" is
+available on `/application` by default.
 
 When a custom management context path is configured, the "`discovery page`" will
 automatically move from `/application` to the root of the management context. For example,
 if the management context path is `/management` then the discovery page will be available
 from `/management`.
-
-If the https://github.com/mikekelly/hal-browser[HAL Browser] is on the classpath
-via its webjar (`org.webjars:hal-browser`), or via the `spring-data-rest-hal-browser` then
-an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
 
 
 

@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
@@ -50,10 +49,7 @@ class CloudFoundryEndpointHandlerMapping
 		HealthMvcEndpoint healthMvcEndpoint = null;
 		while (iterator.hasNext()) {
 			NamedMvcEndpoint endpoint = iterator.next();
-			if (endpoint instanceof HalJsonMvcEndpoint) {
-				iterator.remove();
-			}
-			else if (endpoint instanceof HealthMvcEndpoint) {
+			if (endpoint instanceof HealthMvcEndpoint) {
 				iterator.remove();
 				healthMvcEndpoint = (HealthMvcEndpoint) endpoint;
 			}

@@ -80,22 +80,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-hateoas[spring-boot-sample-hateoas]
 | RESTful API built using Spring Hateoas
 
-| link:spring-boot-sample-hypermedia[spring-boot-sample-hypermedia]
-| Demonstrates Actuator's hypermedia support, including HAL Browser
-
-| link:spring-boot-sample-hypermedia-gson[spring-boot-sample-hypermedia-gson]
-| Demonstrates Actuator's hypermedia support using GSON in place of Jackson
-
-| link:spring-boot-sample-hypermedia-jpa[spring-boot-sample-hypermedia-jpa]
-| Demonstrates Actuator's hypermedia support alongside Spring Data JPA and Spring Data
-  REST
-
-| link:spring-boot-sample-hypermedia-ui-secure[spring-boot-sample-hypermedia-ui-secure]
-| Demonstrates Actuator's hypermedia support alongside a static secure web UI
-
-| link:spring-boot-sample-hypermedia-ui[spring-boot-sample-hypermedia-ui]
-| Demonstrates Actuator's hypermedia support alongside a static web UI
-
 | link:spring-boot-sample-integration[spring-boot-sample-integration]
 | Integration application built using Spring Integration and its Java DSL
 

@@ -48,7 +48,6 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 
 	@ActuatorGetMapping("/{name:.*}")
 	@ResponseBody
-	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
 		if (!getDelegate().isEnabled()) {
 			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's

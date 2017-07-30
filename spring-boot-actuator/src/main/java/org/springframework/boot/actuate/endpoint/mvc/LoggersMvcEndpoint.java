@@ -47,7 +47,6 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 
 	@ActuatorGetMapping("/{name:.*}")
 	@ResponseBody
-	@HypermediaDisabled
 	public Object get(@PathVariable String name) {
 		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
@@ -60,7 +59,6 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 
 	@ActuatorPostMapping("/{name:.*}")
 	@ResponseBody
-	@HypermediaDisabled
 	public Object set(@PathVariable String name,
 			@RequestBody Map<String, String> configuration) {
 		if (!this.delegate.isEnabled()) {
