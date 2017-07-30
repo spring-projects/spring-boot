@@ -143,6 +143,12 @@ public class EndpointWebMvcAutoConfiguration
 			}
 		}
 		if (managementPort == ManagementServerPort.SAME) {
+			String contextPath = environment.getProperty("management.context-path");
+			if ("".equals(contextPath) || "/".equals(contextPath)) {
+				throw new IllegalStateException("A management context path of '"
+						+ contextPath + "' requires the management server to be "
+						+ "listening on a separate port");
+			}
 			if (environment.getProperty("management.ssl.enabled", Boolean.class, false)) {
 				throw new IllegalStateException(
 						"Management-specific SSL cannot be configured as the management "

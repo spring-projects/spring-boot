@@ -121,8 +121,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		Ports values = new Ports();
 		ports.set(values);
 		TestPropertyValues
-				.of("management.context-path=", "management.security.enabled=false",
-						"server.servlet.context-path=",
+				.of("management.security.enabled=false", "server.servlet.context-path=",
 						"server.port=" + ports.get().server)
 				.applyTo(this.applicationContext);
 	}
@@ -140,9 +139,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
-		assertContent("/endpoint", ports.get().server, "endpointoutput");
-		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context"))
-				.isFalse();
+		assertContent("/application/endpoint", ports.get().server, "endpointoutput");
+		assertThat(hasHeader("/application/endpoint", ports.get().server,
+				"X-Application-Context")).isFalse();
 		assertThat(this.applicationContext.containsBean("applicationContextIdFilter"))
 				.isFalse();
 	}
@@ -171,6 +170,26 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
+		assertContent("/application/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/error", ports.get().management, startsWith("{"));
+		ApplicationContext managementContext = this.applicationContext
+				.getBean(ManagementContextResolver.class).getApplicationContext();
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
+				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
+		assertThat(interceptors).hasSize(2);
+	}
+
+	@Test
+	public void onDifferentPortAndRootContext() throws Exception {
+		TestPropertyValues.of("management.port=" + ports.get().management,
+				"management.context-path=/").applyTo(this.applicationContext);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertContent("/controller", ports.get().server, "controlleroutput");
+		assertContent("/endpoint", ports.get().server, null);
+		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
 		assertContent("/error", ports.get().management, startsWith("{"));
 		ApplicationContext managementContext = this.applicationContext
@@ -191,7 +210,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
-		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/application/endpoint", ports.get().management, "endpointoutput");
 		assertContent("/error", ports.get().management, startsWith("{"));
 		ApplicationContext managementContext = this.applicationContext
 				.getBean(ManagementContextResolver.class).getApplicationContext();
@@ -310,7 +329,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
-		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/application/endpoint", ports.get().management, "endpointoutput");
 	}
 
 	@Test
@@ -508,7 +527,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertHttpsContent("/controller", ports.get().management, null);
-		assertHttpsContent("/endpoint", ports.get().management, "endpointoutput");
+		assertHttpsContent("/application/endpoint", ports.get().management,
+				"endpointoutput");
 		assertHttpsContent("/error", ports.get().management, startsWith("{"));
 		ApplicationContext managementContext = this.applicationContext
 				.getBean(ManagementContextResolver.class).getApplicationContext();
@@ -538,6 +558,19 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void rootManagementContextPathUsingSamePortFails() throws Exception {
+		TestPropertyValues.of("management.context-path=/")
+				.applyTo(this.applicationContext);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("A management context path of '/' requires the"
+				+ " management server to be listening on a separate port");
+		this.applicationContext.refresh();
+	}
+
+	@Test
 	public void samePortCanBeUsedWhenManagementSslIsExplicitlyDisabled()
 			throws Exception {
 		TestPropertyValues.of("management.ssl.enabled=false")
@@ -562,7 +595,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertHttpsContent("/controller", ports.get().server, "controlleroutput");
 		assertHttpsContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
-		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/application/endpoint", ports.get().management, "endpointoutput");
 		assertContent("/error", ports.get().management, startsWith("{"));
 		ApplicationContext managementContext = this.applicationContext
 				.getBean(ManagementContextResolver.class).getApplicationContext();
