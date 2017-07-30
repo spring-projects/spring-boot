@@ -364,14 +364,14 @@ Here is a typical layout:
 	         +- customer
 	         |   +- Customer.java
 	         |   +- CustomerController.java
-			 |	 +- CustomerService.java
-			 |   +- CustomerRepository.java
+	         |   +- CustomerService.java
+	         |   +- CustomerRepository.java
 	         |
 	         +- order
-			 |	 +- Order.java
+	         |   +- Order.java
 	         |   +- OrderController.java
-			 |	 +- OrderService.java
-			 |	 +- OrderRepository.java
+	         |   +- OrderService.java
+	         |   +- OrderRepository.java
 ----
 
 The `Application.java` file would declare the `main` method, along with the basic
