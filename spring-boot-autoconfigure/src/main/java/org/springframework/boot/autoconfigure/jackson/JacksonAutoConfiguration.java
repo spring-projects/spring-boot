@@ -114,7 +114,7 @@ public class JacksonAutoConfiguration {
 			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
 			if (jacksonJodaFormat != null) {
 				module.addSerializer(DateTime.class,
-						new DateTimeSerializer(jacksonJodaFormat));
+						new DateTimeSerializer(jacksonJodaFormat, 0));
 			}
 			return module;
 		}
