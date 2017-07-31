@@ -18,9 +18,9 @@ package org.springframework.boot.maven;
 
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Parse and expose arguments specified in a single string.
@@ -40,8 +40,7 @@ class RunArguments {
 
 	RunArguments(String[] args) {
 		if (args != null) {
-			this.args.addAll(Arrays.stream(args).filter(s -> s != null && !"".equals(s))
-					.collect(Collectors.toList()));
+			Arrays.stream(args).filter(StringUtils::hasLength).forEach(this.args::add);
 		}
 	}
 
