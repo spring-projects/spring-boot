@@ -35,6 +35,20 @@ public class RunArgumentsTests {
 	}
 
 	@Test
+	public void parseNullArray() {
+		String[] args = new RunArguments((String[]) null).asArray();
+		assertThat(args).isNotNull();
+		assertThat(args.length).isEqualTo(0);
+	}
+
+	@Test
+	public void parseArrayContainingNullValue() {
+		String[] args = new RunArguments(new String[]{null}).asArray();
+		assertThat(args).isNotNull();
+		assertThat(args.length).isEqualTo(0);
+	}
+
+	@Test
 	public void parseEmpty() {
 		String[] args = parseArgs("   ");
 		assertThat(args).isNotNull();
