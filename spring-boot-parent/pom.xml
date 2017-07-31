@@ -492,6 +492,7 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<parameters>true</parameters>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -742,6 +743,7 @@
 						<configuration>
 							<source>1.8</source>
 							<target>1.8</target>
+							<parameters>true</parameters>
 						</configuration>
 					</plugin>
 				</plugins>
