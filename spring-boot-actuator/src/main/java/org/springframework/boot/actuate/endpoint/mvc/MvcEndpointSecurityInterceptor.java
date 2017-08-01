@@ -69,10 +69,6 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 				&& !(handlerMethod.getBean() instanceof MvcEndpoint)) {
 			return true;
 		}
-		MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
-		if (!mvcEndpoint.isSensitive()) {
-			return true;
-		}
 		if (isUserAllowedAccess(request)) {
 			return true;
 		}

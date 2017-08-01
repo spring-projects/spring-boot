@@ -42,8 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoint> {
 
 	public ShutdownEndpointTests() {
-		super(Config.class, ShutdownEndpoint.class, "shutdown", true,
-				"endpoints.shutdown");
+		super(Config.class, ShutdownEndpoint.class, "shutdown", "endpoints.shutdown");
 	}
 
 	@Override

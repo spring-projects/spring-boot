@@ -41,7 +41,6 @@ public class CloudFoundryHealthMvcEndpointTests {
 		CloudFoundryHealthMvcEndpoint mvc = new CloudFoundryHealthMvcEndpoint(endpoint);
 		given(endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
-		given(endpoint.isSensitive()).willReturn(false);
 		Object result = mvc.invoke(null, null);
 		assertThat(result instanceof Health).isTrue();
 		assertThat(((Health) result).getStatus() == Status.UP).isTrue();

@@ -112,28 +112,7 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void nonSensitiveEndpointsAreNotSecureByDefault() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/application/info")).andExpect(status().isOk());
-		mockMvc.perform(get("/application")).andExpect(status().isOk());
-	}
-
-	@Test
-	public void nonSensitiveEndpointsAreNotSecureByDefaultWithCustomContextPath()
-			throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.context-path:/management")
-				.applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/management/info")).andExpect(status().isOk());
-		mockMvc.perform(get("/management")).andExpect(status().isOk());
-	}
-
-	@Test
-	public void sensitiveEndpointsAreSecureByDefault() throws Exception {
+	public void endpointsAreSecureByDefault() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
@@ -141,8 +120,7 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureByDefaultWithCustomContextPath()
-			throws Exception {
+	public void endpointsAreSecureByDefaultWithCustomContextPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		TestPropertyValues.of("management.context-path:/management")
@@ -152,7 +130,7 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithNonActuatorRoleWithCustomContextPath()
+	public void endpointsAreSecureWithNonActuatorRoleWithCustomContextPath()
 			throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
 				new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
@@ -165,7 +143,7 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithActuatorRoleWithCustomContextPath()
+	public void endpointsAreSecureWithActuatorRoleWithCustomContextPath()
 			throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));

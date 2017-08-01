@@ -41,7 +41,7 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * @param infoContributors the info contributors to use
 	 */
 	public InfoEndpoint(List<InfoContributor> infoContributors) {
-		super("info", false);
+		super("info");
 		Assert.notNull(infoContributors, "Info contributors must not be null");
 		this.infoContributors = infoContributors;
 	}

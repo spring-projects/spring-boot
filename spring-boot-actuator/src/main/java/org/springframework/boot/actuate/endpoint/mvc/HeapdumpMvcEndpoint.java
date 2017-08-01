@@ -68,7 +68,7 @@ public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 	}
 
 	protected HeapdumpMvcEndpoint(long timeout) {
-		super("heapdump", "/heapdump", true);
+		super("heapdump", "/heapdump");
 		this.timeout = timeout;
 	}
 

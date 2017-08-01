@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentEndpoint> {
 
 	public EnvironmentEndpointTests() {
-		super(Config.class, EnvironmentEndpoint.class, "env", true, "endpoints.env");
+		super(Config.class, EnvironmentEndpoint.class, "env", "endpoints.env");
 	}
 
 	@Override

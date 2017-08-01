@@ -86,8 +86,8 @@ public class EndpointMBeanExporterTests {
 		MBeanInfo mbeanInfo = mbeanExporter.getServer()
 				.getMBeanInfo(getObjectName("endpoint1", this.context));
 		assertThat(mbeanInfo).isNotNull();
-		assertThat(mbeanInfo.getOperations().length).isEqualTo(3);
-		assertThat(mbeanInfo.getAttributes().length).isEqualTo(3);
+		assertThat(mbeanInfo.getOperations().length).isEqualTo(2);
+		assertThat(mbeanInfo.getAttributes().length).isEqualTo(2);
 	}
 
 	@Test

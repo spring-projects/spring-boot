@@ -49,12 +49,6 @@ public interface MvcEndpoint {
 	String getPath();
 
 	/**
-	 * Return if the endpoint exposes sensitive information.
-	 * @return if the endpoint is sensitive
-	 */
-	boolean isSensitive();
-
-	/**
 	 * Return the type of {@link Endpoint} exposed, or {@code null} if this
 	 * {@link MvcEndpoint} exposes information that cannot be represented as a traditional
 	 * {@link Endpoint}.

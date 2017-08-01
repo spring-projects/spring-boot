@@ -81,11 +81,6 @@ public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>>
 	}
 
 	@Override
-	public boolean isSensitive() {
-		return this.delegate.isSensitive();
-	}
-
-	@Override
 	@SuppressWarnings("rawtypes")
 	public Class<? extends Endpoint> getEndpointType() {
 		return this.delegate.getClass();

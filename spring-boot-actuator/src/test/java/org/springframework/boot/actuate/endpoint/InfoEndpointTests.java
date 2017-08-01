@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	public InfoEndpointTests() {
-		super(Config.class, InfoEndpoint.class, "info", false, "endpoints.info");
+		super(Config.class, InfoEndpoint.class, "info", "endpoints.info");
 	}
 
 	@Test

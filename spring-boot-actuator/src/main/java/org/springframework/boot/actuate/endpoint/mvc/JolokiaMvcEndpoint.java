@@ -50,7 +50,7 @@ public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint implements
 	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
-		super("jolokia", "/jolokia", true);
+		super("jolokia", "/jolokia");
 		this.controller.setServletClass(AgentServlet.class);
 		this.controller.setServletName("jolokia");
 	}

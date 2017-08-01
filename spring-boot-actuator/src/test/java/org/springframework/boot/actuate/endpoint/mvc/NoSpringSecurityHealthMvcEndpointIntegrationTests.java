@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.security.Principal;
-
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,12 +36,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,19 +62,6 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void healthWhenRightRoleNotPresentShouldNotExposeHealthDetails()
-			throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class);
-		this.context.refresh();
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/application/health").with(getRequestPostProcessor()))
-				.andExpect(status().isOk())
-				.andExpect(content().string("{\"status\":\"UP\"}"));
-	}
-
-	@Test
 	public void healthDetailPresent() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
@@ -89,14 +72,6 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		mockMvc.perform(get("/application/health")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(
 						"\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\"}")));
-	}
-
-	private RequestPostProcessor getRequestPostProcessor() {
-		return (request) -> {
-			Principal principal = mock(Principal.class);
-			request.setUserPrincipal(principal);
-			return request;
-		};
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,

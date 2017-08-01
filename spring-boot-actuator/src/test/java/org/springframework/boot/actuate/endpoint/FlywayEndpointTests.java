@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FlywayEndpointTests extends AbstractEndpointTests<FlywayEndpoint> {
 
 	public FlywayEndpointTests() {
-		super(Config.class, FlywayEndpoint.class, "flyway", true, "endpoints.flyway");
+		super(Config.class, FlywayEndpoint.class, "flyway", "endpoints.flyway");
 	}
 
 	@Test

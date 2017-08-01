@@ -41,7 +41,7 @@ class CloudFoundryDiscoveryMvcEndpoint extends AbstractMvcEndpoint {
 	private final Set<NamedMvcEndpoint> endpoints;
 
 	CloudFoundryDiscoveryMvcEndpoint(Set<NamedMvcEndpoint> endpoints) {
-		super("", false);
+		super("");
 		this.endpoints = endpoints;
 	}
 

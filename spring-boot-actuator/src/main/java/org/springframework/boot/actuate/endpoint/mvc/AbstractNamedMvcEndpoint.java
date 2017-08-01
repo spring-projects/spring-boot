@@ -31,15 +31,8 @@ public abstract class AbstractNamedMvcEndpoint extends AbstractMvcEndpoint
 
 	private final String name;
 
-	public AbstractNamedMvcEndpoint(String name, String path, boolean sensitive) {
-		super(path, sensitive);
-		Assert.hasLength(name, "Name must not be empty");
-		this.name = name;
-	}
-
-	public AbstractNamedMvcEndpoint(String name, String path, boolean sensitive,
-			boolean enabled) {
-		super(path, sensitive, enabled);
+	public AbstractNamedMvcEndpoint(String name, String path) {
+		super(path);
 		Assert.hasLength(name, "Name must not be empty");
 		this.name = name;
 	}

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint> {
 
 	public LoggersEndpointTests() {
-		super(Config.class, LoggersEndpoint.class, "loggers", true, "endpoints.loggers");
+		super(Config.class, LoggersEndpoint.class, "loggers", "endpoints.loggers");
 	}
 
 	@Test

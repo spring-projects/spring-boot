@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpoint> {
 
 	public LiquibaseEndpointTests() {
-		super(Config.class, LiquibaseEndpoint.class, "liquibase", true,
-				"endpoints.liquibase");
+		super(Config.class, LiquibaseEndpoint.class, "liquibase", "endpoints.liquibase");
 	}
 
 	@Test

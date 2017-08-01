@@ -43,13 +43,6 @@ public interface Endpoint<T> {
 	boolean isEnabled();
 
 	/**
-	 * Return if the endpoint is sensitive, i.e. may return data that the average user
-	 * should not see. Mappings can use this as a security hint.
-	 * @return if the endpoint is sensitive
-	 */
-	boolean isSensitive();
-
-	/**
 	 * Called to invoke the endpoint.
 	 * @return the results of the invocation
 	 */

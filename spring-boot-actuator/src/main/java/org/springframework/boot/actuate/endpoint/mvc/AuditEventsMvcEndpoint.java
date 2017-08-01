@@ -42,7 +42,7 @@ public class AuditEventsMvcEndpoint extends AbstractNamedMvcEndpoint {
 	private final AuditEventRepository auditEventRepository;
 
 	public AuditEventsMvcEndpoint(AuditEventRepository auditEventRepository) {
-		super("auditevents", "/auditevents", true);
+		super("auditevents", "/auditevents");
 		Assert.notNull(auditEventRepository, "AuditEventRepository must not be null");
 		this.auditEventRepository = auditEventRepository;
 	}

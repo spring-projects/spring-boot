@@ -50,7 +50,7 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 	 * Create a new {@link ShutdownEndpoint} instance.
 	 */
 	public ShutdownEndpoint() {
-		super("shutdown", true, false);
+		super("shutdown", false);
 	}
 
 	@Override

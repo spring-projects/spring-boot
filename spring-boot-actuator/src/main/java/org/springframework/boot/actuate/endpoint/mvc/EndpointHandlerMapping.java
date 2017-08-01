@@ -91,7 +91,7 @@ public class EndpointHandlerMapping extends AbstractEndpointHandlerMapping<MvcEn
 		private final Set<NamedMvcEndpoint> endpoints;
 
 		private EndpointLinksMvcEndpoint(Set<NamedMvcEndpoint> endpoints) {
-			super("", false);
+			super("");
 			this.endpoints = endpoints;
 		}
 

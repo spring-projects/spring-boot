@@ -868,11 +868,6 @@ public class EndpointWebMvcAutoConfigurationTests {
 		}
 
 		@Override
-		public boolean isSensitive() {
-			return true;
-		}
-
-		@Override
 		@SuppressWarnings("rawtypes")
 		public Class<? extends Endpoint> getEndpointType() {
 			return Endpoint.class;

@@ -50,14 +50,14 @@ public class CorsSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointShouldReturnUnauthorized() throws Exception {
+	public void endpointShouldReturnUnauthorized() throws Exception {
 		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/application/env",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void preflightRequestForInsensitiveShouldReturnOk() throws Exception {
+	public void preflightRequestToEndpointShouldReturnOk() throws Exception {
 		RequestEntity<?> healthRequest = RequestEntity
 				.options(new URI("/application/health"))
 				.header("Origin", "http://localhost:8080")
@@ -65,15 +65,6 @@ public class CorsSampleActuatorApplicationTests {
 		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest,
 				Map.class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	@Test
-	public void preflightRequestForSensitiveEndpointShouldReturnOk() throws Exception {
-		RequestEntity<?> entity = RequestEntity.options(new URI("/application/env"))
-				.header("Origin", "http://localhost:8080")
-				.header("Access-Control-Request-Method", "GET").build();
-		ResponseEntity<?> env = this.testRestTemplate.exchange(entity, Map.class);
-		assertThat(env.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test

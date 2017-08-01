@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -46,6 +47,9 @@ public class ServletPathSampleActuatorApplicationTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	@Autowired
+	private SecurityProperties security;
+
 	@Test
 	public void testErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
@@ -60,8 +64,9 @@ public class ServletPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/spring//application/health",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword())
+				.getForEntity("/spring/application/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
@@ -76,6 +81,10 @@ public class ServletPathSampleActuatorApplicationTests {
 		Map<String, Object> body = entity.getBody();
 		assertThat(body.get("error")).isEqualTo("Unauthorized");
 		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
+	}
+
+	private String getPassword() {
+		return this.security.getUser().getPassword();
 	}
 
 }

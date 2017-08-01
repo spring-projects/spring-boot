@@ -121,6 +121,7 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword())
 				.getForEntity("/application/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
@@ -128,17 +129,9 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testSecureHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"hello\":1");
-	}
-
-	@Test
 	public void testInfo() throws Exception {
 		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword())
 				.getForEntity("/application/info", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody())

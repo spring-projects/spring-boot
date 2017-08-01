@@ -49,16 +49,13 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	private final String id;
 
-	private final boolean sensitive;
-
 	private final String property;
 
 	public AbstractEndpointTests(Class<?> configClass, Class<?> type, String id,
-			boolean sensitive, String property) {
+			String property) {
 		this.configClass = configClass;
 		this.type = type;
 		this.id = id;
-		this.sensitive = sensitive;
 		this.property = property;
 	}
 
@@ -82,42 +79,12 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	}
 
 	@Test
-	public void isSensitive() throws Exception {
-		assertThat(getEndpointBean().isSensitive()).isEqualTo(this.sensitive);
-	}
-
-	@Test
 	public void idOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of(this.property + ".id:myid").applyTo(this.context);
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().getId()).isEqualTo("myid");
-	}
-
-	@Test
-	public void isSensitiveOverride() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object>singletonMap(this.property + ".sensitive",
-						String.valueOf(!this.sensitive)));
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-		this.context.register(this.configClass);
-		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
-	}
-
-	@Test
-	public void isSensitiveOverrideWithGlobal() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		Map<String, Object> properties = new HashMap<>();
-		properties.put("endpoint.sensitive", this.sensitive);
-		properties.put(this.property + ".sensitive", String.valueOf(!this.sensitive));
-		PropertySource<?> propertySource = new MapPropertySource("test", properties);
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-		this.context.register(this.configClass);
-		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
 	}
 
 	@Test
@@ -179,26 +146,6 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		if (result != null) {
 			this.context.getBean(ObjectMapper.class).writeValue(System.out, result);
 		}
-	}
-
-	@Test
-	public void isAllEndpointsSensitive() throws Exception {
-		testGlobalEndpointsSensitive(true);
-	}
-
-	@Test
-	public void isAllEndpointsNotSensitive() throws Exception {
-		testGlobalEndpointsSensitive(false);
-	}
-
-	private void testGlobalEndpointsSensitive(boolean sensitive) {
-		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test", Collections
-				.<String, Object>singletonMap("endpoints.sensitive", sensitive));
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-		this.context.register(this.configClass);
-		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive()).isEqualTo(sensitive);
 	}
 
 	@SuppressWarnings("unchecked")

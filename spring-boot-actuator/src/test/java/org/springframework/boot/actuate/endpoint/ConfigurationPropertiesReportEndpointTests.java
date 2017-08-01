@@ -43,7 +43,7 @@ public class ConfigurationPropertiesReportEndpointTests
 
 	public ConfigurationPropertiesReportEndpointTests() {
 		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",
-				true, "endpoints.configprops");
+				"endpoints.configprops");
 	}
 
 	@Test

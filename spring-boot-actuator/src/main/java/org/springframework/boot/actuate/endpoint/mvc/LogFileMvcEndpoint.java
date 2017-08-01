@@ -58,7 +58,7 @@ public class LogFileMvcEndpoint extends AbstractNamedMvcEndpoint {
 	private File externalFile;
 
 	public LogFileMvcEndpoint() {
-		super("logfile", "/logfile", true);
+		super("logfile", "/logfile");
 	}
 
 	public File getExternalFile() {

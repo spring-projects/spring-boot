@@ -49,7 +49,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 	private Metric<Number> metric3 = new Metric<>("c", 3);
 
 	public MetricsEndpointTests() {
-		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
+		super(Config.class, MetricsEndpoint.class, "metrics", "endpoints.metrics");
 	}
 
 	@Test

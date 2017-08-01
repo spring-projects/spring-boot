@@ -58,7 +58,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = { "info.app.name=MyService" })
+@TestPropertySource(properties = { "info.app.name=MyService",
+		"management.security.enabled=false" })
 public class InfoMvcEndpointTests {
 
 	@Autowired

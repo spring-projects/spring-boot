@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
@@ -62,7 +61,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity.I
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -77,11 +75,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for security of framework endpoints.
  * Many aspects of the behavior can be controller with {@link ManagementServerProperties}
  * via externalized application properties (or via an bean definition of that type to set
- * the defaults).
- * <p>
- * The framework {@link Endpoint}s (used to expose application information to operations)
- * include a {@link Endpoint#isSensitive() sensitive} configuration option which will be
- * used as a security hint by the filter created here.
+ * the defaults)..
  *
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -126,7 +120,6 @@ public class ManagementWebSecurityAutoConfiguration {
 						.getRequestMatcher(this.contextResolver);
 				configurer.requestMatchers(requestMatcher);
 			}
-
 		}
 
 	}
@@ -223,8 +216,6 @@ public class ManagementWebSecurityAutoConfiguration {
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
 				// Match all the requests for actuator endpoints ...
 				http.requestMatcher(matcher);
-				// ... but permitAll() for the non-sensitive ones
-				configurePermittedRequests(http.authorizeRequests());
 				http.httpBasic().authenticationEntryPoint(entryPoint).and().cors();
 				// No cookies for management endpoints by default
 				http.csrf().disable();
@@ -258,38 +249,9 @@ public class ManagementWebSecurityAutoConfiguration {
 			return entryPoint;
 		}
 
-		private void configurePermittedRequests(
-				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
-			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
-					this.contextResolver, EndpointPaths.SENSITIVE)).authenticated();
-			// Permit access to the non-sensitive endpoints
-			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
-					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();
-		}
-
 	}
 
-	private enum EndpointPaths {
-
-		ALL,
-
-		NON_SENSITIVE {
-
-			@Override
-			protected boolean isIncluded(MvcEndpoint endpoint) {
-				return !endpoint.isSensitive();
-			}
-
-		},
-
-		SENSITIVE {
-
-			@Override
-			protected boolean isIncluded(MvcEndpoint endpoint) {
-				return endpoint.isSensitive();
-			}
-
-		};
+	private static class EndpointPaths {
 
 		public String[] getPaths(EndpointHandlerMapping endpointHandlerMapping) {
 			if (endpointHandlerMapping == null) {
@@ -298,22 +260,16 @@ public class ManagementWebSecurityAutoConfiguration {
 			Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
 			Set<String> paths = new LinkedHashSet<>(endpoints.size());
 			for (MvcEndpoint endpoint : endpoints) {
-				if (isIncluded(endpoint)) {
-					String path = endpointHandlerMapping.getPath(endpoint.getPath());
-					paths.add(path);
-					if (!path.equals("")) {
-						paths.add(path + "/**");
-						// Add Spring MVC-generated additional paths
-						paths.add(path + ".*");
-					}
-					paths.add(path + "/");
+				String path = endpointHandlerMapping.getPath(endpoint.getPath());
+				paths.add(path);
+				if (!path.equals("")) {
+					paths.add(path + "/**");
+					// Add Spring MVC-generated additional paths
+					paths.add(path + ".*");
 				}
+				paths.add(path + "/");
 			}
 			return paths.toArray(new String[paths.size()]);
-		}
-
-		protected boolean isIncluded(MvcEndpoint endpoint) {
-			return true;
 		}
 
 	}
@@ -342,7 +298,8 @@ public class ManagementWebSecurityAutoConfiguration {
 				return matcher;
 			}
 			// Match everything, including the sensitive and non-sensitive paths
-			return new LazyEndpointPathRequestMatcher(contextResolver, EndpointPaths.ALL);
+			return new LazyEndpointPathRequestMatcher(contextResolver,
+					new EndpointPaths());
 		}
 
 		LazyEndpointPathRequestMatcher(ManagementContextResolver contextResolver,

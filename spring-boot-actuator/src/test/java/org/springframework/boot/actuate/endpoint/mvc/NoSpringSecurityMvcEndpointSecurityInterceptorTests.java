@@ -74,8 +74,7 @@ public class NoSpringSecurityMvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleNotPresentShouldNotValidateAuthorities()
-			throws Exception {
+	public void endpointIfRoleNotPresentShouldNotValidateAuthorities() throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		this.servletContext.declareRoles("HERO");

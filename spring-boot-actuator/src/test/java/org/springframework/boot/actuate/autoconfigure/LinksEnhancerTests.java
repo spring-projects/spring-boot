@@ -64,7 +64,7 @@ public class LinksEnhancerTests {
 
 	@Test
 	public void usePathAsRelIfNameNotAvailable() throws Exception {
-		MvcEndpoint endpoint = new NoNameTestMvcEndpoint("/a", false);
+		MvcEndpoint endpoint = new NoNameTestMvcEndpoint("/a");
 		LinksEnhancer enhancer = getLinksEnhancer(Collections.singletonList(endpoint));
 		ResourceSupport support = new ResourceSupport();
 		enhancer.addEndpointLinks(support, "");
@@ -143,8 +143,8 @@ public class LinksEnhancerTests {
 
 	private static class NoNameTestMvcEndpoint extends AbstractMvcEndpoint {
 
-		NoNameTestMvcEndpoint(String path, boolean sensitive) {
-			super(path, sensitive);
+		NoNameTestMvcEndpoint(String path) {
+			super(path);
 		}
 
 	}

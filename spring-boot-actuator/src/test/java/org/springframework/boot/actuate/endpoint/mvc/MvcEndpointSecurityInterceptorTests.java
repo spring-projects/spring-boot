@@ -89,22 +89,14 @@ public class MvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void endpointNotSensitiveShouldAllowAccess() throws Exception {
-		this.endpoint.setSensitive(false);
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isTrue();
-	}
-
-	@Test
-	public void sensitiveEndpointIfRoleIsPresentShouldAllowAccess() throws Exception {
+	public void endpointIfRoleIsPresentShouldAllowAccess() throws Exception {
 		this.servletContext.declareRoles("SUPER_HERO");
 		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
 				this.handlerMethod)).isTrue();
 	}
 
 	@Test
-	public void sensitiveEndpointIfNotAuthenticatedShouldNotAllowAccess()
-			throws Exception {
+	public void endpointIfNotAuthenticatedShouldNotAllowAccess() throws Exception {
 		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
 				this.handlerMethod)).isFalse();
 		verify(this.response).sendError(HttpStatus.UNAUTHORIZED.value(),
@@ -118,8 +110,7 @@ public class MvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleIsNotCorrectShouldNotAllowAccess()
-			throws Exception {
+	public void endpointIfRoleIsNotCorrectShouldNotAllowAccess() throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		this.servletContext.declareRoles("HERO");
@@ -130,8 +121,7 @@ public class MvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleNotCorrectShouldCheckAuthorities()
-			throws Exception {
+	public void endpointIfRoleNotCorrectShouldCheckAuthorities() throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		Authentication authentication = mock(Authentication.class);
@@ -144,7 +134,7 @@ public class MvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleAndAuthoritiesNotCorrectShouldNotAllowAccess()
+	public void endpointIfRoleAndAuthoritiesNotCorrectShouldNotAllowAccess()
 			throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);

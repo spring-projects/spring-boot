@@ -64,11 +64,6 @@ public abstract class EndpointMBean implements JmxEndpoint {
 		return this.endpoint.isEnabled();
 	}
 
-	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
-	public boolean isSensitive() {
-		return this.endpoint.isSensitive();
-	}
-
 	@Override
 	public String getIdentity() {
 		return ObjectUtils.getIdentityHexString(getEndpoint());

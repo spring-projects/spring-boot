@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
 	public HealthEndpointTests() {
-		super(Config.class, HealthEndpoint.class, "health", false, "endpoints.health");
+		super(Config.class, HealthEndpoint.class, "health", "endpoints.health");
 	}
 
 	@Test

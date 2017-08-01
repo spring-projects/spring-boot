@@ -46,22 +46,8 @@ public abstract class AbstractMvcEndpoint
 	 */
 	private Boolean enabled;
 
-	/**
-	 * Mark if the endpoint exposes sensitive information.
-	 */
-	private Boolean sensitive;
-
-	private final boolean sensitiveDefault;
-
-	public AbstractMvcEndpoint(String path, boolean sensitive) {
+	public AbstractMvcEndpoint(String path) {
 		setPath(path);
-		this.sensitiveDefault = sensitive;
-	}
-
-	public AbstractMvcEndpoint(String path, boolean sensitive, boolean enabled) {
-		setPath(path);
-		this.sensitiveDefault = sensitive;
-		this.enabled = enabled;
 	}
 
 	@Override
@@ -91,16 +77,6 @@ public abstract class AbstractMvcEndpoint
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return EndpointProperties.isSensitive(this.environment, this.sensitive,
-				this.sensitiveDefault);
-	}
-
-	public void setSensitive(Boolean sensitive) {
-		this.sensitive = sensitive;
 	}
 
 	@Override
