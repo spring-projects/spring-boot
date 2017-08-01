@@ -50,7 +50,7 @@ public class SpringApplicationHierarchyTests {
 	@Test
 	public void testParent() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
-		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
+		builder.properties("spring.flyway.enabled=false", "liquibase.enabled=false");
 		builder.parent(Parent.class);
 		this.context = builder.run("--server.port=0");
 	}
@@ -58,7 +58,7 @@ public class SpringApplicationHierarchyTests {
 	@Test
 	public void testChild() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Parent.class);
-		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
+		builder.properties("spring.flyway.enabled=false", "liquibase.enabled=false");
 		builder.child(Child.class);
 		this.context = builder.run("--server.port=0");
 	}

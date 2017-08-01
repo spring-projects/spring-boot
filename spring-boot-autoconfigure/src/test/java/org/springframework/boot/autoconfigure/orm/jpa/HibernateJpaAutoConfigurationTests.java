@@ -105,7 +105,7 @@ public class HibernateJpaAutoConfigurationTests
 	public void testFlywayPlusValidation() throws Exception {
 		load(new Class<?>[0], new Class<?>[] { FlywayAutoConfiguration.class },
 				"spring.datasource.initialize:false",
-				"flyway.locations:classpath:db/city",
+				"spring.flyway.locations:classpath:db/city",
 				"spring.jpa.hibernate.ddl-auto:validate");
 	}
 

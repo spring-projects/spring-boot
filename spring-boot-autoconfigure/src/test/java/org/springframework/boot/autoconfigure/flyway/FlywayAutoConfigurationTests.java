@@ -95,7 +95,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void createDataSource() throws Exception {
-		TestPropertyValues.of("flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa")
+		TestPropertyValues.of("spring.flyway.url:jdbc:hsqldb:mem:flywaytest", "spring.flyway.user:sa")
 				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -126,7 +126,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void overrideLocations() throws Exception {
 		TestPropertyValues
-				.of("flyway.locations:classpath:db/changelog,classpath:db/migration")
+				.of("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
 				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -139,8 +139,8 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void overrideLocationsList() throws Exception {
 		TestPropertyValues
-				.of("flyway.locations[0]:classpath:db/changelog",
-						"flyway.locations[1]:classpath:db/migration")
+				.of("spring.flyway.locations[0]:classpath:db/changelog",
+						"spring.flyway.locations[1]:classpath:db/migration")
 				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -152,7 +152,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideSchemas() throws Exception {
-		TestPropertyValues.of("flyway.schemas:public").applyTo(this.context);
+		TestPropertyValues.of("spring.flyway.schemas:public").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -162,7 +162,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void changeLogDoesNotExist() throws Exception {
-		TestPropertyValues.of("flyway.locations:file:no-such-dir").applyTo(this.context);
+		TestPropertyValues.of("spring.flyway.locations:file:no-such-dir").applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -172,8 +172,8 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void checkLocationsAllMissing() throws Exception {
 		TestPropertyValues
-				.of("flyway.locations:classpath:db/missing1,classpath:db/migration2",
-						"flyway.check-location:true")
+				.of("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2",
+						"spring.flyway.check-location:true")
 				.applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Cannot find migrations location in");
@@ -185,8 +185,8 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void checkLocationsAllExist() throws Exception {
 		TestPropertyValues
-				.of("flyway.locations:classpath:db/changelog,classpath:db/migration",
-						"flyway.check-location:true")
+				.of("spring.flyway.locations:classpath:db/changelog,classpath:db/migration",
+						"spring.flyway.check-location:true")
 				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -222,7 +222,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideBaselineVersionString() throws Exception {
-		TestPropertyValues.of("flyway.baseline-version=0").applyTo(this.context);
+		TestPropertyValues.of("spring.flyway.baseline-version=0").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -234,7 +234,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void overrideBaselineVersionNumber() throws Exception {
 		Map<String, Object> source = Collections
-				.<String, Object>singletonMap("flyway.baseline-version", 1);
+				.<String, Object>singletonMap("spring.flyway.baseline-version", 1);
 		this.context.getEnvironment().getPropertySources()
 				.addLast(new MapPropertySource("flyway", source));
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
@@ -248,7 +248,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void useVendorDirectory() throws Exception {
 		TestPropertyValues
-				.of("flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
+				.of("spring.flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
 				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,

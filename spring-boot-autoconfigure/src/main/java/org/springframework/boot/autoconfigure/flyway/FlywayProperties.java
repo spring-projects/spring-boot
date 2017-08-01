@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "spring.flyway", ignoreUnknownFields = true)
 public class FlywayProperties {
 
 	/**
