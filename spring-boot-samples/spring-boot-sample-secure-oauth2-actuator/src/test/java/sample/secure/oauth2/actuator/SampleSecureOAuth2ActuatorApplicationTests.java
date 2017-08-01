@@ -69,20 +69,24 @@ public class SampleSecureOAuth2ActuatorApplicationTests {
 	}
 
 	@Test
-	public void healthAvailable() throws Exception {
-		this.mvc.perform(get("/application/health")).andExpect(status().isOk())
-				.andDo(print());
+	public void healthSecured() throws Exception {
+		this.mvc.perform(get("/application/health")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
-	public void envSecuredWithBasic() throws Exception {
-		this.mvc.perform(get("/application/env")).andExpect(status().isUnauthorized())
-				.andExpect(header().string("WWW-Authenticate", containsString("Basic")))
-				.andDo(print());
+	public void healthWithBasicAuthorization() throws Exception {
+		this.mvc.perform(get("/application/health").header("Authorization",
+				"Basic " + Base64Utils.encodeToString("user:password".getBytes())))
+				.andExpect(status().isOk());
 	}
 
 	@Test
-	public void envWithPassword() throws Exception {
+	public void envSecured() throws Exception {
+		this.mvc.perform(get("/application/env")).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void envWithBasicAuthorization() throws Exception {
 		this.mvc.perform(get("/application/env").header("Authorization",
 				"Basic " + Base64Utils.encodeToString("user:password".getBytes())))
 				.andExpect(status().isOk()).andDo(print());
