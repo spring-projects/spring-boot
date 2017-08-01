@@ -574,7 +574,6 @@ public class EndpointWebMvcAutoConfigurationTests {
 				"server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
 				"server.ssl.key-password=password", "management.ssl.enabled=false")
 				.applyTo(this.applicationContext);
-
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);

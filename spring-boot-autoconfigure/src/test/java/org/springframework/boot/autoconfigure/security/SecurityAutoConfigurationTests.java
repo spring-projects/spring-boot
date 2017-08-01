@@ -293,13 +293,10 @@ public class SecurityAutoConfigurationTests {
 	public void testDefaultUsernamePassword() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-
 		this.context.register(SecurityAutoConfiguration.class);
 		this.context.refresh();
-
 		SecurityProperties security = this.context.getBean(SecurityProperties.class);
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				security.getUser().getName(), security.getUser().getPassword());
 		assertThat(manager.authenticate(token)).isNotNull();
@@ -310,14 +307,11 @@ public class SecurityAutoConfigurationTests {
 			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-
 		this.context.register(AuthenticationManagerCustomizer.class,
 				SecurityAutoConfiguration.class);
 		this.context.refresh();
-
 		SecurityProperties security = this.context.getBean(SecurityProperties.class);
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				security.getUser().getName(), security.getUser().getPassword());
 		try {
@@ -327,7 +321,6 @@ public class SecurityAutoConfigurationTests {
 		catch (AuthenticationException success) {
 			// Expected
 		}
-
 		token = new UsernamePasswordAuthenticationToken("foo", "bar");
 		assertThat(manager.authenticate(token)).isNotNull();
 	}
