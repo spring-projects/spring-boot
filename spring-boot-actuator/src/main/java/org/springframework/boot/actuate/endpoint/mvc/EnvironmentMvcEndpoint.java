@@ -93,8 +93,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 
 		@Override
 		protected Object getOptionalValue(Environment source, String name) {
-			Object result = ((EnvironmentEndpoint) getDelegate()).getResolver()
-					.getProperty(name, Object.class);
+			Object result = getValue(name);
 			if (result != null) {
 				result = ((EnvironmentEndpoint) getDelegate()).sanitize(name, result);
 			}
@@ -103,11 +102,16 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 
 		@Override
 		protected Object getValue(Environment source, String name) {
-			Object result = source.getProperty(name, Object.class);
+			Object result = getValue(name);
 			if (result == null) {
 				throw new NoSuchPropertyException("No such property: " + name);
 			}
 			return ((EnvironmentEndpoint) getDelegate()).sanitize(name, result);
+		}
+
+		private Object getValue(String name) {
+			return ((EnvironmentEndpoint) getDelegate()).getResolver().getProperty(name,
+					Object.class);
 		}
 
 	}
