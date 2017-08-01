@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Benedikt Ritter
  * @author Eddú Meléndez
+ * @author Rostyslav Dudka
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
@@ -508,37 +509,63 @@ public class DataSourceProperties
 
 	static class DataSourceBeanCreationException extends BeanCreationException {
 
+		private static String description;
+
+		private static String action;
+
 		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {
-			super(getMessage(connection, environment, property));
+			super(createAndGetMessage(connection, environment, property));
 		}
 
-		private static String getMessage(EmbeddedDatabaseConnection connection,
-				Environment environment, String property) {
-			StringBuilder message = new StringBuilder();
-			message.append("Cannot determine embedded database " + property
-					+ " for database type " + connection + ". ");
-			message.append("If you want an embedded database please put a supported "
-					+ "one on the classpath. ");
-			message.append("If you have database settings to be loaded from a "
-					+ "particular profile you may need to active it");
+		private static String createAndGetMessage(EmbeddedDatabaseConnection connection,
+												  Environment environment, String property) {
+			createDescription(connection, property);
+			createAction(environment);
+			return description + action;
+		}
+
+		private static void createDescription(EmbeddedDatabaseConnection connection,
+											  String property) {
+			description = "Cannot auto-configure DataSource. "
+					+ "No spring.datasource.url property was specified. "
+					+ "Also cannot auto-configure embedded database. "
+					+ "No embedded database " + property + " "
+					+ "for database type " + connection+". ";
+		}
+
+		private static void createAction(Environment environment) {
+			action = "If you want an embedded database please put a supported "
+					+ "one on the classpath. "
+					+ "If you have database settings to be loaded from a "
+					+ "particular profile you may need to active it";
 			if (environment != null) {
-				String[] profiles = environment.getActiveProfiles();
-				if (ObjectUtils.isEmpty(profiles)) {
-					message.append(" (no profiles are currently active)");
-				}
-				else {
-					message.append(" (the profiles \""
-							+ StringUtils.arrayToCommaDelimitedString(
-									environment.getActiveProfiles())
-							+ "\" are currently active)");
-
-				}
+				appendActiveProfiles(environment);
 			}
-			message.append(".");
-			return message.toString();
+			action += ".";
 		}
 
+		private static void appendActiveProfiles(Environment environment) {
+			String[] profiles = environment.getActiveProfiles();
+			if (ObjectUtils.isEmpty(profiles)) {
+				action += " (no profiles are currently active)";
+			}
+			else {
+				action += (" (the profiles \""
+						+ StringUtils.arrayToCommaDelimitedString(
+						environment.getActiveProfiles())
+						+ "\" are currently active)");
+
+			}
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getAction() {
+			return action;
+		}
 	}
 
 }
