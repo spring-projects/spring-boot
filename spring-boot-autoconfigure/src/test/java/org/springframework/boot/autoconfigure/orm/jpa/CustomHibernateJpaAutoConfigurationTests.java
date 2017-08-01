@@ -84,7 +84,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testDefaultDdlAutoForEmbedded() throws Exception {
-		TestPropertyValues.of("spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(TestConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,

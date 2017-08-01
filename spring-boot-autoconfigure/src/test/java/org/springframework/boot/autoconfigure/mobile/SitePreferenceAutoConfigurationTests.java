@@ -67,7 +67,8 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test
 	public void sitePreferenceHandlerInterceptorEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of("spring.mobile.sitepreference.enabled:true");
+		TestPropertyValues.of("spring.mobile.sitepreference.enabled:true")
+				.applyTo(this.context);
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class))
@@ -97,7 +98,8 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test
 	public void sitePreferenceMethodArgumentResolverEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of("spring.mobile.sitepreference.enabled:true");
+		TestPropertyValues.of("spring.mobile.sitepreference.enabled:true")
+				.applyTo(this.context);
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(

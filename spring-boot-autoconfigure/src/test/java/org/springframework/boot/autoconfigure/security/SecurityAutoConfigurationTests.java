@@ -162,7 +162,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestPropertyValues.of("security.basic.enabled:false");
+		TestPropertyValues.of("security.basic.enabled:false").applyTo(this.context);
 		this.context.refresh();
 		// Ignores and the "matches-none" filter only
 		assertThat(this.context.getBeanNamesForType(FilterChainProxy.class).length)
@@ -277,8 +277,8 @@ public class SecurityAutoConfigurationTests {
 	public void testJpaCoexistsHappily() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		TestPropertyValues.of("spring.datasource.url:jdbc:hsqldb:mem:testsecdb");
-		TestPropertyValues.of("spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
+				"spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,

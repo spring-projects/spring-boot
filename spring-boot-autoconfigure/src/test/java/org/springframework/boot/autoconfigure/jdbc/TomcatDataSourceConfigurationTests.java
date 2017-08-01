@@ -53,7 +53,7 @@ public class TomcatDataSourceConfigurationTests {
 
 	@Before
 	public void init() {
-		TestPropertyValues.of(PREFIX + "initialize:false");
+		TestPropertyValues.of(PREFIX + "initialize:false").applyTo(this.context);
 	}
 
 	@After

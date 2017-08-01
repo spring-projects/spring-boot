@@ -78,7 +78,8 @@ public class MongoReactiveAutoConfigurationTests {
 	@Test
 	public void optionsAddedButNoHost() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test");
+		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test")
+				.applyTo(this.context);
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				MongoReactiveAutoConfiguration.class);

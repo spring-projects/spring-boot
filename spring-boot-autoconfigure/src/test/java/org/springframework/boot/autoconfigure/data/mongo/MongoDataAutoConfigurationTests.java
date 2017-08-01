@@ -84,7 +84,8 @@ public class MongoDataAutoConfigurationTests {
 	@Test
 	public void gridFsTemplateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.gridFsDatabase:grid");
+		TestPropertyValues.of("spring.data.mongodb.gridFsDatabase:grid")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
