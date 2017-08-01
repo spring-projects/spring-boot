@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DataSourceBeanCreationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
+ * @author Rostyslav Dudka
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar" })
@@ -41,8 +42,10 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 	@Test
 	public void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
-		assertThat(failureAnalysis.getDescription()).isEqualTo(
-				"Cannot determine embedded database driver class for database type NONE");
+		assertThat(failureAnalysis.getDescription()).isEqualTo("Cannot auto-configure "
+				+ "DataSource. No spring.datasource.url property was specified. "
+				+ "Also cannot auto-configure embedded database. "
+				+ "No embedded database driver class for database type NONE. ");
 		assertThat(failureAnalysis.getAction()).isEqualTo("If you want an embedded "
 				+ "database please put a supported one on the classpath. If you have "
 				+ "database settings to be loaded from a particular profile you may "
