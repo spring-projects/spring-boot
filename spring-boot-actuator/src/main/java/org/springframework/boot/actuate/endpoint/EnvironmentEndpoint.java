@@ -16,11 +16,17 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -41,7 +47,7 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Madhura Bhave
  */
 @ConfigurationProperties(prefix = "endpoints.env")
-public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
+public class EnvironmentEndpoint extends AbstractEndpoint<EnvironmentDescriptor> {
 
 	private final Sanitizer sanitizer = new Sanitizer();
 
@@ -57,28 +63,35 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> result = new LinkedHashMap<>();
-		result.put("profiles", getEnvironment().getActiveProfiles());
+	public EnvironmentDescriptor invoke() {
 		PropertyResolver resolver = getResolver();
-		for (Entry<String, PropertySource<?>> entry : getPropertySourcesAsMap()
-				.entrySet()) {
-			PropertySource<?> source = entry.getValue();
-			String sourceName = entry.getKey();
+		List<PropertySourceDescriptor> propertySources = new ArrayList<PropertySourceDescriptor>();
+		getPropertySourcesAsMap().forEach((sourceName, source) -> {
 			if (source instanceof EnumerablePropertySource) {
-				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				Map<String, Object> properties = new LinkedHashMap<>();
-				for (String name : enumerable.getPropertyNames()) {
-					Object resolved = resolver.getProperty(name, Object.class);
-					properties.put(name, sanitize(name, resolved));
-				}
-				properties = postProcessSourceProperties(sourceName, properties);
-				if (properties != null) {
-					result.put(sourceName, properties);
-				}
+				propertySources.add(describeSource(sourceName,
+						(EnumerablePropertySource<?>) source, resolver));
 			}
+		});
+		return new EnvironmentDescriptor(
+				Arrays.asList(getEnvironment().getActiveProfiles()), propertySources);
+	}
+
+	private PropertySourceDescriptor describeSource(String sourceName,
+			EnumerablePropertySource<?> source, PropertyResolver resolver) {
+		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
+		for (String name : source.getPropertyNames()) {
+			properties.put(name, describeValueOf(name, source, resolver));
 		}
-		return result;
+		return new PropertySourceDescriptor(sourceName, properties);
+	}
+
+	private PropertyValueDescriptor describeValueOf(String name,
+			EnumerablePropertySource<?> source, PropertyResolver resolver) {
+		Object resolved = resolver.getProperty(name, Object.class);
+		@SuppressWarnings("unchecked")
+		String origin = (source instanceof OriginLookup)
+				? ((OriginLookup<Object>) source).getOrigin(name).toString() : null;
+		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
 	}
 
 	public PropertyResolver getResolver() {
@@ -126,19 +139,6 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	/**
-	 * Apply any post processing to source data before it is added.
-	 * @param sourceName the source name
-	 * @param properties the properties
-	 * @return the post-processed properties or {@code null} if the source should not be
-	 * added
-	 * @since 1.4.0
-	 */
-	protected Map<String, Object> postProcessSourceProperties(String sourceName,
-			Map<String, Object> properties) {
-		return properties;
-	}
-
-	/**
 	 * {@link PropertySourcesPropertyResolver} that sanitizes sensitive placeholders if
 	 * present.
 	 */
@@ -164,6 +164,79 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 			return (String) this.sanitizer.sanitize(key, value);
 		}
 
+	}
+
+	/**
+	 * A description of an {@link Environment}.
+	 */
+	static final class EnvironmentDescriptor {
+
+		private final List<String> activeProfiles;
+
+		private final List<PropertySourceDescriptor> propertySources;
+
+		private EnvironmentDescriptor(List<String> activeProfiles,
+				List<PropertySourceDescriptor> propertySources) {
+			this.activeProfiles = activeProfiles;
+			this.propertySources = propertySources;
+		}
+
+		public List<String> getActiveProfiles() {
+			return this.activeProfiles;
+		}
+
+		public List<PropertySourceDescriptor> getPropertySources() {
+			return this.propertySources;
+		}
+
+		/**
+		 * A description of a {@link PropertySource}.
+		 */
+		static final class PropertySourceDescriptor {
+
+			private final String name;
+
+			private final Map<String, PropertyValueDescriptor> properties;
+
+			private PropertySourceDescriptor(String name,
+					Map<String, PropertyValueDescriptor> properties) {
+				this.name = name;
+				this.properties = properties;
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public Map<String, PropertyValueDescriptor> getProperties() {
+				return this.properties;
+			}
+
+			/**
+			 * A description of a property's value, including its origin if available.
+			 */
+			static final class PropertyValueDescriptor {
+
+				private final Object value;
+
+				private final String origin;
+
+				private PropertyValueDescriptor(Object value, String origin) {
+					this.value = value;
+					this.origin = origin;
+				}
+
+				public Object getValue() {
+					return this.value;
+				}
+
+				public String getOrigin() {
+					return this.origin;
+				}
+
+			}
+
+		}
 	}
 
 }
