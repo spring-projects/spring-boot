@@ -51,7 +51,7 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 		this.context.close();
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("liquibase.default-schema=CUSTOMSCHEMA",
+				.of("spring.liquibase.default-schema=CUSTOMSCHEMA",
 						"spring.datasource.generate-unique-name=true",
 						"spring.datasource.schema=classpath:/db/create-custom-schema.sql")
 				.applyTo(this.context);

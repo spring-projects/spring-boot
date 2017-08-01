@@ -60,7 +60,7 @@ import org.springframework.util.ReflectionUtils;
 @Configuration
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "liquibase", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {

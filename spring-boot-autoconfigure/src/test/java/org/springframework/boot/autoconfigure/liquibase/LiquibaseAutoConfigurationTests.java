@@ -107,7 +107,7 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void testXmlChangeLog() throws Exception {
 		TestPropertyValues
-				.of("liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml")
+				.of("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml")
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
@@ -121,7 +121,7 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void testJsonChangeLog() throws Exception {
 		TestPropertyValues
-				.of("liquibase.change-log:classpath:/db/changelog/db.changelog-override.json")
+				.of("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.json")
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
@@ -135,7 +135,7 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void testSqlChangeLog() throws Exception {
 		TestPropertyValues
-				.of("liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")
+				.of("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
@@ -148,7 +148,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void testOverrideContexts() throws Exception {
-		TestPropertyValues.of("liquibase.contexts:test, production")
+		TestPropertyValues.of("spring.liquibase.contexts:test, production")
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
@@ -160,7 +160,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void testOverrideDefaultSchema() throws Exception {
-		TestPropertyValues.of("liquibase.default-schema:public").applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.default-schema:public").applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -171,7 +171,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void testOverrideDropFirst() throws Exception {
-		TestPropertyValues.of("liquibase.drop-first:true").applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.drop-first:true").applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -183,7 +183,7 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void testOverrideDataSource() throws Exception {
 		TestPropertyValues
-				.of("liquibase.url:jdbc:hsqldb:mem:liquibase", "liquibase.user:sa")
+				.of("spring.liquibase.url:jdbc:hsqldb:mem:liquibase", "spring.liquibase.user:sa")
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
@@ -198,7 +198,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testChangeLogDoesNotExist() throws Exception {
-		TestPropertyValues.of("liquibase.change-log:classpath:/no-such-changelog.yaml")
+		TestPropertyValues.of("spring.liquibase.change-log:classpath:/no-such-changelog.yaml")
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
@@ -220,7 +220,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void testOverrideLabels() throws Exception {
-		TestPropertyValues.of("liquibase.labels:test, production").applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.labels:test, production").applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -232,7 +232,7 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testOverrideParameters() throws Exception {
-		TestPropertyValues.of("liquibase.parameters.foo:bar").applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.parameters.foo:bar").applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -247,7 +247,7 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void testRollbackFile() throws Exception {
 		File file = this.temp.newFile("rollback-file.sql");
-		TestPropertyValues.of("liquibase.rollbackFile:" + file.getAbsolutePath())
+		TestPropertyValues.of("spring.liquibase.rollbackFile:" + file.getAbsolutePath())
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,

@@ -113,7 +113,7 @@ public class HibernateJpaAutoConfigurationTests
 	public void testLiquibasePlusValidation() throws Exception {
 		load(new Class<?>[0], new Class<?>[] { LiquibaseAutoConfiguration.class },
 				"spring.datasource.initialize:false",
-				"liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+				"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
 				"spring.jpa.hibernate.ddl-auto:validate");
 	}
 

@@ -551,18 +551,18 @@ content into your application; rather pick only the properties that you need.
 	spring.flyway.validate-on-migrate= #
 
 	# LIQUIBASE ({sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[LiquibaseProperties])
-	liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml # Change log configuration path.
-	liquibase.check-change-log-location=true # Check the change log location exists.
-	liquibase.contexts= # Comma-separated list of runtime contexts to use.
-	liquibase.default-schema= # Default database schema.
-	liquibase.drop-first=false # Drop the database schema first.
-	liquibase.enabled=true # Enable liquibase support.
-	liquibase.labels= # Comma-separated list of runtime labels to use.
-	liquibase.parameters.*= # Change log parameters.
-	liquibase.password= # Login password of the database to migrate.
-	liquibase.rollback-file= # File to which rollback SQL will be written when an update is performed.
-	liquibase.url= # JDBC url of the database to migrate. If not set, the primary configured data source is used.
-	liquibase.user= # Login user of the database to migrate.
+	spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml # Change log configuration path.
+	spring.liquibase.check-change-log-location=true # Check the change log location exists.
+	spring.liquibase.contexts= # Comma-separated list of runtime contexts to use.
+	spring.liquibase.default-schema= # Default database schema.
+	spring.liquibase.drop-first=false # Drop the database schema first.
+	spring.liquibase.enabled=true # Enable liquibase support.
+	spring.liquibase.labels= # Comma-separated list of runtime labels to use.
+	spring.liquibase.parameters.*= # Change log parameters.
+	spring.liquibase.password= # Login password of the database to migrate.
+	spring.liquibase.rollback-file= # File to which rollback SQL will be written when an update is performed.
+	spring.liquibase.url= # JDBC url of the database to migrate. If not set, the primary configured data source is used.
+	spring.liquibase.user= # Login user of the database to migrate.
 
 	# COUCHBASE ({sc-spring-boot-autoconfigure}/couchbase/CouchbaseProperties.{sc-ext}[CouchbaseProperties])
 	spring.couchbase.bootstrap-hosts= # Couchbase nodes (host or IP address) to bootstrap from.
