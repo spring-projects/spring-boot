@@ -29,7 +29,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * Caching implementation of the {@link MetadataReaderFactory} interface backed by a
- * {@link ConcurrentReferenceHashMap} , caching {@link MetadataReader} per Spring
+ * {@link ConcurrentReferenceHashMap}, caching {@link MetadataReader} per Spring
  * {@link Resource} handle (i.e. per ".class" file).
  *
  * @author Phillip Webb
