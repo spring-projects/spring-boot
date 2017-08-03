@@ -29,6 +29,22 @@
 		</subpackage>
 	</subpackage>
 
+	<!-- Endpoint infrastructure -->
+	<subpackage name="endpoint">
+		<disallow pkg="org.springframework.http" />
+		<disallow pkg="org.springframework.web" />
+		<subpackage name="web">
+			<allow pkg="org.springframework.http" />
+			<allow pkg="org.springframework.web" />
+			<subpackage name="mvc">
+				<disallow pkg="org.springframework.web.reactive" />
+			</subpackage>
+			<subpackage name="reactive">
+				<disallow pkg="org.springframework.web.servlet" />
+			</subpackage>
+		</subpackage>
+	</subpackage>
+
 	<!-- Logging -->
 	<subpackage name="logging">
 		<disallow pkg="org.springframework.context" />
