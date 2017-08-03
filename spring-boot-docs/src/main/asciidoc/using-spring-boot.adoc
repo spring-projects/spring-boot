@@ -804,7 +804,7 @@ rewriting classes as they are loaded to make them more amenable to reloading.
 ==== Excluding resources
 Certain resources don't necessarily need to trigger a restart when they are changed. For
 example, Thymeleaf templates can just be edited in-place. By default changing resources
-in `/META-INF/maven`, `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or
+in `/META-INF/maven`, `/META-INF/resources`, `/resources`, `/static`, `/public` or
 `/templates` will not trigger a restart but will trigger a
 <<using-boot-devtools-livereload, live reload>>. If you want to customize these exclusions
 you can use the `spring.devtools.restart.exclude` property. For example, to exclude only

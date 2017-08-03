@@ -46,14 +46,14 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 public class BackgroundPreinitializer
 		implements ApplicationListener<SpringApplicationEvent> {
 
-	private static final AtomicBoolean preinitalizationStarted = new AtomicBoolean(false);
+	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(false);
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			if (preinitalizationStarted.compareAndSet(false, true)) {
+			if (preinitializationStarted.compareAndSet(false, true)) {
 				performPreinitialization();
 			}
 		}

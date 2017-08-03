@@ -44,7 +44,7 @@ public class UnboundElementsSourceFilterTests {
 	}
 
 	@Test
-	public void filterWhenSourceIsSystemEnvironmentPropertySourceShouldReturnFalse()
+	public void filterWhenSourceIsSystemPropertiesPropertySourceShouldReturnFalse()
 			throws Exception {
 		MockPropertySource propertySource = new MockPropertySource(
 				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
@@ -53,7 +53,7 @@ public class UnboundElementsSourceFilterTests {
 	}
 
 	@Test
-	public void filterWhenSourceIsSystemPropertiesPropertySourceShouldReturnTrue()
+	public void filterWhenSourceIsSystemEnvironmentPropertySourceShouldReturnFalse()
 			throws Exception {
 		MockPropertySource propertySource = new MockPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
