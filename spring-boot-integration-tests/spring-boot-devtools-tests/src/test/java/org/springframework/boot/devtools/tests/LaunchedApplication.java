@@ -37,9 +37,10 @@ class LaunchedApplication {
 		this.processes = processes;
 	}
 
-	void stop() {
+	void stop() throws InterruptedException {
 		for (Process process : this.processes) {
 			process.destroy();
+			process.waitFor();
 		}
 	}
 
