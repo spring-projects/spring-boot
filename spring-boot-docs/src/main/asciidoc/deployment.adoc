@@ -451,7 +451,7 @@ then use the https://cloud.google.com/sdk/downloads[Google Cloud SDK] to push yo
 Spring Boot app into that slot from the command line or CI build.
 
 App Engine needs you to create an `app.yaml` file to describe the resources your app
-requires. Normally you put this in `src/min/appengine`, and it looks something like this:
+requires. Normally you put this in `src/main/appengine`, and it looks something like this:
 
 [source,yaml,indent=0]
 ----
