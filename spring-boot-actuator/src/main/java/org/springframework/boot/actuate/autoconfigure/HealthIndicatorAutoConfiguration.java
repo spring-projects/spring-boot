@@ -281,6 +281,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(RedisConnectionFactory.class)
 	@ConditionalOnBean(RedisConnectionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("redis")
 	public static class RedisHealthIndicatorConfiguration extends
@@ -302,6 +303,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(RabbitTemplate.class)
 	@ConditionalOnBean(RabbitTemplate.class)
 	@ConditionalOnEnabledHealthIndicator("rabbit")
 	public static class RabbitHealthIndicatorConfiguration extends
@@ -323,6 +325,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(SolrClient.class)
 	@ConditionalOnBean(SolrClient.class)
 	@ConditionalOnEnabledHealthIndicator("solr")
 	public static class SolrHealthIndicatorConfiguration extends
@@ -361,6 +364,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(JavaMailSenderImpl.class)
 	@ConditionalOnBean(JavaMailSenderImpl.class)
 	@ConditionalOnEnabledHealthIndicator("mail")
 	public static class MailHealthIndicatorConfiguration extends
@@ -382,6 +386,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(ConnectionFactory.class)
 	@ConditionalOnBean(ConnectionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("jms")
 	public static class JmsHealthIndicatorConfiguration extends
