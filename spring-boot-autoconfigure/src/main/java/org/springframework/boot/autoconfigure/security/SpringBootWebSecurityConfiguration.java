@@ -228,7 +228,7 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(request -> false);
+			http.requestMatcher((request) -> false);
 		}
 
 	}

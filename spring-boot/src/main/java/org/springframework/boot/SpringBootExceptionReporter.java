@@ -30,6 +30,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @since 2.0.0
  * @see ApplicationContextAware
  */
+@FunctionalInterface
 public interface SpringBootExceptionReporter {
 
 	/**

@@ -26,6 +26,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
  * @author Vedran Pavic
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface SchedulerFactoryBeanCustomizer {
 
 	/**

@@ -170,7 +170,7 @@ public class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.publisher-confirms=true",
 						"spring.rabbitmq.publisher-returns=true")
-				.run(context -> {
+				.run((context) -> {
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
@@ -238,7 +238,7 @@ public class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.template.mandatory:false",
 						"spring.rabbitmq.publisher-returns=true")
-				.run(context -> {
+				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 					assertThat(getMandatory(rabbitTemplate)).isFalse();
 				});

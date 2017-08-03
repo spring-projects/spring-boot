@@ -23,6 +23,7 @@ package org.springframework.boot.origin;
  * @since 2.0.0
  * @see Origin
  */
+@FunctionalInterface
 public interface OriginProvider {
 
 	/**

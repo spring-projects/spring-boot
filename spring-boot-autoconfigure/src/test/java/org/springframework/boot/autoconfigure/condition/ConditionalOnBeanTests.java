@@ -120,7 +120,7 @@ public class ConditionalOnBeanTests {
 						WithPropertyPlaceholderClassName.class,
 						OnBeanClassConfiguration.class)
 				.withPropertyValues("mybeanclass=java.lang.String")
-				.run(context -> assertThat(context).hasNotFailed());
+				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test

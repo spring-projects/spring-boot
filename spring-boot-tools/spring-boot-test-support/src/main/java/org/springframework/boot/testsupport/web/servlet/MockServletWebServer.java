@@ -214,6 +214,7 @@ public abstract class MockServletWebServer {
 	/**
 	 * Initializer (usually implement by adapting {@code Initializer}).
 	 */
+	@FunctionalInterface
 	protected interface Initializer {
 
 		void onStartup(ServletContext context) throws ServletException;

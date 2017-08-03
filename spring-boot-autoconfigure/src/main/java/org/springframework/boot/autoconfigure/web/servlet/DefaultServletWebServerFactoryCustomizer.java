@@ -446,8 +446,8 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		private static void customizeMaxHttpPostSize(
 				UndertowServletWebServerFactory factory, final long maxHttpPostSize) {
-			factory.addBuilderCustomizers((builder -> builder
-					.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize)));
+			factory.addBuilderCustomizers((builder) -> builder
+					.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
 		}
 
 	}

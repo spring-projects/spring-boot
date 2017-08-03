@@ -113,7 +113,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureUtf8Encoding(Project project) {
-		project.afterEvaluate(evaluated -> evaluated.getTasks()
+		project.afterEvaluate((evaluated) -> evaluated.getTasks()
 				.withType(JavaCompile.class, (compile) -> {
 					if (compile.getOptions().getEncoding() == null) {
 						compile.getOptions().setEncoding("UTF-8");
