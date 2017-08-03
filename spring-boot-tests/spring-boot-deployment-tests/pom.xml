@@ -14,7 +14,7 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<java.version>1.7</java.version>
-		<cargo.timeout>300000</cargo.timeout>
+		<cargo.timeout>600000</cargo.timeout>
 		<cargo.container.download-dir>${settings.localRepository}/.cache/cargo/installs</cargo.container.download-dir>
 	</properties>
 	<modules>
@@ -49,7 +49,7 @@
 									<context>/bootapp</context>
 								</properties>
 								<pingURL>http://localhost:${appserver.port}/bootapp</pingURL>
-								<pingTimeout>30000</pingTimeout>
+								<pingTimeout>60000</pingTimeout>
 							</deployable>
 						</deployables>
 					</configuration>
