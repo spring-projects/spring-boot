@@ -16,20 +16,18 @@
 
 package org.springframework.boot.jta.narayana;
 
-import java.sql.SQLException;
-
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -40,135 +38,124 @@ import static org.mockito.Mockito.verify;
  */
 public class DataSourceXAResourceRecoveryHelperTests {
 
-	private XADataSource xaDataSource;
-
-	private XAConnection xaConnection;
-
-	private XAResource xaResource;
+	@Mock
+	private ConnectionManager connectionManager;
 
 	private DataSourceXAResourceRecoveryHelper recoveryHelper;
 
 	@Before
-	public void before() throws SQLException {
-		this.xaDataSource = mock(XADataSource.class);
-		this.xaConnection = mock(XAConnection.class);
-		this.xaResource = mock(XAResource.class);
-		this.recoveryHelper = new DataSourceXAResourceRecoveryHelper(this.xaDataSource);
+	public void before() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-		given(this.xaDataSource.getXAConnection()).willReturn(this.xaConnection);
-		given(this.xaConnection.getXAResource()).willReturn(this.xaResource);
+		this.recoveryHelper = new DataSourceXAResourceRecoveryHelper(this.connectionManager);
 	}
 
 	@Test
-	public void shouldCreateConnectionAndGetXAResource() throws SQLException {
+	public void shouldCreateConnectionAndGetXAResource() throws XAException {
+		given(this.connectionManager.isConnected()).willReturn(false);
+
 		XAResource[] xaResources = this.recoveryHelper.getXAResources();
+
 		assertThat(xaResources.length).isEqualTo(1);
 		assertThat(xaResources[0]).isSameAs(this.recoveryHelper);
-		verify(this.xaDataSource, times(1)).getXAConnection();
-		verify(this.xaConnection, times(1)).getXAResource();
+		verify(this.connectionManager, times(1)).isConnected();
+		verify(this.connectionManager, times(1)).connect();
 	}
 
 	@Test
-	public void shouldCreateConnectionWithCredentialsAndGetXAResource()
-			throws SQLException {
-		given(this.xaDataSource.getXAConnection(anyString(), anyString()))
-				.willReturn(this.xaConnection);
-		this.recoveryHelper = new DataSourceXAResourceRecoveryHelper(this.xaDataSource,
-				"username", "password");
+	public void shouldGetXAResourceWithoutConnecting() throws XAException {
+		given(this.connectionManager.isConnected()).willReturn(true);
+
 		XAResource[] xaResources = this.recoveryHelper.getXAResources();
+
 		assertThat(xaResources.length).isEqualTo(1);
 		assertThat(xaResources[0]).isSameAs(this.recoveryHelper);
-		verify(this.xaDataSource, times(1)).getXAConnection("username", "password");
-		verify(this.xaConnection, times(1)).getXAResource();
+		verify(this.connectionManager, times(1)).isConnected();
+		verify(this.connectionManager, times(0)).connect();
 	}
 
 	@Test
-	public void shouldFailToCreateConnectionAndNotGetXAResource() throws SQLException {
-		given(this.xaDataSource.getXAConnection())
-				.willThrow(new SQLException("Test exception"));
+	public void shouldFailToCreateConnectionAndNotGetXAResource() throws XAException {
+		given(this.connectionManager.isConnected()).willReturn(false);
+		willThrow(new XAException("test")).given(this.connectionManager).connect();
+
 		XAResource[] xaResources = this.recoveryHelper.getXAResources();
+
 		assertThat(xaResources.length).isEqualTo(0);
-		verify(this.xaDataSource, times(1)).getXAConnection();
-		verify(this.xaConnection, times(0)).getXAResource();
+		verify(this.connectionManager, times(1)).isConnected();
+		verify(this.connectionManager, times(1)).connect();
 	}
 
 	@Test
 	public void shouldDelegateRecoverCall() throws XAException {
-		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.recover(XAResource.TMSTARTRSCAN);
-		verify(this.xaResource, times(1)).recover(XAResource.TMSTARTRSCAN);
+		verify(this.connectionManager, times(1)).connectAndApply(any());
+		verify(this.connectionManager, times(0)).disconnect();
 	}
 
 	@Test
-	public void shouldDelegateRecoverCallAndCloseConnection()
-			throws XAException, SQLException {
-		this.recoveryHelper.getXAResources();
+	public void shouldDelegateRecoverCallAndCloseConnection() throws XAException {
 		this.recoveryHelper.recover(XAResource.TMENDRSCAN);
-		verify(this.xaResource, times(1)).recover(XAResource.TMENDRSCAN);
-		verify(this.xaConnection, times(1)).close();
+		verify(this.connectionManager, times(1)).connectAndApply(any());
+		verify(this.connectionManager, times(1)).disconnect();
 	}
 
 	@Test
 	public void shouldDelegateStartCall() throws XAException {
-		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.start(null, 0);
-		verify(this.xaResource, times(1)).start(null, 0);
+		verify(this.connectionManager, times(1)).connectAndAccept(any());
 	}
 
 	@Test
 	public void shouldDelegateEndCall() throws XAException {
-		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.end(null, 0);
-		verify(this.xaResource, times(1)).end(null, 0);
+		verify(this.connectionManager, times(1)).connectAndAccept(any());
 	}
 
 	@Test
 	public void shouldDelegatePrepareCall() throws XAException {
-		this.recoveryHelper.getXAResources();
-		this.recoveryHelper.prepare(null);
-		verify(this.xaResource, times(1)).prepare(null);
+		given(this.connectionManager.connectAndApply(any())).willReturn(10);
+		assertThat(this.recoveryHelper.prepare(null)).isEqualTo(10);
+		verify(this.connectionManager, times(1)).connectAndApply(any());
 	}
 
 	@Test
 	public void shouldDelegateCommitCall() throws XAException {
-		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.commit(null, true);
-		verify(this.xaResource, times(1)).commit(null, true);
+		verify(this.connectionManager, times(1)).connectAndAccept(any());
 	}
 
 	@Test
 	public void shouldDelegateRollbackCall() throws XAException {
-		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.rollback(null);
-		verify(this.xaResource, times(1)).rollback(null);
+		verify(this.connectionManager, times(1)).connectAndAccept(any());
 	}
 
 	@Test
 	public void shouldDelegateIsSameRMCall() throws XAException {
-		this.recoveryHelper.getXAResources();
-		this.recoveryHelper.isSameRM(null);
-		verify(this.xaResource, times(1)).isSameRM(null);
+		given(this.connectionManager.connectAndApply(any())).willReturn(true);
+		assertThat(this.recoveryHelper.isSameRM(null)).isTrue();
+		verify(this.connectionManager, times(1)).connectAndApply(any());
 	}
 
 	@Test
 	public void shouldDelegateForgetCall() throws XAException {
-		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.forget(null);
-		verify(this.xaResource, times(1)).forget(null);
+		verify(this.connectionManager, times(1)).connectAndAccept(any());
 	}
 
 	@Test
 	public void shouldDelegateGetTransactionTimeoutCall() throws XAException {
-		this.recoveryHelper.getXAResources();
-		this.recoveryHelper.getTransactionTimeout();
-		verify(this.xaResource, times(1)).getTransactionTimeout();
+		given(this.connectionManager.connectAndApply(any())).willReturn(10);
+		assertThat(this.recoveryHelper.getTransactionTimeout()).isEqualTo(10);
+		verify(this.connectionManager, times(1)).connectAndApply(any());
 	}
 
 	@Test
 	public void shouldDelegateSetTransactionTimeoutCall() throws XAException {
-		this.recoveryHelper.getXAResources();
-		this.recoveryHelper.setTransactionTimeout(0);
-		verify(this.xaResource, times(1)).setTransactionTimeout(0);
+		given(this.connectionManager.connectAndApply(any())).willReturn(true);
+		assertThat(this.recoveryHelper.setTransactionTimeout(0)).isTrue();
+		verify(this.connectionManager, times(1)).connectAndApply(any());
 	}
 
 }

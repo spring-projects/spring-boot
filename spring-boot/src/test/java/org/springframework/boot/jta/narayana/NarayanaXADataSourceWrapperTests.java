@@ -63,7 +63,7 @@ public class NarayanaXADataSourceWrapperTests {
 		assertThat(wrapped).isInstanceOf(NarayanaDataSourceBean.class);
 		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(
 				any(DataSourceXAResourceRecoveryHelper.class));
-		verify(this.properties, times(2)).getRecoveryDbUser();
+		verify(this.properties, times(1)).getRecoveryDbUser();
 		verify(this.properties, times(1)).getRecoveryDbPass();
 	}
 

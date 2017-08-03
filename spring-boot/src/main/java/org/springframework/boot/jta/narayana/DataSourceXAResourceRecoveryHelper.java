@@ -16,17 +16,11 @@
 
 package org.springframework.boot.jta.narayana;
 
-import java.sql.SQLException;
-
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.util.Assert;
 
@@ -42,39 +36,15 @@ public class DataSourceXAResourceRecoveryHelper
 
 	private static final XAResource[] NO_XA_RESOURCES = {};
 
-	private static final Log logger = LogFactory
-			.getLog(DataSourceXAResourceRecoveryHelper.class);
-
-	private final XADataSource xaDataSource;
-
-	private final String user;
-
-	private final String password;
-
-	private XAConnection xaConnection;
-
-	private XAResource delegate;
+	private final ConnectionManager connectionManager;
 
 	/**
 	 * Create a new {@link DataSourceXAResourceRecoveryHelper} instance.
-	 * @param xaDataSource the XA data source
+	 * @param connectionManager SQL connection manager.
 	 */
-	public DataSourceXAResourceRecoveryHelper(XADataSource xaDataSource) {
-		this(xaDataSource, null, null);
-	}
-
-	/**
-	 * Create a new {@link DataSourceXAResourceRecoveryHelper} instance.
-	 * @param xaDataSource the XA data source
-	 * @param user the database user or {@code null}
-	 * @param password the database password or {@code null}
-	 */
-	public DataSourceXAResourceRecoveryHelper(XADataSource xaDataSource, String user,
-			String password) {
-		Assert.notNull(xaDataSource, "XADataSource must not be null");
-		this.xaDataSource = xaDataSource;
-		this.user = user;
-		this.password = password;
+	public DataSourceXAResourceRecoveryHelper(ConnectionManager connectionManager) {
+		Assert.notNull(connectionManager, "ConnectionManager must not be null");
+		this.connectionManager = connectionManager;
 	}
 
 	@Override
@@ -84,107 +54,73 @@ public class DataSourceXAResourceRecoveryHelper
 
 	@Override
 	public XAResource[] getXAResources() {
-		if (connect()) {
-			return new XAResource[] { this };
-		}
-		return NO_XA_RESOURCES;
-	}
-
-	private boolean connect() {
-		if (this.delegate == null) {
+		if (!this.connectionManager.isConnected()) {
 			try {
-				this.xaConnection = getXaConnection();
-				this.delegate = this.xaConnection.getXAResource();
+				this.connectionManager.connect();
 			}
-			catch (SQLException ex) {
-				logger.warn("Failed to create connection", ex);
-				return false;
+			catch (XAException ignored) {
+				return NO_XA_RESOURCES;
 			}
 		}
-		return true;
-	}
 
-	private XAConnection getXaConnection() throws SQLException {
-		if (this.user == null && this.password == null) {
-			return this.xaDataSource.getXAConnection();
-		}
-		return this.xaDataSource.getXAConnection(this.user, this.password);
+		return new XAResource[] { this };
 	}
 
 	@Override
-	public Xid[] recover(int flag) throws XAException {
+	public Xid[] recover(final int flag) throws XAException {
 		try {
-			return getDelegate(true).recover(flag);
+			return this.connectionManager.connectAndApply(delegate -> delegate.recover(flag));
 		}
 		finally {
 			if (flag == XAResource.TMENDRSCAN) {
-				disconnect();
+				this.connectionManager.disconnect();
 			}
 		}
 	}
 
-	private void disconnect() throws XAException {
-		try {
-			this.xaConnection.close();
-		}
-		catch (SQLException e) {
-			logger.warn("Failed to close connection", e);
-		}
-		finally {
-			this.xaConnection = null;
-			this.delegate = null;
-		}
+	@Override
+	public void start(final Xid xid, final int flags) throws XAException {
+		this.connectionManager.connectAndAccept(delegate -> delegate.start(xid, flags));
 	}
 
 	@Override
-	public void start(Xid xid, int flags) throws XAException {
-		getDelegate(true).start(xid, flags);
+	public void end(final Xid xid, final int flags) throws XAException {
+		this.connectionManager.connectAndAccept(delegate -> delegate.end(xid, flags));
 	}
 
 	@Override
-	public void end(Xid xid, int flags) throws XAException {
-		getDelegate(true).end(xid, flags);
+	public int prepare(final Xid xid) throws XAException {
+		return this.connectionManager.connectAndApply(delegate -> delegate.prepare(xid));
 	}
 
 	@Override
-	public int prepare(Xid xid) throws XAException {
-		return getDelegate(true).prepare(xid);
+	public void commit(final Xid xid, final boolean onePhase) throws XAException {
+		this.connectionManager.connectAndAccept(delegate -> delegate.commit(xid, onePhase));
 	}
 
 	@Override
-	public void commit(Xid xid, boolean onePhase) throws XAException {
-		getDelegate(true).commit(xid, onePhase);
+	public void rollback(final Xid xid) throws XAException {
+		this.connectionManager.connectAndAccept(delegate -> delegate.rollback(xid));
 	}
 
 	@Override
-	public void rollback(Xid xid) throws XAException {
-		getDelegate(true).rollback(xid);
+	public boolean isSameRM(final XAResource xaResource) throws XAException {
+		return this.connectionManager.connectAndApply(delegate -> delegate.isSameRM(xaResource));
 	}
 
 	@Override
-	public boolean isSameRM(XAResource xaResource) throws XAException {
-		return getDelegate(true).isSameRM(xaResource);
-	}
-
-	@Override
-	public void forget(Xid xid) throws XAException {
-		getDelegate(true).forget(xid);
+	public void forget(final Xid xid) throws XAException {
+		this.connectionManager.connectAndAccept(delegate -> delegate.forget(xid));
 	}
 
 	@Override
 	public int getTransactionTimeout() throws XAException {
-		return getDelegate(true).getTransactionTimeout();
+		return this.connectionManager.connectAndApply(XAResource::getTransactionTimeout);
 	}
 
 	@Override
-	public boolean setTransactionTimeout(int seconds) throws XAException {
-		return getDelegate(true).setTransactionTimeout(seconds);
-	}
-
-	private XAResource getDelegate(boolean required) {
-		Assert.state(this.delegate != null || !required,
-				"Connection has not been opened");
-		return this.delegate;
+	public boolean setTransactionTimeout(final int seconds) throws XAException {
+		return this.connectionManager.connectAndApply(delegate -> delegate.setTransactionTimeout(seconds));
 	}
 
 }
