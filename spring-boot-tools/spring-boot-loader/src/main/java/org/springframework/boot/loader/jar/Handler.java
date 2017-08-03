@@ -203,7 +203,34 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private void setFile(URL context, String file) {
-		setURL(context, JAR_PROTOCOL, null, -1, null, null, file, null, null);
+		setURL(context, JAR_PROTOCOL, null, -1, null, null, normalize(file), null, null);
+	}
+
+	private String normalize(String file) {
+		int afterLastSeparatorIndex = file.lastIndexOf(SEPARATOR) + SEPARATOR.length();
+		String afterSeparator = file.substring(afterLastSeparatorIndex);
+		afterSeparator = replaceParentDir(afterSeparator);
+		afterSeparator = replaceCurrentDir(afterSeparator);
+		return file.substring(0, afterLastSeparatorIndex) + afterSeparator;
+	}
+
+	private String replaceParentDir(String file) {
+		int parentDirIndex;
+		while ((parentDirIndex = file.indexOf("/../")) >= 0) {
+			int precedingSlashIndex = file.lastIndexOf('/', parentDirIndex - 1);
+			if (precedingSlashIndex >= 0) {
+				file = file.substring(0, precedingSlashIndex)
+						+ file.substring(parentDirIndex + 3);
+			}
+			else {
+				file = file.substring(parentDirIndex + 4);
+			}
+		}
+		return file;
+	}
+
+	private String replaceCurrentDir(String file) {
+		return file.replace("/./", "/");
 	}
 
 	@Override
