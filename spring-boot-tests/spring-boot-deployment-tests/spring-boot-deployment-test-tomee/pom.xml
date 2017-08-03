@@ -4,19 +4,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-deployment-tests</artifactId>
-		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-boot-deployment-test-tomee</artifactId>
 	<packaging>war</packaging>
 	<name>Spring Boot TomEE Deployment Test</name>
 	<description>Spring Boot TomEE Deployment Test</description>
-	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<tomee.version>7.0.2</tomee.version>
 		<cargo.container.id>tomee1x</cargo.container.id>
 		<cargo.container.url>

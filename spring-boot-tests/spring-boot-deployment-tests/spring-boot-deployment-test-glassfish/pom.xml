@@ -4,19 +4,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-deployment-tests</artifactId>
-		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-boot-deployment-test-glassfish</artifactId>
 	<packaging>war</packaging>
 	<name>Spring Boot Glassfish Deployment Test</name>
 	<description>Spring Boot Glassfish Deployment Test</description>
-	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<glassfish.version>4.1.1</glassfish.version>
 		<cargo.container.id>glassfish4x</cargo.container.id>
 		<cargo.container.url>http://download.oracle.com/glassfish/${glassfish.version}/release/glassfish-${glassfish.version}.zip</cargo.container.url>
