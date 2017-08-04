@@ -65,7 +65,7 @@ to `/application/health`.
 
 The following technology agnostic endpoints are available:
 
-[cols="2,5,1"]
+[cols="2,5"]
 |===
 | ID | Description
 
@@ -118,7 +118,7 @@ The following technology agnostic endpoints are available:
 
 If you are using Spring MVC, the following additional endpoints can also be used:
 
-[cols="2,5,1"]
+[cols="2,5"]
 |===
 | ID | Description
 
