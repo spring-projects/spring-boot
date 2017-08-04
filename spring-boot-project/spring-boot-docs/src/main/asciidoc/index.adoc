@@ -35,6 +35,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :dc-spring-boot-test-autoconfigure: {dc-root}/org/springframework/boot/test/autoconfigure
 :dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
+:spring-boot-actuator-api: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/actuator-api/
 :spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin/
 :spring-boot-gradle-plugin: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin/
 :spring-reference: http://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/
