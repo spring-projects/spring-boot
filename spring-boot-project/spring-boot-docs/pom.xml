@@ -1050,7 +1050,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>xml-maven-plugin</artifactId>
-						<version>1.0</version>
+						<version>1.0.1</version>
 						<executions>
 							<execution>
 								<goals>
@@ -1140,7 +1140,7 @@
 					<plugin>
 						<groupId>com.agilejava.docbkx</groupId>
 						<artifactId>docbkx-maven-plugin</artifactId>
-						<version>2.0.15</version>
+						<version>2.0.17</version>
 						<configuration>
 							<sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
 							<includes>index.xml</includes>
