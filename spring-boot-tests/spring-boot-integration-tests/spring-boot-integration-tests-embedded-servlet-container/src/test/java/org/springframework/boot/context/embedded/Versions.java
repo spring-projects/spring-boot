@@ -16,13 +16,15 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.File;
 import java.io.FileReader;
 
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.xml.sax.InputSource;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Provides access to dependency versions by querying the project's pom.
@@ -31,22 +33,25 @@ import org.xml.sax.InputSource;
  */
 final class Versions {
 
+	private static final String PROPERTIES = "/*[local-name()='project']/*[local-name()='properties']";
+
 	private Versions() {
 	}
 
 	public static String getBootVersion() {
-		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
-						+ "/text()");
+		String baseDir = StringUtils.cleanPath(new File(".").getAbsolutePath());
+		String mainBaseDir = evaluateExpression("pom.xml",
+				PROPERTIES + "/*[local-name()='main.basedir']/text()");
+		mainBaseDir = mainBaseDir.replace("${basedir}", baseDir);
+		return evaluateExpression(mainBaseDir + "/pom.xml",
+				PROPERTIES + "/*[local-name()='revision']/text()");
 	}
 
-	private static String evaluateExpression(String expression) {
+	private static String evaluateExpression(String file, String expression) {
 		try {
-			XPathFactory xPathFactory = XPathFactory.newInstance();
-			XPath xpath = xPathFactory.newXPath();
-			XPathExpression expr = xpath.compile(expression);
-			String version = expr.evaluate(new InputSource(new FileReader("pom.xml")));
-			return version;
+			InputSource source = new InputSource(new FileReader(file));
+			XPath xpath = XPathFactory.newInstance().newXPath();
+			return xpath.compile(expression).evaluate(source);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to evaluate expression", ex);
