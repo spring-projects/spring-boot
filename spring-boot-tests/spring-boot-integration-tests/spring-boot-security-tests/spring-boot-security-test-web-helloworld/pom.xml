@@ -5,19 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-security-tests</artifactId>
-		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<version>${revision}</version>
 		<relativePath>../</relativePath>
 	</parent>
 	<artifactId>spring-boot-security-test-web-helloworld</artifactId>
 	<name>Spring Boot Security Tests - Web Hello World</name>
 	<description>${project.name}</description>
-	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<properties>
-		<main.basedir>${basedir}/../../..</main.basedir>
+		<main.basedir>${basedir}/../../../..</main.basedir>
 	</properties>
 	<dependencies>
 		<dependency>
