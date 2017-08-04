@@ -52,10 +52,9 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 	@Test
 	public void getResourceFindsResourceFromParentClassLoader() throws Exception {
 		File war = createWar();
-		withWebappClassLoader(war, (classLoader) -> {
-			assertThat(classLoader.getResource("test.txt"))
-					.isEqualTo(new URL(webInfClassesUrlString(war) + "test.txt"));
-		});
+		withWebappClassLoader(war,
+				(classLoader) -> assertThat(classLoader.getResource("test.txt"))
+						.isEqualTo(new URL(webInfClassesUrlString(war) + "test.txt")));
 	}
 
 	@Test

@@ -103,15 +103,13 @@ public class RequestMappingEndpointTests {
 		assertThat(result).hasSize(2);
 		assertThat(result.keySet())
 				.filteredOn((key) -> key.contains("/dump || /dump.json"))
-				.hasOnlyOneElementSatisfying((key) -> {
-					assertThat((Map<String, Object>) result.get(key))
-							.containsOnlyKeys("bean", "method");
-				});
+				.hasOnlyOneElementSatisfying(
+						(key) -> assertThat((Map<String, Object>) result.get(key))
+								.containsOnlyKeys("bean", "method"));
 		assertThat(result.keySet()).filteredOn((key) -> key.contains(" || /.json"))
-				.hasOnlyOneElementSatisfying((key) -> {
-					assertThat((Map<String, Object>) result.get(key))
-							.containsOnlyKeys("bean", "method");
-				});
+				.hasOnlyOneElementSatisfying(
+						(key) -> assertThat((Map<String, Object>) result.get(key))
+								.containsOnlyKeys("bean", "method"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,15 +125,13 @@ public class RequestMappingEndpointTests {
 		assertThat(result).hasSize(2);
 		assertThat(result.keySet())
 				.filteredOn((key) -> key.contains("/dump || /dump.json"))
-				.hasOnlyOneElementSatisfying((key) -> {
-					assertThat((Map<String, Object>) result.get(key))
-							.containsOnlyKeys("method");
-				});
+				.hasOnlyOneElementSatisfying(
+						(key) -> assertThat((Map<String, Object>) result.get(key))
+								.containsOnlyKeys("method"));
 		assertThat(result.keySet()).filteredOn((key) -> key.contains(" || /.json"))
-				.hasOnlyOneElementSatisfying((key) -> {
-					assertThat((Map<String, Object>) result.get(key))
-							.containsOnlyKeys("method");
-				});
+				.hasOnlyOneElementSatisfying(
+						(key) -> assertThat((Map<String, Object>) result.get(key))
+								.containsOnlyKeys("method"));
 	}
 
 	@Configuration
