@@ -40,10 +40,10 @@ public class WebClientCodecCustomizer implements WebClientCustomizer {
 	@Override
 	public void customize(WebClient.Builder webClientBuilder) {
 		webClientBuilder
-				.exchangeStrategies(ExchangeStrategies.builder().codecs((codecs) -> {
-					this.codecCustomizers
-							.forEach((customizer) -> customizer.customize(codecs));
-				}).build());
+				.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs((codecs) -> this.codecCustomizers
+								.forEach((customizer) -> customizer.customize(codecs)))
+				.build());
 	}
 
 }

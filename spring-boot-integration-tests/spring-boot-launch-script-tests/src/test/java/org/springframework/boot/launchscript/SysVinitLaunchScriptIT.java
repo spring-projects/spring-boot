@@ -446,10 +446,9 @@ public class SysVinitLaunchScriptIT {
 			extends DockerCmdExecFactoryImpl {
 
 		private SpringBootDockerCmdExecFactory() {
-			withClientRequestFilters((requestContext) -> {
-				// Workaround for https://go-review.googlesource.com/#/c/3821/
-				requestContext.getHeaders().add("Connection", "close");
-			});
+			withClientRequestFilters((requestContext) ->
+			// Workaround for https://go-review.googlesource.com/#/c/3821/
+			requestContext.getHeaders().add("Connection", "close"));
 		}
 
 		private CopyToContainerCmdExec createCopyToContainerCmdExec() {

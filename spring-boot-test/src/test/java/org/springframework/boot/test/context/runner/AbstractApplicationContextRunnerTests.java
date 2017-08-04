@@ -54,9 +54,9 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
-		get().withSystemProperties(key + "=value").run((context) -> {
-			assertThat(System.getProperties()).containsEntry(key, "value");
-		});
+		get().withSystemProperties(key + "=value")
+				.run((context) -> assertThat(System.getProperties()).containsEntry(key,
+						"value"));
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 	}
 
@@ -66,9 +66,8 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		get().withSystemProperties(key + "=value")
-				.withUserConfiguration(FailingConfig.class).run((context) -> {
-					assertThat(context).hasFailed();
-				});
+				.withUserConfiguration(FailingConfig.class)
+				.run((context) -> assertThat(context).hasFailed());
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 	}
 
@@ -79,9 +78,9 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			get().withSystemProperties(key + "=newValue").run((context) -> {
-				assertThat(System.getProperties()).containsEntry(key, "newValue");
-			});
+			get().withSystemProperties(key + "=newValue")
+					.run((context) -> assertThat(System.getProperties())
+							.containsEntry(key, "newValue"));
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 		}
 		finally {
@@ -96,9 +95,9 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			get().withSystemProperties(key + "=").run((context) -> {
-				assertThat(System.getProperties()).doesNotContainKey(key);
-			});
+			get().withSystemProperties(key + "=")
+					.run((context) -> assertThat(System.getProperties())
+							.doesNotContainKey(key));
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 		}
 		finally {

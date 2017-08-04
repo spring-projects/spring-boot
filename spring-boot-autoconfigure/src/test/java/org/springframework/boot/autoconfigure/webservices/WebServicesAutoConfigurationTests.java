@@ -55,12 +55,9 @@ public class WebServicesAutoConfigurationTests {
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=invalid")
-				.run((context) -> {
-					assertThat(context).getFailure()
-							.isInstanceOf(BeanCreationException.class)
-							.hasMessageContaining(
-									"Failed to bind properties under 'spring.webservices'");
-				});
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class).hasMessageContaining(
+								"Failed to bind properties under 'spring.webservices'"));
 	}
 
 	@Test

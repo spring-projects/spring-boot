@@ -56,9 +56,7 @@ public class HttpHandlerAutoConfigurationTests {
 	public void shouldConfigureHttpHandlerAnnotation() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(HttpHandler.class);
-				});
+				.run((context) -> assertThat(context).hasSingleBean(HttpHandler.class));
 	}
 
 	@Configuration

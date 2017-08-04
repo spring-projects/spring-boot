@@ -138,11 +138,10 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			Collection<CodecCustomizer> codecCustomizers = context
 					.getBeansOfType(CodecCustomizer.class).values();
 			if (!CollectionUtils.isEmpty(codecCustomizers)) {
-				clientBuilder.exchangeStrategies(
-						ExchangeStrategies.builder().codecs((codecs) -> {
-							codecCustomizers.forEach((codecCustomizer) -> codecCustomizer
-									.customize(codecs));
-						}).build());
+				clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs((codecs) -> codecCustomizers.forEach(
+								(codecCustomizer) -> codecCustomizer.customize(codecs)))
+						.build());
 			}
 		}
 

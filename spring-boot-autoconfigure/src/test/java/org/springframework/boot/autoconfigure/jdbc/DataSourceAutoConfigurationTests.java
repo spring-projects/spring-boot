@@ -85,10 +85,8 @@ public class DataSourceAutoConfigurationTests {
 			EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
 			this.contextRunner
 					.withPropertyValues("spring.datasource.url:jdbc:not-going-to-work")
-					.run((context) -> {
-						assertThat(context).getFailure()
-								.isInstanceOf(BeanCreationException.class);
-					});
+					.run((context) -> assertThat(context).getFailure()
+							.isInstanceOf(BeanCreationException.class));
 		}
 		finally {
 			EmbeddedDatabaseConnection.override = null;
@@ -100,11 +98,9 @@ public class DataSourceAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.datasource.driverClassName:org.none.jdbcDriver")
-				.run((context) -> {
-					assertThat(context).getFailure()
-							.isInstanceOf(BeanCreationException.class)
-							.hasMessageContaining("org.none.jdbcDriver");
-				});
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining("org.none.jdbcDriver"));
 	}
 
 	@Test
@@ -217,10 +213,8 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void testDefaultDataSourceCanBeOverridden() throws Exception {
 		this.contextRunner.withUserConfiguration(TestDataSourceConfiguration.class)
-				.run((context) -> {
-					assertThat(context).getBean(DataSource.class)
-							.isInstanceOf(BasicDataSource.class);
-				});
+				.run((context) -> assertThat(context).getBean(DataSource.class)
+						.isInstanceOf(BasicDataSource.class));
 	}
 
 	@Test

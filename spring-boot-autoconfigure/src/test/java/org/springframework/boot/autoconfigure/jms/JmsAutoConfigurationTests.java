@@ -414,13 +414,11 @@ public class JmsAutoConfigurationTests {
 	@Test
 	public void enableJmsAutomatically() throws Exception {
 		this.contextRunner.withUserConfiguration(NoEnableJmsConfiguration.class)
-				.run((context) -> {
-					assertThat(context)
-							.hasBean(
-									JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
-							.hasBean(
-									JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
-				});
+				.run((context) -> assertThat(context)
+						.hasBean(
+								JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+						.hasBean(
+								JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME));
 	}
 
 	@Configuration

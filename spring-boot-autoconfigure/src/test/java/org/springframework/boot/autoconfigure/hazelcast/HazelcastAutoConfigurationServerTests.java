@@ -99,11 +99,9 @@ public class HazelcastAutoConfigurationServerTests {
 	public void unknownConfigFile() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
-				.run((context) -> {
-					assertThat(context).getFailure()
-							.isInstanceOf(BeanCreationException.class)
-							.hasMessageContaining("foo/bar/unknown.xml");
-				});
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining("foo/bar/unknown.xml"));
 	}
 
 	@Test
