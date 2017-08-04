@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -37,6 +38,7 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -128,6 +130,12 @@ class ApplicationBuilder {
 		InvocationRequest invocation = new DefaultInvocationRequest();
 		invocation.setBaseDirectory(appFolder);
 		invocation.setGoals(Collections.singletonList("package"));
+		String repository = System.getProperty("repository");
+		if (StringUtils.hasText(repository) && !repository.equals("${repository}")) {
+			Properties properties = new Properties();
+			properties.put("repository", repository);
+			invocation.setProperties(properties);
+		}
 		InvocationResult execute = new DefaultInvoker().execute(invocation);
 		assertThat(execute.getExitCode()).isEqualTo(0);
 	}

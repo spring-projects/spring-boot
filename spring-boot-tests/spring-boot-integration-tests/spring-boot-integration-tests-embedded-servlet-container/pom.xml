@@ -54,6 +54,7 @@
 				<configuration>
 					<systemPropertyVariables>
 						<maven.home>${maven.home}</maven.home>
+						<repository>${repository}</repository>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
