@@ -6,7 +6,7 @@
 		<conf name="loader" description="Spring Boot loader used when manually building an executable archive" />
 	</configurations>
 	<dependencies>
-		<dependency org="org.springframework.boot" name="spring-boot-starter" rev="${spring-boot.version}" conf="compile" />
-		<dependency org="org.springframework.boot" name="spring-boot-loader" rev="${spring-boot.version}" conf="loader->default" />
+		<dependency org="org.springframework.boot" name="spring-boot-starter" rev="${ant-spring-boot.version}" conf="compile" />
+		<dependency org="org.springframework.boot" name="spring-boot-loader" rev="${ant-spring-boot.version}" conf="loader->default" />
 	</dependencies>
 </ivy-module>
