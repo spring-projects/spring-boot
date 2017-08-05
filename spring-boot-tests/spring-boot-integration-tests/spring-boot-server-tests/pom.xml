@@ -7,9 +7,9 @@
 		<artifactId>spring-boot-integration-tests</artifactId>
 		<version>${revision}</version>
 	</parent>
-	<artifactId>spring-boot-integration-tests-embedded-servlet-container</artifactId>
+	<artifactId>spring-boot-server-tests</artifactId>
 	<packaging>jar</packaging>
-	<name>Spring Boot Embedded Servlet Container Integration Tests</name>
+	<name>Spring Boot Server Tests</name>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>
