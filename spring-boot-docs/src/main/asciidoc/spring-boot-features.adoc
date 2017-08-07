@@ -5357,9 +5357,10 @@ how your tests will run:
   _any_ servlet environment (mock or otherwise).
 
 NOTE: If your test is `@Transactional`, it will rollback the transaction at the end of
-each test method by default. If you're using this arrangement in combination with either
-`RANDOM_PORT` or `DEFINED_PORT`, any transaction initiated on the server won't rollback as
-the test is running in a different thread than the server processing.
+each test method by default. However, as using this arrangement with either `RANDOM_PORT`
+or `DEFINED_PORT` implicitly provides a real servlet environment, HTTP client and
+server will run in separate threads, thus separate transactions. Any transaction
+initiated on the server won't rollback in this case.
 
 NOTE: In addition to `@SpringBootTest` a number of other annotations are also
 provided for testing more specific slices of an application. See below for details.
