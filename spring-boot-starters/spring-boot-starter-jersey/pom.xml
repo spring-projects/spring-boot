@@ -79,6 +79,10 @@
 					<groupId>org.glassfish.hk2.external</groupId>
 					<artifactId>javax.inject</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-validator</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -92,6 +96,10 @@
 				<exclusion>
 					<groupId>org.glassfish.hk2.external</groupId>
 					<artifactId>javax.inject</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-validator</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
