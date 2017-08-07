@@ -65,6 +65,7 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 
 import org.springframework.boot.web.server.Compression;
@@ -176,6 +177,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 				: createTempDir("tomcat"));
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
+		connector.addUpgradeProtocol(new Http2Protocol());
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
