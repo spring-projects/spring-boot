@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collections;
+
 import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
 import org.junit.After;
@@ -157,7 +159,7 @@ public class MvcEndpointPathConfigurationTests {
 
 		@Bean
 		public FlywayEndpoint flyway() {
-			return new FlywayEndpoint(new Flyway());
+			return new FlywayEndpoint(Collections.singletonMap("flyway", new Flyway()));
 		}
 
 		@Bean

@@ -16,11 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
@@ -40,13 +41,9 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.flyway")
-public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
+public class FlywayEndpoint extends AbstractEndpoint<Map<String, FlywayReport>> {
 
 	private final Map<String, Flyway> flyways;
-
-	public FlywayEndpoint(Flyway flyway) {
-		this(Collections.singletonMap("default", flyway));
-	}
 
 	public FlywayEndpoint(Map<String, Flyway> flyways) {
 		super("flyway");
@@ -55,33 +52,25 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 	}
 
 	@Override
-	public List<FlywayReport> invoke() {
-		List<FlywayReport> reports = new ArrayList<>();
+	public Map<String, FlywayReport> invoke() {
+		Map<String, FlywayReport> reports = new HashMap<>();
 		for (Map.Entry<String, Flyway> entry : this.flyways.entrySet()) {
-			List<FlywayMigration> migrations = new ArrayList<>();
-			for (MigrationInfo info : entry.getValue().info().all()) {
-				migrations.add(new FlywayMigration(info));
-			}
-			reports.add(new FlywayReport(entry.getKey(), migrations));
+			reports.put(entry.getKey(),
+					new FlywayReport(Stream.of(entry.getValue().info().all())
+							.map(FlywayMigration::new).collect(Collectors.toList())));
 		}
 		return reports;
 	}
 
 	/**
-	 * Flyway report for one datasource.
+	 * Report for one {@link Flyway} instance.
 	 */
 	public static class FlywayReport {
 
-		private final String name;
 		private final List<FlywayMigration> migrations;
 
-		public FlywayReport(String name, List<FlywayMigration> migrations) {
-			this.name = name;
+		public FlywayReport(List<FlywayMigration> migrations) {
 			this.migrations = migrations;
-		}
-
-		public String getName() {
-			return this.name;
 		}
 
 		public List<FlywayMigration> getMigrations() {
@@ -91,7 +80,7 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 	}
 
 	/**
-	 * Migration properties.
+	 * Details of a migration performed by Flyway.
 	 */
 	public static class FlywayMigration {
 
@@ -107,7 +96,11 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 
 		private final MigrationState state;
 
+		private final String installedBy;
+
 		private final Date installedOn;
+
+		private final Integer installedRank;
 
 		private final Integer executionTime;
 
@@ -118,7 +111,9 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 			this.description = info.getDescription();
 			this.script = info.getScript();
 			this.state = info.getState();
+			this.installedBy = info.getInstalledBy();
 			this.installedOn = info.getInstalledOn();
+			this.installedRank = info.getInstalledRank();
 			this.executionTime = info.getExecutionTime();
 		}
 
@@ -150,8 +145,16 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 			return this.state;
 		}
 
+		public String getInstalledBy() {
+			return this.installedBy;
+		}
+
 		public Date getInstalledOn() {
 			return this.installedOn;
+		}
+
+		public Integer getInstalledRank() {
+			return this.installedRank;
 		}
 
 		public Integer getExecutionTime() {
