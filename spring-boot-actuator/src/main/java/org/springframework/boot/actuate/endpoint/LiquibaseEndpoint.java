@@ -16,13 +16,19 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import liquibase.changelog.ChangeLogHistoryService;
+import liquibase.changelog.ChangeSet.ExecType;
+import liquibase.changelog.RanChangeSet;
 import liquibase.changelog.StandardChangeLogHistoryService;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -41,7 +47,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.liquibase")
-public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
+public class LiquibaseEndpoint extends AbstractEndpoint<Map<String, LiquibaseReport>> {
 
 	private final Map<String, SpringLiquibase> liquibases;
 
@@ -56,57 +62,173 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 	}
 
 	@Override
-	public List<LiquibaseReport> invoke() {
-		List<LiquibaseReport> reports = new ArrayList<>();
+	public Map<String, LiquibaseReport> invoke() {
+		Map<String, LiquibaseReport> reports = new HashMap<>();
 		DatabaseFactory factory = DatabaseFactory.getInstance();
 		StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 		for (Map.Entry<String, SpringLiquibase> entry : this.liquibases.entrySet()) {
-			try {
-				DataSource dataSource = entry.getValue().getDataSource();
-				JdbcConnection connection = new JdbcConnection(
-						dataSource.getConnection());
-				try {
-					Database database = factory
-							.findCorrectDatabaseImplementation(connection);
-					String defaultSchema = entry.getValue().getDefaultSchema();
-					if (StringUtils.hasText(defaultSchema)) {
-						database.setDefaultSchemaName(defaultSchema);
-					}
-					reports.add(new LiquibaseReport(entry.getKey(),
-							service.queryDatabaseChangeLogTable(database)));
-				}
-				finally {
-					connection.close();
-				}
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Unable to get Liquibase changelog", ex);
-			}
+			reports.put(entry.getKey(), createReport(entry.getValue(), service, factory));
 		}
-
 		return reports;
 	}
 
+	private LiquibaseReport createReport(SpringLiquibase liquibase,
+			ChangeLogHistoryService service, DatabaseFactory factory) {
+		try {
+			DataSource dataSource = liquibase.getDataSource();
+			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
+			try {
+				Database database = factory.findCorrectDatabaseImplementation(connection);
+				String defaultSchema = liquibase.getDefaultSchema();
+				if (StringUtils.hasText(defaultSchema)) {
+					database.setDefaultSchemaName(defaultSchema);
+				}
+				service.setDatabase(database);
+				return new LiquibaseReport(service.getRanChangeSets().stream()
+						.map(ChangeSet::new).collect(Collectors.toList()));
+			}
+			finally {
+				connection.close();
+			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable to get Liquibase change sets", ex);
+		}
+	}
+
 	/**
-	 * Liquibase report for one datasource.
+	 * Report for a single {@link SpringLiquibase} instance.
 	 */
 	public static class LiquibaseReport {
 
-		private final String name;
+		private final List<ChangeSet> changeSets;
 
-		private final List<Map<String, ?>> changeLogs;
-
-		public LiquibaseReport(String name, List<Map<String, ?>> changeLogs) {
-			this.name = name;
-			this.changeLogs = changeLogs;
+		public LiquibaseReport(List<ChangeSet> changeSets) {
+			this.changeSets = changeSets;
 		}
 
-		public String getName() {
-			return this.name;
+		public List<ChangeSet> getChangeSets() {
+			return this.changeSets;
 		}
 
-		public List<Map<String, ?>> getChangeLogs() {
-			return this.changeLogs;
+	}
+
+	/**
+	 * A Liquibase change set.
+	 */
+	public static class ChangeSet {
+
+		private final String author;
+
+		private final String changeLog;
+
+		private final String comments;
+
+		private final ContextExpression contextExpression;
+
+		private final Date dateExecuted;
+
+		private final String deploymentId;
+
+		private final String description;
+
+		private final ExecType execType;
+
+		private final String id;
+
+		private final Set<String> labels;
+
+		private final String checksum;
+
+		private final Integer orderExecuted;
+
+		private final String tag;
+
+		public ChangeSet(RanChangeSet ranChangeSet) {
+			this.author = ranChangeSet.getAuthor();
+			this.changeLog = ranChangeSet.getChangeLog();
+			this.comments = ranChangeSet.getComments();
+			this.contextExpression = new ContextExpression(
+					ranChangeSet.getContextExpression().getContexts());
+			this.dateExecuted = ranChangeSet.getDateExecuted();
+			this.deploymentId = ranChangeSet.getDeploymentId();
+			this.description = ranChangeSet.getDescription();
+			this.execType = ranChangeSet.getExecType();
+			this.id = ranChangeSet.getId();
+			this.labels = ranChangeSet.getLabels().getLabels();
+			this.checksum = ranChangeSet.getLastCheckSum() == null ? null
+					: ranChangeSet.getLastCheckSum().toString();
+			this.orderExecuted = ranChangeSet.getOrderExecuted();
+			this.tag = ranChangeSet.getTag();
+		}
+
+		public String getAuthor() {
+			return this.author;
+		}
+
+		public String getChangeLog() {
+			return this.changeLog;
+		}
+
+		public String getComments() {
+			return this.comments;
+		}
+
+		public ContextExpression getContextExpression() {
+			return this.contextExpression;
+		}
+
+		public Date getDateExecuted() {
+			return this.dateExecuted;
+		}
+
+		public String getDeploymentId() {
+			return this.deploymentId;
+		}
+
+		public String getDescription() {
+			return this.description;
+		}
+
+		public ExecType getExecType() {
+			return this.execType;
+		}
+
+		public String getId() {
+			return this.id;
+		}
+
+		public Set<String> getLabels() {
+			return this.labels;
+		}
+
+		public String getChecksum() {
+			return this.checksum;
+		}
+
+		public Integer getOrderExecuted() {
+			return this.orderExecuted;
+		}
+
+		public String getTag() {
+			return this.tag;
+		}
+
+	}
+
+	/**
+	 * A context expression in a {@link ChangeSet}.
+	 */
+	public static class ContextExpression {
+
+		private final Set<String> contexts;
+
+		public ContextExpression(Set<String> contexts) {
+			this.contexts = contexts;
+		}
+
+		public Set<String> getContexts() {
+			return this.contexts;
 		}
 
 	}
