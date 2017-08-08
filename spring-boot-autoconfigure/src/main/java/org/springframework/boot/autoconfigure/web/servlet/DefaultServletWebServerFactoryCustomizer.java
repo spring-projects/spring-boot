@@ -47,6 +47,7 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -415,6 +416,8 @@ public class DefaultServletWebServerFactoryCustomizer
 		protected static void customizeUndertow(final ServerProperties serverProperties,
 				Environment environment, UndertowServletWebServerFactory factory) {
 
+			customizeUndertowHttp2(factory, serverProperties);
+
 			ServerProperties.Undertow undertowProperties = serverProperties.getUndertow();
 			ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
 					.getAccesslog();
@@ -454,6 +457,15 @@ public class DefaultServletWebServerFactoryCustomizer
 			}
 			factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
 					.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
+		}
+
+		private static void customizeUndertowHttp2(UndertowServletWebServerFactory factory,
+				ServerProperties serverProperties) {
+
+			Http2 http2Properties = serverProperties.getHttp2();
+			factory.addBuilderCustomizers((UndertowBuilderCustomizer) builder -> {
+				builder.setServerOption(UndertowOptions.ENABLE_HTTP2, http2Properties.isEnabled());
+			});
 		}
 
 		private static void customizeConnectionTimeout(
