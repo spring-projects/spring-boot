@@ -24,11 +24,13 @@ import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
 import io.undertow.UndertowOptions;
+import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.apache.coyote.http2.Http2Protocol;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
@@ -46,6 +48,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -213,6 +216,8 @@ public class DefaultServletWebServerFactoryCustomizer
 		public static void customizeTomcat(ServerProperties serverProperties,
 				Environment environment, TomcatServletWebServerFactory factory) {
 
+			customizeTomcatHttp2(factory, serverProperties);
+
 			ServerProperties.Tomcat tomcatProperties = serverProperties.getTomcat();
 			if (tomcatProperties.getBasedir() != null) {
 				factory.setBaseDirectory(tomcatProperties.getBasedir());
@@ -259,6 +264,25 @@ public class DefaultServletWebServerFactoryCustomizer
 				factory.getTldSkipPatterns()
 						.addAll(tomcatProperties.getAdditionalTldSkipPatterns());
 			}
+		}
+
+		private static void customizeTomcatHttp2(TomcatServletWebServerFactory factory,
+				ServerProperties serverProperties) {
+
+			Http2 http2Properties = serverProperties.getHttp2();
+
+			if (http2Properties.isEnabled()) {
+				enableHttp2ForTomcat(factory);
+			}
+		}
+
+		private static void enableHttp2ForTomcat(TomcatServletWebServerFactory factory) {
+
+			factory.addContextCustomizers((context) ->
+					context.addLifecycleListener(new AprLifecycleListener()));
+
+			factory.addConnectorCustomizers((connector) ->
+					connector.addUpgradeProtocol(new Http2Protocol()));
 		}
 
 		private static void customizeAcceptCount(TomcatServletWebServerFactory factory,
