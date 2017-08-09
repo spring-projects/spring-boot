@@ -65,6 +65,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -87,6 +88,7 @@ public class MetricFilterAutoConfigurationTests {
 				.containsExactly(MetricsFilterSubmission.MERGED);
 		assertThat(properties.getCounterSubmissions())
 				.containsExactly(MetricsFilterSubmission.MERGED);
+		assertThat(properties.getTimerSubmissions()).isEmpty();
 	}
 
 	@Test
@@ -397,6 +399,37 @@ public class MetricFilterAutoConfigurationTests {
 		filter.doFilter(request, response, chain);
 		verify(context.getBean(GaugeService.class), never()).submit(anyString(),
 				anyDouble());
+		verify(context.getBean(CounterService.class), never()).increment(anyString());
+		context.close();
+	}
+
+	@Test
+	public void recordsTimerMetricsIfConfigured() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		TestPropertyValues.of("endpoints.metrics.filter.gauge-submissions=",
+				"endpoints.metrics.filter.counter-submissions=",
+				"endpoints.metrics.filter.timer-submissions=merged,per-http-method"
+		).applyTo(context);
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+		filter.doFilter(request, response, chain);
+		verify(context.getBean(GaugeService.class)).submit(eq("timer.response.test.path"),
+				anyDouble());
+		verify(context.getBean(GaugeService.class)).submit(eq("timer.response.PUT.test.path"),
+				anyDouble());
+		verifyNoMoreInteractions(context.getBean(GaugeService.class));
 		verify(context.getBean(CounterService.class), never()).increment(anyString());
 		context.close();
 	}

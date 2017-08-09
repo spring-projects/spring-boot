@@ -42,10 +42,16 @@ public class MetricFilterProperties {
 	 */
 	private Set<MetricsFilterSubmission> counterSubmissions;
 
+	/**
+	 * Submissions that should be made to the timer.
+	 */
+	private Set<MetricsFilterSubmission> timerSubmissions;
+
 	public MetricFilterProperties() {
 		this.gaugeSubmissions = new HashSet<>(EnumSet.of(MetricsFilterSubmission.MERGED));
 		this.counterSubmissions = new HashSet<>(
 				EnumSet.of(MetricsFilterSubmission.MERGED));
+		this.timerSubmissions = new HashSet<>();
 	}
 
 	public Set<MetricsFilterSubmission> getGaugeSubmissions() {
@@ -64,12 +70,24 @@ public class MetricFilterProperties {
 		this.counterSubmissions = counterSubmissions;
 	}
 
+	public Set<MetricsFilterSubmission> getTimerSubmissions() {
+		return this.timerSubmissions;
+	}
+
+	public void setTimerSubmissions(Set<MetricsFilterSubmission> timerSubmissions) {
+		this.timerSubmissions = timerSubmissions;
+	}
+
 	boolean shouldSubmitToGauge(MetricsFilterSubmission submission) {
 		return shouldSubmit(this.gaugeSubmissions, submission);
 	}
 
 	boolean shouldSubmitToCounter(MetricsFilterSubmission submission) {
 		return shouldSubmit(this.counterSubmissions, submission);
+	}
+
+	boolean shouldSubmitToTimer(MetricsFilterSubmission submission) {
+		return shouldSubmit(this.timerSubmissions, submission);
 	}
 
 	private boolean shouldSubmit(Set<MetricsFilterSubmission> submissions,
