@@ -36,8 +36,9 @@ import org.springframework.web.client.RestTemplate;
  * Cloud Foundry security service to handle REST calls to the cloud controller and UAA.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
-class CloudFoundrySecurityService {
+public class CloudFoundrySecurityService {
 
 	private final RestTemplate restTemplate;
 
@@ -45,7 +46,7 @@ class CloudFoundrySecurityService {
 
 	private String uaaUrl;
 
-	CloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
+	public CloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
 			String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
 		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");

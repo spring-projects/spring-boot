@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,12 @@ import org.springframework.web.servlet.HandlerMapping;
  * {@link HandlerMapping} to map {@link Endpoint}s to Cloud Foundry specific URLs.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
-class CloudFoundryEndpointHandlerMapping
+public class CloudFoundryEndpointHandlerMapping
 		extends AbstractEndpointHandlerMapping<NamedMvcEndpoint> {
 
-	CloudFoundryEndpointHandlerMapping(Set<? extends NamedMvcEndpoint> endpoints,
+	public CloudFoundryEndpointHandlerMapping(Set<? extends NamedMvcEndpoint> endpoints,
 			CorsConfiguration corsConfiguration, HandlerInterceptor securityInterceptor) {
 		super(endpoints, corsConfiguration);
 		setSecurityInterceptor(securityInterceptor);

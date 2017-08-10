@@ -25,8 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -164,7 +164,7 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
 			throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
@@ -175,7 +175,7 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize()
 			throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()

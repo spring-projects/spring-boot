@@ -23,9 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

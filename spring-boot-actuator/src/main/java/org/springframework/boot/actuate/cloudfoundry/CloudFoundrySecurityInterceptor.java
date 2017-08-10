@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * {@link HandlerInterceptor} to check the cloud foundry token.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
-class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
+public class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Log logger = LogFactory
 			.getLog(CloudFoundrySecurityInterceptor.class);
@@ -48,7 +49,7 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 
 	private final String applicationId;
 
-	CloudFoundrySecurityInterceptor(TokenValidator tokenValidator,
+	public CloudFoundrySecurityInterceptor(TokenValidator tokenValidator,
 			CloudFoundrySecurityService cloudFoundrySecurityService,
 			String applicationId) {
 		this.tokenValidator = tokenValidator;

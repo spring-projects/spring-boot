@@ -33,14 +33,15 @@ import org.springframework.util.Base64Utils;
  * Validator used to ensure that a signed {@link Token} has not been tampered with.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
-class TokenValidator {
+public class TokenValidator {
 
 	private final CloudFoundrySecurityService securityService;
 
 	private Map<String, String> tokenKeys;
 
-	TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
+	public TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
 		this.securityService = cloudFoundrySecurityService;
 	}
 

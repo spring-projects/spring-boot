@@ -65,7 +65,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<EnvironmentDescriptor>
 	@Override
 	public EnvironmentDescriptor invoke() {
 		PropertyResolver resolver = getResolver();
-		List<PropertySourceDescriptor> propertySources = new ArrayList<PropertySourceDescriptor>();
+		List<PropertySourceDescriptor> propertySources = new ArrayList<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> {
 			if (source instanceof EnumerablePropertySource) {
 				propertySources.add(describeSource(sourceName,
