@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -54,6 +55,7 @@ import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningL
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Björn Lindström
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
@@ -96,7 +98,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
 	 * attached with that classifier and the main artifact will be deployed as the main
-	 * artifact. If this is not given (default), it will replace the main artifact and
+	 * artifact. If an artifact with the classifier already exists, it will be used as source.
+	 * If a classifier is not given (default), it will replace the main artifact and
 	 * only the repackaged artifact will be deployed. Attaching the artifact allows to
 	 * deploy it alongside to the original one, see <a href=
 	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
@@ -206,7 +209,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void repackage() throws MojoExecutionException {
-		File source = this.project.getArtifact().getFile();
+		File source = getSourceFile();
 		File target = getTargetFile();
 		Repackager repackager = getRepackager(source);
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
@@ -223,16 +226,33 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		updateArtifact(source, target, repackager.getBackupFile());
 	}
 
+	private File getSourceFile() {
+		File source = this.project.getArtifact().getFile();
+		if (this.classifier != null) {
+			File sourceWithClassifier = new File(source.getParent(),
+					FilenameUtils.getBaseName(source.getName()) + getClassifier() + "."
+							+ FilenameUtils.getExtension(source.getName()));
+			if (sourceWithClassifier.exists()) {
+				source = sourceWithClassifier;
+			}
+		}
+		return source;
+	}
+
 	private File getTargetFile() {
+		if (!this.outputDirectory.exists()) {
+			this.outputDirectory.mkdirs();
+		}
+		return new File(this.outputDirectory, this.finalName + getClassifier() + "."
+				+ this.project.getArtifact().getArtifactHandler().getExtension());
+	}
+
+	private String getClassifier() {
 		String classifier = (this.classifier == null ? "" : this.classifier.trim());
 		if (classifier.length() > 0 && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
-		if (!this.outputDirectory.exists()) {
-			this.outputDirectory.mkdirs();
-		}
-		return new File(this.outputDirectory, this.finalName + classifier + "."
-				+ this.project.getArtifact().getArtifactHandler().getExtension());
+		return classifier;
 	}
 
 	private Repackager getRepackager(File source) {
