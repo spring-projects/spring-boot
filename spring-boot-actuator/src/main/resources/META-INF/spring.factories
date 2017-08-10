@@ -18,5 +18,5 @@ org.springframework.boot.actuate.autoconfigure.trace.TraceRepositoryAutoConfigur
 org.springframework.boot.actuate.autoconfigure.trace.TraceWebFilterAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryActuatorAutoConfiguration
 
-org.springframework.boot.actuate.autoconfigure.endpoint.ManagementContextConfiguration=\
+org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration=\
 org.springframework.boot.actuate.autoconfigure.endpoint.EndpointWebMvcManagementContextConfiguration
