@@ -24,11 +24,15 @@ import java.lang.management.PlatformManagedObject;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.endpoint.Endpoint;
@@ -184,6 +188,8 @@ public class HeapDumpWebEndpoint {
 
 	private static final class TemporaryFileSystemResource extends FileSystemResource {
 
+		private final Log logger = LogFactory.getLog(getClass());
+
 		private TemporaryFileSystemResource(File file) {
 			super(file);
 		}
@@ -204,7 +210,7 @@ public class HeapDumpWebEndpoint {
 						readableChannel.close();
 					}
 					finally {
-						getFile().delete();
+						deleteFile();
 					}
 				}
 
@@ -252,7 +258,7 @@ public class HeapDumpWebEndpoint {
 						delegate.close();
 					}
 					finally {
-						getFile().delete();
+						deleteFile();
 					}
 				}
 
@@ -272,6 +278,17 @@ public class HeapDumpWebEndpoint {
 				}
 
 			};
+		}
+
+		private void deleteFile() {
+			try {
+				Files.delete(getFile().toPath());
+			}
+			catch (IOException ex) {
+				TemporaryFileSystemResource.this.logger.warn(
+						"Failed to delete temporary heap dump file '" + getFile() + "'",
+						ex);
+			}
 		}
 
 		@Override
