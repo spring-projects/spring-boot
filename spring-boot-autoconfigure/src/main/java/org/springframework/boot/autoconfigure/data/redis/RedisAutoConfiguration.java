@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -42,6 +43,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * @author Stephane Nicoll
  * @author Marco Aust
  * @author Mark Paluch
+ * @author Vedran Pavic
  */
 @Configuration
 @ConditionalOnClass({ RedisOperations.class })
@@ -50,6 +52,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 public class RedisAutoConfiguration {
 
 	@Bean
+	@Primary
 	@ConditionalOnMissingBean(name = "redisTemplate")
 	public RedisTemplate<Object, Object> redisTemplate(
 			RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
