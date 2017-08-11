@@ -69,6 +69,14 @@ public class HeapDumpWebEndpointWebIntegrationTests {
 		client.get().uri("/application/heapdump").exchange().expectStatus().isOk()
 				.expectHeader().contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.expectBody(String.class).isEqualTo("HEAPDUMP");
+		assertHeapDumpFileIsDeleted();
+	}
+
+	private void assertHeapDumpFileIsDeleted() throws InterruptedException {
+		long end = System.currentTimeMillis() + 5000;
+		while (System.currentTimeMillis() < end && this.endpoint.file.exists()) {
+			Thread.sleep(100);
+		}
 		assertThat(this.endpoint.file.exists()).isFalse();
 	}
 
