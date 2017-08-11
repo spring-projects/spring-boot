@@ -44,8 +44,7 @@ class ServletWebManagementContextFactory implements ManagementContextFactory {
 			ApplicationContext parent, Class<?>... configClasses) {
 		AnnotationConfigServletWebServerApplicationContext child = new AnnotationConfigServletWebServerApplicationContext();
 		child.setParent(parent);
-		List<Class<?>> combinedClasses = new ArrayList<Class<?>>(
-				Arrays.asList(configClasses));
+		List<Class<?>> combinedClasses = new ArrayList<>(Arrays.asList(configClasses));
 		combinedClasses.add(ServletWebServerFactoryAutoConfiguration.class);
 		child.register(combinedClasses.toArray(new Class<?>[combinedClasses.size()]));
 		registerServletWebServerFactory(parent, child);

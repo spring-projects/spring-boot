@@ -100,7 +100,7 @@ public class HealthWebEndpointExtension {
 	public WebEndpointResponse<Health> getHealth() {
 		Health health = this.delegate.health();
 		Integer status = getStatus(health);
-		return new WebEndpointResponse<Health>(health, status);
+		return new WebEndpointResponse<>(health, status);
 	}
 
 	private int getStatus(Health health) {

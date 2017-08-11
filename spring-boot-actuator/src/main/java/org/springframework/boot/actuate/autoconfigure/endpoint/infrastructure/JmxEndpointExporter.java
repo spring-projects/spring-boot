@@ -53,8 +53,7 @@ class JmxEndpointExporter implements InitializingBean, DisposableBean {
 	private Collection<ObjectName> registeredObjectNames;
 
 	JmxEndpointExporter(EndpointProvider<JmxEndpointOperation> endpointProvider,
-			EndpointMBeanRegistrar endpointMBeanRegistrar,
-			ObjectMapper objectMapper) {
+			EndpointMBeanRegistrar endpointMBeanRegistrar, ObjectMapper objectMapper) {
 		this.endpointProvider = endpointProvider;
 		this.endpointMBeanRegistrar = endpointMBeanRegistrar;
 		DataConverter dataConverter = new DataConverter(objectMapper);
@@ -73,8 +72,8 @@ class JmxEndpointExporter implements InitializingBean, DisposableBean {
 
 	private Collection<ObjectName> registerEndpointMBeans() {
 		List<ObjectName> objectNames = new ArrayList<>();
-		Collection<EndpointMBean> mBeans = this.mBeanFactory.createMBeans(
-				this.endpointProvider.getEndpoints());
+		Collection<EndpointMBean> mBeans = this.mBeanFactory
+				.createMBeans(this.endpointProvider.getEndpoints());
 		for (EndpointMBean mBean : mBeans) {
 			objectNames.add(this.endpointMBeanRegistrar.registerEndpointMBean(mBean));
 		}
@@ -122,12 +121,12 @@ class JmxEndpointExporter implements InitializingBean, DisposableBean {
 			if (responseType.equals(String.class)) {
 				return String.class;
 			}
-			if (responseType.isArray() || Collection.class.isAssignableFrom(responseType)) {
+			if (responseType.isArray()
+					|| Collection.class.isAssignableFrom(responseType)) {
 				return List.class;
 			}
 			return Map.class;
 		}
-
 
 	}
 

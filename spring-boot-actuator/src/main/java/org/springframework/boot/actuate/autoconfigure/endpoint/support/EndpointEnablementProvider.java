@@ -55,7 +55,8 @@ public class EndpointEnablementProvider {
 	 * @param endpointId the id of the endpoint
 	 * @param enabledByDefault whether the endpoint is enabled by default or not
 	 * @param endpointType the requested {@link EndpointType}
-	 * @return the {@link EndpointEnablement} of that endpoint for the specified {@link EndpointType}
+	 * @return the {@link EndpointEnablement} of that endpoint for the specified
+	 * {@link EndpointType}
 	 */
 	public EndpointEnablement getEndpointEnablement(String endpointId,
 			boolean enabledByDefault, EndpointType endpointType) {
@@ -92,9 +93,8 @@ public class EndpointEnablementProvider {
 		// All endpoints specific attributes have been looked at. Checking default value
 		// for the endpoint
 		if (!enabledByDefault) {
-			return new EndpointEnablement(false,
-					createDefaultEnablementMessage(endpointId, enabledByDefault,
-							endpointType));
+			return new EndpointEnablement(false, createDefaultEnablementMessage(
+					endpointId, enabledByDefault, endpointType));
 		}
 
 		if (endpointType != null) {
@@ -106,7 +106,8 @@ public class EndpointEnablementProvider {
 		}
 		else {
 			// Check if there is a global tech required
-			EndpointEnablement anyTechGeneralOutcome = getAnyTechSpecificOutcomeFor("all");
+			EndpointEnablement anyTechGeneralOutcome = getAnyTechSpecificOutcomeFor(
+					"all");
 			if (anyTechGeneralOutcome != null) {
 				return anyTechGeneralOutcome;
 			}

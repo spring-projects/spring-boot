@@ -70,7 +70,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	@Test
 	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
 			throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
@@ -81,7 +81,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 
 	@Test
 	public void nestedPathWithSensitivePlaceholderShouldSanitize() throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		context.getEnvironment().getPropertySources()
@@ -94,7 +94,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	@Test
 	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
 			throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
@@ -108,7 +108,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	@Test
 	public void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize()
 			throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		context.getEnvironment().getPropertySources()

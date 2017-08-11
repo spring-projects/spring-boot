@@ -22,13 +22,12 @@ import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.core.env.Environment;
 
 /**
- * A {@link CachingConfiguration} factory that use the {@link Environment} to extract
- * the caching settings of each endpoint.
+ * A {@link CachingConfiguration} factory that use the {@link Environment} to extract the
+ * caching settings of each endpoint.
  *
  * @author Stephane Nicoll
  */
-class CachingConfigurationFactory
-		implements Function<String, CachingConfiguration> {
+class CachingConfigurationFactory implements Function<String, CachingConfiguration> {
 
 	private final Environment environment;
 
