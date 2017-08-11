@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -29,19 +28,19 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that checks whether an endpoint is enabled or not. Matches
- * according to the {@link Endpoint#enabledByDefault() enabledByDefault flag} and the
- * specific {@link Endpoint#types() tech} that the endpoint may be restricted to.
+ * according to the {@code enabledByDefault} flag {@code types} flag that the
+ * {@link Endpoint} may be restricted to.
  * <p>
  * If no specific {@code endpoints.<id>.*} or {@code endpoints.all.*} properties are
  * defined, the condition matches the {@code enabledByDefault} value regardless of the
- * specific {@link EndpointType}, if any. If any property are set, they are evaluated
- * with a sensible order of precedence.
+ * specific {@link EndpointType}, if any. If any property are set, they are evaluated with
+ * a sensible order of precedence.
  * <p>
  * For instance if {@code endpoints.all.enabled} is {@code false} but
  * {@code endpoints.<id>.enabled} is {@code true}, the condition will match.
  * <p>
- * This condition must be placed on a {@code @Bean} method producing an endpoint as its
- * id and other attributes are inferred from the {@link Endpoint} annotation set on the
+ * This condition must be placed on a {@code @Bean} method producing an endpoint as its id
+ * and other attributes are inferred from the {@link Endpoint} annotation set on the
  * return type of the factory method. Consider the following valid example:
  *
  * <pre class="code">
