@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class SpringBootCondition implements Condition {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	@Override
 	public final boolean matches(ConditionContext context,
