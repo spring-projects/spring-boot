@@ -125,9 +125,6 @@ If you are using Spring MVC, the following additional endpoints can also be used
 |`heapdump`
 |Returns a GZip compressed `hprof` heap dump file.
 
-|`jolokia`
-|Exposes JMX beans over HTTP (when Jolokia is on the classpath).
-
 |`logfile`
 |Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
 been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
@@ -802,7 +799,7 @@ using Maven you would add the following:
  	</dependency>
 ----
 
-Jolokia can then be accessed using `/jolokia` on your management HTTP server.
+Jolokia can then be accessed using `/application/jolokia` on your management HTTP server.
 
 
 
@@ -810,11 +807,11 @@ Jolokia can then be accessed using `/jolokia` on your management HTTP server.
 ==== Customizing Jolokia
 Jolokia has a number of settings that you would traditionally configure using servlet
 parameters. With Spring Boot you can use your `application.properties`, simply prefix the
-parameter with `jolokia.config.`:
+parameter with `management.jolokia.config.`:
 
 [source,properties,indent=0]
 ----
-	jolokia.config.debug=true
+	management.jolokia.config.debug=true
 ----
 
 
@@ -822,11 +819,11 @@ parameter with `jolokia.config.`:
 [[production-ready-disabling-jolokia]]
 ==== Disabling Jolokia
 If you are using Jolokia but you don't want Spring Boot to configure it, simply set the
-`endpoints.jolokia.enabled` property to `false`:
+`management.jolokia.enabled` property to `false`:
 
 [source,properties,indent=0]
 ----
-	endpoints.jolokia.enabled=false
+	management.jolokia.enabled=false
 ----
 
 

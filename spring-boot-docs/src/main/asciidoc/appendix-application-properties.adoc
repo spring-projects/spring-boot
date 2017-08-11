@@ -1118,8 +1118,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.info.enabled= # Enable the endpoint.
 	endpoints.info.id= # Endpoint identifier.
 	endpoints.info.path= # Endpoint path.
-	endpoints.jolokia.enabled=true # Enable Jolokia endpoint.
-	endpoints.jolokia.path=/jolokia # Endpoint URL path.
 	endpoints.liquibase.enabled= # Enable the endpoint.
 	endpoints.liquibase.id= # Endpoint identifier.
 	endpoints.logfile.enabled=true # Enable the endpoint.
@@ -1159,8 +1157,10 @@ content into your application; rather pick only the properties that you need.
 	endpoints.jmx.static-names= # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
 	endpoints.jmx.unique-names=false # Ensure that ObjectNames are modified in case of conflict.
 
-	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/JolokiaProperties.{sc-ext}[JolokiaProperties])
-	jolokia.config.*= # See Jolokia manual
+	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
+	management.jolokia.enabled=true # Enable Jolokia.
+	management.jolokia.path=/jolokia # Path at which Jolokia will be available.
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
 	management.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
