@@ -2,7 +2,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.actuate.autoconfigure.ManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cache.CacheStatisticsAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryActuatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointInfrastructureAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration,\
