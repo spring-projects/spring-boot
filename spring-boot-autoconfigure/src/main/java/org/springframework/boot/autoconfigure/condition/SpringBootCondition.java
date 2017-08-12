@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.Logger;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class SpringBootCondition implements Condition {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	private final Log logger = LogFactory.getLog(getClass());
 
 	@Override
 	public final boolean matches(ConditionContext context,
@@ -158,4 +158,12 @@ public abstract class SpringBootCondition implements Condition {
 		return condition.matches(context, metadata);
 	}
 
+	/**
+	 * Returns the instance of {@link Logger} used by this
+	 * instance of the condition.
+	 * @return instance of {@link Logger}
+	 */
+	protected final Log getLogger() {
+		return this.logger;
+	}
 }
