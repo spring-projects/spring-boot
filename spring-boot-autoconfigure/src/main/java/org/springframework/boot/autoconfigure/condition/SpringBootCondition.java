@@ -158,4 +158,12 @@ public abstract class SpringBootCondition implements Condition {
 		return condition.matches(context, metadata);
 	}
 
+	/**
+	 * Return the {@link Log logger} used by this instance of the condition.
+	 * @return the {@link Log logger}
+	 */
+	protected final Log getLogger() {
+		return this.logger;
+	}
+
 }
