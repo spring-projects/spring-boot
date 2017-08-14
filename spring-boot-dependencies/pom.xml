@@ -135,7 +135,7 @@
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>3.4.2</mongodb.version>
 		<mysql.version>5.1.43</mysql.version>
-		<narayana.version>5.5.28.Final</narayana.version>
+		<narayana.version>5.5.30.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>2.1.3</neo4j-ogm.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
