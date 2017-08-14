@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
+
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -159,11 +159,11 @@ public abstract class SpringBootCondition implements Condition {
 	}
 
 	/**
-	 * Returns the instance of {@link Logger} used by this
-	 * instance of the condition.
-	 * @return instance of {@link Logger}
+	 * Return the {@link Log logger} used by this instance of the condition.
+	 * @return the {@link Log logger}
 	 */
 	protected final Log getLogger() {
 		return this.logger;
 	}
+
 }
