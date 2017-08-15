@@ -31,6 +31,9 @@ do as they were designed before this was clarified.
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
+| http://www.amqphub.org/spring[AMQPHub Spring Boot Starters]
+| https://github.com/amqphub/amqp-10-jms-spring-boot
+
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
