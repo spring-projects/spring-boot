@@ -1119,17 +1119,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.cors.exposed-headers= # Comma-separated list of headers to include in a response.
 	endpoints.cors.max-age=1800 # How long, in seconds, the response from a pre-flight request can be cached by clients.
 
-	# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportProperties.{sc-ext}[EndpointMBeanExportProperties])
-	endpoints.jmx.domain= # JMX domain name. Initialized with the value of 'spring.jmx.default-domain' if set.
-	endpoints.jmx.enabled=true # Enable JMX export of all endpoints.
-	endpoints.jmx.static-names= # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
-	endpoints.jmx.unique-names=false # Ensure that ObjectNames are modified in case of conflict.
-
-	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
-	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
-	management.jolokia.enabled=true # Enable Jolokia.
-	management.jolokia.path=/jolokia # Path at which Jolokia will be available.
-
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
 	management.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
 	management.address= # Network address that the management endpoints should bind to.
@@ -1183,6 +1172,16 @@ content into your application; rather pick only the properties that you need.
 	management.info.env.enabled=true # Enable environment info.
 	management.info.git.enabled=true # Enable git info.
 	management.info.git.mode=simple # Mode to use to expose git information.
+
+	# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/endpoint.infrastructure/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
+	management.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
+	management.jmx.static-names=false # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
+	management.jmx.unique-names=false # Ensure that ObjectNames are modified in case of conflict.
+
+	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
+	management.jolokia.enabled=true # Enable Jolokia.
+	management.jolokia.path=/jolokia # Path at which Jolokia will be available.
 
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
 	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.

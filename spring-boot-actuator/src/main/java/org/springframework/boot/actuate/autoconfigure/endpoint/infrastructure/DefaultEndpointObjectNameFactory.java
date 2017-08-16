@@ -16,12 +16,16 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure;
 
+import java.util.Map;
+
+import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.springframework.boot.endpoint.jmx.EndpointMBean;
 import org.springframework.boot.endpoint.jmx.EndpointObjectNameFactory;
 import org.springframework.jmx.support.ObjectNameManager;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,15 +36,50 @@ import org.springframework.util.StringUtils;
  */
 class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
-	private String domain = "org.springframework.boot";
+	private final JmxEndpointExporterProperties properties;
+
+	private final MBeanServer mBeanServer;
+
+	private final String contextId;
+
+	DefaultEndpointObjectNameFactory(JmxEndpointExporterProperties properties,
+			MBeanServer mBeanServer, String contextId) {
+		this.properties = properties;
+		this.mBeanServer = mBeanServer;
+		this.contextId = contextId;
+	}
 
 	@Override
 	public ObjectName generate(EndpointMBean mBean) throws MalformedObjectNameException {
-		StringBuilder builder = new StringBuilder();
-		builder.append(this.domain);
-		builder.append(":type=Endpoint");
-		builder.append(",name=" + StringUtils.capitalize(mBean.getEndpointId()));
+		String baseObjectName = this.properties.getDomain() +
+				":type=Endpoint" +
+				",name=" + StringUtils.capitalize(mBean.getEndpointId());
+		StringBuilder builder = new StringBuilder(baseObjectName);
+		if (this.mBeanServer != null && hasMBean(baseObjectName)) {
+			builder.append(",context=").append(this.contextId);
+		}
+		if (this.properties.isUniqueNames()) {
+			builder.append(",identity=").append(ObjectUtils.getIdentityHexString(mBean));
+		}
+		builder.append(getStaticNames());
 		return ObjectNameManager.getInstance(builder.toString());
+	}
+
+	private boolean hasMBean(String baseObjectName) throws MalformedObjectNameException {
+		ObjectName query = new ObjectName(baseObjectName + ",*");
+		return this.mBeanServer.queryNames(query, null).size() > 0;
+	}
+
+	private String getStaticNames() {
+		if (this.properties.getStaticNames().isEmpty()) {
+			return "";
+		}
+		StringBuilder builder = new StringBuilder();
+
+		for (Map.Entry<Object, Object> name : this.properties.getStaticNames().entrySet()) {
+			builder.append(",").append(name.getKey()).append("=").append(name.getValue());
+		}
+		return builder.toString();
 	}
 
 }

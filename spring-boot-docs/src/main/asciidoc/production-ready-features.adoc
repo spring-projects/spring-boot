@@ -734,10 +734,10 @@ under the `org.springframework.boot` domain.
 [[production-ready-custom-mbean-names]]
 === Customizing MBean names
 The name of the MBean is usually generated from the `id` of the endpoint. For example
-the `health` endpoint is exposed as `org.springframework.boot/Endpoint/healthEndpoint`.
+the `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
 
 If your application contains more than one Spring `ApplicationContext` you may find that
-names clash. To solve this problem you can set the `endpoints.jmx.unique-names` property
+names clash. To solve this problem you can set the `management.jmx.unique-names` property
 to `true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. Here is an
@@ -745,20 +745,20 @@ example `application.properties`:
 
 [source,properties,indent=0]
 ----
-	endpoints.jmx.domain=myapp
-	endpoints.jmx.unique-names=true
+	management.jmx.domain=com.example.myapp
+	management.jmx.unique-names=true
 ----
 
 
 
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX endpoints
-If you don't want to expose endpoints over JMX you can set the `endpoints.jmx.enabled`
+If you don't want to expose endpoints over JMX you can set the `endpoints.all.jmx.enabled`
 property to `false`:
 
 [source,properties,indent=0]
 ----
-	endpoints.jmx.enabled=false
+	endpoints.all.jmx.enabled=false
 ----
 
 

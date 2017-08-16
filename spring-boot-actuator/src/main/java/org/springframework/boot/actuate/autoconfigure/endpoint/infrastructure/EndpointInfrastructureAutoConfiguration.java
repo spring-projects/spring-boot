@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.endpoint.EndpointType;
 import org.springframework.boot.endpoint.OperationParameterMapper;
@@ -44,6 +45,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,6 +58,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @AutoConfigureAfter(JmxAutoConfiguration.class)
+@EnableConfigurationProperties(JmxEndpointExporterProperties.class)
 public class EndpointInfrastructureAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
@@ -94,18 +97,20 @@ public class EndpointInfrastructureAutoConfiguration {
 
 	@ConditionalOnSingleCandidate(MBeanServer.class)
 	@Bean
-	public JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer,
-			JmxAnnotationEndpointDiscoverer endpointDiscoverer,
+	public JmxEndpointExporter jmxMBeanExporter(JmxEndpointExporterProperties properties,
+			MBeanServer mBeanServer, JmxAnnotationEndpointDiscoverer endpointDiscoverer,
 			ObjectProvider<ObjectMapper> objectMapper) {
 		EndpointProvider<JmxEndpointOperation> endpointProvider = new EndpointProvider<>(
 				this.applicationContext.getEnvironment(), endpointDiscoverer,
 				EndpointType.JMX);
 		EndpointMBeanRegistrar endpointMBeanRegistrar = new EndpointMBeanRegistrar(
-				mBeanServer, new DefaultEndpointObjectNameFactory());
+				mBeanServer, new DefaultEndpointObjectNameFactory(properties,
+				mBeanServer, ObjectUtils.getIdentityHexString(this.applicationContext)));
 		return new JmxEndpointExporter(endpointProvider, endpointMBeanRegistrar,
 				objectMapper.getIfAvailable(ObjectMapper::new));
 	}
 
+	@Configuration
 	@ConditionalOnWebApplication
 	static class WebInfrastructureConfiguration {
 

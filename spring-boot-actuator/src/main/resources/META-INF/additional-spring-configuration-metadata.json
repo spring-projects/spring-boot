@@ -53,12 +53,6 @@
     "description": "Endpoint URL path."
   },
   {
-    "name": "endpoints.jmx.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable JMX export of all endpoints.",
-    "defaultValue": true
-  },
-  {
     "name": "endpoints.mappings.path",
     "type": "java.lang.String",
     "description": "Endpoint URL path."
