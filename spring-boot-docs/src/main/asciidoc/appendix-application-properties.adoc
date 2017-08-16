@@ -1083,7 +1083,7 @@ content into your application; rather pick only the properties that you need.
 	# ----------------------------------------
 
 	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
-	endpoints.enabled=true # Enable endpoints.
+	endpoints.all.enabled=true # Enable all endpoints.
 	endpoints.auditevents.enabled= # Enable the endpoint.
 	endpoints.autoconfig.enabled= # Enable the endpoint.
 	endpoints.beans.enabled= # Enable the endpoint.

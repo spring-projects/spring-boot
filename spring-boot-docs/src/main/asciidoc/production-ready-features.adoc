@@ -208,12 +208,12 @@ NOTE: The prefix ‟`endpoints` + `.` + `name`” is used to uniquely identify t
 that is being configured.
 
 By default, all endpoints except for `shutdown` are enabled. If you prefer to
-specifically "`opt-in`" endpoint enablement you can use the `endpoints.enabled` property.
-For example, the following will disable _all_ endpoints except for `info`:
+specifically "`opt-in`" endpoint enablement you can use the `endpoints.all.enabled`
+property. For example, the following will disable _all_ endpoints except for `info`:
 
 [source,properties,indent=0]
 ----
-	endpoints.enabled=false
+	endpoints.all.enabled=false
 	endpoints.info.enabled=true
 ----
 
