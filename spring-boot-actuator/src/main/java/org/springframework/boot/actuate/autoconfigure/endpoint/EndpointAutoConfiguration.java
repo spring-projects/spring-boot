@@ -29,7 +29,6 @@ import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
-import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
@@ -57,7 +56,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
@@ -83,7 +81,6 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  */
 @Configuration
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
-@EnableConfigurationProperties(EndpointProperties.class)
 public class EndpointAutoConfiguration {
 
 	@Bean
