@@ -20,10 +20,13 @@ import org.springframework.boot.actuate.autoconfigure.ManagementContextConfigura
 import org.springframework.boot.actuate.autoconfigure.endpoint.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.web.AuditEventsWebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.LogFileWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.StatusWebEndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -61,12 +64,27 @@ public class WebEndpointManagementContextConfiguration {
 	@ConditionalOnBean(value = HealthEndpoint.class, search = SearchStrategy.CURRENT)
 	public HealthWebEndpointExtension healthWebEndpointExtension(HealthEndpoint delegate,
 			HealthWebEndpointExtensionProperties extensionProperties) {
-		HealthWebEndpointExtension webExtension = new HealthWebEndpointExtension(
-				delegate);
+		return new HealthWebEndpointExtension(delegate,
+				createHealthStatusHttpMapper(extensionProperties));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	@ConditionalOnBean(value = StatusEndpoint.class, search = SearchStrategy.CURRENT)
+	public StatusWebEndpointExtension statusWebEndpointExtension(StatusEndpoint delegate,
+			HealthWebEndpointExtensionProperties extensionProperties) {
+		return new StatusWebEndpointExtension(delegate,
+				createHealthStatusHttpMapper(extensionProperties));
+	}
+
+	private HealthStatusHttpMapper createHealthStatusHttpMapper(
+			HealthWebEndpointExtensionProperties extensionProperties) {
+		HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
 		if (extensionProperties.getMapping() != null) {
-			webExtension.addStatusMapping(extensionProperties.getMapping());
+			statusHttpMapper.addStatusMapping(extensionProperties.getMapping());
 		}
-		return webExtension;
+		return statusHttpMapper;
 	}
 
 	@Bean

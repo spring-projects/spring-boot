@@ -18,32 +18,32 @@ package org.springframework.boot.actuate.endpoint;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 
 /**
- * {@link Endpoint} to expose application health.
+ * {@link Endpoint} to expose application {@link Status}.
  *
- * @author Dave Syer
- * @author Christian Dupuis
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
-@Endpoint(id = "health")
-public class HealthEndpoint {
+@Endpoint(id = "status")
+public class StatusEndpoint {
 
 	private final HealthIndicator healthIndicator;
 
 	/**
-	 * Create a new {@link HealthEndpoint} instance.
+	 * Create a new {@link StatusEndpoint} instance.
 	 * @param healthIndicator the health indicator
 	 */
-	public HealthEndpoint(HealthIndicator healthIndicator) {
+	public StatusEndpoint(HealthIndicator healthIndicator) {
 		this.healthIndicator = healthIndicator;
 	}
 
 	@ReadOperation
 	public Health health() {
-		return this.healthIndicator.health();
+		return Health.status(this.healthIndicator.health().getStatus()).build();
 	}
 
 }

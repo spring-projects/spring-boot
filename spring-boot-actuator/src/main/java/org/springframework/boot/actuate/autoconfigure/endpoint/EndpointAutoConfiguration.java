@@ -39,10 +39,12 @@ import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.ThreadDumpEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorFactory;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
@@ -88,17 +90,6 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnEnabledEndpoint
 	public EnvironmentEndpoint environmentEndpoint(Environment environment) {
 		return new EnvironmentEndpoint(environment);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	public HealthEndpoint healthEndpoint(
-			ObjectProvider<HealthAggregator> healthAggregator,
-			ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
-		return new HealthEndpoint(
-				healthAggregator.getIfAvailable(() -> new OrderedHealthAggregator()),
-				healthIndicators.getIfAvailable(Collections::emptyMap));
 	}
 
 	@Bean
@@ -180,6 +171,34 @@ public class EndpointAutoConfiguration {
 	public AuditEventsEndpoint auditEventsEndpoint(
 			AuditEventRepository auditEventRepository) {
 		return new AuditEventsEndpoint(auditEventRepository);
+	}
+
+	@Configuration
+	static class HealthEndpointConfiguration {
+
+		private final HealthIndicator healthIndicator;
+
+		HealthEndpointConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
+				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
+			this.healthIndicator = new HealthIndicatorFactory().createHealthIndicator(
+					healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
+					healthIndicators.getIfAvailable(Collections::emptyMap));
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnEnabledEndpoint
+		public HealthEndpoint healthEndpoint() {
+			return new HealthEndpoint(this.healthIndicator);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnEnabledEndpoint
+		public StatusEndpoint statusEndpoint() {
+			return new StatusEndpoint(this.healthIndicator);
+		}
+
 	}
 
 	@Configuration

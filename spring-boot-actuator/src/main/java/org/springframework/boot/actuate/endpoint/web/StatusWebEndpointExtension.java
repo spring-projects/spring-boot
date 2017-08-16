@@ -16,31 +16,26 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.web.WebEndpointExtension;
 import org.springframework.boot.endpoint.web.WebEndpointResponse;
 
 /**
- * {@link WebEndpointExtension} for the {@link HealthEndpoint}.
+ * {@link WebEndpointExtension} for the {@link StatusEndpoint}.
  *
- * @author Christian Dupuis
- * @author Dave Syer
- * @author Andy Wilkinson
- * @author Phillip Webb
- * @author Eddú Meléndez
- * @author Madhura Bhave
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
-@WebEndpointExtension(endpoint = HealthEndpoint.class)
-public class HealthWebEndpointExtension {
+@WebEndpointExtension(endpoint = StatusEndpoint.class)
+public class StatusWebEndpointExtension {
 
-	private final HealthEndpoint delegate;
+	private final StatusEndpoint delegate;
 
 	private final HealthStatusHttpMapper statusHttpMapper;
 
-	public HealthWebEndpointExtension(HealthEndpoint delegate,
+	public StatusWebEndpointExtension(StatusEndpoint delegate,
 			HealthStatusHttpMapper statusHttpMapper) {
 		this.delegate = delegate;
 		this.statusHttpMapper = statusHttpMapper;

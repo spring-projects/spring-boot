@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicatorFactory;
@@ -33,49 +33,47 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Integration tests for {@link HealthEndpoint} and {@link HealthWebEndpointExtension}
+ * Integration tests for {@link StatusEndpoint} and {@link StatusWebEndpointExtension}
  * exposed by Jersey, Spring MVC, and WebFlux.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @RunWith(WebEndpointsRunner.class)
-public class HealthEndpointWebIntegrationTests {
+public class StatusEndpointWebIntegrationTests {
 
 	private static WebTestClient client;
 
 	private static ConfigurableApplicationContext context;
 
 	@Test
-	public void whenHealthIsUp200ResponseIsReturned() throws Exception {
-		client.get().uri("/application/health").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("status").isEqualTo("UP").jsonPath("alpha.status")
-				.isEqualTo("UP").jsonPath("bravo.status").isEqualTo("UP");
+	public void whenStatusIsUp200ResponseIsReturned() throws Exception {
+		client.get().uri("/application/status").exchange().expectStatus().isOk()
+				.expectBody().json("{\"status\":\"UP\"}");
 	}
 
 	@Test
-	public void whenHealthIsDown503ResponseIsReturned() throws Exception {
+	public void whenStatusIsDown503ResponseIsReturned() throws Exception {
 		context.getBean("alphaHealthIndicator", TestHealthIndicator.class)
 				.setHealth(Health.down().build());
-		client.get().uri("/application/health").exchange().expectStatus()
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
-				.isEqualTo("DOWN").jsonPath("alpha.status").isEqualTo("DOWN")
-				.jsonPath("bravo.status").isEqualTo("UP");
+		client.get().uri("/application/status").exchange().expectStatus()
+				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
+				.expectBody().json("{\"status\":\"DOWN\"}");
 	}
 
 	@Configuration
 	public static class TestConfiguration {
 
 		@Bean
-		public HealthEndpoint healthEndpoint(
+		public StatusEndpoint statusEndpoint(
 				Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(new HealthIndicatorFactory().createHealthIndicator(
+			return new StatusEndpoint(new HealthIndicatorFactory().createHealthIndicator(
 					new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean
-		public HealthWebEndpointExtension healthWebEndpointExtension(
-				HealthEndpoint delegate) {
-			return new HealthWebEndpointExtension(delegate, new HealthStatusHttpMapper());
+		public StatusWebEndpointExtension statusWebEndpointExtension(
+				StatusEndpoint delegate) {
+			return new StatusWebEndpointExtension(delegate, new HealthStatusHttpMapper());
 		}
 
 		@Bean

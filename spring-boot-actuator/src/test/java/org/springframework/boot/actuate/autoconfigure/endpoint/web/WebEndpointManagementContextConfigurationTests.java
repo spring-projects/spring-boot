@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
@@ -24,11 +23,14 @@ import org.junit.Test;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.web.AuditEventsWebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.LogFileWebEndpoint;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.endpoint.web.StatusWebEndpointExtension;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link WebEndpointManagementContextConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class WebEndpointManagementContextConfigurationTests {
 
@@ -71,8 +74,8 @@ public class WebEndpointManagementContextConfigurationTests {
 			HealthWebEndpointExtension extension = context
 					.getBean(HealthWebEndpointExtension.class);
 			@SuppressWarnings("unchecked")
-			Map<String, Integer> statusMappings = (Map<String, Integer>) ReflectionTestUtils
-					.getField(extension, "statusMapping");
+			Map<String, Integer> statusMappings = ((HealthStatusHttpMapper) ReflectionTestUtils
+					.getField(extension, "statusHttpMapper")).getStatusMapping();
 			assertThat(statusMappings).containsEntry("DOWN", 503);
 			assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
 			assertThat(statusMappings).containsEntry("CUSTOM", 500);
@@ -83,6 +86,35 @@ public class WebEndpointManagementContextConfigurationTests {
 	public void healthWebEndpointExtensionCanBeDisabled() {
 		beanIsNotAutoConfiguredWhenEndpointIsDisabled(HealthWebEndpointExtension.class,
 				"health", HealthEndpointConfiguration.class);
+	}
+
+	@Test
+	public void statusWebEndpointExtensionIsAutoConfigured() {
+		beanIsAutoConfigured(StatusWebEndpointExtension.class,
+				StatusEndpointConfiguration.class);
+	}
+
+	@Test
+	public void statusMappingCanBeCustomized() {
+		ApplicationContextRunner contextRunner = contextRunner()
+				.withPropertyValues("endpoints.health.mapping.CUSTOM=500")
+				.withUserConfiguration(StatusEndpointConfiguration.class);
+		contextRunner.run((context) -> {
+			StatusWebEndpointExtension extension = context
+					.getBean(StatusWebEndpointExtension.class);
+			@SuppressWarnings("unchecked")
+			Map<String, Integer> statusMappings = ((HealthStatusHttpMapper) ReflectionTestUtils
+					.getField(extension, "statusHttpMapper")).getStatusMapping();
+			assertThat(statusMappings).containsEntry("DOWN", 503);
+			assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
+			assertThat(statusMappings).containsEntry("CUSTOM", 500);
+		});
+	}
+
+	@Test
+	public void statusWebEndpointExtensionCanBeDisabled() {
+		beanIsNotAutoConfiguredWhenEndpointIsDisabled(StatusWebEndpointExtension.class,
+				"status", StatusEndpointConfiguration.class);
 	}
 
 	@Test
@@ -149,8 +181,17 @@ public class WebEndpointManagementContextConfigurationTests {
 
 		@Bean
 		public HealthEndpoint healthEndpoint() {
-			return new HealthEndpoint(new OrderedHealthAggregator(),
-					Collections.emptyMap());
+			return new HealthEndpoint(() -> Health.up().build());
+		}
+
+	}
+
+	@Configuration
+	static class StatusEndpointConfiguration {
+
+		@Bean
+		public StatusEndpoint statusEndpoint() {
+			return new StatusEndpoint(() -> Health.up().build());
 		}
 
 	}
