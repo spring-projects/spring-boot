@@ -65,7 +65,6 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass(EnableOAuth2Client.class)
-@Conditional(OAuth2ClientIdCondition.class)
 public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
@@ -89,7 +88,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
-	@Conditional(NoClientCredentialsCondition.class)
+	@Conditional({OAuth2ClientIdCondition.class, NoClientCredentialsCondition.class})
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class SessionScopedConfiguration {
 
@@ -128,7 +127,7 @@ public class OAuth2RestOperationsConfiguration {
 	// refresh tokens you need to @EnableOAuth2Client
 	@Configuration
 	@ConditionalOnMissingBean(OAuth2ClientConfiguration.class)
-	@Conditional(NoClientCredentialsCondition.class)
+	@Conditional({ OAuth2ClientIdCondition.class, NoClientCredentialsCondition.class })
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class RequestScopedConfiguration {
 
