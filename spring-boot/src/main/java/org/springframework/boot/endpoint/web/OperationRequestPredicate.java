@@ -40,7 +40,7 @@ public class OperationRequestPredicate {
 	private final Collection<String> produces;
 
 	/**
-	 * Creates a new {@code WebEndpointRequestPredict}.
+	 * Creates a new {@code OperationRequestPredicate}.
 	 *
 	 * @param path the path for the operation
 	 * @param httpMethod the HTTP method that the operation supports
