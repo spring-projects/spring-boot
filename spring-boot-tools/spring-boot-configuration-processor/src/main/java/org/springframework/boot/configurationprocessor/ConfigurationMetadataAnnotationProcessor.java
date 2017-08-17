@@ -338,8 +338,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		boolean isNested = isNested(returnElement, field, element);
 		AnnotationMirror annotation = getAnnotation(getter,
 				configurationPropertiesAnnotation());
-		if (returnElement != null && returnElement instanceof TypeElement
-				&& annotation == null && isNested) {
+		if (returnElement instanceof TypeElement && annotation == null && isNested) {
 			String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
 			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
 					this.typeUtils.getQualifiedName(returnElement),
@@ -419,8 +418,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private Element getTopLevelType(Element element) {
-		if ((element.getEnclosingElement() == null)
-				|| !(element.getEnclosingElement() instanceof TypeElement)) {
+		if (!(element.getEnclosingElement() instanceof TypeElement)) {
 			return element;
 		}
 		return getTopLevelType(element.getEnclosingElement());
@@ -430,8 +428,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (isElementDeprecated(element)) {
 			return true;
 		}
-		if (element != null && (element instanceof VariableElement
-				|| element instanceof ExecutableElement)) {
+		if (element instanceof VariableElement || element instanceof ExecutableElement) {
 			return isElementDeprecated(element.getEnclosingElement());
 		}
 		return false;
@@ -535,7 +532,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 
 		static EndpointTypes parse(Object typesAttribute) {
-			if (typesAttribute == null || !(typesAttribute instanceof List)) {
+			if (!(typesAttribute instanceof List)) {
 				return new EndpointTypes(ALL_TYPES);
 			}
 			List<AnnotationValue> values = (List<AnnotationValue>) typesAttribute;
