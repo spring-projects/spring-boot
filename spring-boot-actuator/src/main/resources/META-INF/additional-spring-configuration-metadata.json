@@ -1,15 +1,5 @@
 {"properties": [
   {
-    "name": "endpoints.autoconfig.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path."
-  },
-  {
-    "name": "endpoints.beans.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path."
-  },
-  {
     "name": "endpoints.configprops.keys-to-sanitize",
     "type": "java.lang.String[]",
     "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",
@@ -22,16 +12,6 @@
       ".*credentials.*",
       "vcap_services"
     ]
-  },
-  {
-    "name": "endpoints.configprops.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path."
-  },
-  {
-    "name": "endpoints.dump.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path."
   },
   {
     "name": "endpoints.env.keys-to-sanitize",
@@ -48,25 +28,10 @@
     ]
   },
   {
-    "name": "endpoints.info.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path."
-  },
-  {
-    "name": "endpoints.mappings.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path."
-  },
-  {
     "name": "endpoints.metrics.filter.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the metrics servlet filter.",
     "defaultValue": true
-  },
-  {
-    "name": "endpoints.trace.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path."
   },
   {
 	"name": "endpoints.trace.filter.enabled",
