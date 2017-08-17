@@ -1,5 +1,23 @@
 {"properties": [
   {
+    "name": "endpoints.all.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable all endpoints.",
+    "defaultValue": true
+  },
+  {
+    "name": "endpoints.all.jmx.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable all endpoints as JMX MBeans.",
+    "defaultValue": true
+  },
+  {
+    "name": "endpoints.all.web.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable all endpoints as Web endpoints.",
+    "defaultValue": true
+  },
+  {
     "name": "endpoints.configprops.keys-to-sanitize",
     "type": "java.lang.String[]",
     "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",
