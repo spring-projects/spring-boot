@@ -162,6 +162,7 @@ content into your application; rather pick only the properties that you need.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.
 	server.jetty.acceptors= # Number of acceptor threads to use.
+	server.jetty.dumpAfterStart= false # log all the Jetty configuration in the logs after start
 	server.jetty.accesslog.append=false # Append to log.
 	server.jetty.accesslog.date-format=dd/MMM/yyyy:HH:mm:ss Z # Timestamp format of the request log.
 	server.jetty.accesslog.enabled=false # Enable access log.

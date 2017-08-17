@@ -122,6 +122,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	private int selectors = -1;
 
+	/**
+	 * Dump jetty configuration in the logs after starting.
+	 */
+	private boolean dumpAfterStart = false;
+
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
 
 	private ResourceLoader resourceLoader;
@@ -182,6 +187,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private Server createServer(InetSocketAddress address) {
 		Server server = new Server(getThreadPool());
 		server.setConnectors(new Connector[] { createConnector(address, server) });
+		server.setDumpAfterStart(this.dumpAfterStart);
 		return server;
 	}
 
@@ -576,6 +582,14 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	public void setSelectors(int selectors) {
 		this.selectors = selectors;
+	}
+
+	/**
+	 * To dump the Jetty configuration in the logs.
+	 * @param dumpAfterStart <code>true</code> to dump configuration
+	 */
+	public void setDumpAfterStart(boolean dumpAfterStart) {
+		this.dumpAfterStart = dumpAfterStart;
 	}
 
 	/**

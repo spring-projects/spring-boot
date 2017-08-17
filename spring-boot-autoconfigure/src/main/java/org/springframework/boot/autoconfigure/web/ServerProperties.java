@@ -907,6 +907,11 @@ public class ServerProperties {
 		 */
 		private Integer selectors;
 
+		/**
+		 * Dump jetty configuration in the logs after starting.
+		 */
+		private boolean dumpAfterStart = false;
+
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
@@ -933,6 +938,14 @@ public class ServerProperties {
 
 		public void setSelectors(Integer selectors) {
 			this.selectors = selectors;
+		}
+
+		public boolean isDumpAfterStart() {
+			return this.dumpAfterStart;
+		}
+
+		public void setDumpAfterStart(boolean dumpAfterStart) {
+			this.dumpAfterStart = dumpAfterStart;
 		}
 
 		/**

@@ -480,6 +480,7 @@ public class DefaultServletWebServerFactoryCustomizer
 			if (jettyProperties.getAccesslog().isEnabled()) {
 				customizeAccessLog(factory, jettyProperties.getAccesslog());
 			}
+			factory.setDumpAfterStart(jettyProperties.isDumpAfterStart());
 		}
 
 		private static void customizeConnectionTimeout(
