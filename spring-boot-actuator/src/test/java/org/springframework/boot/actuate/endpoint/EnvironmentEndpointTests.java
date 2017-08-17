@@ -120,7 +120,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysMatchingCustonNameHaveTheirValuesSanitized() {
+	public void sensitiveKeysMatchingCustomNameHaveTheirValuesSanitized() {
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(new StandardEnvironment());
