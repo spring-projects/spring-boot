@@ -193,8 +193,6 @@ content into your application; rather pick only the properties that you need.
 	server.session.cookie.path= # Path of the session cookie.
 	server.session.cookie.secure= # "Secure" flag for the session cookie.
 	server.session.persistent=false # Persist session data between restarts.
-	server.session.servlet.filter-order=-2147483598 # Session repository filter order.
-	server.session.servlet.filter-dispatcher-types=ASYNC, ERROR, REQUEST # Session repository filter dispatcher types.
 	server.session.store-dir= # Directory used to store session data.
 	server.session.timeout= # Session timeout in seconds.
 	server.session.tracking-modes= # Session tracking modes (one or more of the following: "cookie", "url", "ssl").
@@ -423,6 +421,8 @@ content into your application; rather pick only the properties that you need.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.
 	spring.session.redis.namespace= # Namespace for keys used to store sessions.
+	spring.session.servlet.filter-order=-2147483598 # Session repository filter order.
+    spring.session.servlet.filter-dispatcher-types=ASYNC,ERROR,REQUEST # Session repository filter dispatcher types.
 	spring.session.store-type= # Session store type.
 
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
@@ -525,12 +525,14 @@ content into your application; rather pick only the properties that you need.
 	spring.flyway.clean-on-validation-error= #
 	spring.flyway.enabled=true # Enable flyway.
 	spring.flyway.encoding= #
+	spring.flyway.group= #
 	spring.flyway.ignore-failed-future-migration= #
 	spring.flyway.ignore-future-migrations= #
 	spring.flyway.ignore-missing-migrations= #
 	spring.flyway.init-sqls= # SQL statements to execute to initialize a connection immediately after obtaining it.
 	spring.flyway.installed-by= #
 	spring.flyway.locations=classpath:db/migration # locations of migrations scripts
+	spring.flyway.mixed= #
 	spring.flyway.out-of-order= #
 	spring.flyway.password= # JDBC password if you want Flyway to create its own DataSource
 	spring.flyway.placeholder-prefix= #
