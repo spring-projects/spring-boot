@@ -31,6 +31,7 @@ import java.util.TimeZone;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.util.Assert;
@@ -101,6 +102,9 @@ public class ServerProperties {
 
 	@NestedConfigurationProperty
 	private Compression compression = new Compression();
+
+	@NestedConfigurationProperty
+	private Http2 http2;
 
 	private Servlet servlet = new Servlet();
 
@@ -208,6 +212,14 @@ public class ServerProperties {
 
 	public Undertow getUndertow() {
 		return this.undertow;
+	}
+
+	public Http2 getHttp2() {
+		return this.http2;
+	}
+
+	public void setHttp2(Http2 http2) {
+		this.http2 = http2;
 	}
 
 	/**
@@ -947,6 +959,8 @@ public class ServerProperties {
 		public void setDumpAfterStart(boolean dumpAfterStart) {
 			this.dumpAfterStart = dumpAfterStart;
 		}
+
+
 
 		/**
 		 * Jetty access log properties.
