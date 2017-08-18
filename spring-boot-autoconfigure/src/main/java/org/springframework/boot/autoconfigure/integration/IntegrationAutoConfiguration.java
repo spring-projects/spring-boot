@@ -147,7 +147,6 @@ public class IntegrationAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.integration.jdbc.initializer", name = "enabled")
 		public IntegrationDatabaseInitializer integrationDatabaseInitializer(
 				DataSource dataSource, ResourceLoader resourceLoader,
 				IntegrationProperties properties) {

@@ -27,6 +27,7 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
@@ -66,8 +67,9 @@ public class BatchAutoConfigurationWithoutJpaTests {
 					assertThat(
 							context.getBean(PlatformTransactionManager.class).toString())
 									.contains("DataSourceTransactionManager");
-					assertThat(context.getBean(BatchProperties.class).getInitializer()
-							.isEnabled()).isTrue();
+					assertThat(
+							context.getBean(BatchProperties.class).getInitializeSchema())
+									.isEqualTo(DatabaseInitializerMode.EMBEDDED);
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 					assertThat(context.getBean(JobExplorer.class)

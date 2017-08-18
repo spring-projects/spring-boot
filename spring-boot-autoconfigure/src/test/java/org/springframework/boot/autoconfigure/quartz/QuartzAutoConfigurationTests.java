@@ -108,7 +108,7 @@ public class QuartzAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class },
 				"spring.quartz.job-store-type=jdbc",
-				"spring.quartz.jdbc.initialize-schema=true");
+				"spring.quartz.jdbc.initialize-schema=always");
 		testWithDataSource();
 	}
 
@@ -117,7 +117,7 @@ public class QuartzAutoConfigurationTests {
 		load(new Class<?>[] { QuartzJobsConfiguration.class,
 				EmbeddedDataSourceConfiguration.class },
 				"spring.quartz.job-store-type=jdbc",
-				"spring.quartz.jdbc.initialize-schema=true");
+				"spring.quartz.jdbc.initialize-schema=always");
 		testWithDataSource();
 	}
 

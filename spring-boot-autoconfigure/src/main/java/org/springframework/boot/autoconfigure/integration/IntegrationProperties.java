@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -44,7 +45,10 @@ public class IntegrationProperties {
 		 */
 		private String schema = DEFAULT_SCHEMA_LOCATION;
 
-		private final Initializer initializer = new Initializer();
+		/**
+		 * Spring Integration database schema initialization mode.
+		 */
+		private DatabaseInitializerMode initializeSchema = DatabaseInitializerMode.EMBEDDED;
 
 		public String getSchema() {
 			return this.schema;
@@ -54,25 +58,12 @@ public class IntegrationProperties {
 			this.schema = schema;
 		}
 
-		public Initializer getInitializer() {
-			return this.initializer;
+		public DatabaseInitializerMode getInitializeSchema() {
+			return this.initializeSchema;
 		}
 
-		public class Initializer {
-
-			/**
-			 * Create the required integration tables on startup.
-			 */
-			private boolean enabled = false;
-
-			public boolean isEnabled() {
-				return this.enabled;
-			}
-
-			public void setEnabled(boolean enabled) {
-				this.enabled = enabled;
-			}
-
+		public void setInitializeSchema(DatabaseInitializerMode initializeSchema) {
+			this.initializeSchema = initializeSchema;
 		}
 
 	}

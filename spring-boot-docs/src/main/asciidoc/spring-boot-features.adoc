@@ -5568,7 +5568,7 @@ on startup:
 
 [source,properties,indent=0]
 ----
-	spring.integration.jdbc.initializer.enabled=true
+	spring.integration.jdbc.initialize-schema=always
 ----
 
 See the
