@@ -1265,6 +1265,11 @@
 				<version>${solr.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-catalina-jmx-remote</artifactId>
+				<version>${tomcat.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-core</artifactId>
 				<version>${tomcat.version}</version>
@@ -1292,11 +1297,6 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jsp-api</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat</groupId>
-				<artifactId>tomcat-catalina-jmx-remote</artifactId>
 				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
@@ -1648,11 +1648,6 @@
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>javax-websocket-server-impl</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>javax-websocket-client-impl</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
