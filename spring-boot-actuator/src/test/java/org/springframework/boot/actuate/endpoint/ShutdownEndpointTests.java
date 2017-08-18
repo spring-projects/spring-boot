@@ -46,9 +46,9 @@ public class ShutdownEndpointTests {
 
 	@Test
 	public void shutdown() throws Exception {
-		ApplicationContextRunner contexRunner = new ApplicationContextRunner()
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfig.class);
-		contexRunner.run((context) -> {
+		contextRunner.run((context) -> {
 			EndpointConfig config = context.getBean(EndpointConfig.class);
 			ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
 			Map<String, Object> result;

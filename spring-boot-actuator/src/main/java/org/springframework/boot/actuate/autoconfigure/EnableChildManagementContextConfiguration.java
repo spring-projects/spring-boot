@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configurtaion class used to enable configuration of a child management context.
+ * Configuration class used to enable configuration of a child management context.
  *
  * @author Andy Wilkinson
  */

@@ -77,7 +77,7 @@ public class ManagementContextAutoConfiguration {
 
 		@Override
 		public void afterSingletonsInstantiated() {
-			veriifySslConfiguration();
+			verifySslConfiguration();
 			verifyContextPathConfiguration();
 			if (this.environment instanceof ConfigurableEnvironment) {
 				addLocalManagementPortPropertyAlias(
@@ -85,7 +85,7 @@ public class ManagementContextAutoConfiguration {
 			}
 		}
 
-		private void veriifySslConfiguration() {
+		private void verifySslConfiguration() {
 			if (this.environment.getProperty("management.ssl.enabled", Boolean.class,
 					false)) {
 				throw new IllegalStateException(

@@ -121,8 +121,8 @@ public class JerseyEndpointResourceFactory {
 					arguments.putAll(body);
 				}
 			}
-			arguments.putAll(extractPathParmeters(data));
-			arguments.putAll(extractQueryParmeters(data));
+			arguments.putAll(extractPathParameters(data));
+			arguments.putAll(extractQueryParameters(data));
 			try {
 				return convertToJaxRsResponse(this.operationInvoker.invoke(arguments),
 						data.getRequest().getMethod());
@@ -132,12 +132,12 @@ public class JerseyEndpointResourceFactory {
 			}
 		}
 
-		private Map<String, Object> extractPathParmeters(
+		private Map<String, Object> extractPathParameters(
 				ContainerRequestContext requestContext) {
 			return extract(requestContext.getUriInfo().getPathParameters());
 		}
 
-		private Map<String, Object> extractQueryParmeters(
+		private Map<String, Object> extractQueryParameters(
 				ContainerRequestContext requestContext) {
 			return extract(requestContext.getUriInfo().getQueryParameters());
 		}
