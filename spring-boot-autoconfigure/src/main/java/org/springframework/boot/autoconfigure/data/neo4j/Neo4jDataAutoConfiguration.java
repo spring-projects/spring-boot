@@ -53,7 +53,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
+@ConditionalOnClass({ SessionFactory.class, Neo4jTransactionManager.class,
+		PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
 @SuppressWarnings("deprecation")
