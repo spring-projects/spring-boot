@@ -815,6 +815,8 @@ Will produce meta-data information for `server.name`, `server.host.ip` and
 annotation on a field to indicate that a regular (non-inner) class should be treated as
 if it were nested.
 
+TIP: This has no effect on collections and maps as those types are automatically
+identified and a single meta-data property is generated for each of them.
 
 
 [[configuration-metadata-additional-metadata]]
