@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -44,9 +44,9 @@ public class BatchProperties {
 	private String tablePrefix;
 
 	/**
-	 * Spring Batch database schema initialization mode.
+	 * Database schema initialization mode.
 	 */
-	private DatabaseInitializerMode initializeSchema = DatabaseInitializerMode.EMBEDDED;
+	private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
 	private final Job job = new Job();
 
@@ -66,11 +66,11 @@ public class BatchProperties {
 		this.tablePrefix = tablePrefix;
 	}
 
-	public DatabaseInitializerMode getInitializeSchema() {
+	public DatabaseInitializationMode getInitializeSchema() {
 		return this.initializeSchema;
 	}
 
-	public void setInitializeSchema(DatabaseInitializerMode initializeSchema) {
+	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 		this.initializeSchema = initializeSchema;
 	}
 

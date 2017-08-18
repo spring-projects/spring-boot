@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -57,7 +57,7 @@ public class SessionAutoConfigurationJdbcTests
 				.isEqualTo("SPRING_SESSION");
 		assertThat(
 				this.context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-						.isEqualTo(DatabaseInitializerMode.EMBEDDED);
+						.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
 	}
@@ -74,7 +74,7 @@ public class SessionAutoConfigurationJdbcTests
 				.isEqualTo("SPRING_SESSION");
 		assertThat(
 				this.context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-						.isEqualTo(DatabaseInitializerMode.NEVER);
+						.isEqualTo(DatabaseInitializationMode.NEVER);
 		this.thrown.expect(BadSqlGrammarException.class);
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
@@ -93,7 +93,7 @@ public class SessionAutoConfigurationJdbcTests
 				.isEqualTo("FOO_BAR");
 		assertThat(
 				this.context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-						.isEqualTo(DatabaseInitializerMode.EMBEDDED);
+						.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from FOO_BAR")).isEmpty();
 	}

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
-import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -46,9 +46,9 @@ public class IntegrationProperties {
 		private String schema = DEFAULT_SCHEMA_LOCATION;
 
 		/**
-		 * Spring Integration database schema initialization mode.
+		 * Database schema initialization mode.
 		 */
-		private DatabaseInitializerMode initializeSchema = DatabaseInitializerMode.EMBEDDED;
+		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
 		public String getSchema() {
 			return this.schema;
@@ -58,11 +58,11 @@ public class IntegrationProperties {
 			this.schema = schema;
 		}
 
-		public DatabaseInitializerMode getInitializeSchema() {
+		public DatabaseInitializationMode getInitializeSchema() {
 			return this.initializeSchema;
 		}
 
-		public void setInitializeSchema(DatabaseInitializerMode initializeSchema) {
+		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
 		}
 

@@ -107,8 +107,7 @@ public class QuartzAutoConfigurationTests {
 		load(new Class<?>[] { QuartzJobsConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class },
-				"spring.quartz.job-store-type=jdbc",
-				"spring.quartz.jdbc.initialize-schema=always");
+				"spring.quartz.job-store-type=jdbc");
 		testWithDataSource();
 	}
 
@@ -116,8 +115,7 @@ public class QuartzAutoConfigurationTests {
 	public void withDataSourceNoTransactionManager() throws Exception {
 		load(new Class<?>[] { QuartzJobsConfiguration.class,
 				EmbeddedDataSourceConfiguration.class },
-				"spring.quartz.job-store-type=jdbc",
-				"spring.quartz.jdbc.initialize-schema=always");
+				"spring.quartz.job-store-type=jdbc");
 		testWithDataSource();
 	}
 

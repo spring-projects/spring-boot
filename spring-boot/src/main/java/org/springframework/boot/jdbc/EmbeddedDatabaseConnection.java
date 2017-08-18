@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -110,11 +110,6 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * Override for testing.
-	 */
-	static EmbeddedDatabaseConnection override;
-
-	/**
 	 * Convenience method to determine if a given driver class name represents an embedded
 	 * database type.
 	 * @param driverClass the driver class
@@ -149,9 +144,6 @@ public enum EmbeddedDatabaseConnection {
 	 * @return an {@link EmbeddedDatabaseConnection} or {@link #NONE}.
 	 */
 	public static EmbeddedDatabaseConnection get(ClassLoader classLoader) {
-		if (override != null) {
-			return override;
-		}
 		for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
 			if (candidate != NONE && ClassUtils.isPresent(candidate.getDriverClassName(),
 					classLoader)) {

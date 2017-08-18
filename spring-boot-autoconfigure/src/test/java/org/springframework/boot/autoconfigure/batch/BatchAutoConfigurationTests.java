@@ -47,7 +47,7 @@ import org.springframework.batch.support.transaction.ResourcelessTransactionMana
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -89,7 +89,7 @@ public class BatchAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JobExplorer.class);
 					assertThat(
 							context.getBean(BatchProperties.class).getInitializeSchema())
-									.isEqualTo(DatabaseInitializerMode.EMBEDDED);
+									.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 				});
@@ -176,7 +176,7 @@ public class BatchAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					assertThat(
 							context.getBean(BatchProperties.class).getInitializeSchema())
-									.isEqualTo(DatabaseInitializerMode.NEVER);
+									.isEqualTo(DatabaseInitializationMode.NEVER);
 					this.expected.expect(BadSqlGrammarException.class);
 					new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION");
@@ -215,7 +215,7 @@ public class BatchAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					assertThat(
 							context.getBean(BatchProperties.class).getInitializeSchema())
-									.isEqualTo(DatabaseInitializerMode.EMBEDDED);
+									.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from PREFIX_JOB_EXECUTION"))
 									.isEmpty();

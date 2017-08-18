@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -53,8 +53,7 @@ public abstract class AbstractDatabaseInitializer {
 
 	@PostConstruct
 	protected void initialize() {
-		if ((getMode() == DatabaseInitializerMode.EMBEDDED && !isEmbeddedDataSource())
-				|| getMode() == DatabaseInitializerMode.NEVER) {
+		if (!isEnabled()) {
 			return;
 		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
@@ -68,7 +67,18 @@ public abstract class AbstractDatabaseInitializer {
 		DatabasePopulatorUtils.execute(populator, this.dataSource);
 	}
 
-	protected abstract DatabaseInitializerMode getMode();
+	private boolean isEnabled() {
+		if (getMode() == DatabaseInitializationMode.NEVER) {
+			return false;
+		}
+		if (getMode() == DatabaseInitializationMode.EMBEDDED
+				&& !EmbeddedDatabaseConnection.isEmbedded(this.dataSource)) {
+			return false;
+		}
+		return true;
+	}
+
+	protected abstract DatabaseInitializationMode getMode();
 
 	protected abstract String getSchemaLocation();
 
@@ -86,10 +96,6 @@ public abstract class AbstractDatabaseInitializer {
 		catch (MetaDataAccessException ex) {
 			throw new IllegalStateException("Unable to detect database type", ex);
 		}
-	}
-
-	private boolean isEmbeddedDataSource() {
-		return EmbeddedDatabaseConnection.isEmbedded(this.dataSource);
 	}
 
 }

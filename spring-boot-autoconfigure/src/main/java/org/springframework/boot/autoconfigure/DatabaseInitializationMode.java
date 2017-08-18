@@ -20,22 +20,23 @@ package org.springframework.boot.autoconfigure;
  * Supported {@link AbstractDatabaseInitializer database initializer} modes.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
-public enum DatabaseInitializerMode {
+public enum DatabaseInitializationMode {
 
 	/**
-	 * Always enabled.
+	 * Always initialize the database.
 	 */
 	ALWAYS,
 
 	/**
-	 * Enabled when using an embedded database.
+	 * Only initialize an embedded database.
 	 */
 	EMBEDDED,
 
 	/**
-	 * Never enabled.
+	 * Do not initialize the database.
 	 */
 	NEVER
 

@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
-import org.springframework.boot.autoconfigure.DatabaseInitializerMode;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
@@ -41,7 +41,7 @@ public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer 
 	}
 
 	@Override
-	protected DatabaseInitializerMode getMode() {
+	protected DatabaseInitializationMode getMode() {
 		return this.properties.getInitializeSchema();
 	}
 
