@@ -45,7 +45,6 @@ public class HikariDataSourceConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-		EmbeddedDatabaseConnection.override = null;
 	}
 
 	@Test

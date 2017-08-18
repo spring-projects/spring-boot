@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import org.junit.Test;
 
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

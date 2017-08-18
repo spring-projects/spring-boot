@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,11 +53,6 @@ public class TomcatDataSourceConfigurationTests {
 	@Before
 	public void init() {
 		TestPropertyValues.of(PREFIX + "initialize:false").applyTo(this.context);
-	}
-
-	@After
-	public void restore() {
-		EmbeddedDatabaseConnection.override = null;
 	}
 
 	@Test
