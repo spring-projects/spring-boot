@@ -1319,6 +1319,11 @@
 				<version>${solr.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-catalina-jmx-remote</artifactId>
+				<version>${tomcat.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-core</artifactId>
 				<version>${tomcat.version}</version>
