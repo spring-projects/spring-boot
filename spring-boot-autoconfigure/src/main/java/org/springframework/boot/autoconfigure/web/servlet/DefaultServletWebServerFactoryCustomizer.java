@@ -116,6 +116,9 @@ public class DefaultServletWebServerFactoryCustomizer
 		if (this.serverProperties.getSsl() != null) {
 			factory.setSsl(this.serverProperties.getSsl());
 		}
+		if (this.serverProperties.getHttp2() != null) {
+			factory.setHttp2(this.serverProperties.getHttp2());
+		}
 		if (this.serverProperties.getServlet() != null) {
 			factory.setJsp(this.serverProperties.getServlet().getJsp());
 		}
