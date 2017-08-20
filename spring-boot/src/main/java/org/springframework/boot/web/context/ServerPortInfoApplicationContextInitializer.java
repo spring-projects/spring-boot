@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -48,15 +49,15 @@ import org.springframework.core.env.PropertySource;
  * @since 2.0.0
  */
 public class ServerPortInfoApplicationContextInitializer
-		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+		implements ApplicationContextInitializer<ConfigurableApplicationContext>, ApplicationListener<WebServerInitializedEvent> {
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.addApplicationListener(
-				(WebServerInitializedEvent event) -> onApplicationEvent(event));
+		applicationContext.addApplicationListener(this);
 	}
 
-	protected void onApplicationEvent(WebServerInitializedEvent event) {
+	@Override
+	public void onApplicationEvent(WebServerInitializedEvent event) {
 		String propertyName = "local." + event.getServerId() + ".port";
 		setPortProperty(event.getApplicationContext(), propertyName,
 				event.getWebServer().getPort());
