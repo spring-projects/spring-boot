@@ -130,6 +130,9 @@ do as they were designed before this was clarified.
 | http://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
+| https://paulcwarren.github.io/spring-content/[Spring Content]
+| https://github.com/paulcwarren/spring-content
+
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
 
