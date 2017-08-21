@@ -1671,7 +1671,10 @@ configuration properties. Some of them are automatically detected according to t
 so you shouldn't have to set them.
 
 The `spring.jpa.hibernate.ddl-auto` is a special case in that it has different defaults
-depending on whether you are using an embedded database (`create-drop`) or not (`none`).
+depending on runtime conditions. If an embedded database is used and no schema manager,
+such as Liquibase or Flyway, is handling the `DataSource` it then defaults to
+`create-drop`. In all other cases it defaults to `none`.
+
 The dialect to use is also automatically detected based on the current `DataSource` but
 you can set `spring.jpa.database` yourself if you want to be explicit and bypass that
 check on startup.
@@ -1890,12 +1893,13 @@ database. This is controlled through two external properties:
 === Initialize a database using Hibernate
 You can set `spring.jpa.hibernate.ddl-auto` explicitly and the standard Hibernate property
 values are `none`, `validate`, `update`, `create`, `create-drop`. Spring Boot chooses a
-default value for you based on whether it thinks your database is embedded (default
-`create-drop`) or not (default `none`). An embedded database is detected by looking at the
-`Connection` type: `hsqldb`, `h2` and `derby` are embedded, the rest are not. Be careful
-when switching from in-memory to a '`real`' database that you don't make assumptions about
-the existence of the tables and data in the new platform. You either have to set `ddl-auto`
-explicitly, or use one of the other mechanisms to initialize the database.
+default value for you based on whether it thinks your database is embedded: default to
+`create-drop` if no schema manager has been detected, `none` in all other cases. An
+embedded database is detected by looking at the `Connection` type: `hsqldb`, `h2` and
+`derby` are embedded, the rest are not. Be careful when switching from in-memory to a
+'`real`' database that you don't make assumptions about the existence of the tables and
+data in the new platform. You either have to set `ddl-auto` explicitly, or use one of the
+other mechanisms to initialize the database.
 
 NOTE: You can output the schema creation by enabling the `org.hibernate.SQL` logger. This
 is done for you automatically if you enable the <<boot-features-logging-console-output,debug mode>>.

@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -37,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.jdbc.SchemaManagementProvider;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -85,12 +88,17 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
+	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
+
 	public HibernateJpaAutoConfiguration(DataSource dataSource,
 			JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
-			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
+			ObjectProvider<List<SchemaManagementProvider>> providers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
+		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
+				providers.getIfAvailable(Collections::emptyList));
 	}
 
 	@Override
@@ -101,7 +109,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties() {
 		Map<String, Object> vendorProperties = new LinkedHashMap<>();
-		vendorProperties.putAll(getProperties().getHibernateProperties(getDataSource()));
+		String defaultDdlMode = this.defaultDdlAutoProvider.getDefaultDdlAuto(
+				getDataSource());
+		vendorProperties.putAll(getProperties().getHibernateProperties(defaultDdlMode));
 		return vendorProperties;
 	}
 

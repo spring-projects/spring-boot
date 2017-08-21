@@ -60,44 +60,6 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultDdlAutoForMySql() throws Exception {
-		// Set up environment so we get a MySQL database but don't require server to be
-		// running...
-		TestPropertyValues
-				.of("spring.datasource.type:"
-						+ org.apache.tomcat.jdbc.pool.DataSource.class.getName(),
-				"spring.datasource.database:mysql",
-				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
-				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL")
-				.applyTo(this.context);
-		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
-		this.context.refresh();
-		JpaProperties bean = this.context.getBean(JpaProperties.class);
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource)
-				.get("hibernate.hbm2ddl.auto");
-		// Default is generic and safe
-		assertThat(actual).isNull();
-	}
-
-	@Test
-	public void testDefaultDdlAutoForEmbedded() throws Exception {
-		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
-		this.context.refresh();
-		JpaProperties bean = this.context.getBean(JpaProperties.class);
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource)
-				.get("hibernate.hbm2ddl.auto");
-		assertThat(actual).isEqualTo("create-drop");
-	}
-
-	@Test
 	public void testNamingStrategyDelegatorTakesPrecedence() {
 		TestPropertyValues
 				.of("spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
@@ -108,8 +70,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		Map<String, String> hibernateProperties = bean.getHibernateProperties(dataSource);
+		Map<String, String> hibernateProperties = bean.getHibernateProperties("create-drop");
 		assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy")).isNull();
 	}
 

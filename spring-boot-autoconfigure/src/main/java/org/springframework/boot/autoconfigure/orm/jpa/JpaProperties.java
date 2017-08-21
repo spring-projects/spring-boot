@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 
@@ -119,11 +118,11 @@ public class JpaProperties {
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory.
-	 * @param dataSource the DataSource in case it is needed to determine the properties
+	 * @param defaultDdlAuto the default DDL auto (can be {@code null})
 	 * @return some Hibernate properties for configuration
 	 */
-	public Map<String, String> getHibernateProperties(DataSource dataSource) {
-		return this.hibernate.getAdditionalProperties(this.properties, dataSource);
+	public Map<String, String> getHibernateProperties(String defaultDdlAuto) {
+		return this.hibernate.getAdditionalProperties(this.properties, defaultDdlAuto);
 	}
 
 	/**
@@ -146,8 +145,8 @@ public class JpaProperties {
 
 		/**
 		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
-		 * property. Default to "create-drop" when using an embedded database, "none"
-		 * otherwise.
+		 * property. Default to "create-drop" when using an embedded database and no
+		 * schema manager was detected, "none" otherwise.
 		 */
 		private String ddlAuto;
 
@@ -181,11 +180,11 @@ public class JpaProperties {
 		}
 
 		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
-				DataSource dataSource) {
+				String defaultDdlAuto) {
 			Map<String, String> result = new HashMap<>(existing);
 			applyNewIdGeneratorMappings(result);
 			getNaming().applyNamingStrategies(result);
-			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
+			String ddlAuto = determineDdlAuto(existing, defaultDdlAuto);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
 				result.put("hibernate.hbm2ddl.auto", ddlAuto);
 			}
@@ -205,23 +204,15 @@ public class JpaProperties {
 			}
 		}
 
-		private String getOrDeduceDdlAuto(Map<String, String> existing,
-				DataSource dataSource) {
-			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
-					: getDefaultDdlAuto(dataSource));
+		private String determineDdlAuto(Map<String, String> existing,
+				String defaultDdlAuto) {
+			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
 			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
 					&& !"none".equals(ddlAuto)) {
 				return ddlAuto;
 			}
 			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");
-			}
-			return "none";
-		}
-
-		private String getDefaultDdlAuto(DataSource dataSource) {
-			if (EmbeddedDatabaseConnection.isEmbedded(dataSource)) {
-				return "create-drop";
 			}
 			return "none";
 		}

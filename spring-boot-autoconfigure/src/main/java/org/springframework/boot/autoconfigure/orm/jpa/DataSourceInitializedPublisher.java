@@ -28,6 +28,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializedEvent;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
@@ -89,8 +90,10 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (this.properties == null) {
 			return true; // better safe than sorry
 		}
-		Map<String, String> hibernate = this.properties
-				.getHibernateProperties(dataSource);
+		String defaultDdlAuto = (EmbeddedDatabaseConnection.isEmbedded(dataSource)
+				? "create-drop" : "none");
+		Map<String, String> hibernate = this.properties.getHibernateProperties(
+				defaultDdlAuto);
 		if (hibernate.containsKey("hibernate.hbm2ddl.auto")) {
 			return true;
 		}
