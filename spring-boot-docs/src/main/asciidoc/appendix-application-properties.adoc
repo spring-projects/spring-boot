@@ -152,8 +152,8 @@ content into your application; rather pick only the properties that you need.
 	server.address= # Network address to which the server should bind to.
 	server.compression.enabled=false # If response compression is enabled.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
-	server.compression.mime-types= # Comma-separated list of MIME types that should be compressed. For instance `text/html,text/css,application/json`
-	server.compression.min-response-size= # Minimum response size that is required for compression to be performed. For instance 2048
+	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript # Comma-separated list of MIME types that should be compressed.
+	server.compression.min-response-size=2048 # Minimum response size that is required for compression to be performed.
 	server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
 	server.display-name=application # Display name of the application.
 	server.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
