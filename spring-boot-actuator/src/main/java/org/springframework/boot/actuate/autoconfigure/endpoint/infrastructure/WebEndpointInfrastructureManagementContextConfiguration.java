@@ -24,7 +24,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointCorsProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,7 +49,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 @ConditionalOnWebApplication
 @ManagementContextConfiguration
-@EnableConfigurationProperties({ EndpointCorsProperties.class,
+@EnableConfigurationProperties({ CorsEndpointProperties.class,
 		ManagementServerProperties.class })
 class WebEndpointInfrastructureManagementContextConfiguration {
 
@@ -91,7 +90,7 @@ class WebEndpointInfrastructureManagementContextConfiguration {
 		@ConditionalOnMissingBean
 		public WebEndpointServletHandlerMapping webEndpointServletHandlerMapping(
 				EndpointProvider<WebEndpointOperation> provider,
-				EndpointCorsProperties corsProperties,
+				CorsEndpointProperties corsProperties,
 				ManagementServerProperties managementServerProperties) {
 			WebEndpointServletHandlerMapping handlerMapping = new WebEndpointServletHandlerMapping(
 					managementServerProperties.getContextPath(), provider.getEndpoints(),
@@ -103,7 +102,7 @@ class WebEndpointInfrastructureManagementContextConfiguration {
 		}
 
 		private CorsConfiguration getCorsConfiguration(
-				EndpointCorsProperties properties) {
+				CorsEndpointProperties properties) {
 			if (CollectionUtils.isEmpty(properties.getAllowedOrigins())) {
 				return null;
 			}

@@ -200,7 +200,7 @@
   }
 ],"hints": [
   {
-    "name": "endpoints.cors.allowed-headers",
+    "name": "management.endpoints.cors.allowed-headers",
     "values": [
       {
         "value": "*"
@@ -213,7 +213,7 @@
     ]
   },
   {
-    "name": "endpoints.cors.allowed-methods",
+    "name": "management.endpoints.cors.allowed-methods",
     "values": [
       {
         "value": "*"
@@ -226,7 +226,7 @@
     ]
   },
   {
-    "name": "endpoints.cors.allowed-origins",
+    "name": "management.endpoints.cors.allowed-origins",
     "values": [
       {
         "value": "*"

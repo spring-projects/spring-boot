@@ -1114,14 +1114,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
 	endpoints.configprops.web.enabled=true # Expose the configprops endpoint as a Web endpoint.
 
-	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties])
-	endpoints.cors.allow-credentials= # Set whether credentials are supported. When not set, credentials are not supported.
-	endpoints.cors.allowed-headers= # Comma-separated list of headers to allow in a request. '*' allows all headers.
-	endpoints.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
-	endpoints.cors.allowed-origins= # Comma-separated list of origins to allow. '*' allows all origins. When not set, CORS support is disabled.
-	endpoints.cors.exposed-headers= # Comma-separated list of headers to include in a response.
-	endpoints.cors.max-age=1800 # How long, in seconds, the response from a pre-flight request can be cached by clients.
-
 	# ENVIRONMENT ENDPOINT  ({sc-spring-boot-actuator}/endpoint/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint])
 	endpoints.env.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.env.enabled=true # Enable the env endpoint.
@@ -1237,6 +1229,14 @@ content into your application; rather pick only the properties that you need.
 	# CLOUDFOUNDRY
 	management.cloudfoundry.enabled=true # Enable extended Cloud Foundry actuator endpoints.
     management.cloudfoundry.skip-ssl-validation=false # Skip SSL verification for Cloud Foundry actuator endpoint security calls.
+
+	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties])
+	management.endpoints.cors.allow-credentials= # Set whether credentials are supported. When not set, credentials are not supported.
+	management.cors.allowed-headers= # Comma-separated list of headers to allow in a request. '*' allows all headers.
+	management.endpoints.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
+	management.endpoints.cors.allowed-origins= # Comma-separated list of origins to allow. '*' allows all origins. When not set, CORS support is disabled.
+	management.endpoints.cors.exposed-headers= # Comma-separated list of headers to include in a response.
+	management.endpoints.cors.max-age=1800 # How long, in seconds, the response from a pre-flight request can be cached by clients.
 
 	# HEALTH INDICATORS
 	management.health.db.enabled=true # Enable database health check.

@@ -243,13 +243,13 @@ MVC or Spring WebFlux, Actuator's web endpoints can be configured to support suc
 scenarios.
 
 CORS support is disabled by default and is only enabled once the
-`endpoints.cors.allowed-origins` property has been set. The configuration below permits
-`GET` and `POST` calls from the `example.com` domain:
+`management.endpoints.cors.allowed-origins` property has been set. The configuration below
+permits `GET` and `POST` calls from the `example.com` domain:
 
 [source,properties,indent=0]
 ----
-	endpoints.cors.allowed-origins=http://example.com
-	endpoints.cors.allowed-methods=GET,POST
+	management.endpoints.cors.allowed-origins=http://example.com
+	management.endpoints.cors.allowed-methods=GET,POST
 ----
 
 TIP: Check {sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties]

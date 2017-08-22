@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint;
+package org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +27,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "endpoints.cors")
-public class EndpointCorsProperties {
+@ConfigurationProperties(prefix = "management.endpoints.cors")
+public class CorsEndpointProperties {
 
 	/**
 	 * Comma-separated list of origins to allow. '*' allows all origins. When not set,
