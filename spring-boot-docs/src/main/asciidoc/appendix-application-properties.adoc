@@ -1238,6 +1238,11 @@ content into your application; rather pick only the properties that you need.
 	management.endpoints.cors.exposed-headers= # Comma-separated list of headers to include in a response.
 	management.endpoints.cors.max-age=1800 # How long, in seconds, the response from a pre-flight request can be cached by clients.
 
+	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint.infrastructure/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
+	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
+	management.endpoints.jmx.static-names=false # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
+	management.endpoints.jmx.unique-names=false # Ensure that ObjectNames are modified in case of conflict.
+
 	# HEALTH INDICATORS
 	management.health.db.enabled=true # Enable database health check.
 	management.health.cassandra.enabled=true # Enable cassandra health check.
@@ -1266,11 +1271,6 @@ content into your application; rather pick only the properties that you need.
 	management.info.env.enabled=true # Enable environment info.
 	management.info.git.enabled=true # Enable git info.
 	management.info.git.mode=simple # Mode to use to expose git information.
-
-	# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/endpoint.infrastructure/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
-	management.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
-	management.jmx.static-names=false # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
-	management.jmx.unique-names=false # Ensure that ObjectNames are modified in case of conflict.
 
 	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
 	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.

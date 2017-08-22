@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties("management.jmx")
+@ConfigurationProperties("management.endpoints.jmx")
 public class JmxEndpointExporterProperties {
 
 	/**
