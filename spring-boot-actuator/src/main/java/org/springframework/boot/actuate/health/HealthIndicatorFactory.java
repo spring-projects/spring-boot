@@ -32,7 +32,7 @@ public class HealthIndicatorFactory {
 	 * Create a {@link CompositeHealthIndicator} based on the specified health indicators.
 	 * @param healthAggregator the {@link HealthAggregator}
 	 * @param healthIndicators the {@link HealthIndicator} instances mapped by name
-	 * @return an {@link HealthIndicator} that delegates to the specified
+	 * @return a {@link HealthIndicator} that delegates to the specified
 	 * {@code healthIndicators}.
 	 */
 	public HealthIndicator createHealthIndicator(

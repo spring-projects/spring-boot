@@ -75,7 +75,7 @@ rules of thumb:
   are `server.port`, `server.address` etc. In a running Actuator app look at the
   `configprops` endpoint.
 * Look for uses of the `bind` method on the `Binder` to pull configuration values explicitly out of the
-  `Environment` in a relaxed manner. It is often is used with a prefix.
+  `Environment` in a relaxed manner. It is often used with a prefix.
 * Look for `@Value` annotations that bind directly to the `Environment`.
 * Look for `@ConditionalOnExpression` annotations that switch features on and off in
   response to SpEL expressions, normally evaluated with placeholders resolved from the
@@ -125,7 +125,7 @@ TIP: The `Environment` will already have been prepared with all the usual proper
 that Spring Boot loads by default. It is therefore possible to get the location of the
 file from the environment. This example adds the `custom-resource` property source at the
 end of the list so that a key defined in any of the usual other locations takes
-precedence. A custom implementation may obviously defines another order.
+precedence. A custom implementation may obviously define another order.
 
 NOTE: While using `@PropertySource` on your `@SpringBootApplication` seems convenient and
 easy enough to load a custom resource in the `Environment`, we do not recommend it as
@@ -835,7 +835,7 @@ nuclear option is to add your own `TomcatServletWebServerFactory`.
 
 [[howto-enable-multiple-connectors-in-tomcat]]
 === Enable Multiple Connectors with Tomcat
-Add a `org.apache.catalina.connector.Connector` to the
+Add an `org.apache.catalina.connector.Connector` to the
 `TomcatServletWebServerFactory` which can allow multiple connectors, e.g. HTTP and
 HTTPS connector:
 

@@ -560,7 +560,7 @@ the search order becomes:
 
 This search ordering allows you to specify default values in one configuration file
 and then selectively override those values in another. You can provide default values
-for you application in `application.properties` (or whatever other basename you choose
+for your application in `application.properties` (or whatever other basename you choose
 with `spring.config.name`) in one of the default locations. These default values can
 then be overriden at runtime with a different file located in one of the custom
 locations.
@@ -2872,7 +2872,7 @@ language feature). Example:
 [[boot-features-security-custom-user-info-client]]
 ==== Client
 To make your web-app into an OAuth2 client you can simply add `@EnableOAuth2Client` and
-Spring Boot will create a `OAuth2ClientContext` and `OAuth2ProtectedResourceDetails` that
+Spring Boot will create an `OAuth2ClientContext` and `OAuth2ProtectedResourceDetails` that
 are necessary to create an `OAuth2RestOperations`. Spring Boot does not automatically
 create such bean but you can easily create your own:
 
@@ -4279,7 +4279,7 @@ If the connection to InfluxDB requires a user and password, you can set the
 `spring.influx.user` and `spring.influx.password` properties accordingly.
 
 InfluxDB relies on OkHttp. If you need to tune the http client `InfluxDB` uses behind the
-scenes, you can register a `OkHttpClient.Builder` bean.
+scenes, you can register an `OkHttpClient.Builder` bean.
 
 
 
@@ -4443,7 +4443,7 @@ There are several ways to customize the underlying `javax.cache.cacheManager`:
   invoked with the reference of the `CacheManager` for full customization.
 
 TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
-automatically in a `org.springframework.cache.CacheManager` implementation that the
+automatically in an `org.springframework.cache.CacheManager` implementation that the
 abstraction expects. No further customization is applied on it.
 
 
