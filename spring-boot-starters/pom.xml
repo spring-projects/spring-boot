@@ -22,6 +22,7 @@
 	<modules>
 		<module>spring-boot-starter</module>
 		<module>spring-boot-starter-activemq</module>
+		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-amqp</module>
 		<module>spring-boot-starter-aop</module>
 		<module>spring-boot-starter-artemis</module>
@@ -58,7 +59,7 @@
 		<module>spring-boot-starter-mail</module>
 		<module>spring-boot-starter-mobile</module>
 		<module>spring-boot-starter-mustache</module>
-		<module>spring-boot-starter-actuator</module>
+		<module>spring-boot-starter-netty</module>
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-quartz</module>
 		<module>spring-boot-starter-reactor-netty</module>
