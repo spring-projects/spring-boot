@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 
 /**
@@ -48,7 +47,7 @@ public class HealthStatusHttpMapper {
 
 	/**
 	 * Set specific status mappings.
-	 * @param statusMapping a map of status code to {@link HttpStatus}
+	 * @param statusMapping a map of status code to {@code HttpStatus}
 	 */
 	public void setStatusMapping(Map<String, Integer> statusMapping) {
 		Assert.notNull(statusMapping, "StatusMapping must not be null");
@@ -57,7 +56,7 @@ public class HealthStatusHttpMapper {
 
 	/**
 	 * Add specific status mappings to the existing set.
-	 * @param statusMapping a map of status code to {@link HttpStatus}
+	 * @param statusMapping a map of status code to {@code HttpStatus}
 	 */
 	public void addStatusMapping(Map<String, Integer> statusMapping) {
 		Assert.notNull(statusMapping, "StatusMapping must not be null");
