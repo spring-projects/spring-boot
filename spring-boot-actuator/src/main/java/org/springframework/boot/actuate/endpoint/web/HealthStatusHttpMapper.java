@@ -42,8 +42,8 @@ public class HealthStatusHttpMapper {
 	}
 
 	private void setupDefaultStatusMapping() {
-		addStatusMapping(Status.DOWN, 503);
-		addStatusMapping(Status.OUT_OF_SERVICE, 503);
+		addStatusMapping(Status.DOWN, HttpStatus.SERVICE_UNAVAILABLE.value());
+		addStatusMapping(Status.OUT_OF_SERVICE, HttpStatus.SERVICE_UNAVAILABLE.value());
 	}
 
 	/**
@@ -104,12 +104,10 @@ public class HealthStatusHttpMapper {
 		if (code != null) {
 			return this.statusMapping.keySet().stream()
 					.filter((key) -> code.equals(getUniformValue(key)))
-					.map(this.statusMapping::get).findFirst().orElse(200);
+					.map(this.statusMapping::get).findFirst().orElse(HttpStatus.OK.value());
 		}
-		return 200;
+		return HttpStatus.OK.value();
 	}
-
-
 
 	private String getUniformValue(String code) {
 		if (code == null) {
