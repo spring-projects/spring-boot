@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.web.WebEndpointExtension;
 import org.springframework.boot.endpoint.web.WebEndpointResponse;

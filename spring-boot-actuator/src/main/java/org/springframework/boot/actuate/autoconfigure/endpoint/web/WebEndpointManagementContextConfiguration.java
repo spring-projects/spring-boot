@@ -18,15 +18,16 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorProperties;
 import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.web.AuditEventsWebEndpointExtension;
-import org.springframework.boot.actuate.endpoint.web.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.LogFileWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.StatusWebEndpointExtension;
+import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -48,7 +49,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 @ManagementContextConfiguration
-@EnableConfigurationProperties(HealthWebEndpointExtensionProperties.class)
+@EnableConfigurationProperties(HealthIndicatorProperties.class)
 public class WebEndpointManagementContextConfiguration {
 
 	@Bean
@@ -63,9 +64,8 @@ public class WebEndpointManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint
 	@ConditionalOnBean(value = HealthEndpoint.class, search = SearchStrategy.CURRENT)
 	public HealthWebEndpointExtension healthWebEndpointExtension(HealthEndpoint delegate,
-			HealthWebEndpointExtensionProperties extensionProperties) {
-		return new HealthWebEndpointExtension(delegate,
-				createHealthStatusHttpMapper(extensionProperties));
+			HealthStatusHttpMapper healthStatusHttpMapper) {
+		return new HealthWebEndpointExtension(delegate, healthStatusHttpMapper);
 	}
 
 	@Bean
@@ -73,16 +73,17 @@ public class WebEndpointManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint
 	@ConditionalOnBean(value = StatusEndpoint.class, search = SearchStrategy.CURRENT)
 	public StatusWebEndpointExtension statusWebEndpointExtension(StatusEndpoint delegate,
-			HealthWebEndpointExtensionProperties extensionProperties) {
-		return new StatusWebEndpointExtension(delegate,
-				createHealthStatusHttpMapper(extensionProperties));
+			HealthStatusHttpMapper healthStatusHttpMapper) {
+		return new StatusWebEndpointExtension(delegate, healthStatusHttpMapper);
 	}
 
-	private HealthStatusHttpMapper createHealthStatusHttpMapper(
-			HealthWebEndpointExtensionProperties extensionProperties) {
+	@Bean
+	@ConditionalOnMissingBean
+	public HealthStatusHttpMapper createHealthStatusHttpMapper(
+			HealthIndicatorProperties healthIndicatorProperties) {
 		HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
-		if (extensionProperties.getMapping() != null) {
-			statusHttpMapper.addStatusMapping(extensionProperties.getMapping());
+		if (healthIndicatorProperties.getHttpMapping() != null) {
+			statusHttpMapper.addStatusMapping(healthIndicatorProperties.getHttpMapping());
 		}
 		return statusHttpMapper;
 	}

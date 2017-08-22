@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web;
+package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.util.Assert;
 
 /**
@@ -107,8 +106,6 @@ public class HealthStatusHttpMapper {
 		}
 		return 200;
 	}
-
-
 
 	private String getUniformValue(String code) {
 		if (code == null) {

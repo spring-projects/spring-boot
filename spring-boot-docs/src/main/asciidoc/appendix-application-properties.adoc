@@ -1139,7 +1139,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.health.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.health.enabled=true # Enable the health endpoint.
 	endpoints.health.jmx.enabled=true # Expose the health endpoint as a JMX MBean.
-	endpoints.health.mapping= # Mapping of health statuses to HttpStatus codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
 	endpoints.health.web.enabled=true # Expose the health endpoint as a Web endpoint.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/endpoint/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
@@ -1258,6 +1257,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.rabbit.enabled=true # Enable RabbitMQ health check.
 	management.health.redis.enabled=true # Enable Redis health check.
 	management.health.solr.enabled=true # Enable Solr health check.
+	management.health.status.http-mapping= # Mapping of health statuses to HttpStatus codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UP, UNKNOWN # Comma-separated list of health statuses in order of severity.
 
 	# INFO CONTRIBUTORS ({sc-spring-boot-actuator}/autoconfigure/InfoContributorProperties.{sc-ext}[InfoContributorProperties])

@@ -25,12 +25,12 @@ import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.web.AuditEventsWebEndpointExtension;
-import org.springframework.boot.actuate.endpoint.web.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.LogFileWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.StatusWebEndpointExtension;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -68,7 +68,7 @@ public class WebEndpointManagementContextConfigurationTests {
 	@Test
 	public void healthStatusMappingCanBeCustomized() {
 		ApplicationContextRunner contextRunner = contextRunner()
-				.withPropertyValues("endpoints.health.mapping.CUSTOM=500")
+				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.withUserConfiguration(HealthEndpointConfiguration.class);
 		contextRunner.run((context) -> {
 			HealthWebEndpointExtension extension = context
@@ -97,7 +97,7 @@ public class WebEndpointManagementContextConfigurationTests {
 	@Test
 	public void statusMappingCanBeCustomized() {
 		ApplicationContextRunner contextRunner = contextRunner()
-				.withPropertyValues("endpoints.health.mapping.CUSTOM=500")
+				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.withUserConfiguration(StatusEndpointConfiguration.class);
 		contextRunner.run((context) -> {
 			StatusWebEndpointExtension extension = context

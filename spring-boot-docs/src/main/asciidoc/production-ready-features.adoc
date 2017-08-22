@@ -383,13 +383,15 @@ to your application properties:
 
 The HTTP status code in the response reflects the overall health status (e.g. `UP`
 maps to 200, `OUT_OF_SERVICE` or `DOWN` to 503). You might also want to register custom
-status mappings with the `HealthMvcEndpoint` if you access the health endpoint over HTTP.
-For example, the following maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
+status mappings if you access the health endpoint over HTTP. For example, the following
+maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
 
 [source,properties,indent=0]
 ----
-	endpoints.health.mapping.FATAL=503
+	management.health.status.http-mapping.FATAL=503
 ----
+
+TIP: If you need more control you can define your own `HealthStatusHttpMapper` bean.
 
 The default status mappings for the built-in statuses are:
 
