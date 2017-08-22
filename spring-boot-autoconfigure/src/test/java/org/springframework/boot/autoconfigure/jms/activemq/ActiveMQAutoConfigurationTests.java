@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 
 /**
- * Tests for {@link ActiveMQAutoConfiguration}
+ * Tests for {@link ActiveMQAutoConfiguration}.
  *
  * @author Andy Wilkinson
  * @author Aurélien Leboulanger
@@ -68,7 +68,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultsConnectionFactoryAreApplied() {
+	public void defaultConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=false")
 				.run((context) -> {
@@ -96,7 +96,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConnectionFactoryAreApplied() {
+	public void customConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=false",
 						"spring.activemq.brokerUrl=vm://localhost?useJmx=false&broker.persistent=false",
@@ -124,7 +124,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultsPooledConnectionFactoryAreApplied() {
+	public void defaultPooledConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=true")
 				.run((context) -> {
@@ -160,7 +160,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPooledConnectionFactoryAreApplied() {
+	public void customPooledConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=true",
 						"spring.activemq.pool.blockIfFull=false",

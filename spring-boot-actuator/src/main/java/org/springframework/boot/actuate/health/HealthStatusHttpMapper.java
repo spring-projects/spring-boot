@@ -46,7 +46,7 @@ public class HealthStatusHttpMapper {
 
 	/**
 	 * Set specific status mappings.
-	 * @param statusMapping a map of status code to {@code HttpStatus}
+	 * @param statusMapping a map of health status code to HTTP status code
 	 */
 	public void setStatusMapping(Map<String, Integer> statusMapping) {
 		Assert.notNull(statusMapping, "StatusMapping must not be null");
@@ -55,7 +55,7 @@ public class HealthStatusHttpMapper {
 
 	/**
 	 * Add specific status mappings to the existing set.
-	 * @param statusMapping a map of status code to {@code HttpStatus}
+	 * @param statusMapping a map of health status code to HTTP status code
 	 */
 	public void addStatusMapping(Map<String, Integer> statusMapping) {
 		Assert.notNull(statusMapping, "StatusMapping must not be null");
