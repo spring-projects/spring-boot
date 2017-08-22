@@ -133,6 +133,9 @@ do as they were designed before this was clarified.
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
 
+| https://github.com/StripesFramework/stripes[Stripes]
+| https://github.com/juanpablo-santos/stripes-spring-boot
+
 | http://teiid.org/[Teiid]
 | https://github.com/teiid/teiid-spring-boot
 
