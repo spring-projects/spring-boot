@@ -301,6 +301,7 @@
 		<dependency>
 			<groupId>io.projectreactor.ipc</groupId>
 			<artifactId>reactor-netty</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.undertow</groupId>
