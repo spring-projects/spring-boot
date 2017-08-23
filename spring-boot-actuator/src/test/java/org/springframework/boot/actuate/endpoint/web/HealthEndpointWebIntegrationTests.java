@@ -22,9 +22,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.health.CompositeHealthIndicatorFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicatorFactory;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -69,7 +69,7 @@ public class HealthEndpointWebIntegrationTests {
 		@Bean
 		public HealthEndpoint healthEndpoint(
 				Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(new HealthIndicatorFactory().createHealthIndicator(
+			return new HealthEndpoint(new CompositeHealthIndicatorFactory().createHealthIndicator(
 					new OrderedHealthAggregator(), healthIndicators));
 		}
 

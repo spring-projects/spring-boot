@@ -17,8 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
@@ -42,10 +44,11 @@ import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.ThreadDumpEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.health.CompositeHealthIndicatorFactory;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicatorFactory;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
@@ -55,6 +58,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -62,8 +66,10 @@ import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 
 /**
@@ -174,15 +180,16 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Configuration
+	@Import(HealthIndicatorsSupplierConfiguration.class)
 	static class HealthEndpointConfiguration {
 
 		private final HealthIndicator healthIndicator;
 
 		HealthEndpointConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
-				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
-			this.healthIndicator = new HealthIndicatorFactory().createHealthIndicator(
+				Supplier<Map<String, HealthIndicator>> healthIndicatorsSupplier) {
+			this.healthIndicator = new CompositeHealthIndicatorFactory().createHealthIndicator(
 					healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
-					healthIndicators.getIfAvailable(Collections::emptyMap));
+					healthIndicatorsSupplier.get());
 		}
 
 		@Bean
@@ -197,6 +204,55 @@ public class EndpointAutoConfiguration {
 		@ConditionalOnEnabledEndpoint
 		public StatusEndpoint statusEndpoint() {
 			return new StatusEndpoint(this.healthIndicator);
+		}
+
+	}
+
+	@Configuration
+	static class HealthIndicatorsSupplierConfiguration {
+
+		@Configuration
+		@ConditionalOnMissingClass("reactor.core.publisher.Flux")
+		static class SimpleHealthIndicatorsSupplierConfiguration {
+
+			@Bean
+			public Supplier<Map<String, HealthIndicator>> allHealthIndicators(
+					ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
+				return () -> healthIndicators.getIfAvailable(Collections::emptyMap);
+			}
+
+		}
+
+		@Configuration
+		@ConditionalOnClass(name = "reactor.core.publisher.Flux")
+		static class ReactiveHealthIndicatorsSupplierConfiguration {
+
+			@Bean
+			public Supplier<Map<String, HealthIndicator>> allHealthIndicators(
+					ObjectProvider<Map<String, HealthIndicator>> healthIndicators,
+					ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators) {
+				return () -> merge(healthIndicators.getIfAvailable(Collections::emptyMap),
+						reactiveHealthIndicators.getIfAvailable(Collections::emptyMap));
+			}
+
+			private Map<String, HealthIndicator> merge(
+					Map<String, HealthIndicator> healthIndicators,
+					Map<String, ReactiveHealthIndicator> reactiveHealthIndicators) {
+				if (ObjectUtils.isEmpty(reactiveHealthIndicators)) {
+					return healthIndicators;
+				}
+				Map<String, HealthIndicator> allIndicators = new LinkedHashMap<>(
+						healthIndicators);
+				reactiveHealthIndicators.forEach((beanName, indicator) -> {
+					allIndicators.computeIfAbsent(beanName, n -> adapt(indicator));
+				});
+				return allIndicators;
+			}
+
+			private HealthIndicator adapt(ReactiveHealthIndicator healthIndicator) {
+				return () -> healthIndicator.health().block();
+			}
+
 		}
 
 	}

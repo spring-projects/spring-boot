@@ -17,16 +17,28 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.util.Assert;
 
 /**
- * Factory to create a {@link HealthIndicator}.
+ * Factory to create a {@link CompositeHealthIndicator}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class HealthIndicatorFactory {
+public class CompositeHealthIndicatorFactory {
+
+	private final Function<String, String> healthIndicatorNameFactory;
+
+	public CompositeHealthIndicatorFactory(
+			Function<String, String> healthIndicatorNameFactory) {
+		this.healthIndicatorNameFactory = healthIndicatorNameFactory;
+	}
+
+	public CompositeHealthIndicatorFactory() {
+		this(new HealthIndicatorNameFactory());
+	}
 
 	/**
 	 * Create a {@link CompositeHealthIndicator} based on the specified health indicators.
@@ -35,30 +47,17 @@ public class HealthIndicatorFactory {
 	 * @return a {@link HealthIndicator} that delegates to the specified
 	 * {@code healthIndicators}.
 	 */
-	public HealthIndicator createHealthIndicator(HealthAggregator healthAggregator,
+	public CompositeHealthIndicator createHealthIndicator(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> healthIndicators) {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
 				healthAggregator);
 		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
-			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
+			String name = this.healthIndicatorNameFactory.apply(entry.getKey());
+			healthIndicator.addHealthIndicator(name, entry.getValue());
 		}
 		return healthIndicator;
-	}
-
-	/**
-	 * Turns the health indicator name into a key that can be used in the map of health
-	 * information.
-	 * @param name the health indicator name
-	 * @return the key
-	 */
-	private String getKey(String name) {
-		int index = name.toLowerCase().indexOf("healthindicator");
-		if (index > 0) {
-			return name.substring(0, index);
-		}
-		return name;
 	}
 
 }

@@ -35,9 +35,9 @@ import org.springframework.util.Assert;
  */
 public class RedisHealthIndicator extends AbstractHealthIndicator {
 
-	private static final String VERSION = "version";
+	static final String VERSION = "version";
 
-	private static final String REDIS_VERSION = "redis_version";
+	static final String REDIS_VERSION = "redis_version";
 
 	private final RedisConnectionFactory redisConnectionFactory;
 

@@ -24,13 +24,13 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HealthIndicatorFactory}.
+ * Tests for {@link CompositeHealthIndicatorFactory}.
  *
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-public class HealthIndicatorFactoryTests {
+public class CompositeHealthIndicatorFactoryTests {
 
 	@Test
 	public void upAndUpIsAggregatedToUp() throws Exception {
@@ -62,7 +62,7 @@ public class HealthIndicatorFactoryTests {
 
 	private HealthIndicator createHealthIndicator(
 			Map<String, HealthIndicator> healthIndicators) {
-		return new HealthIndicatorFactory()
+		return new CompositeHealthIndicatorFactory()
 				.createHealthIndicator(new OrderedHealthAggregator(), healthIndicators);
 	}
 

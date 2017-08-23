@@ -16,37 +16,46 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.RedisReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HealthIndicatorAutoConfiguration} that validates the outcome of
- * combining reactive and non reactive health indicators.
+ * Tests for {@link ReactiveHealthIndicatorsConfiguration}.
  *
  * @author Stephane Nicoll
  */
-public class HealthIndicatorAutoConfigurationTests {
+public class ReactiveHealthIndicatorsConfigurationTests {
 
 	public final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void reactiveRedisTakePrecedence() {
+	public void redisHealthIndicator() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveHealthIndicator.class);
-					assertThat(context).getBean("redisHealthIndicator")
-							.isInstanceOf(RedisReactiveHealthIndicator.class);
-				});
+				.withConfiguration(AutoConfigurations.of(
+						RedisAutoConfiguration.class))
+				.withPropertyValues("management.health.diskspace.enabled:false")
+				.run(hasSingleReactiveHealthIndicator(RedisReactiveHealthIndicator.class));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> hasSingleReactiveHealthIndicator(
+			Class<? extends ReactiveHealthIndicator> type) {
+		return (context) -> assertThat(context).getBeans(ReactiveHealthIndicator.class)
+				.hasSize(1)
+				.hasValueSatisfying(
+						new Condition<>((indicator) -> indicator.getClass().equals(type),
+								"Wrong indicator type"));
 	}
 
 }

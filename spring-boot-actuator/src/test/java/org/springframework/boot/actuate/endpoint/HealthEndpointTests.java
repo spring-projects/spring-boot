@@ -21,9 +21,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.health.CompositeHealthIndicatorFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicatorFactory;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.Status;
 
@@ -59,7 +59,7 @@ public class HealthEndpointTests {
 
 	private HealthIndicator createHealthIndicator(
 			Map<String, HealthIndicator> healthIndicators) {
-		return new HealthIndicatorFactory()
+		return new CompositeHealthIndicatorFactory()
 				.createHealthIndicator(new OrderedHealthAggregator(), healthIndicators);
 	}
 

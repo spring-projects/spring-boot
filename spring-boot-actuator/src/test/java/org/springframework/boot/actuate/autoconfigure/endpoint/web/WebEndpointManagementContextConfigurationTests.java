@@ -25,14 +25,17 @@ import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.web.AuditEventsWebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.HealthReactiveWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.LogFileWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.StatusReactiveWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.StatusWebEndpointExtension;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -67,7 +70,7 @@ public class WebEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void healthStatusMappingCanBeCustomized() {
-		ApplicationContextRunner contextRunner = contextRunner()
+		WebApplicationContextRunner contextRunner = webContextRunner()
 				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.withUserConfiguration(HealthEndpointConfiguration.class);
 		contextRunner.run((context) -> {
@@ -94,7 +97,7 @@ public class WebEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void statusMappingCanBeCustomized() {
-		ApplicationContextRunner contextRunner = contextRunner()
+		WebApplicationContextRunner contextRunner = webContextRunner()
 				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.withUserConfiguration(StatusEndpointConfiguration.class);
 		contextRunner.run((context) -> {
@@ -114,6 +117,70 @@ public class WebEndpointManagementContextConfigurationTests {
 	}
 
 	@Test
+	public void reactiveHealthWebEndpointExtensionIsAutoConfigured() {
+		reactiveWebContextRunner(HealthEndpointConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(HealthReactiveWebEndpointExtension.class);
+			assertThat(context).doesNotHaveBean(HealthWebEndpointExtension.class);
+		});
+
+	}
+
+	@Test
+	public void reactiveHealthStatusMappingCanBeCustomized() {
+		reactiveWebContextRunner(HealthEndpointConfiguration.class)
+				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
+				.run((context) -> {
+					HealthReactiveWebEndpointExtension extension = context
+							.getBean(HealthReactiveWebEndpointExtension.class);
+					Map<String, Integer> statusMappings = getStatusMapping(extension);
+					assertThat(statusMappings).containsEntry("DOWN", 503);
+					assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
+					assertThat(statusMappings).containsEntry("CUSTOM", 500);
+				});
+	}
+
+	@Test
+	public void reactiveHealthWebEndpointExtensionCanBeDisabled() {
+		reactiveWebContextRunner(HealthEndpointConfiguration.class)
+				.withPropertyValues("endpoints.health.enabled=false").run((context) -> {
+			assertThat(context).doesNotHaveBean(HealthReactiveWebEndpointExtension.class);
+			assertThat(context).doesNotHaveBean(HealthWebEndpointExtension.class);
+		});
+
+	}
+
+	@Test
+	public void reactiveStatusWebEndpointExtensionIsAutoConfigured() {
+		reactiveWebContextRunner(StatusEndpointConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(StatusReactiveWebEndpointExtension.class);
+			assertThat(context).doesNotHaveBean(StatusWebEndpointExtension.class);
+		});
+	}
+
+	@Test
+	public void reactiveStatusMappingCanBeCustomized() {
+		reactiveWebContextRunner(StatusEndpointConfiguration.class)
+				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
+				.run((context) -> {
+					StatusReactiveWebEndpointExtension extension = context
+							.getBean(StatusReactiveWebEndpointExtension.class);
+					Map<String, Integer> statusMappings = getStatusMapping(extension);
+					assertThat(statusMappings).containsEntry("DOWN", 503);
+					assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
+					assertThat(statusMappings).containsEntry("CUSTOM", 500);
+				});
+	}
+
+	@Test
+	public void reactiveStatusWebEndpointExtensionCanBeDisabled() {
+		reactiveWebContextRunner(StatusEndpointConfiguration.class)
+				.withPropertyValues("endpoints.status.enabled=false").run((context) -> {
+			assertThat(context).doesNotHaveBean(StatusReactiveWebEndpointExtension.class);
+			assertThat(context).doesNotHaveBean(StatusWebEndpointExtension.class);
+		});
+	}
+
+	@Test
 	public void auditEventsWebEndpointExtensionIsAutoConfigured() {
 		beanIsAutoConfigured(AuditEventsWebEndpointExtension.class,
 				AuditEventsEndpointConfiguration.class);
@@ -128,28 +195,28 @@ public class WebEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {
-		contextRunner().withPropertyValues("logging.file:test.log").run(
+		webContextRunner().withPropertyValues("logging.file:test.log").run(
 				(context) -> assertThat(context.getBeansOfType(LogFileWebEndpoint.class))
 						.hasSize(1));
 	}
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingPathIsSet() {
-		contextRunner().withPropertyValues("logging.path:test/logs").run(
+		webContextRunner().withPropertyValues("logging.path:test/logs").run(
 				(context) -> assertThat(context.getBeansOfType(LogFileWebEndpoint.class))
 						.hasSize(1));
 	}
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
-		contextRunner().withPropertyValues("endpoints.logfile.external-file:external.log")
+		webContextRunner().withPropertyValues("endpoints.logfile.external-file:external.log")
 				.run((context) -> assertThat(
 						context.getBeansOfType(LogFileWebEndpoint.class)).hasSize(1));
 	}
 
 	@Test
 	public void logFileWebEndpointCanBeDisabled() {
-		contextRunner()
+		webContextRunner()
 				.withPropertyValues("logging.file:test.log",
 						"endpoints.logfile.enabled:false")
 				.run((context) -> assertThat(context)
@@ -157,19 +224,31 @@ public class WebEndpointManagementContextConfigurationTests {
 	}
 
 	private void beanIsAutoConfigured(Class<?> beanType, Class<?>... config) {
-		contextRunner().withPropertyValues("endpoints.default.web.enabled:true")
+		webContextRunner().withPropertyValues("endpoints.default.web.enabled:true")
 				.withUserConfiguration(config)
 				.run((context) -> assertThat(context).hasSingleBean(beanType));
 	}
 
+	private ReactiveWebApplicationContextRunner reactiveWebContextRunner(
+			Class<?>... config) {
+		return reactiveWebContextRunner()
+				.withPropertyValues("endpoints.default.web.enabled:true")
+				.withUserConfiguration(config);
+	}
+
 	private void beanIsNotAutoConfiguredWhenEndpointIsDisabled(Class<?> webExtension,
 			String id, Class<?>... config) {
-		contextRunner().withPropertyValues("endpoints." + id + ".enabled=false")
+		webContextRunner().withPropertyValues("endpoints." + id + ".enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(webExtension));
 	}
 
-	private ApplicationContextRunner contextRunner() {
-		return new ApplicationContextRunner().withConfiguration(
+	private WebApplicationContextRunner webContextRunner() {
+		return new WebApplicationContextRunner().withConfiguration(
+				AutoConfigurations.of(WebEndpointManagementContextConfiguration.class));
+	}
+
+	private ReactiveWebApplicationContextRunner reactiveWebContextRunner() {
+		return new ReactiveWebApplicationContextRunner().withConfiguration(
 				AutoConfigurations.of(WebEndpointManagementContextConfiguration.class));
 	}
 

@@ -213,7 +213,7 @@ public final class Health {
 		 * @param ex the exception
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withException(Exception ex) {
+		public Builder withException(Throwable ex) {
 			Assert.notNull(ex, "Exception must not be null");
 			return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
 		}
@@ -248,11 +248,11 @@ public final class Health {
 		}
 
 		/**
-		 * Set status to {@link Status#DOWN} and add details for given {@link Exception}.
+		 * Set status to {@link Status#DOWN} and add details for given {@link Throwable}.
 		 * @param ex the exception
 		 * @return this {@link Builder} instance
 		 */
-		public Builder down(Exception ex) {
+		public Builder down(Throwable ex) {
 			return down().withException(ex);
 		}
 

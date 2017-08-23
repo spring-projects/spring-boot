@@ -22,11 +22,6 @@ import java.util.Properties;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.connection.ClusterInfo;
 import org.springframework.data.redis.connection.RedisClusterConnection;
@@ -48,18 +43,6 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  */
 public class RedisHealthIndicatorTests {
-
-	@Test
-	public void indicatorExists() {
-		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-						EndpointAutoConfiguration.class,
-						HealthIndicatorAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RedisConnectionFactory.class);
-					assertThat(context).hasSingleBean(RedisHealthIndicator.class);
-				});
-	}
 
 	@Test
 	public void redisIsUp() throws Exception {
