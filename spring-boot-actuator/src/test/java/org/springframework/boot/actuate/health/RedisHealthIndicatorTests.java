@@ -20,14 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.connection.ClusterInfo;
 import org.springframework.data.redis.connection.RedisClusterConnection;
@@ -46,28 +45,18 @@ import static org.mockito.Mockito.verify;
  *
  * @author Christian Dupuis
  * @author Richard Santana
+ * @author Stephane Nicoll
  */
 public class RedisHealthIndicatorTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
-
 	@Test
 	public void indicatorExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, RedisAutoConfiguration.class,
-				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(RedisConnectionFactory.class))
-				.hasSize(1);
-		RedisHealthIndicator healthIndicator = this.context
-				.getBean(RedisHealthIndicator.class);
-		assertThat(healthIndicator).isNotNull();
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(
+				RedisAutoConfiguration.class, EndpointAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class)).run((context) -> {
+			assertThat(context).hasSingleBean(RedisConnectionFactory.class);
+			assertThat(context).hasSingleBean(RedisHealthIndicator.class);
+		});
 	}
 
 	@Test
@@ -75,35 +64,30 @@ public class RedisHealthIndicatorTests {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = mock(
-				RedisConnectionFactory.class);
-		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
 		given(redisConnection.info()).willReturn(info);
-		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
-				redisConnectionFactory);
+		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("2.8.9");
-		verify(redisConnectionFactory).getConnection();
-		verify(redisConnection).info();
 	}
 
 	@Test
 	public void redisIsDown() throws Exception {
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = mock(
-				RedisConnectionFactory.class);
-		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
-		given(redisConnection.info())
-				.willThrow(new RedisConnectionFailureException("Connection failed"));
-		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
-				redisConnectionFactory);
+		given(redisConnection.info()).willThrow(
+				new RedisConnectionFailureException("Connection failed"));
+		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
-		verify(redisConnectionFactory).getConnection();
-		verify(redisConnection).info();
+	}
+
+	private RedisHealthIndicator createHealthIndicator(
+			RedisConnection redisConnection) {
+		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
+		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
+		return new RedisHealthIndicator(redisConnectionFactory);
 	}
 
 	@Test
