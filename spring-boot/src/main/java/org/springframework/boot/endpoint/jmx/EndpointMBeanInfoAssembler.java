@@ -103,7 +103,7 @@ class EndpointMBeanInfoAssembler {
 		if (type == OperationType.READ) {
 			return MBeanOperationInfo.INFO;
 		}
-		if (type == OperationType.WRITE) {
+		if (type == OperationType.WRITE || type == OperationType.DELETE) {
 			return MBeanOperationInfo.ACTION;
 		}
 		return MBeanOperationInfo.UNKNOWN;

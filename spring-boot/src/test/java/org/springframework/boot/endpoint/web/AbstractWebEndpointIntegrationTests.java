@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.endpoint.DeleteOperation;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.OperationParameterMapper;
 import org.springframework.boot.endpoint.ReadOperation;
@@ -160,6 +161,23 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	public void deleteOperation() {
+		load(TestEndpointConfiguration.class,
+				(client) -> client.delete().uri("/test/one")
+						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+						.isOk().expectBody().jsonPath("part").isEqualTo("one"));
+	}
+
+	@Test
+	public void deleteOperationWithVoidResponse() {
+		load(VoidDeleteResponseEndpointConfiguration.class, (context, client) -> {
+			client.delete().uri("/voiddelete").accept(MediaType.APPLICATION_JSON).exchange()
+					.expectStatus().isNoContent().expectBody().isEmpty();
+			verify(context.getBean(EndpointDelegate.class)).delete();
+		});
+	}
+
+	@Test
 	public void nullIsPassedToTheOperationWhenArgumentIsNotFoundInPostRequestBody() {
 		load(TestEndpointConfiguration.class, (context, client) -> {
 			Map<String, Object> body = new HashMap<>();
@@ -186,6 +204,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 				(context, client) -> client.get().uri("/nullread")
 						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 						.isNotFound());
+	}
+
+	@Test
+	public void nullResponseFromDeleteOperationResultsInNoContentResponseStatus() {
+		load(NullDeleteResponseEndpointConfiguration.class,
+				(context, client) -> client.delete().uri("/nulldelete")
+						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+						.isNoContent());
 	}
 
 	@Test
@@ -310,6 +336,19 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	@Configuration
 	@Import(BaseConfiguration.class)
+	static class VoidDeleteResponseEndpointConfiguration {
+
+		@Bean
+		public VoidDeleteResponseEndpoint voidDeleteResponseEndpoint(
+				EndpointDelegate delegate) {
+			return new VoidDeleteResponseEndpoint(delegate);
+		}
+
+	}
+
+
+	@Configuration
+	@Import(BaseConfiguration.class)
 	static class NullWriteResponseEndpointConfiguration {
 
 		@Bean
@@ -327,6 +366,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@Bean
 		public NullReadResponseEndpoint nullResponseEndpoint() {
 			return new NullReadResponseEndpoint();
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class NullDeleteResponseEndpointConfiguration {
+
+		@Bean
+		public NullDeleteResponseEndpoint nullDeleteResponseEndpoint() {
+			return new NullDeleteResponseEndpoint();
 		}
 
 	}
@@ -377,6 +427,11 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			this.endpointDelegate.write(foo, bar);
 		}
 
+		@DeleteOperation
+		public Map<String, Object> deletePart(@Selector String part) {
+			return Collections.singletonMap("part", part);
+		}
+
 	}
 
 	@Endpoint(id = "query")
@@ -421,6 +476,22 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
+	@Endpoint(id = "voiddelete")
+	static class VoidDeleteResponseEndpoint {
+
+		private final EndpointDelegate delegate;
+
+		VoidDeleteResponseEndpoint(EndpointDelegate delegate) {
+			this.delegate = delegate;
+		}
+
+		@DeleteOperation
+		public void delete() {
+			this.delegate.delete();
+		}
+
+	}
+
 	@Endpoint(id = "nullwrite")
 	static class NullWriteResponseEndpoint {
 
@@ -443,6 +514,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 		@ReadOperation
 		public String readReturningNull() {
+			return null;
+		}
+
+	}
+
+	@Endpoint(id = "nulldelete")
+	static class NullDeleteResponseEndpoint {
+
+		@DeleteOperation
+		public String deleteReturningNull() {
 			return null;
 		}
 
@@ -475,6 +556,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		void write();
 
 		void write(String foo, String bar);
+
+		void delete();
 
 	}
 

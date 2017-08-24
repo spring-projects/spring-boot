@@ -64,12 +64,14 @@ public class AnnotationEndpointDiscovererTests {
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
-			assertThat(operations).hasSize(3);
+			assertThat(operations).hasSize(4);
 			assertThat(operations).containsKeys(
 					ReflectionUtils.findMethod(TestEndpoint.class, "getAll"),
 					ReflectionUtils.findMethod(TestEndpoint.class, "getOne",
 							String.class),
 					ReflectionUtils.findMethod(TestEndpoint.class, "update", String.class,
+							String.class),
+					ReflectionUtils.findMethod(TestEndpoint.class, "deleteOne",
 							String.class));
 		});
 	}
@@ -82,12 +84,14 @@ public class AnnotationEndpointDiscovererTests {
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
-			assertThat(operations).hasSize(4);
+			assertThat(operations).hasSize(5);
 			assertThat(operations).containsKeys(
 					ReflectionUtils.findMethod(TestEndpoint.class, "getAll"),
 					ReflectionUtils.findMethod(TestEndpoint.class, "getOne",
 							String.class),
 					ReflectionUtils.findMethod(TestEndpoint.class, "update", String.class,
+							String.class),
+					ReflectionUtils.findMethod(TestEndpoint.class, "deleteOne",
 							String.class),
 					ReflectionUtils.findMethod(TestEndpointSubclass.class,
 							"updateWithMoreArguments", String.class, String.class,
@@ -114,7 +118,7 @@ public class AnnotationEndpointDiscovererTests {
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
-			assertThat(operations).hasSize(3);
+			assertThat(operations).hasSize(4);
 			operations.values()
 					.forEach(operation -> assertThat(operation.getInvoker())
 							.isNotInstanceOf(CachingOperationInvoker.class));
@@ -133,7 +137,7 @@ public class AnnotationEndpointDiscovererTests {
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
-			assertThat(operations).hasSize(3);
+			assertThat(operations).hasSize(4);
 			operations.values()
 					.forEach(operation -> assertThat(operation.getInvoker())
 							.isNotInstanceOf(CachingOperationInvoker.class));
@@ -229,6 +233,11 @@ public class AnnotationEndpointDiscovererTests {
 
 		@WriteOperation
 		public void update(String foo, String bar) {
+
+		}
+
+		@DeleteOperation
+		public void deleteOne(@Selector String id) {
 
 		}
 

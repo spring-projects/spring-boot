@@ -16,27 +16,21 @@
 
 package org.springframework.boot.endpoint;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * An enumeration of the different types of operation supported by an endpoint.
+ * Identifies a method on an {@link Endpoint} as being a delete operation.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
-public enum OperationType {
-
-	/**
-	 * A read operation.
-	 */
-	READ,
-
-	/**
-	 * A write operation.
-	 */
-	WRITE,
-
-	/**
-	 * A delete operation.
-	 */
-	DELETE
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface DeleteOperation {
 
 }

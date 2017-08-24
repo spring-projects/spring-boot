@@ -43,6 +43,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.endpoint.DeleteOperation;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.WriteOperation;
@@ -109,6 +110,15 @@ public class EndpointMBeanTests {
 						new Object[] { "one" }, new String[] { String.class.getName() });
 				assertThat(updatedOneResponse).isEqualTo("1");
 
+				// deleteOne
+				Object deleteResponse = this.server.invoke(objectName, "deleteOne",
+						new Object[] { "one" }, new String[] { String.class.getName() });
+				assertThat(oneResponse).isEqualTo("ONE");
+
+				// getOne validation after delete
+				updatedOneResponse = this.server.invoke(objectName, "getOne",
+						new Object[] { "one" }, new String[] { String.class.getName() });
+				assertThat(updatedOneResponse).isNull();
 			}
 			catch (Exception ex) {
 				throw new AssertionError("Failed to invoke method on FooEndpoint", ex);
@@ -123,7 +133,8 @@ public class EndpointMBeanTests {
 			try {
 				MBeanInfo mBeanInfo = this.server.getMBeanInfo(objectName);
 				Map<String, MBeanOperationInfo> operations = mapOperations(mBeanInfo);
-				assertThat(operations).containsOnlyKeys("getAll", "getOne", "update");
+				assertThat(operations).containsOnlyKeys("getAll", "getOne", "update",
+						"deleteOne");
 				assertOperation(operations.get("getAll"), String.class,
 						MBeanOperationInfo.INFO, new Class<?>[0]);
 				assertOperation(operations.get("getOne"), String.class,
@@ -131,6 +142,8 @@ public class EndpointMBeanTests {
 				assertOperation(operations.get("update"), Void.TYPE,
 						MBeanOperationInfo.ACTION,
 						new Class<?>[] { String.class, String.class });
+				assertOperation(operations.get("deleteOne"), Void.TYPE,
+						MBeanOperationInfo.ACTION, new Class<?>[] { String.class });
 			}
 			catch (Exception ex) {
 				throw new AssertionError("Failed to retrieve MBeanInfo of FooEndpoint",
@@ -303,6 +316,11 @@ public class EndpointMBeanTests {
 		@WriteOperation
 		public void update(FooName name, String value) {
 			this.all.put(name, new Foo(value));
+		}
+
+		@DeleteOperation
+		public void deleteOne(FooName name) {
+			this.all.remove(name);
 		}
 
 	}

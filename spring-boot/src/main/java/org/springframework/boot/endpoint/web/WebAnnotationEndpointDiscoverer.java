@@ -205,6 +205,9 @@ public class WebAnnotationEndpointDiscoverer extends
 			if (operationType == OperationType.WRITE) {
 				return WebEndpointHttpMethod.POST;
 			}
+			if (operationType == OperationType.DELETE) {
+				return WebEndpointHttpMethod.DELETE;
+			}
 			return WebEndpointHttpMethod.GET;
 		}
 
