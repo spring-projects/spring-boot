@@ -1,13 +1,5 @@
 {"properties": [
   {
-    "name": "error.path",
-    "type": "java.lang.String",
-    "description": "Path of the error controller.",
-    "deprecation": {
-      "replacement": "server.error.path"
-    }
-  },
-  {
     "name": "security.basic.authorize-mode",
     "defaultValue": "role"
   },
