@@ -20,6 +20,10 @@
     "defaultValue": "all"
   },
   {
+    "name": "security.filter-dispatcher-types",
+    "defaultValue": ["async", "error", "request"]
+  },
+  {
     "name": "security.sessions",
     "defaultValue": "stateless"
   },
@@ -378,6 +382,10 @@
   {
     "name": "spring.session.hazelcast.flush-mode",
     "defaultValue": "on-save"
+  },
+  {
+    "name": "spring.session.servlet.filter-dispatcher-types",
+    "defaultValue": ["async", "error", "request"]
   },
   {
     "name": "spring.session.redis.flush-mode",

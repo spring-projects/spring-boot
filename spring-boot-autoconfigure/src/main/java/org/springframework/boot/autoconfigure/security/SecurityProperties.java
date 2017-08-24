@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -104,8 +105,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Security filter chain dispatcher types.
 	 */
-	private Set<String> filterDispatcherTypes = new HashSet<>(
-			Arrays.asList("ASYNC", "ERROR", "REQUEST"));
+	private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(Arrays.asList(
+			DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 	public Headers getHeaders() {
 		return this.headers;
@@ -163,11 +164,11 @@ public class SecurityProperties implements SecurityPrerequisite {
 		this.filterOrder = filterOrder;
 	}
 
-	public Set<String> getFilterDispatcherTypes() {
+	public Set<DispatcherType> getFilterDispatcherTypes() {
 		return this.filterDispatcherTypes;
 	}
 
-	public void setFilterDispatcherTypes(Set<String> filterDispatcherTypes) {
+	public void setFilterDispatcherTypes(Set<DispatcherType> filterDispatcherTypes) {
 		this.filterDispatcherTypes = filterDispatcherTypes;
 	}
 

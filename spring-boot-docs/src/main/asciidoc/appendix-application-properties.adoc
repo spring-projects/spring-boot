@@ -476,7 +476,7 @@ content into your application; rather pick only the properties that you need.
 	security.basic.realm=Spring # HTTP basic realm name.
 	security.enable-csrf=false # Enable Cross Site Request Forgery support.
 	security.filter-order=0 # Security filter chain order.
-	security.filter-dispatcher-types=ASYNC, FORWARD, INCLUDE, REQUEST # Security filter chain dispatcher types.
+	security.filter-dispatcher-types=ASYNC,ERROR,REQUEST # Security filter chain dispatcher types.
 	security.headers.cache=true # Enable cache control HTTP headers.
 	security.headers.content-security-policy= # Value for content security policy header.
 	security.headers.content-security-policy-mode=default # Content security policy mode.
