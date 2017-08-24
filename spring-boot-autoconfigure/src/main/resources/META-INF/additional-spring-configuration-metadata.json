@@ -399,7 +399,7 @@
   }
 ],"hints": [
   {
-    "name": "liquibase.change-log",
+    "name": "spring.liquibase.change-log",
     "providers": [
       {
         "name": "handle-as",
@@ -449,17 +449,6 @@
         "name": "class-reference",
         "parameters": {
           "target": "org.springframework.data.mapping.model.FieldNamingStrategy"
-        }
-      }
-    ]
-  },
-  {
-    "name": "spring.data.neo4j.compiler",
-    "providers": [
-      {
-        "name": "class-reference",
-        "parameters": {
-          "target": "org.neo4j.ogm.compiler.Compiler"
         }
       }
     ]
@@ -648,17 +637,6 @@
         "name": "class-reference",
         "parameters": {
           "target": "org.hibernate.boot.model.naming.PhysicalNamingStrategy"
-        }
-      }
-    ]
-  },
-  {
-    "name": "spring.jpa.hibernate.naming.strategy",
-    "providers": [
-      {
-        "name": "class-reference",
-        "parameters": {
-          "target": "org.hibernate.cfg.NamingStrategy"
         }
       }
     ]
