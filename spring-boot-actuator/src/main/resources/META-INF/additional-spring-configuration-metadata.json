@@ -199,6 +199,661 @@
     }
   },
   {
+    "name": "endpoints.actuator.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the endpoint.",
+    "deprecation": {
+      "reason": "The \"actuator\" endpoint is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.actuator.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "The \"actuator\" endpoint is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.actuator.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "The \"actuator\" endpoint is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.auditevents.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.auditevents.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.autoconfig.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.autoconfig.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.autoconfig.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.beans.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.beans.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.beans.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.configprops.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.configprops.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.configprops.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.cors.allow-credentials",
+    "type": "java.lang.Boolean",
+    "description": "Set whether credentials are supported. When not set, credentials are not supported.",
+    "deprecation": {
+      "replacement": "management.endpoints.cors.allow-credentials",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.cors.allowed-headers",
+    "type": "java.util.List<java.lang.String>",
+    "description": "Comma-separated list of headers to allow in a request. '*' allows all headers.",
+    "deprecation": {
+      "replacement": "management.endpoints.cors.allowed-headers",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.cors.allowed-methods",
+    "type": "java.util.List<java.lang.String>",
+    "description": "Comma-separated list of methods to allow. '*' allows all methods. When not set,\n defaults to GET.",
+    "deprecation": {
+      "replacement": "management.endpoints.cors.allowed-methods",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.cors.allowed-origins",
+    "type": "java.util.List<java.lang.String>",
+    "description": "Comma-separated list of origins to allow. '*' allows all origins. When not set,\n CORS support is disabled.",
+    "deprecation": {
+      "replacement": "management.endpoints.cors.allowed-origins",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.cors.exposed-headers",
+    "type": "java.util.List<java.lang.String>",
+    "description": "Comma-separated list of headers to include in a response.",
+    "deprecation": {
+      "replacement": "management.endpoints.cors.exposed-headers",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.cors.max-age",
+    "type": "java.lang.Long",
+    "description": "How long, in seconds, the response from a pre-flight request can be cached by\n clients.",
+    "defaultValue": 1800,
+    "deprecation": {
+      "replacement": "management.endpoints.cors.max-age",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.docs.curies.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the curie generation.",
+    "defaultValue": false,
+    "deprecation": {
+      "reason": "The \"docs\" endpoint is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.docs.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the endpoint.",
+    "deprecation": {
+      "reason": "The \"docs\" endpoint is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.docs.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "The \"docs\" endpoint is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.docs.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "The \"docs\" endpoint is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.dump.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the endpoint.",
+    "deprecation": {
+      "replacement": "endpoints.threaddump.enabled",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.dump.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.dump.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.dump.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable endpoints.",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "endpoints.all.enabled",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.env.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.env.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.env.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.flyway.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.flyway.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.health.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.health.mapping",
+    "type": "java.util.Map<java.lang.String,org.springframework.http.HttpStatus>",
+    "description": "Mapping of health statuses to HttpStatus codes. By default, registered health\n statuses map to sensible defaults (i.e. UP maps to 200).",
+    "deprecation": {
+      "replacement": "management.health.status.http-mapping",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.health.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.health.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.health.time-to-live",
+    "type": "java.lang.Long",
+    "description": "Time to live for cached result, in milliseconds.",
+    "defaultValue": 1000,
+    "deprecation": {
+      "replacement": "endpoints.health.cache.time-to-live",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.heapdump.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.heapdump.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.hypermedia.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable hypermedia support for endpoints.",
+    "defaultValue": false,
+    "deprecation": {
+      "reason": "Hypermedia support in the Actuator is no longer available.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.info.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.info.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.info.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.jmx.domain",
+    "type": "java.lang.String",
+    "description": "JMX domain name. Initialized with the value of 'spring.jmx.default-domain' if set.",
+    "deprecation": {
+      "replacement": "management.endpoints.jmx.domain",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.jmx.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JMX export of all endpoints.",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "endpoints.all.jmx.enabled",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.jmx.static-names",
+    "type": "java.util.Properties",
+    "description": "Additional static properties to append to all ObjectNames of MBeans representing\n Endpoints.",
+    "deprecation": {
+      "replacement": "management.endpoints.jmx.static-names",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.jmx.unique-names",
+    "type": "java.lang.Boolean",
+    "description": "Ensure that ObjectNames are modified in case of conflict.",
+    "defaultValue": false,
+    "deprecation": {
+      "replacement": "management.endpoints.jmx.unique-names",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.jolokia.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the endpoint.",
+    "deprecation": {
+      "replacement": "management.jolokia.enabled",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.jolokia.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.jolokia.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.liquibase.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.liquibase.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.logfile.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.logfile.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.loggers.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.loggers.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.loggers.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.mappings.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.mappings.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.mappings.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Default endpoint sensitive setting.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.shutdown.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.shutdown.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.shutdown.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.trace.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.trace.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.trace.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
     "name" : "management.shell.auth.jaas.domain",
     "type" : "java.lang.String",
     "description" : "JAAS domain.",
