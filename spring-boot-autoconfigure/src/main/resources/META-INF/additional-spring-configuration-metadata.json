@@ -729,6 +729,76 @@
       "replacement": "spring.liquibase.user",
       "level": "error"
     }
+  },
+  {
+    "name": "server.context-parameters",
+    "type": "java.util.Map<java.lang.String,java.lang.String>",
+    "description": "ServletContext parameters.",
+    "deprecation": {
+      "replacement": "server.servlet.context-parameters",
+      "level": "error"
+    }
+  },
+  {
+    "name": "server.context-path",
+    "type": "java.lang.String",
+    "description": "Context path of the application.",
+    "deprecation": {
+      "replacement": "server.servlet.context-path",
+      "level": "error"
+    }
+  },
+  {
+    "name": "server.jsp-servlet.class-name",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "server.servlet.jsp.class-name",
+      "level": "error"
+    }
+  },
+  {
+    "name": "server.jsp-servlet.init-parameters",
+    "type": "java.util.Map<java.lang.String,java.lang.String>",
+    "deprecation": {
+      "replacement": "server.servlet.jsp.init-parameters",
+      "level": "error"
+    }
+  },
+  {
+    "name": "server.jsp-servlet.registered",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "replacement": "server.servlet.jsp.registered",
+      "level": "error"
+    }
+  },
+  {
+    "name": "server.max-http-post-size",
+    "type": "java.lang.Integer",
+    "description": "Maximum size in bytes of the HTTP post content.",
+    "defaultValue": 0,
+    "deprecation": {
+      "reason": "Use dedicated property for each container.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "server.servlet-path",
+    "type": "java.lang.String",
+    "description": "Path of the main dispatcher servlet.",
+    "defaultValue": "/",
+    "deprecation": {
+      "replacement": "server.servlet.path",
+      "level": "error"
+    }
+  },
+  {
+    "name": "server.undertow.buffers-per-region",
+    "type": "java.lang.Integer",
+    "description": "Number of buffer per region.",
+    "deprecation": {
+      "level": "error"
+    }
   }
 ],"hints": [
   {
