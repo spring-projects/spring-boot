@@ -284,13 +284,10 @@ public final class TestPropertyValues {
 	 */
 	private class SystemPropertiesHandler implements Closeable {
 
-		private final Map<String, Object> properties;
-
 		private final Map<String, String> previous;
 
 		SystemPropertiesHandler() {
-			this.properties = new LinkedHashMap<>(TestPropertyValues.this.properties);
-			this.previous = apply(this.properties);
+			this.previous = apply(TestPropertyValues.this.properties);
 		}
 
 		private Map<String, String> apply(Map<String, ?> properties) {
