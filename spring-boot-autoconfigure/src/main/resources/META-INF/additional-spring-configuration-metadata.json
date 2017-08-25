@@ -799,6 +799,64 @@
     "deprecation": {
       "level": "error"
     }
+  },
+  {
+    "name" : "spring.http.multipart.enabled",
+    "type" : "java.lang.Boolean",
+    "description" : "Enable support of multipart uploads.",
+    "defaultValue" : true,
+    "deprecation" : {
+      "replacement" : "spring.servlet.multipart.enabled",
+      "level" : "error"
+    }
+  }, {
+    "name" : "spring.http.multipart.file-size-threshold",
+    "type" : "java.lang.String",
+    "description" : "Threshold after which files will be written to disk. Values can use the suffixes\n \"MB\" or \"KB\" to indicate megabytes or kilobytes respectively.",
+    "defaultValue" : "0",
+    "deprecation" : {
+      "replacement" : "spring.servlet.multipart.file-size-threshold",
+      "level" : "error"
+    }
+  },
+  {
+    "name": "spring.http.multipart.location",
+    "type": "java.lang.String",
+    "description": "Intermediate location of uploaded files.",
+    "deprecation": {
+      "replacement": "spring.servlet.multipart.location",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.http.multipart.max-file-size",
+    "type": "java.lang.String",
+    "description": "Max file size. Values can use the suffixes \"MB\" or \"KB\" to indicate megabytes or\n kilobytes respectively.",
+    "defaultValue": "1MB",
+    "deprecation": {
+      "replacement": "spring.servlet.multipart.max-file-size",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.http.multipart.max-request-size",
+    "type": "java.lang.String",
+    "description": "Max request size. Values can use the suffixes \"MB\" or \"KB\" to indicate megabytes or\n kilobytes respectively.",
+    "defaultValue": "10MB",
+    "deprecation": {
+      "replacement": "spring.servlet.multipart.max-request-size",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.http.multipart.resolve-lazily",
+    "type": "java.lang.Boolean",
+    "description": "Whether to resolve the multipart request lazily at the time of file or parameter\n access.",
+    "defaultValue": false,
+    "deprecation": {
+      "replacement": "spring.servlet.multipart.resolve-lazily",
+      "level": "error"
+    }
   }
 ],"hints": [
   {
