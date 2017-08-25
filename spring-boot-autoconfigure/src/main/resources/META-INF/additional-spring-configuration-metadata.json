@@ -857,6 +857,15 @@
       "replacement": "spring.servlet.multipart.resolve-lazily",
       "level": "error"
     }
+  },
+  {
+    "name": "spring.jpa.hibernate.naming.strategy",
+    "type": "java.lang.String",
+    "description": "Hibernate 4 naming strategy fully qualified name. Not supported with Hibernate\n 5.",
+    "deprecation": {
+      "reason": "Auto-configuration for Hibernate 4 is no longer provided.",
+      "level": "error"
+    }
   }
 ],"hints": [
   {
