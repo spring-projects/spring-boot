@@ -28,6 +28,7 @@ import org.springframework.session.hazelcast.HazelcastFlushMode;
  * @author Tommy Ludwig
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Eddú Meléndez
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.session")
@@ -68,6 +69,10 @@ public class SessionProperties {
 	 */
 	public Integer getTimeout() {
 		return this.timeout;
+	}
+
+	public void setTimeout(Integer timeout) {
+		this.timeout = timeout;
 	}
 
 	public Hazelcast getHazelcast() {
