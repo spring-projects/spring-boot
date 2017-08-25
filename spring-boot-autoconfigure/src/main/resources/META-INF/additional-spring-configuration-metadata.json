@@ -819,22 +819,23 @@
     }
   },
   {
-    "name" : "spring.http.multipart.enabled",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable support of multipart uploads.",
-    "defaultValue" : true,
-    "deprecation" : {
-      "replacement" : "spring.servlet.multipart.enabled",
-      "level" : "error"
+    "name": "spring.http.multipart.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable support of multipart uploads.",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "spring.servlet.multipart.enabled",
+      "level": "error"
     }
-  }, {
-    "name" : "spring.http.multipart.file-size-threshold",
-    "type" : "java.lang.String",
-    "description" : "Threshold after which files will be written to disk. Values can use the suffixes\n \"MB\" or \"KB\" to indicate megabytes or kilobytes respectively.",
-    "defaultValue" : "0",
-    "deprecation" : {
-      "replacement" : "spring.servlet.multipart.file-size-threshold",
-      "level" : "error"
+  },
+  {
+    "name": "spring.http.multipart.file-size-threshold",
+    "type": "java.lang.String",
+    "description": "Threshold after which files will be written to disk. Values can use the suffixes\n \"MB\" or \"KB\" to indicate megabytes or kilobytes respectively.",
+    "defaultValue": "0",
+    "deprecation": {
+      "replacement": "spring.servlet.multipart.file-size-threshold",
+      "level": "error"
     }
   },
   {
