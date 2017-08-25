@@ -73,7 +73,7 @@ public abstract class EnvironmentTestUtils {
 		Map<String, Object> map = getOrAdd(sources, name);
 		for (String pair : pairs) {
 			int index = getSeparatorIndex(pair);
-			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String key = index > 0 ? pair.substring(0, index) : pair;
 			String value = index > 0 ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
 		}
