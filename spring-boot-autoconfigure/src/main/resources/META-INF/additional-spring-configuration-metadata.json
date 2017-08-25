@@ -942,6 +942,16 @@
       "replacement": "spring.session.jdbc.initialize-schema",
       "level": "error"
     }
+  },
+  {
+    "name": "spring.thymeleaf.content-type",
+    "type": "org.springframework.util.MimeType",
+    "description": "Content-Type value.",
+    "defaultValue": "text/html",
+    "deprecation": {
+      "replacement": "spring.thymeleaf.servlet.content-type",
+      "level": "error"
+    }
   }
 ],"hints": [
   {
