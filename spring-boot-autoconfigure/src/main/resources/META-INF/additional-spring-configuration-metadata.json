@@ -810,6 +810,15 @@
     }
   },
   {
+    "name": "spring.data.neo4j.compiler",
+    "type": "java.lang.String",
+    "description": "Compiler to use.",
+    "deprecation": {
+      "reason": "Not supported anymore as of Neo4j 3.",
+      "level": "error"
+    }
+  },
+  {
     "name" : "spring.http.multipart.enabled",
     "type" : "java.lang.Boolean",
     "description" : "Enable support of multipart uploads.",
