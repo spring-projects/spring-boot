@@ -197,6 +197,182 @@
     "deprecation": {
       "replacement": "spring.info.git.location"
     }
+  },
+  {
+    "name" : "management.shell.auth.jaas.domain",
+    "type" : "java.lang.String",
+    "description" : "JAAS domain.",
+    "defaultValue" : "my-domain",
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.auth.key.path",
+    "type" : "java.lang.String",
+    "description" : "Path to the authentication key. This should point to a valid \".pem\" file.",
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.auth.simple.user.name",
+    "type" : "java.lang.String",
+    "description" : "Login user.",
+    "defaultValue" : "user",
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.auth.simple.user.password",
+    "type" : "java.lang.String",
+    "description" : "Login password.",
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.auth.spring.roles",
+    "type" : "java.lang.String[]",
+    "description" : "Comma-separated list of required roles to login to the CRaSH console.",
+    "defaultValue" : [ "ACTUATOR" ],
+    "deprecation" : {
+      "replacement" : "management.security.roles",
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.auth.type",
+    "type" : "java.lang.String",
+    "description" : "Authentication type. Auto-detected according to the environment (i.e. if Spring\n Security is available, \"spring\" is used by default).",
+    "defaultValue" : "simple",
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.command-path-patterns",
+    "type" : "java.lang.String[]",
+    "description" : "Patterns to use to look for commands.",
+    "defaultValue" : [ "classpath*:/commands/**", "classpath*:/crash/commands/**" ],
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.command-refresh-interval",
+    "type" : "java.lang.Integer",
+    "description" : "Scan for changes and update the command if necessary (in seconds).",
+    "defaultValue" : -1,
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.config-path-patterns",
+    "type" : "java.lang.String[]",
+    "description" : "Patterns to use to look for configurations.",
+    "defaultValue" : [ "classpath*:/crash/*" ],
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.disabled-commands",
+    "type" : "java.lang.String[]",
+    "description" : "Comma-separated list of commands to disable.",
+    "defaultValue" : [ "jpa*", "jdbc*", "jndi*" ],
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  }, {
+    "name" : "management.shell.disabled-plugins",
+    "type" : "java.lang.String[]",
+    "description" : "Comma-separated list of plugins to disable. Certain plugins are disabled by default\n based on the environment.",
+    "defaultValue" : [ ],
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.ssh.auth-timeout",
+    "type" : "java.lang.Integer",
+    "description" : "Number of milliseconds after user will be prompted to login again.",
+    "defaultValue" : 600000,
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  }, {
+    "name" : "management.shell.ssh.enabled",
+    "type" : "java.lang.Boolean",
+    "description" : "Enable CRaSH SSH support.",
+    "defaultValue" : true,
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.ssh.idle-timeout",
+    "type" : "java.lang.Integer",
+    "description" : "Number of milliseconds after which unused connections are closed.",
+    "defaultValue" : 600000,
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.ssh.key-path",
+    "type" : "java.lang.String",
+    "description" : "Path to the SSH server key.",
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.ssh.port",
+    "type" : "java.lang.Integer",
+    "description" : "SSH port.",
+    "defaultValue" : 2000,
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.telnet.enabled",
+    "type" : "java.lang.Boolean",
+    "description" : "Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is\n available.",
+    "defaultValue" : false,
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "management.shell.telnet.port",
+    "type" : "java.lang.Integer",
+    "description" : "Telnet port.",
+    "defaultValue" : 5000,
+    "deprecation" : {
+      "reason" : "CRaSH support is no longer available.",
+      "level" : "error"
+    }
   }
 ],"hints": [
   {
