@@ -617,6 +617,118 @@
       "replacement": "spring.flyway.validate-on-migrate",
       "level": "error"
     }
+  },
+  {
+    "name": "liquibase.change-log",
+    "type": "java.lang.String",
+    "description": "Change log configuration path.",
+    "defaultValue": "classpath:/db/changelog/db.changelog-master.yaml",
+    "deprecation": {
+      "replacement": "spring.liquibase.change-log",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.check-change-log-location",
+    "type": "java.lang.Boolean",
+    "description": "Check the change log location exists.",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "spring.liquibase.check-change-log-location",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.contexts",
+    "type": "java.lang.String",
+    "description": "Comma-separated list of runtime contexts to use.",
+    "deprecation": {
+      "replacement": "spring.liquibase.contexts",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.default-schema",
+    "type": "java.lang.String",
+    "description": "Default database schema.",
+    "deprecation": {
+      "replacement": "spring.liquibase.default-schema",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.drop-first",
+    "type": "java.lang.Boolean",
+    "description": "Drop the database schema first.",
+    "defaultValue": false,
+    "deprecation": {
+      "replacement": "spring.liquibase.drop-first",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable liquibase support.",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "spring.liquibase.enabled",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.labels",
+    "type": "java.lang.String",
+    "description": "Comma-separated list of runtime labels to use.",
+    "deprecation": {
+      "replacement": "spring.liquibase.labels",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.parameters",
+    "type": "java.util.Map<java.lang.String,java.lang.String>",
+    "description": "Change log parameters.",
+    "deprecation": {
+      "replacement": "spring.liquibase.parameters",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.password",
+    "type": "java.lang.String",
+    "description": "Login password of the database to migrate.",
+    "deprecation": {
+      "replacement": "spring.liquibase.password",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.rollback-file",
+    "type": "java.io.File",
+    "description": "File to which rollback SQL will be written when an update is performed.",
+    "deprecation": {
+      "replacement": "spring.liquibase.rollback-file",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.url",
+    "type": "java.lang.String",
+    "description": "JDBC url of the database to migrate. If not set, the primary configured data source\n is used.",
+    "deprecation": {
+      "replacement": "spring.liquibase.url",
+      "level": "error"
+    }
+  },
+  {
+    "name": "liquibase.user",
+    "type": "java.lang.String",
+    "description": "Login user of the database to migrate.",
+    "deprecation": {
+      "replacement": "spring.liquibase.user",
+      "level": "error"
+    }
   }
 ],"hints": [
   {
