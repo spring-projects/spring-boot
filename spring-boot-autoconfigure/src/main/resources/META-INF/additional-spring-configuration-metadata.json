@@ -877,6 +877,46 @@
     }
   },
   {
+    "name": "spring.redis.pool.max-active",
+    "type": "java.lang.Integer",
+    "description": "Max number of connections that can be allocated by the pool at a given time.\n Use a negative value for no limit.",
+    "defaultValue": 8,
+    "deprecation": {
+      "replacement": "spring.redis.jedis.pool.max-idle",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.redis.pool.max-idle",
+    "type": "java.lang.Integer",
+    "description": "Max number of \"idle\" connections in the pool. Use a negative value to indicate\n an unlimited number of idle connections.",
+    "defaultValue": 8,
+    "deprecation": {
+      "replacement": "spring.redis.jedis.pool.max-idle",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.redis.pool.max-wait",
+    "type": "java.lang.Integer",
+    "description": "Maximum amount of time (in milliseconds) a connection allocation should block\n before throwing an exception when the pool is exhausted. Use a negative value\n to block indefinitely.",
+    "defaultValue": -1,
+    "deprecation": {
+      "replacement": "spring.redis.jedis.pool.max-wait",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.redis.pool.min-idle",
+    "type": "java.lang.Integer",
+    "description": "Target for the minimum number of idle connections to maintain in the pool. This\n setting only has an effect if it is positive.",
+    "defaultValue": 0,
+    "deprecation": {
+      "replacement": "spring.redis.jedis.pool.min-idle",
+      "level": "error"
+    }
+  },
+  {
     "name": "spring.session.jdbc.initializer.enabled",
     "type": "java.lang.Boolean",
     "description": "Create the required session tables on startup if necessary. Enabled\n automatically if the default table name is set or a custom schema is\n configured.",
