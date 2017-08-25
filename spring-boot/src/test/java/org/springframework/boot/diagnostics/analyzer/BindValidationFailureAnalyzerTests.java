@@ -135,7 +135,7 @@ public class BindValidationFailureAnalyzerTests {
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {
 			int index = pair.indexOf("=");
-			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String key = index > 0 ? pair.substring(0, index) : pair;
 			String value = index > 0 ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
 		}
