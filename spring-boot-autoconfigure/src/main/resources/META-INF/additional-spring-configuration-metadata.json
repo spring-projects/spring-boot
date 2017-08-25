@@ -917,6 +917,24 @@
     }
   },
   {
+    "name": "spring.sendgrid.password",
+    "type": "java.lang.String",
+    "description": "SendGrid password.",
+    "deprecation": {
+      "reason": "The use of a username and password is no longer supported (Use spring.sendgrid.api-key instead).",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.sendgrid.username",
+    "type": "java.lang.String",
+    "description": "SendGrid username. Alternative to api key.",
+    "deprecation": {
+      "reason": "The use of a username and password is no longer supported (Use spring.sendgrid.api-key instead).",
+      "level": "error"
+    }
+  },
+  {
     "name": "spring.session.jdbc.initializer.enabled",
     "type": "java.lang.Boolean",
     "description": "Create the required session tables on startup if necessary. Enabled\n automatically if the default table name is set or a custom schema is\n configured.",
