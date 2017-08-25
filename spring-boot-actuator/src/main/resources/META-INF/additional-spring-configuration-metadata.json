@@ -854,6 +854,15 @@
     }
   },
   {
+    "name" : "jolokia.config",
+    "type" : "java.util.Map<java.lang.String,java.lang.String>",
+    "description" : "Jolokia settings. These are traditionally set using servlet parameters. Refer to\n the documentation of Jolokia for more details.",
+    "deprecation" : {
+      "replacement" : "management.jolokia.config",
+      "level" : "error"
+    }
+  },
+  {
     "name" : "management.shell.auth.jaas.domain",
     "type" : "java.lang.String",
     "description" : "JAAS domain.",
