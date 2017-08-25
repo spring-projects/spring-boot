@@ -388,6 +388,235 @@
     "type": "java.lang.Boolean",
     "description": "Enable the connection status view for supported providers.",
     "defaultValue": false
+  },
+  {
+    "name" : "flyway.baseline-description",
+    "type" : "java.lang.String",
+    "deprecation" : {
+      "replacement" : "spring.flyway.baseline-description",
+      "level" : "error"
+    }
+  }, {
+    "name" : "flyway.baseline-on-migrate",
+    "type" : "java.lang.Boolean",
+    "deprecation" : {
+      "replacement" : "spring.flyway.baseline-on-migrate",
+      "level" : "error"
+    }
+  },
+  {
+    "name": "flyway.baseline-version",
+    "type": "org.flywaydb.core.api.MigrationVersion",
+    "deprecation": {
+      "replacement": "spring.flyway.baseline-version",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.check-location",
+    "type": "java.lang.Boolean",
+    "description": "Check that migration scripts location exists.",
+    "defaultValue": false,
+    "deprecation": {
+      "replacement": "spring.flyway.check-location",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.clean-on-validation-error",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "replacement": "spring.flyway.clean-on-validation-error",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable flyway.",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "spring.flyway.enabled",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.encoding",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.encoding",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.ignore-failed-future-migration",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "replacement": "spring.flyway.ignore-failed-future-migration",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.init-description",
+    "type": "java.lang.String",
+    "deprecation": {
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.init-on-migrate",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.init-sqls",
+    "type": "java.util.List<java.lang.String>",
+    "description": "SQL statements to execute to initialize a connection immediately after obtaining\n it.",
+    "deprecation": {
+      "replacement": "spring.flyway.init-sqls",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.init-version",
+    "type": "org.flywaydb.core.api.MigrationVersion",
+    "deprecation": {
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.locations",
+    "type": "java.util.List<java.lang.String>",
+    "description": "Locations of migrations scripts. Can contain the special \"{vendor}\" placeholder to\n use vendor-specific locations.",
+    "deprecation": {
+      "replacement": "spring.flyway.locations",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.out-of-order",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "replacement": "spring.flyway.out-of-order",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.password",
+    "type": "java.lang.String",
+    "description": "Login password of the database to migrate.",
+    "deprecation": {
+      "replacement": "spring.flyway.password",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.placeholder-prefix",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.placeholder-prefix",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.placeholder-replacement",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "replacement": "spring.flyway.placeholder-replacement",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.placeholder-suffix",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.placeholder-suffix",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.placeholders",
+    "type": "java.util.Map<java.lang.String,java.lang.String>",
+    "deprecation": {
+      "replacement": "spring.flyway.placeholders",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.schemas",
+    "type": "java.lang.String[]",
+    "deprecation": {
+      "replacement": "spring.flyway.schemas",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.sql-migration-prefix",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.sql-migration-prefix",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.sql-migration-separator",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.sql-migration-separator",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.sql-migration-suffix",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.sql-migration-suffix",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.table",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.table",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.target",
+    "type": "org.flywaydb.core.api.MigrationVersion",
+    "deprecation": {
+      "replacement": "spring.flyway.target",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.url",
+    "type": "java.lang.String",
+    "description": "JDBC url of the database to migrate. If not set, the primary configured data source\n is used.",
+    "deprecation": {
+      "replacement": "spring.flyway.url",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.user",
+    "type": "java.lang.String",
+    "description": "Login user of the database to migrate.",
+    "deprecation": {
+      "replacement": "spring.flyway.user",
+      "level": "error"
+    }
+  },
+  {
+    "name": "flyway.validate-on-migrate",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "replacement": "spring.flyway.validate-on-migrate",
+      "level": "error"
+    }
   }
 ],"hints": [
   {
