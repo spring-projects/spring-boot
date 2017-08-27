@@ -69,8 +69,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
-import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
@@ -101,10 +101,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  */
 @Configuration
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
-@AutoConfigureAfter({ ActiveMQAutoConfiguration.class, CassandraAutoConfiguration.class,
-		CassandraDataAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
-		DataSourceAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
-		JestAutoConfiguration.class, JmsAutoConfiguration.class,
+@AutoConfigureAfter({ ActiveMQAutoConfiguration.class, ArtemisAutoConfiguration.class,
+		CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
+		CouchbaseDataAutoConfiguration.class, DataSourceAutoConfiguration.class,
+		ElasticsearchAutoConfiguration.class, JestAutoConfiguration.class,
 		LdapDataAutoConfiguration.class, MailSenderAutoConfiguration.class,
 		MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 		Neo4jDataAutoConfiguration.class, RabbitAutoConfiguration.class,
