@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -166,8 +166,6 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).startsWith(String.format(
 				"Constructor in %s required a bean named '%s' that could not be found",
 				StringNameHandler.class.getName(), "test-string"));
-		assertThat(analysis.getDescription().contains(
-				"No matching auto-configuration has been found for this bean name."));
 		assertThat(analysis.getAction()).startsWith(String.format(
 				"Consider defining a bean named '%s' in your configuration.",
 				"test-string"));
