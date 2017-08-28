@@ -62,8 +62,8 @@ public class HealthIndicatorFactoryTests {
 
 	private HealthIndicator createHealthIndicator(
 			Map<String, HealthIndicator> healthIndicators) {
-		return new HealthIndicatorFactory().createHealthIndicator(
-				new OrderedHealthAggregator(), healthIndicators);
+		return new HealthIndicatorFactory()
+				.createHealthIndicator(new OrderedHealthAggregator(), healthIndicators);
 	}
 
 }

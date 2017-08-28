@@ -51,9 +51,8 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	@Override
 	public ObjectName generate(EndpointMBean mBean) throws MalformedObjectNameException {
-		String baseObjectName = this.properties.getDomain() +
-				":type=Endpoint" +
-				",name=" + StringUtils.capitalize(mBean.getEndpointId());
+		String baseObjectName = this.properties.getDomain() + ":type=Endpoint" + ",name="
+				+ StringUtils.capitalize(mBean.getEndpointId());
 		StringBuilder builder = new StringBuilder(baseObjectName);
 		if (this.mBeanServer != null && hasMBean(baseObjectName)) {
 			builder.append(",context=").append(this.contextId);
@@ -76,7 +75,8 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		}
 		StringBuilder builder = new StringBuilder();
 
-		for (Map.Entry<Object, Object> name : this.properties.getStaticNames().entrySet()) {
+		for (Map.Entry<Object, Object> name : this.properties.getStaticNames()
+				.entrySet()) {
 			builder.append(",").append(name.getKey()).append("=").append(name.getValue());
 		}
 		return builder.toString();

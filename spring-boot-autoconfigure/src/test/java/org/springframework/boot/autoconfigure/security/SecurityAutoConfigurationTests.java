@@ -298,8 +298,8 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class);
 		this.context.refresh();
-		String password = this.outputCapture.toString().split("Using default security password: ")[1]
-				.split("\n")[0].trim();
+		String password = this.outputCapture.toString()
+				.split("Using default security password: ")[1].split("\n")[0].trim();
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				"user", password);
@@ -307,16 +307,17 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomAuthenticationDoesNotCreateDefaultUser()
-			throws Exception {
+	public void testCustomAuthenticationDoesNotCreateDefaultUser() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(AuthenticationManagerCustomizer.class,
 				SecurityAutoConfiguration.class);
 		this.context.refresh();
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		assertThat(this.outputCapture.toString()).doesNotContain("Using default security password: ");
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("foo", "bar");
+		assertThat(this.outputCapture.toString())
+				.doesNotContain("Using default security password: ");
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+				"foo", "bar");
 		assertThat(manager.authenticate(token)).isNotNull();
 	}
 

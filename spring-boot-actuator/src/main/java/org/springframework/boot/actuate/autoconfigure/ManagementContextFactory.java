@@ -27,7 +27,13 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 interface ManagementContextFactory {
 
+	/**
+	 * Create the management application context.
+	 * @param parent the parent context
+	 * @param configurationClasses the configuration classes
+	 * @return a configured application context
+	 */
 	ConfigurableApplicationContext createManagementContext(ApplicationContext parent,
-			Class<?>... configClasses);
+			Class<?>... configurationClasses);
 
 }

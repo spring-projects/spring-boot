@@ -254,9 +254,8 @@ public class EndpointEnablementProviderTests {
 
 	@Test
 	public void specificEnabledOverrideHasNoEffectWithUnrelatedTechProperty() {
-		validate(
-				getEndpointEnablement("foo", true, EndpointExposure.JMX,
-						"endpoints.default.enabled=false", "endpoints.default.web.enabled=true"),
+		validate(getEndpointEnablement("foo", true, EndpointExposure.JMX,
+				"endpoints.default.enabled=false", "endpoints.default.web.enabled=true"),
 				false, "found property endpoints.default.enabled");
 	}
 
@@ -264,8 +263,8 @@ public class EndpointEnablementProviderTests {
 	public void specificDisabledWithEndpointPropertyEvenWithEnabledGeneralProperties() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
 				EndpointExposure.WEB, "endpoints.default.enabled=true",
-				"endpoints.default.web.enabled=true", "endpoints.default.jmx.enabled=true",
-				"endpoints.foo.enabled=false");
+				"endpoints.default.web.enabled=true",
+				"endpoints.default.jmx.enabled=true", "endpoints.foo.enabled=false");
 		validate(enablement, false, "found property endpoints.foo.enabled");
 	}
 
@@ -273,8 +272,9 @@ public class EndpointEnablementProviderTests {
 	public void specificDisabledWithTechPropertyEvenWithEnabledGeneralProperties() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
 				EndpointExposure.WEB, "endpoints.default.enabled=true",
-				"endpoints.default.web.enabled=true", "endpoints.default.jmx.enabled=true",
-				"endpoints.foo.enabled=true", "endpoints.foo.web.enabled=false");
+				"endpoints.default.web.enabled=true",
+				"endpoints.default.jmx.enabled=true", "endpoints.foo.enabled=true",
+				"endpoints.foo.web.enabled=false");
 		validate(enablement, false, "found property endpoints.foo.web.enabled");
 	}
 

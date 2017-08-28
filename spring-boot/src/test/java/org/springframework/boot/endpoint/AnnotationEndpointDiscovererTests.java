@@ -119,9 +119,8 @@ public class AnnotationEndpointDiscovererTests {
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
 			assertThat(operations).hasSize(4);
-			operations.values()
-					.forEach(operation -> assertThat(operation.getInvoker())
-							.isNotInstanceOf(CachingOperationInvoker.class));
+			operations.values().forEach(operation -> assertThat(operation.getInvoker())
+					.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
 
@@ -138,9 +137,8 @@ public class AnnotationEndpointDiscovererTests {
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
 			assertThat(operations).hasSize(4);
-			operations.values()
-					.forEach(operation -> assertThat(operation.getInvoker())
-							.isNotInstanceOf(CachingOperationInvoker.class));
+			operations.values().forEach(operation -> assertThat(operation.getInvoker())
+					.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
 
@@ -190,8 +188,8 @@ public class AnnotationEndpointDiscovererTests {
 			EndpointInfo<TestEndpointOperation> endpoint) {
 		Map<Method, TestEndpointOperation> operationByMethod = new HashMap<>();
 		endpoint.getOperations().forEach((operation) -> {
-			Operation existing = operationByMethod
-					.put(operation.getOperationMethod(), operation);
+			Operation existing = operationByMethod.put(operation.getOperationMethod(),
+					operation);
 			if (existing != null) {
 				throw new AssertionError(String.format(
 						"Found endpoint with duplicate operation method '%s'",

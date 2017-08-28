@@ -385,8 +385,10 @@ public class MetricFilterAutoConfigurationTests {
 	public void doesNotRecordRolledUpMetricsIfConfigured() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
-		TestPropertyValues.of("management.metrics.filter.gauge-submissions=",
-				"management.metrics.filter.counter-submissions=").applyTo(context);
+		TestPropertyValues
+				.of("management.metrics.filter.gauge-submissions=",
+						"management.metrics.filter.counter-submissions=")
+				.applyTo(context);
 		context.refresh();
 		Filter filter = context.getBean(Filter.class);
 		MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/test/path");

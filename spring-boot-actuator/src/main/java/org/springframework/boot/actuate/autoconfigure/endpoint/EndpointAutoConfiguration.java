@@ -78,8 +78,8 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Eddú Meléndez
  * @author Meang Akira Tanaka
  * @author Ben Hale
- * @since 2.0.0
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 @Configuration
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })

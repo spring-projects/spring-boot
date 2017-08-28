@@ -41,7 +41,8 @@ public class SampleServletApplication extends SpringBootServletInitializer {
 	@Bean
 	public UserDetailsService userDetailsService() throws Exception {
 		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(User.withUsername("user").password("password").roles("USER").build());
+		manager.createUser(
+				User.withUsername("user").password("password").roles("USER").build());
 		return manager;
 	}
 

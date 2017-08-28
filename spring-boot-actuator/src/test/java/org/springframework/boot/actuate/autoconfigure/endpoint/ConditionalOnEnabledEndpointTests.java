@@ -118,10 +118,9 @@ public class ConditionalOnEnabledEndpointTests {
 
 	@Test
 	public void disabledEvenWithEnabledGeneralProperties() {
-		this.contextRunner.withUserConfiguration(FooConfig.class)
-				.withPropertyValues("endpoints.default.enabled=true",
-						"endpoints.default.web.enabled=true",
-						"endpoints.default.jmx.enabled=true", "endpoints.foo.enabled=false")
+		this.contextRunner.withUserConfiguration(FooConfig.class).withPropertyValues(
+				"endpoints.default.enabled=true", "endpoints.default.web.enabled=true",
+				"endpoints.default.jmx.enabled=true", "endpoints.foo.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 

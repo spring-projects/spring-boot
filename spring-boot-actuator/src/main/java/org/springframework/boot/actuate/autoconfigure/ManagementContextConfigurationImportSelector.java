@@ -122,8 +122,8 @@ class ManagementContextConfigurationImportSelector
 			Map<String, Object> annotationAttributes = annotationMetadata
 					.getAnnotationAttributes(
 							ManagementContextConfiguration.class.getName());
-			return annotationAttributes == null ? ManagementContextType.ANY
-					: (ManagementContextType) annotationAttributes.get("value");
+			return (annotationAttributes == null ? ManagementContextType.ANY
+					: (ManagementContextType) annotationAttributes.get("value"));
 		}
 
 		private int readOrder(AnnotationMetadata annotationMetadata) {

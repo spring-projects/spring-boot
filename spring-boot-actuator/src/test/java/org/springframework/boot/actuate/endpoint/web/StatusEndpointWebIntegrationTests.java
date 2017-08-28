@@ -57,8 +57,8 @@ public class StatusEndpointWebIntegrationTests {
 		context.getBean("alphaHealthIndicator", TestHealthIndicator.class)
 				.setHealth(Health.down().build());
 		client.get().uri("/application/status").exchange().expectStatus()
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
-				.expectBody().json("{\"status\":\"DOWN\"}");
+				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody()
+				.json("{\"status\":\"DOWN\"}");
 	}
 
 	@Configuration

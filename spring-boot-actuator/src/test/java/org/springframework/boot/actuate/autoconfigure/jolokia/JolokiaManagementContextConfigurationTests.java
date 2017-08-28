@@ -63,28 +63,30 @@ public class JolokiaManagementContextConfigurationTests {
 
 	@Test
 	public void customPath() {
-		this.contextRunner.withPropertyValues("management.jolokia.enabled=true",
-				"management.jolokia.path=/lokia").run(
-				isDefinedOnPath("/application/lokia/*"));
+		this.contextRunner
+				.withPropertyValues("management.jolokia.enabled=true",
+						"management.jolokia.path=/lokia")
+				.run(isDefinedOnPath("/application/lokia/*"));
 	}
 
 	@Test
 	public void customManagementPath() {
-		this.contextRunner.withPropertyValues("management.jolokia.enabled=true",
-				"management.context-path=/admin").run(
-				isDefinedOnPath("/admin/jolokia/*"));
+		this.contextRunner
+				.withPropertyValues("management.jolokia.enabled=true",
+						"management.context-path=/admin")
+				.run(isDefinedOnPath("/admin/jolokia/*"));
 	}
 
 	@Test
 	public void customInitParameters() {
 		this.contextRunner.withPropertyValues("management.jolokia.enabled=true",
 				"management.jolokia.config.debug=true").run((context) -> {
-			assertThat(context).hasSingleBean(ServletRegistrationBean.class);
-			ServletRegistrationBean<?> registrationBean = context
-					.getBean(ServletRegistrationBean.class);
-			assertThat(registrationBean.getInitParameters())
-					.containsOnly(entry("debug", "true"));
-		});
+					assertThat(context).hasSingleBean(ServletRegistrationBean.class);
+					ServletRegistrationBean<?> registrationBean = context
+							.getBean(ServletRegistrationBean.class);
+					assertThat(registrationBean.getInitParameters())
+							.containsOnly(entry("debug", "true"));
+				});
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> isDefinedOnPath(

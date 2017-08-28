@@ -73,8 +73,7 @@ public class SecurityFilterAutoConfiguration {
 			return null;
 		}
 		return securityProperties.getFilterDispatcherTypes().stream()
-				.map((type) -> DispatcherType.valueOf(type.name()))
-				.collect(Collectors
+				.map((type) -> DispatcherType.valueOf(type.name())).collect(Collectors
 						.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
 	}
 

@@ -51,12 +51,14 @@ public class RedisHealthIndicatorTests {
 
 	@Test
 	public void indicatorExists() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(
-				RedisAutoConfiguration.class, EndpointAutoConfiguration.class,
-				HealthIndicatorAutoConfiguration.class)).run((context) -> {
-			assertThat(context).hasSingleBean(RedisConnectionFactory.class);
-			assertThat(context).hasSingleBean(RedisHealthIndicator.class);
-		});
+		new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
+						EndpointAutoConfiguration.class,
+						HealthIndicatorAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RedisConnectionFactory.class);
+					assertThat(context).hasSingleBean(RedisHealthIndicator.class);
+				});
 	}
 
 	@Test
@@ -74,8 +76,8 @@ public class RedisHealthIndicatorTests {
 	@Test
 	public void redisIsDown() throws Exception {
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		given(redisConnection.info()).willThrow(
-				new RedisConnectionFailureException("Connection failed"));
+		given(redisConnection.info())
+				.willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -83,9 +85,9 @@ public class RedisHealthIndicatorTests {
 				.contains("Connection failed");
 	}
 
-	private RedisHealthIndicator createHealthIndicator(
-			RedisConnection redisConnection) {
-		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
+	private RedisHealthIndicator createHealthIndicator(RedisConnection redisConnection) {
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
 		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
 		return new RedisHealthIndicator(redisConnectionFactory);
 	}

@@ -49,7 +49,8 @@ import org.springframework.core.env.PropertySource;
  * @since 2.0.0
  */
 public class ServerPortInfoApplicationContextInitializer
-		implements ApplicationContextInitializer<ConfigurableApplicationContext>, ApplicationListener<WebServerInitializedEvent> {
+		implements ApplicationContextInitializer<ConfigurableApplicationContext>,
+		ApplicationListener<WebServerInitializedEvent> {
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {

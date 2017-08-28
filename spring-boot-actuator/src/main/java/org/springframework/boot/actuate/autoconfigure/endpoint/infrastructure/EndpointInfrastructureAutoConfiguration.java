@@ -71,15 +71,18 @@ public class EndpointInfrastructureAutoConfiguration {
 	@Bean
 	public OperationParameterMapper operationParameterMapper() {
 		DefaultConversionService conversionService = new DefaultConversionService();
-		conversionService.addConverter(String.class, Date.class, (string) -> {
-			if (StringUtils.hasLength(string)) {
-				OffsetDateTime offsetDateTime = OffsetDateTime.parse(string,
-						DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-				return new Date(offsetDateTime.toEpochSecond() * 1000);
-			}
-			return null;
-		});
+		conversionService.addConverter(String.class, Date.class, this::convertToDate);
 		return new ConversionServiceOperationParameterMapper(conversionService);
+	}
+
+	private Date convertToDate(String value) {
+		if (StringUtils.hasLength(value)) {
+			OffsetDateTime offsetDateTime = OffsetDateTime.parse(value,
+					DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+			return new Date(offsetDateTime.toEpochSecond() * 1000);
+		}
+		return null;
+
 	}
 
 	@Bean

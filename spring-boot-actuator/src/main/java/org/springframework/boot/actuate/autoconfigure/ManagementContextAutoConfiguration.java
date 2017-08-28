@@ -37,6 +37,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
@@ -58,7 +59,7 @@ public class ManagementContextAutoConfiguration {
 
 		@Bean
 		public ManagementServletContext managementServletContext(
-				final ManagementServerProperties properties) {
+				ManagementServerProperties properties) {
 			return () -> properties.getContextPath();
 		}
 
@@ -86,12 +87,11 @@ public class ManagementContextAutoConfiguration {
 		}
 
 		private void verifySslConfiguration() {
-			if (this.environment.getProperty("management.ssl.enabled", Boolean.class,
-					false)) {
-				throw new IllegalStateException(
-						"Management-specific SSL cannot be configured as the management "
-								+ "server is not listening on a separate port");
-			}
+			Boolean enabled = this.environment.getProperty("management.ssl.enabled",
+					Boolean.class, false);
+			Assert.state(!enabled,
+					"Management-specific SSL cannot be configured as the management "
+							+ "server is not listening on a separate port");
 		}
 
 		private void verifyContextPathConfiguration() {
@@ -112,6 +112,7 @@ public class ManagementContextAutoConfiguration {
 				ConfigurableEnvironment environment) {
 			environment.getPropertySources()
 					.addLast(new PropertySource<Object>("Management Server") {
+
 						@Override
 						public Object getProperty(String name) {
 							if ("local.management.port".equals(name)) {
@@ -119,6 +120,7 @@ public class ManagementContextAutoConfiguration {
 							}
 							return null;
 						}
+
 					});
 		}
 

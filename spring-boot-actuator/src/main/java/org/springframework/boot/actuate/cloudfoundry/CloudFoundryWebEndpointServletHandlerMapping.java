@@ -50,18 +50,20 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
 /**
- * A custom {@link RequestMappingInfoHandlerMapping} that makes web endpoints available
- * on Cloudfoundry specific URLS over HTTP using Spring MVC.
+ * A custom {@link RequestMappingInfoHandlerMapping} that makes web endpoints available on
+ * Cloudfoundry specific URLS over HTTP using Spring MVC.
  *
  * @author Madhura Bhave
  */
-class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointServletHandlerMapping {
+class CloudFoundryWebEndpointServletHandlerMapping
+		extends AbstractWebEndpointServletHandlerMapping {
 
 	private final Method handle = ReflectionUtils.findMethod(OperationHandler.class,
 			"handle", HttpServletRequest.class, Map.class);
 
 	private final Method links = ReflectionUtils.findMethod(
-			CloudFoundryWebEndpointServletHandlerMapping.class, "links", HttpServletRequest.class, HttpServletResponse.class);
+			CloudFoundryWebEndpointServletHandlerMapping.class, "links",
+			HttpServletRequest.class, HttpServletResponse.class);
 
 	private static final Log logger = LogFactory
 			.getLog(CloudFoundryWebEndpointServletHandlerMapping.class);
@@ -70,7 +72,10 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 
 	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
 
-	CloudFoundryWebEndpointServletHandlerMapping(String endpointPath, Collection<EndpointInfo<WebEndpointOperation>> webEndpoints, CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor) {
+	CloudFoundryWebEndpointServletHandlerMapping(String endpointPath,
+			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			CorsConfiguration corsConfiguration,
+			CloudFoundrySecurityInterceptor securityInterceptor) {
 		super(endpointPath, webEndpoints, corsConfiguration);
 		this.securityInterceptor = securityInterceptor;
 	}
@@ -81,27 +86,32 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 	}
 
 	@ResponseBody
-	private Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
-		CloudFoundrySecurityInterceptor.SecurityResponse securityResponse = this.securityInterceptor.preHandle(request, "");
+	private Map<String, Map<String, Link>> links(HttpServletRequest request,
+			HttpServletResponse response) {
+		CloudFoundrySecurityInterceptor.SecurityResponse securityResponse = this.securityInterceptor
+				.preHandle(request, "");
 		if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 			sendFailureResponse(response, securityResponse);
 		}
 		AccessLevel accessLevel = AccessLevel.get(request);
-		Map<String, Link> links = this.endpointLinksResolver
-				.resolveLinks(getEndpoints(), request.getRequestURL().toString());
+		Map<String, Link> links = this.endpointLinksResolver.resolveLinks(getEndpoints(),
+				request.getRequestURL().toString());
 		Map<String, Link> filteredLinks = new LinkedHashMap<>();
 		if (accessLevel == null) {
 			return Collections.singletonMap("_links", filteredLinks);
 		}
 		filteredLinks = links.entrySet().stream()
-				.filter(e -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
+				.filter(e -> e.getKey().equals("self")
+						|| accessLevel.isAccessAllowed(e.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		return Collections.singletonMap("_links", filteredLinks);
 	}
 
-	private void sendFailureResponse(HttpServletResponse response, CloudFoundrySecurityInterceptor.SecurityResponse securityResponse) {
+	private void sendFailureResponse(HttpServletResponse response,
+			CloudFoundrySecurityInterceptor.SecurityResponse securityResponse) {
 		try {
-			response.sendError(securityResponse.getStatus().value(), securityResponse.getMessage());
+			response.sendError(securityResponse.getStatus().value(),
+					securityResponse.getMessage());
 		}
 		catch (Exception ex) {
 			logger.debug("Failed to send error response", ex);
@@ -111,7 +121,9 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 	@Override
 	protected void registerMappingForOperation(WebEndpointOperation operation) {
 		registerMapping(createRequestMappingInfo(operation),
-				new OperationHandler(operation.getInvoker(), operation.getId(), this.securityInterceptor), this.handle);
+				new OperationHandler(operation.getInvoker(), operation.getId(),
+						this.securityInterceptor),
+				this.handle);
 	}
 
 	/**
@@ -125,7 +137,8 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 
 		private final CloudFoundrySecurityInterceptor securityInterceptor;
 
-		OperationHandler(OperationInvoker operationInvoker, String id, CloudFoundrySecurityInterceptor securityInterceptor) {
+		OperationHandler(OperationInvoker operationInvoker, String id,
+				CloudFoundrySecurityInterceptor securityInterceptor) {
 			this.operationInvoker = operationInvoker;
 			this.endpointId = id;
 			this.securityInterceptor = securityInterceptor;
@@ -135,7 +148,8 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 		@ResponseBody
 		public Object handle(HttpServletRequest request,
 				@RequestBody(required = false) Map<String, String> body) {
-			CloudFoundrySecurityInterceptor.SecurityResponse securityResponse = this.securityInterceptor.preHandle(request, this.endpointId);
+			CloudFoundrySecurityInterceptor.SecurityResponse securityResponse = this.securityInterceptor
+					.preHandle(request, this.endpointId);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				return failureResponse(securityResponse);
 			}
@@ -155,8 +169,10 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 			}
 		}
 
-		private Object failureResponse(CloudFoundrySecurityInterceptor.SecurityResponse response) {
-			return handleResult(new WebEndpointResponse<>(response.getMessage(), response.getStatus().value()));
+		private Object failureResponse(
+				CloudFoundrySecurityInterceptor.SecurityResponse response) {
+			return handleResult(new WebEndpointResponse<>(response.getMessage(),
+					response.getStatus().value()));
 		}
 
 		private Object handleResult(Object result) {
@@ -179,4 +195,3 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 	}
 
 }
-

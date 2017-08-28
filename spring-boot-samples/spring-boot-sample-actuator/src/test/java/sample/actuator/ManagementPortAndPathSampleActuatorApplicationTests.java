@@ -104,8 +104,9 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	@Test
 	public void testManagementErrorPage() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:" + this.managementPort + "/error", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.managementPort + "/error",
+						Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

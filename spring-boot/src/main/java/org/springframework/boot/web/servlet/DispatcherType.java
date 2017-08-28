@@ -18,7 +18,7 @@ package org.springframework.boot.web.servlet;
 
 /**
  * Enumeration of filter dispatcher types, identical to
- * {@link javax.servlet.DispatcherType} and used in configuration as the servlet api may
+ * {@link javax.servlet.DispatcherType} and used in configuration as the servlet API may
  * not be present.
  *
  * @author Stephane Nicoll

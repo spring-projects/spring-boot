@@ -55,8 +55,7 @@ class SessionRepositoryFilterConfiguration {
 			return null;
 		}
 		return servletProperties.getFilterDispatcherTypes().stream()
-				.map((type) -> DispatcherType.valueOf(type.name()))
-				.collect(Collectors
+				.map((type) -> DispatcherType.valueOf(type.name())).collect(Collectors
 						.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
 	}
 

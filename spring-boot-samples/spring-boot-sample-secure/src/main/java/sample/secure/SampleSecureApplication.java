@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ public class SampleSecureApplication implements CommandLineRunner {
 	@Bean
 	public UserDetailsService userDetailsService() throws Exception {
 		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(User.withUsername("user").password("password").roles("USER").build());
+		manager.createUser(
+				User.withUsername("user").password("password").roles("USER").build());
 		return manager;
 	}
 

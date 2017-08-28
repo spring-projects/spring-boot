@@ -105,11 +105,9 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http
-				.requestMatcher(this.springBootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS))
-				.authorizeRequests().anyRequest().authenticated()
-					.and()
-				.httpBasic();
+			http.requestMatcher(
+					this.springBootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS))
+					.authorizeRequests().anyRequest().authenticated().and().httpBasic();
 		}
 
 	}

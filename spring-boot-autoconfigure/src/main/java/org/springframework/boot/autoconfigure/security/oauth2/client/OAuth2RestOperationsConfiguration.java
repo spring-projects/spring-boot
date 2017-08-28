@@ -86,7 +86,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
-	@Conditional({OAuth2ClientIdCondition.class, NoClientCredentialsCondition.class})
+	@Conditional({ OAuth2ClientIdCondition.class, NoClientCredentialsCondition.class })
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class SessionScopedConfiguration {
 

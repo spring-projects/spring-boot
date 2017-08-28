@@ -32,12 +32,10 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
 /**
  * {@link ManagementContextConfiguration} for embedding Jolokia, a JMX-HTTP bridge giving
  * an alternative to JSR-160 connectors.
- *
  * <p>
  * This configuration will get automatically enabled as soon as the Jolokia
  * {@link AgentServlet} is on the classpath. To disable it set
  * {@code management.jolokia.enabled=false}.
- *
  * <p>
  * Additional configuration parameters for Jolokia can be provided by specifying
  * {@code management.jolokia.config.*} properties. See the

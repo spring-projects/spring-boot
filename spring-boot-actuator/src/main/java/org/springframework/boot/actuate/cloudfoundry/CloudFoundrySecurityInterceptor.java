@@ -52,18 +52,19 @@ class CloudFoundrySecurityInterceptor {
 		this.applicationId = applicationId;
 	}
 
-	SecurityResponse preHandle(HttpServletRequest request,
-			String endpointId) {
+	SecurityResponse preHandle(HttpServletRequest request, String endpointId) {
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return SecurityResponse.success();
 		}
 		try {
 			if (!StringUtils.hasText(this.applicationId)) {
-				throw new CloudFoundryAuthorizationException(CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
+				throw new CloudFoundryAuthorizationException(
+						CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
 						"Application id is not available");
 			}
 			if (this.cloudFoundrySecurityService == null) {
-				throw new CloudFoundryAuthorizationException(CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
+				throw new CloudFoundryAuthorizationException(
+						CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
 						"Cloud controller URL is not available");
 			}
 			if (HttpMethod.OPTIONS.matches(request.getMethod())) {
@@ -75,21 +76,23 @@ class CloudFoundrySecurityInterceptor {
 			logger.error(ex);
 			if (ex instanceof CloudFoundryAuthorizationException) {
 				CloudFoundryAuthorizationException cfException = (CloudFoundryAuthorizationException) ex;
-				return new SecurityResponse(cfException.getStatusCode(), "{\"security_error\":\"" + cfException.getMessage() + "\"}");
+				return new SecurityResponse(cfException.getStatusCode(),
+						"{\"security_error\":\"" + cfException.getMessage() + "\"}");
 			}
-			return new SecurityResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+			return new SecurityResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					ex.getMessage());
 		}
 		return SecurityResponse.success();
 	}
 
-	private void check(HttpServletRequest request, String path)
-			throws Exception {
+	private void check(HttpServletRequest request, String path) throws Exception {
 		Token token = getToken(request);
 		this.tokenValidator.validate(token);
 		AccessLevel accessLevel = this.cloudFoundrySecurityService
 				.getAccessLevel(token.toString(), this.applicationId);
 		if (!accessLevel.isAccessAllowed(path)) {
-			throw new CloudFoundryAuthorizationException(CloudFoundryAuthorizationException.Reason.ACCESS_DENIED,
+			throw new CloudFoundryAuthorizationException(
+					CloudFoundryAuthorizationException.Reason.ACCESS_DENIED,
 					"Access denied");
 		}
 		accessLevel.put(request);
@@ -100,7 +103,8 @@ class CloudFoundrySecurityInterceptor {
 		String bearerPrefix = "bearer ";
 		if (authorization == null
 				|| !authorization.toLowerCase().startsWith(bearerPrefix)) {
-			throw new CloudFoundryAuthorizationException(CloudFoundryAuthorizationException.Reason.MISSING_AUTHORIZATION,
+			throw new CloudFoundryAuthorizationException(
+					CloudFoundryAuthorizationException.Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}
 		return new Token(authorization.substring(bearerPrefix.length()));
@@ -116,7 +120,7 @@ class CloudFoundrySecurityInterceptor {
 		private final String message;
 
 		SecurityResponse(HttpStatus status) {
-			this (status, null);
+			this(status, null);
 		}
 
 		SecurityResponse(HttpStatus status, String message) {
@@ -135,7 +139,7 @@ class CloudFoundrySecurityInterceptor {
 		static SecurityResponse success() {
 			return new SecurityResponse(HttpStatus.OK);
 		}
+
 	}
 
 }
-

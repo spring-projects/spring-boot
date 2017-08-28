@@ -63,9 +63,11 @@ public class SecurityAutoConfiguration {
 	}
 
 	@Bean
-	public SpringBootSecurity springBootSecurity(EndpointPathResolver endpointPathResolver,
+	public SpringBootSecurity springBootSecurity(
+			EndpointPathResolver endpointPathResolver,
 			ObjectProvider<ErrorController> errorController) {
-		return new SpringBootSecurity(endpointPathResolver, errorController.getIfAvailable());
+		return new SpringBootSecurity(endpointPathResolver,
+				errorController.getIfAvailable());
 	}
 
 	@Bean

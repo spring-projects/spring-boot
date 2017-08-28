@@ -46,8 +46,8 @@ public class HealthEndpointTests {
 				.withDetail("first", "1").build());
 		healthIndicators.put("upAgain", () -> new Health.Builder().status(Status.UP)
 				.withDetail("second", "2").build());
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
-				healthIndicators));
+		HealthEndpoint endpoint = new HealthEndpoint(
+				createHealthIndicator(healthIndicators));
 		Health health = endpoint.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsOnlyKeys("up", "upAgain");
@@ -59,8 +59,8 @@ public class HealthEndpointTests {
 
 	private HealthIndicator createHealthIndicator(
 			Map<String, HealthIndicator> healthIndicators) {
-		return new HealthIndicatorFactory().createHealthIndicator(
-				new OrderedHealthAggregator(), healthIndicators);
+		return new HealthIndicatorFactory()
+				.createHealthIndicator(new OrderedHealthAggregator(), healthIndicators);
 	}
 
 }

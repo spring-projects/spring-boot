@@ -19,12 +19,13 @@ package org.springframework.boot.configurationprocessor;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -148,7 +149,6 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				processEndpoint(element);
 			}
 		}
-
 		if (roundEnv.processingOver()) {
 			try {
 				writeMetaData();
@@ -372,34 +372,36 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			enabledByDefault = Boolean.TRUE;
 		}
 		String type = this.typeUtils.getQualifiedName(element);
-		this.metadataCollector.add(ItemMetadata.newGroup(endpointKey(endpointId),
-				type, type, null));
+		this.metadataCollector
+				.add(ItemMetadata.newGroup(endpointKey(endpointId), type, type, null));
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
-				"enabled", Boolean.class.getName(), type, null, String.format(
-						"Enable the %s endpoint.", endpointId), enabledByDefault, null));
+				"enabled", Boolean.class.getName(), type, null,
+				String.format("Enable the %s endpoint.", endpointId), enabledByDefault,
+				null));
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
 				"cache.time-to-live", Long.class.getName(), type, null,
 				"Maximum time in milliseconds that a response can be cached.", 0, null));
-
-		EndpointTypes endpointTypes = EndpointTypes.parse(elementValues.get("types"));
+		EndpointExposure endpointTypes = EndpointExposure
+				.parse(elementValues.get("exposure"));
 		if (endpointTypes.hasJmx()) {
 			this.metadataCollector.add(ItemMetadata.newProperty(
 					endpointKey(endpointId + ".jmx"), "enabled", Boolean.class.getName(),
-					type, null, String.format("Expose the %s endpoint as a JMX MBean.",
-							endpointId), enabledByDefault, null));
+					type, null,
+					String.format("Expose the %s endpoint as a JMX MBean.", endpointId),
+					enabledByDefault, null));
 		}
 		if (endpointTypes.hasWeb()) {
 			this.metadataCollector.add(ItemMetadata.newProperty(
 					endpointKey(endpointId + ".web"), "enabled", Boolean.class.getName(),
 					type, null, String.format("Expose the %s endpoint as a Web endpoint.",
-							endpointId), false, null));
+							endpointId),
+					false, null));
 		}
 	}
 
 	private String endpointKey(String suffix) {
 		return "endpoints." + suffix;
 	}
-
 
 	private boolean isNested(Element returnType, VariableElement field,
 			TypeElement element) {
@@ -521,39 +523,44 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.processingEnv.getMessager().printMessage(kind, msg);
 	}
 
-	private static class EndpointTypes {
+	private static class EndpointExposure {
 
-		private static final List<String> ALL_TYPES = Arrays.asList("JMX", "WEB");
+		private static final List<String> ALL = Arrays.asList("JMX", "WEB");
 
 		private final List<String> types;
 
-		EndpointTypes(List<String> types) {
+		EndpointExposure(List<String> types) {
 			this.types = types;
 		}
 
-		static EndpointTypes parse(Object typesAttribute) {
-			if (!(typesAttribute instanceof List)) {
-				return new EndpointTypes(ALL_TYPES);
-			}
-			List<AnnotationValue> values = (List<AnnotationValue>) typesAttribute;
+		static EndpointExposure parse(Object exposureAttribute) {
+			List<AnnotationValue> values = asAnnotationValues(exposureAttribute);
 			if (values.isEmpty()) {
-				return new EndpointTypes(ALL_TYPES);
+				return new EndpointExposure(ALL);
 			}
-			List<String> types = new ArrayList<>();
-			for (AnnotationValue value : values) {
-				types.add(((VariableElement) value.getValue()).getSimpleName().toString());
-			}
-			return new EndpointTypes(types);
+			return new EndpointExposure(
+					values.stream().map(EndpointExposure::getValueAttribute)
+							.collect(Collectors.toList()));
+		}
 
+		@SuppressWarnings("unchecked")
+		private static List<AnnotationValue> asAnnotationValues(Object typesAttribute) {
+			if (!(typesAttribute instanceof List)) {
+				return Collections.emptyList();
+			}
+			return (List<AnnotationValue>) typesAttribute;
+		}
+
+		private static String getValueAttribute(AnnotationValue value) {
+			return ((VariableElement) value.getValue()).getSimpleName().toString();
 		}
 
 		public boolean hasJmx() {
-			return  this.types.contains("JMX");
+			return this.types.contains("JMX");
 		}
 
-
 		public boolean hasWeb() {
-			return  this.types.contains("WEB");
+			return this.types.contains("WEB");
 		}
 
 	}

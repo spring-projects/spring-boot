@@ -31,7 +31,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-
 /**
  * Provides request matchers that can be used to configure security for static resources
  * and the error controller path in a custom {@link WebSecurityConfigurerAdapter}.
@@ -68,8 +67,8 @@ public final class SpringBootSecurity {
 		Assert.notEmpty(ids, "At least one endpoint id must be specified.");
 		List<String> pathList = Arrays.asList(ids);
 		if (pathList.contains(ALL_ENDPOINTS)) {
-			return new AntPathRequestMatcher(this.endpointPathResolver.resolvePath(
-					ALL_ENDPOINTS), null);
+			return new AntPathRequestMatcher(
+					this.endpointPathResolver.resolvePath(ALL_ENDPOINTS), null);
 		}
 		return getEndpointsRequestMatcher(pathList);
 	}
@@ -140,4 +139,3 @@ public final class SpringBootSecurity {
 	}
 
 }
-

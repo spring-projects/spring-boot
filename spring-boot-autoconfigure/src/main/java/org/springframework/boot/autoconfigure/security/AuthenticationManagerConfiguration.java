@@ -50,12 +50,12 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}. Can be
- * disabled by providing a bean of type {@link AuthenticationManager}, {@link AuthenticationProvider}
- * or {@link UserDetailsService}. The value provided by this configuration will become the "global"
- * authentication manager (from Spring Security), or the parent of the global instance.
- * Thus it acts as a fallback when no others are provided, is used by method security if
- * enabled, and as a parent authentication manager for "local" authentication managers in
- * individual filter chains.
+ * disabled by providing a bean of type {@link AuthenticationManager},
+ * {@link AuthenticationProvider} or {@link UserDetailsService}. The value provided by
+ * this configuration will become the "global" authentication manager (from Spring
+ * Security), or the parent of the global instance. Thus it acts as a fallback when no
+ * others are provided, is used by method security if enabled, and as a parent
+ * authentication manager for "local" authentication managers in individual filter chains.
  *
  * @author Dave Syer
  * @author Rob Winch
@@ -63,8 +63,8 @@ import org.springframework.util.ReflectionUtils;
  */
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)
-@ConditionalOnMissingBean({ AuthenticationManager.class,
-	AuthenticationProvider.class, UserDetailsService.class})
+@ConditionalOnMissingBean({ AuthenticationManager.class, AuthenticationProvider.class,
+		UserDetailsService.class })
 @Order(0)
 public class AuthenticationManagerConfiguration {
 
@@ -102,8 +102,8 @@ public class AuthenticationManagerConfiguration {
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}
 	 * exists that adds a {@link SecurityConfigurer} to the
 	 * {@link AuthenticationManagerBuilder}.</li>
-	 * <li>{@link AuthenticationManagerConfiguration}
-	 * adds {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
+	 * <li>{@link AuthenticationManagerConfiguration} adds
+	 * {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
 	 * {@link SecurityConfigurer} in the first step.</li>
 	 * <li>We then can default an {@link AuthenticationProvider} if necessary. Note we can
 	 * only invoke the
@@ -169,10 +169,9 @@ public class AuthenticationManagerConfiguration {
 				return;
 			}
 			String password = UUID.randomUUID().toString();
-			logger.info(String.format("%n%nUsing default security password: %s%n",
-					password));
-			withUser("user").password(password)
-					.roles();
+			logger.info(
+					String.format("%n%nUsing default security password: %s%n", password));
+			withUser("user").password(password).roles();
 			setField(auth, "defaultUserDetailsService", getUserDetailsService());
 			super.configure(auth);
 		}

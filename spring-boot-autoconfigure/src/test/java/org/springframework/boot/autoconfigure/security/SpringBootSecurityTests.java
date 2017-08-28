@@ -46,15 +46,16 @@ public class SpringBootSecurityTests {
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
-	private static String[] STATIC_RESOURCES = new String[]{"/css/**", "/js/**",
-			"/images/**", "/webjars/**", "/**/favicon.ico"};
+	private static String[] STATIC_RESOURCES = new String[] { "/css/**", "/js/**",
+			"/images/**", "/webjars/**", "/**/favicon.ico" };
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
-		this.bootSecurity = new SpringBootSecurity(this.endpointPathResolver, this.errorController);
+		this.bootSecurity = new SpringBootSecurity(this.endpointPathResolver,
+				this.errorController);
 	}
 
 	@Test
@@ -65,7 +66,8 @@ public class SpringBootSecurityTests {
 	}
 
 	@Test
-	public void endpointIdsShouldReturnRequestMatcherWithEndpointPaths() throws Exception {
+	public void endpointIdsShouldReturnRequestMatcherWithEndpointPaths()
+			throws Exception {
 		RequestMatcher requestMatcher = this.bootSecurity.endpointIds("id-1", "id-2");
 		assertThat(requestMatcher).isInstanceOf(OrRequestMatcher.class);
 		this.request.setServletPath("/test/id-1");
@@ -77,8 +79,10 @@ public class SpringBootSecurityTests {
 	}
 
 	@Test
-	public void endpointIdsShouldReturnRequestMatcherWithAllEndpointPaths() throws Exception {
-		RequestMatcher requestMatcher = this.bootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS);
+	public void endpointIdsShouldReturnRequestMatcherWithAllEndpointPaths()
+			throws Exception {
+		RequestMatcher requestMatcher = this.bootSecurity
+				.endpointIds(SpringBootSecurity.ALL_ENDPOINTS);
 		this.request.setServletPath("/test/id-1");
 		assertThat(requestMatcher.matches(this.request)).isTrue();
 		this.request.setServletPath("/test/id-2");
@@ -112,7 +116,8 @@ public class SpringBootSecurityTests {
 	}
 
 	@Test
-	public void staticResourcesShouldReturnRequestMatcherWithStaticResources() throws Exception {
+	public void staticResourcesShouldReturnRequestMatcherWithStaticResources()
+			throws Exception {
 		RequestMatcher requestMatcher = this.bootSecurity.staticResources();
 		assertThat(requestMatcher).isInstanceOf(OrRequestMatcher.class);
 		for (String resource : STATIC_RESOURCES) {
@@ -122,7 +127,8 @@ public class SpringBootSecurityTests {
 	}
 
 	@Test
-	public void errorShouldReturnRequestMatcherWithErrorControllerPath() throws Exception {
+	public void errorShouldReturnRequestMatcherWithErrorControllerPath()
+			throws Exception {
 		RequestMatcher requestMatcher = this.bootSecurity.error();
 		assertThat(requestMatcher).isInstanceOf(AntPathRequestMatcher.class);
 		this.request.setServletPath("/test/error");
@@ -152,6 +158,7 @@ public class SpringBootSecurityTests {
 		public String getErrorPath() {
 			return "/test/error";
 		}
+
 	}
 
 	@Endpoint(id = "id-1")
@@ -167,4 +174,5 @@ public class SpringBootSecurityTests {
 	static class FakeEndpoint {
 
 	}
+
 }

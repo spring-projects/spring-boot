@@ -65,17 +65,16 @@ public class SampleActuatorLog4J2ApplicationTests {
 
 	@Test
 	public void validateLoggersEndpoint() throws Exception {
-		this.mvc.perform(get("/application/loggers/org.apache.coyote.http11.Http11NioProtocol")
-		.header("Authorization", "Basic " + getBasicAuth()))
+		this.mvc.perform(
+				get("/application/loggers/org.apache.coyote.http11.Http11NioProtocol")
+						.header("Authorization", "Basic " + getBasicAuth()))
 				.andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"configuredLevel\":\"WARN\","
 						+ "\"effectiveLevel\":\"WARN\"}")));
 	}
 
 	private String getBasicAuth() {
-		return new String(Base64.getEncoder()
-				.encode(("user:password").getBytes()));
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
 	}
 
 }
-

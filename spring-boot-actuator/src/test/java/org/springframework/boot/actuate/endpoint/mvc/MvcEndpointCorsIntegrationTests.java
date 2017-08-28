@@ -65,8 +65,7 @@ public class MvcEndpointCorsIntegrationTests {
 				EndpointInfrastructureAutoConfiguration.class,
 				EndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 				ServletEndpointAutoConfiguration.class);
-		TestPropertyValues.of("endpoints.default.web.enabled:true")
-				.applyTo(this.context);
+		TestPropertyValues.of("endpoints.default.web.enabled:true").applyTo(this.context);
 	}
 
 	@Test
@@ -144,8 +143,10 @@ public class MvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void allowedMethodsCanBeConfigured() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com",
-				"management.endpoints.cors.allowed-methods:GET,HEAD").applyTo(this.context);
+		TestPropertyValues
+				.of("management.endpoints.cors.allowed-origins:foo.example.com",
+						"management.endpoints.cors.allowed-methods:GET,HEAD")
+				.applyTo(this.context);
 		createMockMvc()
 				.perform(options("/application/beans")
 						.header(HttpHeaders.ORIGIN, "foo.example.com")
@@ -156,16 +157,20 @@ public class MvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void credentialsCanBeAllowed() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com",
-				"management.endpoints.cors.allow-credentials:true").applyTo(this.context);
+		TestPropertyValues
+				.of("management.endpoints.cors.allowed-origins:foo.example.com",
+						"management.endpoints.cors.allow-credentials:true")
+				.applyTo(this.context);
 		performAcceptedCorsRequest().andExpect(
 				header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
 	}
 
 	@Test
 	public void credentialsCanBeDisabled() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com",
-				"management.endpoints.cors.allow-credentials:false").applyTo(this.context);
+		TestPropertyValues
+				.of("management.endpoints.cors.allowed-origins:foo.example.com",
+						"management.endpoints.cors.allow-credentials:false")
+				.applyTo(this.context);
 		performAcceptedCorsRequest().andExpect(
 				header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
 	}

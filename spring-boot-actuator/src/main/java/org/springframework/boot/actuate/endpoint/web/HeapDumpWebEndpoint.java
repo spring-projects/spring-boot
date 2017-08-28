@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
@@ -206,12 +208,7 @@ public class HeapDumpWebEndpoint {
 
 				@Override
 				public void close() throws IOException {
-					try {
-						readableChannel.close();
-					}
-					finally {
-						deleteFile();
-					}
+					closeThenDeleteFile(readableChannel);
 				}
 
 				@Override
@@ -224,60 +221,23 @@ public class HeapDumpWebEndpoint {
 
 		@Override
 		public InputStream getInputStream() throws IOException {
-			InputStream delegate = super.getInputStream();
-			return new InputStream() {
-
-				@Override
-				public int read() throws IOException {
-					return delegate.read();
-				}
-
-				@Override
-				public int read(byte[] b) throws IOException {
-					return delegate.read(b);
-				}
-
-				@Override
-				public int read(byte[] b, int off, int len) throws IOException {
-					return delegate.read(b, off, len);
-				}
-
-				@Override
-				public long skip(long n) throws IOException {
-					return delegate.skip(n);
-				}
-
-				@Override
-				public int available() throws IOException {
-					return delegate.available();
-				}
+			return new FilterInputStream(super.getInputStream()) {
 
 				@Override
 				public void close() throws IOException {
-					try {
-						delegate.close();
-					}
-					finally {
-						deleteFile();
-					}
-				}
-
-				@Override
-				public synchronized void mark(int readlimit) {
-					delegate.mark(readlimit);
-				}
-
-				@Override
-				public synchronized void reset() throws IOException {
-					delegate.reset();
-				}
-
-				@Override
-				public boolean markSupported() {
-					return delegate.markSupported();
+					closeThenDeleteFile(this.in);
 				}
 
 			};
+		}
+
+		private void closeThenDeleteFile(Closeable closeable) throws IOException {
+			try {
+				closeable.close();
+			}
+			finally {
+				deleteFile();
+			}
 		}
 
 		private void deleteFile() {

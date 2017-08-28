@@ -171,8 +171,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	@Test
 	public void deleteOperationWithVoidResponse() {
 		load(VoidDeleteResponseEndpointConfiguration.class, (context, client) -> {
-			client.delete().uri("/voiddelete").accept(MediaType.APPLICATION_JSON).exchange()
-					.expectStatus().isNoContent().expectBody().isEmpty();
+			client.delete().uri("/voiddelete").accept(MediaType.APPLICATION_JSON)
+					.exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).delete();
 		});
 	}
@@ -345,7 +345,6 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 	}
-
 
 	@Configuration
 	@Import(BaseConfiguration.class)

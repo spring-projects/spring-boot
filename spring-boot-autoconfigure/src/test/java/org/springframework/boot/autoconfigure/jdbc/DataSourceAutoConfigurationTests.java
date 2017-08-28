@@ -318,7 +318,8 @@ public class DataSourceAutoConfigurationTests {
 		@Override
 		protected Class<?> loadClass(String name, boolean resolve)
 				throws ClassNotFoundException {
-			for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
+			for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection
+					.values()) {
 				if (name.equals(candidate.getDriverClassName())) {
 					throw new ClassNotFoundException();
 				}
@@ -327,6 +328,5 @@ public class DataSourceAutoConfigurationTests {
 		}
 
 	}
-
 
 }

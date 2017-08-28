@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.port=0", "management.context-path=/admin"})
+		"management.port=0", "management.context-path=/admin" })
 @DirtiesContext
 public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 
@@ -51,7 +51,6 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
 		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -77,9 +76,10 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testMissing() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin").getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/missing",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
+				.getForEntity(
+						"http://localhost:" + this.managementPort + "/admin/missing",
+						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}

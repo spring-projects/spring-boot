@@ -266,4 +266,3 @@ public class TokenValidatorTests {
 	}
 
 }
-

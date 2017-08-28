@@ -31,6 +31,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * Security configuration for management endpoints.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
@@ -39,9 +40,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 public class ManagementWebSecurityAutoConfiguration {
 
 	@Bean
-	public EndpointPathResolver managementEndpointPathResolver(ManagementServerProperties properties) {
+	public EndpointPathResolver managementEndpointPathResolver(
+			ManagementServerProperties properties) {
 		return new ManagementEndpointPathResolver(properties);
 	}
 
 }
-

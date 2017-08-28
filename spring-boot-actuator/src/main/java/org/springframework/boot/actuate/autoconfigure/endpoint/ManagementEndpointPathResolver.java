@@ -20,8 +20,8 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProper
 import org.springframework.boot.endpoint.EndpointPathResolver;
 
 /**
- * {@link EndpointPathResolver} implementation for resolving
- * actuator endpoint paths based on the endpoint id and management.context-path.
+ * {@link EndpointPathResolver} implementation for resolving actuator endpoint paths based
+ * on the endpoint id and management.context-path.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -38,5 +38,5 @@ public class ManagementEndpointPathResolver implements EndpointPathResolver {
 	public String resolvePath(String endpointId) {
 		return this.contextPath + "/" + endpointId;
 	}
-}
 
+}

@@ -17,8 +17,7 @@
 package org.springframework.boot.endpoint;
 
 /**
- * Strategy interface that can be used to resolve endpoint paths
- * based on endpoint id.
+ * Strategy interface that can be used to resolve endpoint paths based on endpoint id.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -33,4 +32,3 @@ public interface EndpointPathResolver {
 	String resolvePath(String endpointId);
 
 }
-

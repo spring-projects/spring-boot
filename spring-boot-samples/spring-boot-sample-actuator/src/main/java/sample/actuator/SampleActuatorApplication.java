@@ -22,7 +22,6 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -38,17 +37,20 @@ public class SampleActuatorApplication {
 	@Bean
 	public UserDetailsService userDetailsService() throws Exception {
 		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(User.withUsername("user").password("password").roles("USER").build());
+		manager.createUser(
+				User.withUsername("user").password("password").roles("USER").build());
 		return manager;
 	}
 
 	@Bean
 	public HealthIndicator helloHealthIndicator() {
 		return new HealthIndicator() {
+
 			@Override
 			public Health health() {
 				return Health.up().withDetail("hello", "world").build();
 			}
+
 		};
 	}
 

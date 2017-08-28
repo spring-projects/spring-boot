@@ -73,9 +73,7 @@ public class WebEndpointManagementContextConfigurationTests {
 		contextRunner.run((context) -> {
 			HealthWebEndpointExtension extension = context
 					.getBean(HealthWebEndpointExtension.class);
-			@SuppressWarnings("unchecked")
-			Map<String, Integer> statusMappings = ((HealthStatusHttpMapper) ReflectionTestUtils
-					.getField(extension, "statusHttpMapper")).getStatusMapping();
+			Map<String, Integer> statusMappings = getStatusMapping(extension);
 			assertThat(statusMappings).containsEntry("DOWN", 503);
 			assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
 			assertThat(statusMappings).containsEntry("CUSTOM", 500);
@@ -102,9 +100,7 @@ public class WebEndpointManagementContextConfigurationTests {
 		contextRunner.run((context) -> {
 			StatusWebEndpointExtension extension = context
 					.getBean(StatusWebEndpointExtension.class);
-			@SuppressWarnings("unchecked")
-			Map<String, Integer> statusMappings = ((HealthStatusHttpMapper) ReflectionTestUtils
-					.getField(extension, "statusHttpMapper")).getStatusMapping();
+			Map<String, Integer> statusMappings = getStatusMapping(extension);
 			assertThat(statusMappings).containsEntry("DOWN", 503);
 			assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
 			assertThat(statusMappings).containsEntry("CUSTOM", 500);
@@ -161,8 +157,7 @@ public class WebEndpointManagementContextConfigurationTests {
 	}
 
 	private void beanIsAutoConfigured(Class<?> beanType, Class<?>... config) {
-		contextRunner()
-				.withPropertyValues("endpoints.default.web.enabled:true")
+		contextRunner().withPropertyValues("endpoints.default.web.enabled:true")
 				.withUserConfiguration(config)
 				.run((context) -> assertThat(context).hasSingleBean(beanType));
 	}
@@ -176,6 +171,11 @@ public class WebEndpointManagementContextConfigurationTests {
 	private ApplicationContextRunner contextRunner() {
 		return new ApplicationContextRunner().withConfiguration(
 				AutoConfigurations.of(WebEndpointManagementContextConfiguration.class));
+	}
+
+	private Map<String, Integer> getStatusMapping(Object extension) {
+		return ((HealthStatusHttpMapper) ReflectionTestUtils.getField(extension,
+				"statusHttpMapper")).getStatusMapping();
 	}
 
 	@Configuration

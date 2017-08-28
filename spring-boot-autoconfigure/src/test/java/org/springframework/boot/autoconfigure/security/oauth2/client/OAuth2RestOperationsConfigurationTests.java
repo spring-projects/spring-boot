@@ -22,6 +22,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.servlet.MockServletWebServerFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -77,8 +78,7 @@ public class OAuth2RestOperationsConfigurationTests {
 		TestPropertyValues.of("security.oauth2.client.client-id=acme")
 				.applyTo(this.environment);
 		initializeContext(ConfigForRequestScopedConfiguration.class, false);
-		assertThat(this.context.containsBean("oauth2ClientContext"))
-				.isTrue();
+		assertThat(this.context.containsBean("oauth2ClientContext")).isTrue();
 	}
 
 	@Test
@@ -93,8 +93,7 @@ public class OAuth2RestOperationsConfigurationTests {
 		TestPropertyValues.of("security.oauth2.client.client-id=acme")
 				.applyTo(this.environment);
 		initializeContext(ConfigForSessionScopedConfiguration.class, false);
-		assertThat(this.context.containsBean("oauth2ClientContext"))
-				.isTrue();
+		assertThat(this.context.containsBean("oauth2ClientContext")).isTrue();
 	}
 
 	@Test
@@ -104,10 +103,11 @@ public class OAuth2RestOperationsConfigurationTests {
 		this.context.getBean(DefaultOAuth2ClientContext.class);
 	}
 
-	private void initializeContext(Class<?> configuration, boolean isClientCredentials) {
+	private void initializeContext(Class<?> configuration, boolean clientCredentials) {
 		this.context = new SpringApplicationBuilder(configuration)
-				.environment(this.environment)
-				.web(!isClientCredentials).run();
+				.environment(this.environment).web(clientCredentials
+						? WebApplicationType.NONE : WebApplicationType.SERVLET)
+				.run();
 	}
 
 	@Configuration
@@ -123,7 +123,8 @@ public class OAuth2RestOperationsConfigurationTests {
 
 	@Configuration
 	@Import({ OAuth2ClientConfiguration.class, OAuth2RestOperationsConfiguration.class })
-	protected static class ConfigForSessionScopedConfiguration extends WebApplicationConfiguration {
+	protected static class ConfigForSessionScopedConfiguration
+			extends WebApplicationConfiguration {
 
 		@Bean
 		public SecurityProperties securityProperties() {
@@ -133,7 +134,8 @@ public class OAuth2RestOperationsConfigurationTests {
 	}
 
 	@Configuration
-	protected static class ConfigForRequestScopedConfiguration extends WebApplicationConfiguration {
+	protected static class ConfigForRequestScopedConfiguration
+			extends WebApplicationConfiguration {
 
 	}
 

@@ -113,7 +113,7 @@ public class EndpointMBeanTests {
 				// deleteOne
 				Object deleteResponse = this.server.invoke(objectName, "deleteOne",
 						new Object[] { "one" }, new String[] { String.class.getName() });
-				assertThat(oneResponse).isEqualTo("ONE");
+				assertThat(deleteResponse).isNull();
 
 				// getOne validation after delete
 				updatedOneResponse = this.server.invoke(objectName, "getOne",

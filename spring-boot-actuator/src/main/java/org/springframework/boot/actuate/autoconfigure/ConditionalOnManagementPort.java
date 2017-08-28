@@ -26,6 +26,8 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that matches based on the configuration of the management port.
+ *
+ * @since 2.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })

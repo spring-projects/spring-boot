@@ -44,22 +44,22 @@ public class SampleActuatorCustomSecurityApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat((String)body.get("message")).contains("Expected exception in controller");
+		assertThat((String) body.get("message"))
+				.contains("Expected exception in controller");
 	}
 
 	@Test
 	public void testInsecureStaticResources() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}
 
 	@Test
 	public void insecureActuator() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/status",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("/application/status", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

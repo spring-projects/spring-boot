@@ -66,8 +66,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Security filter chain dispatcher types.
 	 */
-	private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(Arrays.asList(
-			DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
+	private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(Arrays
+			.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 	public Basic getBasic() {
 		return this.basic;

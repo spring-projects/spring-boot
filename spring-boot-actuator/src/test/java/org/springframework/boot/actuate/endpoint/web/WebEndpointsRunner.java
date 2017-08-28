@@ -78,9 +78,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
  * The {@link PropertySource PropertySources} that belong to the application context's
  * {@link org.springframework.core.env.Environment} are reset at the end of every test.
  * This means that {@link TestPropertyValues} can be used in a test without affecting the
- * {@code Environment} of other tests in the same class.
- * The runner always sets the flag `endpoints.default.web.enabled` to true so that web
- * endpoints are enabled.
+ * {@code Environment} of other tests in the same class. The runner always sets the flag
+ * `endpoints.default.web.enabled` to true so that web endpoints are enabled.
  *
  * @author Andy Wilkinson
  */
@@ -266,7 +265,8 @@ public class WebEndpointsRunner extends Suite {
 		private ReactiveWebEndpointsRunner(Class<?> klass) throws InitializationError {
 			super(klass, "Reactive", (classes) -> {
 				ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
-				TestPropertyValues.of("endpoints.default.web.enabled:true").applyTo(context);
+				TestPropertyValues.of("endpoints.default.web.enabled:true")
+						.applyTo(context);
 				classes.add(ReactiveInfrastructureConfiguration.class);
 				context.register(classes.toArray(new Class<?>[classes.size()]));
 				context.refresh();

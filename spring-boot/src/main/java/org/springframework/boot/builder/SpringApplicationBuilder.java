@@ -395,8 +395,8 @@ public class SpringApplicationBuilder {
 		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
-			String key = index > 0 ? property.substring(0, index) : property;
-			String value = index > 0 ? property.substring(index + 1) : "";
+			String key = (index > 0 ? property.substring(0, index) : property);
+			String value = (index > 0 ? property.substring(index + 1) : "");
 			map.put(key, value);
 		}
 		return map;

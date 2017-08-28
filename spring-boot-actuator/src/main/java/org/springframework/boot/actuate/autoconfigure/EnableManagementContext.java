@@ -35,6 +35,10 @@ import org.springframework.context.annotation.Import;
 @Import(ManagementContextConfigurationImportSelector.class)
 @interface EnableManagementContext {
 
+	/**
+	 * The management context type that should be enabled.
+	 * @return the management context type
+	 */
 	ManagementContextType value();
 
 }

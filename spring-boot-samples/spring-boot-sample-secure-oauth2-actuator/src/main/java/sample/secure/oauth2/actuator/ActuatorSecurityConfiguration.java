@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Madhura Bhave
  */
 @Configuration
-@Order(2) //before the resource server configuration
+@Order(2) // before the resource server configuration
 public class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private final SpringBootSecurity springBootSecurity;
@@ -23,9 +23,9 @@ public class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter 
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.requestMatcher(this.springBootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS))
-				.authorizeRequests().antMatchers("/**").authenticated()
-				.and()
-			.httpBasic();
+		http.requestMatcher(
+				this.springBootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS))
+				.authorizeRequests().antMatchers("/**").authenticated().and().httpBasic();
 	}
+
 }

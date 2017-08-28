@@ -17,13 +17,14 @@
 package org.springframework.boot.configurationsample.endpoint;
 
 import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.EndpointExposure;
 
 /**
  * An endpoints that only exposes a web endpoint.
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "web", types = Endpoint.Type.WEB)
+@Endpoint(id = "web", exposure = EndpointExposure.WEB)
 public class OnlyWebEndpoint {
 
 }

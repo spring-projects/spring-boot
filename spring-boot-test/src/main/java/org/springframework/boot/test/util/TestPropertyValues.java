@@ -252,8 +252,8 @@ public final class TestPropertyValues {
 
 		public static Pair parse(String pair) {
 			int index = getSeparatorIndex(pair);
-			String key = index > 0 ? pair.substring(0, index) : pair;
-			String value = index > 0 ? pair.substring(index + 1) : "";
+			String key = (index > 0 ? pair.substring(0, index) : pair);
+			String value = (index > 0 ? pair.substring(index + 1) : "");
 			return of(key.trim(), value.trim());
 		}
 

@@ -12,6 +12,7 @@ public class AuthenticationConfiguration extends GlobalAuthenticationConfigurerA
 
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("greg").password("turnquist").roles("read");
+		auth.inMemoryAuthentication().withUser("greg").password("turnquist")
+				.roles("read");
 	}
 }

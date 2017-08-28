@@ -18,6 +18,12 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.springframework.core.env.Environment;
 
+/**
+ * Port types that can be used to control how the management server is started.
+ *
+ * @author Andy Wilkinson
+ * @since 2.0.0
+ */
 public enum ManagementPortType {
 
 	/**

@@ -66,32 +66,33 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 		@Bean
 		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				EndpointProvider<WebEndpointOperation> provider,
-				Environment environment, RestTemplateBuilder builder) {
-			CloudFoundryWebEndpointServletHandlerMapping handlerMapping = new CloudFoundryWebEndpointServletHandlerMapping(
+				EndpointProvider<WebEndpointOperation> provider, Environment environment,
+				RestTemplateBuilder builder) {
+			return new CloudFoundryWebEndpointServletHandlerMapping(
 					"/cloudfoundryapplication", provider.getEndpoints(),
 					getCorsConfiguration(), getSecurityInterceptor(builder, environment));
-			return handlerMapping;
 		}
 
 		private CloudFoundrySecurityInterceptor getSecurityInterceptor(
 				RestTemplateBuilder restTemplateBuilder, Environment environment) {
 			CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
 					restTemplateBuilder, environment);
-			TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
-			return new CloudFoundrySecurityInterceptor(
-					tokenValidator, cloudfoundrySecurityService,
+			TokenValidator tokenValidator = new TokenValidator(
+					cloudfoundrySecurityService);
+			return new CloudFoundrySecurityInterceptor(tokenValidator,
+					cloudfoundrySecurityService,
 					environment.getProperty("vcap.application.application_id"));
 		}
 
 		private CloudFoundrySecurityService getCloudFoundrySecurityService(
 				RestTemplateBuilder restTemplateBuilder, Environment environment) {
-			String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
+			String cloudControllerUrl = environment
+					.getProperty("vcap.application.cf_api");
 			boolean skipSslValidation = environment.getProperty(
 					"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
-			return cloudControllerUrl == null ? null
-					: new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl,
-					skipSslValidation);
+			return (cloudControllerUrl == null ? null
+					: new CloudFoundrySecurityService(restTemplateBuilder,
+							cloudControllerUrl, skipSslValidation));
 		}
 
 		private CorsConfiguration getCorsConfiguration() {
@@ -107,9 +108,9 @@ public class CloudFoundryActuatorAutoConfiguration {
 	}
 
 	/**
-	 * {@link WebSecurityConfigurer} to tell Spring Security to
-	 * ignore cloudfoundry specific paths. The Cloud foundry endpoints
-	 * are protected by their own security interceptor.
+	 * {@link WebSecurityConfigurer} to tell Spring Security to ignore cloudfoundry
+	 * specific paths. The Cloud foundry endpoints are protected by their own security
+	 * interceptor.
 	 */
 	@ConditionalOnClass(WebSecurity.class)
 	@Order(SecurityProperties.IGNORED_ORDER)
@@ -119,7 +120,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
-			builder.ignoring().requestMatchers(new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+			builder.ignoring().requestMatchers(
+					new AntPathRequestMatcher("/cloudfoundryapplication/**"));
 		}
 
 		@Override
