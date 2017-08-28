@@ -58,7 +58,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-@TestPropertySource(properties = "management.security.enabled=false")
+@TestPropertySource(properties = { "management.jolokia.enabled=true",
+		"management.security.enabled=false" })
 public class JolokiaManagementContextConfigurationIntegrationTests {
 
 	@Autowired

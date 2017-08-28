@@ -35,7 +35,7 @@ public class JolokiaProperties {
 	/**
 	 * Enable Jolokia.
 	 */
-	private boolean enabled = true;
+	private boolean enabled;
 
 	/**
 	 * Path at which Jolokia will be available.

@@ -54,7 +54,7 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
 @ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ AgentServlet.class, ServletWrappingController.class })
-@ConditionalOnProperty(value = "management.jolokia.enabled", matchIfMissing = true)
+@ConditionalOnProperty(value = "management.jolokia.enabled", havingValue = "true")
 @EnableConfigurationProperties(JolokiaProperties.class)
 public class JolokiaManagementContextConfiguration {
 

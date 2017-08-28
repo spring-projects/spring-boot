@@ -1274,7 +1274,7 @@ content into your application; rather pick only the properties that you need.
 
 	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
 	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
-	management.jolokia.enabled=true # Enable Jolokia.
+	management.jolokia.enabled=false # Enable Jolokia.
 	management.jolokia.path=/jolokia # Path at which Jolokia will be available.
 
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
