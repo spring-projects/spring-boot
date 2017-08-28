@@ -17,31 +17,26 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2SsoDefaultConfiguration.NeedsWebSecurityCondition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.util.ClassUtils;
 
 /**
  * Configuration for OAuth2 Single Sign On (SSO). If the user only has
  * {@code @EnableOAuth2Sso} but not on a {@code WebSecurityConfigurerAdapter} then one is
- * added with all paths secured and with an order that puts it ahead of the default HTTP
- * Basic security chain in Spring Boot.
+ * added with all paths secured.
  *
  * @author Dave Syer
  * @since 1.3.0
  */
 @Configuration
 @Conditional(NeedsWebSecurityCondition.class)
-public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
-		implements Ordered {
+public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter {
 
 	private final ApplicationContext applicationContext;
 
@@ -57,21 +52,6 @@ public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
 	protected void configure(HttpSecurity http) throws Exception {
 		http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
 		new SsoSecurityConfigurer(this.applicationContext).configure(http);
-	}
-
-	@Override
-	public int getOrder() {
-		if (this.sso.getFilterOrder() != null) {
-			return this.sso.getFilterOrder();
-		}
-		if (ClassUtils.isPresent(
-				"org.springframework.boot.actuate.autoconfigure.ManagementServerProperties",
-				null)) {
-			// If > BASIC_AUTH_ORDER then the existing rules for the actuator
-			// endpoints will take precedence. This value is < BASIC_AUTH_ORDER.
-			return SecurityProperties.ACCESS_OVERRIDE_ORDER - 5;
-		}
-		return SecurityProperties.ACCESS_OVERRIDE_ORDER;
 	}
 
 	protected static class NeedsWebSecurityCondition extends EnableOAuth2SsoCondition {

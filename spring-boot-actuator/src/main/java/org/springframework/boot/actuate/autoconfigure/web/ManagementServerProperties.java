@@ -17,14 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.web;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.http.HttpSession;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -42,26 +36,6 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
 public class ManagementServerProperties implements SecurityPrerequisite {
-
-	/**
-	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
-	 * authentication for management endpoints. If you want to add your own authentication
-	 * for all or some of those endpoints the best thing to do is to add your own
-	 * WebSecurityConfigurerAdapter with lower order, for instance by using
-	 * {@code ACCESS_OVERRIDE_ORDER}.
-	 */
-	public static final int BASIC_AUTH_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 5;
-
-	/**
-	 * Order before the basic authentication access control provided automatically for the
-	 * management endpoints. This is a useful place to put user-defined access rules if
-	 * you want to override the default access rules for the management endpoints. If you
-	 * want to keep the default rules for management endpoints but want to override the
-	 * security for the rest of the application, use
-	 * {@code SecurityProperties.ACCESS_OVERRIDE_ORDER} instead.
-	 */
-	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
-			- 1;
 
 	/**
 	 * Management endpoint HTTP port. Use the same port as the application by default.
@@ -85,8 +59,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * Add the "X-Application-Context" HTTP header in each response.
 	 */
 	private boolean addApplicationContextHeader = false;
-
-	private final Security security = new Security();
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -144,89 +116,12 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		return contextPath;
 	}
 
-	public Security getSecurity() {
-		return this.security;
-	}
-
 	public boolean getAddApplicationContextHeader() {
 		return this.addApplicationContextHeader;
 	}
 
 	public void setAddApplicationContextHeader(boolean addApplicationContextHeader) {
 		this.addApplicationContextHeader = addApplicationContextHeader;
-	}
-
-	/**
-	 * Security configuration.
-	 */
-	public static class Security {
-
-		/**
-		 * Enable security.
-		 */
-		private boolean enabled = true;
-
-		/**
-		 * Comma-separated list of roles that can access the management endpoint.
-		 */
-		private List<String> roles = new ArrayList<>(
-				Collections.singletonList("ACTUATOR"));
-
-		/**
-		 * Session creating policy for security use (always, never, if_required,
-		 * stateless).
-		 */
-		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
-
-		public SessionCreationPolicy getSessions() {
-			return this.sessions;
-		}
-
-		public void setSessions(SessionCreationPolicy sessions) {
-			this.sessions = sessions;
-		}
-
-		public void setRoles(List<String> roles) {
-			this.roles = roles;
-		}
-
-		public List<String> getRoles() {
-			return this.roles;
-		}
-
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-	}
-
-	public enum SessionCreationPolicy {
-
-		/**
-		 * Always create an {@link HttpSession}.
-		 */
-		ALWAYS,
-
-		/**
-		 * Never create an {@link HttpSession}, but use any {@link HttpSession} that
-		 * already exists.
-		 */
-		NEVER,
-
-		/**
-		 * Only create an {@link HttpSession} if required.
-		 */
-		IF_REQUIRED,
-
-		/**
-		 * Never create an {@link HttpSession}.
-		 */
-		STATELESS
-
 	}
 
 }

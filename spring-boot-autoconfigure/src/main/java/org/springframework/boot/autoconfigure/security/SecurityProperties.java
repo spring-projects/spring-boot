@@ -35,14 +35,6 @@ import org.springframework.core.Ordered;
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
-	 * Order before the basic authentication access control provided by Boot. This is a
-	 * useful place to put user-defined access rules if you want to override the default
-	 * access rules.
-	 */
-	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER
-			- 2;
-
-	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for application endpoints. If you want to add your own
 	 * authentication for all or some of those endpoints the best thing to do is to add

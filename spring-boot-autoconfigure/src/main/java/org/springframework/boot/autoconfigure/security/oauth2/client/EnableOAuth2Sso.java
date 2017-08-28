@@ -33,8 +33,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * {@link WebSecurityConfigurerAdapter} provided by the user and annotated with
  * {@code @EnableOAuth2Sso}, it is enhanced by adding an authentication filter and an
  * authentication entry point. If the user only has {@code @EnableOAuth2Sso} but not on a
- * WebSecurityConfigurerAdapter then one is added with all paths secured and with an order
- * that puts it ahead of the default HTTP Basic security chain in Spring Boot.
+ * WebSecurityConfigurerAdapter then one is added with all paths secured.
  *
  * @author Dave Syer
  * @since 1.3.0

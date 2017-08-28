@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -32,8 +30,6 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration.ResourceServerCondition;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -85,12 +81,6 @@ public class OAuth2ResourceServerConfiguration {
 		return new ResourceSecurityConfigurer(this.resource);
 	}
 
-	@Bean
-	public static ResourceServerFilterChainOrderProcessor resourceServerFilterChainOrderProcessor(
-			ResourceServerProperties properties) {
-		return new ResourceServerFilterChainOrderProcessor(properties);
-	}
-
 	protected static class ResourceSecurityConfigurer
 			extends ResourceServerConfigurerAdapter {
 
@@ -109,45 +99,6 @@ public class OAuth2ResourceServerConfiguration {
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().anyRequest().authenticated();
-		}
-
-	}
-
-	private static final class ResourceServerFilterChainOrderProcessor
-			implements BeanPostProcessor, ApplicationContextAware {
-
-		private final ResourceServerProperties properties;
-
-		private ApplicationContext context;
-
-		private ResourceServerFilterChainOrderProcessor(
-				ResourceServerProperties properties) {
-			this.properties = properties;
-		}
-
-		@Override
-		public void setApplicationContext(ApplicationContext context)
-				throws BeansException {
-			this.context = context;
-		}
-
-		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
-			return bean;
-		}
-
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
-			if (bean instanceof ResourceServerConfiguration) {
-				if (this.context.getBeanNamesForType(ResourceServerConfiguration.class,
-						false, false).length == 1) {
-					ResourceServerConfiguration config = (ResourceServerConfiguration) bean;
-					config.setOrder(this.properties.getFilterOrder());
-				}
-			}
-			return bean;
 		}
 
 	}
