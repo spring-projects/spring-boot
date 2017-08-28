@@ -24,8 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
-
-import com.google.common.collect.Streams;
+import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.ApplicationContext;
@@ -179,7 +178,7 @@ public final class TestPropertyValues {
 		if (pairs == null) {
 			return empty();
 		}
-		return of(Streams.stream(pairs));
+		return of(StreamSupport.stream(pairs.spliterator(), false));
 	}
 
 	/**
