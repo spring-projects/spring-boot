@@ -27,11 +27,20 @@ public enum EndpointType {
 	/**
 	 * Expose the endpoint as a JMX MBean.
 	 */
-	JMX,
+	JMX(true),
 
 	/**
 	 * Expose the endpoint as a Web endpoint.
 	 */
-	WEB
+	WEB(false);
 
+	private final boolean enabledByDefault;
+
+	EndpointType(boolean enabledByDefault) {
+		this.enabledByDefault = enabledByDefault;
+	}
+
+	public boolean isEnabledByDefault() {
+		return this.enabledByDefault;
+	}
 }

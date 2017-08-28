@@ -65,6 +65,8 @@ public class MvcEndpointCorsIntegrationTests {
 				EndpointInfrastructureAutoConfiguration.class,
 				EndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 				ServletEndpointAutoConfiguration.class);
+		TestPropertyValues.of("endpoints.all.web.enabled:true")
+				.applyTo(this.context);
 	}
 
 	@Test

@@ -103,6 +103,10 @@ public class EndpointEnablementProvider {
 			if (globalTypeOutcome != null) {
 				return globalTypeOutcome;
 			}
+			else if (!endpointType.isEnabledByDefault()) {
+				return new EndpointEnablement(false, createDefaultEnablementMessage("all", false,
+						endpointType));
+			}
 		}
 		else {
 			// Check if there is a global tech required

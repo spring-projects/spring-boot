@@ -161,7 +161,9 @@ public class WebEndpointManagementContextConfigurationTests {
 	}
 
 	private void beanIsAutoConfigured(Class<?> beanType, Class<?>... config) {
-		contextRunner().withUserConfiguration(config)
+		contextRunner()
+				.withPropertyValues("endpoints.all.web.enabled:true")
+				.withUserConfiguration(config)
 				.run((context) -> assertThat(context).hasSingleBean(beanType));
 	}
 

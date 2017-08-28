@@ -185,8 +185,8 @@ public class EndpointEnablementProviderTests {
 
 	@Test
 	public void specificEnabledByDefault() {
-		validate(determineEnablement("foo", true, EndpointType.WEB), true,
-				"endpoint 'foo' (web) is enabled by default");
+		validate(determineEnablement("foo", true, EndpointType.JMX), true,
+				"endpoint 'foo' (jmx) is enabled by default");
 	}
 
 	@Test
@@ -208,15 +208,15 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificNotDisabledViaUnrelatedTechProperty() {
 		validate(
-				determineEnablement("foo", true, EndpointType.WEB,
-						"endpoints.foo.jmx.enabled=false"),
-				true, "endpoint 'foo' (web) is enabled by default");
+				determineEnablement("foo", true, EndpointType.JMX,
+						"endpoints.foo.web.enabled=false"),
+				true, "endpoint 'foo' (jmx) is enabled by default");
 	}
 
 	@Test
 	public void specificDisabledViaGeneralProperty() {
 		validate(
-				determineEnablement("foo", true, EndpointType.WEB,
+				determineEnablement("foo", true, EndpointType.JMX,
 						"endpoints.all.enabled=false"),
 				false, "found property endpoints.all.enabled");
 	}
@@ -256,8 +256,8 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificEnabledOverrideHasNoEffectWithUnrelatedTechProperty() {
 		validate(
-				determineEnablement("foo", true, EndpointType.WEB,
-						"endpoints.all.enabled=false", "endpoints.all.jmx.enabled=true"),
+				determineEnablement("foo", true, EndpointType.JMX,
+						"endpoints.all.enabled=false", "endpoints.all.web.enabled=true"),
 				false, "found property endpoints.all.enabled");
 	}
 

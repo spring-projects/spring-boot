@@ -55,40 +55,12 @@ public class WebMvcEndpointInfrastructureAutoConfigurationTests {
 					ServletEndpointAutoConfiguration.class));
 
 	@Test
-	public void webEndpointsAreExposed() {
-		this.contextRunner.run((context) -> {
-			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/autoconfig"))
-					.isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/beans")).isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/configprops"))
-					.isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/env")).isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/health"))
-					.isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/info")).isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/mappings"))
-					.isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/metrics"))
-					.isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.POST, "/application/shutdown"))
-					.isFalse();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/threaddump"))
-					.isTrue();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/trace")).isTrue();
-		});
-	}
-
-	@Test
-	public void webEndpointsCanBeDisabled() {
-		WebApplicationContextRunner contextRunner = this.contextRunner
-				.withPropertyValues("endpoints.all.web.enabled=false");
-		contextRunner.run((context) -> {
+	public void webEndpointsAreDisabledByDefault() {
+		this.contextRunner.run(context -> {
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/autoconfig"))
 					.isFalse();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/beans"))
-					.isFalse();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/beans")).isFalse();
 			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/configprops"))
 					.isFalse();
 			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/env")).isFalse();
@@ -103,8 +75,36 @@ public class WebMvcEndpointInfrastructureAutoConfigurationTests {
 					.isFalse();
 			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/threaddump"))
 					.isFalse();
-			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/trace"))
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/trace")).isFalse();
+		});
+	}
+
+	@Test
+	public void webEndpointsCanBeEnabled() {
+		WebApplicationContextRunner contextRunner = this.contextRunner
+				.withPropertyValues("endpoints.all.web.enabled=true");
+		contextRunner.run(context -> {
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/autoconfig"))
+					.isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/beans"))
+					.isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/configprops"))
+					.isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/env")).isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/health"))
+					.isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/info")).isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/mappings"))
+					.isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/metrics"))
+					.isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.POST, "/application/shutdown"))
 					.isFalse();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/threaddump"))
+					.isTrue();
+			assertThat(isExposed(mockMvc, HttpMethod.GET, "/application/trace"))
+					.isTrue();
 		});
 	}
 

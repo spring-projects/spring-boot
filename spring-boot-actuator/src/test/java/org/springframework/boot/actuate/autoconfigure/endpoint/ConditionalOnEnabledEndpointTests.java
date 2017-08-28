@@ -184,6 +184,7 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void enabledOnlyWebByDefault() {
 		this.contextRunner.withUserConfiguration(OnlyWebConfig.class)
+				.withPropertyValues("endpoints.all.web.enabled=true")
 				.run((context) -> assertThat(context).hasBean("onlyweb"));
 	}
 
