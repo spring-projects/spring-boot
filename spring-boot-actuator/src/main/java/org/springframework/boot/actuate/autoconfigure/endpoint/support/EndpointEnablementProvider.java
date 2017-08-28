@@ -93,8 +93,7 @@ public class EndpointEnablementProvider {
 		// All endpoints specific attributes have been looked at. Checking default value
 		// for the endpoint
 		if (!enabledByDefault) {
-			return new EndpointEnablement(false, createDefaultEnablementMessage(
-					endpointId, enabledByDefault, endpointType));
+			return defaultEndpointEnablement(endpointId, false, endpointType);
 		}
 
 		if (endpointType != null) {
@@ -103,9 +102,8 @@ public class EndpointEnablementProvider {
 			if (globalTypeOutcome != null) {
 				return globalTypeOutcome;
 			}
-			else if (!endpointType.isEnabledByDefault()) {
-				return new EndpointEnablement(false, createDefaultEnablementMessage("all", false,
-						endpointType));
+			if (!endpointType.isEnabledByDefault()) {
+				return defaultEndpointEnablement("all", false, endpointType);
 			}
 		}
 		else {
@@ -122,6 +120,11 @@ public class EndpointEnablementProvider {
 		if (globalOutCome != null) {
 			return globalOutCome;
 		}
+		return defaultEndpointEnablement(endpointId, enabledByDefault, endpointType);
+	}
+
+	private EndpointEnablement defaultEndpointEnablement(String endpointId,
+			boolean enabledByDefault, EndpointType endpointType) {
 		return new EndpointEnablement(enabledByDefault, createDefaultEnablementMessage(
 				endpointId, enabledByDefault, endpointType));
 	}
