@@ -27,7 +27,6 @@ public interface EndpointPathResolver {
 
 	/**
 	 * Resolve endpoint path based on id.
-	 *
 	 * @param endpointId the endpoint id
 	 * @return the resolved path
 	 */

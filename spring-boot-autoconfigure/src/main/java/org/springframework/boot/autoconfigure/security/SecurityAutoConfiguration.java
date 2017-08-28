@@ -52,10 +52,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @ConditionalOnClass({ AuthenticationManager.class,
 		GlobalAuthenticationConfigurerAdapter.class })
 @EnableConfigurationProperties(SecurityProperties.class)
-@Import({ SpringBootWebSecurityConfiguration.class,
-		WebSecurityEnablerConfiguration.class,
-		AuthenticationManagerConfiguration.class,
-		SecurityDataConfiguration.class })
+@Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
+		AuthenticationManagerConfiguration.class, SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean

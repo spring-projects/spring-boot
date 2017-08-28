@@ -33,11 +33,11 @@ import org.springframework.util.StringUtils;
 
 
 /**
- * Provides request matchers that can be used to
- * configure security for static resources and the error controller path in a custom
- * {@link WebSecurityConfigurerAdapter}.
+ * Provides request matchers that can be used to configure security for static resources
+ * and the error controller path in a custom {@link WebSecurityConfigurerAdapter}.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public final class SpringBootSecurity {
 
@@ -46,14 +46,15 @@ public final class SpringBootSecurity {
 	 */
 	public final static String ALL_ENDPOINTS = "**";
 
-	private static String[] STATIC_RESOURCES = new String[]{"/css/**", "/js/**",
-			"/images/**", "/webjars/**", "/**/favicon.ico"};
+	private static String[] STATIC_RESOURCES = new String[] { "/css/**", "/js/**",
+			"/images/**", "/webjars/**", "/**/favicon.ico" };
 
 	private final EndpointPathResolver endpointPathResolver;
 
 	private final ErrorController errorController;
 
-	SpringBootSecurity(EndpointPathResolver endpointPathResolver, ErrorController errorController) {
+	SpringBootSecurity(EndpointPathResolver endpointPathResolver,
+			ErrorController errorController) {
 		this.endpointPathResolver = endpointPathResolver;
 		this.errorController = errorController;
 	}
@@ -67,7 +68,8 @@ public final class SpringBootSecurity {
 		Assert.notEmpty(ids, "At least one endpoint id must be specified.");
 		List<String> pathList = Arrays.asList(ids);
 		if (pathList.contains(ALL_ENDPOINTS)) {
-			return new AntPathRequestMatcher(this.endpointPathResolver.resolvePath(ALL_ENDPOINTS), null);
+			return new AntPathRequestMatcher(this.endpointPathResolver.resolvePath(
+					ALL_ENDPOINTS), null);
 		}
 		return getEndpointsRequestMatcher(pathList);
 	}
@@ -84,7 +86,8 @@ public final class SpringBootSecurity {
 			if (e.isAnnotationPresent(Endpoint.class)) {
 				return e.getAnnotation(Endpoint.class).id();
 			}
-			throw new IllegalArgumentException("Only classes annotated with @Endpoint are supported.");
+			throw new IllegalArgumentException(
+					"Only classes annotated with @Endpoint are supported.");
 		}).collect(Collectors.toList());
 		return getEndpointsRequestMatcher(paths);
 	}
@@ -104,7 +107,8 @@ public final class SpringBootSecurity {
 	 */
 	public RequestMatcher error() {
 		if (this.errorController == null) {
-			throw new IllegalStateException("Path for error controller could not be determined.");
+			throw new IllegalStateException(
+					"Path for error controller could not be determined.");
 		}
 		String path = normalizePath(this.errorController.getErrorPath());
 		return new AntPathRequestMatcher(path + "/**", null);
@@ -121,9 +125,9 @@ public final class SpringBootSecurity {
 
 	private static RequestMatcher getRequestMatcher(String... paths) {
 		List<RequestMatcher> matchers = new ArrayList<>();
-			for (String path : paths) {
-				matchers.add(new AntPathRequestMatcher(path, null));
-			}
+		for (String path : paths) {
+			matchers.add(new AntPathRequestMatcher(path, null));
+		}
 		return new OrRequestMatcher(matchers);
 	}
 
@@ -134,5 +138,6 @@ public final class SpringBootSecurity {
 		}
 		return result;
 	}
+
 }
 

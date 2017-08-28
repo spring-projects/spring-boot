@@ -24,6 +24,7 @@ import org.springframework.boot.endpoint.EndpointPathResolver;
  * actuator endpoint paths based on the endpoint id and management.context-path.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class ManagementEndpointPathResolver implements EndpointPathResolver {
 

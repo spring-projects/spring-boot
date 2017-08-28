@@ -108,11 +108,6 @@ public class SecurityProperties implements SecurityPrerequisite {
 		 */
 		private boolean enabled = true;
 
-		/**
-		 * Security authorize mode to apply.
-		 */
-		private SecurityAuthorizeMode authorizeMode = SecurityAuthorizeMode.ROLE;
-
 		public boolean isEnabled() {
 			return this.enabled;
 		}

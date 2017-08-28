@@ -21,6 +21,7 @@ package org.springframework.boot.endpoint;
  * resolving endpoint paths.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class DefaultEndpointPathResolver implements EndpointPathResolver {
 

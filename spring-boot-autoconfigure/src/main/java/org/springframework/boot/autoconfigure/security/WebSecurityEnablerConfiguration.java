@@ -25,12 +25,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * If there is a bean of type WebSecurityConfigurerAdapter,
- * this adds the {@code @EnableWebSecurity} annotation if it is not already specified.
- * This will make sure that the annotation is present with default security autoconfiguration
- * and also if the user adds custom security and forgets to add the annotation.
+ * If there is a bean of type WebSecurityConfigurerAdapter, this adds the
+ * {@code @EnableWebSecurity} annotation if it is not already specified. This will make
+ * sure that the annotation is present with default security auto-configuration and also
+ * if the user adds custom security and forgets to add the annotation.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 @ConditionalOnBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnClass(EnableWebSecurity.class)
