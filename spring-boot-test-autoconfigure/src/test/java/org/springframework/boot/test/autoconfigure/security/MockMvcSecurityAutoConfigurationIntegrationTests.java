@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -39,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest
 @RunWith(SpringRunner.class)
-@TestPropertySource(properties = { "security.user.password=secret", "debug=true" })
+@TestPropertySource(properties = { "debug=true" })
 public class MockMvcSecurityAutoConfigurationIntegrationTests {
 
 	@Autowired
@@ -53,7 +54,8 @@ public class MockMvcSecurityAutoConfigurationIntegrationTests {
 
 	@Test
 	public void unauthorizedResponseWithNoUser() throws Exception {
-		this.mockMvc.perform(get("/")).andExpect(status().isUnauthorized());
+		this.mockMvc.perform(get("/")
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
 	}
 
 	@Test

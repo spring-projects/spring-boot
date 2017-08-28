@@ -20,11 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @EnableAutoConfiguration
 @ComponentScan
@@ -33,6 +37,13 @@ public class SampleSecureApplication implements CommandLineRunner {
 
 	@Autowired
 	private SampleService service;
+
+	@Bean
+	public UserDetailsService userDetailsService() throws Exception {
+		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+		manager.createUser(User.withUsername("user").password("password").roles("USER").build());
+		return manager;
+	}
 
 	@Override
 	public void run(String... args) throws Exception {

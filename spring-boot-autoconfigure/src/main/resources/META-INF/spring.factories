@@ -98,7 +98,6 @@ org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration,\
-org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration,\
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\

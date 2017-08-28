@@ -17,9 +17,8 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.lang.reflect.Field;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +28,6 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -47,13 +45,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.ReflectionUtils;
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}. Can be
- * disabled by providing a bean of type AuthenticationManager, or by autowiring an
- * {@link AuthenticationManagerBuilder} into a method in one of your configuration
- * classes. The value provided by this configuration will become the "global"
+ * disabled by providing a bean of type {@link AuthenticationManager}, {@link AuthenticationProvider}
+ * or {@link UserDetailsService}. The value provided by this configuration will become the "global"
  * authentication manager (from Spring Security), or the parent of the global instance.
  * Thus it acts as a fallback when no others are provided, is used by method security if
  * enabled, and as a parent authentication manager for "local" authentication managers in
@@ -61,10 +59,12 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Dave Syer
  * @author Rob Winch
+ * @author Madhura Bhave
  */
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)
-@ConditionalOnMissingBean({ AuthenticationManager.class })
+@ConditionalOnMissingBean({ AuthenticationManager.class,
+	AuthenticationProvider.class, UserDetailsService.class})
 @Order(0)
 public class AuthenticationManagerConfiguration {
 
@@ -102,7 +102,7 @@ public class AuthenticationManagerConfiguration {
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}
 	 * exists that adds a {@link SecurityConfigurer} to the
 	 * {@link AuthenticationManagerBuilder}.</li>
-	 * <li>{@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)}
+	 * <li>{@link AuthenticationManagerConfiguration}
 	 * adds {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
 	 * {@link SecurityConfigurer} in the first step.</li>
 	 * <li>We then can default an {@link AuthenticationProvider} if necessary. Note we can
@@ -168,14 +168,11 @@ public class AuthenticationManagerConfiguration {
 			if (auth.isConfigured()) {
 				return;
 			}
-			User user = this.securityProperties.getUser();
-			if (user.isDefaultPassword()) {
-				logger.info(String.format("%n%nUsing default security password: %s%n",
-						user.getPassword()));
-			}
-			Set<String> roles = new LinkedHashSet<>(user.getRole());
-			withUser(user.getName()).password(user.getPassword())
-					.roles(roles.toArray(new String[roles.size()]));
+			String password = UUID.randomUUID().toString();
+			logger.info(String.format("%n%nUsing default security password: %s%n",
+					password));
+			withUser("user").password(password)
+					.roles();
 			setField(auth, "defaultUserDetailsService", getUserDetailsService());
 			super.configure(auth);
 		}

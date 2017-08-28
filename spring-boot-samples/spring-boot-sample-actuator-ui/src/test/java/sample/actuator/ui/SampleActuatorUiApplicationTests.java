@@ -54,7 +54,8 @@ public class SampleActuatorUiApplicationTests {
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
+				.exchange("/", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Hello");
@@ -80,11 +81,16 @@ public class SampleActuatorUiApplicationTests {
 	public void testError() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/error",
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
+				.exchange("/error",
 				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(entity.getBody()).contains("<html>").contains("<body>")
 				.contains("Please contact the operator with the above information");
+	}
+
+	private String getPassword() {
+		return "password";
 	}
 
 }

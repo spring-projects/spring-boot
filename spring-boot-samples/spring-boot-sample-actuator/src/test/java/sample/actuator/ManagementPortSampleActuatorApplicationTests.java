@@ -18,14 +18,14 @@ package sample.actuator;
 
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.web.server.LocalManagementPort;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -45,9 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"management.port=0" })
 @DirtiesContext
 public class ManagementPortSampleActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@LocalServerPort
 	private int port = 9010;
@@ -89,7 +86,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	@Test
 	public void testErrorPage() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:" + this.managementPort + "/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
@@ -98,7 +95,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return this.security.getUser().getPassword();
+		return "password";
 	}
 
 }

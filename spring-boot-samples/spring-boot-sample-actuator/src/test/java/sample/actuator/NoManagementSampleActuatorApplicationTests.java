@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -43,9 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"management.port=-1" })
 @DirtiesContext
 public class NoManagementSampleActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -71,7 +67,7 @@ public class NoManagementSampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return this.security.getUser().getPassword();
+		return "password";
 	}
 
 }

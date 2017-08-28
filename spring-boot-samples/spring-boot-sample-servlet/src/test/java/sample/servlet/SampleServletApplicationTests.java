@@ -16,15 +16,20 @@
 
 package sample.servlet;
 
+import java.util.Collections;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -44,12 +49,11 @@ public class SampleServletApplicationTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@Autowired
-	private SecurityProperties security;
-
 	@Test
 	public void testHomeIsSecure() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
@@ -62,6 +66,6 @@ public class SampleServletApplicationTests {
 	}
 
 	private String getPassword() {
-		return this.security.getUser().getPassword();
+		return "password";
 	}
 }

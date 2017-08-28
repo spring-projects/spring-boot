@@ -21,9 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.web.server.LocalManagementPort;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -45,9 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"management.port=0", "management.context-path=/admin" })
 @DirtiesContext
 public class ManagementPortAndPathSampleActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@LocalServerPort
 	private int port = 9010;
@@ -98,7 +93,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	@Test
 	public void testErrorPage() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
@@ -109,7 +104,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	@Test
 	public void testManagementErrorPage() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:" + this.managementPort + "/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
@@ -118,7 +113,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return this.security.getUser().getPassword();
+		return "password";
 	}
 
 }

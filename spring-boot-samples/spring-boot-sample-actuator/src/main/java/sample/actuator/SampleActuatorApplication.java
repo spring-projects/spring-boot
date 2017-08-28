@@ -22,6 +22,10 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootApplication
 @EnableConfigurationProperties(ServiceProperties.class)
@@ -29,6 +33,13 @@ public class SampleActuatorApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleActuatorApplication.class, args);
+	}
+
+	@Bean
+	public UserDetailsService userDetailsService() throws Exception {
+		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+		manager.createUser(User.withUsername("user").password("password").roles("USER").build());
+		return manager;
 	}
 
 	@Bean

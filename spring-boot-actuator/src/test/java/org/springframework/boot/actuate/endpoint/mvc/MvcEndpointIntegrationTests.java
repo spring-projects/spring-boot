@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfigurati
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointInfrastructureAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.security.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
@@ -36,6 +35,7 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
@@ -69,7 +69,8 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/application/beans")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/application/beans")
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -79,7 +80,8 @@ public class MvcEndpointIntegrationTests {
 		TestPropertyValues.of("management.context-path:/management")
 				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/management/beans")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/management/beans")
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -89,29 +91,11 @@ public class MvcEndpointIntegrationTests {
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.context-path:/management")
+		TestPropertyValues.of("management.context-path:/management",
+				"endpoints.all.web.enabled=true")
 				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
-	}
-
-	@Test
-	public void endpointSecurityCanBeDisabledWithCustomContextPath() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.context-path:/management",
-				"management.security.enabled:false").applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
-	}
-
-	@Test
-	public void endpointSecurityCanBeDisabled() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.security.enabled:false").applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/application/beans")).andExpect(status().isOk());
 	}
 
 	private MockMvc createSecureMockMvc() {
@@ -153,8 +137,7 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Import(DefaultConfiguration.class)
-	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
-			ManagementWebSecurityAutoConfiguration.class })
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class})
 	static class SecureConfiguration {
 
 	}

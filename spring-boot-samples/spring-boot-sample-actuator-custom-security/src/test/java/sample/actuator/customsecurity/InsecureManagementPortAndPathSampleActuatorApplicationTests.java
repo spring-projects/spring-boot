@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package sample.actuator;
-
-import java.util.Map;
+package sample.actuator.customsecurity;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.web.server.LocalManagementPort;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -39,16 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for separate management and main service ports.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.port=0", "management.context-path=/admin",
-		"management.security.enabled=false" })
+		"management.port=0", "management.context-path=/admin"})
 @DirtiesContext
 public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@LocalServerPort
 	private int port = 9010;
@@ -59,27 +52,24 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.port, Map.class);
+		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("message")).isEqualTo("Hello Phil");
+		assertThat(entity.getBody()).contains("Hello World");
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
-		testHome(); // makes sure some requests have been made
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/metrics", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	@Test
-	public void testHealth() throws Exception {
+	public void testSecureActuator() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/admin/health",
+				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	}
+
+	@Test
+	public void testInsecureActuator() throws Exception {
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.managementPort + "/admin/status",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
@@ -87,15 +77,11 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testMissing() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin").getForEntity(
 				"http://localhost:" + this.managementPort + "/admin/missing",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
-	}
-
-	private String getPassword() {
-		return this.security.getUser().getPassword();
 	}
 
 }

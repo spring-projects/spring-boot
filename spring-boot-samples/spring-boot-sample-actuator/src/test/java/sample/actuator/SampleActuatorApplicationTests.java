@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -50,9 +49,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class SampleActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -204,7 +200,8 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testErrorPageDirectAccess() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/error", Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
+				.getForEntity("/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -239,7 +236,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return this.security.getUser().getPassword();
+		return "password";
 	}
 
 }

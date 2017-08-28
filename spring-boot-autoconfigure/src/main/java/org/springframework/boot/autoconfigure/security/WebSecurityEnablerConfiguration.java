@@ -16,33 +16,27 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * If the user explicitly disables the basic security features and forgets to
- * {@code @EnableWebSecurity}, and yet still wants a bean of type
- * WebSecurityConfigurerAdapter, he is trying to use a custom security setup. The app
- * would fail in a confusing way without this shim configuration, which just helpfully
- * defines an empty {@code @EnableWebSecurity}.
+ * If there is a bean of type WebSecurityConfigurerAdapter,
+ * this adds the {@code @EnableWebSecurity} annotation if it is not already specified.
+ * This will make sure that the annotation is present with default security autoconfiguration
+ * and also if the user adds custom security and forgets to add the annotation.
  *
- * @author Dave Syer
+ * @author Madhura Bhave
  */
-@ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 @ConditionalOnBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnClass(EnableWebSecurity.class)
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
-@ConditionalOnWebApplication(type = Type.SERVLET)
-@AutoConfigureAfter(SecurityAutoConfiguration.class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableWebSecurity
-public class FallbackWebSecurityAutoConfiguration {
-
+public class WebSecurityEnablerConfiguration {
 }
+

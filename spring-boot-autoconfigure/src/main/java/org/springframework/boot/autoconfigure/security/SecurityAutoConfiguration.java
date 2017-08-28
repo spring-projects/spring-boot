@@ -16,10 +16,14 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorController;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.endpoint.DefaultEndpointPathResolver;
+import org.springframework.boot.endpoint.EndpointPathResolver;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,9 +53,22 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 		GlobalAuthenticationConfigurerAdapter.class })
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class,
+		WebSecurityEnablerConfiguration.class,
 		AuthenticationManagerConfiguration.class,
-		BootGlobalAuthenticationConfiguration.class, SecurityDataConfiguration.class })
+		SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public EndpointPathResolver endpointPathResolver() {
+		return new DefaultEndpointPathResolver();
+	}
+
+	@Bean
+	public SpringBootSecurity springBootSecurity(EndpointPathResolver endpointPathResolver,
+			ObjectProvider<ErrorController> errorController) {
+		return new SpringBootSecurity(endpointPathResolver, errorController.getIfAvailable());
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)

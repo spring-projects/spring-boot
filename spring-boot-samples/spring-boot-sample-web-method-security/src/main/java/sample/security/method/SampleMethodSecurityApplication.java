@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.autoconfigure.security.SpringBootSecurity;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -80,7 +80,6 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	}
 
 	@Configuration
-	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
@@ -90,6 +89,27 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 					.failureUrl("/login?error").and().logout()
 					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
 					.exceptionHandling().accessDeniedPage("/access?error");
+		}
+
+	}
+
+	@Configuration
+	@Order(1)
+	protected static class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+		private final SpringBootSecurity springBootSecurity;
+
+		public ActuatorSecurity(SpringBootSecurity springBootSecurity) {
+			this.springBootSecurity = springBootSecurity;
+		}
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http
+				.requestMatcher(this.springBootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS))
+				.authorizeRequests().anyRequest().authenticated()
+					.and()
+				.httpBasic();
 		}
 
 	}

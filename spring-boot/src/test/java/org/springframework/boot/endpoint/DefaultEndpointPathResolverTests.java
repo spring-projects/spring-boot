@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;
+package org.springframework.boot.endpoint;
 
-import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
- * Customizer that can be implemented by beans to configure paths that need to be ignored
- * by Spring Boot's default Spring Security configuration.
+ * Tests for {@link DefaultEndpointPathResolver}.
  *
  * @author Madhura Bhave
- * @since 1.5.0
  */
-@FunctionalInterface
-public interface IgnoredRequestCustomizer {
+public class DefaultEndpointPathResolverTests {
 
-	/**
-	 * Customize the provided {@link IgnoredRequestConfigurer}.
-	 * @param configurer the configurer to customize
-	 */
-	void customize(IgnoredRequestConfigurer configurer);
+	private DefaultEndpointPathResolver resolver = new DefaultEndpointPathResolver();
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
+	@Test
+	public void resolveShouldThrowException() throws Exception {
+		this.thrown.expect(UnsupportedOperationException.class);
+		this.resolver.resolvePath("my-id");
+	}
 }

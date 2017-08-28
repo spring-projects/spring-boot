@@ -21,9 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.web.server.LocalManagementPort;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -46,9 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"management.context-path:/admin" })
 @DirtiesContext
 public class ManagementAddressActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@LocalServerPort
 	private int port = 9010;
@@ -75,7 +70,7 @@ public class ManagementAddressActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return this.security.getUser().getPassword();
+		return "password";
 	}
 
 }

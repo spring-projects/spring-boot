@@ -1,4 +1,4 @@
-package sample.actuator;
+package sample.actuator.customsecurity;
 
 import java.net.URI;
 import java.util.Map;
@@ -12,10 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -59,7 +63,7 @@ public class CorsSampleActuatorApplicationTests {
 	@Test
 	public void preflightRequestToEndpointShouldReturnOk() throws Exception {
 		RequestEntity<?> healthRequest = RequestEntity
-				.options(new URI("/application/health"))
+				.options(new URI("/application/env"))
 				.header("Origin", "http://localhost:8080")
 				.header("Access-Control-Request-Method", "GET").build();
 		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest,
@@ -70,7 +74,7 @@ public class CorsSampleActuatorApplicationTests {
 	@Test
 	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden()
 			throws Exception {
-		RequestEntity<?> entity = RequestEntity.options(new URI("/application/health"))
+		RequestEntity<?> entity = RequestEntity.options(new URI("/application/env"))
 				.header("Origin", "http://localhost:9095")
 				.header("Access-Control-Request-Method", "GET").build();
 		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity,
