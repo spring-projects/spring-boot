@@ -532,7 +532,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(enabledFlag("simple", true));
 		assertThat(metadata).has(jmxEnabledFlag("simple", true));
-		assertThat(metadata).has(webEnabledFlag("simple", true));
+		assertThat(metadata).has(webEnabledFlag("simple", false));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(5);
 	}
@@ -558,7 +558,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				ofType(String.class).withDefaultValue("test"));
 		assertThat(metadata).has(enabledFlag("customprops", true));
 		assertThat(metadata).has(jmxEnabledFlag("customprops", true));
-		assertThat(metadata).has(webEnabledFlag("customprops", true));
+		assertThat(metadata).has(webEnabledFlag("customprops", false));
 		assertThat(metadata).has(cacheTtl("customprops"));
 		assertThat(metadata.getItems()).hasSize(6);
 	}
@@ -580,7 +580,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("endpoints.web")
 				.fromSource(OnlyWebEndpoint.class));
 		assertThat(metadata).has(enabledFlag("web", true));
-		assertThat(metadata).has(webEnabledFlag("web", true));
+		assertThat(metadata).has(webEnabledFlag("web", false));
 		assertThat(metadata).has(cacheTtl("web"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -594,7 +594,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(jmxEnabledFlag("incremental", true));
-		assertThat(metadata).has(webEnabledFlag("incremental", true));
+		assertThat(metadata).has(webEnabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(5);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
@@ -618,7 +618,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(jmxEnabledFlag("incremental", true));
-		assertThat(metadata).has(webEnabledFlag("incremental", true));
+		assertThat(metadata).has(webEnabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(5);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
@@ -627,7 +627,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
 				.fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
-		assertThat(metadata).has(webEnabledFlag("incremental", true));
+		assertThat(metadata).has(webEnabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -650,7 +650,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(IncrementalJmxEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(jmxEnabledFlag("incremental", true));
-		assertThat(metadata).has(webEnabledFlag("incremental", true));
+		assertThat(metadata).has(webEnabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(5);
 	}

@@ -15,7 +15,7 @@
     "name": "endpoints.all.web.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable all endpoints as Web endpoints.",
-    "defaultValue": true
+    "defaultValue": false
   },
   {
     "name": "endpoints.configprops.keys-to-sanitize",
