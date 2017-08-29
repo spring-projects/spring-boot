@@ -22,9 +22,7 @@ import com.couchbase.client.java.CouchbaseBucket;
 import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.CouchbaseConfiguration;
 import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
@@ -35,16 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CouchbaseAutoConfiguration}
+ * Tests for {@link CouchbaseAutoConfiguration}.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
 public class CouchbaseAutoConfigurationTests
 		extends AbstractCouchbaseAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void bootstrapHostsIsRequired() {
