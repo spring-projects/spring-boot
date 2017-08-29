@@ -184,6 +184,9 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 	app.java.version=@java.version@
 ----
 
+NOTE: Only production configuration is filtered that way (i.e. no filtering is applied on
+`src/test/resources`).
+
 TIP: The `spring-boot:run` can add `src/main/resources` directly to the classpath
 (for hot reloading purposes) if you enable the `addResources` flag. This circumvents
 the resource filtering and this feature. You can use the `exec:java` goal instead
