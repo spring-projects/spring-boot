@@ -22,7 +22,7 @@ package org.springframework.boot.endpoint;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public enum EndpointOperationType {
+public enum OperationType {
 
 	/**
 	 * A read operation.

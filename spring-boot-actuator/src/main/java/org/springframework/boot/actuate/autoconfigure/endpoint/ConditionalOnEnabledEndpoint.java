@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.context.annotation.Conditional;
 
 /**
@@ -33,8 +33,8 @@ import org.springframework.context.annotation.Conditional;
  * <p>
  * If no specific {@code endpoints.<id>.*} or {@code endpoints.default.*} properties are
  * defined, the condition matches the {@code enabledByDefault} value regardless of the
- * specific {@link EndpointType}, if any. If any property are set, they are evaluated with
- * a sensible order of precedence.
+ * specific {@link EndpointDelivery}, if any. If any property are set, they are evaluated
+ * with a sensible order of precedence.
  * <p>
  * For instance if {@code endpoints.default.enabled} is {@code false} but
  * {@code endpoints.<id>.enabled} is {@code true}, the condition will match.

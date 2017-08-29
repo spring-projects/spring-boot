@@ -116,7 +116,7 @@ public class AnnotationEndpointDiscovererTests {
 					endpoints.get("test"));
 			assertThat(operations).hasSize(3);
 			operations.values()
-					.forEach(operation -> assertThat(operation.getOperationInvoker())
+					.forEach(operation -> assertThat(operation.getInvoker())
 							.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
@@ -135,7 +135,7 @@ public class AnnotationEndpointDiscovererTests {
 					endpoints.get("test"));
 			assertThat(operations).hasSize(3);
 			operations.values()
-					.forEach(operation -> assertThat(operation.getOperationInvoker())
+					.forEach(operation -> assertThat(operation.getInvoker())
 							.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
@@ -154,16 +154,16 @@ public class AnnotationEndpointDiscovererTests {
 					endpoints.get("test"));
 			OperationInvoker getAllOperationInvoker = operations
 					.get(ReflectionUtils.findMethod(TestEndpoint.class, "getAll"))
-					.getOperationInvoker();
+					.getInvoker();
 			assertThat(getAllOperationInvoker)
 					.isInstanceOf(CachingOperationInvoker.class);
 			assertThat(((CachingOperationInvoker) getAllOperationInvoker).getTimeToLive())
 					.isEqualTo(500);
 			assertThat(operations.get(ReflectionUtils.findMethod(TestEndpoint.class,
-					"getOne", String.class)).getOperationInvoker())
+					"getOne", String.class)).getInvoker())
 							.isNotInstanceOf(CachingOperationInvoker.class);
 			assertThat(operations.get(ReflectionUtils.findMethod(TestEndpoint.class,
-					"update", String.class, String.class)).getOperationInvoker())
+					"update", String.class, String.class)).getInvoker())
 							.isNotInstanceOf(CachingOperationInvoker.class);
 		});
 	}
@@ -186,7 +186,7 @@ public class AnnotationEndpointDiscovererTests {
 			EndpointInfo<TestEndpointOperation> endpoint) {
 		Map<Method, TestEndpointOperation> operationByMethod = new HashMap<>();
 		endpoint.getOperations().forEach((operation) -> {
-			EndpointOperation existing = operationByMethod
+			Operation existing = operationByMethod
 					.put(operation.getOperationMethod(), operation);
 			if (existing != null) {
 				throw new AssertionError(String.format(
@@ -281,11 +281,11 @@ public class AnnotationEndpointDiscovererTests {
 		}
 	}
 
-	private static final class TestEndpointOperation extends EndpointOperation {
+	private static final class TestEndpointOperation extends Operation {
 
 		private final Method operationMethod;
 
-		private TestEndpointOperation(EndpointOperationType type,
+		private TestEndpointOperation(OperationType type,
 				OperationInvoker operationInvoker, Method operationMethod) {
 			super(type, operationInvoker, true);
 			this.operationMethod = operationMethod;
@@ -313,7 +313,7 @@ public class AnnotationEndpointDiscovererTests {
 
 		@Override
 		public Collection<EndpointInfo<TestEndpointOperation>> discoverEndpoints() {
-			return discoverEndpointsWithExtension(null, null).stream()
+			return discoverEndpoints(null, null).stream()
 					.map(EndpointInfoDescriptor::getEndpointInfo)
 					.collect(Collectors.toList());
 		}
@@ -324,7 +324,7 @@ public class AnnotationEndpointDiscovererTests {
 				@Override
 				public TestEndpointOperation createOperation(String endpointId,
 						AnnotationAttributes operationAttributes, Object target,
-						Method operationMethod, EndpointOperationType operationType,
+						Method operationMethod, OperationType operationType,
 						long timeToLive) {
 					return new TestEndpointOperation(operationType,
 							createOperationInvoker(timeToLive), operationMethod);

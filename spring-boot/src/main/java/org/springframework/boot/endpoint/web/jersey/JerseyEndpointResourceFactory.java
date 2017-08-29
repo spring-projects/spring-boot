@@ -80,7 +80,7 @@ public class JerseyEndpointResourceFactory {
 		resourceBuilder.addMethod(requestPredicate.getHttpMethod().name())
 				.consumes(toStringArray(requestPredicate.getConsumes()))
 				.produces(toStringArray(requestPredicate.getProduces()))
-				.handledBy(new EndpointInvokingInflector(operation.getOperationInvoker(),
+				.handledBy(new EndpointInvokingInflector(operation.getInvoker(),
 						!requestPredicate.getConsumes().isEmpty()));
 		return resourceBuilder.build();
 	}
@@ -110,26 +110,30 @@ public class JerseyEndpointResourceFactory {
 			this.readBody = readBody;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public Response apply(ContainerRequestContext data) {
 			Map<String, Object> arguments = new HashMap<>();
 			if (this.readBody) {
-				Map<String, Object> body = ((ContainerRequest) data)
-						.readEntity(Map.class);
-				if (body != null) {
-					arguments.putAll(body);
-				}
+				arguments.putAll(extractBodyArguments(data));
 			}
 			arguments.putAll(extractPathParameters(data));
 			arguments.putAll(extractQueryParameters(data));
 			try {
-				return convertToJaxRsResponse(this.operationInvoker.invoke(arguments),
-						data.getRequest().getMethod());
+				Object response = this.operationInvoker.invoke(arguments);
+				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}
 			catch (ParameterMappingException ex) {
 				return Response.status(Status.BAD_REQUEST).build();
 			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private Map<String, Object> extractBodyArguments(ContainerRequestContext data) {
+			Map<?, ?> entity = ((ContainerRequest) data).readEntity(Map.class);
+			if (entity == null) {
+				return Collections.emptyMap();
+			}
+			return (Map<String, Object>) entity;
 		}
 
 		private Map<String, Object> extractPathParameters(
@@ -155,8 +159,9 @@ public class JerseyEndpointResourceFactory {
 
 		private Response convertToJaxRsResponse(Object response, String httpMethod) {
 			if (response == null) {
-				return Response.status(HttpMethod.GET.equals(httpMethod)
-						? Status.NOT_FOUND : Status.NO_CONTENT).build();
+				boolean isGet = HttpMethod.GET.equals(httpMethod);
+				Status status = (isGet ? Status.NOT_FOUND : Status.NO_CONTENT);
+				return Response.status(status).build();
 			}
 			try {
 				if (!(response instanceof WebEndpointResponse)) {

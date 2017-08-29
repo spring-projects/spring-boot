@@ -27,7 +27,7 @@ import java.util.Collection;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface EndpointDiscoverer<T extends EndpointOperation> {
+public interface EndpointDiscoverer<T extends Operation> {
 
 	/**
 	 * Perform endpoint discovery.

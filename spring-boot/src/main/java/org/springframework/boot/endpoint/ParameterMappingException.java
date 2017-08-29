@@ -47,7 +47,6 @@ public class ParameterMappingException extends RuntimeException {
 
 	/**
 	 * Returns the input that was to be mapped.
-	 *
 	 * @return the input
 	 */
 	public Object getInput() {
@@ -56,7 +55,6 @@ public class ParameterMappingException extends RuntimeException {
 
 	/**
 	 * Returns the type to be mapped to.
-	 *
 	 * @return the type
 	 */
 	public Class<?> getType() {

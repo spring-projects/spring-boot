@@ -22,11 +22,11 @@ package org.springframework.boot.endpoint;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class EndpointOperation {
+public class Operation {
 
-	private final EndpointOperationType type;
+	private final OperationType type;
 
-	private final OperationInvoker operationInvoker;
+	private final OperationInvoker invoker;
 
 	private final boolean blocking;
 
@@ -37,18 +37,18 @@ public class EndpointOperation {
 	 * @param operationInvoker used to perform the operation
 	 * @param blocking whether or not this is a blocking operation
 	 */
-	public EndpointOperation(EndpointOperationType type,
+	public Operation(OperationType type,
 			OperationInvoker operationInvoker, boolean blocking) {
 		this.type = type;
-		this.operationInvoker = operationInvoker;
+		this.invoker = operationInvoker;
 		this.blocking = blocking;
 	}
 
 	/**
-	 * Returns the {@link EndpointOperationType type} of the operation.
+	 * Returns the {@link OperationType type} of the operation.
 	 * @return the type
 	 */
-	public EndpointOperationType getType() {
+	public OperationType getType() {
 		return this.type;
 	}
 
@@ -57,8 +57,8 @@ public class EndpointOperation {
 	 * operation.
 	 * @return the operation invoker
 	 */
-	public OperationInvoker getOperationInvoker() {
-		return this.operationInvoker;
+	public OperationInvoker getInvoker() {
+		return this.invoker;
 	}
 
 	/**

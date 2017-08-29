@@ -26,8 +26,8 @@ import javax.management.MBeanParameterInfo;
 import org.junit.Test;
 
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperationType;
 import org.springframework.boot.endpoint.OperationInvoker;
+import org.springframework.boot.endpoint.OperationType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -44,9 +44,9 @@ public class EndpointMBeanInfoAssemblerTests {
 
 	@Test
 	public void exposeSimpleReadOperation() {
-		JmxEndpointOperation operation = new JmxEndpointOperation(
-				EndpointOperationType.READ, new DummyOperationInvoker(), "getAll",
-				Object.class, "Test operation", Collections.emptyList());
+		JmxEndpointOperation operation = new JmxEndpointOperation(OperationType.READ,
+				new DummyOperationInvoker(), "getAll", Object.class, "Test operation",
+				Collections.emptyList());
 		EndpointInfo<JmxEndpointOperation> endpoint = new EndpointInfo<>("test", true,
 				Collections.singletonList(operation));
 		EndpointMBeanInfo endpointMBeanInfo = this.mBeanInfoAssembler
@@ -73,9 +73,8 @@ public class EndpointMBeanInfoAssemblerTests {
 
 	@Test
 	public void exposeSimpleWriteOperation() {
-		JmxEndpointOperation operation = new JmxEndpointOperation(
-				EndpointOperationType.WRITE, new DummyOperationInvoker(), "update",
-				Object.class, "Update operation",
+		JmxEndpointOperation operation = new JmxEndpointOperation(OperationType.WRITE,
+				new DummyOperationInvoker(), "update", Object.class, "Update operation",
 				Collections.singletonList(new JmxEndpointOperationParameterInfo("test",
 						String.class, "Test argument")));
 		EndpointInfo<JmxEndpointOperation> endpoint = new EndpointInfo<>("another", true,

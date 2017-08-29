@@ -17,12 +17,12 @@
 package org.springframework.boot.endpoint;
 
 /**
- * An enumeration of the available {@link Endpoint} types.
+ * An enumeration of the available {@link Endpoint} delivery technologies.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public enum EndpointType {
+public enum EndpointDelivery {
 
 	/**
 	 * Expose the endpoint as a JMX MBean.
@@ -36,11 +36,12 @@ public enum EndpointType {
 
 	private final boolean enabledByDefault;
 
-	EndpointType(boolean enabledByDefault) {
+	EndpointDelivery(boolean enabledByDefault) {
 		this.enabledByDefault = enabledByDefault;
 	}
 
 	public boolean isEnabledByDefault() {
 		return this.enabledByDefault;
 	}
+
 }

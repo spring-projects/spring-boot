@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.web.WebEndpointResponse;
 import org.springframework.core.io.FileSystemResource;
@@ -55,7 +55,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.heapdump")
-@Endpoint(id = "heapdump", types = EndpointType.WEB)
+@Endpoint(id = "heapdump", delivery = EndpointDelivery.WEB)
 public class HeapDumpWebEndpoint {
 
 	private final long timeout;

@@ -31,11 +31,11 @@ import org.springframework.boot.endpoint.AnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperationType;
-import org.springframework.boot.endpoint.EndpointType;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.OperationParameterMapper;
+import org.springframework.boot.endpoint.OperationType;
 import org.springframework.boot.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.endpoint.Selector;
 import org.springframework.context.ApplicationContext;
@@ -79,8 +79,8 @@ public class WebAnnotationEndpointDiscoverer extends
 
 	@Override
 	public Collection<EndpointInfo<WebEndpointOperation>> discoverEndpoints() {
-		Collection<EndpointInfoDescriptor<WebEndpointOperation, OperationRequestPredicate>> endpoints = discoverEndpointsWithExtension(
-				WebEndpointExtension.class, EndpointType.WEB);
+		Collection<EndpointInfoDescriptor<WebEndpointOperation, OperationRequestPredicate>> endpoints = discoverEndpoints(
+				WebEndpointExtension.class, EndpointDelivery.WEB);
 		verifyThatOperationsHaveDistinctPredicates(endpoints);
 		return endpoints.stream().map(EndpointInfoDescriptor::getEndpointInfo)
 				.collect(Collectors.toList());
@@ -129,7 +129,7 @@ public class WebAnnotationEndpointDiscoverer extends
 		@Override
 		public WebEndpointOperation createOperation(String endpointId,
 				AnnotationAttributes operationAttributes, Object target, Method method,
-				EndpointOperationType type, long timeToLive) {
+				OperationType type, long timeToLive) {
 			WebEndpointHttpMethod httpMethod = determineHttpMethod(type);
 			OperationRequestPredicate requestPredicate = new OperationRequestPredicate(
 					determinePath(endpointId, method), httpMethod,
@@ -201,9 +201,8 @@ public class WebAnnotationEndpointDiscoverer extends
 					(parameter) -> parameter.getAnnotation(Selector.class) == null);
 		}
 
-		private WebEndpointHttpMethod determineHttpMethod(
-				EndpointOperationType operationType) {
-			if (operationType == EndpointOperationType.WRITE) {
+		private WebEndpointHttpMethod determineHttpMethod(OperationType operationType) {
+			if (operationType == OperationType.WRITE) {
 				return WebEndpointHttpMethod.POST;
 			}
 			return WebEndpointHttpMethod.GET;

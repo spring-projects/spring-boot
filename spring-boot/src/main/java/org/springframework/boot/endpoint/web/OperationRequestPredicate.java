@@ -111,26 +111,16 @@ public class OperationRequestPredicate {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
 		OperationRequestPredicate other = (OperationRequestPredicate) obj;
-		if (!this.consumes.equals(other.consumes)) {
-			return false;
-		}
-		if (this.httpMethod != other.httpMethod) {
-			return false;
-		}
-		if (!this.canonicalPath.equals(other.canonicalPath)) {
-			return false;
-		}
-		if (!this.produces.equals(other.produces)) {
-			return false;
-		}
-		return true;
+		boolean result = true;
+		result = result && this.consumes.equals(other.consumes);
+		result = result && this.httpMethod == other.httpMethod;
+		result = result && this.canonicalPath.equals(other.canonicalPath);
+		result = result && this.produces.equals(other.produces);
+		return result;
 	}
 
 }

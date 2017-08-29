@@ -37,8 +37,8 @@ import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointType;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.Selector;
@@ -194,7 +194,7 @@ public class WebAnnotationEndpointDiscovererTests {
 					EndpointInfo<WebEndpointOperation> endpoint = endpoints.get("test");
 					assertThat(endpoint.getOperations()).hasSize(1);
 					OperationInvoker operationInvoker = endpoint.getOperations()
-							.iterator().next().getOperationInvoker();
+							.iterator().next().getInvoker();
 					assertThat(operationInvoker)
 							.isInstanceOf(CachingOperationInvoker.class);
 					assertThat(
@@ -375,7 +375,7 @@ public class WebAnnotationEndpointDiscovererTests {
 
 	}
 
-	@Endpoint(id = "nonweb", types = EndpointType.JMX)
+	@Endpoint(id = "nonweb", delivery = EndpointDelivery.JMX)
 	static class NonWebEndpoint {
 
 		@ReadOperation

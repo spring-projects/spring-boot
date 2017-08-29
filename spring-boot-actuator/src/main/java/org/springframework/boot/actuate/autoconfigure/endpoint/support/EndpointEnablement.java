@@ -25,6 +25,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.support;
 public final class EndpointEnablement {
 
 	private final boolean enabled;
+
 	private final String reason;
 
 	/**

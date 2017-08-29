@@ -20,10 +20,10 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.support.EndpointEnablementProvider;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.EndpointDiscoverer;
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperation;
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.Operation;
 import org.springframework.core.env.Environment;
 
 /**
@@ -34,25 +34,25 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public final class EndpointProvider<T extends EndpointOperation> {
+public final class EndpointProvider<T extends Operation> {
 
 	private final EndpointDiscoverer<T> discoverer;
 
 	private final EndpointEnablementProvider endpointEnablementProvider;
 
-	private final EndpointType endpointType;
+	private final EndpointDelivery delivery;
 
 	/**
 	 * Creates a new instance.
 	 * @param environment the environment to use to check the endpoints that are enabled
 	 * @param discoverer the discoverer to get the initial set of endpoints
-	 * @param endpointType the type of endpoint to handle
+	 * @param delivery the delivery technology for the endpoint
 	 */
 	public EndpointProvider(Environment environment, EndpointDiscoverer<T> discoverer,
-			EndpointType endpointType) {
+			EndpointDelivery delivery) {
 		this.discoverer = discoverer;
 		this.endpointEnablementProvider = new EndpointEnablementProvider(environment);
-		this.endpointType = endpointType;
+		this.delivery = delivery;
 	}
 
 	public Collection<EndpointInfo<T>> getEndpoints() {
@@ -62,7 +62,7 @@ public final class EndpointProvider<T extends EndpointOperation> {
 
 	private boolean isEnabled(EndpointInfo<?> endpoint) {
 		return this.endpointEnablementProvider.getEndpointEnablement(endpoint.getId(),
-				endpoint.isEnabledByDefault(), this.endpointType).isEnabled();
+				endpoint.isEnabledByDefault(), this.delivery).isEnabled();
 	}
 
 }

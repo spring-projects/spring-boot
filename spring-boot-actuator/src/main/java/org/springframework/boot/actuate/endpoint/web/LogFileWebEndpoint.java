@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.core.env.Environment;
@@ -39,7 +39,7 @@ import org.springframework.core.io.Resource;
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.logfile")
-@Endpoint(id = "logfile", types = EndpointType.WEB)
+@Endpoint(id = "logfile", delivery = EndpointDelivery.WEB)
 public class LogFileWebEndpoint {
 
 	private static final Log logger = LogFactory.getLog(LogFileWebEndpoint.class);

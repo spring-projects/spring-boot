@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.jmx.JmxEndpointExtension;
 import org.springframework.boot.endpoint.web.WebEndpointExtension;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +30,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -44,14 +45,9 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		EndpointAttributes endpoint = getEndpointAttributes(context, metadata);
-		if (!StringUtils.hasText(endpoint.id)) {
-			throw new IllegalStateException("Endpoint id could not be determined");
-		}
-		EndpointEnablementProvider enablementProvider = new EndpointEnablementProvider(
-				context.getEnvironment());
-		EndpointEnablement endpointEnablement = enablementProvider.getEndpointEnablement(
-				endpoint.id, endpoint.enabled, endpoint.endpointType);
+		EndpointAttributes attributes = getEndpointAttributes(context, metadata);
+		EndpointEnablement endpointEnablement = attributes
+				.getEnablement(new EndpointEnablementProvider(context.getEnvironment()));
 		return new ConditionOutcome(endpointEnablement.isEnabled(),
 				ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
 						.because(endpointEnablement.getReason()));
@@ -59,24 +55,27 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 	private EndpointAttributes getEndpointAttributes(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		if (metadata instanceof MethodMetadata
-				&& metadata.isAnnotated(Bean.class.getName())) {
-			MethodMetadata methodMetadata = (MethodMetadata) metadata;
-			try {
-				// We should be safe to load at this point since we are in the
-				// REGISTER_BEAN phase
-				Class<?> returnType = ClassUtils.forName(
-						methodMetadata.getReturnTypeName(), context.getClassLoader());
-				return extractEndpointAttributes(returnType);
-			}
-			catch (Throwable ex) {
-				throw new IllegalStateException("Failed to extract endpoint id for "
-						+ methodMetadata.getDeclaringClassName() + "."
-						+ methodMetadata.getMethodName(), ex);
-			}
-		}
-		throw new IllegalStateException(
+		Assert.state(
+				metadata instanceof MethodMetadata
+						&& metadata.isAnnotated(Bean.class.getName()),
 				"OnEnabledEndpointCondition may only be used on @Bean methods");
+		return getEndpointAttributes(context, (MethodMetadata) metadata);
+	}
+
+	private EndpointAttributes getEndpointAttributes(ConditionContext context,
+			MethodMetadata methodMetadata) {
+		try {
+			// We should be safe to load at this point since we are in the
+			// REGISTER_BEAN phase
+			Class<?> returnType = ClassUtils.forName(methodMetadata.getReturnTypeName(),
+					context.getClassLoader());
+			return extractEndpointAttributes(returnType);
+		}
+		catch (Throwable ex) {
+			throw new IllegalStateException("Failed to extract endpoint id for "
+					+ methodMetadata.getDeclaringClassName() + "."
+					+ methodMetadata.getMethodName(), ex);
+		}
 	}
 
 	protected EndpointAttributes extractEndpointAttributes(Class<?> type) {
@@ -105,11 +104,10 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		if (endpoint == null) {
 			return null;
 		}
-		// If both types are set, all techs are exposed
-		EndpointType endpointType = (endpoint.types().length == 1 ? endpoint.types()[0]
-				: null);
+		// If both types are set, all delivery technologies are exposed
+		EndpointDelivery[] delivery = endpoint.delivery();
 		return new EndpointAttributes(endpoint.id(), endpoint.enabledByDefault(),
-				endpointType);
+				(delivery.length == 1 ? delivery[0] : null));
 	}
 
 	private static class EndpointAttributes {
@@ -118,12 +116,19 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 		private final boolean enabled;
 
-		private final EndpointType endpointType;
+		private final EndpointDelivery delivery;
 
-		EndpointAttributes(String id, boolean enabled, EndpointType endpointType) {
+		EndpointAttributes(String id, boolean enabled, EndpointDelivery delivery) {
+			if (!StringUtils.hasText(id)) {
+				throw new IllegalStateException("Endpoint id could not be determined");
+			}
 			this.id = id;
 			this.enabled = enabled;
-			this.endpointType = endpointType;
+			this.delivery = delivery;
+		}
+
+		public EndpointEnablement getEnablement(EndpointEnablementProvider provider) {
+			return provider.getEndpointEnablement(this.id, this.enabled, this.delivery);
 		}
 
 	}

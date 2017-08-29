@@ -16,9 +16,9 @@
 
 package org.springframework.boot.endpoint.web;
 
-import org.springframework.boot.endpoint.EndpointOperation;
-import org.springframework.boot.endpoint.EndpointOperationType;
+import org.springframework.boot.endpoint.Operation;
 import org.springframework.boot.endpoint.OperationInvoker;
+import org.springframework.boot.endpoint.OperationType;
 
 /**
  * An operation on a web endpoint.
@@ -26,7 +26,7 @@ import org.springframework.boot.endpoint.OperationInvoker;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebEndpointOperation extends EndpointOperation {
+public class WebEndpointOperation extends Operation {
 
 	private final OperationRequestPredicate requestPredicate;
 
@@ -42,9 +42,8 @@ public class WebEndpointOperation extends EndpointOperation {
 	 * @param requestPredicate the predicate for requests that can be handled by the
 	 * @param id the id of the operation, unique within its endpoint operation
 	 */
-	public WebEndpointOperation(EndpointOperationType type,
-			OperationInvoker operationInvoker, boolean blocking,
-			OperationRequestPredicate requestPredicate, String id) {
+	public WebEndpointOperation(OperationType type, OperationInvoker operationInvoker,
+			boolean blocking, OperationRequestPredicate requestPredicate, String id) {
 		super(type, operationInvoker, blocking);
 		this.requestPredicate = requestPredicate;
 		this.id = id;

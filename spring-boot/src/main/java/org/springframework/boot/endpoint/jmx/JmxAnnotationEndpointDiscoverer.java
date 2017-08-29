@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -30,11 +31,11 @@ import org.springframework.boot.endpoint.AnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperationType;
-import org.springframework.boot.endpoint.EndpointType;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.OperationParameterMapper;
+import org.springframework.boot.endpoint.OperationType;
 import org.springframework.boot.endpoint.ReflectiveOperationInvoker;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -60,7 +61,6 @@ public class JmxAnnotationEndpointDiscoverer
 	 * Creates a new {@link JmxAnnotationEndpointDiscoverer} that will discover
 	 * {@link Endpoint endpoints} and {@link JmxEndpointExtension jmx extensions} using
 	 * the given {@link ApplicationContext}.
-	 *
 	 * @param applicationContext the application context
 	 * @param parameterMapper the {@link OperationParameterMapper} used to convert
 	 * arguments when an operation is invoked
@@ -75,8 +75,8 @@ public class JmxAnnotationEndpointDiscoverer
 
 	@Override
 	public Collection<EndpointInfo<JmxEndpointOperation>> discoverEndpoints() {
-		Collection<EndpointInfoDescriptor<JmxEndpointOperation, String>> endpointDescriptors = discoverEndpointsWithExtension(
-				JmxEndpointExtension.class, EndpointType.JMX);
+		Collection<EndpointInfoDescriptor<JmxEndpointOperation, String>> endpointDescriptors = discoverEndpoints(
+				JmxEndpointExtension.class, EndpointDelivery.JMX);
 		verifyThatOperationsHaveDistinctName(endpointDescriptors);
 		return endpointDescriptors.stream().map(EndpointInfoDescriptor::getEndpointInfo)
 				.collect(Collectors.toList());
@@ -113,7 +113,7 @@ public class JmxAnnotationEndpointDiscoverer
 		@Override
 		public JmxEndpointOperation createOperation(String endpointId,
 				AnnotationAttributes operationAttributes, Object target, Method method,
-				EndpointOperationType type, long timeToLive) {
+				OperationType type, long timeToLive) {
 			String operationName = method.getName();
 			Class<?> outputType = mapParameterType(method.getReturnType());
 			String description = getDescription(method,
@@ -139,29 +139,40 @@ public class JmxAnnotationEndpointDiscoverer
 		}
 
 		private List<JmxEndpointOperationParameterInfo> getParameters(Method method) {
-			List<JmxEndpointOperationParameterInfo> parameters = new ArrayList<>();
 			Parameter[] methodParameters = method.getParameters();
 			if (methodParameters.length == 0) {
-				return parameters;
+				return Collections.emptyList();
 			}
 			ManagedOperationParameter[] managedOperationParameters = jmxAttributeSource
 					.getManagedOperationParameters(method);
-			if (managedOperationParameters.length > 0) {
-				for (int i = 0; i < managedOperationParameters.length; i++) {
-					ManagedOperationParameter mBeanParameter = managedOperationParameters[i];
-					Parameter methodParameter = methodParameters[i];
-					parameters.add(new JmxEndpointOperationParameterInfo(
-							mBeanParameter.getName(),
-							mapParameterType(methodParameter.getType()),
-							mBeanParameter.getDescription()));
-				}
+			if (managedOperationParameters.length == 0) {
+				return getParametersInfo(methodParameters);
 			}
-			else {
-				for (Parameter parameter : methodParameters) {
-					parameters.add(
-							new JmxEndpointOperationParameterInfo(parameter.getName(),
-									mapParameterType(parameter.getType()), null));
-				}
+			return getParametersInfo(methodParameters, managedOperationParameters);
+		}
+
+		private List<JmxEndpointOperationParameterInfo> getParametersInfo(
+				Parameter[] methodParameters) {
+			List<JmxEndpointOperationParameterInfo> parameters = new ArrayList<>();
+			for (Parameter methodParameter : methodParameters) {
+				String name = methodParameter.getName();
+				Class<?> type = mapParameterType(methodParameter.getType());
+				parameters.add(new JmxEndpointOperationParameterInfo(name, type, null));
+			}
+			return parameters;
+		}
+
+		private List<JmxEndpointOperationParameterInfo> getParametersInfo(
+				Parameter[] methodParameters,
+				ManagedOperationParameter[] managedOperationParameters) {
+			List<JmxEndpointOperationParameterInfo> parameters = new ArrayList<>();
+			for (int i = 0; i < managedOperationParameters.length; i++) {
+				ManagedOperationParameter managedOperationParameter = managedOperationParameters[i];
+				Parameter methodParameter = methodParameters[i];
+				parameters.add(new JmxEndpointOperationParameterInfo(
+						managedOperationParameter.getName(),
+						mapParameterType(methodParameter.getType()),
+						managedOperationParameter.getDescription()));
 			}
 			return parameters;
 		}

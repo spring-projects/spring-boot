@@ -47,8 +47,8 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public abstract class AbstractWebEndpointServletHandlerMapping extends RequestMappingInfoHandlerMapping
-		implements InitializingBean {
+public abstract class AbstractWebEndpointServletHandlerMapping
+		extends RequestMappingInfoHandlerMapping implements InitializingBean {
 
 	private final String endpointPath;
 
@@ -96,9 +96,12 @@ public abstract class AbstractWebEndpointServletHandlerMapping extends RequestMa
 		this.webEndpoints.stream()
 				.flatMap((webEndpoint) -> webEndpoint.getOperations().stream())
 				.forEach(this::registerMappingForOperation);
-		registerMapping(new RequestMappingInfo(patternsRequestConditionForPattern(""),
-				new RequestMethodsRequestCondition(RequestMethod.GET), null, null, null,
-				null, null), this, getLinks());
+		PatternsRequestCondition patterns = patternsRequestConditionForPattern("");
+		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
+				RequestMethod.GET);
+		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null,
+				null, null, null);
+		registerMapping(mapping, this, getLinks());
 	}
 
 	@Override
@@ -114,23 +117,22 @@ public abstract class AbstractWebEndpointServletHandlerMapping extends RequestMa
 	protected RequestMappingInfo createRequestMappingInfo(
 			WebEndpointOperation operationInfo) {
 		OperationRequestPredicate requestPredicate = operationInfo.getRequestPredicate();
-		return new RequestMappingInfo(null,
-				patternsRequestConditionForPattern(requestPredicate.getPath()),
-				new RequestMethodsRequestCondition(
-						RequestMethod.valueOf(requestPredicate.getHttpMethod().name())),
-				null, null,
-				new ConsumesRequestCondition(
-						toStringArray(requestPredicate.getConsumes())),
-				new ProducesRequestCondition(
-						toStringArray(requestPredicate.getProduces())),
-				null);
+		PatternsRequestCondition patterns = patternsRequestConditionForPattern(
+				requestPredicate.getPath());
+		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
+				RequestMethod.valueOf(requestPredicate.getHttpMethod().name()));
+		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
+				toStringArray(requestPredicate.getConsumes()));
+		ProducesRequestCondition produces = new ProducesRequestCondition(
+				toStringArray(requestPredicate.getProduces()));
+		return new RequestMappingInfo(null, patterns, methods, null, null, consumes,
+				produces, null);
 	}
 
 	private PatternsRequestCondition patternsRequestConditionForPattern(String path) {
-		return new PatternsRequestCondition(
-				new String[] { this.endpointPath
-						+ (StringUtils.hasText(path) ? "/" + path : "") },
-				null, null, false, false);
+		String[] patterns = new String[] {
+				this.endpointPath + (StringUtils.hasText(path) ? "/" + path : "") };
+		return new PatternsRequestCondition(patterns, null, null, false, false);
 	}
 
 	private String[] toStringArray(Collection<String> collection) {
@@ -171,6 +173,5 @@ public abstract class AbstractWebEndpointServletHandlerMapping extends RequestMa
 		}
 
 	}
-
 
 }

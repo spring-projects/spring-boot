@@ -22,7 +22,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperationType;
+import org.springframework.boot.endpoint.OperationType;
 import org.springframework.boot.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
@@ -136,7 +136,7 @@ public class RequestMappingEndpointTests {
 				WebEndpointHttpMethod.GET, Collections.singletonList("application/json"),
 				Collections.singletonList("application/json"));
 		WebEndpointOperation operation = new WebEndpointOperation(
-				EndpointOperationType.READ, (arguments) -> "Invoked", true,
+				OperationType.READ, (arguments) -> "Invoked", true,
 				requestPredicate, "test");
 		WebEndpointServletHandlerMapping mapping = new WebEndpointServletHandlerMapping(
 				"application", Collections.singleton(new EndpointInfo<>("test", true,

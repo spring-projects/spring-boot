@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperationType;
 import org.springframework.boot.endpoint.OperationInvoker;
+import org.springframework.boot.endpoint.OperationType;
 import org.springframework.boot.endpoint.ParameterMappingException;
 import org.springframework.boot.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.endpoint.web.Link;
@@ -126,29 +126,28 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 	}
 
 	private void registerMappingForOperation(WebEndpointOperation operation) {
-		EndpointOperationType operationType = operation.getType();
+		OperationType operationType = operation.getType();
 		registerMapping(createRequestMappingInfo(operation),
-				operationType == EndpointOperationType.WRITE
-						? new WriteOperationHandler(operation.getOperationInvoker())
-						: new ReadOperationHandler(operation.getOperationInvoker()),
-				operationType == EndpointOperationType.WRITE ? this.handleWrite
+				operationType == OperationType.WRITE
+						? new WriteOperationHandler(operation.getInvoker())
+						: new ReadOperationHandler(operation.getInvoker()),
+				operationType == OperationType.WRITE ? this.handleWrite
 						: this.handleRead);
 	}
 
 	private RequestMappingInfo createRequestMappingInfo(
 			WebEndpointOperation operationInfo) {
 		OperationRequestPredicate requestPredicate = operationInfo.getRequestPredicate();
-		return new RequestMappingInfo(null,
-				new PatternsRequestCondition(pathPatternParser
-						.parse(this.endpointPath + "/" + requestPredicate.getPath())),
-				new RequestMethodsRequestCondition(
-						RequestMethod.valueOf(requestPredicate.getHttpMethod().name())),
-				null, null,
-				new ConsumesRequestCondition(
-						toStringArray(requestPredicate.getConsumes())),
-				new ProducesRequestCondition(
-						toStringArray(requestPredicate.getProduces())),
-				null);
+		PatternsRequestCondition patterns = new PatternsRequestCondition(pathPatternParser
+				.parse(this.endpointPath + "/" + requestPredicate.getPath()));
+		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
+				RequestMethod.valueOf(requestPredicate.getHttpMethod().name()));
+		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
+				toStringArray(requestPredicate.getConsumes()));
+		ProducesRequestCondition produces = new ProducesRequestCondition(
+				toStringArray(requestPredicate.getProduces()));
+		return new RequestMappingInfo(null, patterns, methods, null, null, consumes,
+				produces, null);
 	}
 
 	private String[] toStringArray(Collection<String> collection) {

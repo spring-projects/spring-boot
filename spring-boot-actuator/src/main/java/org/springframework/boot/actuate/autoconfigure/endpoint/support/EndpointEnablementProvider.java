@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.support;
 
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
+import org.springframework.util.Assert;
 
 /**
  * Determines an endpoint's enablement based on the current {@link Environment}.
@@ -54,109 +54,111 @@ public class EndpointEnablementProvider {
 	 * Return the {@link EndpointEnablement} of an endpoint for a specific tech exposure.
 	 * @param endpointId the id of the endpoint
 	 * @param enabledByDefault whether the endpoint is enabled by default or not
-	 * @param endpointType the requested {@link EndpointType}
+	 * @param delivery the requested {@link EndpointDelivery}
 	 * @return the {@link EndpointEnablement} of that endpoint for the specified
-	 * {@link EndpointType}
+	 * {@link EndpointDelivery}
 	 */
 	public EndpointEnablement getEndpointEnablement(String endpointId,
-			boolean enabledByDefault, EndpointType endpointType) {
-		if (!StringUtils.hasText(endpointId)) {
-			throw new IllegalArgumentException("Endpoint id must have a value");
+			boolean enabledByDefault, EndpointDelivery delivery) {
+		Assert.hasText(endpointId, "Endpoint id must have a value");
+		Assert.isTrue(!endpointId.equals("default"), "Endpoint id 'default' is a reserved "
+				+ "value and cannot be used by an endpoint");
+		EndpointEnablement result = findEnablement(endpointId, delivery);
+		if (result != null) {
+			return result;
 		}
-		if (endpointId.equals("default")) {
-			throw new IllegalArgumentException("Endpoint id 'default' is a reserved "
-					+ "value and cannot be used by an endpoint");
+		result = findEnablement(getKey(endpointId, "enabled"));
+		if (result != null) {
+			return result;
 		}
-
-		if (endpointType != null) {
-			String endpointTypeKey = createTechSpecificKey(endpointId, endpointType);
-			EndpointEnablement endpointTypeSpecificOutcome = getEnablementFor(
-					endpointTypeKey);
-			if (endpointTypeSpecificOutcome != null) {
-				return endpointTypeSpecificOutcome;
-			}
-		}
-		else {
-			// If any tech specific is on at this point we should enable the endpoint
-			EndpointEnablement anyTechSpecificOutcome = getAnyTechSpecificOutcomeFor(
-					endpointId);
-			if (anyTechSpecificOutcome != null) {
-				return anyTechSpecificOutcome;
-			}
-		}
-		String endpointKey = createKey(endpointId, "enabled");
-		EndpointEnablement endpointSpecificOutcome = getEnablementFor(endpointKey);
-		if (endpointSpecificOutcome != null) {
-			return endpointSpecificOutcome;
-		}
-
 		// All endpoints specific attributes have been looked at. Checking default value
 		// for the endpoint
 		if (!enabledByDefault) {
-			return defaultEndpointEnablement(endpointId, false, endpointType);
+			return getDefaultEndpointEnablement(endpointId, false, delivery);
 		}
-
-		if (endpointType != null) {
-			String defaultTypeKey = createTechSpecificKey("default", endpointType);
-			EndpointEnablement globalTypeOutcome = getEnablementFor(defaultTypeKey);
-			if (globalTypeOutcome != null) {
-				return globalTypeOutcome;
-			}
-			if (!endpointType.isEnabledByDefault()) {
-				return defaultEndpointEnablement("default", false, endpointType);
-			}
-		}
-		else {
-			// Check if there is a global tech required
-			EndpointEnablement anyTechGeneralOutcome = getAnyTechSpecificOutcomeFor(
-					"default");
-			if (anyTechGeneralOutcome != null) {
-				return anyTechGeneralOutcome;
-			}
-		}
-
-		String defaultKey = createKey("default", "enabled");
-		EndpointEnablement globalOutCome = getEnablementFor(defaultKey);
-		if (globalOutCome != null) {
-			return globalOutCome;
-		}
-		return defaultEndpointEnablement(endpointId, enabledByDefault, endpointType);
+		return getGlobalEndpointEnablement(endpointId, enabledByDefault,
+				delivery);
 	}
 
-	private EndpointEnablement defaultEndpointEnablement(String endpointId,
-			boolean enabledByDefault, EndpointType endpointType) {
-		return new EndpointEnablement(enabledByDefault, createDefaultEnablementMessage(
-				endpointId, enabledByDefault, endpointType));
-	}
-
-	private String createDefaultEnablementMessage(String endpointId,
-			boolean enabledByDefault, EndpointType endpointType) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("endpoint '%s' ", endpointId));
-		if (endpointType != null) {
-			sb.append(String.format("(%s) ", endpointType.name().toLowerCase()));
+	private EndpointEnablement findEnablement(String endpointId,
+			EndpointDelivery delivery) {
+		if (delivery != null) {
+			return findEnablement(getKey(endpointId, delivery));
 		}
-		sb.append(String.format("is %s by default",
-				(enabledByDefault ? "enabled" : "disabled")));
-		return sb.toString();
+		return findEnablementForAnyDeliveryTechnology(endpointId);
 	}
 
-	private EndpointEnablement getAnyTechSpecificOutcomeFor(String endpointId) {
-		for (EndpointType endpointType : EndpointType.values()) {
-			String key = createTechSpecificKey(endpointId, endpointType);
-			EndpointEnablement outcome = getEnablementFor(key);
-			if (outcome != null && outcome.isEnabled()) {
-				return outcome;
+	private EndpointEnablement getGlobalEndpointEnablement(String endpointId,
+			boolean enabledByDefault, EndpointDelivery delivery) {
+		EndpointEnablement result = findGlobalEndpointEnablement(delivery);
+		if (result != null) {
+			return result;
+		}
+		result = findEnablement(getKey("default", "enabled"));
+		if (result != null) {
+			return result;
+		}
+		return getDefaultEndpointEnablement(endpointId, enabledByDefault,
+				delivery);
+	}
+
+	private EndpointEnablement findGlobalEndpointEnablement(
+			EndpointDelivery delivery) {
+		if (delivery != null) {
+			EndpointEnablement result = findEnablement(getKey("default", delivery));
+			if (result != null) {
+				return result;
+			}
+			if (!delivery.isEnabledByDefault()) {
+				return getDefaultEndpointEnablement("default", false, delivery);
+			}
+			return null;
+		}
+		return findEnablementForAnyDeliveryTechnology("default");
+	}
+
+	private EndpointEnablement findEnablementForAnyDeliveryTechnology(String endpointId) {
+		for (EndpointDelivery candidate : EndpointDelivery.values()) {
+			EndpointEnablement result = findEnablementForDeliveryTechnology(endpointId,
+					candidate);
+			if (result != null && result.isEnabled()) {
+				return result;
 			}
 		}
 		return null;
 	}
 
-	private String createTechSpecificKey(String endpointId, EndpointType endpointType) {
-		return createKey(endpointId, endpointType.name().toLowerCase() + ".enabled");
+	private EndpointEnablement findEnablementForDeliveryTechnology(String endpointId,
+			EndpointDelivery delivery) {
+		String endpointTypeKey = getKey(endpointId, delivery);
+		EndpointEnablement endpointTypeSpecificOutcome = findEnablement(endpointTypeKey);
+		return endpointTypeSpecificOutcome;
 	}
 
-	private String createKey(String endpointId, String suffix) {
+	private EndpointEnablement getDefaultEndpointEnablement(String endpointId,
+			boolean enabledByDefault, EndpointDelivery delivery) {
+		return new EndpointEnablement(enabledByDefault, createDefaultEnablementMessage(
+				endpointId, enabledByDefault, delivery));
+	}
+
+	private String createDefaultEnablementMessage(String endpointId,
+			boolean enabledByDefault, EndpointDelivery delivery) {
+		StringBuilder message = new StringBuilder();
+		message.append(String.format("endpoint '%s' ", endpointId));
+		if (delivery != null) {
+			message.append(
+					String.format("(%s) ", delivery.name().toLowerCase()));
+		}
+		message.append(String.format("is %s by default",
+				(enabledByDefault ? "enabled" : "disabled")));
+		return message.toString();
+	}
+
+	private String getKey(String endpointId, EndpointDelivery delivery) {
+		return getKey(endpointId, delivery.name().toLowerCase() + ".enabled");
+	}
+
+	private String getKey(String endpointId, String suffix) {
 		return "endpoints." + endpointId + "." + suffix;
 	}
 
@@ -166,7 +168,7 @@ public class EndpointEnablementProvider {
 	 * @param key the key to check
 	 * @return the outcome or {@code null} if the key is no set
 	 */
-	private EndpointEnablement getEnablementFor(String key) {
+	private EndpointEnablement findEnablement(String key) {
 		if (this.environment.containsProperty(key)) {
 			boolean match = this.environment.getProperty(key, Boolean.class, true);
 			return new EndpointEnablement(match, String.format("found property %s", key));

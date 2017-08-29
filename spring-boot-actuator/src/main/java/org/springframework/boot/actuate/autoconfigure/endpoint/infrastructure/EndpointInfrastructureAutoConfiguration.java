@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.OperationParameterMapper;
 import org.springframework.boot.endpoint.jmx.EndpointMBeanRegistrar;
 import org.springframework.boot.endpoint.jmx.JmxAnnotationEndpointDiscoverer;
@@ -102,10 +102,10 @@ public class EndpointInfrastructureAutoConfiguration {
 			ObjectProvider<ObjectMapper> objectMapper) {
 		EndpointProvider<JmxEndpointOperation> endpointProvider = new EndpointProvider<>(
 				this.applicationContext.getEnvironment(), endpointDiscoverer,
-				EndpointType.JMX);
+				EndpointDelivery.JMX);
 		EndpointMBeanRegistrar endpointMBeanRegistrar = new EndpointMBeanRegistrar(
-				mBeanServer, new DefaultEndpointObjectNameFactory(properties,
-				mBeanServer, ObjectUtils.getIdentityHexString(this.applicationContext)));
+				mBeanServer, new DefaultEndpointObjectNameFactory(properties, mBeanServer,
+						ObjectUtils.getIdentityHexString(this.applicationContext)));
 		return new JmxEndpointExporter(endpointProvider, endpointMBeanRegistrar,
 				objectMapper.getIfAvailable(ObjectMapper::new));
 	}
@@ -127,7 +127,7 @@ public class EndpointInfrastructureAutoConfiguration {
 			return new EndpointProvider<>(this.applicationContext.getEnvironment(),
 					webEndpointDiscoverer(operationParameterMapper,
 							cachingConfigurationFactory),
-					EndpointType.WEB);
+					EndpointDelivery.WEB);
 		}
 
 		private WebAnnotationEndpointDiscoverer webEndpointDiscoverer(

@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 import org.junit.Test;
 
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointType;
+import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.jmx.JmxEndpointExtension;
 import org.springframework.boot.endpoint.web.WebEndpointExtension;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -297,8 +297,8 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Endpoint(id = "bar", types = { EndpointType.WEB,
-			EndpointType.JMX }, enabledByDefault = false)
+	@Endpoint(id = "bar", delivery = { EndpointDelivery.WEB,
+			EndpointDelivery.JMX }, enabledByDefault = false)
 	static class BarEndpoint {
 
 	}
@@ -314,7 +314,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Endpoint(id = "onlyweb", types = EndpointType.WEB)
+	@Endpoint(id = "onlyweb", delivery = EndpointDelivery.WEB)
 	static class OnlyWebEndpoint {
 
 	}

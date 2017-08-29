@@ -49,7 +49,8 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebEndpointServletHandlerMapping extends AbstractWebEndpointServletHandlerMapping {
+public class WebEndpointServletHandlerMapping
+		extends AbstractWebEndpointServletHandlerMapping {
 
 	private final Method handle = ReflectionUtils.findMethod(OperationHandler.class,
 			"handle", HttpServletRequest.class, Map.class);
@@ -84,11 +85,13 @@ public class WebEndpointServletHandlerMapping extends AbstractWebEndpointServlet
 		setOrder(-100);
 	}
 
+	@Override
 	protected void registerMappingForOperation(WebEndpointOperation operation) {
 		registerMapping(createRequestMappingInfo(operation),
-				new OperationHandler(operation.getOperationInvoker()), this.handle);
+				new OperationHandler(operation.getInvoker()), this.handle);
 	}
 
+	@Override
 	protected Method getLinks() {
 		return this.links;
 	}

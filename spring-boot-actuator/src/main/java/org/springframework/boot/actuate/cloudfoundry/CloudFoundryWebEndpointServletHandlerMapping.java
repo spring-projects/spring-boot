@@ -111,7 +111,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebEndpointSe
 	@Override
 	protected void registerMappingForOperation(WebEndpointOperation operation) {
 		registerMapping(createRequestMappingInfo(operation),
-				new OperationHandler(operation.getOperationInvoker(), operation.getId(), this.securityInterceptor), this.handle);
+				new OperationHandler(operation.getInvoker(), operation.getId(), this.securityInterceptor), this.handle);
 	}
 
 	/**

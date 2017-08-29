@@ -17,8 +17,8 @@
 package org.springframework.boot.endpoint;
 
 /**
- * {@link EndpointPathResolver} implementation that does not support
- * resolving endpoint paths.
+ * {@link EndpointPathResolver} implementation that does not support resolving endpoint
+ * paths.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -31,4 +31,3 @@ public class DefaultEndpointPathResolver implements EndpointPathResolver {
 	}
 
 }
-
