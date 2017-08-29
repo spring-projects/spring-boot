@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -38,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  */
 public class MongoPropertiesTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void canBindCharArrayPassword() {

@@ -17,9 +17,7 @@
 package org.springframework.boot.context.config;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -39,9 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 public class DelegatingApplicationListenerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final DelegatingApplicationListener listener = new DelegatingApplicationListener();
 

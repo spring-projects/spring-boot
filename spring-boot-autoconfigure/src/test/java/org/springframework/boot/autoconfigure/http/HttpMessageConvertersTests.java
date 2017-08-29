@@ -21,9 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -47,9 +45,6 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 public class HttpMessageConvertersTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void containsDefaults() throws Exception {

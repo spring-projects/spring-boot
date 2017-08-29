@@ -17,9 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
 
@@ -33,9 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ManagementEndpointPathResolverTests {
 
 	private ManagementEndpointPathResolver resolver;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {

@@ -23,7 +23,6 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
@@ -41,9 +40,6 @@ public class JarURLConnectionTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder(new File("target"));
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private File rootJarFile;
 
