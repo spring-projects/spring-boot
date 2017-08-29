@@ -2582,7 +2582,7 @@ to decode tokens, so there is nothing else to do. If your app is a standalone se
 need to give it some more configuration, one of the following options:
 
 * `security.oauth2.resource.user-info-uri` to use the `/me` resource (e.g.
-`\https://uaa.run.pivotal.io/userinfo` on PWS)
+`\https://uaa.run.pivotal.io/userinfo` on Pivotal Web Services (PWS))
 
 * `security.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
 `\https://uaa.run.pivotal.io/check_token` on PWS).
@@ -2603,8 +2603,20 @@ URI where it can be downloaded (as a JSON object with a "`value`" field) with
 	{"alg":"SHA256withRSA","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"}
 ----
 
-WARNING: If you use the `security.oauth2.resource.jwt.key-uri` the authorization server
-needs to be running when your application starts up. It will log a warning if it can't
+Additionally, if your authorization server has an endpoint that returns a set of JSON Web Keys(JWKs),
+you can configure `security.oauth2.resource.jwk.key-set-uri`. E.g. on PWS:
+
+[indent=0]
+----
+	$ curl https://uaa.run.pivotal.io/token_keys
+	{"keys":[{"kid":"key-1","alg":"RS256","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"]}
+----
+
+NOTE: Configuring both JWT and JWK properties will cause an error. Only one of `security.oauth2.resource.jwt.key-uri`
+(or `security.oauth2.resource.jwt.key-value`) and `security.oauth2.resource.jwk.key-set-uri` should be configured.
+
+WARNING: If you use the `security.oauth2.resource.jwt.key-uri` or `security.oauth2.resource.jwk.key-set-uri,
+` the authorization server needs to be running when your application starts up. It will log a warning if it can't
 find the key, and tell you what to do to fix it.
 
 OAuth2 resources are protected by a filter chain with order
