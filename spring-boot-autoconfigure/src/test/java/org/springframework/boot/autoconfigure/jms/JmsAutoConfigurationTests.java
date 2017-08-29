@@ -165,7 +165,7 @@ public class JmsAutoConfigurationTests {
 		assertThat(container.getSessionAcknowledgeMode())
 				.isEqualTo(Session.CLIENT_ACKNOWLEDGE);
 		assertThat(container.getConcurrentConsumers()).isEqualTo(2);
-		assertThat(container.getMaxConcurrentConsumers());
+		assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
 	}
 
 	@Test
