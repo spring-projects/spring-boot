@@ -54,14 +54,14 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void disabledViaGeneralProperty() {
 		this.contextRunner.withUserConfiguration(FooConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false")
+				.withPropertyValues("endpoints.default.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
 	public void enabledOverrideViaSpecificProperty() {
 		this.contextRunner.withUserConfiguration(FooConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false",
+				.withPropertyValues("endpoints.default.enabled=false",
 						"endpoints.foo.enabled=true")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
@@ -94,34 +94,34 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void enabledOverrideViaGeneralWebProperty() {
 		this.contextRunner.withUserConfiguration(FooConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false",
-						"endpoints.all.web.enabled=true")
+				.withPropertyValues("endpoints.default.enabled=false",
+						"endpoints.default.web.enabled=true")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	public void enabledOverrideViaGeneralJmxProperty() {
 		this.contextRunner.withUserConfiguration(FooConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false",
-						"endpoints.all.jmx.enabled=true")
+				.withPropertyValues("endpoints.default.enabled=false",
+						"endpoints.default.jmx.enabled=true")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	public void enabledOverrideViaGeneralAnyProperty() {
 		this.contextRunner.withUserConfiguration(FooConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false",
-						"endpoints.all.web.enabled=false",
-						"endpoints.all.jmx.enabled=true")
+				.withPropertyValues("endpoints.default.enabled=false",
+						"endpoints.default.web.enabled=false",
+						"endpoints.default.jmx.enabled=true")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	public void disabledEvenWithEnabledGeneralProperties() {
 		this.contextRunner.withUserConfiguration(FooConfig.class)
-				.withPropertyValues("endpoints.all.enabled=true",
-						"endpoints.all.web.enabled=true",
-						"endpoints.all.jmx.enabled=true", "endpoints.foo.enabled=false")
+				.withPropertyValues("endpoints.default.enabled=true",
+						"endpoints.default.web.enabled=true",
+						"endpoints.default.jmx.enabled=true", "endpoints.foo.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
@@ -134,21 +134,21 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void disabledByDefaultWithAnnotationFlagEvenWithGeneralProperty() {
 		this.contextRunner.withUserConfiguration(BarConfig.class)
-				.withPropertyValues("endpoints.all.enabled=true")
+				.withPropertyValues("endpoints.default.enabled=true")
 				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	public void disabledByDefaultWithAnnotationFlagEvenWithGeneralWebProperty() {
 		this.contextRunner.withUserConfiguration(BarConfig.class)
-				.withPropertyValues("endpoints.all.web.enabled=true")
+				.withPropertyValues("endpoints.default.web.enabled=true")
 				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	public void disabledByDefaultWithAnnotationFlagEvenWithGeneralJmxProperty() {
 		this.contextRunner.withUserConfiguration(BarConfig.class)
-				.withPropertyValues("endpoints.all.jmx.enabled=true")
+				.withPropertyValues("endpoints.default.jmx.enabled=true")
 				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
@@ -184,7 +184,7 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void enabledOnlyWebByDefault() {
 		this.contextRunner.withUserConfiguration(OnlyWebConfig.class)
-				.withPropertyValues("endpoints.all.web.enabled=true")
+				.withPropertyValues("endpoints.default.web.enabled=true")
 				.run((context) -> assertThat(context).hasBean("onlyweb"));
 	}
 
@@ -205,15 +205,15 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void enableOverridesOnlyWebViaGeneralJmxPropertyHasNoEffect() {
 		this.contextRunner.withUserConfiguration(OnlyWebConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false",
-						"endpoints.all.jmx.enabled=true")
+				.withPropertyValues("endpoints.default.enabled=false",
+						"endpoints.default.jmx.enabled=true")
 				.run((context) -> assertThat(context).doesNotHaveBean("onlyweb"));
 	}
 
 	@Test
 	public void enableOverridesOnlyWebViaSpecificJmxPropertyHasNoEffect() {
 		this.contextRunner.withUserConfiguration(OnlyWebConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false",
+				.withPropertyValues("endpoints.default.enabled=false",
 						"endpoints.onlyweb.jmx.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("onlyweb"));
 	}
@@ -221,7 +221,7 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void enableOverridesOnlyWebViaSpecificWebProperty() {
 		this.contextRunner.withUserConfiguration(OnlyWebConfig.class)
-				.withPropertyValues("endpoints.all.enabled=false",
+				.withPropertyValues("endpoints.default.enabled=false",
 						"endpoints.onlyweb.web.enabled=true")
 				.run((context) -> assertThat(context).hasBean("onlyweb"));
 	}
@@ -229,7 +229,7 @@ public class ConditionalOnEnabledEndpointTests {
 	@Test
 	public void disabledOnlyWebEvenWithEnabledGeneralProperties() {
 		this.contextRunner.withUserConfiguration(OnlyWebConfig.class).withPropertyValues(
-				"endpoints.all.enabled=true", "endpoints.all.web.enabled=true",
+				"endpoints.default.enabled=true", "endpoints.default.web.enabled=true",
 				"endpoints.onlyweb.enabled=true", "endpoints.onlyweb.web.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}

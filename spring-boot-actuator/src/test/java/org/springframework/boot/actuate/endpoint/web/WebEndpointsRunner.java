@@ -79,8 +79,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
  * {@link org.springframework.core.env.Environment} are reset at the end of every test.
  * This means that {@link TestPropertyValues} can be used in a test without affecting the
  * {@code Environment} of other tests in the same class.
- * The runner always sets the flag `endpoints.all.web.enabled` to true so that web endpoints
- * are enabled.
+ * The runner always sets the flag `endpoints.default.web.enabled` to true so that web
+ * endpoints are enabled.
  *
  * @author Andy Wilkinson
  */
@@ -192,7 +192,8 @@ public class WebEndpointsRunner extends Suite {
 		private MvcWebEndpointsRunner(Class<?> klass) throws InitializationError {
 			super(klass, "Spring MVC", (classes) -> {
 				AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
-				TestPropertyValues.of("endpoints.all.web.enabled:true").applyTo(context);
+				TestPropertyValues.of("endpoints.default.web.enabled=true")
+						.applyTo(context);
 				classes.add(MvcTestConfiguration.class);
 				context.register(classes.toArray(new Class<?>[classes.size()]));
 				context.refresh();
@@ -224,7 +225,8 @@ public class WebEndpointsRunner extends Suite {
 		private JerseyWebEndpointsRunner(Class<?> klass) throws InitializationError {
 			super(klass, "Jersey", (classes) -> {
 				AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
-				TestPropertyValues.of("endpoints.all.web.enabled:true").applyTo(context);
+				TestPropertyValues.of("endpoints.default.web.enabled=true")
+						.applyTo(context);
 				classes.add(JerseyAppConfiguration.class);
 				classes.add(JerseyInfrastructureConfiguration.class);
 				context.register(classes.toArray(new Class<?>[classes.size()]));
@@ -264,7 +266,7 @@ public class WebEndpointsRunner extends Suite {
 		private ReactiveWebEndpointsRunner(Class<?> klass) throws InitializationError {
 			super(klass, "Reactive", (classes) -> {
 				ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
-				TestPropertyValues.of("endpoints.all.web.enabled:true").applyTo(context);
+				TestPropertyValues.of("endpoints.default.web.enabled:true").applyTo(context);
 				classes.add(ReactiveInfrastructureConfiguration.class);
 				context.register(classes.toArray(new Class<?>[classes.size()]));
 				context.refresh();

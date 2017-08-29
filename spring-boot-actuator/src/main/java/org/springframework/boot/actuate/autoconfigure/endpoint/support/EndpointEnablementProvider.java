@@ -63,9 +63,9 @@ public class EndpointEnablementProvider {
 		if (!StringUtils.hasText(endpointId)) {
 			throw new IllegalArgumentException("Endpoint id must have a value");
 		}
-		if (endpointId.equals("all")) {
-			throw new IllegalArgumentException("Endpoint id 'all' is a reserved value "
-					+ "and cannot be used by an endpoint");
+		if (endpointId.equals("default")) {
+			throw new IllegalArgumentException("Endpoint id 'default' is a reserved "
+					+ "value and cannot be used by an endpoint");
 		}
 
 		if (endpointType != null) {
@@ -97,26 +97,26 @@ public class EndpointEnablementProvider {
 		}
 
 		if (endpointType != null) {
-			String globalTypeKey = createTechSpecificKey("all", endpointType);
-			EndpointEnablement globalTypeOutcome = getEnablementFor(globalTypeKey);
+			String defaultTypeKey = createTechSpecificKey("default", endpointType);
+			EndpointEnablement globalTypeOutcome = getEnablementFor(defaultTypeKey);
 			if (globalTypeOutcome != null) {
 				return globalTypeOutcome;
 			}
 			if (!endpointType.isEnabledByDefault()) {
-				return defaultEndpointEnablement("all", false, endpointType);
+				return defaultEndpointEnablement("default", false, endpointType);
 			}
 		}
 		else {
 			// Check if there is a global tech required
 			EndpointEnablement anyTechGeneralOutcome = getAnyTechSpecificOutcomeFor(
-					"all");
+					"default");
 			if (anyTechGeneralOutcome != null) {
 				return anyTechGeneralOutcome;
 			}
 		}
 
-		String globalKey = createKey("all", "enabled");
-		EndpointEnablement globalOutCome = getEnablementFor(globalKey);
+		String defaultKey = createKey("default", "enabled");
+		EndpointEnablement globalOutCome = getEnablementFor(defaultKey);
 		if (globalOutCome != null) {
 			return globalOutCome;
 		}

@@ -92,7 +92,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		TestPropertyValues.of("management.context-path:/management",
-				"endpoints.all.web.enabled=true")
+				"endpoints.default.web.enabled=true")
 				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());

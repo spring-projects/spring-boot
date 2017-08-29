@@ -31,12 +31,12 @@ import org.springframework.context.annotation.Conditional;
  * according to the {@code enabledByDefault} flag {@code types} flag that the
  * {@link Endpoint} may be restricted to.
  * <p>
- * If no specific {@code endpoints.<id>.*} or {@code endpoints.all.*} properties are
+ * If no specific {@code endpoints.<id>.*} or {@code endpoints.default.*} properties are
  * defined, the condition matches the {@code enabledByDefault} value regardless of the
  * specific {@link EndpointType}, if any. If any property are set, they are evaluated with
  * a sensible order of precedence.
  * <p>
- * For instance if {@code endpoints.all.enabled} is {@code false} but
+ * For instance if {@code endpoints.default.enabled} is {@code false} but
  * {@code endpoints.<id>.enabled} is {@code true}, the condition will match.
  * <p>
  * This condition must be placed on a {@code @Bean} method producing an endpoint as its id

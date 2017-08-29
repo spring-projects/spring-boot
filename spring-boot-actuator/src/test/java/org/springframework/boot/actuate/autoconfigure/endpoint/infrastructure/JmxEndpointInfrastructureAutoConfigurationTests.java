@@ -60,7 +60,7 @@ public class JmxEndpointInfrastructureAutoConfigurationTests {
 
 	@Test
 	public void jmxEndpointsCanBeDisabled() {
-		this.contextRunner.withPropertyValues("endpoints.all.jmx.enabled:false")
+		this.contextRunner.withPropertyValues("endpoints.default.jmx.enabled:false")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[0],
@@ -73,7 +73,7 @@ public class JmxEndpointInfrastructureAutoConfigurationTests {
 
 	@Test
 	public void singleJmxEndpointCanBeEnabled() {
-		this.contextRunner.withPropertyValues("endpoints.all.jmx.enabled=false",
+		this.contextRunner.withPropertyValues("endpoints.default.jmx.enabled=false",
 				"endpoints.beans.jmx.enabled=true").run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans" },

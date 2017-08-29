@@ -1084,11 +1084,6 @@ content into your application; rather pick only the properties that you need.
 	# ACTUATOR PROPERTIES
 	# ----------------------------------------
 
-	# ALL ENDPOINTS
-	endpoints.all.enabled=true # Enable all endpoints.
-	endpoints.all.jmx.enabled=true # Enable all endpoints as JMX MBeans.
-	endpoints.all.web.enabled=false # Enable all endpoints as Web endpoints.
-
 	# AUDIT EVENTS ENDPOINT ({sc-spring-boot-actuator}/endpoint/AuditEventsEndpoint.{sc-ext}[AuditEventsEndpoint])
 	endpoints.auditevents.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.auditevents.enabled=true # Enable the auditevents endpoint.
@@ -1113,6 +1108,11 @@ content into your application; rather pick only the properties that you need.
 	endpoints.configprops.jmx.enabled=true # Expose the configprops endpoint as a JMX MBean.
 	endpoints.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
 	endpoints.configprops.web.enabled=false # Expose the configprops endpoint as a Web endpoint.
+
+	# ENDPOINT DEFAULT SETTINGS
+	endpoints.default.enabled=true # Enable all endpoints by default.
+	endpoints.default.jmx.enabled=true # Enable all endpoints as JMX MBeans by default.
+	endpoints.default.web.enabled=false # Enable all endpoints as Web endpoints by default.
 
 	# ENVIRONMENT ENDPOINT  ({sc-spring-boot-actuator}/endpoint/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint])
 	endpoints.env.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.

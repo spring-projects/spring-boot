@@ -211,12 +211,12 @@ NOTE: The prefix ‟`endpoints` + `.` + `name`” is used to uniquely identify t
 that is being configured.
 
 By default, all endpoints except for `shutdown` are enabled. If you prefer to
-specifically "`opt-in`" endpoint enablement you can use the `endpoints.all.enabled`
+specifically "`opt-in`" endpoint enablement you can use the `endpoints.default.enabled`
 property. For example, the following will disable _all_ endpoints except for `info`:
 
 [source,properties,indent=0]
 ----
-	endpoints.all.enabled=false
+	endpoints.default.enabled=false
 	endpoints.info.enabled=true
 ----
 
@@ -758,12 +758,12 @@ example `application.properties`:
 
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX endpoints
-If you don't want to expose endpoints over JMX you can set the `endpoints.all.jmx.enabled`
+If you don't want to expose endpoints over JMX you can set the `endpoints.default.jmx.enabled`
 property to `false`:
 
 [source,properties,indent=0]
 ----
-	endpoints.all.jmx.enabled=false
+	endpoints.default.jmx.enabled=false
 ----
 
 
