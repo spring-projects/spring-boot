@@ -123,7 +123,7 @@ public enum DatabaseDriver {
 	 * Firebird.
 	 */
 	FIREBIRD("Firebird", "org.firebirdsql.jdbc.FBDriver",
-			"org.firebirdsql.pool.FBConnectionPoolDataSource",
+			"org.firebirdsql.ds.FBXADataSource",
 			"SELECT 1 FROM RDB$DATABASE") {
 
 		@Override
