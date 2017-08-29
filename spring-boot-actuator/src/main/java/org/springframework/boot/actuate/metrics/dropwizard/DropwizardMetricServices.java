@@ -90,8 +90,20 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	}
 
 	@Override
+	public void increment(String name, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		incrementInternal(name, delta);
+	}
+
+	@Override
 	public void decrement(String name) {
 		incrementInternal(name, -1L);
+	}
+
+	@Override
+	public void decrement(String name, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		incrementInternal(name, -delta);
 	}
 
 	private void incrementInternal(String name, long value) {

@@ -79,6 +79,22 @@ public class DefaultCounterServiceTests {
 	}
 
 	@Test
+	public void incrementCounterWithDelta() {
+		this.service.increment("foo", 42L);
+		verify(this.repository).increment(this.captor.capture());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(42L);
+	}
+
+	@Test
+	public void decrementCounterWithDelta() {
+		this.service.decrement("foo", 42L);
+		verify(this.repository).increment(this.captor.capture());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(-42L);
+	}
+
+	@Test
 	public void resetResetsCounter() throws Exception {
 		this.service.reset("foo");
 		verify(this.repository).reset("counter.foo");

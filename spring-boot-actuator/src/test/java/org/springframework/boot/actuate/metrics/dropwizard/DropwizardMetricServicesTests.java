@@ -65,6 +65,12 @@ public class DropwizardMetricServicesTests {
 	}
 
 	@Test
+	public void incrementCounterWithDelta() {
+		this.writer.increment("foo", 3L);
+		assertThat(this.registry.counter("counter.foo").getCount()).isEqualTo(3);
+	}
+
+	@Test
 	public void updatePredefinedMeter() {
 		this.writer.increment("meter.foo");
 		this.writer.increment("meter.foo");
