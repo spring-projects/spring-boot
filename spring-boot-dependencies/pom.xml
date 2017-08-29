@@ -85,7 +85,7 @@
 		<hazelcast.version>3.8.3</hazelcast.version>
 		<hazelcast-hibernate5.version>1.2.1</hazelcast-hibernate5.version>
 		<hibernate.version>5.2.10.Final</hibernate.version>
-		<hibernate-validator.version>6.0.1.Final</hibernate-validator.version>
+		<hibernate-validator.version>6.0.2.Final</hibernate-validator.version>
 		<hikaricp.version>2.6.3</hikaricp.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
 		<htmlunit.version>2.27</htmlunit.version>
