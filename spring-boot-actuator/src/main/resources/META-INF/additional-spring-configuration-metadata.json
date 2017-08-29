@@ -46,10 +46,31 @@
     ]
   },
   {
+    "name": "endpoints.metrics.filter.counter-submissions",
+    "type": "java.util.Set<org.springframework.boot.actuate.metrics.web.servlet.MetricsFilterSubmission>",
+    "description": "Submissions that should be made to the counter.",
+    "deprecation": {
+      "replacement": "management.metrics.filter.counter-submissions",
+      "level": "error"
+    }
+  },
+  {
     "name": "endpoints.metrics.filter.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the metrics servlet filter.",
-    "defaultValue": true
+    "deprecation": {
+      "replacement": "management.metrics.filter.enabled",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.filter.gauge-submissions",
+    "type": "java.util.Set<org.springframework.boot.actuate.metrics.web.servlet.MetricsFilterSubmission>",
+    "description": "Submissions that should be made to the gauge.",
+    "deprecation": {
+      "replacement": "management.metrics.filter.gauge-submissions",
+      "level": "error"
+    }
   },
   {
 	"name": "endpoints.trace.filter.enabled",
@@ -185,6 +206,12 @@
   {
     "name": "management.info.git.mode",
     "defaultValue": "simple"
+  },
+  {
+    "name": "management.metrics.filter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the metrics servlet filter.",
+    "defaultValue": true
   },
   {
     "name": "management.security.sessions",

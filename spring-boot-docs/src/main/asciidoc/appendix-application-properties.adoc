@@ -1173,9 +1173,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.metrics.enabled=true # Enable the metrics endpoint.
 	endpoints.metrics.jmx.enabled=true # Expose the metrics endpoint as a JMX MBean.
 	endpoints.metrics.web.enabled=false # Expose the metrics endpoint as a Web endpoint.
-	endpoints.metrics.filter.counter-submissions= # Submissions that should be made to the counter.
-	endpoints.metrics.filter.enabled=true # Enable the metrics servlet filter.
-	endpoints.metrics.filter.gauge-submissions= # Submissions that should be made to the gauge.
 
 	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/endpoint/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
 	endpoints.shutdown.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
@@ -1276,6 +1273,11 @@ content into your application; rather pick only the properties that you need.
 	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
 	management.jolokia.enabled=false # Enable Jolokia.
 	management.jolokia.path=/jolokia # Path at which Jolokia will be available.
+
+	# METRICS FILTER ({sc-spring-boot-actuator}/autoconfigure/metrics/MetricsFilterProperties.{sc-ext}[MetricsFilterProperties])
+	management.metrics.filter.counter-submissions= # Submissions that should be made to the counter.
+	management.metrics.filter.enabled=true # Enable the metrics servlet filter.
+	management.metrics.filter.gauge-submissions= # Submissions that should be made to the gauge.
 
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
 	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.

@@ -236,7 +236,7 @@ public class MetricFilterAutoConfigurationTests {
 	@Test
 	public void skipsFilterIfPropertyDisabled() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("endpoints.metrics.filter.enabled:false").applyTo(context);
+		TestPropertyValues.of("management.metrics.filter.enabled:false").applyTo(context);
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
 		context.refresh();
 		assertThat(context.getBeansOfType(Filter.class).size()).isEqualTo(0);
@@ -357,8 +357,8 @@ public class MetricFilterAutoConfigurationTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
 		TestPropertyValues
-				.of("endpoints.metrics.filter.gauge-submissions=merged,per-http-method",
-						"endpoints.metrics.filter.counter-submissions=merged,per-http-method")
+				.of("management.metrics.filter.gauge-submissions=merged,per-http-method",
+						"management.metrics.filter.counter-submissions=merged,per-http-method")
 				.applyTo(context);
 		context.refresh();
 		Filter filter = context.getBean(Filter.class);
@@ -385,8 +385,8 @@ public class MetricFilterAutoConfigurationTests {
 	public void doesNotRecordRolledUpMetricsIfConfigured() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
-		TestPropertyValues.of("endpoints.metrics.filter.gauge-submissions=",
-				"endpoints.metrics.filter.counter-submissions=").applyTo(context);
+		TestPropertyValues.of("management.metrics.filter.gauge-submissions=",
+				"management.metrics.filter.counter-submissions=").applyTo(context);
 		context.refresh();
 		Filter filter = context.getBean(Filter.class);
 		MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/test/path");
