@@ -100,8 +100,8 @@ public class RedisHealthIndicatorTests {
 				redisConnectionFactory);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(((String) health.getDetails().get("error"))
-				.contains("Connection failed"));
+		assertThat((String) health.getDetails().get("error"))
+				.contains("Connection failed");
 		verify(redisConnectionFactory).getConnection();
 		verify(redisConnection).info();
 	}
