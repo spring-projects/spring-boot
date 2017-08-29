@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.metrics.buffer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.util.Assert;
 
 /**
  * Fast implementation of {@link CounterService} using {@link CounterBuffers}.
@@ -46,8 +47,20 @@ public class BufferCounterService implements CounterService {
 	}
 
 	@Override
+	public void increment(String metricName, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		this.buffers.increment(wrap(metricName), delta);
+	}
+
+	@Override
 	public void decrement(String metricName) {
 		this.buffers.increment(wrap(metricName), -1L);
+	}
+
+	@Override
+	public void decrement(String metricName, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		this.buffers.increment(wrap(metricName), -delta);
 	}
 
 	@Override

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.metrics.writer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.util.Assert;
 
 /**
  * Default implementation of {@link CounterService}.
@@ -45,8 +46,20 @@ public class DefaultCounterService implements CounterService {
 	}
 
 	@Override
+	public void increment(String metricName, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		this.writer.increment(new Delta<>(wrap(metricName), delta));
+	}
+
+	@Override
 	public void decrement(String metricName) {
 		this.writer.increment(new Delta<>(wrap(metricName), -1L));
+	}
+
+	@Override
+	public void decrement(String metricName, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		this.writer.increment(new Delta<>(wrap(metricName), -delta));
 	}
 
 	@Override

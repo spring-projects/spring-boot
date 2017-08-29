@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics;
 
+import org.springframework.util.Assert;
+
 /**
  * A service that can be used to increment, decrement and reset a named counter value.
  *
@@ -30,10 +32,34 @@ public interface CounterService {
 	void increment(String metricName);
 
 	/**
+	 * Increment the specified counter by delta.
+	 * @param metricName the name of the counter
+	 * @param delta the amount to increment by
+	 */
+	default void increment(String metricName, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		for (int i = 0; i < delta; i++) {
+			increment(metricName);
+		}
+	}
+
+	/**
 	 * Decrement the specified counter by 1.
 	 * @param metricName the name of the counter
 	 */
 	void decrement(String metricName);
+
+	/**
+	 * Decrement the specified counter by delta.
+	 * @param metricName the name of the counter
+	 * @param delta the amount to decrement by
+	 */
+	default void decrement(String metricName, long delta) {
+		Assert.state(delta > 0, "Delta should be greater than 0");
+		for (int i = 0; i < delta; i++) {
+			decrement(metricName);
+		}
+	}
 
 	/**
 	 * Reset the specified counter.
