@@ -73,10 +73,14 @@
     }
   },
   {
-	"name": "endpoints.trace.filter.enabled",
-	"type": "java.lang.Boolean",
-	"description": "Enable the trace servlet filter.",
-	"defaultValue": true
+    "name": "endpoints.trace.filter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the trace servlet filter.",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "management.trace.filter.enabled",
+      "level": "error"
+    }
   },
   {
     "name": "info",
@@ -216,6 +220,12 @@
   {
     "name": "management.security.sessions",
     "defaultValue": "stateless"
+  },
+  {
+    "name": "management.trace.filter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the trace servlet filter.",
+    "defaultValue": true
   },
   {
     "name": "spring.git.properties",

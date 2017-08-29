@@ -64,7 +64,7 @@ public class TraceWebFilterAutoConfigurationTests {
 
 	@Test
 	public void skipsFilterIfPropertyDisabled() throws Exception {
-		load("endpoints.trace.filter.enabled:false");
+		load("management.trace.filter.enabled:false");
 		assertThat(this.context.getBeansOfType(WebRequestTraceFilter.class).size())
 				.isEqualTo(0);
 	}

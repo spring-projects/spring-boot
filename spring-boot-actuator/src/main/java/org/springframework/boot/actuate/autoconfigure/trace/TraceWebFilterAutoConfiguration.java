@@ -45,7 +45,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "endpoints.trace.filter", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.trace.filter", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(TraceProperties.class)
 public class TraceWebFilterAutoConfiguration {
 

@@ -1195,7 +1195,6 @@ content into your application; rather pick only the properties that you need.
 	# TRACE ENDPOINT ({sc-spring-boot-actuator}/endpoint/TraceEndpoint.{sc-ext}[TraceEndpoint])
 	endpoints.trace.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.trace.enabled=true # Enable the trace endpoint.
-	endpoints.trace.filter.enabled=true # Enable the trace servlet filter.
 	endpoints.trace.jmx.enabled=true # Expose the trace endpoint as a JMX MBean.
 	endpoints.trace.web.enabled=false # Expose the trace endpoint as a Web endpoint.
 
@@ -1280,6 +1279,7 @@ content into your application; rather pick only the properties that you need.
 	management.metrics.filter.gauge-submissions= # Submissions that should be made to the gauge.
 
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
+	management.trace.filter.enabled=true # Enable the trace servlet filter.
 	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
