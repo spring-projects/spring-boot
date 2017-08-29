@@ -24,6 +24,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
@@ -245,6 +246,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 				});
 	}
 
+	@Test
+	public void readOperationWithMonoResponse() {
+		load(MonoResponseEndpointConfiguration.class,
+				(client) -> client.get().uri("/mono").accept(MediaType.APPLICATION_JSON)
+						.exchange().expectStatus().isOk().expectBody().jsonPath("a")
+						.isEqualTo("alpha"));
+	}
+
 	protected abstract T createApplicationContext(Class<?>... config);
 
 	protected abstract int getPort(T context);
@@ -402,6 +411,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class MonoResponseEndpointConfiguration {
+
+		@Bean
+		public MonoResponseEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
+			return new MonoResponseEndpoint();
+		}
+
+	}
+
 	@Endpoint(id = "test")
 	static class TestEndpoint {
 
@@ -546,6 +566,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			return new WebEndpointResponse<Resource>(
 					new ByteArrayResource(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }),
 					200);
+		}
+
+	}
+
+	@Endpoint(id = "mono")
+	static class MonoResponseEndpoint {
+
+		@ReadOperation
+		Mono<Map<String, String>> operation() {
+			return Mono.just(Collections.singletonMap("a", "alpha"));
 		}
 
 	}

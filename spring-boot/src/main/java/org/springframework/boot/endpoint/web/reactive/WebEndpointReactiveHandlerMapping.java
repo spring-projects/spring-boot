@@ -22,6 +22,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
@@ -127,10 +131,14 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 
 	private void registerMappingForOperation(WebEndpointOperation operation) {
 		OperationType operationType = operation.getType();
+		OperationInvoker operationInvoker = operation.getInvoker();
+		if (operation.isBlocking()) {
+			operationInvoker = new ElasticSchedulerOperationInvoker(operationInvoker);
+		}
 		registerMapping(createRequestMappingInfo(operation),
 				operationType == OperationType.WRITE
-						? new WriteOperationHandler(operation.getInvoker())
-						: new ReadOperationHandler(operation.getInvoker()),
+						? new WriteOperationHandler(operationInvoker)
+						: new ReadOperationHandler(operationInvoker),
 				operationType == OperationType.WRITE ? this.handleWrite
 						: this.handleRead);
 	}
@@ -184,8 +192,9 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 			this.operationInvoker = operationInvoker;
 		}
 
-		@SuppressWarnings("unchecked")
-		ResponseEntity<?> doHandle(ServerWebExchange exchange, Map<String, String> body) {
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Publisher<ResponseEntity<? extends Object>> doHandle(ServerWebExchange exchange,
+				Map<String, String> body) {
 			Map<String, Object> arguments = new HashMap<>((Map<String, String>) exchange
 					.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
 			if (body != null) {
@@ -193,26 +202,28 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 			}
 			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
 					.put(name, values.size() == 1 ? values.get(0) : values));
-			try {
-				return handleResult(this.operationInvoker.invoke(arguments),
-						exchange.getRequest().getMethod());
-			}
-			catch (ParameterMappingException ex) {
-				return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
-			}
+			return (Publisher) handleResult(
+					(Publisher<?>) this.operationInvoker.invoke(arguments),
+					exchange.getRequest().getMethod());
 		}
 
-		private ResponseEntity<?> handleResult(Object result, HttpMethod httpMethod) {
-			if (result == null) {
-				return new ResponseEntity<>(httpMethod == HttpMethod.GET
-						? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT);
+		private Publisher<ResponseEntity<Object>> handleResult(Publisher<?> result,
+				HttpMethod httpMethod) {
+			return Mono.from(result).map(this::toResponseEntity)
+					.onErrorReturn(ParameterMappingException.class,
+							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
+					.defaultIfEmpty(
+							new ResponseEntity<Object>(httpMethod == HttpMethod.GET
+									? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
+		}
+
+		private ResponseEntity<Object> toResponseEntity(Object response) {
+			if (!(response instanceof WebEndpointResponse)) {
+				return new ResponseEntity<Object>(response, HttpStatus.OK);
 			}
-			if (!(result instanceof WebEndpointResponse)) {
-				return new ResponseEntity<>(result, HttpStatus.OK);
-			}
-			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
-			return new ResponseEntity<Object>(response.getBody(),
-					HttpStatus.valueOf(response.getStatus()));
+			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
+			return new ResponseEntity<Object>(webEndpointResponse.getBody(),
+					HttpStatus.valueOf(webEndpointResponse.getStatus()));
 		}
 
 	}
@@ -227,7 +238,7 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 		}
 
 		@ResponseBody
-		public ResponseEntity<?> handle(ServerWebExchange exchange,
+		public Publisher<ResponseEntity<?>> handle(ServerWebExchange exchange,
 				@RequestBody(required = false) Map<String, String> body) {
 			return doHandle(exchange, body);
 		}
@@ -244,8 +255,38 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 		}
 
 		@ResponseBody
-		public ResponseEntity<?> handle(ServerWebExchange exchange) {
+		public Publisher<ResponseEntity<?>> handle(ServerWebExchange exchange) {
 			return doHandle(exchange, null);
+		}
+
+	}
+
+	/**
+	 * An {@link OperationInvoker} that performs the invocation of a blocking operation on
+	 * a separate thread using Reactor's {@link Schedulers#elastic() elastic scheduler}.
+	 */
+	private static final class ElasticSchedulerOperationInvoker
+			implements OperationInvoker {
+
+		private final OperationInvoker delegate;
+
+		private ElasticSchedulerOperationInvoker(OperationInvoker delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Object invoke(Map<String, Object> arguments) {
+			return Mono.create((sink) -> {
+				Schedulers.elastic().schedule(() -> {
+					try {
+						Object result = this.delegate.invoke(arguments);
+						sink.success(result);
+					}
+					catch (Exception ex) {
+						sink.error(ex);
+					}
+				});
+			});
 		}
 
 	}

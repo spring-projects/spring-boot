@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -34,6 +35,7 @@ import org.glassfish.jersey.process.Inflector;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.Resource.Builder;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
@@ -43,6 +45,7 @@ import org.springframework.boot.endpoint.web.Link;
 import org.springframework.boot.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.endpoint.web.WebEndpointResponse;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -99,6 +102,17 @@ public class JerseyEndpointResourceFactory {
 
 	private static final class EndpointInvokingInflector
 			implements Inflector<ContainerRequestContext, Object> {
+
+		private static final List<Function<Object, Object>> bodyConverters;
+
+		static {
+			bodyConverters = new ArrayList<>();
+			bodyConverters.add(new ResourceBodyConverter());
+			if (ClassUtils.isPresent("reactor.core.publisher.Mono",
+					EndpointInvokingInflector.class.getClassLoader())) {
+				bodyConverters.add(new MonoBodyConverter());
+			}
+		}
 
 		private final OperationInvoker operationInvoker;
 
@@ -181,6 +195,38 @@ public class JerseyEndpointResourceFactory {
 		private Object convertIfNecessary(Object body) throws IOException {
 			if (body instanceof org.springframework.core.io.Resource) {
 				return ((org.springframework.core.io.Resource) body).getInputStream();
+			}
+			if (body instanceof Mono) {
+				return ((Mono<?>) body).block();
+			}
+			return body;
+		}
+
+	}
+
+	private static final class ResourceBodyConverter implements Function<Object, Object> {
+
+		@Override
+		public Object apply(Object body) {
+			if (body instanceof org.springframework.core.io.Resource) {
+				try {
+					return ((org.springframework.core.io.Resource) body).getInputStream();
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException();
+				}
+			}
+			return body;
+		}
+
+	}
+
+	private static final class MonoBodyConverter implements Function<Object, Object> {
+
+		@Override
+		public Object apply(Object body) {
+			if (body instanceof Mono) {
+				return ((Mono<?>) body).block();
 			}
 			return body;
 		}
