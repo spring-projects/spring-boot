@@ -70,15 +70,15 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 	/**
 	 * Perform endpoint discovery, including discovery and merging of extensions.
 	 * @param extensionType the annotation type of the extension
-	 * @param delivery the {@link EndpointDelivery} that should be considered
+	 * @param exposure the {@link EndpointExposure} that should be considered
 	 * @return the list of {@link EndpointInfo EndpointInfos} that describes the
-	 * discovered endpoints matching the specified {@link EndpointDelivery}
+	 * discovered endpoints matching the specified {@link EndpointExposure}
 	 */
 	protected Collection<EndpointInfoDescriptor<T, K>> discoverEndpoints(
-			Class<? extends Annotation> extensionType, EndpointDelivery delivery) {
-		Map<Class<?>, EndpointInfo<T>> endpoints = discoverEndpoints(delivery);
+			Class<? extends Annotation> extensionType, EndpointExposure exposure) {
+		Map<Class<?>, EndpointInfo<T>> endpoints = discoverEndpoints(exposure);
 		Map<Class<?>, EndpointExtensionInfo<T>> extensions = discoverExtensions(endpoints,
-				extensionType, delivery);
+				extensionType, exposure);
 		Collection<EndpointInfoDescriptor<T, K>> result = new ArrayList<>();
 		endpoints.forEach((endpointClass, endpointInfo) -> {
 			EndpointExtensionInfo<T> extension = extensions.remove(endpointClass);
@@ -87,7 +87,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 		return result;
 	}
 
-	private Map<Class<?>, EndpointInfo<T>> discoverEndpoints(EndpointDelivery delivery) {
+	private Map<Class<?>, EndpointInfo<T>> discoverEndpoints(EndpointExposure exposure) {
 		String[] beanNames = this.applicationContext
 				.getBeanNamesForAnnotation(Endpoint.class);
 		Map<Class<?>, EndpointInfo<T>> endpoints = new LinkedHashMap<>();
@@ -96,7 +96,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 			Class<?> beanType = this.applicationContext.getType(beanName);
 			AnnotationAttributes attributes = AnnotatedElementUtils
 					.findMergedAnnotationAttributes(beanType, Endpoint.class, true, true);
-			if (isDeliveredOver(attributes, delivery)) {
+			if (isExposedOver(attributes, exposure)) {
 				EndpointInfo<T> info = createEndpointInfo(beanName, beanType, attributes);
 				EndpointInfo<T> previous = endpointsById.putIfAbsent(info.getId(), info);
 				Assert.state(previous == null, () -> "Found two endpoints with the id '"
@@ -117,7 +117,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 
 	private Map<Class<?>, EndpointExtensionInfo<T>> discoverExtensions(
 			Map<Class<?>, EndpointInfo<T>> endpoints,
-			Class<? extends Annotation> extensionType, EndpointDelivery delivery) {
+			Class<? extends Annotation> extensionType, EndpointExposure delivery) {
 		if (extensionType == null) {
 			return Collections.emptyMap();
 		}
@@ -129,7 +129,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 			Class<?> endpointType = getEndpointType(extensionType, beanType);
 			AnnotationAttributes endpointAttributes = AnnotatedElementUtils
 					.getMergedAnnotationAttributes(endpointType, Endpoint.class);
-			Assert.state(isDeliveredOver(endpointAttributes, delivery),
+			Assert.state(isExposedOver(endpointAttributes, delivery),
 					"Invalid extension " + beanType.getName() + "': endpoint '"
 							+ endpointType.getName()
 							+ "' does not support such extension");
@@ -199,14 +199,14 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 		return result;
 	}
 
-	private boolean isDeliveredOver(AnnotationAttributes attributes,
-			EndpointDelivery delivery) {
-		if (delivery == null) {
+	private boolean isExposedOver(AnnotationAttributes attributes,
+			EndpointExposure exposure) {
+		if (exposure == null) {
 			return true;
 		}
-		EndpointDelivery[] supported = (EndpointDelivery[]) attributes.get("delivery");
+		EndpointExposure[] supported = (EndpointExposure[]) attributes.get("exposure");
 		return ObjectUtils.isEmpty(supported)
-				|| ObjectUtils.containsElement(supported, delivery);
+				|| ObjectUtils.containsElement(supported, exposure);
 	}
 
 	private Map<Method, T> discoverOperations(String id, String name, Class<?> type) {

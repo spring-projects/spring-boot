@@ -31,7 +31,7 @@ import org.springframework.boot.endpoint.AnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointDelivery;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.OperationParameterMapper;
@@ -76,7 +76,7 @@ public class JmxAnnotationEndpointDiscoverer
 	@Override
 	public Collection<EndpointInfo<JmxEndpointOperation>> discoverEndpoints() {
 		Collection<EndpointInfoDescriptor<JmxEndpointOperation, String>> endpointDescriptors = discoverEndpoints(
-				JmxEndpointExtension.class, EndpointDelivery.JMX);
+				JmxEndpointExtension.class, EndpointExposure.JMX);
 		verifyThatOperationsHaveDistinctName(endpointDescriptors);
 		return endpointDescriptors.stream().map(EndpointInfoDescriptor::getEndpointInfo)
 				.collect(Collectors.toList());

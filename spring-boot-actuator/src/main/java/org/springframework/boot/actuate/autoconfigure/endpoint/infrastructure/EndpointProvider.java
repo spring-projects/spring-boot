@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.support.EndpointEnablementProvider;
-import org.springframework.boot.endpoint.EndpointDelivery;
 import org.springframework.boot.endpoint.EndpointDiscoverer;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.Operation;
 import org.springframework.core.env.Environment;
@@ -40,19 +40,19 @@ public final class EndpointProvider<T extends Operation> {
 
 	private final EndpointEnablementProvider endpointEnablementProvider;
 
-	private final EndpointDelivery delivery;
+	private final EndpointExposure exposure;
 
 	/**
 	 * Creates a new instance.
 	 * @param environment the environment to use to check the endpoints that are enabled
 	 * @param discoverer the discoverer to get the initial set of endpoints
-	 * @param delivery the delivery technology for the endpoint
+	 * @param exposure the exposure technology for the endpoint
 	 */
 	public EndpointProvider(Environment environment, EndpointDiscoverer<T> discoverer,
-			EndpointDelivery delivery) {
+			EndpointExposure exposure) {
 		this.discoverer = discoverer;
 		this.endpointEnablementProvider = new EndpointEnablementProvider(environment);
-		this.delivery = delivery;
+		this.exposure = exposure;
 	}
 
 	public Collection<EndpointInfo<T>> getEndpoints() {
@@ -62,7 +62,7 @@ public final class EndpointProvider<T extends Operation> {
 
 	private boolean isEnabled(EndpointInfo<?> endpoint) {
 		return this.endpointEnablementProvider.getEndpointEnablement(endpoint.getId(),
-				endpoint.isEnabledByDefault(), this.delivery).isEnabled();
+				endpoint.isEnabledByDefault(), this.exposure).isEnabled();
 	}
 
 }

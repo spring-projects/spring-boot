@@ -17,12 +17,12 @@
 package org.springframework.boot.endpoint;
 
 /**
- * An enumeration of the available {@link Endpoint} delivery technologies.
+ * An enumeration of the available {@link Endpoint} exposure technologies.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public enum EndpointDelivery {
+public enum EndpointExposure {
 
 	/**
 	 * Expose the endpoint as a JMX MBean.
@@ -36,7 +36,7 @@ public enum EndpointDelivery {
 
 	private final boolean enabledByDefault;
 
-	EndpointDelivery(boolean enabledByDefault) {
+	EndpointExposure(boolean enabledByDefault) {
 		this.enabledByDefault = enabledByDefault;
 	}
 

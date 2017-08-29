@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointDelivery;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.jmx.JmxEndpointExtension;
 import org.springframework.boot.endpoint.web.WebEndpointExtension;
 import org.springframework.context.annotation.Bean;
@@ -104,10 +104,10 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		if (endpoint == null) {
 			return null;
 		}
-		// If both types are set, all delivery technologies are exposed
-		EndpointDelivery[] delivery = endpoint.delivery();
+		// If both types are set, all exposure technologies are exposed
+		EndpointExposure[] exposures = endpoint.exposure();
 		return new EndpointAttributes(endpoint.id(), endpoint.enabledByDefault(),
-				(delivery.length == 1 ? delivery[0] : null));
+				(exposures.length == 1 ? exposures[0] : null));
 	}
 
 	private static class EndpointAttributes {
@@ -116,19 +116,19 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 		private final boolean enabled;
 
-		private final EndpointDelivery delivery;
+		private final EndpointExposure exposure;
 
-		EndpointAttributes(String id, boolean enabled, EndpointDelivery delivery) {
+		EndpointAttributes(String id, boolean enabled, EndpointExposure exposure) {
 			if (!StringUtils.hasText(id)) {
 				throw new IllegalStateException("Endpoint id could not be determined");
 			}
 			this.id = id;
 			this.enabled = enabled;
-			this.delivery = delivery;
+			this.exposure = exposure;
 		}
 
 		public EndpointEnablement getEnablement(EndpointEnablementProvider provider) {
-			return provider.getEndpointEnablement(this.id, this.enabled, this.delivery);
+			return provider.getEndpointEnablement(this.id, this.enabled, this.exposure);
 		}
 
 	}

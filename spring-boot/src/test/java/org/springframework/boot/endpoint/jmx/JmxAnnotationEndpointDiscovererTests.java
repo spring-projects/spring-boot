@@ -31,7 +31,7 @@ import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointDelivery;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.ReflectiveOperationInvoker;
@@ -331,7 +331,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 
 	}
 
-	@Endpoint(id = "jmx", delivery = EndpointDelivery.JMX)
+	@Endpoint(id = "jmx", exposure = EndpointExposure.JMX)
 	private static class TestJmxEndpoint {
 
 		@ReadOperation
@@ -410,7 +410,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 
 	}
 
-	@Endpoint(id = "nonjmx", delivery = EndpointDelivery.WEB)
+	@Endpoint(id = "nonjmx", exposure = EndpointExposure.WEB)
 	private static class NonJmxEndpoint {
 
 		@ReadOperation

@@ -31,7 +31,7 @@ import org.springframework.boot.endpoint.AnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointDelivery;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.OperationParameterMapper;
@@ -80,7 +80,7 @@ public class WebAnnotationEndpointDiscoverer extends
 	@Override
 	public Collection<EndpointInfo<WebEndpointOperation>> discoverEndpoints() {
 		Collection<EndpointInfoDescriptor<WebEndpointOperation, OperationRequestPredicate>> endpoints = discoverEndpoints(
-				WebEndpointExtension.class, EndpointDelivery.WEB);
+				WebEndpointExtension.class, EndpointExposure.WEB);
 		verifyThatOperationsHaveDistinctPredicates(endpoints);
 		return endpoints.stream().map(EndpointInfoDescriptor::getEndpointInfo)
 				.collect(Collectors.toList());

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.support;
 
-import org.springframework.boot.endpoint.EndpointDelivery;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
@@ -54,16 +54,16 @@ public class EndpointEnablementProvider {
 	 * Return the {@link EndpointEnablement} of an endpoint for a specific tech exposure.
 	 * @param endpointId the id of the endpoint
 	 * @param enabledByDefault whether the endpoint is enabled by default or not
-	 * @param delivery the requested {@link EndpointDelivery}
+	 * @param exposure the requested {@link EndpointExposure}
 	 * @return the {@link EndpointEnablement} of that endpoint for the specified
-	 * {@link EndpointDelivery}
+	 * {@link EndpointExposure}
 	 */
 	public EndpointEnablement getEndpointEnablement(String endpointId,
-			boolean enabledByDefault, EndpointDelivery delivery) {
+			boolean enabledByDefault, EndpointExposure exposure) {
 		Assert.hasText(endpointId, "Endpoint id must have a value");
 		Assert.isTrue(!endpointId.equals("default"), "Endpoint id 'default' is a reserved "
 				+ "value and cannot be used by an endpoint");
-		EndpointEnablement result = findEnablement(endpointId, delivery);
+		EndpointEnablement result = findEnablement(endpointId, exposure);
 		if (result != null) {
 			return result;
 		}
@@ -74,23 +74,23 @@ public class EndpointEnablementProvider {
 		// All endpoints specific attributes have been looked at. Checking default value
 		// for the endpoint
 		if (!enabledByDefault) {
-			return getDefaultEndpointEnablement(endpointId, false, delivery);
+			return getDefaultEndpointEnablement(endpointId, false, exposure);
 		}
 		return getGlobalEndpointEnablement(endpointId, enabledByDefault,
-				delivery);
+				exposure);
 	}
 
 	private EndpointEnablement findEnablement(String endpointId,
-			EndpointDelivery delivery) {
-		if (delivery != null) {
-			return findEnablement(getKey(endpointId, delivery));
+			EndpointExposure exposure) {
+		if (exposure != null) {
+			return findEnablement(getKey(endpointId, exposure));
 		}
-		return findEnablementForAnyDeliveryTechnology(endpointId);
+		return findEnablementForAnyExposureTechnology(endpointId);
 	}
 
 	private EndpointEnablement getGlobalEndpointEnablement(String endpointId,
-			boolean enabledByDefault, EndpointDelivery delivery) {
-		EndpointEnablement result = findGlobalEndpointEnablement(delivery);
+			boolean enabledByDefault, EndpointExposure exposure) {
+		EndpointEnablement result = findGlobalEndpointEnablement(exposure);
 		if (result != null) {
 			return result;
 		}
@@ -99,27 +99,27 @@ public class EndpointEnablementProvider {
 			return result;
 		}
 		return getDefaultEndpointEnablement(endpointId, enabledByDefault,
-				delivery);
+				exposure);
 	}
 
 	private EndpointEnablement findGlobalEndpointEnablement(
-			EndpointDelivery delivery) {
-		if (delivery != null) {
-			EndpointEnablement result = findEnablement(getKey("default", delivery));
+			EndpointExposure exposure) {
+		if (exposure != null) {
+			EndpointEnablement result = findEnablement(getKey("default", exposure));
 			if (result != null) {
 				return result;
 			}
-			if (!delivery.isEnabledByDefault()) {
-				return getDefaultEndpointEnablement("default", false, delivery);
+			if (!exposure.isEnabledByDefault()) {
+				return getDefaultEndpointEnablement("default", false, exposure);
 			}
 			return null;
 		}
-		return findEnablementForAnyDeliveryTechnology("default");
+		return findEnablementForAnyExposureTechnology("default");
 	}
 
-	private EndpointEnablement findEnablementForAnyDeliveryTechnology(String endpointId) {
-		for (EndpointDelivery candidate : EndpointDelivery.values()) {
-			EndpointEnablement result = findEnablementForDeliveryTechnology(endpointId,
+	private EndpointEnablement findEnablementForAnyExposureTechnology(String endpointId) {
+		for (EndpointExposure candidate : EndpointExposure.values()) {
+			EndpointEnablement result = findEnablementForExposureTechnology(endpointId,
 					candidate);
 			if (result != null && result.isEnabled()) {
 				return result;
@@ -128,34 +128,33 @@ public class EndpointEnablementProvider {
 		return null;
 	}
 
-	private EndpointEnablement findEnablementForDeliveryTechnology(String endpointId,
-			EndpointDelivery delivery) {
-		String endpointTypeKey = getKey(endpointId, delivery);
-		EndpointEnablement endpointTypeSpecificOutcome = findEnablement(endpointTypeKey);
-		return endpointTypeSpecificOutcome;
+	private EndpointEnablement findEnablementForExposureTechnology(String endpointId,
+			EndpointExposure exposure) {
+		String endpointTypeKey = getKey(endpointId, exposure);
+		return findEnablement(endpointTypeKey);
 	}
 
 	private EndpointEnablement getDefaultEndpointEnablement(String endpointId,
-			boolean enabledByDefault, EndpointDelivery delivery) {
+			boolean enabledByDefault, EndpointExposure exposure) {
 		return new EndpointEnablement(enabledByDefault, createDefaultEnablementMessage(
-				endpointId, enabledByDefault, delivery));
+				endpointId, enabledByDefault, exposure));
 	}
 
 	private String createDefaultEnablementMessage(String endpointId,
-			boolean enabledByDefault, EndpointDelivery delivery) {
+			boolean enabledByDefault, EndpointExposure exposure) {
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("endpoint '%s' ", endpointId));
-		if (delivery != null) {
+		if (exposure != null) {
 			message.append(
-					String.format("(%s) ", delivery.name().toLowerCase()));
+					String.format("(%s) ", exposure.name().toLowerCase()));
 		}
 		message.append(String.format("is %s by default",
 				(enabledByDefault ? "enabled" : "disabled")));
 		return message.toString();
 	}
 
-	private String getKey(String endpointId, EndpointDelivery delivery) {
-		return getKey(endpointId, delivery.name().toLowerCase() + ".enabled");
+	private String getKey(String endpointId, EndpointExposure exposure) {
+		return getKey(endpointId, exposure.name().toLowerCase() + ".enabled");
 	}
 
 	private String getKey(String endpointId, String suffix) {

@@ -20,7 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.endpoint.EndpointDelivery;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ObjectUtils;
@@ -188,42 +188,42 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificEnabledByDefault() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.JMX);
+				EndpointExposure.JMX);
 		validate(enablement, true, "endpoint 'foo' (jmx) is enabled by default");
 	}
 
 	@Test
 	public void specificDisabledViaEndpointProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.foo.enabled=false");
+				EndpointExposure.WEB, "endpoints.foo.enabled=false");
 		validate(enablement, false, "found property endpoints.foo.enabled");
 	}
 
 	@Test
 	public void specificDisabledViaTechProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.foo.web.enabled=false");
+				EndpointExposure.WEB, "endpoints.foo.web.enabled=false");
 		validate(enablement, false, "found property endpoints.foo.web.enabled");
 	}
 
 	@Test
 	public void specificNotDisabledViaUnrelatedTechProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.JMX, "endpoints.foo.web.enabled=false");
+				EndpointExposure.JMX, "endpoints.foo.web.enabled=false");
 		validate(enablement, true, "endpoint 'foo' (jmx) is enabled by default");
 	}
 
 	@Test
 	public void specificDisabledViaGeneralProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.JMX, "endpoints.default.enabled=false");
+				EndpointExposure.JMX, "endpoints.default.enabled=false");
 		validate(enablement, false, "found property endpoints.default.enabled");
 	}
 
 	@Test
 	public void specificEnabledOverrideViaEndpointProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.default.enabled=false",
+				EndpointExposure.WEB, "endpoints.default.enabled=false",
 				"endpoints.foo.enabled=true");
 		validate(enablement, true, "found property endpoints.foo.enabled");
 	}
@@ -231,7 +231,7 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificEnabledOverrideViaTechProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.foo.enabled=false",
+				EndpointExposure.WEB, "endpoints.foo.enabled=false",
 				"endpoints.foo.web.enabled=true");
 		validate(enablement, true, "found property endpoints.foo.web.enabled");
 	}
@@ -239,7 +239,7 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificEnabledOverrideHasNotEffectWithUnrelatedTechProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.foo.enabled=false",
+				EndpointExposure.WEB, "endpoints.foo.enabled=false",
 				"endpoints.foo.jmx.enabled=true");
 		validate(enablement, false, "found property endpoints.foo.enabled");
 	}
@@ -247,7 +247,7 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificEnabledOverrideViaGeneralWebProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.default.enabled=false",
+				EndpointExposure.WEB, "endpoints.default.enabled=false",
 				"endpoints.default.web.enabled=true");
 		validate(enablement, true, "found property endpoints.default.web.enabled");
 	}
@@ -255,7 +255,7 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificEnabledOverrideHasNoEffectWithUnrelatedTechProperty() {
 		validate(
-				getEndpointEnablement("foo", true, EndpointDelivery.JMX,
+				getEndpointEnablement("foo", true, EndpointExposure.JMX,
 						"endpoints.default.enabled=false", "endpoints.default.web.enabled=true"),
 				false, "found property endpoints.default.enabled");
 	}
@@ -263,7 +263,7 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificDisabledWithEndpointPropertyEvenWithEnabledGeneralProperties() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.default.enabled=true",
+				EndpointExposure.WEB, "endpoints.default.enabled=true",
 				"endpoints.default.web.enabled=true", "endpoints.default.jmx.enabled=true",
 				"endpoints.foo.enabled=false");
 		validate(enablement, false, "found property endpoints.foo.enabled");
@@ -272,7 +272,7 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificDisabledWithTechPropertyEvenWithEnabledGeneralProperties() {
 		EndpointEnablement enablement = getEndpointEnablement("foo", true,
-				EndpointDelivery.WEB, "endpoints.default.enabled=true",
+				EndpointExposure.WEB, "endpoints.default.enabled=true",
 				"endpoints.default.web.enabled=true", "endpoints.default.jmx.enabled=true",
 				"endpoints.foo.enabled=true", "endpoints.foo.web.enabled=false");
 		validate(enablement, false, "found property endpoints.foo.web.enabled");
@@ -281,49 +281,49 @@ public class EndpointEnablementProviderTests {
 	@Test
 	public void specificDisabledByDefaultWithAnnotationFlag() {
 		EndpointEnablement enablement = getEndpointEnablement("bar", false,
-				EndpointDelivery.WEB);
+				EndpointExposure.WEB);
 		validate(enablement, false, "endpoint 'bar' (web) is disabled by default");
 	}
 
 	@Test
 	public void specificDisabledByDefaultWithAnnotationFlagEvenWithGeneralProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("bar", false,
-				EndpointDelivery.WEB, "endpoints.default.enabled=true");
+				EndpointExposure.WEB, "endpoints.default.enabled=true");
 		validate(enablement, false, "endpoint 'bar' (web) is disabled by default");
 	}
 
 	@Test
 	public void specificDisabledByDefaultWithAnnotationFlagEvenWithGeneralWebProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("bar", false,
-				EndpointDelivery.WEB, "endpoints.default.web.enabled=true");
+				EndpointExposure.WEB, "endpoints.default.web.enabled=true");
 		validate(enablement, false, "endpoint 'bar' (web) is disabled by default");
 	}
 
 	@Test
 	public void specificDisabledByDefaultWithAnnotationFlagEvenWithGeneralJmxProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("bar", false,
-				EndpointDelivery.WEB, "endpoints.default.jmx.enabled=true");
+				EndpointExposure.WEB, "endpoints.default.jmx.enabled=true");
 		validate(enablement, false, "endpoint 'bar' (web) is disabled by default");
 	}
 
 	@Test
 	public void specificEnabledOverrideWithAndAnnotationFlagAndEndpointProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("bar", false,
-				EndpointDelivery.WEB, "endpoints.bar.enabled=true");
+				EndpointExposure.WEB, "endpoints.bar.enabled=true");
 		validate(enablement, true, "found property endpoints.bar.enabled");
 	}
 
 	@Test
 	public void specificEnabledOverrideWithAndAnnotationFlagAndTechProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("bar", false,
-				EndpointDelivery.WEB, "endpoints.bar.web.enabled=true");
+				EndpointExposure.WEB, "endpoints.bar.web.enabled=true");
 		validate(enablement, true, "found property endpoints.bar.web.enabled");
 	}
 
 	@Test
 	public void specificEnabledOverrideWithAndAnnotationFlagHasNoEffectWithUnrelatedTechProperty() {
 		EndpointEnablement enablement = getEndpointEnablement("bar", false,
-				EndpointDelivery.WEB, "endpoints.bar.jmx.enabled=true");
+				EndpointExposure.WEB, "endpoints.bar.jmx.enabled=true");
 		validate(enablement, false, "endpoint 'bar' (web) is disabled by default");
 	}
 
@@ -333,11 +333,11 @@ public class EndpointEnablementProviderTests {
 	}
 
 	private EndpointEnablement getEndpointEnablement(String id, boolean enabledByDefault,
-			EndpointDelivery delivery, String... environment) {
+			EndpointExposure exposure, String... environment) {
 		MockEnvironment env = new MockEnvironment();
 		TestPropertyValues.of(environment).applyTo(env);
 		EndpointEnablementProvider provider = new EndpointEnablementProvider(env);
-		return provider.getEndpointEnablement(id, enabledByDefault, delivery);
+		return provider.getEndpointEnablement(id, enabledByDefault, exposure);
 	}
 
 	private void validate(EndpointEnablement enablement, boolean enabled,

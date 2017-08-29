@@ -41,11 +41,11 @@ public @interface Endpoint {
 	String id();
 
 	/**
-	 * Defines the {@link EndpointDelivery delivery technologies} over which the
-	 * endpoint should be delivered over. By default, all technologies are supported.
-	 * @return the supported endpoint delivery technologies
+	 * Defines the {@link EndpointExposure technologies} over which the endpoint should be
+	 * exposed. By default, all technologies are supported.
+	 * @return the supported endpoint exposure technologies
 	 */
-	EndpointDelivery[] delivery() default {};
+	EndpointExposure[] exposure() default {};
 
 	/**
 	 * Whether or not the endpoint is enabled by default.

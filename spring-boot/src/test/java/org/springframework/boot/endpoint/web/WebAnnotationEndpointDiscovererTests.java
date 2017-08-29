@@ -37,7 +37,7 @@ import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointDelivery;
+import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.ReadOperation;
@@ -375,7 +375,7 @@ public class WebAnnotationEndpointDiscovererTests {
 
 	}
 
-	@Endpoint(id = "nonweb", delivery = EndpointDelivery.JMX)
+	@Endpoint(id = "nonweb", exposure = EndpointExposure.JMX)
 	static class NonWebEndpoint {
 
 		@ReadOperation
