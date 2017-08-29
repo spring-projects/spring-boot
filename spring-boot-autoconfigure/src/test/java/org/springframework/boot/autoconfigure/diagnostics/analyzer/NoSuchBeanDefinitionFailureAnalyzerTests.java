@@ -166,8 +166,6 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).startsWith(String.format(
 				"Constructor in %s required a bean named '%s' that could not be found",
 				StringNameHandler.class.getName(), "test-string"));
-		assertThat(analysis.getDescription().contains(
-				"No matching auto-configuration has been found for this bean name."));
 		assertThat(analysis.getAction()).startsWith(String.format(
 				"Consider defining a bean named '%s' in your configuration.",
 				"test-string"));
