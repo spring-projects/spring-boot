@@ -33,16 +33,16 @@ import org.springframework.boot.jdbc.SchemaManagementProvider;
  */
 class FlywaySchemaManagementProvider implements SchemaManagementProvider {
 
-	private final List<Flyway> flyways;
+	private final List<Flyway> flywayInstances;
 
-	FlywaySchemaManagementProvider(List<Flyway> flyways) {
-		this.flyways = flyways;
+	FlywaySchemaManagementProvider(List<Flyway> flywayInstances) {
+		this.flywayInstances = flywayInstances;
 	}
 
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
-		for (Flyway flyway : this.flyways) {
-			if (dataSource.equals(flyway.getDataSource())) {
+		for (Flyway flywayInstance : this.flywayInstances) {
+			if (dataSource.equals(flywayInstance.getDataSource())) {
 				return SchemaManagement.MANAGED;
 			}
 		}

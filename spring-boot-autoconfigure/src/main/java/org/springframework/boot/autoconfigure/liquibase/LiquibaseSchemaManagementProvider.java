@@ -33,16 +33,16 @@ import org.springframework.boot.jdbc.SchemaManagementProvider;
  */
 class LiquibaseSchemaManagementProvider implements SchemaManagementProvider {
 
-	private final List<SpringLiquibase> liquibases;
+	private final List<SpringLiquibase> liquibaseInstances;
 
 	LiquibaseSchemaManagementProvider(List<SpringLiquibase> liquibases) {
-		this.liquibases = liquibases;
+		this.liquibaseInstances = liquibases;
 	}
 
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
-		for (SpringLiquibase liquibase : this.liquibases) {
-			if (dataSource.equals(liquibase.getDataSource())) {
+		for (SpringLiquibase liquibaseInstance : this.liquibaseInstances) {
+			if (dataSource.equals(liquibaseInstance.getDataSource())) {
 				return SchemaManagement.MANAGED;
 			}
 		}
