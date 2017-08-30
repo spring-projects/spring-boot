@@ -106,12 +106,13 @@ public class JerseyEndpointResourceFactory {
 		private static final List<Function<Object, Object>> bodyConverters;
 
 		static {
-			bodyConverters = new ArrayList<>();
-			bodyConverters.add(new ResourceBodyConverter());
+			List<Function<Object, Object>> converters = new ArrayList<>();
+			converters.add(new ResourceBodyConverter());
 			if (ClassUtils.isPresent("reactor.core.publisher.Mono",
 					EndpointInvokingInflector.class.getClassLoader())) {
-				bodyConverters.add(new MonoBodyConverter());
+				converters.add(new MonoBodyConverter());
 			}
+			bodyConverters = Collections.unmodifiableList(converters);
 		}
 
 		private final OperationInvoker operationInvoker;
@@ -193,11 +194,8 @@ public class JerseyEndpointResourceFactory {
 		}
 
 		private Object convertIfNecessary(Object body) throws IOException {
-			if (body instanceof org.springframework.core.io.Resource) {
-				return ((org.springframework.core.io.Resource) body).getInputStream();
-			}
-			if (body instanceof Mono) {
-				return ((Mono<?>) body).block();
+			for (Function<Object, Object> converter : bodyConverters) {
+				body = converter.apply(body);
 			}
 			return body;
 		}

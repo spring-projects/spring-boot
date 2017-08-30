@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
 import reactor.core.scheduler.Schedulers;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -212,9 +213,8 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 			return Mono.from(result).map(this::toResponseEntity)
 					.onErrorReturn(ParameterMappingException.class,
 							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
-					.defaultIfEmpty(
-							new ResponseEntity<>(httpMethod == HttpMethod.GET
-									? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
+					.defaultIfEmpty(new ResponseEntity<>(httpMethod == HttpMethod.GET
+							? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
 		}
 
 		private ResponseEntity<Object> toResponseEntity(Object response) {
@@ -277,16 +277,18 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 		@Override
 		public Object invoke(Map<String, Object> arguments) {
 			return Mono.create((sink) -> {
-				Schedulers.elastic().schedule(() -> {
-					try {
-						Object result = this.delegate.invoke(arguments);
-						sink.success(result);
-					}
-					catch (Exception ex) {
-						sink.error(ex);
-					}
-				});
+				Schedulers.elastic().schedule(() -> invoke(arguments, sink));
 			});
+		}
+
+		private void invoke(Map<String, Object> arguments, MonoSink<Object> sink) {
+			try {
+				Object result = this.delegate.invoke(arguments);
+				sink.success(result);
+			}
+			catch (Exception ex) {
+				sink.error(ex);
+			}
 		}
 
 	}
