@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,14 @@ public class AccessLevelTests {
 
 	@Test
 	public void accessToHealthEndpointShouldNotBeRestricted() throws Exception {
-		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("/health")).isTrue();
-		assertThat(AccessLevel.FULL.isAccessAllowed("/health")).isTrue();
+		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("health")).isTrue();
+		assertThat(AccessLevel.FULL.isAccessAllowed("health")).isTrue();
 	}
 
 	@Test
 	public void accessToInfoEndpointShouldNotBeRestricted() throws Exception {
-		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("/info")).isTrue();
-		assertThat(AccessLevel.FULL.isAccessAllowed("/info")).isTrue();
+		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("info")).isTrue();
+		assertThat(AccessLevel.FULL.isAccessAllowed("info")).isTrue();
 	}
 
 	@Test

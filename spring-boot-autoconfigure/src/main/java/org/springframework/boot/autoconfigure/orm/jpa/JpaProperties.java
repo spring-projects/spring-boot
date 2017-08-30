@@ -21,8 +21,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 

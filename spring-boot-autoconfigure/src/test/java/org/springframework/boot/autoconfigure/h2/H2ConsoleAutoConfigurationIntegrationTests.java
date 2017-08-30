@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfigurationInteg
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -60,24 +61,16 @@ public class H2ConsoleAutoConfigurationIntegrationTests {
 	public void noPrincipal() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/h2-console/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void userPrincipal() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/").with(user("test").roles("USER")))
+		mockMvc.perform(get("/h2-console/").accept(MediaType.APPLICATION_JSON).with(user("test").roles("USER")))
 				.andExpect(status().isOk())
 				.andExpect(header().string("X-Frame-Options", "SAMEORIGIN"));
-	}
-
-	@Test
-	public void someOtherPrincipal() throws Exception {
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/").with(user("test").roles("FOO")))
-				.andExpect(status().isForbidden());
 	}
 
 	@Configuration

@@ -19,9 +19,9 @@ package org.springframework.boot.endpoint.jmx;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.endpoint.EndpointOperation;
-import org.springframework.boot.endpoint.EndpointOperationType;
+import org.springframework.boot.endpoint.Operation;
 import org.springframework.boot.endpoint.OperationInvoker;
+import org.springframework.boot.endpoint.OperationType;
 
 /**
  * An operation on a JMX endpoint.
@@ -30,7 +30,7 @@ import org.springframework.boot.endpoint.OperationInvoker;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class JmxEndpointOperation extends EndpointOperation {
+public class JmxEndpointOperation extends Operation {
 
 	private final String operationName;
 
@@ -50,7 +50,7 @@ public class JmxEndpointOperation extends EndpointOperation {
 	 * @param description the description of the operation
 	 * @param parameters the parameters of the operation
 	 */
-	public JmxEndpointOperation(EndpointOperationType type, OperationInvoker invoker,
+	public JmxEndpointOperation(OperationType type, OperationInvoker invoker,
 			String operationName, Class<?> outputType, String description,
 			List<JmxEndpointOperationParameterInfo> parameters) {
 		super(type, invoker, true);

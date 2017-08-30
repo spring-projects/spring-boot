@@ -95,8 +95,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void createDataSource() throws Exception {
-		TestPropertyValues.of("spring.flyway.url:jdbc:hsqldb:mem:flywaytest", "spring.flyway.user:sa")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.flyway.url:jdbc:hsqldb:mem:flywaytest",
+				"spring.flyway.user:sa").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -162,7 +162,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void changeLogDoesNotExist() throws Exception {
-		TestPropertyValues.of("spring.flyway.locations:file:no-such-dir").applyTo(this.context);
+		TestPropertyValues.of("spring.flyway.locations:file:no-such-dir")
+				.applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,

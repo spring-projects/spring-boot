@@ -42,6 +42,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ClassUtils;
@@ -61,19 +63,15 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "endpoints.configprops")
-public class ConfigurationPropertiesReportEndpoint
-		extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
+@Endpoint(id = "configprops")
+@ConfigurationProperties("endpoints.configprops")
+public class ConfigurationPropertiesReportEndpoint implements ApplicationContextAware {
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
 	private final Sanitizer sanitizer = new Sanitizer();
 
 	private ApplicationContext context;
-
-	public ConfigurationPropertiesReportEndpoint() {
-		super("configprops");
-	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
@@ -84,8 +82,8 @@ public class ConfigurationPropertiesReportEndpoint
 		this.sanitizer.setKeysToSanitize(keysToSanitize);
 	}
 
-	@Override
-	public Map<String, Object> invoke() {
+	@ReadOperation
+	public Map<String, Object> configurationProperties() {
 		return extract(this.context);
 	}
 

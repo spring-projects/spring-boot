@@ -130,7 +130,7 @@ public class FreeMarkerAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(Servlet.class)
+	@ConditionalOnClass({ Servlet.class, FreeMarkerConfigurer.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	public static class FreeMarkerWebConfiguration extends FreeMarkerConfiguration {
 

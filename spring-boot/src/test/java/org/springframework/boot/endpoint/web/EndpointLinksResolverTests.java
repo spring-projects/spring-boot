@@ -24,7 +24,7 @@ import org.assertj.core.api.Condition;
 import org.junit.Test;
 
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperationType;
+import org.springframework.boot.endpoint.OperationType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,7 +74,7 @@ public class EndpointLinksResolverTests {
 	}
 
 	private WebEndpointOperation operationWithPath(String path, String id) {
-		return new WebEndpointOperation(EndpointOperationType.READ, null, false,
+		return new WebEndpointOperation(OperationType.READ, null, false,
 				new OperationRequestPredicate(path, WebEndpointHttpMethod.GET,
 						Collections.emptyList(), Collections.emptyList()),
 				id);

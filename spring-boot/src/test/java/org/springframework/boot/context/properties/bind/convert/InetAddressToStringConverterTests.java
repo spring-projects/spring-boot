@@ -18,9 +18,7 @@ package org.springframework.boot.context.properties.bind.convert;
 
 import java.net.InetAddress;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,9 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class InetAddressToStringConverterTests extends AbstractInetAddressTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private InetAddressToStringConverter converter = new InetAddressToStringConverter();
 

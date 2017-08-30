@@ -68,7 +68,6 @@ public class DataSourceInitializerTests {
 
 	@Before
 	public void init() {
-		EmbeddedDatabaseConnection.override = null;
 		TestPropertyValues.of("spring.datasource.initialize:false",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
 				.applyTo(this.context);
@@ -76,7 +75,6 @@ public class DataSourceInitializerTests {
 
 	@After
 	public void restore() {
-		EmbeddedDatabaseConnection.override = null;
 		if (this.context != null) {
 			this.context.close();
 		}

@@ -28,6 +28,9 @@ do as they were designed before this was clarified.
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
 | https://github.com/apache/cxf
 
+| https://qpid.apache.org/components/jms/[Apache Qpid]
+| https://github.com/amqphub/amqp-10-jms-spring-boot
+
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
@@ -129,6 +132,9 @@ do as they were designed before this was clarified.
 
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
+
+| https://github.com/StripesFramework/stripes[Stripes]
+| https://github.com/juanpablo-santos/stripes-spring-boot
 
 | http://teiid.org/[Teiid]
 | https://github.com/teiid/teiid-spring-boot

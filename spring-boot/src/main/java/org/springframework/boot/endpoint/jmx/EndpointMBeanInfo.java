@@ -21,11 +21,11 @@ import java.util.Map;
 import javax.management.MBeanInfo;
 
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.EndpointOperation;
+import org.springframework.boot.endpoint.Operation;
 
 /**
  * The {@link MBeanInfo} for a particular {@link EndpointInfo endpoint}. Maps operation
- * names to an {@link EndpointOperation}.
+ * names to an {@link Operation}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0

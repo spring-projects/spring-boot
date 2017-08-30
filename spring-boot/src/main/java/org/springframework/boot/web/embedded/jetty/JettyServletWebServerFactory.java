@@ -747,7 +747,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		@Override
 		public void close() {
-			close();
+			this.delegate.close();
 		}
 
 		@Override

@@ -123,7 +123,8 @@ public enum DatabaseDriver {
 	 * Firebird.
 	 */
 	FIREBIRD("Firebird", "org.firebirdsql.jdbc.FBDriver",
-			"org.firebirdsql.ds.FBXADataSource", "SELECT 1 FROM RDB$DATABASE") {
+			"org.firebirdsql.ds.FBXADataSource",
+			"SELECT 1 FROM RDB$DATABASE") {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {

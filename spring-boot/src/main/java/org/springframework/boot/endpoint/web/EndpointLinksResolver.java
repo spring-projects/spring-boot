@@ -33,7 +33,6 @@ public class EndpointLinksResolver {
 	/**
 	 * Resolves links to the operations of the given {code webEndpoints} based on a
 	 * request with the given {@code requestUrl}.
-	 *
 	 * @param webEndpoints the web endpoints
 	 * @param requestUrl the url of the request for the endpoint links
 	 * @return the links

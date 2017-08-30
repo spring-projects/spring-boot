@@ -62,6 +62,10 @@ public final class Metadata {
 		return new MetadataItemCondition(ItemType.PROPERTY, name).ofType(type);
 	}
 
+	public static Metadata.MetadataItemCondition withEnabledFlag(String key) {
+		return withProperty(key).ofType(Boolean.class);
+	}
+
 	public static MetadataHintCondition withHint(String name) {
 		return new MetadataHintCondition(name);
 	}

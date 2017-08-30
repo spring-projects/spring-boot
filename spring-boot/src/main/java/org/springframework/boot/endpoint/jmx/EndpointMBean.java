@@ -74,16 +74,12 @@ public class EndpointMBean implements DynamicMBean {
 	@Override
 	public Object invoke(String actionName, Object[] params, String[] signature)
 			throws MBeanException, ReflectionException {
-		JmxEndpointOperation operationInfo = this.endpointInfo.getOperations()
+		JmxEndpointOperation operation = this.endpointInfo.getOperations()
 				.get(actionName);
-		if (operationInfo != null) {
-			Map<String, Object> arguments = new HashMap<>();
-			List<JmxEndpointOperationParameterInfo> parameters = operationInfo
-					.getParameters();
-			for (int i = 0; i < params.length; i++) {
-				arguments.put(parameters.get(i).getName(), params[i]);
-			}
-			Object result = operationInfo.getOperationInvoker().invoke(arguments);
+		if (operation != null) {
+			Map<String, Object> arguments = getArguments(params,
+					operation.getParameters());
+			Object result = operation.getInvoker().invoke(arguments);
 			if (REACTOR_PRESENT) {
 				result = ReactiveHandler.handle(result);
 			}
@@ -92,6 +88,15 @@ public class EndpointMBean implements DynamicMBean {
 		throw new ReflectionException(new IllegalArgumentException(
 				String.format("Endpoint with id '%s' has no operation named %s",
 						this.endpointInfo.getEndpointId(), actionName)));
+	}
+
+	private Map<String, Object> getArguments(Object[] params,
+			List<JmxEndpointOperationParameterInfo> parameters) {
+		Map<String, Object> arguments = new HashMap<>();
+		for (int i = 0; i < params.length; i++) {
+			arguments.put(parameters.get(i).getName(), params[i]);
+		}
+		return arguments;
 	}
 
 	@Override

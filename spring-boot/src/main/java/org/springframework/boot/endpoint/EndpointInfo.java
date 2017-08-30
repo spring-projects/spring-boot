@@ -25,7 +25,7 @@ import java.util.Collection;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class EndpointInfo<T extends EndpointOperation> {
+public class EndpointInfo<T extends Operation> {
 
 	private final String id;
 

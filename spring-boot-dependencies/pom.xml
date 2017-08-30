@@ -134,10 +134,11 @@
 		<mongo-driver-reactivestreams.version>1.5.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.4.2</mongodb.version>
 		<mysql.version>5.1.43</mysql.version>
-		<narayana.version>5.6.3.Final</narayana.version>
+		<narayana.version>5.6.4.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.0.0-RC1</neo4j-ogm.version>
 		<netty.version>4.1.13.Final</netty.version>
+		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<postgresql.version>42.1.3</postgresql.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.1.4</querydsl.version>
@@ -196,13 +197,13 @@
 		<exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
 		<git-commit-id-plugin.version>2.2.2</git-commit-id-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-		<maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
+		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.6.2</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
-		<maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
+		<maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
 		<maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
 		<maven-invoker-plugin.version>3.0.0</maven-invoker-plugin.version>
@@ -1584,6 +1585,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-client-impl</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>javax-websocket-server-impl</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
@@ -1595,6 +1601,11 @@
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>websocket-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-servlet</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -2401,6 +2412,11 @@
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.synchronoss.cloud</groupId>
+				<artifactId>nio-multipart-parser</artifactId>
+				<version>${nio-multipart-parser.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.xerial</groupId>

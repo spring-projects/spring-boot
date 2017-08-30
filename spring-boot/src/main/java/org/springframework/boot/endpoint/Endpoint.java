@@ -41,11 +41,11 @@ public @interface Endpoint {
 	String id();
 
 	/**
-	 * Defines the endpoint {@link EndpointType types} that should be exposed. By default,
-	 * all types are exposed.
-	 * @return the endpoint types to expose
+	 * Defines the {@link EndpointExposure technologies} over which the endpoint should be
+	 * exposed. By default, all technologies are supported.
+	 * @return the supported endpoint exposure technologies
 	 */
-	EndpointType[] types() default {};
+	EndpointExposure[] exposure() default {};
 
 	/**
 	 * Whether or not the endpoint is enabled by default.

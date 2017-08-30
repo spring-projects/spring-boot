@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Extension of Tomcat's {@link WebappClassLoader} that does not consider the
- * {@link ClassLoader#getSystemClassLoader() system classloader}. This is required to to
+ * {@link ClassLoader#getSystemClassLoader() system classloader}. This is required to
  * ensure that any custom context classloader is always used (as is the case with some
  * executable archives).
  *

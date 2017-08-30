@@ -160,7 +160,8 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void testOverrideDefaultSchema() throws Exception {
-		TestPropertyValues.of("spring.liquibase.default-schema:public").applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.default-schema:public")
+				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -182,9 +183,8 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void testOverrideDataSource() throws Exception {
-		TestPropertyValues
-				.of("spring.liquibase.url:jdbc:hsqldb:mem:liquibase", "spring.liquibase.user:sa")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.url:jdbc:hsqldb:mem:liquibase",
+				"spring.liquibase.user:sa").applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -198,7 +198,8 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testChangeLogDoesNotExist() throws Exception {
-		TestPropertyValues.of("spring.liquibase.change-log:classpath:/no-such-changelog.yaml")
+		TestPropertyValues
+				.of("spring.liquibase.change-log:classpath:/no-such-changelog.yaml")
 				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
@@ -220,7 +221,8 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void testOverrideLabels() throws Exception {
-		TestPropertyValues.of("spring.liquibase.labels:test, production").applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.labels:test, production")
+				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -232,7 +234,8 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testOverrideParameters() throws Exception {
-		TestPropertyValues.of("spring.liquibase.parameters.foo:bar").applyTo(this.context);
+		TestPropertyValues.of("spring.liquibase.parameters.foo:bar")
+				.applyTo(this.context);
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

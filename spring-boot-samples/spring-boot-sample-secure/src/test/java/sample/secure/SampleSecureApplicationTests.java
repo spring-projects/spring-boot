@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sample.secure.SampleSecureApplicationTests.TestConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,23 +38,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { SampleSecureApplication.class, TestConfiguration.class })
+@SpringBootTest(classes = { SampleSecureApplication.class })
 public class SampleSecureApplicationTests {
 
 	@Autowired
 	private SampleService service;
 
-	@Autowired
-	private ApplicationContext context;
-
 	private Authentication authentication;
 
 	@Before
 	public void init() {
-		AuthenticationManager authenticationManager = this.context
-				.getBean(AuthenticationManager.class);
-		this.authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken("user", "password"));
+		this.authentication = new UsernamePasswordAuthenticationToken("user", "password");
 	}
 
 	@After
@@ -88,11 +77,6 @@ public class SampleSecureApplicationTests {
 	public void denied() throws Exception {
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
 		assertThat("Goodbye World").isEqualTo(this.service.denied());
-	}
-
-	@PropertySource("classpath:test.properties")
-	@Configuration
-	protected static class TestConfiguration {
 	}
 
 }
