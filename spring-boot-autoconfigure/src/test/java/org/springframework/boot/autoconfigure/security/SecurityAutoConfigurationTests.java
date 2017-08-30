@@ -21,7 +21,6 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -29,7 +28,6 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -52,6 +50,7 @@ import org.springframework.security.config.annotation.authentication.configurers
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
@@ -73,9 +72,6 @@ public class SecurityAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
-
 	@After
 	public void close() {
 		if (this.context != null) {
@@ -91,8 +87,9 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
+		// 1 for static resources and one for the rest
 		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
-				.hasSize(1);
+				.hasSize(2);
 	}
 
 	@Test
@@ -160,7 +157,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisableDefaultSecurity() throws Exception {
+	public void testDisableBasicAuthOnApplicationPaths() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
@@ -169,7 +166,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		// Ignores and the "matches-none" filter only
 		assertThat(this.context.getBeanNamesForType(FilterChainProxy.class).length)
-				.isEqualTo(0);
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -298,26 +295,33 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class);
 		this.context.refresh();
-		String password = this.outputCapture.toString()
-				.split("Using default security password: ")[1].split("\n")[0].trim();
+		SecurityProperties security = this.context.getBean(SecurityProperties.class);
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				"user", password);
+				security.getUser().getName(), security.getUser().getPassword());
 		assertThat(manager.authenticate(token)).isNotNull();
 	}
 
 	@Test
-	public void testCustomAuthenticationDoesNotCreateDefaultUser() throws Exception {
+	public void testCustomAuthenticationDoesNotAuthenticateWithBootSecurityUser()
+			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(AuthenticationManagerCustomizer.class,
 				SecurityAutoConfiguration.class);
 		this.context.refresh();
+		SecurityProperties security = this.context.getBean(SecurityProperties.class);
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		assertThat(this.outputCapture.toString())
-				.doesNotContain("Using default security password: ");
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				"foo", "bar");
+				security.getUser().getName(), security.getUser().getPassword());
+		try {
+			manager.authenticate(token);
+			fail("Expected Exception");
+		}
+		catch (AuthenticationException success) {
+			// Expected
+		}
+		token = new UsernamePasswordAuthenticationToken("foo", "bar");
 		assertThat(manager.authenticate(token)).isNotNull();
 	}
 

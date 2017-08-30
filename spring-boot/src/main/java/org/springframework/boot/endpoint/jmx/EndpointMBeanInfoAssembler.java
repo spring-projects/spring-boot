@@ -31,7 +31,7 @@ import javax.management.modelmbean.ModelMBeanNotificationInfo;
 import javax.management.modelmbean.ModelMBeanOperationInfo;
 
 import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.OperationType;
+import org.springframework.boot.endpoint.EndpointOperationType;
 
 /**
  * Gathers the management operations of a particular {@link EndpointInfo endpoint}.
@@ -61,6 +61,7 @@ class EndpointMBeanInfoAssembler {
 				.toArray(new ModelMBeanOperationInfo[] {});
 		Map<String, JmxEndpointOperation> operationsInfo = new LinkedHashMap<>();
 		operationsMapping.forEach((name, t) -> operationsInfo.put(name, t.operation));
+
 		MBeanInfo info = new ModelMBeanInfoSupport(EndpointMBean.class.getName(),
 				getDescription(endpointInfo), new ModelMBeanAttributeInfo[0],
 				new ModelMBeanConstructorInfo[0], operationsMBeanInfo,
@@ -99,11 +100,11 @@ class EndpointMBeanInfoAssembler {
 								.toArray(new MBeanParameterInfo[parameterInfos.size()])));
 	}
 
-	private int mapOperationType(OperationType type) {
-		if (type == OperationType.READ) {
+	private int mapOperationType(EndpointOperationType type) {
+		if (type == EndpointOperationType.READ) {
 			return MBeanOperationInfo.INFO;
 		}
-		if (type == OperationType.WRITE || type == OperationType.DELETE) {
+		if (type == EndpointOperationType.WRITE) {
 			return MBeanOperationInfo.ACTION;
 		}
 		return MBeanOperationInfo.UNKNOWN;

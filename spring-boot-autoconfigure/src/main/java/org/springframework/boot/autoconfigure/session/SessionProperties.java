@@ -23,7 +23,6 @@ import java.util.Set;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
 /**
@@ -89,8 +88,8 @@ public class SessionProperties {
 		/**
 		 * Session repository filter dispatcher types.
 		 */
-		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(Arrays.asList(
-				DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
+		private Set<String> filterDispatcherTypes = new HashSet<>(
+				Arrays.asList("ASYNC", "ERROR", "REQUEST"));
 
 		public int getFilterOrder() {
 			return this.filterOrder;
@@ -100,11 +99,11 @@ public class SessionProperties {
 			this.filterOrder = filterOrder;
 		}
 
-		public Set<DispatcherType> getFilterDispatcherTypes() {
+		public Set<String> getFilterDispatcherTypes() {
 			return this.filterDispatcherTypes;
 		}
 
-		public void setFilterDispatcherTypes(Set<DispatcherType> filterDispatcherTypes) {
+		public void setFilterDispatcherTypes(Set<String> filterDispatcherTypes) {
 			this.filterDispatcherTypes = filterDispatcherTypes;
 		}
 

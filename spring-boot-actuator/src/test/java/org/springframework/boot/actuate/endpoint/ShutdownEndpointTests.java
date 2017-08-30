@@ -24,11 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
@@ -42,60 +39,41 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ShutdownEndpointTests {
+public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoint> {
 
-	@Test
-	public void shutdown() throws Exception {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(EndpointConfig.class);
-		contextRunner.run((context) -> {
-			EndpointConfig config = context.getBean(EndpointConfig.class);
-			ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
-			Map<String, Object> result;
-			Thread.currentThread().setContextClassLoader(
-					new URLClassLoader(new URL[0], getClass().getClassLoader()));
-			try {
-				result = context.getBean(ShutdownEndpoint.class).shutdown();
-			}
-			finally {
-				Thread.currentThread().setContextClassLoader(previousTccl);
-			}
-			assertThat((String) result.get("message")).startsWith("Shutting down");
-			assertThat(((ConfigurableApplicationContext) context).isActive()).isTrue();
-			assertThat(config.latch.await(10, TimeUnit.SECONDS)).isTrue();
-			assertThat(config.threadContextClassLoader)
-					.isEqualTo(getClass().getClassLoader());
-		});
+	public ShutdownEndpointTests() {
+		super(Config.class, ShutdownEndpoint.class, "shutdown", "endpoints.shutdown");
+	}
+
+	@Override
+	public void isEnabledByDefault() throws Exception {
+		// Shutdown is dangerous so is disabled by default
+		assertThat(getEndpointBean().isEnabled()).isFalse();
 	}
 
 	@Test
-	public void shutdownChild() throws Exception {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				EmptyConfig.class).child(EndpointConfig.class)
-						.web(WebApplicationType.NONE).run();
-		CountDownLatch latch = context.getBean(EndpointConfig.class).latch;
-		assertThat((String) context.getBean(ShutdownEndpoint.class).shutdown()
-				.get("message")).startsWith("Shutting down");
-		assertThat(context.isActive()).isTrue();
-		assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
-	}
-
-	@Test
-	public void shutdownParent() throws Exception {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				EndpointConfig.class).child(EmptyConfig.class)
-						.web(WebApplicationType.NONE).run();
-		CountDownLatch parentLatch = context.getBean(EndpointConfig.class).latch;
-		CountDownLatch childLatch = context.getBean(EmptyConfig.class).latch;
-		assertThat((String) context.getBean(ShutdownEndpoint.class).shutdown()
-				.get("message")).startsWith("Shutting down");
-		assertThat(context.isActive()).isTrue();
-		assertThat(parentLatch.await(10, TimeUnit.SECONDS)).isTrue();
-		assertThat(childLatch.await(10, TimeUnit.SECONDS)).isTrue();
+	public void invoke() throws Exception {
+		Config config = this.context.getBean(Config.class);
+		ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
+		Map<String, Object> result;
+		Thread.currentThread().setContextClassLoader(
+				new URLClassLoader(new URL[0], getClass().getClassLoader()));
+		try {
+			result = getEndpointBean().invoke();
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(previousTccl);
+		}
+		assertThat((String) result.get("message")).startsWith("Shutting down");
+		assertThat(this.context.isActive()).isTrue();
+		assertThat(config.latch.await(10, TimeUnit.SECONDS)).isTrue();
+		assertThat(config.threadContextClassLoader)
+				.isEqualTo(getClass().getClassLoader());
 	}
 
 	@Configuration
-	public static class EndpointConfig {
+	@EnableConfigurationProperties
+	public static class Config {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
@@ -110,22 +88,11 @@ public class ShutdownEndpointTests {
 		@Bean
 		public ApplicationListener<ContextClosedEvent> listener() {
 			return (event) -> {
-				EndpointConfig.this.threadContextClassLoader = Thread.currentThread()
+				this.threadContextClassLoader = Thread.currentThread()
 						.getContextClassLoader();
-				EndpointConfig.this.latch.countDown();
+				this.latch.countDown();
 			};
-		}
 
-	}
-
-	@Configuration
-	public static class EmptyConfig {
-
-		private final CountDownLatch latch = new CountDownLatch(1);
-
-		@Bean
-		public ApplicationListener<ContextClosedEvent> listener() {
-			return (event) -> EmptyConfig.this.latch.countDown();
 		}
 
 	}

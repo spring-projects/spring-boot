@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.session;
 
 import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.DispatcherType;
@@ -50,12 +52,14 @@ class SessionRepositoryFilterConfiguration {
 
 	private EnumSet<DispatcherType> getDispatcherTypes(
 			SessionProperties sessionProperties) {
-		SessionProperties.Servlet servletProperties = sessionProperties.getServlet();
-		if (servletProperties.getFilterDispatcherTypes() == null) {
+		Set<String> filterDispatcherTypes = sessionProperties.getServlet()
+				.getFilterDispatcherTypes();
+		if (filterDispatcherTypes == null) {
 			return null;
 		}
-		return servletProperties.getFilterDispatcherTypes().stream()
-				.map((type) -> DispatcherType.valueOf(type.name())).collect(Collectors
+		return filterDispatcherTypes.stream()
+				.map((type) -> type.toUpperCase(Locale.ENGLISH))
+				.map(DispatcherType::valueOf).collect(Collectors
 						.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
 	}
 

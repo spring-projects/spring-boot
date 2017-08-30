@@ -24,10 +24,7 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.endpoint.Selector;
-import org.springframework.boot.endpoint.WriteOperation;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -40,8 +37,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@Endpoint(id = "loggers")
-public class LoggersEndpoint {
+@ConfigurationProperties(prefix = "endpoints.loggers")
+public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final LoggingSystem loggingSystem;
 
@@ -50,12 +47,13 @@ public class LoggersEndpoint {
 	 * @param loggingSystem the logging system to expose
 	 */
 	public LoggersEndpoint(LoggingSystem loggingSystem) {
+		super("loggers");
 		Assert.notNull(loggingSystem, "LoggingSystem must not be null");
 		this.loggingSystem = loggingSystem;
 	}
 
-	@ReadOperation
-	public Map<String, Object> loggers() {
+	@Override
+	public Map<String, Object> invoke() {
 		Collection<LoggerConfiguration> configurations = this.loggingSystem
 				.getLoggerConfigurations();
 		if (configurations == null) {
@@ -65,20 +63,6 @@ public class LoggersEndpoint {
 		result.put("levels", getLevels());
 		result.put("loggers", getLoggers(configurations));
 		return result;
-	}
-
-	@ReadOperation
-	public LoggerLevels loggerLevels(@Selector String name) {
-		Assert.notNull(name, "Name must not be null");
-		LoggerConfiguration configuration = this.loggingSystem
-				.getLoggerConfiguration(name);
-		return (configuration == null ? null : new LoggerLevels(configuration));
-	}
-
-	@WriteOperation
-	public void configureLogLevel(@Selector String name, LogLevel configuredLevel) {
-		Assert.notNull(name, "Name must not be empty");
-		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}
 
 	private NavigableSet<LogLevel> getLevels() {
@@ -93,6 +77,18 @@ public class LoggersEndpoint {
 			loggers.put(configuration.getName(), new LoggerLevels(configuration));
 		}
 		return loggers;
+	}
+
+	public LoggerLevels invoke(String name) {
+		Assert.notNull(name, "Name must not be null");
+		LoggerConfiguration configuration = this.loggingSystem
+				.getLoggerConfiguration(name);
+		return (configuration == null ? null : new LoggerLevels(configuration));
+	}
+
+	public void setLogLevel(String name, LogLevel level) {
+		Assert.notNull(name, "Name must not be empty");
+		this.loggingSystem.setLogLevel(name, level);
 	}
 
 	/**

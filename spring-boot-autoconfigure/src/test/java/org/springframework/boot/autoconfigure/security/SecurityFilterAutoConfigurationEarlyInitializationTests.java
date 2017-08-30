@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,9 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfigurationTests.WebSecurity;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -55,19 +54,17 @@ import org.springframework.web.bind.annotation.RestController;
  */
 public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	// gh-4154
 
 	@Test
 	public void testSecurityFilterDoesNotCauseEarlyInitialization() throws Exception {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
-			TestPropertyValues.of("server.port:0").applyTo(context);
+			TestPropertyValues.of("server.port:0", "security.user.password:password")
+					.applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
-			String password = this.outputCapture.toString()
-					.split("Using default security password: ")[1].split("\n")[0].trim();
-			new TestRestTemplate("user", password)
+			new TestRestTemplate("user", "password")
 					.getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
 
@@ -79,8 +76,8 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 			ConverterBean.class })
 	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, SecurityAutoConfiguration.class,
-			SecurityFilterAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebSecurity.class,
+			SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 

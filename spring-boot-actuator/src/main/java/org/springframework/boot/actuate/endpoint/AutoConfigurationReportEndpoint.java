@@ -26,12 +26,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.ReadOperation;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Condition;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,19 +47,19 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@Endpoint(id = "autoconfig")
-public class AutoConfigurationReportEndpoint {
+@ConfigurationProperties(prefix = "endpoints.autoconfig")
+public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
-	private final ConditionEvaluationReport conditionEvaluationReport;
+	@Autowired
+	private ConditionEvaluationReport autoConfigurationReport;
 
-	public AutoConfigurationReportEndpoint(
-			ConditionEvaluationReport conditionEvaluationReport) {
-		this.conditionEvaluationReport = conditionEvaluationReport;
+	public AutoConfigurationReportEndpoint() {
+		super("autoconfig");
 	}
 
-	@ReadOperation
-	public Report getEvaluationReport() {
-		return new Report(this.conditionEvaluationReport);
+	@Override
+	public Report invoke() {
+		return new Report(this.autoConfigurationReport);
 	}
 
 	/**

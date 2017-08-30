@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.ReadOperation;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
@@ -32,8 +31,8 @@ import org.springframework.util.Assert;
  * @author Meang Akira Tanaka
  * @author Stephane Nicoll
  */
-@Endpoint(id = "info")
-public class InfoEndpoint {
+@ConfigurationProperties(prefix = "endpoints.info")
+public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final List<InfoContributor> infoContributors;
 
@@ -42,12 +41,13 @@ public class InfoEndpoint {
 	 * @param infoContributors the info contributors to use
 	 */
 	public InfoEndpoint(List<InfoContributor> infoContributors) {
+		super("info");
 		Assert.notNull(infoContributors, "Info contributors must not be null");
 		this.infoContributors = infoContributors;
 	}
 
-	@ReadOperation
-	public Map<String, Object> info() {
+	@Override
+	public Map<String, Object> invoke() {
 		Info.Builder builder = new Info.Builder();
 		for (InfoContributor contributor : this.infoContributors) {
 			contributor.contribute(builder);

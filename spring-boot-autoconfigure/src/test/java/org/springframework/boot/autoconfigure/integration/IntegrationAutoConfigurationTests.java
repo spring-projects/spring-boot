@@ -26,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -153,9 +152,9 @@ public class IntegrationAutoConfigurationTests {
 				DataSourceTransactionManagerAutoConfiguration.class,
 				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
-				"spring.integration.jdbc.initialize-schema=always");
+				"spring.integration.jdbc.initializer.enabled=true");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
-				.getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+				.getInitializer().isEnabled()).isTrue();
 		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
 		assertThat(jdbcOperations.queryForList("select * from INT_MESSAGE")).isEmpty();
 		assertThat(jdbcOperations.queryForList("select * from INT_GROUP_TO_MESSAGE"))
@@ -173,24 +172,25 @@ public class IntegrationAutoConfigurationTests {
 				DataSourceTransactionManagerAutoConfiguration.class,
 				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
-				"spring.integration.jdbc.initialize-schema=never");
+				"spring.integration.jdbc.initializer.enabled=false");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
-				.getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
+				.getInitializer().isEnabled()).isFalse();
 		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
 		this.thrown.expect(BadSqlGrammarException.class);
 		jdbcOperations.queryForList("select * from INT_MESSAGE");
 	}
 
 	@Test
-	public void integrationJdbcDatabaseInitializerEnabledByDefaultWithEmbeddedDb() {
+	public void integrationJdbcDatabaseInitializerDisabledByDefault() {
 		load(new Class[] { EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
-				.getInitializeSchema()).isEqualTo(DatabaseInitializationMode.EMBEDDED);
+				.getInitializer().isEnabled()).isFalse();
 		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
-		jdbcOperations.queryForList("select * from INT_MESSAGE").isEmpty();
+		this.thrown.expect(BadSqlGrammarException.class);
+		jdbcOperations.queryForList("select * from INT_MESSAGE");
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,

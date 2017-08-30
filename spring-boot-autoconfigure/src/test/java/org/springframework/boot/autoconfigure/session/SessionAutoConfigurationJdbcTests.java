@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -55,9 +54,8 @@ public class SessionAutoConfigurationJdbcTests
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("SPRING_SESSION");
-		assertThat(
-				this.context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-						.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+		assertThat(this.context.getBean(JdbcSessionProperties.class).getInitializer()
+				.isEnabled()).isTrue();
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
 	}
@@ -67,14 +65,13 @@ public class SessionAutoConfigurationJdbcTests
 		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class),
 				"spring.session.store-type=jdbc",
-				"spring.session.jdbc.initialize-schema=never");
+				"spring.session.jdbc.initializer.enabled=false");
 		JdbcOperationsSessionRepository repository = validateSessionRepository(
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("SPRING_SESSION");
-		assertThat(
-				this.context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-						.isEqualTo(DatabaseInitializationMode.NEVER);
+		assertThat(this.context.getBean(JdbcSessionProperties.class).getInitializer()
+				.isEnabled()).isFalse();
 		this.thrown.expect(BadSqlGrammarException.class);
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
@@ -91,11 +88,27 @@ public class SessionAutoConfigurationJdbcTests
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("FOO_BAR");
-		assertThat(
-				this.context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-						.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+		assertThat(this.context.getBean(JdbcSessionProperties.class).getInitializer()
+				.isEnabled()).isTrue();
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from FOO_BAR")).isEmpty();
+	}
+
+	@Test
+	public void customTableNameWithDefaultSchemaDisablesInitializer() {
+		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class),
+				"spring.session.store-type=jdbc",
+				"spring.session.jdbc.table-name=FOO_BAR");
+		JdbcOperationsSessionRepository repository = validateSessionRepository(
+				JdbcOperationsSessionRepository.class);
+		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
+				.isEqualTo("FOO_BAR");
+		assertThat(this.context.getBean(JdbcSessionProperties.class).getInitializer()
+				.isEnabled()).isFalse();
+		this.thrown.expect(BadSqlGrammarException.class);
+		assertThat(this.context.getBean(JdbcOperations.class)
+				.queryForList("select * from SPRING_SESSION")).isEmpty();
 	}
 
 }

@@ -42,6 +42,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	 * Creates a new {code ReflectiveOperationInvoker} that will invoke the given
 	 * {@code method} on the given {@code target}. The given {@code parameterMapper} will
 	 * be used to map parameters to the required types.
+	 *
 	 * @param parameterMapper the parameter mapper
 	 * @param target the target of the reflective call
 	 * @param method the method to call

@@ -22,7 +22,9 @@ import java.util.List;
 
 import javax.validation.ValidatorFactory;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
@@ -71,6 +73,9 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 public class WebFluxAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private GenericReactiveWebApplicationContext context;
 

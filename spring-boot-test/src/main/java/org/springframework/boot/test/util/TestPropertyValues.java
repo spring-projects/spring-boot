@@ -24,7 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
+import com.google.common.collect.Streams;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.ApplicationContext;
@@ -178,7 +179,7 @@ public final class TestPropertyValues {
 		if (pairs == null) {
 			return empty();
 		}
-		return of(StreamSupport.stream(pairs.spliterator(), false));
+		return of(Streams.stream(pairs));
 	}
 
 	/**
@@ -252,8 +253,8 @@ public final class TestPropertyValues {
 
 		public static Pair parse(String pair) {
 			int index = getSeparatorIndex(pair);
-			String key = (index > 0 ? pair.substring(0, index) : pair);
-			String value = (index > 0 ? pair.substring(index + 1) : "");
+			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String value = index > 0 ? pair.substring(index + 1) : "";
 			return of(key.trim(), value.trim());
 		}
 
@@ -283,10 +284,13 @@ public final class TestPropertyValues {
 	 */
 	private class SystemPropertiesHandler implements Closeable {
 
+		private final Map<String, Object> properties;
+
 		private final Map<String, String> previous;
 
 		SystemPropertiesHandler() {
-			this.previous = apply(TestPropertyValues.this.properties);
+			this.properties = new LinkedHashMap<>(TestPropertyValues.this.properties);
+			this.previous = apply(this.properties);
 		}
 
 		private Map<String, String> apply(Map<String, ?> properties) {

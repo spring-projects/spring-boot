@@ -65,8 +65,8 @@ rules of thumb:
   `+@Conditional*+` annotations to find out what features they enable and when. Add
   `--debug` to the command line or a System property `-Ddebug` to get a log on the
   console of all the auto-configuration decisions that were made in your app. In a running
-  Actuator app look at the `autoconfig` endpoint (`/application/autoconfig` or the JMX
-  equivalent) for the same information.
+  Actuator app look at the `autoconfig` endpoint ('`/autoconfig`' or the JMX equivalent) for
+  the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
   {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`])
   and read from there the available external configuration options. The
@@ -75,7 +75,7 @@ rules of thumb:
   are `server.port`, `server.address` etc. In a running Actuator app look at the
   `configprops` endpoint.
 * Look for uses of the `bind` method on the `Binder` to pull configuration values explicitly out of the
-  `Environment` in a relaxed manner. It is often used with a prefix.
+  `Environment` in a relaxed manner. It is often is used with a prefix.
 * Look for `@Value` annotations that bind directly to the `Environment`.
 * Look for `@ConditionalOnExpression` annotations that switch features on and off in
   response to SpEL expressions, normally evaluated with placeholders resolved from the
@@ -125,7 +125,7 @@ TIP: The `Environment` will already have been prepared with all the usual proper
 that Spring Boot loads by default. It is therefore possible to get the location of the
 file from the environment. This example adds the `custom-resource` property source at the
 end of the list so that a key defined in any of the usual other locations takes
-precedence. A custom implementation may obviously define another order.
+precedence. A custom implementation may obviously defines another order.
 
 NOTE: While using `@PropertySource` on your `@SpringBootApplication` seems convenient and
 easy enough to load a custom resource in the `Environment`, we do not recommend it as
@@ -183,9 +183,6 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 	app.encoding=@project.build.sourceEncoding@
 	app.java.version=@java.version@
 ----
-
-NOTE: Only production configuration is filtered that way (i.e. no filtering is applied on
-`src/test/resources`).
 
 TIP: The `spring-boot:run` can add `src/main/resources` directly to the classpath
 (for hot reloading purposes) if you enable the `addResources` flag. This circumvents
@@ -838,7 +835,7 @@ nuclear option is to add your own `TomcatServletWebServerFactory`.
 
 [[howto-enable-multiple-connectors-in-tomcat]]
 === Enable Multiple Connectors with Tomcat
-Add an `org.apache.catalina.connector.Connector` to the
+Add a `org.apache.catalina.connector.Connector` to the
 `TomcatServletWebServerFactory` which can allow multiple connectors, e.g. HTTP and
 HTTPS connector:
 
@@ -1938,17 +1935,12 @@ data.
 [[howto-initialize-a-spring-batch-database]]
 === Initialize a Spring Batch database
 If you are using Spring Batch then it comes pre-packaged with SQL initialization scripts
-for most popular database platforms. Spring Boot can detect your database type and
-execute those scripts on startup. If you are using an embedded database this happens
-by default. You can also enable it for any database type:
-
-[indent=0,subs="verbatim,quotes,attributes"]
-----
-	spring.batch.initialize-schema=always
-----
-
-You can also switch off the initialization explicitly using
-`spring.batch.initialize-schema=never`.
+for most popular database platforms. Spring Boot will detect your database type, and
+execute those scripts by default, and in this case will switch the fail fast setting to
+false (errors are logged but do not prevent the application from starting). This is
+because the scripts are known to be reliable and generally do not contain bugs, so errors
+are ignorable, and ignoring them makes the scripts idempotent. You can switch off the
+initialization explicitly using `spring.batch.initializer.enabled=false`.
 
 
 

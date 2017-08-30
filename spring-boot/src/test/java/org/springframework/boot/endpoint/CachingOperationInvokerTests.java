@@ -41,7 +41,7 @@ public class CachingOperationInvokerTests {
 	public final ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createInstanceWithTtlSetToZero() {
+	public void createInstanceWithTllSetToZero() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("TimeToLive");
 		new CachingOperationInvoker(mock(OperationInvoker.class), 0);

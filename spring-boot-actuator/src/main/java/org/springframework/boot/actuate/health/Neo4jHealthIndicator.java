@@ -27,7 +27,6 @@ import org.neo4j.ogm.session.SessionFactory;
  * statement.
  *
  * @author Eric Spiegelberg
- * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class Neo4jHealthIndicator extends AbstractHealthIndicator {
@@ -52,8 +51,8 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
 		Result result = session.query(CYPHER, Collections.emptyMap());
-		builder.up().withDetail("nodes", result.queryResults()
-				.iterator().next().get("nodes"));
+		int nodes = (int) result.queryResults().iterator().next().get("nodes");
+		builder.up().withDetail("nodes", nodes);
 	}
 
 }

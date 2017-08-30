@@ -24,7 +24,6 @@ import java.util.Map;
 import org.hibernate.validator.constraints.NotBlank;
 
 import org.springframework.context.annotation.Description;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,14 +41,14 @@ public class SampleController {
 		this.helloWorldService = helloWorldService;
 	}
 
-	@GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping("/")
 	@ResponseBody
 	public Map<String, String> hello() {
 		return Collections.singletonMap("message",
 				this.helloWorldService.getHelloMessage());
 	}
 
-	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping("/")
 	@ResponseBody
 	public Map<String, Object> olleh(@Validated Message message) {
 		Map<String, Object> model = new LinkedHashMap<>();

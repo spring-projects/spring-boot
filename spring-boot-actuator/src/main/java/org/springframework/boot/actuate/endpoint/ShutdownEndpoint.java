@@ -20,8 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.WriteOperation;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,8 +32,9 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@Endpoint(id = "shutdown", enabledByDefault = false)
-public class ShutdownEndpoint implements ApplicationContextAware {
+@ConfigurationProperties(prefix = "endpoints.shutdown")
+public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
+		implements ApplicationContextAware {
 
 	private static final Map<String, Object> NO_CONTEXT_MESSAGE = Collections
 			.unmodifiableMap(Collections.<String, Object>singletonMap("message",
@@ -46,8 +46,15 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 
 	private ConfigurableApplicationContext context;
 
-	@WriteOperation
-	public Map<String, Object> shutdown() {
+	/**
+	 * Create a new {@link ShutdownEndpoint} instance.
+	 */
+	public ShutdownEndpoint() {
+		super("shutdown", false);
+	}
+
+	@Override
+	public Map<String, Object> invoke() {
 		if (this.context == null) {
 			return NO_CONTEXT_MESSAGE;
 		}

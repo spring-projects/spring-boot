@@ -32,15 +32,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 2.0.0
  */
-public abstract class OnEnabledEndpointElementCondition extends SpringBootCondition {
+abstract class OnEnabledEndpointElementCondition extends SpringBootCondition {
 
 	private final String prefix;
 
 	private final Class<? extends Annotation> annotationType;
 
-	protected OnEnabledEndpointElementCondition(String prefix,
+	OnEnabledEndpointElementCondition(String prefix,
 			Class<? extends Annotation> annotationType) {
 		this.prefix = prefix;
 		this.annotationType = annotationType;

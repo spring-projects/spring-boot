@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.ReadOperation;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.context.ApplicationContext;
@@ -41,12 +40,17 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@Endpoint(id = "beans")
-public class BeansEndpoint implements ApplicationContextAware {
+@ConfigurationProperties(prefix = "endpoints.beans")
+public class BeansEndpoint extends AbstractEndpoint<List<Object>>
+		implements ApplicationContextAware {
 
 	private final HierarchyAwareLiveBeansView liveBeansView = new HierarchyAwareLiveBeansView();
 
 	private final JsonParser parser = JsonParserFactory.getJsonParser();
+
+	public BeansEndpoint() {
+		super("beans");
+	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
@@ -56,8 +60,8 @@ public class BeansEndpoint implements ApplicationContextAware {
 		}
 	}
 
-	@ReadOperation
-	public List<Object> beans() {
+	@Override
+	public List<Object> invoke() {
 		return this.parser.parseList(this.liveBeansView.getSnapshotAsJson());
 	}
 

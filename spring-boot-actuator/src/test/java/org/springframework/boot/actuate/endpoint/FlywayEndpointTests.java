@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
 import org.flywaydb.core.Flyway;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -34,16 +31,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link FlywayEndpoint}.
  *
  * @author Eddú Meléndez
- * @author Andy Wilkinson
  */
-public class FlywayEndpointTests {
+public class FlywayEndpointTests extends AbstractEndpointTests<FlywayEndpoint> {
+
+	public FlywayEndpointTests() {
+		super(Config.class, FlywayEndpoint.class, "flyway", "endpoints.flyway");
+	}
 
 	@Test
-	public void flywayReportIsProduced() throws Exception {
-		new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.run((context) -> assertThat(
-						context.getBean(FlywayEndpoint.class).flywayReports())
-								.hasSize(1));
+	public void invoke() throws Exception {
+		assertThat(getEndpointBean().invoke()).hasSize(1);
 	}
 
 	@Configuration
@@ -51,8 +48,8 @@ public class FlywayEndpointTests {
 	public static class Config {
 
 		@Bean
-		public FlywayEndpoint endpoint(Map<String, Flyway> flyways) {
-			return new FlywayEndpoint(flyways);
+		public FlywayEndpoint endpoint(Flyway flyway) {
+			return new FlywayEndpoint(flyway);
 		}
 
 	}

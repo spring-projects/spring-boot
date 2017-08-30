@@ -21,7 +21,9 @@ import java.net.URI;
 import javax.servlet.MultipartConfigElement;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -64,6 +66,9 @@ import static org.mockito.Mockito.mock;
 public class MultipartAutoConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@After
 	public void close() {

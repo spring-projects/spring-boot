@@ -32,11 +32,6 @@ public enum WebEndpointHttpMethod {
 	/**
 	 * An HTTP POST request.
 	 */
-	POST,
-
-	/**
-	 * An HTTP DELETE request.
-	 */
-	DELETE
+	POST
 
 }

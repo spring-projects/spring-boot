@@ -560,7 +560,7 @@ the search order becomes:
 
 This search ordering allows you to specify default values in one configuration file
 and then selectively override those values in another. You can provide default values
-for your application in `application.properties` (or whatever other basename you choose
+for you application in `application.properties` (or whatever other basename you choose
 with `spring.config.name`) in one of the default locations. These default values can
 then be overriden at runtime with a different file located in one of the custom
 locations.
@@ -1219,8 +1219,8 @@ early instantiation. There is a
 validation sample] so you can see how to set things up.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
-`@ConfigurationProperties` beans. Simply point your web browser to
-`/application/configprops` or use the equivalent JMX endpoint. See the
+`@ConfigurationProperties` beans. Simply point your web browser to `/configprops`
+or use the equivalent JMX endpoint. See the
 _<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>_.
 section for details.
 
@@ -2794,7 +2794,7 @@ to decode tokens, so there is nothing else to do. If your app is a standalone se
 need to give it some more configuration, one of the following options:
 
 * `security.oauth2.resource.user-info-uri` to use the `/me` resource (e.g.
-`\https://uaa.run.pivotal.io/userinfo` on Pivotal Web Services (PWS))
+`\https://uaa.run.pivotal.io/userinfo` on PWS)
 
 * `security.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
 `\https://uaa.run.pivotal.io/check_token` on PWS).
@@ -2815,20 +2815,8 @@ URI where it can be downloaded (as a JSON object with a "`value`" field) with
 	{"alg":"SHA256withRSA","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"}
 ----
 
-Additionally, if your authorization server has an endpoint that returns a set of JSON Web Keys(JWKs),
-you can configure `security.oauth2.resource.jwk.key-set-uri`. E.g. on PWS:
-
-[indent=0]
-----
-	$ curl https://uaa.run.pivotal.io/token_keys
-	{"keys":[{"kid":"key-1","alg":"RS256","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"]}
-----
-
-NOTE: Configuring both JWT and JWK properties will cause an error. Only one of `security.oauth2.resource.jwt.key-uri`
-(or `security.oauth2.resource.jwt.key-value`) and `security.oauth2.resource.jwk.key-set-uri` should be configured.
-
-WARNING: If you use the `security.oauth2.resource.jwt.key-uri` or `security.oauth2.resource.jwk.key-set-uri,
-` the authorization server needs to be running when your application starts up. It will log a warning if it can't
+WARNING: If you use the `security.oauth2.resource.jwt.key-uri` the authorization server
+needs to be running when your application starts up. It will log a warning if it can't
 find the key, and tell you what to do to fix it.
 
 OAuth2 resources are protected by a filter chain with order
@@ -2884,7 +2872,7 @@ language feature). Example:
 [[boot-features-security-custom-user-info-client]]
 ==== Client
 To make your web-app into an OAuth2 client you can simply add `@EnableOAuth2Client` and
-Spring Boot will create an `OAuth2ClientContext` and `OAuth2ProtectedResourceDetails` that
+Spring Boot will create a `OAuth2ClientContext` and `OAuth2ProtectedResourceDetails` that
 are necessary to create an `OAuth2RestOperations`. Spring Boot does not automatically
 create such bean but you can easily create your own:
 
@@ -4291,7 +4279,7 @@ If the connection to InfluxDB requires a user and password, you can set the
 `spring.influx.user` and `spring.influx.password` properties accordingly.
 
 InfluxDB relies on OkHttp. If you need to tune the http client `InfluxDB` uses behind the
-scenes, you can register an `OkHttpClient.Builder` bean.
+scenes, you can register a `OkHttpClient.Builder` bean.
 
 
 
@@ -4455,7 +4443,7 @@ There are several ways to customize the underlying `javax.cache.cacheManager`:
   invoked with the reference of the `CacheManager` for full customization.
 
 TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
-automatically in an `org.springframework.cache.CacheManager` implementation that the
+automatically in a `org.springframework.cache.CacheManager` implementation that the
 abstraction expects. No further customization is applied on it.
 
 
@@ -5580,7 +5568,7 @@ on startup:
 
 [source,properties,indent=0]
 ----
-	spring.integration.jdbc.initialize-schema=always
+	spring.integration.jdbc.initializer.enabled=true
 ----
 
 See the
@@ -5719,10 +5707,9 @@ how your tests will run:
   _any_ servlet environment (mock or otherwise).
 
 NOTE: If your test is `@Transactional`, it will rollback the transaction at the end of
-each test method by default. However, as using this arrangement with either `RANDOM_PORT`
-or `DEFINED_PORT` implicitly provides a real servlet environment, HTTP client and
-server will run in separate threads, thus separate transactions. Any transaction
-initiated on the server won't rollback in this case.
+each test method by default. If you're using this arrangement in combination with either
+`RANDOM_PORT` or `DEFINED_PORT`, any transaction initiated on the server won't rollback as
+the test is running in a different thread than the server processing.
 
 NOTE: In addition to `@SpringBootTest` a number of other annotations are also
 provided for testing more specific slices of an application. See below for details.

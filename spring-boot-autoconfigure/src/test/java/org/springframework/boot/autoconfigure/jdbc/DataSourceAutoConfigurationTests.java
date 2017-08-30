@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
@@ -41,7 +39,6 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.context.HidePackagesClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -84,11 +81,16 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testBadUrl() throws Exception {
-		this.contextRunner
-				.withPropertyValues("spring.datasource.url:jdbc:not-going-to-work")
-				.withClassLoader(new DisableEmbeddedDatabaseClassLoader())
-				.run((context) -> assertThat(context).getFailure()
-						.isInstanceOf(BeanCreationException.class));
+		try {
+			EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
+			this.contextRunner
+					.withPropertyValues("spring.datasource.url:jdbc:not-going-to-work")
+					.run((context) -> assertThat(context).getFailure()
+							.isInstanceOf(BeanCreationException.class));
+		}
+		finally {
+			EmbeddedDatabaseConnection.override = null;
+		}
 	}
 
 	@Test
@@ -305,26 +307,6 @@ public class DataSourceAutoConfigurationTests {
 		@Override
 		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 			return mock(Logger.class);
-		}
-
-	}
-
-	private static class DisableEmbeddedDatabaseClassLoader extends URLClassLoader {
-
-		DisableEmbeddedDatabaseClassLoader() {
-			super(new URL[0], DisableEmbeddedDatabaseClassLoader.class.getClassLoader());
-		}
-
-		@Override
-		protected Class<?> loadClass(String name, boolean resolve)
-				throws ClassNotFoundException {
-			for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection
-					.values()) {
-				if (name.equals(candidate.getDriverClassName())) {
-					throw new ClassNotFoundException();
-				}
-			}
-			return super.loadClass(name, resolve);
 		}
 
 	}

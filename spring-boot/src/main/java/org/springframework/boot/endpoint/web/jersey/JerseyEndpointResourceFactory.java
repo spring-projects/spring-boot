@@ -80,7 +80,7 @@ public class JerseyEndpointResourceFactory {
 		resourceBuilder.addMethod(requestPredicate.getHttpMethod().name())
 				.consumes(toStringArray(requestPredicate.getConsumes()))
 				.produces(toStringArray(requestPredicate.getProduces()))
-				.handledBy(new EndpointInvokingInflector(operation.getInvoker(),
+				.handledBy(new EndpointInvokingInflector(operation.getOperationInvoker(),
 						!requestPredicate.getConsumes().isEmpty()));
 		return resourceBuilder.build();
 	}
@@ -110,38 +110,34 @@ public class JerseyEndpointResourceFactory {
 			this.readBody = readBody;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Response apply(ContainerRequestContext data) {
 			Map<String, Object> arguments = new HashMap<>();
 			if (this.readBody) {
-				arguments.putAll(extractBodyArguments(data));
+				Map<String, Object> body = ((ContainerRequest) data)
+						.readEntity(Map.class);
+				if (body != null) {
+					arguments.putAll(body);
+				}
 			}
-			arguments.putAll(extractPathParameters(data));
-			arguments.putAll(extractQueryParameters(data));
+			arguments.putAll(extractPathParmeters(data));
+			arguments.putAll(extractQueryParmeters(data));
 			try {
-				Object response = this.operationInvoker.invoke(arguments);
-				return convertToJaxRsResponse(response, data.getRequest().getMethod());
+				return convertToJaxRsResponse(this.operationInvoker.invoke(arguments),
+						data.getRequest().getMethod());
 			}
 			catch (ParameterMappingException ex) {
 				return Response.status(Status.BAD_REQUEST).build();
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		private Map<String, Object> extractBodyArguments(ContainerRequestContext data) {
-			Map<?, ?> entity = ((ContainerRequest) data).readEntity(Map.class);
-			if (entity == null) {
-				return Collections.emptyMap();
-			}
-			return (Map<String, Object>) entity;
-		}
-
-		private Map<String, Object> extractPathParameters(
+		private Map<String, Object> extractPathParmeters(
 				ContainerRequestContext requestContext) {
 			return extract(requestContext.getUriInfo().getPathParameters());
 		}
 
-		private Map<String, Object> extractQueryParameters(
+		private Map<String, Object> extractQueryParmeters(
 				ContainerRequestContext requestContext) {
 			return extract(requestContext.getUriInfo().getQueryParameters());
 		}
@@ -159,9 +155,8 @@ public class JerseyEndpointResourceFactory {
 
 		private Response convertToJaxRsResponse(Object response, String httpMethod) {
 			if (response == null) {
-				boolean isGet = HttpMethod.GET.equals(httpMethod);
-				Status status = (isGet ? Status.NOT_FOUND : Status.NO_CONTENT);
-				return Response.status(status).build();
+				return Response.status(HttpMethod.GET.equals(httpMethod)
+						? Status.NOT_FOUND : Status.NO_CONTENT).build();
 			}
 			try {
 				if (!(response instanceof WebEndpointResponse)) {

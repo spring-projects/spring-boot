@@ -16,20 +16,19 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationState;
 import org.flywaydb.core.api.MigrationType;
 
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.FlywayEndpoint.FlywayReport;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
@@ -40,36 +39,49 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@Endpoint(id = "flyway")
-public class FlywayEndpoint {
+@ConfigurationProperties(prefix = "endpoints.flyway")
+public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 
 	private final Map<String, Flyway> flyways;
 
+	public FlywayEndpoint(Flyway flyway) {
+		this(Collections.singletonMap("default", flyway));
+	}
+
 	public FlywayEndpoint(Map<String, Flyway> flyways) {
+		super("flyway");
 		Assert.notEmpty(flyways, "Flyways must be specified");
 		this.flyways = flyways;
 	}
 
-	@ReadOperation
-	public Map<String, FlywayReport> flywayReports() {
-		Map<String, FlywayReport> reports = new HashMap<>();
+	@Override
+	public List<FlywayReport> invoke() {
+		List<FlywayReport> reports = new ArrayList<>();
 		for (Map.Entry<String, Flyway> entry : this.flyways.entrySet()) {
-			reports.put(entry.getKey(),
-					new FlywayReport(Stream.of(entry.getValue().info().all())
-							.map(FlywayMigration::new).collect(Collectors.toList())));
+			List<FlywayMigration> migrations = new ArrayList<>();
+			for (MigrationInfo info : entry.getValue().info().all()) {
+				migrations.add(new FlywayMigration(info));
+			}
+			reports.add(new FlywayReport(entry.getKey(), migrations));
 		}
 		return reports;
 	}
 
 	/**
-	 * Report for one {@link Flyway} instance.
+	 * Flyway report for one datasource.
 	 */
 	public static class FlywayReport {
 
+		private final String name;
 		private final List<FlywayMigration> migrations;
 
-		public FlywayReport(List<FlywayMigration> migrations) {
+		public FlywayReport(String name, List<FlywayMigration> migrations) {
+			this.name = name;
 			this.migrations = migrations;
+		}
+
+		public String getName() {
+			return this.name;
 		}
 
 		public List<FlywayMigration> getMigrations() {
@@ -79,7 +91,7 @@ public class FlywayEndpoint {
 	}
 
 	/**
-	 * Details of a migration performed by Flyway.
+	 * Migration properties.
 	 */
 	public static class FlywayMigration {
 
@@ -95,11 +107,7 @@ public class FlywayEndpoint {
 
 		private final MigrationState state;
 
-		private final String installedBy;
-
 		private final Date installedOn;
-
-		private final Integer installedRank;
 
 		private final Integer executionTime;
 
@@ -110,9 +118,7 @@ public class FlywayEndpoint {
 			this.description = info.getDescription();
 			this.script = info.getScript();
 			this.state = info.getState();
-			this.installedBy = info.getInstalledBy();
 			this.installedOn = info.getInstalledOn();
-			this.installedRank = info.getInstalledRank();
 			this.executionTime = info.getExecutionTime();
 		}
 
@@ -144,16 +150,8 @@ public class FlywayEndpoint {
 			return this.state;
 		}
 
-		public String getInstalledBy() {
-			return this.installedBy;
-		}
-
 		public Date getInstalledOn() {
 			return this.installedOn;
-		}
-
-		public Integer getInstalledRank() {
-			return this.installedRank;
 		}
 
 		public Integer getExecutionTime() {

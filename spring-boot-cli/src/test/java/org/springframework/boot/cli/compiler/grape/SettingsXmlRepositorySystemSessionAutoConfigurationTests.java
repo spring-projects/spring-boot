@@ -29,7 +29,9 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -46,6 +48,9 @@ import static org.mockito.BDDMockito.given;
  * @author Andy Wilkinson
  */
 public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private RepositorySystem repositorySystem;

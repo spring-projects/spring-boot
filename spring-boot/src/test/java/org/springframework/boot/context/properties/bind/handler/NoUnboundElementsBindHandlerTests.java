@@ -19,7 +19,9 @@ package org.springframework.boot.context.properties.bind.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.BindHandler;
@@ -39,6 +41,9 @@ import static org.assertj.core.api.Assertions.fail;
  * @author Madhura Bhave
  */
 public class NoUnboundElementsBindHandlerTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 

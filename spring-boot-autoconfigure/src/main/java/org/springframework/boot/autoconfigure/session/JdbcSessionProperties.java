@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -43,10 +42,7 @@ public class JdbcSessionProperties {
 	 */
 	private String tableName = DEFAULT_TABLE_NAME;
 
-	/**
-	 * Database schema initialization mode.
-	 */
-	private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
+	private final Initializer initializer = new Initializer();
 
 	public String getSchema() {
 		return this.schema;
@@ -64,12 +60,32 @@ public class JdbcSessionProperties {
 		this.tableName = tableName;
 	}
 
-	public DatabaseInitializationMode getInitializeSchema() {
-		return this.initializeSchema;
+	public Initializer getInitializer() {
+		return this.initializer;
 	}
 
-	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-		this.initializeSchema = initializeSchema;
+	public class Initializer {
+
+		/**
+		 * Create the required session tables on startup if necessary. Enabled
+		 * automatically if the default table name is set or a custom schema is
+		 * configured.
+		 */
+		private Boolean enabled;
+
+		public boolean isEnabled() {
+			if (this.enabled != null) {
+				return this.enabled;
+			}
+			boolean defaultTableName = DEFAULT_TABLE_NAME.equals(getTableName());
+			boolean customSchema = !DEFAULT_SCHEMA_LOCATION.equals(getSchema());
+			return (defaultTableName || customSchema);
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
 	}
 
 }

@@ -52,8 +52,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ SessionFactory.class, Neo4jTransactionManager.class,
-		PlatformTransactionManager.class })
+@ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
 public class Neo4jDataAutoConfiguration {

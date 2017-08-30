@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.integration;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
-import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
@@ -41,8 +40,8 @@ public class IntegrationDatabaseInitializer extends AbstractDatabaseInitializer 
 	}
 
 	@Override
-	protected DatabaseInitializationMode getMode() {
-		return this.properties.getInitializeSchema();
+	protected boolean isEnabled() {
+		return this.properties.getInitializer().isEnabled();
 	}
 
 	@Override

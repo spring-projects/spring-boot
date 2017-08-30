@@ -40,7 +40,7 @@ public class OperationRequestPredicate {
 	private final Collection<String> produces;
 
 	/**
-	 * Creates a new {@code OperationRequestPredicate}.
+	 * Creates a new {@code WebEndpointRequestPredict}.
 	 *
 	 * @param path the path for the operation
 	 * @param httpMethod the HTTP method that the operation supports
@@ -111,16 +111,26 @@ public class OperationRequestPredicate {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null || getClass() != obj.getClass()) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		OperationRequestPredicate other = (OperationRequestPredicate) obj;
-		boolean result = true;
-		result = result && this.consumes.equals(other.consumes);
-		result = result && this.httpMethod == other.httpMethod;
-		result = result && this.canonicalPath.equals(other.canonicalPath);
-		result = result && this.produces.equals(other.produces);
-		return result;
+		if (!this.consumes.equals(other.consumes)) {
+			return false;
+		}
+		if (this.httpMethod != other.httpMethod) {
+			return false;
+		}
+		if (!this.canonicalPath.equals(other.canonicalPath)) {
+			return false;
+		}
+		if (!this.produces.equals(other.produces)) {
+			return false;
+		}
+		return true;
 	}
 
 }

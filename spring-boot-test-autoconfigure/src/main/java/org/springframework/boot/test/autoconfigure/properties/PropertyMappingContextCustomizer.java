@@ -79,15 +79,12 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 			Set<Class<?>> components = new LinkedHashSet<>();
 			Set<Class<?>> propertyMappings = new LinkedHashSet<>();
 			while (beanClass != null) {
-				Annotation[] annotations = AnnotationUtils.getAnnotations(beanClass);
-				if (annotations != null) {
-					for (Annotation annotation : annotations) {
-						if (isAnnotated(annotation, Component.class)) {
-							components.add(annotation.annotationType());
-						}
-						if (isAnnotated(annotation, PropertyMapping.class)) {
-							propertyMappings.add(annotation.annotationType());
-						}
+				for (Annotation annotation : AnnotationUtils.getAnnotations(beanClass)) {
+					if (isAnnotated(annotation, Component.class)) {
+						components.add(annotation.annotationType());
+					}
+					if (isAnnotated(annotation, PropertyMapping.class)) {
+						propertyMappings.add(annotation.annotationType());
 					}
 				}
 				beanClass = beanClass.getSuperclass();

@@ -22,7 +22,9 @@ import java.util.Set;
 
 import com.mongodb.Mongo;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
@@ -57,6 +59,9 @@ import static org.junit.Assert.fail;
  * @author Oliver Gierke
  */
 public class MongoDataAutoConfigurationTests {
+
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 

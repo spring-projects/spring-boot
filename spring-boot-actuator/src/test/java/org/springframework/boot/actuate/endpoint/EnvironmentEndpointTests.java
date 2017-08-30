@@ -26,11 +26,14 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,45 +47,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  */
-public class EnvironmentEndpointTests {
+public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentEndpoint> {
 
+	public EnvironmentEndpointTests() {
+		super(Config.class, EnvironmentEndpoint.class, "env", "endpoints.env");
+	}
+
+	@Override
 	@After
 	public void close() {
 		System.clearProperty("VCAP_SERVICES");
 	}
 
 	@Test
-	public void basicResponse() {
-		EnvironmentDescriptor env = new EnvironmentEndpoint(new StandardEnvironment())
-				.environment(null);
+	public void invoke() {
+		EnvironmentDescriptor env = getEndpointBean().invoke();
 		assertThat(env.getActiveProfiles()).isEmpty();
 		assertThat(env.getPropertySources()).hasSize(2);
 	}
 
 	@Test
-	public void compositeSourceIsHandledCorrectly() {
-		StandardEnvironment environment = new StandardEnvironment();
+	public void testCompositeSource() {
+		EnvironmentEndpoint report = getEndpointBean();
 		CompositePropertySource source = new CompositePropertySource("composite");
 		source.addPropertySource(new MapPropertySource("one",
 				Collections.singletonMap("foo", (Object) "bar")));
 		source.addPropertySource(new MapPropertySource("two",
 				Collections.singletonMap("foo", (Object) "spam")));
-		environment.getPropertySources().addFirst(source);
-		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
-				.environment(null);
+		this.context.getEnvironment().getPropertySources().addFirst(source);
+		EnvironmentDescriptor env = report.invoke();
 		assertThat(getSource("composite:one", env).getProperties().get("foo").getValue())
 				.isEqualTo("bar");
 	}
 
 	@Test
-	public void sensitiveKeysHaveTheirValuesSanitized() {
+	public void testKeySanitization() {
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
 		System.setProperty("mySecret", "123456");
 		System.setProperty("myCredentials", "123456");
 		System.setProperty("VCAP_SERVICES", "123456");
-		EnvironmentDescriptor env = new EnvironmentEndpoint(new StandardEnvironment())
-				.environment(null);
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
 		Map<String, PropertyValueDescriptor> systemProperties = getSource(
 				"systemProperties", env).getProperties();
 		assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("******");
@@ -95,13 +101,13 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysMatchingCredentialsPatternHaveTheirValuesSanitized() {
+	public void testKeySanitizationCredentialsPattern() {
 		System.setProperty("my.services.amqp-free.credentials.uri", "123456");
 		System.setProperty("credentials.http_api_uri", "123456");
 		System.setProperty("my.services.cleardb-free.credentials", "123456");
 		System.setProperty("foo.mycredentials.uri", "123456");
-		EnvironmentDescriptor env = new EnvironmentEndpoint(new StandardEnvironment())
-				.environment(null);
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
 		Map<String, PropertyValueDescriptor> systemProperties = getSource(
 				"systemProperties", env).getProperties();
 		assertThat(
@@ -120,12 +126,12 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysMatchingCustomNameHaveTheirValuesSanitized() {
+	public void testKeySanitizationWithCustomKeys() {
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
-		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(new StandardEnvironment());
-		endpoint.setKeysToSanitize("key");
-		EnvironmentDescriptor env = endpoint.environment(null);
+		EnvironmentEndpoint report = getEndpointBean();
+		report.setKeysToSanitize("key");
+		EnvironmentDescriptor env = report.invoke();
 		Map<String, PropertyValueDescriptor> systemProperties = getSource(
 				"systemProperties", env).getProperties();
 		assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("123456");
@@ -134,12 +140,12 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysMatchingCustomPatternHaveTheirValuesSanitized() {
+	public void testKeySanitizationWithCustomPattern() {
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
-		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(new StandardEnvironment());
-		endpoint.setKeysToSanitize(".*pass.*");
-		EnvironmentDescriptor env = endpoint.environment(null);
+		EnvironmentEndpoint report = getEndpointBean();
+		report.setKeysToSanitize(".*pass.*");
+		EnvironmentDescriptor env = report.invoke();
 		Map<String, PropertyValueDescriptor> systemProperties = getSource(
 				"systemProperties", env).getProperties();
 		assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("******");
@@ -148,59 +154,130 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
+	public void testKeySanitizationWithCustomKeysByEnvironment() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("endpoints.env.keys-to-sanitize: key")
+				.applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
+		Map<String, PropertyValueDescriptor> systemProperties = getSource(
+				"systemProperties", env).getProperties();
+		assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("123456");
+		assertThat(systemProperties.get("apiKey").getValue()).isEqualTo("******");
+		clearSystemProperties("dbPassword", "apiKey");
+	}
+
+	@Test
+	public void testKeySanitizationWithCustomPatternByEnvironment() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("endpoints.env.keys-to-sanitize: .*pass.*")
+				.applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
+		Map<String, PropertyValueDescriptor> systemProperties = getSource(
+				"systemProperties", env).getProperties();
+		assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("******");
+		assertThat(systemProperties.get("apiKey").getValue()).isEqualTo("123456");
+		clearSystemProperties("dbPassword", "apiKey");
+	}
+
+	@Test
+	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("endpoints.env.keys-to-sanitize: .*pass.*, key")
+				.applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
+		Map<String, PropertyValueDescriptor> systemProperties = getSource(
+				"systemProperties", env).getProperties();
+		assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("******");
+		assertThat(systemProperties.get("apiKey").getValue()).isEqualTo("******");
+		clearSystemProperties("dbPassword", "apiKey");
+	}
+
+	@Test
 	public void propertyWithPlaceholderResolved() {
-		StandardEnvironment environment = new StandardEnvironment();
+		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("my.foo: ${bar.blah}", "bar.blah: hello")
-				.applyTo(environment);
-		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
-				.environment(null);
-		assertThat(getSource("test", env).getProperties().get("my.foo").getValue())
-				.isEqualTo("hello");
+				.applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
+		Map<String, PropertyValueDescriptor> testProperties = getSource("test", env)
+				.getProperties();
+		assertThat(testProperties.get("my.foo").getValue()).isEqualTo("hello");
 	}
 
 	@Test
 	public void propertyWithPlaceholderNotResolved() {
-		StandardEnvironment environment = new StandardEnvironment();
-		TestPropertyValues.of("my.foo: ${bar.blah}").applyTo(environment);
-		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
-				.environment(null);
-		assertThat(getSource("test", env).getProperties().get("my.foo").getValue())
-				.isEqualTo("${bar.blah}");
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("my.foo: ${bar.blah}").applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
+		Map<String, PropertyValueDescriptor> testProperties = getSource("test", env)
+				.getProperties();
+		assertThat(testProperties.get("my.foo").getValue()).isEqualTo("${bar.blah}");
 	}
 
 	@Test
 	public void propertyWithSensitivePlaceholderResolved() {
-		StandardEnvironment environment = new StandardEnvironment();
+		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("my.foo: http://${bar.password}://hello", "bar.password: hello")
-				.applyTo(environment);
-		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
-				.environment(null);
-		assertThat(getSource("test", env).getProperties().get("my.foo").getValue())
+				.applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
+		Map<String, PropertyValueDescriptor> testProperties = getSource("test", env)
+				.getProperties();
+		assertThat(testProperties.get("my.foo").getValue())
 				.isEqualTo("http://******://hello");
 	}
 
 	@Test
 	public void propertyWithSensitivePlaceholderNotResolved() {
-		StandardEnvironment environment = new StandardEnvironment();
+		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("my.foo: http://${bar.password}://hello")
-				.applyTo(environment);
-		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
-				.environment(null);
-		assertThat(getSource("test", env).getProperties().get("my.foo").getValue())
+				.applyTo(this.context);
+		this.context.register(Config.class);
+		this.context.refresh();
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
+		Map<String, PropertyValueDescriptor> testProperties = getSource("test", env)
+				.getProperties();
+		assertThat(testProperties.get("my.foo").getValue())
 				.isEqualTo("http://${bar.password}://hello");
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void propertyWithTypeOtherThanStringShouldNotFail() {
-		StandardEnvironment environment = new StandardEnvironment();
-		MutablePropertySources propertySources = environment.getPropertySources();
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources propertySources = this.context.getEnvironment()
+				.getPropertySources();
 		Map<String, Object> source = new HashMap<>();
 		source.put("foo", Collections.singletonMap("bar", "baz"));
 		propertySources.addFirst(new MapPropertySource("test", source));
-		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
-				.environment(null);
+		this.context.register(Config.class);
+		this.context.refresh();
+		EnvironmentEndpoint report = getEndpointBean();
+		EnvironmentDescriptor env = report.invoke();
 		Map<String, PropertyValueDescriptor> testProperties = getSource("test", env)
 				.getProperties();
 		Map<String, String> foo = (Map<String, String>) testProperties.get("foo")
@@ -218,6 +295,17 @@ public class EnvironmentEndpointTests {
 			EnvironmentDescriptor descriptor) {
 		return descriptor.getPropertySources().stream()
 				.filter((source) -> name.equals(source.getName())).findFirst().get();
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class Config {
+
+		@Bean
+		public EnvironmentEndpoint endpoint() {
+			return new EnvironmentEndpoint();
+		}
+
 	}
 
 }
