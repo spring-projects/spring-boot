@@ -63,6 +63,10 @@
 					<groupId>org.glassfish.web</groupId>
 					<artifactId>javax.el</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-validator</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -72,6 +76,10 @@
 				<exclusion>
 					<groupId>org.jvnet</groupId>
   					<artifactId>tiger-types</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-validator</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
