@@ -56,6 +56,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-data-ldap[spring-boot-sample-data-ldap]
 | Stores data using Spring Data LDAP
 
+| link:spring-boot-sample-data-mongodb-reactive[spring-boot-sample-data-mongodb-reactive]
+| Stores data using Spring Data MongoDB Reactive
+
 | link:spring-boot-sample-data-mongodb[spring-boot-sample-data-mongodb]
 | Stores data using Spring Data MongoDB
 
