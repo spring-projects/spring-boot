@@ -27,7 +27,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * {@link OncePerRequestFilter} to add a {@literal X-Application-Context} header that
+ * {@link OncePerRequestFilter} to add an {@literal X-Application-Context} header that
  * contains the {@link ApplicationContext#getId() ApplicationContext ID}.
  *
  * @author Phillip Webb

@@ -76,8 +76,8 @@ public class SessionAutoConfigurationJdbcTests
 				this.context.getBean(JdbcSessionProperties.class).getInitializeSchema())
 						.isEqualTo(DatabaseInitializationMode.NEVER);
 		this.thrown.expect(BadSqlGrammarException.class);
-		assertThat(this.context.getBean(JdbcOperations.class)
-				.queryForList("select * from SPRING_SESSION")).isEmpty();
+		this.context.getBean(JdbcOperations.class)
+				.queryForList("select * from SPRING_SESSION");
 	}
 
 	@Test

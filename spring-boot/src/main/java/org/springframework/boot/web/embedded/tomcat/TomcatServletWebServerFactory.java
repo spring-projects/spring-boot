@@ -89,8 +89,8 @@ import org.springframework.util.StringUtils;
  * {@link TomcatWebServer}s. Can be initialized using Spring's
  * {@link ServletContextInitializer}s or Tomcat {@link LifecycleListener}s.
  * <p>
- * Unless explicitly configured otherwise this factory will created containers that
- * listens for HTTP requests on port 8080.
+ * Unless explicitly configured otherwise this factory will create containers that
+ * listen for HTTP requests on port 8080.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -508,7 +508,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	/**
-	 * Post process the Tomcat {@link Context} before it used with the Tomcat Server.
+	 * Post process the Tomcat {@link Context} before it's used with the Tomcat Server.
 	 * Subclasses can override this method to apply additional processing to the
 	 * {@link Context}.
 	 * @param context the Tomcat {@link Context}
@@ -591,7 +591,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	/**
 	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
 	 * Tomcat {@link Engine}.
-	 * @return the engineValves the valves that will be applied
+	 * @return the engine valves that will be applied
 	 */
 	public Collection<Valve> getEngineValves() {
 		return this.engineValves;
@@ -619,7 +619,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	/**
 	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
 	 * Tomcat {@link Context}.
-	 * @return the contextValves the valves that will be applied
+	 * @return the context valves that will be applied
 	 * @see #getEngineValves()
 	 */
 	public Collection<Valve> getContextValves() {
@@ -650,7 +650,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	/**
 	 * Returns a mutable collection of the {@link LifecycleListener}s that will be applied
 	 * to the Tomcat {@link Context} .
-	 * @return the contextLifecycleListeners the listeners that will be applied
+	 * @return the context lifecycle listeners that will be applied
 	 */
 	public Collection<LifecycleListener> getContextLifecycleListeners() {
 		return this.contextLifecycleListeners;

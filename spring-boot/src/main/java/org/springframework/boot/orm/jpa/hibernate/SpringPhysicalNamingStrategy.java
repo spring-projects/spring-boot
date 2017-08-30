@@ -77,7 +77,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	}
 
 	/**
-	 * Get an the identifier for the specified details. By default this method will return
+	 * Get an identifier for the specified details. By default this method will return
 	 * an identifier with the name adapted based on the result of
 	 * {@link #isCaseInsensitive(JdbcEnvironment)}
 	 * @param name the name of the identifier

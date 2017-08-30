@@ -7,7 +7,7 @@
  -----
 
   By default, both the <<<repackage>>> and the <<<run>>> goals will include any <<<provided>>>
-  dependencies that are defined in the project. A boot-based project should consider
+  dependencies that are defined in the project. A Spring Boot project should consider
   <<<provided>>> dependencies as <<container>> dependencies that are required to run
   the application.
 
