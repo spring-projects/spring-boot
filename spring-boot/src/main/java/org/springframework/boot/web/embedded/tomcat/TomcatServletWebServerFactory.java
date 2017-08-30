@@ -89,8 +89,8 @@ import org.springframework.util.StringUtils;
  * {@link TomcatWebServer}s. Can be initialized using Spring's
  * {@link ServletContextInitializer}s or Tomcat {@link LifecycleListener}s.
  * <p>
- * Unless explicitly configured otherwise this factory will create containers that
- * listen for HTTP requests on port 8080.
+ * Unless explicitly configured otherwise this factory will create containers that listen
+ * for HTTP requests on port 8080.
  *
  * @author Phillip Webb
  * @author Dave Syer

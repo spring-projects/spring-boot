@@ -213,16 +213,16 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 					.onErrorReturn(ParameterMappingException.class,
 							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
 					.defaultIfEmpty(
-							new ResponseEntity<Object>(httpMethod == HttpMethod.GET
+							new ResponseEntity<>(httpMethod == HttpMethod.GET
 									? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
 		}
 
 		private ResponseEntity<Object> toResponseEntity(Object response) {
 			if (!(response instanceof WebEndpointResponse)) {
-				return new ResponseEntity<Object>(response, HttpStatus.OK);
+				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
 			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
-			return new ResponseEntity<Object>(webEndpointResponse.getBody(),
+			return new ResponseEntity<>(webEndpointResponse.getBody(),
 					HttpStatus.valueOf(webEndpointResponse.getStatus()));
 		}
 

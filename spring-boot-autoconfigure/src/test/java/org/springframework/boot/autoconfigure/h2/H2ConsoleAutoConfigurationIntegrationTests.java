@@ -61,15 +61,16 @@ public class H2ConsoleAutoConfigurationIntegrationTests {
 	public void noPrincipal() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/h2-console/").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void userPrincipal() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/").accept(MediaType.APPLICATION_JSON).with(user("test").roles("USER")))
-				.andExpect(status().isOk())
+		mockMvc.perform(get("/h2-console/").accept(MediaType.APPLICATION_JSON)
+				.with(user("test").roles("USER"))).andExpect(status().isOk())
 				.andExpect(header().string("X-Frame-Options", "SAMEORIGIN"));
 	}
 

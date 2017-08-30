@@ -109,8 +109,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties() {
 		Map<String, Object> vendorProperties = new LinkedHashMap<>();
-		String defaultDdlMode = this.defaultDdlAutoProvider.getDefaultDdlAuto(
-				getDataSource());
+		String defaultDdlMode = this.defaultDdlAutoProvider
+				.getDefaultDdlAuto(getDataSource());
 		vendorProperties.putAll(getProperties().getHibernateProperties(defaultDdlMode));
 		return vendorProperties;
 	}

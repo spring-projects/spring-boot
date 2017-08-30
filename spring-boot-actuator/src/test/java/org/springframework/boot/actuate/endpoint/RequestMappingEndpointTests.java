@@ -135,9 +135,8 @@ public class RequestMappingEndpointTests {
 		OperationRequestPredicate requestPredicate = new OperationRequestPredicate("test",
 				WebEndpointHttpMethod.GET, Collections.singletonList("application/json"),
 				Collections.singletonList("application/json"));
-		WebEndpointOperation operation = new WebEndpointOperation(
-				OperationType.READ, (arguments) -> "Invoked", true,
-				requestPredicate, "test");
+		WebEndpointOperation operation = new WebEndpointOperation(OperationType.READ,
+				(arguments) -> "Invoked", true, requestPredicate, "test");
 		WebEndpointServletHandlerMapping mapping = new WebEndpointServletHandlerMapping(
 				"application", Collections.singleton(new EndpointInfo<>("test", true,
 						Collections.singleton(operation))));

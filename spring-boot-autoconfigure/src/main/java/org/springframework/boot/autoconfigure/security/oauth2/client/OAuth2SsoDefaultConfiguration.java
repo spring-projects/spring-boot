@@ -40,12 +40,8 @@ public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter 
 
 	private final ApplicationContext applicationContext;
 
-	private final OAuth2SsoProperties sso;
-
-	public OAuth2SsoDefaultConfiguration(ApplicationContext applicationContext,
-			OAuth2SsoProperties sso) {
+	public OAuth2SsoDefaultConfiguration(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		this.sso = sso;
 	}
 
 	@Override

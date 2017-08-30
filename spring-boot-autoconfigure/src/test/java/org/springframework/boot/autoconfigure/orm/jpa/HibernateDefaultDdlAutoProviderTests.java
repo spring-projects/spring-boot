@@ -53,14 +53,14 @@ public class HibernateDefaultDdlAutoProviderTests {
 						+ org.apache.tomcat.jdbc.pool.DataSource.class.getName(),
 				"spring.datasource.database:mysql",
 				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
-				"spring.jpa.database:MYSQL"
-		).run((context) -> {
-			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
-					Collections.emptyList());
-			assertThat(ddlAutoProvider.getDefaultDdlAuto(
-					context.getBean(DataSource.class))).isEqualTo("none");
+				"spring.jpa.database:MYSQL").run((context) -> {
+					HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
+							Collections.emptyList());
+					assertThat(ddlAutoProvider
+							.getDefaultDdlAuto(context.getBean(DataSource.class)))
+									.isEqualTo("none");
 
-		});
+				});
 	}
 
 	@Test
@@ -68,8 +68,9 @@ public class HibernateDefaultDdlAutoProviderTests {
 		this.contextRunner.run((context) -> {
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.emptyList());
-			assertThat(ddlAutoProvider.getDefaultDdlAuto(
-					context.getBean(DataSource.class))).isEqualTo("create-drop");
+			assertThat(
+					ddlAutoProvider.getDefaultDdlAuto(context.getBean(DataSource.class)))
+							.isEqualTo("create-drop");
 		});
 	}
 
@@ -82,8 +83,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 					.willReturn(SchemaManagement.MANAGED);
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.singletonList(provider));
-			assertThat(ddlAutoProvider.getDefaultDdlAuto(
-					dataSource)).isEqualTo("none");
+			assertThat(ddlAutoProvider.getDefaultDdlAuto(dataSource)).isEqualTo("none");
 		});
 	}
 
@@ -96,8 +96,8 @@ public class HibernateDefaultDdlAutoProviderTests {
 					.willReturn(SchemaManagement.UNMANAGED);
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.singletonList(provider));
-			assertThat(ddlAutoProvider.getDefaultDdlAuto(
-					dataSource)).isEqualTo("create-drop");
+			assertThat(ddlAutoProvider.getDefaultDdlAuto(dataSource))
+					.isEqualTo("create-drop");
 		});
 	}
 

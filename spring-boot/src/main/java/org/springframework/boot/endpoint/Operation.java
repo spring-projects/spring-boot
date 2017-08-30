@@ -37,8 +37,8 @@ public class Operation {
 	 * @param operationInvoker used to perform the operation
 	 * @param blocking whether or not this is a blocking operation
 	 */
-	public Operation(OperationType type,
-			OperationInvoker operationInvoker, boolean blocking) {
+	public Operation(OperationType type, OperationInvoker operationInvoker,
+			boolean blocking) {
 		this.type = type;
 		this.invoker = operationInvoker;
 		this.blocking = blocking;

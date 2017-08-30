@@ -81,7 +81,7 @@ public final class SpringBootSecurity {
 	 */
 	public RequestMatcher endpoints(Class<?>... endpoints) {
 		Assert.notEmpty(endpoints, "At least one endpoint must be specified.");
-		List<String> paths = Arrays.stream(endpoints).map(e -> {
+		List<String> paths = Arrays.stream(endpoints).map((e) -> {
 			if (e.isAnnotationPresent(Endpoint.class)) {
 				return e.getAnnotation(Endpoint.class).id();
 			}

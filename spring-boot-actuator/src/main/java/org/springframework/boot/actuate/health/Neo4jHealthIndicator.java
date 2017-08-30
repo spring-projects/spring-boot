@@ -52,8 +52,8 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
 		Result result = session.query(CYPHER, Collections.emptyMap());
-		builder.up().withDetail("nodes", result.queryResults()
-				.iterator().next().get("nodes"));
+		builder.up().withDetail("nodes",
+				result.queryResults().iterator().next().get("nodes"));
 	}
 
 }

@@ -213,9 +213,8 @@ public class ConfigurationMetadata {
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("items: %n"));
-		this.items.values().forEach(itemMetadata -> {
-			result.append("\t").append(String.format("%s%n", itemMetadata));
-		});
+		this.items.values().forEach((itemMetadata) -> result.append("\t")
+				.append(String.format("%s%n", itemMetadata)));
 		return result.toString();
 	}
 

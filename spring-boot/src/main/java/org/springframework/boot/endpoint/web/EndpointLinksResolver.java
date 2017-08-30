@@ -41,7 +41,7 @@ public class EndpointLinksResolver {
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
 			String requestUrl) {
 		String normalizedUrl = normalizeRequestUrl(requestUrl);
-		Map<String, Link> links = new LinkedHashMap<String, Link>();
+		Map<String, Link> links = new LinkedHashMap<>();
 		links.put("self", new Link(normalizedUrl));
 		for (EndpointInfo<WebEndpointOperation> endpoint : webEndpoints) {
 			for (WebEndpointOperation operation : endpoint.getOperations()) {

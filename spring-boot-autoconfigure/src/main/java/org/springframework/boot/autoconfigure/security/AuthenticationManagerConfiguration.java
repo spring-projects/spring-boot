@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -79,10 +78,8 @@ public class AuthenticationManagerConfiguration {
 	}
 
 	@Bean
-	public static SpringBootAuthenticationConfigurerAdapter springBootAuthenticationConfigurerAdapter(
-			SecurityProperties securityProperties,
-			List<SecurityPrerequisite> dependencies) {
-		return new SpringBootAuthenticationConfigurerAdapter(securityProperties);
+	public static SpringBootAuthenticationConfigurerAdapter springBootAuthenticationConfigurerAdapter() {
+		return new SpringBootAuthenticationConfigurerAdapter();
 	}
 
 	@Bean
@@ -118,16 +115,9 @@ public class AuthenticationManagerConfiguration {
 	private static class SpringBootAuthenticationConfigurerAdapter
 			extends GlobalAuthenticationConfigurerAdapter {
 
-		private final SecurityProperties securityProperties;
-
-		SpringBootAuthenticationConfigurerAdapter(SecurityProperties securityProperties) {
-			this.securityProperties = securityProperties;
-		}
-
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
-			auth.apply(new DefaultInMemoryUserDetailsManagerConfigurer(
-					this.securityProperties));
+			auth.apply(new DefaultInMemoryUserDetailsManagerConfigurer());
 		}
 
 	}
@@ -155,13 +145,6 @@ public class AuthenticationManagerConfiguration {
 	 */
 	private static class DefaultInMemoryUserDetailsManagerConfigurer
 			extends InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
-
-		private final SecurityProperties securityProperties;
-
-		DefaultInMemoryUserDetailsManagerConfigurer(
-				SecurityProperties securityProperties) {
-			this.securityProperties = securityProperties;
-		}
 
 		@Override
 		public void configure(AuthenticationManagerBuilder auth) throws Exception {

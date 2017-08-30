@@ -120,12 +120,14 @@ public class FlywayAutoConfigurationTests {
 		registerAndRefresh(FlywayDataSourceConfiguration.class,
 				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		FlywaySchemaManagementProvider schemaManagementProvider = this.context.getBean(
-				FlywaySchemaManagementProvider.class);
-		assertThat(schemaManagementProvider.getSchemaManagement(this.context.getBean(
-				DataSource.class))).isEqualTo(SchemaManagement.UNMANAGED);
-		assertThat(schemaManagementProvider.getSchemaManagement(this.context.getBean(
-				"flywayDataSource", DataSource.class))).isEqualTo(SchemaManagement.MANAGED);
+		FlywaySchemaManagementProvider schemaManagementProvider = this.context
+				.getBean(FlywaySchemaManagementProvider.class);
+		assertThat(schemaManagementProvider
+				.getSchemaManagement(this.context.getBean(DataSource.class)))
+						.isEqualTo(SchemaManagement.UNMANAGED);
+		assertThat(schemaManagementProvider.getSchemaManagement(
+				this.context.getBean("flywayDataSource", DataSource.class)))
+						.isEqualTo(SchemaManagement.MANAGED);
 	}
 
 	@Test

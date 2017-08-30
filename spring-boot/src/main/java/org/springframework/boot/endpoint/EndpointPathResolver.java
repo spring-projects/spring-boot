@@ -22,6 +22,7 @@ package org.springframework.boot.endpoint;
  * @author Madhura Bhave
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface EndpointPathResolver {
 
 	/**

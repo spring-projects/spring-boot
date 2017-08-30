@@ -101,7 +101,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 			return Collections.singletonMap("_links", filteredLinks);
 		}
 		filteredLinks = links.entrySet().stream()
-				.filter(e -> e.getKey().equals("self")
+				.filter((e) -> e.getKey().equals("self")
 						|| accessLevel.isAccessAllowed(e.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		return Collections.singletonMap("_links", filteredLinks);

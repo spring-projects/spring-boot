@@ -90,8 +90,8 @@ import org.springframework.util.StringUtils;
  * Can be initialized using Spring's {@link ServletContextInitializer}s or Jetty
  * {@link Configuration}s.
  * <p>
- * Unless explicitly configured otherwise this factory will create servers that listen
- * for HTTP requests on port 8080.
+ * Unless explicitly configured otherwise this factory will create servers that listen for
+ * HTTP requests on port 8080.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -527,8 +527,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Post process the Jetty {@link WebAppContext} before it's used with the Jetty Server.
-	 * Subclasses can override this method to apply additional processing to the
+	 * Post process the Jetty {@link WebAppContext} before it's used with the Jetty
+	 * Server. Subclasses can override this method to apply additional processing to the
 	 * {@link WebAppContext}.
 	 * @param webAppContext the Jetty {@link WebAppContext}
 	 */

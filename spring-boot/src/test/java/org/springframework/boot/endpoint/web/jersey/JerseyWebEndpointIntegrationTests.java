@@ -69,7 +69,7 @@ public class JerseyWebEndpointIntegrationTests extends
 		@Bean
 		public ServletRegistrationBean<ServletContainer> servletContainer(
 				ResourceConfig resourceConfig) {
-			return new ServletRegistrationBean<ServletContainer>(
+			return new ServletRegistrationBean<>(
 					new ServletContainer(resourceConfig), "/*");
 		}
 
@@ -80,7 +80,7 @@ public class JerseyWebEndpointIntegrationTests extends
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
 					.createEndpointResources("endpoints",
 							endpointDiscoverer.discoverEndpoints());
-			resourceConfig.registerResources(new HashSet<Resource>(resources));
+			resourceConfig.registerResources(new HashSet<>(resources));
 			resourceConfig.register(JacksonFeature.class);
 			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()),
 					ContextResolver.class);

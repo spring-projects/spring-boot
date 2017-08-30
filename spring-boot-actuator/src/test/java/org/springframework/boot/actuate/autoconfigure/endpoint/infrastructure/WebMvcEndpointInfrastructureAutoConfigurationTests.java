@@ -56,7 +56,7 @@ public class WebMvcEndpointInfrastructureAutoConfigurationTests {
 
 	@Test
 	public void webEndpointsAreDisabledByDefault() {
-		this.contextRunner.run(context -> {
+		this.contextRunner.run((context) -> {
 			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 			assertThat(isExposed(mvc, HttpMethod.GET, "autoconfig")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isFalse();
@@ -76,7 +76,7 @@ public class WebMvcEndpointInfrastructureAutoConfigurationTests {
 	public void webEndpointsCanBeEnabled() {
 		WebApplicationContextRunner contextRunner = this.contextRunner
 				.withPropertyValues("endpoints.default.web.enabled=true");
-		contextRunner.run(context -> {
+		contextRunner.run((context) -> {
 			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 			assertThat(isExposed(mvc, HttpMethod.GET, "autoconfig")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();

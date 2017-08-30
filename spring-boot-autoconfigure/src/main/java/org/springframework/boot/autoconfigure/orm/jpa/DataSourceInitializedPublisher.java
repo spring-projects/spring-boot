@@ -92,8 +92,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		}
 		String defaultDdlAuto = (EmbeddedDatabaseConnection.isEmbedded(dataSource)
 				? "create-drop" : "none");
-		Map<String, String> hibernate = this.properties.getHibernateProperties(
-				defaultDdlAuto);
+		Map<String, String> hibernate = this.properties
+				.getHibernateProperties(defaultDdlAuto);
 		if (hibernate.containsKey("hibernate.hbm2ddl.auto")) {
 			return true;
 		}
