@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	}
 
 	/**
-	 * Get an the identifier for the specified details. By default this method will return
+	 * Get an identifier for the specified details. By default this method will return
 	 * an identifier with the name adapted based on the result of
 	 * {@link #isCaseInsensitive(JdbcEnvironment)}
 	 * @param name the name of the identifier

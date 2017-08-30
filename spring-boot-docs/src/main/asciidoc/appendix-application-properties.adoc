@@ -414,16 +414,22 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # Locations of static resources.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
+	spring.session.store-type= # Session store type.
+	spring.session.servlet.filter-order=-2147483598 # Session repository filter order.
+	spring.session.servlet.filter-dispatcher-types=ASYNC,ERROR,REQUEST # Session repository filter dispatcher types.
+
+	# SPRING SESSION HAZELCAST ({sc-spring-boot-autoconfigure}/session/HazelcastSessionProperties.{sc-ext}[HazelcastSessionProperties])
 	spring.session.hazelcast.flush-mode=on-save # Sessions flush mode.
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
+
+	# SPRING SESSION JDBC ({sc-spring-boot-autoconfigure}/session/JdbcSessionProperties.{sc-ext}[JdbcSessionProperties])
 	spring.session.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
+
+	# SPRING SESSION REDIS ({sc-spring-boot-autoconfigure}/session/RedisSessionProperties.{sc-ext}[RedisSessionProperties])
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.
 	spring.session.redis.namespace= # Namespace for keys used to store sessions.
-	spring.session.servlet.filter-order=-2147483598 # Session repository filter order.
-    spring.session.servlet.filter-dispatcher-types=ASYNC,ERROR,REQUEST # Session repository filter dispatcher types.
-	spring.session.store-type= # Session store type.
 
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
 	spring.social.auto-connection-views=false # Enable the connection status view for supported providers.
@@ -924,7 +930,7 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
 	spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
 	spring.activemq.pool.maximum-active-session-per-connection=500 # Maximum number of active sessions per connection.
-	spring.activemq.pool.reconnect-on-exception=true # Reset the connection when a "JMXException" occurs.
+	spring.activemq.pool.reconnect-on-exception=true # Reset the connection when a "JMSException" occurs.
 	spring.activemq.pool.time-between-expiration-check=-1 # Time to sleep, in milliseconds, between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
 	spring.activemq.pool.use-anonymous-producers=true # Use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.
 

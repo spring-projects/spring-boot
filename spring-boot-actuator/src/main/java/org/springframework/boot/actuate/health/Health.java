@@ -125,7 +125,7 @@ public final class Health {
 	}
 
 	/**
-	 * Create a new {@link Builder} instance with an {@link Status#DOWN} status an the
+	 * Create a new {@link Builder} instance with an {@link Status#DOWN} status and the
 	 * specified exception details.
 	 * @param ex the exception
 	 * @return a new {@link Builder} instance

@@ -189,7 +189,7 @@ public class ActiveMQProperties {
 		private int maximumActiveSessionPerConnection = 500;
 
 		/**
-		 * Reset the connection when a "JMXException" occurs.
+		 * Reset the connection when a "JMSException" occurs.
 		 */
 		private boolean reconnectOnException = true;
 

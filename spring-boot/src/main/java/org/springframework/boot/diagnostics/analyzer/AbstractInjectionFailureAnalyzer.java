@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,8 +106,8 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable>
 	}
 
 	/**
-	 * Returns an analysis of the given {@code failure}, or {@code null} if no analysis
-	 * was possible.
+	 * Returns an analysis of the given {@code rootFailure}, or {@code null} if no
+	 * analysis was possible.
 	 * @param rootFailure the root failure passed to the analyzer
 	 * @param cause the actual found cause
 	 * @param description the description of the injection point or {@code null}
