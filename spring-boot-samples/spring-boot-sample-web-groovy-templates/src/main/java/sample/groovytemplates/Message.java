@@ -24,7 +24,7 @@ public class Message {
 
 	private Long id;
 
-	@NotEmpty(message = "Message is required.")
+	@NotEmpty(message = "Text is required.")
 	private String text;
 
 	@NotEmpty(message = "Summary is required.")

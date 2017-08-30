@@ -39,7 +39,7 @@ public abstract class AbstractFailureAnalyzer<T extends Throwable>
 	}
 
 	/**
-	 * Returns an analysis of the given {@code failure}, or {@code null} if no analysis
+	 * Returns an analysis of the given {@code rootFailure}, or {@code null} if no analysis
 	 * was possible.
 	 * @param rootFailure the root failure passed to the analyzer
 	 * @param cause the actual found cause

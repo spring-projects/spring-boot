@@ -413,7 +413,7 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.chain.strategy.fixed.version= # Version string to use for the Version Strategy.
 	spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # Locations of static resources.
 
-	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
+	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties], {sc-spring-boot-autoconfigure}/session/JdbcSessionProperties.{sc-ext}[JdbcSessionProperties], {sc-spring-boot-autoconfigure}/session/RedisSessionProperties.{sc-ext}[RedisSessionProperties])
 	spring.session.hazelcast.flush-mode=on-save # Sessions flush mode.
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
 	spring.session.jdbc.initialize-schema=embedded # Database schema initialization mode.
@@ -924,7 +924,7 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
 	spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
 	spring.activemq.pool.maximum-active-session-per-connection=500 # Maximum number of active sessions per connection.
-	spring.activemq.pool.reconnect-on-exception=true # Reset the connection when a "JMXException" occurs.
+	spring.activemq.pool.reconnect-on-exception=true # Reset the connection when a "JMSException" occurs.
 	spring.activemq.pool.time-between-expiration-check=-1 # Time to sleep, in milliseconds, between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
 	spring.activemq.pool.use-anonymous-producers=true # Use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.
 
