@@ -24,6 +24,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+
 		// @formatter:off
 		http.authorizeRequests()
 				.requestMatchers(this.bootSecurity.endpointIds("status", "info")).permitAll()

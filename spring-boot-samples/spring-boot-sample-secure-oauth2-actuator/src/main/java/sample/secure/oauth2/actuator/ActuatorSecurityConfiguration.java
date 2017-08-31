@@ -23,9 +23,12 @@ public class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter 
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.requestMatcher(
-				this.springBootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS))
-				.authorizeRequests().antMatchers("/**").authenticated().and().httpBasic();
+		// @formatter:off
+		http.requestMatcher(this.springBootSecurity.endpointIds(SpringBootSecurity.ALL_ENDPOINTS)).authorizeRequests()
+				.antMatchers("/**").authenticated()
+				.and()
+			.httpBasic();
+		// @formatter:on
 	}
 
 }
