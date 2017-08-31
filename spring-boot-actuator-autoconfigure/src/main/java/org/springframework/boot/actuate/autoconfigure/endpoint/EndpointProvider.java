@@ -33,7 +33,7 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public final class EndpointProvider<T extends Operation> {
+public class EndpointProvider<T extends Operation> {
 
 	private final EndpointDiscoverer<T> discoverer;
 

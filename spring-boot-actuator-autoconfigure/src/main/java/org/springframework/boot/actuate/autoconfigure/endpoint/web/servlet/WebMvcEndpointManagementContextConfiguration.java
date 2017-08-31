@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -59,6 +61,14 @@ public class WebMvcEndpointManagementContextConfiguration {
 				new EndpointMapping(managementServerProperties.getContextPath()),
 				provider.getEndpoints(), getCorsConfiguration(corsProperties));
 		return handlerMapping;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public EndpointPathProvider endpointPathProvider(
+			EndpointProvider<WebEndpointOperation> provider,
+			ManagementServerProperties managementServerProperties) {
+		return new DefaultEndpointPathProvider(provider, managementServerProperties);
 	}
 
 	private CorsConfiguration getCorsConfiguration(CorsEndpointProperties properties) {

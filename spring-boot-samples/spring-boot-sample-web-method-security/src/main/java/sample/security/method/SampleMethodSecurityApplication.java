@@ -19,6 +19,7 @@ package sample.security.method;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.boot.actuate.autoconfigure.security.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
@@ -104,9 +105,12 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			// FIXME
-			// http.requestMatcher(ALL_ENDPOINTS)
-			// .authorizeRequests().anyRequest().authenticated().and().httpBasic();
+			// @formatter:off
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+					.anyRequest().authenticated()
+					.and()
+				.httpBasic();
+			// @formatter:on
 		}
 
 	}

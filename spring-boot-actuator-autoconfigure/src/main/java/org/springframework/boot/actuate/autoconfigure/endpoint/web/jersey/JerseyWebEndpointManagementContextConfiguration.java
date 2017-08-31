@@ -21,6 +21,8 @@ import java.util.HashSet;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -58,6 +60,14 @@ class JerseyWebEndpointManagementContextConfiguration {
 				new HashSet<>(new JerseyEndpointResourceFactory().createEndpointResources(
 						new EndpointMapping(managementServerProperties.getContextPath()),
 						provider.getEndpoints())));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public EndpointPathProvider endpointPathProvider(
+			EndpointProvider<WebEndpointOperation> provider,
+			ManagementServerProperties managementServerProperties) {
+		return new DefaultEndpointPathProvider(provider, managementServerProperties);
 	}
 
 }

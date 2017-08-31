@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -47,6 +49,14 @@ public class WebFluxEndpointManagementContextConfiguration {
 		return new WebFluxEndpointHandlerMapping(
 				new EndpointMapping(managementServerProperties.getContextPath()),
 				provider.getEndpoints());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public EndpointPathProvider endpointPathProvider(
+			EndpointProvider<WebEndpointOperation> provider,
+			ManagementServerProperties managementServerProperties) {
+		return new DefaultEndpointPathProvider(provider, managementServerProperties);
 	}
 
 }

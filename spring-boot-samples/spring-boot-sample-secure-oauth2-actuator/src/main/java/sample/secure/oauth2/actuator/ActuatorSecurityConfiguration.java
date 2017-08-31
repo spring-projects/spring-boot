@@ -1,5 +1,6 @@
 package sample.secure.oauth2.actuator;
 
+import org.springframework.boot.actuate.autoconfigure.security.EndpointRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,12 +17,11 @@ public class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter 
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// FIXME
 		// @formatter:off
-//		http.requestMatcher(ALL_ENDPOINTS).authorizeRequests()
-//				.antMatchers("/**").authenticated()
-//				.and()
-//			.httpBasic();
+		http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+				.antMatchers("/**").authenticated()
+				.and()
+			.httpBasic();
 		// @formatter:on
 	}
 
