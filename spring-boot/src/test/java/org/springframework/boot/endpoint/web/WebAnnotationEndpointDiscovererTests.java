@@ -36,6 +36,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.CachingOperationInvoker;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.endpoint.DeleteOperation;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.EndpointInfo;
@@ -213,6 +214,24 @@ public class WebAnnotationEndpointDiscovererTests {
 			assertThat(requestPredicates(endpoint)).has(requestPredicates(
 					path("resource").httpMethod(WebEndpointHttpMethod.GET).consumes()
 							.produces("application/octet-stream")));
+		});
+	}
+
+	@Test
+	public void operationCanProduceCustomMediaTypes() {
+		load(CustomMediaTypesEndpointConfiguration.class, (discoverer) -> {
+			Map<String, EndpointInfo<WebEndpointOperation>> endpoints = mapEndpoints(
+					discoverer.discoverEndpoints());
+			assertThat(endpoints).containsOnlyKeys("custommediatypes");
+			EndpointInfo<WebEndpointOperation> endpoint = endpoints
+					.get("custommediatypes");
+			assertThat(requestPredicates(endpoint)).has(requestPredicates(
+					path("custommediatypes").httpMethod(WebEndpointHttpMethod.GET)
+							.consumes().produces("text/plain"),
+					path("custommediatypes").httpMethod(WebEndpointHttpMethod.POST)
+							.consumes().produces("a/b", "c/d"),
+					path("custommediatypes").httpMethod(WebEndpointHttpMethod.DELETE)
+							.consumes().produces("text/plain")));
 		});
 	}
 
@@ -415,6 +434,27 @@ public class WebAnnotationEndpointDiscovererTests {
 
 	}
 
+	@Endpoint(id = "custommediatypes")
+	static class CustomMediaTypesEndpoint {
+
+		@ReadOperation(produces = "text/plain")
+		public String read() {
+			return "read";
+		}
+
+		@WriteOperation(produces = { "a/b", "c/d" })
+		public String write() {
+			return "write";
+
+		}
+
+		@DeleteOperation(produces = "text/plain")
+		public String delete() {
+			return "delete";
+		}
+
+	}
+
 	@Configuration
 	static class MultipleEndpointsConfiguration {
 
@@ -574,6 +614,17 @@ public class WebAnnotationEndpointDiscovererTests {
 		@Bean
 		public ResourceEndpoint resourceEndpoint() {
 			return new ResourceEndpoint();
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class CustomMediaTypesEndpointConfiguration {
+
+		@Bean
+		public CustomMediaTypesEndpoint customMediaTypesEndpoint() {
+			return new CustomMediaTypesEndpoint();
 		}
 
 	}

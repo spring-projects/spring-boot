@@ -33,4 +33,11 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ReadOperation {
 
+	/**
+	 * The media type of the result of the operation.
+	 *
+	 * @return the media type
+	 */
+	String[] produces() default {};
+
 }

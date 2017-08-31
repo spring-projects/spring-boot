@@ -18,6 +18,7 @@ package org.springframework.boot.endpoint.web;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -134,7 +135,8 @@ public class WebAnnotationEndpointDiscoverer extends
 			OperationRequestPredicate requestPredicate = new OperationRequestPredicate(
 					determinePath(endpointId, method), httpMethod,
 					determineConsumedMediaTypes(httpMethod, method),
-					determineProducedMediaTypes(method));
+					determineProducedMediaTypes(
+							operationAttributes.getStringArray("produces"), method));
 			OperationInvoker invoker = new ReflectiveOperationInvoker(
 					this.parameterMapper, target, method);
 			if (timeToLive > 0) {
@@ -171,7 +173,11 @@ public class WebAnnotationEndpointDiscoverer extends
 			return Collections.emptyList();
 		}
 
-		private Collection<String> determineProducedMediaTypes(Method method) {
+		private Collection<String> determineProducedMediaTypes(String[] produces,
+				Method method) {
+			if (produces.length > 0) {
+				return Arrays.asList(produces);
+			}
 			if (Void.class.equals(method.getReturnType())
 					|| void.class.equals(method.getReturnType())) {
 				return Collections.emptyList();

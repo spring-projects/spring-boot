@@ -254,6 +254,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 						.isEqualTo("alpha"));
 	}
 
+	@Test
+	public void readOperationWithCustomMediaType() {
+		load(CustomMediaTypesEndpointConfiguration.class,
+				(client) -> client.get().uri("/custommediatypes").exchange()
+						.expectStatus().isOk().expectHeader()
+						.valueMatches("Content-Type", "text/plain(;charset=.*)?"));
+	}
+
 	protected abstract T createApplicationContext(Class<?>... config);
 
 	protected abstract int getPort(T context);
@@ -422,6 +430,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class CustomMediaTypesEndpointConfiguration {
+
+		@Bean
+		public CustomMediaTypesEndpoint customMediaTypesEndpoint() {
+			return new CustomMediaTypesEndpoint();
+		}
+
+	}
+
 	@Endpoint(id = "test")
 	static class TestEndpoint {
 
@@ -576,6 +595,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		Mono<Map<String, String>> operation() {
 			return Mono.just(Collections.singletonMap("a", "alpha"));
+		}
+
+	}
+
+	@Endpoint(id = "custommediatypes")
+	static class CustomMediaTypesEndpoint {
+
+		@ReadOperation(produces = "text/plain")
+		public String read() {
+			return "read";
 		}
 
 	}
