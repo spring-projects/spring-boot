@@ -50,7 +50,7 @@ content into your application; rather pick only the properties that you need.
 
 	# AOP
 	spring.aop.auto=true # Add @EnableAspectJAutoProxy.
-	spring.aop.proxy-target-class=false # Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).
+	spring.aop.proxy-target-class= # Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false). Defaults to "true" when using Spring Transaction Management, otherwise "false".
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.index= # Application index.
