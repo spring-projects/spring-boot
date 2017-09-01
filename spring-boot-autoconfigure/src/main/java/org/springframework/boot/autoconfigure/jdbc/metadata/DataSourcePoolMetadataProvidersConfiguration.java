@@ -20,6 +20,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.jdbc.metadata.CommonsDbcp2DataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -25,26 +25,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure</artifactId>
-		</dependency>
+		<!-- Optional -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<!-- Optional -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-xml</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -73,16 +57,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>io.dropwizard.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>io.lettuce</groupId>
 			<artifactId>lettuce-core</artifactId>
 			<optional>true</optional>
@@ -93,18 +67,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>javax.cache</groupId>
-			<artifactId>cache-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>javax.jms-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -113,34 +77,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-broker</artifactId>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<artifactId>geronimo-jms_1.1_spec</artifactId>
-					<groupId>org.apache.geronimo.specs</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-el</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-jdbc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -169,11 +107,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.jolokia</groupId>
-			<artifactId>jolokia-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-spring4-embedded</artifactId>
 			<optional>true</optional>
@@ -196,6 +129,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webflux</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -258,7 +196,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
+			<artifactId>spring-security-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -267,11 +205,6 @@
 			<optional>true</optional>
 		</dependency>
 		<!-- Annotation processing -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
@@ -289,8 +222,28 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -299,13 +252,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.ipc</groupId>
-			<artifactId>reactor-netty</artifactId>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-test</artifactId>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -325,18 +278,8 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -348,36 +291,6 @@
 			<groupId>org.skyscreamer</groupId>
 			<artifactId>jsonassert</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-elasticsearch</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-rest-webmvc</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-jmx</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<optional>true</optional>
 		</dependency>
 	</dependencies>
 </project>

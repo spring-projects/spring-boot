@@ -768,6 +768,5 @@
 			<artifactId>tomcat-embed-jasper</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 </project>

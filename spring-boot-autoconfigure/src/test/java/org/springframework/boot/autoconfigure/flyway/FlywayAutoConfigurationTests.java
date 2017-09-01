@@ -38,8 +38,8 @@ import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;

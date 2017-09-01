@@ -16,6 +16,5 @@
 
 /**
  * Endpoints used to expose actuator information.
- *
  */
 package org.springframework.boot.actuate.endpoint;

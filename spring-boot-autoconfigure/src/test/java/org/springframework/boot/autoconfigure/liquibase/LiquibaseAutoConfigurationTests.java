@@ -32,8 +32,8 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
 import org.springframework.boot.test.rule.OutputCapture;

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

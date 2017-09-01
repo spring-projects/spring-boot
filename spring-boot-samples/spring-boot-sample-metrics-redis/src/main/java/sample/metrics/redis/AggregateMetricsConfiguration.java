@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package sample.metrics.redis;
 
-import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
-import org.springframework.boot.actuate.endpoint.PublicMetrics;
+import org.springframework.boot.actuate.metrics.PublicMetrics;
 import org.springframework.boot.actuate.metrics.aggregate.AggregateMetricReader;
 import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.reader.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.repository.redis.RedisMetricRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

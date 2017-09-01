@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.config.ResourceNotFoundException;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.Resource;

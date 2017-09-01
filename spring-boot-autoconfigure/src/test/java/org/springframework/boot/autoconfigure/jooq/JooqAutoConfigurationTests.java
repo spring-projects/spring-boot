@@ -36,7 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;

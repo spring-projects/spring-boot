@@ -39,7 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.trace.TraceProperties.Include;
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.ServletWebRequest;

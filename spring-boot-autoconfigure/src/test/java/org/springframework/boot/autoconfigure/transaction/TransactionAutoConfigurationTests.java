@@ -25,8 +25,8 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;

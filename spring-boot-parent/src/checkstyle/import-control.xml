@@ -95,6 +95,9 @@
 			<subpackage name="view">
 				<allow pkg="org.springframework.web.servlet" />
 			</subpackage>
+			<subpackage name="error">
+				<allow pkg="org.springframework.web.servlet" />
+			</subpackage>
 		</subpackage>
 
 		<!-- Reactive -->

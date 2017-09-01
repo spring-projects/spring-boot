@@ -15,6 +15,6 @@
  */
 
 /**
- * Classes for cache statistics.
+ * Actuator support for cache statistics.
  */
 package org.springframework.boot.actuate.cache;

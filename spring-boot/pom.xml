@@ -75,6 +75,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.projectreactor.ipc</groupId>
 			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>
@@ -100,6 +105,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<optional>true</optional>
@@ -122,6 +132,11 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -157,11 +172,6 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-server</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -324,21 +334,6 @@
 		<dependency>
 			<groupId>org.firebirdsql.jdbc</groupId>
 			<artifactId>jaybird-jdk18</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-spring4</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
