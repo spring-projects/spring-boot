@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -164,11 +163,11 @@ class AutoConfigurationSorter {
 		private int getOrder() {
 			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getInteger(this.className,
-						"AutoConfigureOrder", Ordered.LOWEST_PRECEDENCE);
+						"AutoConfigureOrder", AutoConfigureOrder.DEFAULT_ORDER);
 			}
 			Map<String, Object> attributes = getAnnotationMetadata()
 					.getAnnotationAttributes(AutoConfigureOrder.class.getName());
-			return (attributes == null ? Ordered.LOWEST_PRECEDENCE
+			return (attributes == null ? AutoConfigureOrder.DEFAULT_ORDER
 					: (Integer) attributes.get("value"));
 		}
 
