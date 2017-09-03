@@ -65,8 +65,9 @@ public class RedisReactiveHealthIndicatorTests {
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
 		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-				.expectError(RedisConnectionFailureException.class);
+		StepVerifier.create(health).consumeNextWith(h -> {
+			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
+		}).verifyComplete();
 		verify(redisConnection).close();
 	}
 
