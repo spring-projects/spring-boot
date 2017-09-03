@@ -18,12 +18,14 @@ package org.springframework.boot.actuate.health;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.data.redis.connection.ReactiveRedisConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 
 /**
  * A {@link ReactiveHealthIndicator} for Redis.
  *
  * @author Stephane Nicoll
+ * @author Mark Paluch
  * @since 2.0.0
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
@@ -37,10 +39,14 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		return this.connectionFactory.getReactiveConnection().serverCommands().info()
-				.map(info -> builder.up().withDetail(
-						RedisHealthIndicator.VERSION, info.getProperty(
-								RedisHealthIndicator.REDIS_VERSION)).build());
+		ReactiveRedisConnection connection = this.connectionFactory
+				.getReactiveConnection();
+		return connection.serverCommands().info()
+				.map(info -> builder.up()
+						.withDetail(RedisHealthIndicator.VERSION,
+								info.getProperty(RedisHealthIndicator.REDIS_VERSION))
+						.build())
+				.doFinally(signal -> connection.close());
 	}
 
 }
