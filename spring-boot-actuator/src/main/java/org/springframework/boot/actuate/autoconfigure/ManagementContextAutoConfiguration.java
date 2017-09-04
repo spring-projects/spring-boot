@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -51,6 +53,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 public class ManagementContextAutoConfiguration {
 
 	@Configuration
