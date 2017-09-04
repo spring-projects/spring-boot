@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
@@ -46,14 +47,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
+import org.springframework.lang.Nullable;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -61,6 +67,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.fail;
 
 /**
@@ -470,6 +477,51 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		Duration duration = this.context.getBean(DurationProperty.class).getDuration();
 		assertThat(duration.getSeconds()).isEqualTo(60);
+	}
+
+	@Test
+	public void converterIsFound() {
+		prepareConverterContext(ConverterConfiguration.class, PersonProperty.class);
+		this.context.refresh();
+		Person person = this.context.getBean(PersonProperty.class).getPerson();
+		assertThat(person.firstName).isEqualTo("John");
+		assertThat(person.lastName).isEqualTo("Smith");
+	}
+
+	@Test
+	public void converterWithoutQualifierIsNotInvoked() {
+		prepareConverterContext(NonQualifiedConverterConfiguration.class,
+				PersonProperty.class);
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectCause(instanceOf(BindException.class));
+		this.context.refresh();
+	}
+
+	@Test
+	public void genericConverterIsFound() {
+		prepareConverterContext(GenericConverterConfiguration.class, PersonProperty.class);
+		this.context.refresh();
+		Person person = this.context.getBean(PersonProperty.class).getPerson();
+		assertThat(person.firstName).isEqualTo("John");
+		assertThat(person.lastName).isEqualTo("Smith");
+	}
+
+	@Test
+	public void genericConverterWithoutQualifierIsNotInvoked() {
+		prepareConverterContext(NonQualifiedGenericConverterConfiguration.class,
+				PersonProperty.class);
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectCause(instanceOf(BindException.class));
+		this.context.refresh();
+	}
+
+	private void prepareConverterContext(Class<?>... config) {
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		sources.addFirst(new MapPropertySource("test",
+				Collections.singletonMap("test.person", "John Smith")));
+		this.context.register(config);
 	}
 
 	private void assertBindingFailure(int errorCount) {
@@ -1033,6 +1085,105 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		public void setName(String name) {
 			this.name = name;
+		}
+
+	}
+
+	@Configuration
+	static class ConverterConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		public Converter<String, Person> personConverter() {
+			return new PersonConverter();
+		}
+
+	}
+
+	@Configuration
+	static class NonQualifiedConverterConfiguration {
+
+		@Bean
+		public Converter<String, Person> personConverter() {
+			return new PersonConverter();
+		}
+
+	}
+
+	private static class PersonConverter implements Converter<String, Person> {
+
+		@Nullable
+		@Override
+		public Person convert(String source) {
+			String[] content = StringUtils.split(source, " ");
+			return new Person(content[0], content[1]);
+		}
+	}
+
+	@Configuration
+	static class GenericConverterConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		public GenericConverter genericPersonConverter() {
+			return new GenericPersonConverter();
+		}
+
+	}
+
+	@Configuration
+	static class NonQualifiedGenericConverterConfiguration {
+
+		@Bean
+		public GenericConverter genericPersonConverter() {
+			return new GenericPersonConverter();
+		}
+
+	}
+
+	private static class GenericPersonConverter implements GenericConverter {
+
+		@Nullable
+		@Override
+		public Set<ConvertiblePair> getConvertibleTypes() {
+			return Collections.singleton(new ConvertiblePair(String.class, Person.class));
+		}
+
+		@Nullable
+		@Override
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+			String[] content = StringUtils.split((String) source, " ");
+			return new Person(content[0], content[1]);
+		}
+	}
+
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PersonProperty {
+
+		private Person person;
+
+		public Person getPerson() {
+			return this.person;
+		}
+
+		public void setPerson(Person person) {
+			this.person = person;
+		}
+
+	}
+
+	static class Person {
+
+		private final String firstName;
+
+		private final String lastName;
+
+		Person(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
 		}
 
 	}
