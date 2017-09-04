@@ -16,83 +16,174 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.json.JsonParser;
-import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.LiveBeansView;
-import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
- * Exposes JSON view of Spring beans. If the {@link Environment} contains a key setting
- * the {@link LiveBeansView#MBEAN_DOMAIN_PROPERTY_NAME} then all application contexts in
- * the JVM will be shown (and the corresponding MBeans will be registered per the standard
- * behavior of LiveBeansView). Otherwise only the current application context hierarchy.
+ * {@link Endpoint} to expose details of an application's bean, grouped by application
+ * context.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
  */
 @Endpoint(id = "beans")
-public class BeansEndpoint implements ApplicationContextAware {
+public class BeansEndpoint {
 
-	private final HierarchyAwareLiveBeansView liveBeansView = new HierarchyAwareLiveBeansView();
+	private final ConfigurableApplicationContext context;
 
-	private final JsonParser parser = JsonParserFactory.getJsonParser();
-
-	@Override
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		if (context.getEnvironment()
-				.getProperty(LiveBeansView.MBEAN_DOMAIN_PROPERTY_NAME) == null) {
-			this.liveBeansView.setLeafContext(context);
-		}
+	/**
+	 * Creates a new {@code BeansEndpoint} that will describe the beans in the given
+	 * {@code context} and all of its ancestors.
+	 *
+	 * @param context the application context
+	 * @see ConfigurableApplicationContext#getParent()
+	 */
+	public BeansEndpoint(ConfigurableApplicationContext context) {
+		this.context = context;
 	}
 
 	@ReadOperation
-	public List<Object> beans() {
-		return this.parser.parseList(this.liveBeansView.getSnapshotAsJson());
+	public Map<String, Object> beans() {
+		List<ApplicationContextDescriptor> contexts = new ArrayList<>();
+		ConfigurableApplicationContext current = this.context;
+		while (current != null) {
+			contexts.add(ApplicationContextDescriptor.describing(current));
+			current = getConfigurableParent(current);
+		}
+		return Collections.singletonMap("contexts", contexts);
 	}
 
-	private static class HierarchyAwareLiveBeansView extends LiveBeansView {
+	private ConfigurableApplicationContext getConfigurableParent(
+			ConfigurableApplicationContext context) {
+		ApplicationContext parent = context.getParent();
+		if (parent instanceof ConfigurableApplicationContext) {
+			return (ConfigurableApplicationContext) parent;
+		}
+		return null;
+	}
 
-		private ConfigurableApplicationContext leafContext;
+	/**
+	 * A description of an application context, primarily intended for serialization to
+	 * JSON.
+	 */
+	static final class ApplicationContextDescriptor {
 
-		private void setLeafContext(ApplicationContext leafContext) {
-			this.leafContext = asConfigurableContext(leafContext);
+		private final String id;
+
+		private final String parentId;
+
+		private final Map<String, BeanDescriptor> beans;
+
+		private ApplicationContextDescriptor(String id, String parentId,
+				Map<String, BeanDescriptor> beans) {
+			this.id = id;
+			this.parentId = parentId;
+			this.beans = beans;
 		}
 
-		@Override
-		public String getSnapshotAsJson() {
-			if (this.leafContext == null) {
-				return super.getSnapshotAsJson();
+		public String getId() {
+			return this.id;
+		}
+
+		public String getParentId() {
+			return this.parentId;
+		}
+
+		public Map<String, BeanDescriptor> getBeans() {
+			return this.beans;
+		}
+
+		private static ApplicationContextDescriptor describing(
+				ConfigurableApplicationContext context) {
+			ApplicationContext parent = context.getParent();
+			return new ApplicationContextDescriptor(context.getId(),
+					parent == null ? null : parent.getId(),
+					describeBeans(context.getBeanFactory()));
+		}
+
+		private static Map<String, BeanDescriptor> describeBeans(
+				ConfigurableListableBeanFactory beanFactory) {
+			Map<String, BeanDescriptor> beans = new HashMap<>();
+			for (String beanName : beanFactory.getBeanDefinitionNames()) {
+				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
+				if (isBeanEligible(beanName, definition, beanFactory)) {
+					beans.put(beanName, describeBean(beanName, definition, beanFactory));
+				}
 			}
-			return generateJson(getContextHierarchy());
+			return beans;
 		}
 
-		private ConfigurableApplicationContext asConfigurableContext(
-				ApplicationContext applicationContext) {
-			Assert.isTrue(applicationContext instanceof ConfigurableApplicationContext,
-					"'" + applicationContext
-							+ "' does not implement ConfigurableApplicationContext");
-			return (ConfigurableApplicationContext) applicationContext;
+		private static BeanDescriptor describeBean(String name, BeanDefinition definition,
+				ConfigurableListableBeanFactory factory) {
+			return new BeanDescriptor(factory.getAliases(name), definition.getScope(),
+					factory.getType(name), definition.getResourceDescription(),
+					factory.getDependenciesForBean(name));
 		}
 
-		private Set<ConfigurableApplicationContext> getContextHierarchy() {
-			Set<ConfigurableApplicationContext> contexts = new LinkedHashSet<>();
-			ApplicationContext context = this.leafContext;
-			while (context != null) {
-				contexts.add(asConfigurableContext(context));
-				context = context.getParent();
-			}
-			return contexts;
+		private static boolean isBeanEligible(String beanName, BeanDefinition bd,
+				ConfigurableBeanFactory bf) {
+			return (bd.getRole() != BeanDefinition.ROLE_INFRASTRUCTURE
+					&& (!bd.isLazyInit() || bf.containsSingleton(beanName)));
+		}
+
+	}
+
+	/**
+	 * A description of a bean in an application context, primarily intended for
+	 * serialization to JSON.
+	 */
+	static final class BeanDescriptor {
+
+		private final String[] aliases;
+
+		private final String scope;
+
+		private final Class<?> type;
+
+		private final String resource;
+
+		private final String[] dependencies;
+
+		private BeanDescriptor(String[] aliases, String scope, Class<?> type,
+				String resource, String[] dependencies) {
+			this.aliases = aliases;
+			this.scope = StringUtils.hasText(scope) ? scope
+					: BeanDefinition.SCOPE_SINGLETON;
+			this.type = type;
+			this.resource = resource;
+			this.dependencies = dependencies;
+		}
+
+		public String[] getAliases() {
+			return this.aliases;
+		}
+
+		public String getScope() {
+			return this.scope;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
+
+		public String getResource() {
+			return this.resource;
+		}
+
+		public String[] getDependencies() {
+			return this.dependencies;
 		}
 
 	}

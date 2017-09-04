@@ -64,6 +64,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -101,8 +102,9 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public BeansEndpoint beansEndpoint() {
-		return new BeansEndpoint();
+	public BeansEndpoint beansEndpoint(
+			ConfigurableApplicationContext applicationContext) {
+		return new BeansEndpoint(applicationContext);
 	}
 
 	@Bean
@@ -187,9 +189,10 @@ public class EndpointAutoConfiguration {
 
 		HealthEndpointConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
 				Supplier<Map<String, HealthIndicator>> healthIndicatorsSupplier) {
-			this.healthIndicator = new CompositeHealthIndicatorFactory().createHealthIndicator(
-					healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
-					healthIndicatorsSupplier.get());
+			this.healthIndicator = new CompositeHealthIndicatorFactory()
+					.createHealthIndicator(
+							healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
+							healthIndicatorsSupplier.get());
 		}
 
 		@Bean

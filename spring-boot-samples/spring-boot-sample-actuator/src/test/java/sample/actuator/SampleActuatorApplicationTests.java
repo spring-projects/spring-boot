@@ -213,13 +213,14 @@ public class SampleActuatorApplicationTests {
 	@SuppressWarnings("unchecked")
 	public void testBeans() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = this.restTemplate
+		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/beans", List.class);
+				.getForEntity("/application/beans", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).hasSize(1);
-		Map<String, Object> body = (Map<String, Object>) entity.getBody().get(0);
-		assertThat(((String) body.get("context"))).startsWith("application");
+		Map<String, Object> body = (Map<String, Object>) ((List<?>) entity.getBody()
+				.get("contexts")).get(0);
+		assertThat(((String) body.get("id"))).startsWith("application");
 	}
 
 	@Test

@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportM
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -197,8 +198,9 @@ public class MvcEndpointCorsIntegrationTests {
 	static class EndpointConfiguration {
 
 		@Bean
-		public BeansEndpoint beansEndpoint() {
-			return new BeansEndpoint();
+		public BeansEndpoint beansEndpoint(
+				ConfigurableApplicationContext applicationContext) {
+			return new BeansEndpoint(applicationContext);
 		}
 
 	}
