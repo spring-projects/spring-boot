@@ -2022,14 +2022,14 @@ To automatically run Liquibase database migrations on startup, add the
 `org.liquibase:liquibase-core` to your classpath.
 
 The master change log is by default read from `db/changelog/db.changelog-master.yaml` but
-can be set using `liquibase.change-log`. In addition to YAML, Liquibase also supports
-JSON, XML, and SQL change log formats.
+can be set using `spring.liquibase.change-log`. In addition to YAML, Liquibase also
+supports JSON, XML, and SQL change log formats.
 
 By default Liquibase will autowire the (`@Primary`) `DataSource` in your context and use
 that for migrations. If you like to use a different `DataSource` you can create one and
 mark its `@Bean` as `@LiquibaseDataSource` - if you do that remember to create another one
 and mark it as `@Primary` if you want two data sources. Or you can use Liquibase's native
-`DataSource` by setting `liquibase.[url,user,password]` in external properties.
+`DataSource` by setting `spring.liquibase.[url,user,password]` in external properties.
 
 See
 {sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[`LiquibaseProperties`]

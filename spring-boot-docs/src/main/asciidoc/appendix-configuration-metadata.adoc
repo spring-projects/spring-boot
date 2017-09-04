@@ -559,7 +559,7 @@ The following types can be used:
 NOTE: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE
 about it.
 
-The meta-data snippet below corresponds to the standard `liquibase.change-log`
+The meta-data snippet below corresponds to the standard `spring.liquibase.change-log`
 property that defines the path to the changelog to use. It is actually used internally as a
 `org.springframework.core.io.Resource` but cannot be exposed as such as we need to keep the
 original String value to pass it to the Liquibase API.
@@ -568,7 +568,7 @@ original String value to pass it to the Liquibase API.
 ----
 	{"hints": [
 		{
-			"name": "liquibase.change-log",
+			"name": "spring.liquibase.change-log",
 			"providers": [
 				{
 					"name": "handle-as",
