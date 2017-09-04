@@ -1968,12 +1968,13 @@ To automatically run Flyway database migrations on startup, add the
 
 The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an
 underscore-separated version, e.g. '`1`' or '`2_1`'). By default they live in a folder
-`classpath:db/migration` but you can modify that using `flyway.locations`. You can also
-add a special `{vendor}` placeholder to use vendor-specific scripts. Assume the following:
+`classpath:db/migration` but you can modify that using `spring.flyway.locations`. You can
+also add a special `{vendor}` placeholder to use vendor-specific scripts. Assume the
+following:
 
 [source,properties,indent=0]
 ----
-	flyway.locations=db/migration/{vendor}
+	spring.flyway.locations=db/migration/{vendor}
 ----
 
 Rather than using `db/migration`, this configuration will set the folder to use according
@@ -1999,7 +2000,7 @@ By default Flyway will autowire the (`@Primary`) `DataSource` in your context an
 use that for migrations. If you like to use a different `DataSource` you can create
 one and mark its `@Bean` as `@FlywayDataSource` - if you do that remember to create
 another one and mark it as `@Primary` if you want two data sources.
-Or you can use Flyway's native `DataSource` by setting `flyway.[url,user,password]`
+Or you can use Flyway's native `DataSource` by setting `spring.flyway.[url,user,password]`
 in external properties.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
@@ -2008,11 +2009,17 @@ you can see how to set things up.
 You can also use Flyway to provide data for specific scenarios. For example, you can
 place test-specific migrations in `src/test/resources` and they will only be run when your
 application starts for testing. If you want to be more sophisticated you can use
-profile-specific configuration to customize `flyway.locations` so that certain migrations
-will only run when a particular profile is active. For example, in
-`application-dev.properties` you could set `flyway.locations` to
-`classpath:/db/migration, classpath:/dev/db/migration` and migrations in `dev/db/migration`
-will only run when the `dev` profile is active.
+profile-specific configuration to customize `spring.flyway.locations` so that certain
+migrations will only run when a particular profile is active. For example, in
+`application-dev.properties`:
+
+[source,properties,indent=0]
+----
+	spring.flyway.locations=classpath:/db/migration,classpath:/dev/db/migration
+----
+
+With that setup, migrations in `dev/db/migration` will only run when the `dev` profile is
+active.
 
 
 
