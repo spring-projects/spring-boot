@@ -203,7 +203,7 @@
 			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-runtime</artifactId>
-				<version>1.0.4</version>
+				<version>1.1.4-3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
