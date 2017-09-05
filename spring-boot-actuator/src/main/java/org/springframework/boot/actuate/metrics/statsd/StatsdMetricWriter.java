@@ -121,8 +121,8 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 
 	/**
 	 * Sanitize the metric name if necessary.
-	 * @param name The metric name
-	 * @return The sanitized metric name
+	 * @param name the metric name
+	 * @return the sanitized metric name
 	 */
 	private String sanitizeMetricName(String name) {
 		return name.replace(":", "-");

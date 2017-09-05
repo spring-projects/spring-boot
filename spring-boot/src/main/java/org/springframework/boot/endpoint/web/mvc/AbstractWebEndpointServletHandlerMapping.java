@@ -72,7 +72,7 @@ public abstract class AbstractWebEndpointServletHandlerMapping
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointPath the path beneath which all endpoints should be mapped
 	 * @param webEndpoints the web endpoints
-	 * @param corsConfiguration the CORS configuraton for the endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
 	public AbstractWebEndpointServletHandlerMapping(String endpointPath,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
