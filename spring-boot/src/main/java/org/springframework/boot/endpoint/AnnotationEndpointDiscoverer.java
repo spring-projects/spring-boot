@@ -19,7 +19,6 @@ package org.springframework.boot.endpoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,8 +28,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.HierarchicalBeanFactory;
-import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -38,7 +36,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * A base {@link EndpointDiscoverer} implementation that discovers {@link Endpoint} beans
@@ -92,7 +89,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 	}
 
 	private Map<Class<?>, EndpointInfo<T>> discoverEndpoints(EndpointExposure exposure) {
-		String[] beanNames = beanNamesForAnnotationIncludingAncestors(
+		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(
 				this.applicationContext, Endpoint.class);
 		Map<Class<?>, EndpointInfo<T>> endpoints = new LinkedHashMap<>();
 		Map<String, EndpointInfo<T>> endpointsById = new LinkedHashMap<>();
@@ -125,7 +122,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 		if (extensionType == null) {
 			return Collections.emptyMap();
 		}
-		String[] beanNames = beanNamesForAnnotationIncludingAncestors(
+		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(
 				this.applicationContext, extensionType);
 		Map<Class<?>, EndpointExtensionInfo<T>> extensions = new HashMap<>();
 		for (String beanName : beanNames) {
@@ -152,28 +149,6 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 		}
 		return extensions;
 
-	}
-
-	private static String[] beanNamesForAnnotationIncludingAncestors(
-			ListableBeanFactory lbf, Class<? extends Annotation> annotationType) {
-		Assert.notNull(lbf, "ListableBeanFactory must not be null");
-		String[] result = lbf.getBeanNamesForAnnotation(annotationType);
-		if (lbf instanceof HierarchicalBeanFactory) {
-			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
-			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
-				String[] parentResult = beanNamesForAnnotationIncludingAncestors(
-						(ListableBeanFactory) hbf.getParentBeanFactory(), annotationType);
-				List<String> resultList = new ArrayList<>();
-				resultList.addAll(Arrays.asList(result));
-				for (String beanName : parentResult) {
-					if (!resultList.contains(beanName) && !hbf.containsLocalBean(beanName)) {
-						resultList.add(beanName);
-					}
-				}
-				result = StringUtils.toStringArray(resultList);
-			}
-		}
-		return result;
 	}
 
 	private EndpointInfo<T> getEndpointInfo(Map<Class<?>, EndpointInfo<T>> endpoints,
