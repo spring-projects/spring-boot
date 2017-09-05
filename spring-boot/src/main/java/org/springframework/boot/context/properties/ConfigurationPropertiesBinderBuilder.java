@@ -124,7 +124,7 @@ public class ConfigurationPropertiesBinderBuilder {
 
 	/**
 	 * Build a {@link ConfigurationPropertiesBinder} based on the state of the builder,
-	 * discovering the {@lik ConversionService} and {@link Validator} if necessary.
+	 * discovering the {@link ConversionService} and {@link Validator} if necessary.
 	 * @return a {@link ConfigurationPropertiesBinder}
 	 */
 	public ConfigurationPropertiesBinder build() {
