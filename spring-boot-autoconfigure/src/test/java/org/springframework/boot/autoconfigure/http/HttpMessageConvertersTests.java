@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -55,6 +56,7 @@ public class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
+				ResourceRegionHttpMessageConverter.class,
 				SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class,
@@ -128,6 +130,7 @@ public class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
+				ResourceRegionHttpMessageConverter.class,
 				SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class,

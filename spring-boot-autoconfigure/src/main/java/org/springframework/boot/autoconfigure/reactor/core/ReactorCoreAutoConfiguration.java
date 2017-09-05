@@ -40,7 +40,7 @@ public class ReactorCoreAutoConfiguration {
 	@Autowired
 	protected void initialize(ReactorCoreProperties properties) {
 		if (properties.getStacktraceMode().isEnabled()) {
-			Hooks.onOperator(Hooks.OperatorHook::operatorStacktrace);
+			Hooks.onOperatorDebug();
 		}
 	}
 
