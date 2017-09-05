@@ -24,6 +24,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -35,6 +36,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.http.ReactiveHttpInputMessage;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -45,6 +47,7 @@ import org.springframework.util.ObjectUtils;
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
+@ConditionalOnClass(ReactiveHttpInputMessage.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({ ReactiveWebServerAutoConfiguration.BeanPostProcessorsRegistrar.class,
