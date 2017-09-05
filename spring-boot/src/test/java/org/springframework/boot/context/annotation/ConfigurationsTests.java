@@ -68,7 +68,6 @@ public class ConfigurationsTests {
 				Arrays.asList(String.class, Integer.class));
 		Configurations c4 = new TestConfigurations(Arrays.asList(Long.class, Byte.class));
 		Class<?>[] classes = Configurations.getClasses(c1, c2, c3, c4);
-		System.out.println(Arrays.asList(classes));
 		assertThat(classes).containsExactly(Short.class, Long.class, Byte.class,
 				InputStream.class, Integer.class, OutputStream.class, String.class);
 	}

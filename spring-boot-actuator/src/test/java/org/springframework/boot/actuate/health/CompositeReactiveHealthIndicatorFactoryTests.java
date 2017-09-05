@@ -74,19 +74,19 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 
 	@Test
 	public void reactiveHealthIndicatorTakesPrecedence() {
-		ReactiveHealthIndicator reactivehealthIndicator = mock(
+		ReactiveHealthIndicator reactiveHealthIndicator = mock(
 				ReactiveHealthIndicator.class);
-		given(reactivehealthIndicator.health()).willReturn(Mono.just(UP));
+		given(reactiveHealthIndicator.health()).willReturn(Mono.just(UP));
 		HealthIndicator regularHealthIndicator = mock(HealthIndicator.class);
 		given(regularHealthIndicator.health()).willReturn(UP);
 		ReactiveHealthIndicator healthIndicator = createHealthIndicator(
-				Collections.singletonMap("test", reactivehealthIndicator),
+				Collections.singletonMap("test", reactiveHealthIndicator),
 				Collections.singletonMap("test", regularHealthIndicator));
 		StepVerifier.create(healthIndicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("test");
 		}).verifyComplete();
-		verify(reactivehealthIndicator, times(1)).health();
+		verify(reactiveHealthIndicator, times(1)).health();
 		verify(regularHealthIndicator, times(0)).health();
 	}
 

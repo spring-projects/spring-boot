@@ -36,7 +36,7 @@ import org.springframework.util.ClassUtils;
  */
 public class AutoConfigurations extends Configurations implements Ordered {
 
-	private static AutoConfigurationSorter SORTER = new AutoConfigurationSorter(
+	private static final AutoConfigurationSorter SORTER = new AutoConfigurationSorter(
 			new SimpleMetadataReaderFactory(), null);
 
 	private static final Ordered ORDER = new AutoConfigurationImportSelector();
