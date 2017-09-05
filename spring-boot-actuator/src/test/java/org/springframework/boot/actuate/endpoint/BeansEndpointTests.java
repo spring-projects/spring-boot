@@ -43,27 +43,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BeansEndpointTests {
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void beansAreFound() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
-			Map<String, Object> result = context.getBean(BeansEndpoint.class).beans();
-			List<ApplicationContextDescriptor> contexts = (List<ApplicationContextDescriptor>) result
-					.get("contexts");
-			assertThat(contexts).hasSize(1);
-			ApplicationContextDescriptor contextDescriptor = contexts.get(0);
-			assertThat(contextDescriptor.getParentId()).isNull();
-			assertThat(contextDescriptor.getId()).isEqualTo(context.getId());
-			Map<String, BeanDescriptor> beans = contextDescriptor.getBeans();
+			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
+					.beans();
+			assertThat(result.getParent()).isNull();
+			assertThat(result.getId()).isEqualTo(context.getId());
+			Map<String, BeanDescriptor> beans = result.getBeans();
 			assertThat(beans.size())
 					.isLessThanOrEqualTo(context.getBeanDefinitionCount());
-			assertThat(contexts.get(0).getBeans()).containsKey("endpoint");
+			assertThat(beans).containsKey("endpoint");
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void infrastructureBeansAreOmitted() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -75,32 +70,28 @@ public class BeansEndpointTests {
 					.filter((name) -> BeanDefinition.ROLE_INFRASTRUCTURE == factory
 							.getBeanDefinition(name).getRole())
 					.collect(Collectors.toList());
-			Map<String, Object> result = context.getBean(BeansEndpoint.class).beans();
-			List<ApplicationContextDescriptor> contexts = (List<ApplicationContextDescriptor>) result
-					.get("contexts");
-			Map<String, BeanDescriptor> beans = contexts.get(0).getBeans();
+			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
+					.beans();
+			Map<String, BeanDescriptor> beans = result.getBeans();
 			for (String infrastructureBean : infrastructureBeans) {
 				assertThat(beans).doesNotContainKey(infrastructureBean);
 			}
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void lazyBeansAreOmitted() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class,
 						LazyBeanConfiguration.class);
 		contextRunner.run((context) -> {
-			Map<String, Object> result = context.getBean(BeansEndpoint.class).beans();
-			List<ApplicationContextDescriptor> contexts = (List<ApplicationContextDescriptor>) result
-					.get("contexts");
+			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
+					.beans();
 			assertThat(context).hasBean("lazyBean");
-			assertThat(contexts.get(0).getBeans()).doesNotContainKey("lazyBean");
+			assertThat(result.getBeans()).doesNotContainKey("lazyBean");
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void beansInParentContextAreFound() {
 		ApplicationContextRunner parentRunner = new ApplicationContextRunner()
@@ -110,31 +101,9 @@ public class BeansEndpointTests {
 					.withUserConfiguration(EndpointConfiguration.class).withParent(parent)
 					.run(child -> {
 				BeansEndpoint endpoint = child.getBean(BeansEndpoint.class);
-				Map<String, Object> result = endpoint.beans();
-				List<ApplicationContextDescriptor> contexts = (List<ApplicationContextDescriptor>) result
-						.get("contexts");
-				assertThat(contexts).hasSize(2);
-				assertThat(contexts.get(1).getBeans()).containsKey("bean");
-				assertThat(contexts.get(0).getBeans()).containsKey("endpoint");
-			});
-		});
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void beansInChildContextAreNotFound() {
-		ApplicationContextRunner parentRunner = new ApplicationContextRunner()
-				.withUserConfiguration(EndpointConfiguration.class);
-		parentRunner.run((parent) -> {
-			new ApplicationContextRunner().withUserConfiguration(BeanConfiguration.class)
-					.withParent(parent).run(child -> {
-				BeansEndpoint endpoint = child.getBean(BeansEndpoint.class);
-				Map<String, Object> result = endpoint.beans();
-				List<ApplicationContextDescriptor> contexts = (List<ApplicationContextDescriptor>) result
-						.get("contexts");
-				assertThat(contexts).hasSize(1);
-				assertThat(contexts.get(0).getBeans()).containsKey("endpoint");
-				assertThat(contexts.get(0).getBeans()).doesNotContainKey("bean");
+				ApplicationContextDescriptor result = endpoint.beans();
+				assertThat(result.getParent().getBeans()).containsKey("bean");
+				assertThat(result.getBeans()).containsKey("endpoint");
 			});
 		});
 	}

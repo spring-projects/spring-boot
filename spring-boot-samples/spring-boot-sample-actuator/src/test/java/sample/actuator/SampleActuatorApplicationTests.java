@@ -217,10 +217,8 @@ public class SampleActuatorApplicationTests {
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/application/beans", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).hasSize(1);
-		Map<String, Object> body = (Map<String, Object>) ((List<?>) entity.getBody()
-				.get("contexts")).get(0);
-		assertThat(((String) body.get("id"))).startsWith("application");
+		assertThat(entity.getBody()).containsOnlyKeys("beans", "parent", "id");
+		assertThat(((String) entity.getBody().get("id"))).startsWith("application");
 	}
 
 	@SuppressWarnings("unchecked")

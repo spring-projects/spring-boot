@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose details of an application's bean, grouped by application
+ * {@link Endpoint} to expose details of an application's beans, grouped by application
  * context.
  *
  * @author Dave Syer
@@ -55,50 +53,53 @@ public class BeansEndpoint {
 	}
 
 	@ReadOperation
-	public Map<String, Object> beans() {
-		List<ApplicationContextDescriptor> contexts = new ArrayList<>();
-		ConfigurableApplicationContext current = this.context;
-		while (current != null) {
-			contexts.add(ApplicationContextDescriptor.describing(current));
-			current = getConfigurableParent(current);
-		}
-		return Collections.singletonMap("contexts", contexts);
+	public ApplicationContextDescriptor beans() {
+		return ApplicationContextDescriptor.describing(this.context);
 	}
 
-	private ConfigurableApplicationContext getConfigurableParent(
-			ConfigurableApplicationContext context) {
-		ApplicationContext parent = context.getParent();
-		if (parent instanceof ConfigurableApplicationContext) {
-			return (ConfigurableApplicationContext) parent;
+	/**
+	 * Response produced by the {@link BeansEndpoint}, primarily intended for
+	 * serialization to JSON.
+	 */
+	public static class BeansEndpointResponse {
+
+		private List<ApplicationContextDescriptor> contexts;
+
+		public BeansEndpointResponse(List<ApplicationContextDescriptor> contexts) {
+			this.contexts = contexts;
 		}
-		return null;
+
+		public List<ApplicationContextDescriptor> getContexts() {
+			return this.contexts;
+		}
+
 	}
 
 	/**
 	 * A description of an application context, primarily intended for serialization to
 	 * JSON.
 	 */
-	static final class ApplicationContextDescriptor {
+	public static final class ApplicationContextDescriptor {
 
 		private final String id;
 
-		private final String parentId;
-
 		private final Map<String, BeanDescriptor> beans;
 
-		private ApplicationContextDescriptor(String id, String parentId,
-				Map<String, BeanDescriptor> beans) {
+		private final ApplicationContextDescriptor parent;
+
+		private ApplicationContextDescriptor(String id, Map<String, BeanDescriptor> beans,
+				ApplicationContextDescriptor parent) {
 			this.id = id;
-			this.parentId = parentId;
 			this.beans = beans;
+			this.parent = parent;
 		}
 
 		public String getId() {
 			return this.id;
 		}
 
-		public String getParentId() {
-			return this.parentId;
+		public ApplicationContextDescriptor getParent() {
+			return this.parent;
 		}
 
 		public Map<String, BeanDescriptor> getBeans() {
@@ -107,10 +108,12 @@ public class BeansEndpoint {
 
 		private static ApplicationContextDescriptor describing(
 				ConfigurableApplicationContext context) {
-			ApplicationContext parent = context.getParent();
+			if (context == null) {
+				return null;
+			}
 			return new ApplicationContextDescriptor(context.getId(),
-					parent == null ? null : parent.getId(),
-					describeBeans(context.getBeanFactory()));
+					describeBeans(context.getBeanFactory()),
+					describing(getConfigurableParent(context)));
 		}
 
 		private static Map<String, BeanDescriptor> describeBeans(
@@ -138,13 +141,22 @@ public class BeansEndpoint {
 					&& (!bd.isLazyInit() || bf.containsSingleton(beanName)));
 		}
 
+		private static ConfigurableApplicationContext getConfigurableParent(
+				ConfigurableApplicationContext context) {
+			ApplicationContext parent = context.getParent();
+			if (parent instanceof ConfigurableApplicationContext) {
+				return (ConfigurableApplicationContext) parent;
+			}
+			return null;
+		}
+
 	}
 
 	/**
 	 * A description of a bean in an application context, primarily intended for
 	 * serialization to JSON.
 	 */
-	static final class BeanDescriptor {
+	public static final class BeanDescriptor {
 
 		private final String[] aliases;
 
