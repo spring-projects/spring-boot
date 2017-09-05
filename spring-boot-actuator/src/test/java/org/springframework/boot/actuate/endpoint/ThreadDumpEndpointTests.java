@@ -30,7 +30,8 @@ public class ThreadDumpEndpointTests {
 
 	@Test
 	public void dumpThreads() throws Exception {
-		assertThat(new ThreadDumpEndpoint().threadDump().size()).isGreaterThan(0);
+		assertThat(new ThreadDumpEndpoint().threadDump().getThreads().size())
+				.isGreaterThan(0);
 	}
 
 }

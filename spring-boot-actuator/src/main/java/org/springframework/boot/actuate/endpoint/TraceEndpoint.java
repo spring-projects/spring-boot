@@ -44,8 +44,26 @@ public class TraceEndpoint {
 	}
 
 	@ReadOperation
-	public List<Trace> traces() {
-		return this.repository.findAll();
+	public TraceDescriptor traces() {
+		return new TraceDescriptor(this.repository.findAll());
+	}
+
+	/**
+	 * A description of an application's {@link Trace} entries. Primarily intended for
+	 * serialization to JSON.
+	 */
+	public static final class TraceDescriptor {
+
+		private final List<Trace> traces;
+
+		private TraceDescriptor(List<Trace> traces) {
+			this.traces = traces;
+		}
+
+		public List<Trace> getTraces() {
+			return this.traces;
+		}
+
 	}
 
 }

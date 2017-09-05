@@ -18,15 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
-import org.springframework.boot.actuate.endpoint.web.AuditEventsWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.LogFileWebEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -51,15 +47,6 @@ public class WebEndpointManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint
 	public HeapDumpWebEndpoint heapDumpWebEndpoint() {
 		return new HeapDumpWebEndpoint();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	@ConditionalOnBean(value = AuditEventsEndpoint.class, search = SearchStrategy.CURRENT)
-	public AuditEventsWebEndpointExtension auditEventsWebEndpointExtension(
-			AuditEventsEndpoint delegate) {
-		return new AuditEventsWebEndpointExtension(delegate);
 	}
 
 	@Bean

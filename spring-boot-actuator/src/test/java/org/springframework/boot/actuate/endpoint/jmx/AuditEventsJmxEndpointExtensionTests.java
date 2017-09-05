@@ -50,7 +50,7 @@ public class AuditEventsJmxEndpointExtensionTests {
 		Date date = new Date();
 		given(this.repository.find(null, date, null))
 				.willReturn(Collections.singletonList(this.event));
-		List<AuditEvent> result = this.extension.eventsWithDateAfter(date);
+		List<AuditEvent> result = this.extension.eventsWithDateAfter(date).getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}
 
@@ -59,8 +59,8 @@ public class AuditEventsJmxEndpointExtensionTests {
 		Date date = new Date();
 		given(this.repository.find("Joan", date, null))
 				.willReturn(Collections.singletonList(this.event));
-		List<AuditEvent> result = this.extension.eventsWithPrincipalAndDateAfter("Joan",
-				date);
+		List<AuditEvent> result = this.extension
+				.eventsWithPrincipalAndDateAfter("Joan", date).getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}
 

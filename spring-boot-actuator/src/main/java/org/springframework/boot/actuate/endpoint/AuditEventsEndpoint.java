@@ -42,9 +42,28 @@ public class AuditEventsEndpoint {
 	}
 
 	@ReadOperation
-	public List<AuditEvent> eventsWithPrincipalDateAfterAndType(String principal,
+	public AuditEventsDescriptor eventsWithPrincipalDateAfterAndType(String principal,
 			Date after, String type) {
-		return this.auditEventRepository.find(principal, after, type);
+		return new AuditEventsDescriptor(
+				this.auditEventRepository.find(principal, after, type));
+	}
+
+	/**
+	 * A description of an application's {@link AuditEvent audit events}. Primarily
+	 * intended for serialization to JSON.
+	 */
+	public static final class AuditEventsDescriptor {
+
+		private final List<AuditEvent> events;
+
+		private AuditEventsDescriptor(List<AuditEvent> events) {
+			this.events = events;
+		}
+
+		public List<AuditEvent> getEvents() {
+			return this.events;
+		}
+
 	}
 
 }

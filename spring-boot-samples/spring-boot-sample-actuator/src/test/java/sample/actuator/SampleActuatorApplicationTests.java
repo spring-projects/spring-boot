@@ -163,35 +163,35 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testTrace() throws Exception {
 		this.restTemplate.getForEntity("/health", String.class);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = this.restTemplate
+		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/trace", List.class);
+				.getForEntity("/application/trace", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> list = entity.getBody();
-		Map<String, Object> trace = list.get(list.size() - 1);
-		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		Map<String, Object> trace = ((List<Map<String, Object>>) body.get("traces"))
+				.get(0);
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) trace
 				.get("info")).get("headers")).get("response");
 		assertThat(map.get("status")).isEqualTo("200");
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void traceWithParameterMap() throws Exception {
 		this.restTemplate.withBasicAuth("user", getPassword())
 				.getForEntity("/application/health?param1=value1", String.class);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = this.restTemplate
+		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/trace", List.class);
+				.getForEntity("/application/trace", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> list = entity.getBody();
-		Map<String, Object> trace = list.get(0);
-		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		Map<String, Object> trace = ((List<Map<String, Object>>) body.get("traces"))
+				.get(0);
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
 				.get("info")).get("parameters");
 		assertThat(map.get("param1")).isNotNull();

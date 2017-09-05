@@ -38,7 +38,7 @@ public class TraceEndpointTests {
 	public void trace() throws Exception {
 		TraceRepository repository = new InMemoryTraceRepository();
 		repository.add(Collections.<String, Object>singletonMap("a", "b"));
-		Trace trace = new TraceEndpoint(repository).traces().get(0);
+		Trace trace = new TraceEndpoint(repository).traces().getTraces().get(0);
 		assertThat(trace.getInfo().get("a")).isEqualTo("b");
 	}
 

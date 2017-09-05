@@ -17,10 +17,9 @@
 package org.springframework.boot.actuate.endpoint.jmx;
 
 import java.util.Date;
-import java.util.List;
 
-import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
+import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint.AuditEventsDescriptor;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.jmx.JmxEndpointExtension;
 
@@ -41,12 +40,12 @@ public class AuditEventsJmxEndpointExtension {
 	}
 
 	@ReadOperation
-	public List<AuditEvent> eventsWithDateAfter(Date dateAfter) {
+	public AuditEventsDescriptor eventsWithDateAfter(Date dateAfter) {
 		return this.delegate.eventsWithPrincipalDateAfterAndType(null, dateAfter, null);
 	}
 
 	@ReadOperation
-	public List<AuditEvent> eventsWithPrincipalAndDateAfter(String principal,
+	public AuditEventsDescriptor eventsWithPrincipalAndDateAfter(String principal,
 			Date dateAfter) {
 		return this.delegate.eventsWithPrincipalDateAfterAndType(principal, dateAfter,
 				null);

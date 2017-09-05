@@ -28,14 +28,32 @@ import org.springframework.boot.endpoint.ReadOperation;
  * {@link Endpoint} to expose thread info.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Endpoint(id = "threaddump")
 public class ThreadDumpEndpoint {
 
 	@ReadOperation
-	public List<ThreadInfo> threadDump() {
-		return Arrays
-				.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true));
+	public ThreadDumpDescriptor threadDump() {
+		return new ThreadDumpDescriptor(Arrays
+				.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true)));
+	}
+
+	/**
+	 * A description of a thread dump. Primarily intended for serialization to JSON.
+	 */
+	public static final class ThreadDumpDescriptor {
+
+		private final List<ThreadInfo> threads;
+
+		private ThreadDumpDescriptor(List<ThreadInfo> threads) {
+			this.threads = threads;
+		}
+
+		public List<ThreadInfo> getThreads() {
+			return this.threads;
+		}
+
 	}
 
 }

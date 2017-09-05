@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.StatusEndpoint;
-import org.springframework.boot.actuate.endpoint.web.AuditEventsWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HealthReactiveWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
@@ -143,9 +142,10 @@ public class WebEndpointManagementContextConfigurationTests {
 	public void reactiveHealthWebEndpointExtensionCanBeDisabled() {
 		reactiveWebContextRunner(HealthEndpointConfiguration.class)
 				.withPropertyValues("endpoints.health.enabled=false").run((context) -> {
-			assertThat(context).doesNotHaveBean(HealthReactiveWebEndpointExtension.class);
-			assertThat(context).doesNotHaveBean(HealthWebEndpointExtension.class);
-		});
+					assertThat(context)
+							.doesNotHaveBean(HealthReactiveWebEndpointExtension.class);
+					assertThat(context).doesNotHaveBean(HealthWebEndpointExtension.class);
+				});
 
 	}
 
@@ -175,22 +175,10 @@ public class WebEndpointManagementContextConfigurationTests {
 	public void reactiveStatusWebEndpointExtensionCanBeDisabled() {
 		reactiveWebContextRunner(StatusEndpointConfiguration.class)
 				.withPropertyValues("endpoints.status.enabled=false").run((context) -> {
-			assertThat(context).doesNotHaveBean(StatusReactiveWebEndpointExtension.class);
-			assertThat(context).doesNotHaveBean(StatusWebEndpointExtension.class);
-		});
-	}
-
-	@Test
-	public void auditEventsWebEndpointExtensionIsAutoConfigured() {
-		beanIsAutoConfigured(AuditEventsWebEndpointExtension.class,
-				AuditEventsEndpointConfiguration.class);
-	}
-
-	@Test
-	public void auditEventsWebEndpointExtensionCanBeDisabled() {
-		beanIsNotAutoConfiguredWhenEndpointIsDisabled(
-				AuditEventsWebEndpointExtension.class, "auditevents",
-				AuditEventsEndpointConfiguration.class);
+					assertThat(context)
+							.doesNotHaveBean(StatusReactiveWebEndpointExtension.class);
+					assertThat(context).doesNotHaveBean(StatusWebEndpointExtension.class);
+				});
 	}
 
 	@Test
@@ -209,7 +197,8 @@ public class WebEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
-		webContextRunner().withPropertyValues("endpoints.logfile.external-file:external.log")
+		webContextRunner()
+				.withPropertyValues("endpoints.logfile.external-file:external.log")
 				.run((context) -> assertThat(
 						context.getBeansOfType(LogFileWebEndpoint.class)).hasSize(1));
 	}

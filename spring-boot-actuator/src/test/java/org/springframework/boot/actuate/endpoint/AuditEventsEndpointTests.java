@@ -47,8 +47,8 @@ public class AuditEventsEndpointTests {
 	public void eventsWithType() {
 		given(this.repository.find(null, null, "type"))
 				.willReturn(Collections.singletonList(this.event));
-		List<AuditEvent> result = this.endpoint.eventsWithPrincipalDateAfterAndType(null,
-				null, "type");
+		List<AuditEvent> result = this.endpoint
+				.eventsWithPrincipalDateAfterAndType(null, null, "type").getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}
 
@@ -57,8 +57,8 @@ public class AuditEventsEndpointTests {
 		Date date = new Date();
 		given(this.repository.find(null, date, null))
 				.willReturn(Collections.singletonList(this.event));
-		List<AuditEvent> result = this.endpoint.eventsWithPrincipalDateAfterAndType(null,
-				date, null);
+		List<AuditEvent> result = this.endpoint
+				.eventsWithPrincipalDateAfterAndType(null, date, null).getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}
 
@@ -67,7 +67,7 @@ public class AuditEventsEndpointTests {
 		given(this.repository.find("Joan", null, null))
 				.willReturn(Collections.singletonList(this.event));
 		List<AuditEvent> result = this.endpoint
-				.eventsWithPrincipalDateAfterAndType("Joan", null, null);
+				.eventsWithPrincipalDateAfterAndType("Joan", null, null).getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}
 
