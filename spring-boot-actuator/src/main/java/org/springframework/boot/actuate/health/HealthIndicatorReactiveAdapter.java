@@ -23,8 +23,8 @@ import reactor.core.scheduler.Schedulers;
 import org.springframework.util.Assert;
 
 /**
- * Adapts a {@link HealthIndicator} to a {@link ReactiveHealthIndicator} so that it can
- * be safely invoked in a reactive environment.
+ * Adapts a {@link HealthIndicator} to a {@link ReactiveHealthIndicator} so that it can be
+ * safely invoked in a reactive environment.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
@@ -40,8 +40,7 @@ public class HealthIndicatorReactiveAdapter implements ReactiveHealthIndicator {
 
 	@Override
 	public Mono<Health> health() {
-		return Mono.create((sink) ->
-				Schedulers.elastic().schedule(() -> invoke(sink)));
+		return Mono.create((sink) -> Schedulers.elastic().schedule(() -> invoke(sink)));
 	}
 
 	private void invoke(MonoSink<Health> sink) {

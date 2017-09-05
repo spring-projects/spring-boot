@@ -33,8 +33,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Builder for creating {@link ConfigurationPropertiesBinder} based on the state of
- * the {@link ApplicationContext}.
+ * Builder for creating {@link ConfigurationPropertiesBinder} based on the state of the
+ * {@link ApplicationContext}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
@@ -46,7 +46,10 @@ public class ConfigurationPropertiesBinderBuilder {
 	 */
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
-	private static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
+	/**
+	 * The bean name of the configuration properties conversion service.
+	 */
+	public static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory" };
@@ -87,7 +90,7 @@ public class ConfigurationPropertiesBinderBuilder {
 	/**
 	 * Specify the {@link Validator} to use or {@code null} to use the default.
 	 * <p>
-	 * By default, use a {@link Validator} bean named {@value VALIDATOR_BEAN_NAME} if
+	 * By default, use a {@link Validator} bean named {@value #VALIDATOR_BEAN_NAME} if
 	 * any. If not, create a JSR 303 Validator if the necessary libraries are available.
 	 * No validation occurs otherwise.
 	 * @param validator the validator to use or {@code null}
@@ -111,8 +114,8 @@ public class ConfigurationPropertiesBinderBuilder {
 	}
 
 	/**
-	 * Specify the {@link ConfigurableEnvironment Environment} to use, use all
-	 * available {@link PropertySource}.
+	 * Specify the {@link ConfigurableEnvironment Environment} to use, use all available
+	 * {@link PropertySource}.
 	 * @param environment the environment to use
 	 * @return this instance
 	 * @see #withPropertySources(Iterable)
@@ -136,7 +139,8 @@ public class ConfigurationPropertiesBinderBuilder {
 		if (this.validator != null) {
 			return this.validator;
 		}
-		Validator defaultValidator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
+		Validator defaultValidator = getOptionalBean(VALIDATOR_BEAN_NAME,
+				Validator.class);
 		if (defaultValidator != null) {
 			return defaultValidator;
 		}
@@ -160,7 +164,8 @@ public class ConfigurationPropertiesBinderBuilder {
 
 	private ConversionService createDefaultConversionService() {
 		ConversionServiceFactory conversionServiceFactory = this.applicationContext
-				.getAutowireCapableBeanFactory().createBean(ConversionServiceFactory.class);
+				.getAutowireCapableBeanFactory()
+				.createBean(ConversionServiceFactory.class);
 		return conversionServiceFactory.createConversionService();
 	}
 

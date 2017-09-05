@@ -67,8 +67,9 @@ public class StatusEndpointWebIntegrationTests {
 		@Bean
 		public StatusEndpoint statusEndpoint(
 				Map<String, HealthIndicator> healthIndicators) {
-			return new StatusEndpoint(new CompositeHealthIndicatorFactory().createHealthIndicator(
-					new OrderedHealthAggregator(), healthIndicators));
+			return new StatusEndpoint(
+					new CompositeHealthIndicatorFactory().createHealthIndicator(
+							new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean

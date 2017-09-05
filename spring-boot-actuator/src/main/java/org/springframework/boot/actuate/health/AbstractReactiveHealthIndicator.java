@@ -25,18 +25,17 @@ import reactor.core.publisher.Mono;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public abstract class AbstractReactiveHealthIndicator
-		implements ReactiveHealthIndicator {
+public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthIndicator {
 
 	@Override
 	public final Mono<Health> health() {
 		return doHealthCheck(new Health.Builder())
-				.onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()));
+				.onErrorResume((ex) -> Mono.just(new Health.Builder().down(ex).build()));
 	}
 
 	/**
-	 * Actual health check logic. If an error occurs in the pipeline it will be
-	 * handled automatically.
+	 * Actual health check logic. If an error occurs in the pipeline it will be handled
+	 * automatically.
 	 * @param builder the {@link Health.Builder} to report health status and details
 	 * @return a {@link Mono} that provides the {@link Health}
 	 */

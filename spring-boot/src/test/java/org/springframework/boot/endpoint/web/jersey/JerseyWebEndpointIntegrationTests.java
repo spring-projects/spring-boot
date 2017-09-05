@@ -69,8 +69,8 @@ public class JerseyWebEndpointIntegrationTests extends
 		@Bean
 		public ServletRegistrationBean<ServletContainer> servletContainer(
 				ResourceConfig resourceConfig) {
-			return new ServletRegistrationBean<>(
-					new ServletContainer(resourceConfig), "/*");
+			return new ServletRegistrationBean<>(new ServletContainer(resourceConfig),
+					"/*");
 		}
 
 		@Bean

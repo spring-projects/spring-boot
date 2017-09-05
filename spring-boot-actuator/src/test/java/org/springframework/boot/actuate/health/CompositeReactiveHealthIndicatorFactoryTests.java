@@ -44,7 +44,7 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 	public void noHealthIndicator() {
 		ReactiveHealthIndicator healthIndicator = createHealthIndicator(
 				Collections.singletonMap("test", () -> Mono.just(UP)), null);
-		StepVerifier.create(healthIndicator.health()).consumeNextWith(h -> {
+		StepVerifier.create(healthIndicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("test");
 		}).verifyComplete();
@@ -53,10 +53,9 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 	@Test
 	public void defaultHealthIndicatorNameFactory() {
 		ReactiveHealthIndicator healthIndicator = new CompositeReactiveHealthIndicatorFactory()
-				.createReactiveHealthIndicator(new OrderedHealthAggregator(),
-						Collections.singletonMap("myHealthIndicator", () -> Mono.just(UP)),
-						null);
-		StepVerifier.create(healthIndicator.health()).consumeNextWith(h -> {
+				.createReactiveHealthIndicator(new OrderedHealthAggregator(), Collections
+						.singletonMap("myHealthIndicator", () -> Mono.just(UP)), null);
+		StepVerifier.create(healthIndicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("my");
 		}).verifyComplete();
@@ -67,7 +66,7 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 		ReactiveHealthIndicator healthIndicator = createHealthIndicator(
 				Collections.singletonMap("test", () -> Mono.just(UP)),
 				Collections.singletonMap("regular", () -> DOWN));
-		StepVerifier.create(healthIndicator.health()).consumeNextWith(h -> {
+		StepVerifier.create(healthIndicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("test", "regular");
 		}).verifyComplete();
@@ -75,14 +74,15 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 
 	@Test
 	public void reactiveHealthIndicatorTakesPrecedence() {
-		ReactiveHealthIndicator reactivehealthIndicator = mock(ReactiveHealthIndicator.class);
+		ReactiveHealthIndicator reactivehealthIndicator = mock(
+				ReactiveHealthIndicator.class);
 		given(reactivehealthIndicator.health()).willReturn(Mono.just(UP));
 		HealthIndicator regularHealthIndicator = mock(HealthIndicator.class);
 		given(regularHealthIndicator.health()).willReturn(UP);
 		ReactiveHealthIndicator healthIndicator = createHealthIndicator(
 				Collections.singletonMap("test", reactivehealthIndicator),
 				Collections.singletonMap("test", regularHealthIndicator));
-		StepVerifier.create(healthIndicator.health()).consumeNextWith(h -> {
+		StepVerifier.create(healthIndicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("test");
 		}).verifyComplete();
@@ -93,7 +93,7 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 	private ReactiveHealthIndicator createHealthIndicator(
 			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
-		return new CompositeReactiveHealthIndicatorFactory(n -> n)
+		return new CompositeReactiveHealthIndicatorFactory((n) -> n)
 				.createReactiveHealthIndicator(new OrderedHealthAggregator(),
 						reactiveHealthIndicators, healthIndicators);
 	}

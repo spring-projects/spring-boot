@@ -43,17 +43,16 @@ public class ReactiveHealthIndicatorsConfigurationTests {
 	@Test
 	public void redisHealthIndicator() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(
-						RedisAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
-				.run(hasSingleReactiveHealthIndicator(RedisReactiveHealthIndicator.class));
+				.run(hasSingleReactiveHealthIndicator(
+						RedisReactiveHealthIndicator.class));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> hasSingleReactiveHealthIndicator(
 			Class<? extends ReactiveHealthIndicator> type) {
 		return (context) -> assertThat(context).getBeans(ReactiveHealthIndicator.class)
-				.hasSize(1)
-				.hasValueSatisfying(
+				.hasSize(1).hasValueSatisfying(
 						new Condition<>((indicator) -> indicator.getClass().equals(type),
 								"Wrong indicator type"));
 	}

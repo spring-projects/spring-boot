@@ -76,16 +76,16 @@ public class ConfigurationPropertiesBinder {
 	 * @throws ConfigurationPropertiesBindingException if the binding failed
 	 */
 	public void bind(Object target) {
-		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
-				target.getClass(), ConfigurationProperties.class);
+		ConfigurationProperties annotation = AnnotationUtils
+				.findAnnotation(target.getClass(), ConfigurationProperties.class);
 		if (annotation != null) {
 			bind(target, annotation);
 		}
 	}
 
 	/**
-	 * Bind the specified {@code target} object using the configuration defined by
-	 * the specified {@code annotation}.
+	 * Bind the specified {@code target} object using the configuration defined by the
+	 * specified {@code annotation}.
 	 * @param target the target to bind the configuration property sources to
 	 * @param annotation the binding configuration
 	 * @throws ConfigurationPropertiesBindingException if the binding failed
@@ -154,10 +154,9 @@ public class ConfigurationPropertiesBinder {
 		return details.toString();
 	}
 
-
 	/**
-	 * {@link Validator} extension to be implemented to signal that that validator can
-	 * be destroyed once the binder is no longer in use.
+	 * {@link Validator} extension to be implemented to signal that that validator can be
+	 * destroyed once the binder is no longer in use.
 	 */
 	interface InternalValidator extends Validator {
 

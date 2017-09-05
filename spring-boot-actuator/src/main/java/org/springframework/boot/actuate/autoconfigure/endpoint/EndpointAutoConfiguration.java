@@ -246,9 +246,8 @@ public class EndpointAutoConfiguration {
 				}
 				Map<String, HealthIndicator> allIndicators = new LinkedHashMap<>(
 						healthIndicators);
-				reactiveHealthIndicators.forEach((beanName, indicator) -> {
-					allIndicators.computeIfAbsent(beanName, n -> adapt(indicator));
-				});
+				reactiveHealthIndicators.forEach((beanName, indicator) -> allIndicators
+						.computeIfAbsent(beanName, n -> adapt(indicator)));
 				return allIndicators;
 			}
 

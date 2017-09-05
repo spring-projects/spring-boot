@@ -47,7 +47,7 @@ public class HealthReactiveWebEndpointExtension {
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<Health>> health() {
-		return this.delegate.health().map(health -> {
+		return this.delegate.health().map((health) -> {
 			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
 			return new WebEndpointResponse<>(health, status);
 		});

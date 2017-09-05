@@ -57,9 +57,8 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 		Assert.notNull(indicators, "Indicators must not be null");
 		this.indicators = new LinkedHashMap<>(indicators);
 		this.healthAggregator = healthAggregator;
-		this.timeoutCompose = mono -> this.timeout != null ?
-				mono.timeout(Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) :
-				mono;
+		this.timeoutCompose = (mono) -> this.timeout != null ? mono.timeout(
+				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
 	}
 
 	/**
@@ -77,9 +76,10 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	/**
 	 * Specify an alternative timeout {@link Health} if an {@link HealthIndicator} failed
 	 * to reply after specified {@code timeout}.
-	 * @param timeout number of milliseconds to wait before using the {@code timeoutHealth}
+	 * @param timeout number of milliseconds to wait before using the
+	 * {@code timeoutHealth}
 	 * @param timeoutHealth the {@link Health} to use if an health indicator reached the
-	 * {@code} timeout
+	 * {@code timeout}
 	 * @return this instance
 	 */
 	public CompositeReactiveHealthIndicator timeoutStrategy(long timeout,
@@ -93,7 +93,7 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	@Override
 	public Mono<Health> health() {
 		return Flux.fromIterable(this.indicators.entrySet())
-				.flatMap(entry -> Mono.just(entry.getKey())
+				.flatMap((entry) -> Mono.just(entry.getKey())
 						.and(entry.getValue().health().compose(this.timeoutCompose)))
 				.collectMap(Tuple2::getT1, Tuple2::getT2)
 				.map(this.healthAggregator::aggregate);

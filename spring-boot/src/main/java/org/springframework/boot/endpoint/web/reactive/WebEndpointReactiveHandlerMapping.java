@@ -276,9 +276,8 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 
 		@Override
 		public Object invoke(Map<String, Object> arguments) {
-			return Mono.create((sink) -> {
-				Schedulers.elastic().schedule(() -> invoke(arguments, sink));
-			});
+			return Mono.create((sink) -> Schedulers.elastic()
+					.schedule(() -> invoke(arguments, sink)));
 		}
 
 		private void invoke(Map<String, Object> arguments, MonoSink<Object> sink) {

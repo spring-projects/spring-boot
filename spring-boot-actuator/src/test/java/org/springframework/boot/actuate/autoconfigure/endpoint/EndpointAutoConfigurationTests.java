@@ -47,36 +47,37 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void healthEndpointAdaptReactiveHealthIndicator() {
-		this.contextRunner.withUserConfiguration(
-				ReactiveHealthIndicatorConfiguration.class).run((context) -> {
-			ReactiveHealthIndicator reactiveHealthIndicator = context.getBean(
-					"reactiveHealthIndicator", ReactiveHealthIndicator.class);
-			verify(reactiveHealthIndicator, times(0)).health();
-			Health health = context.getBean(HealthEndpoint.class).health();
-			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsOnlyKeys("reactive");
-			verify(reactiveHealthIndicator, times(1)).health();
-		});
+		this.contextRunner
+				.withUserConfiguration(ReactiveHealthIndicatorConfiguration.class)
+				.run((context) -> {
+					ReactiveHealthIndicator reactiveHealthIndicator = context.getBean(
+							"reactiveHealthIndicator", ReactiveHealthIndicator.class);
+					verify(reactiveHealthIndicator, times(0)).health();
+					Health health = context.getBean(HealthEndpoint.class).health();
+					assertThat(health.getStatus()).isEqualTo(Status.UP);
+					assertThat(health.getDetails()).containsOnlyKeys("reactive");
+					verify(reactiveHealthIndicator, times(1)).health();
+				});
 	}
 
 	@Test
 	public void healthEndpointMergeRegularAndReactive() {
 		this.contextRunner.withUserConfiguration(HealthIndicatorConfiguration.class,
 				ReactiveHealthIndicatorConfiguration.class).run((context) -> {
-			HealthIndicator simpleHealthIndicator = context.getBean(
-					"simpleHealthIndicator", HealthIndicator.class);
-			ReactiveHealthIndicator reactiveHealthIndicator = context.getBean(
-					"reactiveHealthIndicator", ReactiveHealthIndicator.class);
-			verify(simpleHealthIndicator, times(0)).health();
-			verify(reactiveHealthIndicator, times(0)).health();
-			Health health = context.getBean(HealthEndpoint.class).health();
-			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsOnlyKeys("simple", "reactive");
-			verify(simpleHealthIndicator, times(1)).health();
-			verify(reactiveHealthIndicator, times(1)).health();
-		});
+					HealthIndicator simpleHealthIndicator = context
+							.getBean("simpleHealthIndicator", HealthIndicator.class);
+					ReactiveHealthIndicator reactiveHealthIndicator = context.getBean(
+							"reactiveHealthIndicator", ReactiveHealthIndicator.class);
+					verify(simpleHealthIndicator, times(0)).health();
+					verify(reactiveHealthIndicator, times(0)).health();
+					Health health = context.getBean(HealthEndpoint.class).health();
+					assertThat(health.getStatus()).isEqualTo(Status.UP);
+					assertThat(health.getDetails()).containsOnlyKeys("simple",
+							"reactive");
+					verify(simpleHealthIndicator, times(1)).health();
+					verify(reactiveHealthIndicator, times(1)).health();
+				});
 	}
-
 
 	@Configuration
 	static class HealthIndicatorConfiguration {

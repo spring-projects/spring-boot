@@ -67,4 +67,3 @@ public class CompositeReactiveHealthIndicatorConfiguration<H extends ReactiveHea
 	}
 
 }
-

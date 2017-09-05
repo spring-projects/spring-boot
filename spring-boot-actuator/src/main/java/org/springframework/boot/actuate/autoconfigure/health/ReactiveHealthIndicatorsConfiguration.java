@@ -43,8 +43,7 @@ public class ReactiveHealthIndicatorsConfiguration {
 	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("redis")
 	static class RedisHealthIndicatorConfiguration extends
-			CompositeReactiveHealthIndicatorConfiguration<RedisReactiveHealthIndicator,
-					ReactiveRedisConnectionFactory> {
+			CompositeReactiveHealthIndicatorConfiguration<RedisReactiveHealthIndicator, ReactiveRedisConnectionFactory> {
 
 		private final Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories;
 

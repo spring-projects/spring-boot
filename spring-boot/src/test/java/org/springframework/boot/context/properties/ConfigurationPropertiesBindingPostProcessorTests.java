@@ -249,7 +249,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void genericConverterIsFound() {
-		prepareConverterContext(GenericConverterConfiguration.class, PersonProperty.class);
+		prepareConverterContext(GenericConverterConfiguration.class,
+				PersonProperty.class);
 		this.context.refresh();
 		Person person = this.context.getBean(PersonProperty.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
@@ -356,7 +357,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
-
 	@Configuration
 	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "test")
@@ -380,7 +380,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 
 	}
-
 
 	@Configuration
 	@EnableConfigurationProperties
@@ -427,7 +426,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
-
 	@SuppressWarnings("rawtypes")
 	// Must be a raw type
 	static class FactoryBeanTester implements FactoryBean, InitializingBean {
@@ -453,7 +451,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 
 	}
-
 
 	@Configuration
 	@EnableConfigurationProperties(PropertyWithoutConfigurationPropertiesAnnotation.class)
@@ -553,12 +550,12 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		@Nullable
 		@Override
-		public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+				TypeDescriptor targetType) {
 			String[] content = StringUtils.split((String) source, " ");
 			return new Person(content[0], content[1]);
 		}
 	}
-
 
 	@Configuration
 	@EnableConfigurationProperties

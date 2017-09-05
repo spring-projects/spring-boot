@@ -47,10 +47,10 @@ public class StatusReactiveWebEndpointExtension {
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<Health>> health() {
-		return this.delegate.health().map(health -> {
+		return this.delegate.health().map((health) -> {
 			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-			return new WebEndpointResponse<>(
-					Health.status(health.getStatus()).build(), status);
+			return new WebEndpointResponse<>(Health.status(health.getStatus()).build(),
+					status);
 		});
 	}
 

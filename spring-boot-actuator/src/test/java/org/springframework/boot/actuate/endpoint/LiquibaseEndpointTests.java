@@ -44,7 +44,6 @@ public class LiquibaseEndpointTests {
 					LiquibaseAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
-
 	@Test
 	public void liquibaseReportIsReturned() throws Exception {
 		this.contextRunner.withUserConfiguration(Config.class)

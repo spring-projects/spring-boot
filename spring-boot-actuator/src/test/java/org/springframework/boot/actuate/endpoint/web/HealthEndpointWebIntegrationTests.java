@@ -69,8 +69,9 @@ public class HealthEndpointWebIntegrationTests {
 		@Bean
 		public HealthEndpoint healthEndpoint(
 				Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(new CompositeHealthIndicatorFactory().createHealthIndicator(
-					new OrderedHealthAggregator(), healthIndicators));
+			return new HealthEndpoint(
+					new CompositeHealthIndicatorFactory().createHealthIndicator(
+							new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean

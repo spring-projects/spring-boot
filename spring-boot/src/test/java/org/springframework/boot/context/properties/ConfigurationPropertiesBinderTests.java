@@ -114,7 +114,8 @@ public class ConfigurationPropertiesBinderTests {
 	}
 
 	private void bindToEnum(String property) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, property);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				property);
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithEnum target = new PropertyWithEnum();
@@ -129,7 +130,8 @@ public class ConfigurationPropertiesBinderTests {
 	}
 
 	private void bindToEnumSet(String property, FooEnum... expected) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, property);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				property);
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithEnum target = new PropertyWithEnum();
@@ -237,11 +239,9 @@ public class ConfigurationPropertiesBinderTests {
 	public void validationWithCustomValidator() {
 		CustomPropertyValidator validator = spy(new CustomPropertyValidator());
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null,
-				validator);
+				this.environment.getPropertySources(), null, validator);
 		PropertyWithCustomValidator target = new PropertyWithCustomValidator();
-		assertThat(bindWithValidationErrors(binder, target)
-				.getAllErrors()).hasSize(1);
+		assertThat(bindWithValidationErrors(binder, target).getAllErrors()).hasSize(1);
 		verify(validator).validate(eq(target), any(Errors.class));
 	}
 
@@ -251,8 +251,7 @@ public class ConfigurationPropertiesBinderTests {
 				"test.foo=bar");
 		CustomPropertyValidator validator = spy(new CustomPropertyValidator());
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null,
-				validator);
+				this.environment.getPropertySources(), null, validator);
 		PropertyWithValidatingSetter target = new PropertyWithValidatingSetter();
 		binder.bind(target);
 		assertThat(target.getFoo()).isEqualTo("bar");
@@ -430,7 +429,6 @@ public class ConfigurationPropertiesBinderTests {
 		}
 
 	}
-
 
 	@ConfigurationProperties(prefix = "test")
 	public static class PropertyWithValidatingSetter {

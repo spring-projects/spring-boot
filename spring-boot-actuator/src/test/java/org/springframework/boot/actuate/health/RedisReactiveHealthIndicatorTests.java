@@ -47,9 +47,10 @@ public class RedisReactiveHealthIndicatorTests {
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
 		given(commands.info()).willReturn(Mono.just(info));
-		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
+		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(
+				redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith(h -> {
+		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("version");
 			assertThat(h.getDetails().get("version")).isEqualTo("2.8.9");
@@ -60,19 +61,21 @@ public class RedisReactiveHealthIndicatorTests {
 	@Test
 	public void redisIsDown() throws Exception {
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
-		given(commands.info()).willReturn(Mono.error(
-				new RedisConnectionFailureException("Connection failed")));
+		given(commands.info()).willReturn(
+				Mono.error(new RedisConnectionFailureException("Connection failed")));
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
-		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
+		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(
+				redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith(h -> {
-			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
-		}).verifyComplete();
+		StepVerifier.create(health)
+				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+				.verifyComplete();
 		verify(redisConnection).close();
 	}
 
 	private RedisReactiveHealthIndicator createHealthIndicator(
-			ReactiveRedisConnection redisConnection, ReactiveServerCommands serverCommands) {
+			ReactiveRedisConnection redisConnection,
+			ReactiveServerCommands serverCommands) {
 
 		ReactiveRedisConnectionFactory redisConnectionFactory = mock(
 				ReactiveRedisConnectionFactory.class);

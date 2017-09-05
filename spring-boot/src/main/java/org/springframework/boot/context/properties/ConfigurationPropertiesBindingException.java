@@ -20,8 +20,8 @@ import org.springframework.core.NestedExceptionUtils;
 import org.springframework.util.ClassUtils;
 
 /**
- * Exception thrown when a {@code @ConfigurationProperties} annotated object failed
- * to be bound.
+ * Exception thrown when a {@code @ConfigurationProperties} annotated object failed to be
+ * bound.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
@@ -30,8 +30,8 @@ public class ConfigurationPropertiesBindingException extends RuntimeException {
 
 	private final Class<?> targetClass;
 
-	public ConfigurationPropertiesBindingException(Class<?> targetClass,
-			String message, Throwable cause) {
+	public ConfigurationPropertiesBindingException(Class<?> targetClass, String message,
+			Throwable cause) {
 		super("Could not bind properties to '" + ClassUtils.getShortName(targetClass)
 				+ "': " + message, cause);
 		this.targetClass = targetClass;

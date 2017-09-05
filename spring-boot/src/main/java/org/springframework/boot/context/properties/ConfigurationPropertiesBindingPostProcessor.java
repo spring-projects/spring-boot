@@ -233,10 +233,10 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ConfigurationPropertiesBinder getBinder() {
 		if (this.configurationPropertiesBinder == null) {
-			this.configurationPropertiesBinder = new ConfigurationPropertiesBinderBuilder(this.applicationContext)
-					.withConversionService(this.conversionService)
-					.withValidator(this.validator)
-					.withPropertySources(this.propertySources).build();
+			this.configurationPropertiesBinder = new ConfigurationPropertiesBinderBuilder(
+					this.applicationContext).withConversionService(this.conversionService)
+							.withValidator(this.validator)
+							.withPropertySources(this.propertySources).build();
 		}
 		return this.configurationPropertiesBinder;
 	}

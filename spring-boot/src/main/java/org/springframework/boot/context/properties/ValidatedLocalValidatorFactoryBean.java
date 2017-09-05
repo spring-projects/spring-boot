@@ -51,8 +51,8 @@ class ValidatedLocalValidatorFactoryBean extends LocalValidatorFactoryBean
 		if (AnnotatedElementUtils.hasAnnotation(type, Validated.class)) {
 			return true;
 		}
-		if (type.getPackage() != null && type.getPackage().getName()
-				.startsWith("org.springframework.boot")) {
+		if (type.getPackage() != null
+				&& type.getPackage().getName().startsWith("org.springframework.boot")) {
 			return false;
 		}
 		if (getConstraintsForClass(type).isBeanConstrained()) {

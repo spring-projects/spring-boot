@@ -63,8 +63,8 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointIsInParentContextIsDiscovered() {
-		AnnotationConfigApplicationContext parent =
-				new AnnotationConfigApplicationContext(TestEndpointConfiguration.class);
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext(
+				TestEndpointConfiguration.class);
 		loadWithParent(parent, EmptyConfiguration.class, hasTestEndpoint());
 	}
 
@@ -125,7 +125,7 @@ public class AnnotationEndpointDiscovererTests {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
 					new TestAnnotationEndpointDiscoverer(context,
 							(endpointId) -> new CachingConfiguration(0))
-							.discoverEndpoints());
+									.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
@@ -139,7 +139,7 @@ public class AnnotationEndpointDiscovererTests {
 	public void endpointMainReadOperationIsNotCachedWithNonMatchingId() {
 		Function<String, CachingConfiguration> cachingConfigurationFactory = (
 				endpointId) -> (endpointId.equals("foo") ? new CachingConfiguration(500)
-				: new CachingConfiguration(0));
+						: new CachingConfiguration(0));
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
 					new TestAnnotationEndpointDiscoverer(context,
@@ -157,7 +157,7 @@ public class AnnotationEndpointDiscovererTests {
 	public void endpointMainReadOperationIsCachedWithMatchingId() {
 		Function<String, CachingConfiguration> cachingConfigurationFactory = (
 				endpointId) -> (endpointId.equals("test") ? new CachingConfiguration(500)
-				: new CachingConfiguration(0));
+						: new CachingConfiguration(0));
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
 					new TestAnnotationEndpointDiscoverer(context,
@@ -174,10 +174,10 @@ public class AnnotationEndpointDiscovererTests {
 					.isEqualTo(500);
 			assertThat(operations.get(ReflectionUtils.findMethod(TestEndpoint.class,
 					"getOne", String.class)).getInvoker())
-					.isNotInstanceOf(CachingOperationInvoker.class);
+							.isNotInstanceOf(CachingOperationInvoker.class);
 			assertThat(operations.get(ReflectionUtils.findMethod(TestEndpoint.class,
 					"update", String.class, String.class)).getInvoker())
-					.isNotInstanceOf(CachingOperationInvoker.class);
+							.isNotInstanceOf(CachingOperationInvoker.class);
 		});
 	}
 

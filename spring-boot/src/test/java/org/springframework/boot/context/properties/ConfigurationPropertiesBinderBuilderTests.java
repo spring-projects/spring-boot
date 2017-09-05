@@ -51,8 +51,8 @@ public class ConfigurationPropertiesBinderBuilderTests {
 
 	private final StaticApplicationContext applicationContext = new StaticApplicationContext();
 
-	private final ConfigurationPropertiesBinderBuilder builder =
-			new ConfigurationPropertiesBinderBuilder(this.applicationContext);
+	private final ConfigurationPropertiesBinderBuilder builder = new ConfigurationPropertiesBinderBuilder(
+			this.applicationContext);
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -78,8 +78,8 @@ public class ConfigurationPropertiesBinderBuilderTests {
 				DefaultConversionService.class);
 		ConfigurationPropertiesBinder binder = this.builder
 				.withEnvironment(this.environment).build();
-		assertThat(ReflectionTestUtils.getField(binder, "conversionService")).isSameAs(
-				this.applicationContext.getBean("conversionService"));
+		assertThat(ReflectionTestUtils.getField(binder, "conversionService"))
+				.isSameAs(this.applicationContext.getBean("conversionService"));
 	}
 
 	@Test
@@ -97,8 +97,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	public void useCustomValidator() {
 		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment)
-				.withValidator(validator).build();
+				.withEnvironment(this.environment).withValidator(validator).build();
 		assertThat(ReflectionTestUtils.getField(binder, "validator")).isSameAs(validator);
 	}
 
@@ -124,8 +123,9 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	public void validationWithJsr303() {
 		ConfigurationPropertiesBinder binder = this.builder
 				.withEnvironment(this.environment).build();
-		assertThat(bindWithValidationErrors(binder, new PropertyWithJSR303())
-				.getAllErrors()).hasSize(2);
+		assertThat(
+				bindWithValidationErrors(binder, new PropertyWithJSR303()).getAllErrors())
+						.hasSize(2);
 	}
 
 	@Test

@@ -60,13 +60,15 @@ public class CompositeReactiveHealthIndicatorFactory {
 			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(reactiveHealthIndicators, "ReactiveHealthIndicators must not be null");
+		Assert.notNull(reactiveHealthIndicators,
+				"ReactiveHealthIndicators must not be null");
 		CompositeReactiveHealthIndicator healthIndicator = new CompositeReactiveHealthIndicator(
 				healthAggregator);
-		merge(reactiveHealthIndicators, healthIndicators).forEach((beanName, indicator) -> {
-			String name = this.healthIndicatorNameFactory.apply(beanName);
-			healthIndicator.addHealthIndicator(name, indicator);
-		});
+		merge(reactiveHealthIndicators, healthIndicators)
+				.forEach((beanName, indicator) -> {
+					String name = this.healthIndicatorNameFactory.apply(beanName);
+					healthIndicator.addHealthIndicator(name, indicator);
+				});
 		return healthIndicator;
 	}
 
@@ -80,8 +82,8 @@ public class CompositeReactiveHealthIndicatorFactory {
 				reactiveHealthIndicators);
 		healthIndicators.forEach((beanName, indicator) -> {
 			String name = this.healthIndicatorNameFactory.apply(beanName);
-			allIndicators.computeIfAbsent(name, n ->
-					new HealthIndicatorReactiveAdapter(indicator));
+			allIndicators.computeIfAbsent(name,
+					(n) -> new HealthIndicatorReactiveAdapter(indicator));
 		});
 		return allIndicators;
 	}
