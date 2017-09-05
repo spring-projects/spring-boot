@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -37,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testNaming() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(Config.class)
@@ -45,17 +44,18 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor other = properties.getBeans()
 					.get("other");
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("prefix")).isEqualTo("other");
-			assertThat(nestedProperties.get("properties")).isNotNull();
+			assertThat(other).isNotNull();
+			assertThat(other.getPrefix()).isEqualTo("other");
+			assertThat(other.getProperties()).isNotNull();
+			assertThat(other.getProperties()).isNotEmpty();
 		});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(OverriddenPrefix.class)
@@ -63,12 +63,13 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("bar");
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("prefix")).isEqualTo("other");
-			assertThat(nestedProperties.get("properties")).isNotNull();
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor bar = properties.getBeans().get("bar");
+			assertThat(bar).isNotNull();
+			assertThat(bar.getPrefix()).isEqualTo("other");
+			assertThat(bar.getProperties()).isNotNull();
+			assertThat(bar.getProperties()).isNotEmpty();
 		});
 	}
 

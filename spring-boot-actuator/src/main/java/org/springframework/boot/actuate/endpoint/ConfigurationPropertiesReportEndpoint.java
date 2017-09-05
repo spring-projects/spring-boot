@@ -83,42 +83,35 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@ReadOperation
-	public Map<String, Object> configurationProperties() {
+	public ConfigurationPropertiesDescriptor configurationProperties() {
 		return extract(this.context);
 	}
 
-	/**
-	 * Extract beans annotated {@link ConfigurationProperties} and serialize into
-	 * {@link Map}.
-	 * @param context the application context
-	 * @return the beans
-	 */
-	protected Map<String, Object> extract(ApplicationContext context) {
-		// Serialize beans into map structure and sanitize values
+	private ConfigurationPropertiesDescriptor extract(ApplicationContext context) {
 		ObjectMapper mapper = new ObjectMapper();
 		configureObjectMapper(mapper);
-		return extract(context, mapper);
+		return describeConfigurationProperties(context, mapper);
 	}
 
-	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
-		Map<String, Object> result = new HashMap<>();
+	private ConfigurationPropertiesDescriptor describeConfigurationProperties(
+			ApplicationContext context, ObjectMapper mapper) {
+		if (context == null) {
+			return null;
+		}
 		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
 				context);
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
 				beanFactoryMetaData);
+		Map<String, ConfigurationPropertiesBeanDescriptor> beanDescriptors = new HashMap<>();
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
-			Map<String, Object> root = new HashMap<>();
 			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
-			root.put("prefix", prefix);
-			root.put("properties", sanitize(prefix, safeSerialize(mapper, bean, prefix)));
-			result.put(beanName, root);
+			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(
+					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
 		}
-		if (context.getParent() != null) {
-			result.put("parent", extract(context.getParent(), mapper));
-		}
-		return result;
+		return new ConfigurationPropertiesDescriptor(beanDescriptors,
+				describeConfigurationProperties(context.getParent(), mapper));
 	}
 
 	private ConfigurationBeanFactoryMetaData getBeanFactoryMetaData(
@@ -359,4 +352,58 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		}
 
 	}
+
+	/**
+	 * A description of an application context's {@link ConfigurationProperties} beans.
+	 * Primarily intended for serialization to JSON.
+	 */
+	public static final class ConfigurationPropertiesDescriptor {
+
+		private final Map<String, ConfigurationPropertiesBeanDescriptor> beans;
+
+		private final ConfigurationPropertiesDescriptor parent;
+
+		private ConfigurationPropertiesDescriptor(
+				Map<String, ConfigurationPropertiesBeanDescriptor> beans,
+				ConfigurationPropertiesDescriptor parent) {
+			this.beans = beans;
+			this.parent = parent;
+		}
+
+		public Map<String, ConfigurationPropertiesBeanDescriptor> getBeans() {
+			return this.beans;
+		}
+
+		public ConfigurationPropertiesDescriptor getParent() {
+			return this.parent;
+		}
+
+	}
+
+	/**
+	 * A description of a {@link ConfigurationProperties} bean. Primarily intended for
+	 * serialization to JSON.
+	 */
+	public static final class ConfigurationPropertiesBeanDescriptor {
+
+		private final String prefix;
+
+		private final Map<String, Object> properties;
+
+		private ConfigurationPropertiesBeanDescriptor(String prefix,
+				Map<String, Object> properties) {
+			this.prefix = prefix;
+			this.properties = properties;
+		}
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public Map<String, Object> getProperties() {
+			return this.properties;
+		}
+
+	}
+
 }

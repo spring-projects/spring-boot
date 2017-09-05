@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -44,35 +46,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void configurationPropertiesAreReturned() throws Exception {
 		load((properties) -> {
-			assertThat(properties.size()).isGreaterThan(0);
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
+			assertThat(properties.getBeans().size()).isGreaterThan(0);
+			ConfigurationPropertiesBeanDescriptor nestedProperties = properties.getBeans()
 					.get("testProperties");
 			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("prefix")).isEqualTo("test");
-			assertThat(nestedProperties.get("properties")).isNotNull();
+			assertThat(nestedProperties.getPrefix()).isEqualTo("test");
+			assertThat(nestedProperties.getProperties()).isNotNull();
+			assertThat(nestedProperties.getProperties()).isNotEmpty();
 		});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void entriesWithNullValuesAreNotIncluded() {
 		load((properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("testProperties");
-			assertThat((Map<String, Object>) nestedProperties.get("properties"))
-					.doesNotContainKey("nullValue");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties).doesNotContainKey("nullValue");
 		});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void defaultKeySanitization() throws Exception {
 		load((properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
@@ -80,30 +79,27 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void customKeySanitization() throws Exception {
 		load("property", (properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void customPatternKeySanitization() throws Exception {
 		load(".*pass.*", (properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
 		ApplicationContextRunner tester = new ApplicationContextRunner()
@@ -113,9 +109,10 @@ public class ConfigurationPropertiesReportEndpointTests {
 		tester.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
@@ -127,8 +124,8 @@ public class ConfigurationPropertiesReportEndpointTests {
 	public void keySanitizationWithCustomPatternUsingCompositeKeys() throws Exception {
 		// gh-4415
 		load(Arrays.asList(".*\\.secrets\\..*", ".*\\.hidden\\..*"), (properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
 			Map<String, Object> secrets = (Map<String, Object>) nestedProperties
 					.get("secrets");
@@ -141,11 +138,10 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void mixedBoolean() throws Exception {
 		load((properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
 		});
 	}
@@ -154,8 +150,8 @@ public class ConfigurationPropertiesReportEndpointTests {
 	@SuppressWarnings("unchecked")
 	public void listsAreSanitized() throws Exception {
 		load((properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties.get("listItems")).isInstanceOf(List.class);
 			List<Object> list = (List<Object>) nestedProperties.get("listItems");
 			assertThat(list).hasSize(1);
@@ -168,8 +164,8 @@ public class ConfigurationPropertiesReportEndpointTests {
 	@SuppressWarnings("unchecked")
 	public void listsOfListsAreSanitized() throws Exception {
 		load((properties) -> {
-			Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
-					.get("testProperties")).get("properties");
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);
 			List<List<Object>> listOfLists = (List<List<Object>>) nestedProperties
 					.get("listOfListItems");
@@ -181,16 +177,17 @@ public class ConfigurationPropertiesReportEndpointTests {
 		});
 	}
 
-	private void load(Consumer<Map<String, Object>> properties) {
+	private void load(Consumer<ConfigurationPropertiesDescriptor> properties) {
 		load(Collections.emptyList(), properties);
 	}
 
-	private void load(String keyToSanitize, Consumer<Map<String, Object>> properties) {
+	private void load(String keyToSanitize,
+			Consumer<ConfigurationPropertiesDescriptor> properties) {
 		load(Collections.singletonList(keyToSanitize), properties);
 	}
 
 	private void load(List<String> keysToSanitize,
-			Consumer<Map<String, Object>> properties) {
+			Consumer<ConfigurationPropertiesDescriptor> properties) {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(Config.class);
 		contextRunner.run((context) -> {

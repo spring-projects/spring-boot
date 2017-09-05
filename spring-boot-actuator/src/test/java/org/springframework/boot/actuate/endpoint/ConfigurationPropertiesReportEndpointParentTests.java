@@ -16,10 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -38,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointParentTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void configurationPropertiesClass() throws Exception {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class)
 				.run((parent) -> {
@@ -47,17 +45,17 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 							.withParent(parent).run(child -> {
 						ConfigurationPropertiesReportEndpoint endpoint = child
 								.getBean(ConfigurationPropertiesReportEndpoint.class);
-						Map<String, Object> result = endpoint.configurationProperties();
-						assertThat(result.keySet()).containsExactlyInAnyOrder("parent",
-								"endpoint", "someProperties");
-						assertThat(((Map<String, Object>) result.get("parent")).keySet())
+						ConfigurationPropertiesDescriptor result = endpoint
+								.configurationProperties();
+						assertThat(result.getBeans().keySet())
+								.containsExactlyInAnyOrder("endpoint", "someProperties");
+						assertThat((result.getParent().getBeans().keySet()))
 								.containsExactly("testProperties");
 					});
 				});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void configurationPropertiesBeanMethod() throws Exception {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class)
 				.run((parent) -> {
@@ -67,10 +65,11 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 							.withParent(parent).run(child -> {
 						ConfigurationPropertiesReportEndpoint endpoint = child
 								.getBean(ConfigurationPropertiesReportEndpoint.class);
-						Map<String, Object> result = endpoint.configurationProperties();
-						assertThat(result.keySet()).containsExactlyInAnyOrder("parent",
-								"endpoint", "otherProperties");
-						assertThat(((Map<String, Object>) result.get("parent")).keySet())
+						ConfigurationPropertiesDescriptor result = endpoint
+								.configurationProperties();
+						assertThat(result.getBeans().keySet())
+								.containsExactlyInAnyOrder("endpoint", "otherProperties");
+						assertThat((result.getParent().getBeans().keySet()))
 								.containsExactly("testProperties");
 					});
 				});

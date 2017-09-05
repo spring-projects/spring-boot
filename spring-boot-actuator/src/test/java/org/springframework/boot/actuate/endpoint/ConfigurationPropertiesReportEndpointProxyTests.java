@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -52,10 +52,12 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(Config.class, SqlExecutor.class);
 		contextRunner.run((context) -> {
-			Map<String, Object> report = context
+			ConfigurationPropertiesDescriptor report = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class)
 					.configurationProperties();
-			assertThat(report.toString()).contains("prefix=executor.sql");
+			assertThat(report.getBeans().values().stream()
+					.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
+					.filter("executor.sql"::equals).findFirst()).isNotEmpty();
 		});
 	}
 

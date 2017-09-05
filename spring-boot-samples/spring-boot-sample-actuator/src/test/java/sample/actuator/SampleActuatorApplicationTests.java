@@ -223,6 +223,7 @@ public class SampleActuatorApplicationTests {
 		assertThat(((String) body.get("id"))).startsWith("application");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testConfigProps() throws Exception {
 		@SuppressWarnings("rawtypes")
@@ -230,9 +231,8 @@ public class SampleActuatorApplicationTests {
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/application/configprops", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat(body)
+		assertThat((Map<String, Object>) body.get("beans"))
 				.containsKey("spring.datasource-" + DataSourceProperties.class.getName());
 	}
 

@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -44,7 +46,6 @@ import static org.assertj.core.api.Assertions.entry;
 public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testNaming() throws Exception {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(FooConfig.class)
@@ -52,13 +53,12 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("foo");
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-			Map<String, Object> map = (Map<String, Object>) nestedProperties
-					.get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor foo = properties.getBeans().get("foo");
+			assertThat(foo).isNotNull();
+			assertThat(foo.getPrefix()).isEqualTo("foo");
+			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(2);
 			assertThat(map.get("name")).isEqualTo("foo");
@@ -74,12 +74,11 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("foo");
-			assertThat(nestedProperties).isNotNull();
-			Map<String, Object> map = (Map<String, Object>) nestedProperties
-					.get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor foo = properties.getBeans().get("foo");
+			assertThat(foo).isNotNull();
+			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(2);
 			assertThat(((Map<String, Object>) map.get("bar")).get("name"))
@@ -88,7 +87,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testCycle() throws Exception {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(CycleConfig.class)
@@ -96,13 +94,12 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("foo");
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-			Map<String, Object> map = (Map<String, Object>) nestedProperties
-					.get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor foo = properties.getBeans().get("foo");
+			assertThat(foo).isNotNull();
+			assertThat(foo.getPrefix()).isEqualTo("foo");
+			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(1);
 			assertThat(map.get("error")).isEqualTo("Cannot serialize 'foo'");
@@ -118,13 +115,13 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor fooProperties = properties.getBeans()
 					.get("foo");
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-			Map<String, Object> map = (Map<String, Object>) nestedProperties
-					.get("properties");
+			assertThat(fooProperties).isNotNull();
+			assertThat(fooProperties.getPrefix()).isEqualTo("foo");
+			Map<String, Object> map = fooProperties.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(3);
 			assertThat(((Map<String, Object>) map.get("map")).get("name"))
@@ -133,21 +130,18 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testEmptyMapIsNotAdded() throws Exception {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(MapConfig.class);
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("foo");
-			assertThat(nestedProperties).isNotNull();
-			System.err.println(nestedProperties);
-			assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-			Map<String, Object> map = (Map<String, Object>) nestedProperties
-					.get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor foo = properties.getBeans().get("foo");
+			assertThat(foo).isNotNull();
+			assertThat(foo.getPrefix()).isEqualTo("foo");
+			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(2);
 			assertThat(map).doesNotContainKey("map");
@@ -163,13 +157,12 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("foo");
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-			Map<String, Object> map = (Map<String, Object>) nestedProperties
-					.get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor foo = properties.getBeans().get("foo");
+			assertThat(foo).isNotNull();
+			assertThat(foo.getPrefix()).isEqualTo("foo");
+			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(3);
 			assertThat(((List<String>) map.get("list")).get(0)).isEqualTo("foo");
@@ -177,7 +170,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testInetAddress() throws Exception {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(AddressedConfig.class)
@@ -185,14 +177,12 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("foo");
-			assertThat(nestedProperties).isNotNull();
-			System.err.println(nestedProperties);
-			assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-			Map<String, Object> map = (Map<String, Object>) nestedProperties
-					.get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor foo = properties.getBeans().get("foo");
+			assertThat(foo).isNotNull();
+			assertThat(foo.getPrefix()).isEqualTo("foo");
+			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(3);
 			assertThat(map.get("address")).isEqualTo("192.168.1.10");
@@ -209,14 +199,12 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			Map<String, Object> properties = endpoint.configurationProperties();
-			assertThat(properties).containsKeys("foo");
-			Map<String, Object> nestedProperties = (Map<String, Object>) properties
-					.get("foo");
-			assertThat(nestedProperties).containsOnlyKeys("prefix", "properties");
-			assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-			Map<String, Object> propertiesMap = (Map<String, Object>) nestedProperties
-					.get("properties");
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			assertThat(properties.getBeans()).containsKeys("foo");
+			ConfigurationPropertiesBeanDescriptor foo = properties.getBeans().get("foo");
+			assertThat(foo.getPrefix()).isEqualTo("foo");
+			Map<String, Object> propertiesMap = foo.getProperties();
 			assertThat(propertiesMap).containsOnlyKeys("bar", "name", "map", "list");
 			Map<String, Object> map = (Map<String, Object>) propertiesMap.get("map");
 			assertThat(map).containsOnly(entry("entryOne", true));
