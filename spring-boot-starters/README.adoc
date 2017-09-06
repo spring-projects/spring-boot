@@ -37,6 +37,9 @@ do as they were designed before this was clarified.
 | https://azure.microsoft.com/[Azure]
 | https://github.com/Microsoft/azure-spring-boot-starters
 
+| https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
+| https://github.com/MarcGiffing/bucket4j-spring-boot-starter
+
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
