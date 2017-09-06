@@ -132,7 +132,6 @@ public class TestPropertyValuesTests {
 				return null;
 			});
 			assertThat(System.getProperty("foo")).isEqualTo("bar1");
-			assertThat(System.getProperties()).doesNotContainKey("baz");
 		}
 		finally {
 			System.clearProperty("foo");
