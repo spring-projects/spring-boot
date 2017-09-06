@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Abstract base {@link ServletContextInitializer} to register {@link Filter}s in a
@@ -209,13 +210,14 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		if (!isEnabled()) {
+			this.logger.info("Filter " + ClassUtils.getShortNameAsProperty(this.getClass())
+					+ " was not registered (disabled)");
+			return;
+		}
 		Filter filter = getFilter();
 		Assert.notNull(filter, "Filter must not be null");
 		String name = getOrDeduceName(filter);
-		if (!isEnabled()) {
-			this.logger.info("Filter " + name + " was not registered (disabled)");
-			return;
-		}
 		FilterRegistration.Dynamic added = servletContext.addFilter(name, filter);
 		if (added == null) {
 			this.logger.info("Filter " + name + " was not registered "
