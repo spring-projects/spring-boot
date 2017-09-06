@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -35,8 +38,19 @@ import org.eclipse.jetty.server.handler.ErrorHandler;
  * prefers Tomcat, Jetty and Undertow to all behave in the same way.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JettyEmbeddedErrorHandler extends ErrorHandler {
+
+	private static final Set<String> SUPPORTED_METHODS;
+
+	static {
+		Set<String> supportedMethods = new HashSet<String>();
+		supportedMethods.add("GET");
+		supportedMethods.add("HEAD");
+		supportedMethods.add("POST");
+		SUPPORTED_METHODS = Collections.unmodifiableSet(supportedMethods);
+	}
 
 	private final ErrorHandler delegate;
 
@@ -47,12 +61,19 @@ class JettyEmbeddedErrorHandler extends ErrorHandler {
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		String method = request.getMethod();
-		if (!HttpMethod.GET.is(method) && !HttpMethod.POST.is(method)
-				&& !HttpMethod.HEAD.is(method)) {
+		if (!isSupported(request.getMethod())) {
 			request = new ErrorHttpServletRequest(request);
 		}
 		this.delegate.handle(target, baseRequest, request, response);
+	}
+
+	private boolean isSupported(String method) {
+		for (String supportedMethod : SUPPORTED_METHODS) {
+			if (supportedMethod.equalsIgnoreCase(method)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static class ErrorHttpServletRequest extends HttpServletRequestWrapper {
