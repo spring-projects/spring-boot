@@ -36,9 +36,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 
 /**
- * A set of {@link Configuration @Configuration} classes that can be registered
+ * A set of {@link Configuration @Configuration} classes that can be registered in
  * {@link ApplicationContext}. Classes can be returned from one or more
- * {@link Configurations} instance by using {@link #getClasses(Configurations[])}. The
+ * {@link Configurations} instances by using {@link #getClasses(Configurations[])}. The
  * resulting array follows the ordering rules usually applied by the
  * {@link ApplicationContext} and/or custom {@link ImportSelector} implementations.
  * <p>
@@ -57,7 +57,7 @@ public abstract class Configurations {
 	private static final Comparator<Object> COMPARATOR = OrderComparator.INSTANCE
 			.thenComparing((other) -> other.getClass().getName());
 
-	private Set<Class<?>> classes;
+	private final Set<Class<?>> classes;
 
 	protected Configurations(Collection<Class<?>> classes) {
 		Assert.notNull(classes, "Classes must not be null");
@@ -92,7 +92,7 @@ public abstract class Configurations {
 
 	/**
 	 * Merge configurations.
-	 * @param mergedClasses the merge classes
+	 * @param mergedClasses the merged classes
 	 * @return a new configurations instance (must be of the same type as this instance)
 	 */
 	protected abstract Configurations merge(Set<Class<?>> mergedClasses);

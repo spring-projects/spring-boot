@@ -35,8 +35,8 @@ public final class RepositoryConfiguration {
 
 	/**
 	 * Creates a new {@code RepositoryConfiguration} instance.
-	 * @param name The name of the repository
-	 * @param uri The uri of the repository
+	 * @param name the name of the repository
+	 * @param uri the uri of the repository
 	 * @param snapshotsEnabled {@code true} if the repository should enable access to
 	 * snapshots, {@code false} otherwise
 	 */

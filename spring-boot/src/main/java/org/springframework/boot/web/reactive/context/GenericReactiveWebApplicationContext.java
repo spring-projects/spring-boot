@@ -68,7 +68,7 @@ public class GenericReactiveWebApplicationContext
 	 * {@link org.springframework.web.context.support.ServletContextResource} in a
 	 * reactive web application.
 	 * <p>
-	 * {@link #exists()} always returns null in order to avoid exposing the whole
+	 * {@link #exists()} always returns {@code false} in order to avoid exposing the whole
 	 * classpath in a non-servlet environment.
 	 */
 	class FilteredReactiveWebContextResource extends AbstractResource {
