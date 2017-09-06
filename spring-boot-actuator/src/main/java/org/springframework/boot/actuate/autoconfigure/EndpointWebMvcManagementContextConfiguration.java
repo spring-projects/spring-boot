@@ -143,6 +143,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
 	@ConditionalOnEnabledEndpoint("env")
 	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
@@ -173,6 +174,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(LoggersEndpoint.class)
 	@ConditionalOnEnabledEndpoint("loggers")
 	public LoggersMvcEndpoint loggersMvcEndpoint(LoggersEndpoint delegate) {
@@ -180,6 +182,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(MetricsEndpoint.class)
 	@ConditionalOnEnabledEndpoint("metrics")
 	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
@@ -187,6 +190,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint("logfile")
 	@Conditional(LogFileCondition.class)
 	public LogFileMvcEndpoint logfileMvcEndpoint() {
@@ -194,6 +198,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(ShutdownEndpoint.class)
 	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
@@ -201,6 +206,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(AuditEventRepository.class)
 	@ConditionalOnEnabledEndpoint("auditevents")
 	public AuditEventsMvcEndpoint auditEventMvcEndpoint(

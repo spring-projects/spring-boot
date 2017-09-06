@@ -111,8 +111,9 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		};
 	}
 
-	@ConditionalOnEnabledEndpoint("actuator")
 	@Bean
+	@ConditionalOnEnabledEndpoint("actuator")
+	@ConditionalOnMissingBean
 	public HalJsonMvcEndpoint halJsonMvcEndpoint(
 			ManagementServletContext managementServletContext,
 			ResourceProperties resources, ResourceLoader resourceLoader) {
@@ -137,6 +138,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	static class DocsMvcEndpointConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint("docs")
 		@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
 		public DocsMvcEndpoint docsMvcEndpoint(

@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link EndpointWebMvcHypermediaManagementContextConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 
@@ -112,7 +113,38 @@ public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 				.isEqualTo("http://localhost/docs/#spring_boot_actuator__{rel}");
 	}
 
+	@Test
+	public void halJsonMvcEndpointIsConditionalOnMissingBean() throws Exception {
+		createContext();
+		this.context.register(HalJsonConfiguration.class, TestConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EndpointWebMvcHypermediaManagementContextConfiguration.class);
+		this.context.refresh();
+		HalJsonMvcEndpoint bean = this.context.getBean(HalJsonMvcEndpoint.class);
+		assertThat(bean).isInstanceOf(TestHalJsonMvcEndpoint.class);
+	}
+
+	@Test
+	public void docsMvcEndpointIsConditionalOnMissingBean() throws Exception {
+		createContext();
+		this.context.register(DocsConfiguration.class, TestConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EndpointWebMvcHypermediaManagementContextConfiguration.class);
+		this.context.refresh();
+		DocsMvcEndpoint bean = this.context.getBean(DocsMvcEndpoint.class);
+		assertThat(bean).isInstanceOf(TestDocsMvcEndpoint.class);
+	}
+
 	private void load(String... properties) {
+		createContext();
+		EnvironmentTestUtils.addEnvironment(this.context, properties);
+		this.context.register(TestConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EndpointWebMvcHypermediaManagementContextConfiguration.class);
+		this.context.refresh();
+	}
+
+	private void createContext() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setClassLoader(new ClassLoader(getClass().getClassLoader()) {
 
@@ -126,11 +158,6 @@ public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 			}
 
 		});
-		EnvironmentTestUtils.addEnvironment(this.context, properties);
-		this.context.register(TestConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				EndpointWebMvcHypermediaManagementContextConfiguration.class);
-		this.context.refresh();
 	}
 
 	private String getCurieHref() {
@@ -148,6 +175,42 @@ public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 		@Bean
 		public MvcEndpoints mvcEndpoints() {
 			return new MvcEndpoints();
+		}
+
+	}
+
+	@Configuration
+	static class DocsConfiguration {
+
+		@Bean
+		public DocsMvcEndpoint testDocsMvcEndpoint(ManagementServletContext managementServletContext) {
+			return new TestDocsMvcEndpoint(managementServletContext);
+		}
+
+	}
+
+	@Configuration
+	static class HalJsonConfiguration {
+
+		@Bean
+		public HalJsonMvcEndpoint testHalJsonMvcEndpoint(ManagementServletContext managementServletContext) {
+			return new TestHalJsonMvcEndpoint(managementServletContext);
+		}
+
+	}
+
+	static class TestDocsMvcEndpoint extends DocsMvcEndpoint {
+
+		TestDocsMvcEndpoint(ManagementServletContext managementServletContext) {
+			super(managementServletContext);
+		}
+
+	}
+
+	static class TestHalJsonMvcEndpoint extends HalJsonMvcEndpoint {
+
+		TestHalJsonMvcEndpoint(ManagementServletContext managementServletContext) {
+			super(managementServletContext);
 		}
 
 	}
