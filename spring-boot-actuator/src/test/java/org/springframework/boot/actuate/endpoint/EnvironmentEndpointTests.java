@@ -242,13 +242,6 @@ public class EnvironmentEndpointTests {
 				.isEqualTo("bar");
 	}
 
-	@Test
-	public void propertyEntryNoMatchReturnNull() {
-		EnvironmentDescriptor env = new EnvironmentEndpoint(new StandardEnvironment())
-				.environmentEntry("this.property.does-not-exist");
-		assertThat(env).isNull();
-	}
-
 	private void clearSystemProperties(String... properties) {
 		for (String property : properties) {
 			System.clearProperty(property);
