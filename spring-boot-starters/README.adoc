@@ -49,6 +49,9 @@ do as they were designed before this was clarified.
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
 
+| https://paulcwarren.github.io/spring-content/[Content Stores & Services]
+| https://github.com/paulcwarren/spring-content
+
 | http://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
