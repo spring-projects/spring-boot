@@ -69,9 +69,9 @@ public class EnvironmentEndpointTests {
 		StandardEnvironment environment = new StandardEnvironment();
 		CompositePropertySource source = new CompositePropertySource("composite");
 		source.addPropertySource(new MapPropertySource("one",
-				Collections.singletonMap("foo", (Object) "bar")));
+				Collections.singletonMap("foo", "bar")));
 		source.addPropertySource(new MapPropertySource("two",
-				Collections.singletonMap("foo", (Object) "spam")));
+				Collections.singletonMap("foo", "spam")));
 		environment.getPropertySources().addFirst(source);
 		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
 				.environment(null);
@@ -230,6 +230,25 @@ public class EnvironmentEndpointTests {
 		assertThat(foo.get("bar")).isEqualTo("baz");
 	}
 
+	@Test
+	public void propertyEntry() {
+		StandardEnvironment environment = new StandardEnvironment();
+		TestPropertyValues.of("my.foo=bar", "my.foo2=bar2")
+				.applyTo(environment);
+		EnvironmentDescriptor env = new EnvironmentEndpoint(environment)
+				.environmentEntry("my.foo");
+		assertThat(env).isNotNull();
+		assertThat(getSource("test", env).getProperties().get("my.foo").getValue())
+				.isEqualTo("bar");
+	}
+
+	@Test
+	public void propertyEntryNoMatchReturnNull() {
+		EnvironmentDescriptor env = new EnvironmentEndpoint(new StandardEnvironment())
+				.environmentEntry("this.property.does-not-exist");
+		assertThat(env).isNull();
+	}
+
 	private void clearSystemProperties(String... properties) {
 		for (String property : properties) {
 			System.clearProperty(property);
@@ -253,6 +272,5 @@ public class EnvironmentEndpointTests {
 		}
 
 	}
-
 
 }

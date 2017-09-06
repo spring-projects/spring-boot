@@ -73,17 +73,18 @@ public class EnvironmentEndpoint {
 	@ReadOperation
 	public EnvironmentDescriptor environment(String pattern) {
 		if (StringUtils.hasText(pattern)) {
-			return environment(Pattern.compile(pattern).asPredicate());
+			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate());
 		}
-		return environment((name) -> true);
+		return getEnvironmentDescriptor((name) -> true);
 	}
 
 	@ReadOperation
-	public Object getEnvironmentEntry(@Selector String toMatch) {
-		return environment((name) -> toMatch.equals(name));
+	public EnvironmentDescriptor environmentEntry(@Selector String toMatch) {
+		return getEnvironmentDescriptor(toMatch::equals);
 	}
 
-	private EnvironmentDescriptor environment(Predicate<String> propertyNamePredicate) {
+	private EnvironmentDescriptor getEnvironmentDescriptor(
+			Predicate<String> propertyNamePredicate) {
 		PropertyResolver resolver = getResolver();
 		List<PropertySourceDescriptor> propertySources = new ArrayList<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> {
