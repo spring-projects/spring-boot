@@ -94,7 +94,7 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	public Mono<Health> health() {
 		return Flux.fromIterable(this.indicators.entrySet())
 				.flatMap((entry) -> Mono.just(entry.getKey())
-						.and(entry.getValue().health().compose(this.timeoutCompose)))
+						.zipWith(entry.getValue().health().compose(this.timeoutCompose)))
 				.collectMap(Tuple2::getT1, Tuple2::getT2)
 				.map(this.healthAggregator::aggregate);
 	}
