@@ -130,7 +130,6 @@ public final class TestPropertyValues {
 		}
 		catch (Exception ex) {
 			rethrow(ex);
-			throw new IllegalStateException("Original cause not rethrown", ex);
 		}
 	}
 
