@@ -26,8 +26,13 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
@@ -148,6 +153,23 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
+	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
+		ApplicationContextRunner tester = new ApplicationContextRunner()
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
+				.withPropertyValues("endpoints.env.keys-to-sanitize=.*pass.*")
+				.withUserConfiguration(Config.class);
+		tester.run((context) -> {
+			EnvironmentEndpoint endpoint = context
+					.getBean(EnvironmentEndpoint.class);
+			EnvironmentDescriptor env = endpoint.environment(null);
+			Map<String, PropertyValueDescriptor> systemProperties = getSource(
+					"systemProperties", env).getProperties();
+			assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("******");
+			assertThat(systemProperties.get("apiKey").getValue()).isEqualTo("123456");
+		});
+	}
+
+	@Test
 	public void propertyWithPlaceholderResolved() {
 		StandardEnvironment environment = new StandardEnvironment();
 		TestPropertyValues.of("my.foo: ${bar.blah}", "bar.blah: hello")
@@ -219,5 +241,18 @@ public class EnvironmentEndpointTests {
 		return descriptor.getPropertySources().stream()
 				.filter((source) -> name.equals(source.getName())).findFirst().get();
 	}
+
+
+	@Configuration
+	@EnableConfigurationProperties
+	static class Config {
+
+		@Bean
+		public EnvironmentEndpoint environmentEndpoint(Environment environment) {
+			return new EnvironmentEndpoint(environment);
+		}
+
+	}
+
 
 }

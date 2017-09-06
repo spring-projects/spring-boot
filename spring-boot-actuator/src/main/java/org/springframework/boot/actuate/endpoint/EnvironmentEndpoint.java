@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.Selector;
@@ -54,6 +55,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Madhura Bhave
  */
 @Endpoint(id = "env")
+@ConfigurationProperties("endpoints.env")
 public class EnvironmentEndpoint {
 
 	private final Sanitizer sanitizer = new Sanitizer();
