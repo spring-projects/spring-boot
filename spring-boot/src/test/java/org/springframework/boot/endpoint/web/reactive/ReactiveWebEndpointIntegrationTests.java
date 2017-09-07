@@ -21,6 +21,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import org.springframework.boot.endpoint.web.AbstractWebEndpointIntegrationTests;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
@@ -29,6 +30,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.cors.CorsConfiguration;
@@ -63,7 +65,9 @@ public class ReactiveWebEndpointIntegrationTests
 	@Override
 	protected ReactiveWebServerApplicationContext createApplicationContext(
 			Class<?>... config) {
-		return new ReactiveWebServerApplicationContext(config);
+		ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
+		context.register(config);
+		return context;
 	}
 
 	@Override
@@ -89,11 +93,13 @@ public class ReactiveWebEndpointIntegrationTests
 
 		@Bean
 		public WebEndpointReactiveHandlerMapping webEndpointHandlerMapping(
+				Environment environment,
 				WebAnnotationEndpointDiscoverer endpointDiscoverer) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
-			return new WebEndpointReactiveHandlerMapping("endpoints",
+			return new WebEndpointReactiveHandlerMapping(
+					new EndpointMapping(environment.getProperty("endpointPath")),
 					endpointDiscoverer.discoverEndpoints(), corsConfiguration);
 		}
 

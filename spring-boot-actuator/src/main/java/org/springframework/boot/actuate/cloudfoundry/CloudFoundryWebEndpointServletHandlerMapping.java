@@ -35,6 +35,7 @@ import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.ParameterMappingException;
 import org.springframework.boot.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.Link;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.endpoint.web.WebEndpointResponse;
@@ -72,11 +73,11 @@ class CloudFoundryWebEndpointServletHandlerMapping
 
 	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
 
-	CloudFoundryWebEndpointServletHandlerMapping(String endpointPath,
+	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
 			CorsConfiguration corsConfiguration,
 			CloudFoundrySecurityInterceptor securityInterceptor) {
-		super(endpointPath, webEndpoints, corsConfiguration);
+		super(endpointMapping, webEndpoints, corsConfiguration);
 		this.securityInterceptor = securityInterceptor;
 	}
 

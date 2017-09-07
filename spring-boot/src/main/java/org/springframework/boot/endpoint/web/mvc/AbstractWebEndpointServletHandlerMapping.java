@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.endpoint.EndpointInfo;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.util.StringUtils;
@@ -50,7 +51,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
 public abstract class AbstractWebEndpointServletHandlerMapping
 		extends RequestMappingInfoHandlerMapping implements InitializingBean {
 
-	private final String endpointPath;
+	private final EndpointMapping endpointMapping;
 
 	private final Collection<EndpointInfo<WebEndpointOperation>> webEndpoints;
 
@@ -59,25 +60,25 @@ public abstract class AbstractWebEndpointServletHandlerMapping
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
-	 * @param endpointPath the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the base mapping for all endpoints
 	 * @param collection the web endpoints operations
 	 */
-	public AbstractWebEndpointServletHandlerMapping(String endpointPath,
+	public AbstractWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> collection) {
-		this(endpointPath, collection, null);
+		this(endpointMapping, collection, null);
 	}
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
-	 * @param endpointPath the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the base mapping for all endpoints
 	 * @param webEndpoints the web endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
-	public AbstractWebEndpointServletHandlerMapping(String endpointPath,
+	public AbstractWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
 			CorsConfiguration corsConfiguration) {
-		this.endpointPath = (endpointPath.startsWith("/") ? "" : "/") + endpointPath;
+		this.endpointMapping = endpointMapping;
 		this.webEndpoints = webEndpoints;
 		this.corsConfiguration = corsConfiguration;
 		setOrder(-100);
@@ -87,8 +88,8 @@ public abstract class AbstractWebEndpointServletHandlerMapping
 		return this.webEndpoints;
 	}
 
-	public String getEndpointPath() {
-		return this.endpointPath;
+	public EndpointMapping getEndpointMapping() {
+		return this.endpointMapping;
 	}
 
 	@Override
@@ -96,6 +97,12 @@ public abstract class AbstractWebEndpointServletHandlerMapping
 		this.webEndpoints.stream()
 				.flatMap((webEndpoint) -> webEndpoint.getOperations().stream())
 				.forEach(this::registerMappingForOperation);
+		if (StringUtils.hasText(this.endpointMapping.getPath())) {
+			registerLinksRequestMapping();
+		}
+	}
+
+	private void registerLinksRequestMapping() {
 		PatternsRequestCondition patterns = patternsRequestConditionForPattern("");
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.GET);
@@ -130,8 +137,7 @@ public abstract class AbstractWebEndpointServletHandlerMapping
 	}
 
 	private PatternsRequestCondition patternsRequestConditionForPattern(String path) {
-		String[] patterns = new String[] {
-				this.endpointPath + (StringUtils.hasText(path) ? "/" + path : "") };
+		String[] patterns = new String[] { this.endpointMapping.createSubPath(path) };
 		return new PatternsRequestCondition(patterns, null, null, false, false);
 	}
 

@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -69,8 +70,9 @@ public class CloudFoundryActuatorAutoConfiguration {
 				EndpointProvider<WebEndpointOperation> provider, Environment environment,
 				RestTemplateBuilder builder) {
 			return new CloudFoundryWebEndpointServletHandlerMapping(
-					"/cloudfoundryapplication", provider.getEndpoints(),
-					getCorsConfiguration(), getSecurityInterceptor(builder, environment));
+					new EndpointMapping("/cloudfoundryapplication"),
+					provider.getEndpoints(), getCorsConfiguration(),
+					getSecurityInterceptor(builder, environment));
 		}
 
 		private CloudFoundrySecurityInterceptor getSecurityInterceptor(

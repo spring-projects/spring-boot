@@ -223,14 +223,15 @@ property. For example, the following will disable _all_ endpoints except for `in
 
 
 [[production-ready-endpoint-hypermedia]]
-=== Hypermedia for actuator MVC endpoints
+=== Hypermedia for actuator web endpoints
 A "`discovery page`" is added with links to all the endpoints. The "`discovery page`" is
 available on `/application` by default.
 
 When a custom management context path is configured, the "`discovery page`" will
 automatically move from `/application` to the root of the management context. For example,
 if the management context path is `/management` then the discovery page will be available
-from `/management`.
+from `/management`. When the management context path is set to `/` the discovery page
+is disabled to prevent the possiblility of a clash with other mappings.
 
 
 

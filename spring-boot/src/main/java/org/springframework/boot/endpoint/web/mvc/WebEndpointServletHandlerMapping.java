@@ -29,6 +29,7 @@ import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.ParameterMappingException;
 import org.springframework.boot.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.Link;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.endpoint.web.WebEndpointResponse;
@@ -63,25 +64,25 @@ public class WebEndpointServletHandlerMapping
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
-	 * @param endpointPath the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the base mapping for all endpoints
 	 * @param collection the web endpoints operations
 	 */
-	public WebEndpointServletHandlerMapping(String endpointPath,
+	public WebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> collection) {
-		this(endpointPath, collection, null);
+		this(endpointMapping, collection, null);
 	}
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
-	 * @param endpointPath the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the base mapping for all endpoints
 	 * @param webEndpoints the web endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
-	public WebEndpointServletHandlerMapping(String endpointPath,
+	public WebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
 			CorsConfiguration corsConfiguration) {
-		super(endpointPath, webEndpoints, corsConfiguration);
+		super(endpointMapping, webEndpoints, corsConfiguration);
 		setOrder(-100);
 	}
 

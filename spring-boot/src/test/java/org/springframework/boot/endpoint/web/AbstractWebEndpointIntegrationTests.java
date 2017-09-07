@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.endpoint.DeleteOperation;
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -66,6 +68,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	@Test
 	public void readOperation() {
 		load(TestEndpointConfiguration.class,
+				(client) -> client.get().uri("/test").accept(MediaType.APPLICATION_JSON)
+						.exchange().expectStatus().isOk().expectBody().jsonPath("All")
+						.isEqualTo(true));
+	}
+
+	@Test
+	public void readOperationWithEndpointsMappedToTheRoot() {
+		load(TestEndpointConfiguration.class, "",
 				(client) -> client.get().uri("/test").accept(MediaType.APPLICATION_JSON)
 						.exchange().expectStatus().isOk().expectBody().jsonPath("All")
 						.isEqualTo(true));
@@ -99,6 +109,13 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 						.jsonPath("_links.test.templated").isEqualTo(false)
 						.jsonPath("_links.test-part.href").isNotEmpty()
 						.jsonPath("_links.test-part.templated").isEqualTo(true));
+	}
+
+	@Test
+	public void linksMappingIsDisabledWhenEndpointPathIsEmpty() {
+		load(TestEndpointConfiguration.class, "",
+				(client) -> client.get().uri("").accept(MediaType.APPLICATION_JSON)
+						.exchange().expectStatus().isNotFound());
 	}
 
 	@Test
@@ -268,12 +285,20 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	private void load(Class<?> configuration,
 			BiConsumer<ApplicationContext, WebTestClient> consumer) {
+		load(configuration, "/endpoints", consumer);
+	}
+
+	private void load(Class<?> configuration, String endpointPath,
+			BiConsumer<ApplicationContext, WebTestClient> consumer) {
 		T context = createApplicationContext(configuration, this.exporterConfiguration);
+		context.getEnvironment().getPropertySources().addLast(new MapPropertySource(
+				"test", Collections.singletonMap("endpointPath", endpointPath)));
+		context.refresh();
 		try {
 			consumer.accept(context,
 					WebTestClient.bindToServer()
 							.baseUrl(
-									"http://localhost:" + getPort(context) + "/endpoints")
+									"http://localhost:" + getPort(context) + endpointPath)
 							.build());
 		}
 		finally {
@@ -282,7 +307,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	protected void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
-		load(configuration, (context, client) -> clientConsumer.accept(client));
+		load(configuration, "/endpoints",
+				(context, client) -> clientConsumer.accept(client));
+	}
+
+	protected void load(Class<?> configuration, String endpointPath,
+			Consumer<WebTestClient> clientConsumer) {
+		load(configuration, endpointPath,
+				(context, client) -> clientConsumer.accept(client));
 	}
 
 	@Configuration
@@ -302,6 +334,11 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 					parameterMapper, (id) -> new CachingConfiguration(0),
 					Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
+		}
+
+		@Bean
+		public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
+			return new PropertyPlaceholderConfigurer();
 		}
 
 	}

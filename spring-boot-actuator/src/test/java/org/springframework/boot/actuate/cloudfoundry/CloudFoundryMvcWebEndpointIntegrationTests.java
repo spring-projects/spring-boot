@@ -31,6 +31,7 @@ import org.springframework.boot.endpoint.OperationParameterMapper;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.Selector;
 import org.springframework.boot.endpoint.WriteOperation;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -196,7 +197,8 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
-			return new CloudFoundryWebEndpointServletHandlerMapping("/cfApplication",
+			return new CloudFoundryWebEndpointServletHandlerMapping(
+					new EndpointMapping("/cfApplication"),
 					webEndpointDiscoverer.discoverEndpoints(), corsConfiguration,
 					interceptor);
 		}

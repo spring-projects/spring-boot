@@ -33,6 +33,7 @@ import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.OperationType;
 import org.springframework.boot.endpoint.ParameterMappingException;
 import org.springframework.boot.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.Link;
 import org.springframework.boot.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
@@ -42,6 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -80,7 +82,7 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 
 	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
 
-	private final String endpointPath;
+	private final EndpointMapping endpointMapping;
 
 	private final Collection<EndpointInfo<WebEndpointOperation>> webEndpoints;
 
@@ -89,25 +91,25 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
-	 * @param endpointPath the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the base mapping for all endpoints
 	 * @param collection the web endpoints
 	 */
-	public WebEndpointReactiveHandlerMapping(String endpointPath,
+	public WebEndpointReactiveHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> collection) {
-		this(endpointPath, collection, null);
+		this(endpointMapping, collection, null);
 	}
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
-	 * @param endpointPath the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the path beneath which all endpoints should be mapped
 	 * @param webEndpoints the web endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
-	public WebEndpointReactiveHandlerMapping(String endpointPath,
+	public WebEndpointReactiveHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
 			CorsConfiguration corsConfiguration) {
-		this.endpointPath = (endpointPath.startsWith("/") ? "" : "/") + endpointPath;
+		this.endpointMapping = endpointMapping;
 		this.webEndpoints = webEndpoints;
 		this.corsConfiguration = corsConfiguration;
 		setOrder(-100);
@@ -118,8 +120,15 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 		this.webEndpoints.stream()
 				.flatMap((webEndpoint) -> webEndpoint.getOperations().stream())
 				.forEach(this::registerMappingForOperation);
+		if (StringUtils.hasText(this.endpointMapping.getPath())) {
+			registerLinksMapping();
+		}
+	}
+
+	private void registerLinksMapping() {
 		registerMapping(new RequestMappingInfo(
-				new PatternsRequestCondition(pathPatternParser.parse(this.endpointPath)),
+				new PatternsRequestCondition(
+						pathPatternParser.parse(this.endpointMapping.getPath())),
 				new RequestMethodsRequestCondition(RequestMethod.GET), null, null, null,
 				null, null), this, this.links);
 	}
@@ -148,7 +157,7 @@ public class WebEndpointReactiveHandlerMapping extends RequestMappingInfoHandler
 			WebEndpointOperation operationInfo) {
 		OperationRequestPredicate requestPredicate = operationInfo.getRequestPredicate();
 		PatternsRequestCondition patterns = new PatternsRequestCondition(pathPatternParser
-				.parse(this.endpointPath + "/" + requestPredicate.getPath()));
+				.parse(this.endpointMapping.createSubPath(requestPredicate.getPath())));
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.valueOf(requestPredicate.getHttpMethod().name()));
 		ConsumesRequestCondition consumes = new ConsumesRequestCondition(

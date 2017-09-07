@@ -27,6 +27,7 @@ import java.util.function.Function;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -41,12 +42,14 @@ import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationInvoker;
 import org.springframework.boot.endpoint.ParameterMappingException;
 import org.springframework.boot.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.Link;
 import org.springframework.boot.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.endpoint.web.WebEndpointResponse;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A factory for creating Jersey {@link Resource Resources} for web endpoint operations.
@@ -61,25 +64,29 @@ public class JerseyEndpointResourceFactory {
 	/**
 	 * Creates {@link Resource Resources} for the operations of the given
 	 * {@code webEndpoints}.
-	 * @param endpointPath the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the base mapping for all endpoints
 	 * @param webEndpoints the web endpoints
 	 * @return the resources for the operations
 	 */
-	public Collection<Resource> createEndpointResources(String endpointPath,
+	public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints) {
 		List<Resource> resources = new ArrayList<>();
 		webEndpoints.stream()
 				.flatMap((endpointInfo) -> endpointInfo.getOperations().stream())
-				.map((operation) -> createResource(endpointPath, operation))
+				.map((operation) -> createResource(endpointMapping, operation))
 				.forEach(resources::add);
-		resources.add(createEndpointLinksResource(endpointPath, webEndpoints));
+		if (StringUtils.hasText(endpointMapping.getPath())) {
+			resources.add(
+					createEndpointLinksResource(endpointMapping.getPath(), webEndpoints));
+		}
 		return resources;
 	}
 
-	private Resource createResource(String endpointPath, WebEndpointOperation operation) {
+	private Resource createResource(EndpointMapping endpointMapping,
+			WebEndpointOperation operation) {
 		OperationRequestPredicate requestPredicate = operation.getRequestPredicate();
 		Builder resourceBuilder = Resource.builder()
-				.path(endpointPath + "/" + requestPredicate.getPath());
+				.path(endpointMapping.createSubPath(requestPredicate.getPath()));
 		resourceBuilder.addMethod(requestPredicate.getHttpMethod().name())
 				.consumes(toStringArray(requestPredicate.getConsumes()))
 				.produces(toStringArray(requestPredicate.getProduces()))
@@ -95,7 +102,7 @@ public class JerseyEndpointResourceFactory {
 	private Resource createEndpointLinksResource(String endpointPath,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints) {
 		Builder resourceBuilder = Resource.builder().path(endpointPath);
-		resourceBuilder.addMethod("GET").handledBy(
+		resourceBuilder.addMethod("GET").produces(MediaType.APPLICATION_JSON).handledBy(
 				new EndpointLinksInflector(webEndpoints, this.endpointLinksResolver));
 		return resourceBuilder.build();
 	}

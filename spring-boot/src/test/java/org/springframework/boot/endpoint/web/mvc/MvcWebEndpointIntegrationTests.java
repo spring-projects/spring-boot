@@ -21,11 +21,13 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import org.springframework.boot.endpoint.web.AbstractWebEndpointIntegrationTests;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -59,7 +61,9 @@ public class MvcWebEndpointIntegrationTests extends
 	@Override
 	protected AnnotationConfigServletWebServerApplicationContext createApplicationContext(
 			Class<?>... config) {
-		return new AnnotationConfigServletWebServerApplicationContext(config);
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+		context.register(config);
+		return context;
 	}
 
 	@Override
@@ -83,11 +87,13 @@ public class MvcWebEndpointIntegrationTests extends
 
 		@Bean
 		public WebEndpointServletHandlerMapping webEndpointHandlerMapping(
+				Environment environment,
 				WebAnnotationEndpointDiscoverer webEndpointDiscoverer) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
-			return new WebEndpointServletHandlerMapping("/endpoints",
+			return new WebEndpointServletHandlerMapping(
+					new EndpointMapping(environment.getProperty("endpointPath")),
 					webEndpointDiscoverer.discoverEndpoints(), corsConfiguration);
 		}
 

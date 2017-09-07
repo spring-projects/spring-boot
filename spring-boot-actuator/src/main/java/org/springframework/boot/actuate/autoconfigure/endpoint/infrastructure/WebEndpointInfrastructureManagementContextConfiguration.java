@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.endpoint.web.mvc.WebEndpointServletHandlerMapping;
@@ -66,7 +67,8 @@ class WebEndpointInfrastructureManagementContextConfiguration {
 				ManagementServerProperties managementServerProperties) {
 			return (resourceConfig) -> resourceConfig.registerResources(new HashSet<>(
 					new JerseyEndpointResourceFactory().createEndpointResources(
-							managementServerProperties.getContextPath(),
+							new EndpointMapping(
+									managementServerProperties.getContextPath()),
 							provider.getEndpoints())));
 		}
 
@@ -93,8 +95,8 @@ class WebEndpointInfrastructureManagementContextConfiguration {
 				CorsEndpointProperties corsProperties,
 				ManagementServerProperties managementServerProperties) {
 			WebEndpointServletHandlerMapping handlerMapping = new WebEndpointServletHandlerMapping(
-					managementServerProperties.getContextPath(), provider.getEndpoints(),
-					getCorsConfiguration(corsProperties));
+					new EndpointMapping(managementServerProperties.getContextPath()),
+					provider.getEndpoints(), getCorsConfiguration(corsProperties));
 			for (WebEndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
 				customizer.customize(handlerMapping);
 			}
@@ -137,7 +139,8 @@ class WebEndpointInfrastructureManagementContextConfiguration {
 				EndpointProvider<WebEndpointOperation> provider,
 				ManagementServerProperties managementServerProperties) {
 			return new WebEndpointReactiveHandlerMapping(
-					managementServerProperties.getContextPath(), provider.getEndpoints());
+					new EndpointMapping(managementServerProperties.getContextPath()),
+					provider.getEndpoints());
 		}
 
 	}

@@ -82,7 +82,6 @@ public class ManagementContextAutoConfiguration {
 		@Override
 		public void afterSingletonsInstantiated() {
 			verifySslConfiguration();
-			verifyContextPathConfiguration();
 			if (this.environment instanceof ConfigurableEnvironment) {
 				addLocalManagementPortPropertyAlias(
 						(ConfigurableEnvironment) this.environment);
@@ -95,15 +94,6 @@ public class ManagementContextAutoConfiguration {
 			Assert.state(!enabled,
 					"Management-specific SSL cannot be configured as the management "
 							+ "server is not listening on a separate port");
-		}
-
-		private void verifyContextPathConfiguration() {
-			String contextPath = this.environment.getProperty("management.context-path");
-			if ("".equals(contextPath) || "/".equals(contextPath)) {
-				throw new IllegalStateException("A management context path of '"
-						+ contextPath + "' requires the management server to be "
-						+ "listening on a separate port");
-			}
 		}
 
 		/**

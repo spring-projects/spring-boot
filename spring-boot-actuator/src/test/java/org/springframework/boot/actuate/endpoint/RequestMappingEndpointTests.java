@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import org.springframework.boot.endpoint.EndpointInfo;
 import org.springframework.boot.endpoint.OperationType;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.endpoint.web.WebEndpointOperation;
@@ -138,7 +139,8 @@ public class RequestMappingEndpointTests {
 		WebEndpointOperation operation = new WebEndpointOperation(OperationType.READ,
 				(arguments) -> "Invoked", true, requestPredicate, "test");
 		WebEndpointServletHandlerMapping mapping = new WebEndpointServletHandlerMapping(
-				"application", Collections.singleton(new EndpointInfo<>("test", true,
+				new EndpointMapping("application"),
+				Collections.singleton(new EndpointInfo<>("test", true,
 						Collections.singleton(operation))));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
