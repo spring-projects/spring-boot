@@ -46,6 +46,13 @@ public class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
+	public void templateBackOffWithNoClient() {
+		this.context = new AnnotationConfigApplicationContext(
+				ElasticsearchDataAutoConfiguration.class);
+		assertThat(this.context.getBeansOfType(ElasticsearchTemplate.class)).isEmpty();
+	}
+
+	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
