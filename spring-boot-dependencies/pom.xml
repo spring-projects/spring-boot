@@ -72,7 +72,7 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<dropwizard-metrics.version>3.2.4</dropwizard-metrics.version>
 		<ehcache.version>2.10.4</ehcache.version>
-		<ehcache3.version>3.3.1</ehcache3.version>
+		<ehcache3.version>3.4.0</ehcache3.version>
 		<embedded-mongo.version>2.0.0</embedded-mongo.version>
 		<flyway.version>4.2.0</flyway.version>
 		<freemarker.version>2.3.26-incubating</freemarker.version>
