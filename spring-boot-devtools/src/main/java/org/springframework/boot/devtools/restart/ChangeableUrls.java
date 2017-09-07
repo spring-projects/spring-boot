@@ -140,6 +140,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		String[] entries = StringUtils.delimitedListToStringArray(classPath, " ");
 		List<URL> urls = new ArrayList<URL>(entries.length);
 		File parent = new File(jarFile.getName()).getParentFile();
+		List<File> nonExistentEntries = new ArrayList<File>();
 		for (String entry : entries) {
 			try {
 				File referenced = new File(parent, entry);
@@ -147,15 +148,18 @@ final class ChangeableUrls implements Iterable<URL> {
 					urls.add(referenced.toURI().toURL());
 				}
 				else {
-					System.out.println("Ignoring Class-Path entry " + entry + " found in "
-							+ jarFile.getName() + " as " + referenced
-							+ " does not exist");
+					nonExistentEntries.add(referenced);
 				}
 			}
 			catch (MalformedURLException ex) {
 				throw new IllegalStateException(
 						"Class-Path attribute contains malformed URL", ex);
 			}
+		}
+		if (!nonExistentEntries.isEmpty()) {
+			System.out.println("The Class-Path manifest attribute in " + jarFile.getName()
+					+ " referenced one or more files that do not exist: "
+					+ StringUtils.collectionToCommaDelimitedString(nonExistentEntries));
 		}
 		return urls;
 	}
