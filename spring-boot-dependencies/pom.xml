@@ -48,7 +48,7 @@
 		<!-- Dependency versions -->
 		<activemq.version>5.15.0</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.54</appengine-sdk.version>
+		<appengine-sdk.version>1.9.55</appengine-sdk.version>
 		<artemis.version>2.1.0</artemis.version>
 		<aspectj.version>1.8.10</aspectj.version>
 		<assertj.version>3.8.0</assertj.version>
@@ -117,7 +117,7 @@
 		<jna.version>4.4.0</jna.version>
 		<joda-time.version>2.9.9</joda-time.version>
 		<jolokia.version>1.3.7</jolokia.version>
-		<jooq.version>3.9.4</jooq.version>
+		<jooq.version>3.9.5</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
 		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
@@ -132,8 +132,8 @@
 		<mssql-jdbc.version>6.2.1.jre8</mssql-jdbc.version>
 		<mockito.version>2.8.47</mockito.version>
 		<mongo-driver-reactivestreams.version>1.5.0</mongo-driver-reactivestreams.version>
-		<mongodb.version>3.4.2</mongodb.version>
-		<mysql.version>5.1.43</mysql.version>
+		<mongodb.version>3.4.3</mongodb.version>
+		<mysql.version>5.1.44</mysql.version>
 		<narayana.version>5.6.4.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.0.0-RC1</neo4j-ogm.version>
@@ -186,7 +186,7 @@
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.20</tomcat.version>
-		<undertow.version>1.4.18.Final</undertow.version>
+		<undertow.version>1.4.20.Final</undertow.version>
 		<unboundid-ldapsdk.version>3.2.1</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator.version>0.32-1</webjars-locator.version>
