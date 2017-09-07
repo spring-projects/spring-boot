@@ -133,7 +133,7 @@
 		<mariadb.version>1.5.9</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre7</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
-		<mongodb.version>3.4.2</mongodb.version>
+		<mongodb.version>3.4.3</mongodb.version>
 		<mysql.version>5.1.44</mysql.version>
 		<narayana.version>5.5.30.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
