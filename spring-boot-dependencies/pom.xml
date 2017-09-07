@@ -125,7 +125,7 @@
 		<junit.version>4.12</junit.version>
 		<lettuce.version>5.0.0.RC1</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
-		<log4j2.version>2.8.2</log4j2.version>
+		<log4j2.version>2.9.0</log4j2.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.18</lombok.version>
 		<mariadb.version>2.0.3</mariadb.version>
