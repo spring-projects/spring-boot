@@ -47,6 +47,14 @@ public class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
+	public void templateBackOffWithNoClient() {
+		this.context = new AnnotationConfigApplicationContext(
+				ElasticsearchDataAutoConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(ElasticsearchTemplate.class))
+				.isEmpty();
+	}
+
+	@Test
 	public void templateExists() {
 		load("spring.data.elasticsearch.properties.path.data:target/data",
 				"spring.data.elasticsearch.properties.path.logs:target/logs");
