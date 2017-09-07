@@ -184,7 +184,7 @@
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
-		<thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
+		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.20</tomcat.version>
 		<undertow.version>1.4.20.Final</undertow.version>
 		<unboundid-ldapsdk.version>3.2.1</unboundid-ldapsdk.version>
