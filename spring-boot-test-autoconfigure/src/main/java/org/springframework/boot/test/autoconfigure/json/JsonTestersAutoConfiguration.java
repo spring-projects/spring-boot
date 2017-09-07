@@ -19,6 +19,8 @@ package org.springframework.boot.test.autoconfigure.json;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import javax.json.bind.Jsonb;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
@@ -33,10 +35,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.boot.test.json.AbstractJsonMarshalTester;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -48,13 +52,15 @@ import org.springframework.util.ReflectionUtils;
  * Auto-configuration for Json testers.
  *
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @see AutoConfigureJsonTesters
  * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
 @ConditionalOnProperty("spring.test.jsontesters.enabled")
-@AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class })
+@AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class,
+		JsonbAutoConfiguration.class })
 public class JsonTestersAutoConfiguration {
 
 	@Bean
@@ -90,6 +96,18 @@ public class JsonTestersAutoConfiguration {
 		@ConditionalOnBean(Gson.class)
 		public FactoryBean<GsonTester<?>> gsonTesterFactoryBean(Gson gson) {
 			return new JsonTesterFactoryBean<>(GsonTester.class, gson);
+		}
+
+	}
+
+	@ConditionalOnClass(Jsonb.class)
+	private static class JsonbJsonTesterConfiguration {
+
+		@Bean
+		@Scope("prototype")
+		@ConditionalOnBean(Jsonb.class)
+		public FactoryBean<JsonbTester<?>> jsonbTesterFactoryBean(Jsonb jsonb) {
+			return new JsonTesterFactoryBean<>(JsonbTester.class, jsonb);
 		}
 
 	}

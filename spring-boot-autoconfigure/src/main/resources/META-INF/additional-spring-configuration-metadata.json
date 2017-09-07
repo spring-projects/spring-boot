@@ -1141,6 +1141,9 @@
       },
       {
         "value": "jackson"
+      },
+      {
+        "value": "jsonb"
       }
     ],
     "providers": [

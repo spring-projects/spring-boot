@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.http;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.json.bind.Jsonb;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.junit.After;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +41,7 @@ import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessage
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.JsonbHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
@@ -51,6 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author David Liu
  * @author Andy Wilkinson
  * @author Sebastien Deleuze
+ * @author Eddú Meléndez
  */
 public class HttpMessageConvertersAutoConfigurationTests {
 
@@ -140,19 +145,20 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	public void jacksonIsPreferredByDefaultWhenBothGsonAndJacksonAreAvailable() {
 		this.context.register(GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class);
+				JsonbAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
 		assertConverterBeanExists(MappingJackson2HttpMessageConverter.class,
 				"mappingJackson2HttpMessageConverter");
 		assertConverterBeanRegisteredWithHttpMessageConverters(
 				MappingJackson2HttpMessageConverter.class);
 		assertThat(this.context.getBeansOfType(GsonHttpMessageConverter.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(JsonbHttpMessageConverter.class)).isEmpty();
 	}
 
 	@Test
 	public void gsonCanBePreferredWhenBothGsonAndJacksonAreAvailable() {
 		this.context.register(GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class);
+				JsonbAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class);
 		TestPropertyValues.of("spring.http.converters.preferred-json-mapper:gson")
 				.applyTo(this.context);
 		this.context.refresh();
@@ -160,6 +166,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				"gsonHttpMessageConverter");
 		assertConverterBeanRegisteredWithHttpMessageConverters(
 				GsonHttpMessageConverter.class);
+		assertThat(this.context.getBeansOfType(JsonbHttpMessageConverter.class))
+				.isEmpty();
 		assertThat(this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class))
 				.isEmpty();
 	}
@@ -174,6 +182,55 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 		assertConverterBeanRegisteredWithHttpMessageConverters(
 				GsonHttpMessageConverter.class);
+	}
+
+	@Test
+	public void noJsonb() throws Exception {
+		this.context.register(HttpMessageConvertersAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(Jsonb.class).isEmpty()).isTrue();
+		assertThat(this.context.getBeansOfType(JsonbHttpMessageConverter.class).isEmpty())
+				.isTrue();
+	}
+
+	@Test
+	public void defaultJsonbConverter() throws Exception {
+		this.context.register(JsonbAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class);
+		this.context.refresh();
+		assertConverterBeanExists(JsonbHttpMessageConverter.class,
+				"jsonbHttpMessageConverter");
+
+		assertConverterBeanRegisteredWithHttpMessageConverters(
+				JsonbHttpMessageConverter.class);
+	}
+
+	@Test
+	public void jsonbCanBePreferredWhenBothGsonAndJacksonAreAvailable() {
+		this.context.register(GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
+				JsonbAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class);
+		TestPropertyValues.of("spring.http.converters.preferred-json-mapper:jsonb")
+				.applyTo(this.context);
+		this.context.refresh();
+		assertConverterBeanExists(JsonbHttpMessageConverter.class,
+				"jsonbHttpMessageConverter");
+		assertConverterBeanRegisteredWithHttpMessageConverters(
+				JsonbHttpMessageConverter.class);
+		assertThat(this.context.getBeansOfType(GsonHttpMessageConverter.class))
+				.isEmpty();
+		assertThat(this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class))
+				.isEmpty();
+	}
+
+	@Test
+	public void customJsonbConverter() throws Exception {
+		this.context.register(JsonbAutoConfiguration.class, JsonbConverterConfig.class,
+				HttpMessageConvertersAutoConfiguration.class);
+		this.context.refresh();
+		assertConverterBeanExists(JsonbHttpMessageConverter.class,
+				"customJsonbMessageConverter");
+		assertConverterBeanRegisteredWithHttpMessageConverters(
+				JsonbHttpMessageConverter.class);
 	}
 
 	@Test
@@ -283,6 +340,18 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		public GsonHttpMessageConverter customGsonMessageConverter(Gson gson) {
 			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
 			converter.setGson(gson);
+			return converter;
+		}
+
+	}
+
+	@Configuration
+	protected static class JsonbConverterConfig {
+
+		@Bean
+		public JsonbHttpMessageConverter customJsonbMessageConverter(Jsonb jsonb) {
+			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
+			converter.setJsonb(jsonb);
 			return converter;
 		}
 
