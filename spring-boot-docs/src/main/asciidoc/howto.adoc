@@ -2127,7 +2127,7 @@ an internal network for management and an external one for user applications) yo
 also set `management.address` to a valid IP address that the server is able to bind to.
 
 For more detail look at the
-{sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
+{sc-spring-boot-actuator}/autoconfigure/web/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
 source code and
 _<<production-ready-features.adoc#production-ready-customizing-management-server-port>>_
 in the '`Production-ready features`' section.

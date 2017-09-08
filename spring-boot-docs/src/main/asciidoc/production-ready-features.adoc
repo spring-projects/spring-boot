@@ -252,7 +252,7 @@ permits `GET` and `POST` calls from the `example.com` domain:
 	management.endpoints.cors.allowed-methods=GET,POST
 ----
 
-TIP: Check {sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties]
+TIP: Check {sc-spring-boot-actuator}/autoconfigure/endpoint/infrastructure/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties]
 for a complete list of options.
 
 
