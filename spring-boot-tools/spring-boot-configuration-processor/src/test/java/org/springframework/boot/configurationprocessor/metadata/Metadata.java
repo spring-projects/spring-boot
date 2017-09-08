@@ -151,6 +151,9 @@ public final class Metadata {
 					.nullSafeEquals(this.defaultValue, itemMetadata.getDefaultValue())) {
 				return false;
 			}
+			if (this.defaultValue == null && itemMetadata.getDefaultValue() != null) {
+				return false;
+			}
 			if (this.description != null
 					&& !this.description.equals(itemMetadata.getDescription())) {
 				return false;
