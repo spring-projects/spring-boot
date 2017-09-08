@@ -55,6 +55,9 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
+							<ignoredClassPatterns>
+								<ignoredClassPattern>javax.annotation.*</ignoredClassPattern>
+							</ignoredClassPatterns>
 							<ignoredResourcePatterns>
 								<ignoredResourcePattern>changelog.txt</ignoredResourcePattern>
 							</ignoredResourcePatterns>
