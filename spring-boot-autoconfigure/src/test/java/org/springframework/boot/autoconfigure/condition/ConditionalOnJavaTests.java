@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
@@ -44,52 +44,52 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConditionalOnJavaTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	private final OnJavaCondition condition = new OnJavaCondition();
 
 	@Test
 	public void doesNotMatchIfBetterVersionIsRequired() {
-		registerAndRefresh(Java9Required.class);
-		assertPresent(false);
+		this.contextRunner.withUserConfiguration(Java9Required.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	public void doesNotMatchIfLowerIsRequired() {
-		registerAndRefresh(Java5Required.class);
-		assertPresent(false);
+		this.contextRunner.withUserConfiguration(Java7Required.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	public void matchesIfVersionIsInRange() {
-		registerAndRefresh(Java6Required.class);
-		assertPresent(true);
+		this.contextRunner.withUserConfiguration(Java8Required.class)
+				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
 	public void boundsTests() throws Exception {
-		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.SEVEN, JavaVersion.SIX, true);
-		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.SEVEN, JavaVersion.SEVEN, true);
-		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.SEVEN, JavaVersion.EIGHT, false);
-		testBounds(Range.OLDER_THAN, JavaVersion.SEVEN, JavaVersion.SIX, false);
-		testBounds(Range.OLDER_THAN, JavaVersion.SEVEN, JavaVersion.SEVEN, false);
-		testBounds(Range.OLDER_THAN, JavaVersion.SEVEN, JavaVersion.EIGHT, true);
+		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.NINE, JavaVersion.EIGHT, true);
+		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.EIGHT, true);
+		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.NINE, false);
+		testBounds(Range.OLDER_THAN, JavaVersion.NINE, JavaVersion.EIGHT, false);
+		testBounds(Range.OLDER_THAN, JavaVersion.EIGHT, JavaVersion.EIGHT, false);
+		testBounds(Range.OLDER_THAN, JavaVersion.EIGHT, JavaVersion.NINE, true);
 	}
 
 	@Test
 	public void equalOrNewerMessage() throws Exception {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER,
-				JavaVersion.SEVEN, JavaVersion.SIX);
+				JavaVersion.NINE, JavaVersion.EIGHT);
 		assertThat(outcome.getMessage())
-				.isEqualTo("@ConditionalOnJava (1.6 or newer) found 1.7");
+				.isEqualTo("@ConditionalOnJava (1.8 or newer) found 1.9");
 	}
 
 	@Test
 	public void olderThanMessage() throws Exception {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN,
-				JavaVersion.SEVEN, JavaVersion.SIX);
+				JavaVersion.NINE, JavaVersion.EIGHT);
 		assertThat(outcome.getMessage())
-				.isEqualTo("@ConditionalOnJava (older than 1.6) found 1.7");
+				.isEqualTo("@ConditionalOnJava (older than 1.8) found 1.9");
 	}
 
 	@Test
@@ -98,28 +98,16 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Test
-	public void java7IsDetected() throws Exception {
-		assertThat(getJavaVersion(Function.class)).isEqualTo("1.7");
-	}
-
-	@Test
-	public void java6IsDetected() throws Exception {
-		assertThat(getJavaVersion(Function.class, Files.class)).isEqualTo("1.6");
-	}
-
-	@Test
-	public void java6IsTheFallback() throws Exception {
+	public void java8IsTheFallback() throws Exception {
 		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
-				.isEqualTo("1.6");
+				.isEqualTo("1.8");
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
 		URL[] urls = ((URLClassLoader) getClass().getClassLoader()).getURLs();
 		URLClassLoader classLoader = new ClassHidingClassLoader(urls, hiddenClasses);
-
 		Class<?> javaVersionClass = classLoader
 				.loadClass(ConditionalOnJava.JavaVersion.class.getName());
-
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
 				"getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
@@ -132,15 +120,6 @@ public class ConditionalOnJavaTests {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
 				version);
 		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
-	}
-
-	private void registerAndRefresh(Class<?> annotatedClasses) {
-		this.context.register(annotatedClasses);
-		this.context.refresh();
-	}
-
-	private void assertPresent(boolean expected) {
-		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
 	}
 
 	private final class ClassHidingClassLoader extends URLClassLoader {
@@ -183,8 +162,8 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Configuration
-	@ConditionalOnJava(range = Range.OLDER_THAN, value = JavaVersion.SIX)
-	static class Java5Required {
+	@ConditionalOnJava(range = Range.OLDER_THAN, value = JavaVersion.EIGHT)
+	static class Java7Required {
 
 		@Bean
 		String foo() {
@@ -194,8 +173,8 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Configuration
-	@ConditionalOnJava(JavaVersion.SIX)
-	static class Java6Required {
+	@ConditionalOnJava(JavaVersion.EIGHT)
+	static class Java8Required {
 
 		@Bean
 		String foo() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,6 @@ public class RemoteDevToolsProperties {
 
 	private Restart restart = new Restart();
 
-	private Debug debug = new Debug();
-
 	private Proxy proxy = new Proxy();
 
 	public String getContextPath() {
@@ -80,10 +78,6 @@ public class RemoteDevToolsProperties {
 		return this.restart;
 	}
 
-	public Debug getDebug() {
-		return this.debug;
-	}
-
 	public Proxy getProxy() {
 		return this.proxy;
 	}
@@ -101,38 +95,6 @@ public class RemoteDevToolsProperties {
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
-		}
-
-	}
-
-	public static class Debug {
-
-		public static final Integer DEFAULT_LOCAL_PORT = 8000;
-
-		/**
-		 * Enable remote debug support.
-		 */
-		private boolean enabled = true;
-
-		/**
-		 * Local remote debug server port.
-		 */
-		private int localPort = DEFAULT_LOCAL_PORT;
-
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-		public int getLocalPort() {
-			return this.localPort;
-		}
-
-		public void setLocalPort(int localPort) {
-			this.localPort = localPort;
 		}
 
 	}

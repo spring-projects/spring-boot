@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,30 +26,38 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.FlywayCallback;
+import org.flywaydb.core.internal.callback.SqlScriptFlywayCallback;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.
@@ -57,6 +66,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Eddú Meléndez
  */
 public class FlywayAutoConfigurationTests {
 
@@ -67,8 +77,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.name:flywaytest");
+		TestPropertyValues.of("spring.datasource.name:flywaytest").applyTo(this.context);
 	}
 
 	@After
@@ -87,8 +96,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void createDataSource() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa");
+		TestPropertyValues.of("spring.flyway.url:jdbc:hsqldb:mem:flywaytest",
+				"spring.flyway.user:sa").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -107,6 +116,21 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void schemaManagementProviderDetectsDataSource() throws Exception {
+		registerAndRefresh(FlywayDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		FlywaySchemaManagementProvider schemaManagementProvider = this.context
+				.getBean(FlywaySchemaManagementProvider.class);
+		assertThat(schemaManagementProvider
+				.getSchemaManagement(this.context.getBean(DataSource.class)))
+						.isEqualTo(SchemaManagement.UNMANAGED);
+		assertThat(schemaManagementProvider.getSchemaManagement(
+				this.context.getBean("flywayDataSource", DataSource.class)))
+						.isEqualTo(SchemaManagement.MANAGED);
+	}
+
+	@Test
 	public void defaultFlyway() throws Exception {
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -117,8 +141,9 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideLocations() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:classpath:db/changelog,classpath:db/migration");
+		TestPropertyValues
+				.of("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -129,9 +154,10 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideLocationsList() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations[0]:classpath:db/changelog",
-				"flyway.locations[1]:classpath:db/migration");
+		TestPropertyValues
+				.of("spring.flyway.locations[0]:classpath:db/changelog",
+						"spring.flyway.locations[1]:classpath:db/migration")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -142,7 +168,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideSchemas() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "flyway.schemas:public");
+		TestPropertyValues.of("spring.flyway.schemas:public").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -152,8 +178,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void changeLogDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:file:no-such-dir");
+		TestPropertyValues.of("spring.flyway.locations:file:no-such-dir")
+				.applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -162,9 +188,10 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void checkLocationsAllMissing() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:classpath:db/missing1,classpath:db/migration2",
-				"flyway.check-location:true");
+		TestPropertyValues
+				.of("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2",
+						"spring.flyway.check-location:true")
+				.applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Cannot find migrations location in");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
@@ -174,9 +201,10 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void checkLocationsAllExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:classpath:db/changelog,classpath:db/migration",
-				"flyway.check-location:true");
+		TestPropertyValues
+				.of("spring.flyway.locations:classpath:db/changelog,classpath:db/migration",
+						"spring.flyway.check-location:true")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -211,7 +239,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideBaselineVersionString() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "flyway.baseline-version=0");
+		TestPropertyValues.of("spring.flyway.baseline-version=0").applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -223,7 +251,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void overrideBaselineVersionNumber() throws Exception {
 		Map<String, Object> source = Collections
-				.<String, Object>singletonMap("flyway.baseline-version", 1);
+				.<String, Object>singletonMap("spring.flyway.baseline-version", 1);
 		this.context.getEnvironment().getPropertySources()
 				.addLast(new MapPropertySource("flyway", source));
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
@@ -236,14 +264,34 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void useVendorDirectory() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog");
+		TestPropertyValues
+				.of("spring.flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
+				.applyTo(this.context);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
 		assertThat(flyway.getLocations()).containsExactlyInAnyOrder(
 				"classpath:db/vendors/h2", "classpath:db/changelog");
+	}
+
+	@Test
+	public void callbacksAreConfiguredAndOrdered() throws Exception {
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				CallbackConfiguration.class);
+		assertThat(this.context.getBeansOfType(Flyway.class)).hasSize(1);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		FlywayCallback callbackOne = this.context.getBean("callbackOne",
+				FlywayCallback.class);
+		FlywayCallback callbackTwo = this.context.getBean("callbackTwo",
+				FlywayCallback.class);
+		assertThat(flyway.getCallbacks()).hasSize(3);
+		assertThat(flyway.getCallbacks()).startsWith(callbackTwo, callbackOne);
+		assertThat(flyway.getCallbacks()[2]).isInstanceOf(SqlScriptFlywayCallback.class);
+		InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
+		orderedCallbacks.verify(callbackTwo).beforeMigrate(any(Connection.class));
+		orderedCallbacks.verify(callbackOne).beforeMigrate(any(Connection.class));
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
@@ -299,7 +347,7 @@ public class FlywayAutoConfigurationTests {
 
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			properties.put("configured", "manually");
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
@@ -321,6 +369,23 @@ public class FlywayAutoConfigurationTests {
 
 		public void assertCalled() {
 			assertThat(this.called).isTrue();
+		}
+
+	}
+
+	@Configuration
+	static class CallbackConfiguration {
+
+		@Bean
+		@Order(1)
+		public FlywayCallback callbackOne() {
+			return mock(FlywayCallback.class);
+		}
+
+		@Bean
+		@Order(0)
+		public FlywayCallback callbackTwo() {
+			return mock(FlywayCallback.class);
 		}
 
 	}

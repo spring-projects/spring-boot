@@ -18,7 +18,6 @@ package org.springframework.boot.launchscript;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +26,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 
@@ -76,7 +73,7 @@ public class SysVinitLaunchScriptIT {
 
 	@Parameters(name = "{0} {1}")
 	public static List<Object[]> parameters() {
-		List<Object[]> parameters = new ArrayList<Object[]>();
+		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
 			for (File version : os.listFiles()) {
 				parameters.add(new Object[] { os.getName(), version.getName() });
@@ -278,7 +275,7 @@ public class SysVinitLaunchScriptIT {
 		String tag = "spring-boot-it/" + this.os.toLowerCase() + ":" + this.version;
 		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
 
-			private List<BuildResponseItem> items = new ArrayList<BuildResponseItem>();
+			private List<BuildResponseItem> items = new ArrayList<>();
 
 			@Override
 			public void onNext(BuildResponseItem item) {
@@ -449,16 +446,9 @@ public class SysVinitLaunchScriptIT {
 			extends DockerCmdExecFactoryImpl {
 
 		private SpringBootDockerCmdExecFactory() {
-			withClientRequestFilters(new ClientRequestFilter() {
-
-				@Override
-				public void filter(ClientRequestContext requestContext)
-						throws IOException {
-					// Workaround for https://go-review.googlesource.com/#/c/3821/
-					requestContext.getHeaders().add("Connection", "close");
-				}
-
-			});
+			withClientRequestFilters((requestContext) ->
+			// Workaround for https://go-review.googlesource.com/#/c/3821/
+			requestContext.getHeaders().add("Connection", "close"));
 		}
 
 		private CopyToContainerCmdExec createCopyToContainerCmdExec() {

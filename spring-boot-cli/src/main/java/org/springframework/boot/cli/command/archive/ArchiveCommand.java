@@ -57,9 +57,7 @@ import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.loader.tools.JarWriter;
 import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
-import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.core.io.Resource;
@@ -168,7 +166,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		}
 
 		private List<URL> getClassPathUrls(GroovyCompiler compiler) {
-			return new ArrayList<URL>(Arrays.asList(compiler.getLoader().getURLs()));
+			return new ArrayList<>(Arrays.asList(compiler.getLoader().getURLs()));
 		}
 
 		private List<MatchedResource> findMatchingClasspathEntries(List<URL> classpath,
@@ -176,7 +174,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			ResourceMatcher matcher = new ResourceMatcher(
 					options.valuesOf(this.includeOption),
 					options.valuesOf(this.excludeOption));
-			List<File> roots = new ArrayList<File>();
+			List<File> roots = new ArrayList<>();
 			for (URL classpathEntry : classpath) {
 				roots.add(new File(URI.create(classpathEntry.toString())));
 			}
@@ -187,8 +185,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 				List<MatchedResource> classpathEntries, List<URL> dependencies)
 						throws FileNotFoundException, IOException, URISyntaxException {
 			final List<Library> libraries;
-			JarWriter writer = new JarWriter(file);
-			try {
+			try (JarWriter writer = new JarWriter(file)) {
 				addManifest(writer, compiledClasses);
 				addCliClasses(writer);
 				for (Class<?> compiledClass : compiledClasses) {
@@ -196,26 +193,19 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 				}
 				libraries = addClasspathEntries(writer, classpathEntries);
 			}
-			finally {
-				writer.close();
-			}
 			libraries.addAll(createLibraries(dependencies));
 			Repackager repackager = new Repackager(file);
 			repackager.setMainClass(PackagedSpringApplicationLauncher.class.getName());
-			repackager.repackage(new Libraries() {
-
-				@Override
-				public void doWithLibraries(LibraryCallback callback) throws IOException {
-					for (Library library : libraries) {
-						callback.library(library);
-					}
+			repackager.repackage((callback) -> {
+				for (Library library : libraries) {
+					callback.library(library);
 				}
 			});
 		}
 
 		private List<Library> createLibraries(List<URL> dependencies)
 				throws URISyntaxException {
-			List<Library> libraries = new ArrayList<Library>();
+			List<Library> libraries = new ArrayList<>();
 			for (URL dependency : dependencies) {
 				File file = new File(dependency.toURI());
 				libraries.add(new Library(file, getLibraryScope(file)));
@@ -277,7 +267,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private List<Library> addClasspathEntries(JarWriter writer,
 				List<MatchedResource> entries) throws IOException {
-			List<Library> libraries = new ArrayList<Library>();
+			List<Library> libraries = new ArrayList<>();
 			for (MatchedResource entry : entries) {
 				if (entry.isRoot()) {
 					libraries.add(new Library(entry.getFile(), LibraryScope.COMPILE));
@@ -329,7 +319,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		private void disableGrabResolvers(List<? extends AnnotatedNode> nodes) {
 			for (AnnotatedNode classNode : nodes) {
 				List<AnnotationNode> annotations = classNode.getAnnotations();
-				for (AnnotationNode node : new ArrayList<AnnotationNode>(annotations)) {
+				for (AnnotationNode node : new ArrayList<>(annotations)) {
 					if (node.getClassNode().getNameWithoutPackage()
 							.equals("GrabResolver")) {
 						node.setMember("initClass", new ConstantExpression(false));

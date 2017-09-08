@@ -16,14 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
 
 /**
  * {@link Endpoint} to expose application health.
@@ -32,70 +28,22 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.health")
-public class HealthEndpoint extends AbstractEndpoint<Health> {
+@Endpoint(id = "health")
+public class HealthEndpoint {
 
 	private final HealthIndicator healthIndicator;
 
 	/**
-	 * Time to live for cached result, in milliseconds.
-	 */
-	private long timeToLive = 1000;
-
-	/**
 	 * Create a new {@link HealthEndpoint} instance.
-	 * @param healthAggregator the health aggregator
-	 * @param healthIndicators the health indicators
+	 * @param healthIndicator the health indicator
 	 */
-	public HealthEndpoint(HealthAggregator healthAggregator,
-			Map<String, HealthIndicator> healthIndicators) {
-		super("health", false);
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
-		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
-				healthAggregator);
-		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
-			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
-		}
+	public HealthEndpoint(HealthIndicator healthIndicator) {
 		this.healthIndicator = healthIndicator;
 	}
 
-	/**
-	 * Time to live for cached result. This is particularly useful to cache the result of
-	 * this endpoint to prevent a DOS attack if it is accessed anonymously.
-	 * @return time to live in milliseconds (default 1000)
-	 */
-	public long getTimeToLive() {
-		return this.timeToLive;
-	}
-
-	/**
-	 * Set the time to live for cached results.
-	 * @param timeToLive the time to live in milliseconds
-	 */
-	public void setTimeToLive(long timeToLive) {
-		this.timeToLive = timeToLive;
-	}
-
-	/**
-	 * Invoke all {@link HealthIndicator} delegates and collect their health information.
-	 */
-	@Override
-	public Health invoke() {
+	@ReadOperation
+	public Health health() {
 		return this.healthIndicator.health();
-	}
-
-	/**
-	 * Turns the bean name into a key that can be used in the map of health information.
-	 * @param name the bean name
-	 * @return the key
-	 */
-	private String getKey(String name) {
-		int index = name.toLowerCase().indexOf("healthindicator");
-		if (index > 0) {
-			return name.substring(0, index);
-		}
-		return name;
 	}
 
 }

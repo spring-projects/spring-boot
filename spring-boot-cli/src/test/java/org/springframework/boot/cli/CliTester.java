@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.cli;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -25,7 +26,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -40,9 +40,8 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.cli.command.test.TestCommand;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.util.SocketUtils;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
@@ -57,11 +56,9 @@ public class CliTester implements TestRule {
 
 	private long timeout = TimeUnit.MINUTES.toMillis(6);
 
-	private final List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
+	private final List<AbstractCommand> commands = new ArrayList<>();
 
 	private final String prefix;
-
-	private final int port = SocketUtils.findAvailableTcpPort();
 
 	public CliTester(String prefix) {
 		this.prefix = prefix;
@@ -72,20 +69,23 @@ public class CliTester implements TestRule {
 	}
 
 	public String run(String... args) throws Exception {
-		Future<RunCommand> future = submitCommand(new RunCommand(), args);
+		List<String> updatedArgs = new ArrayList<>();
+		boolean classpathUpdated = false;
+		for (String arg : args) {
+			if (arg.startsWith("--classpath=")) {
+				arg = arg + ":" + new File("target/test-classes").getAbsolutePath();
+				classpathUpdated = true;
+			}
+			updatedArgs.add(arg);
+		}
+		if (!classpathUpdated) {
+			updatedArgs.add(
+					"--classpath=.:" + new File("target/test-classes").getAbsolutePath());
+		}
+		Future<RunCommand> future = submitCommand(new RunCommand(),
+				updatedArgs.toArray(new String[updatedArgs.size()]));
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
-	}
-
-	public String test(String... args) throws Exception {
-		Future<TestCommand> future = submitCommand(new TestCommand(), args);
-		try {
-			this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
-			return getOutput();
-		}
-		catch (Exception ex) {
-			return getOutput();
-		}
 	}
 
 	public String grab(String... args) throws Exception {
@@ -104,19 +104,22 @@ public class CliTester implements TestRule {
 			String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
-		return Executors.newSingleThreadExecutor().submit(new Callable<T>() {
-			@Override
-			public T call() throws Exception {
-				ClassLoader loader = Thread.currentThread().getContextClassLoader();
-				System.setProperty("server.port", String.valueOf(CliTester.this.port));
-				try {
-					command.run(sources);
-					return command;
-				}
-				finally {
-					System.clearProperty("server.port");
-					Thread.currentThread().setContextClassLoader(loader);
-				}
+		return Executors.newSingleThreadExecutor().submit(() -> {
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			System.setProperty("server.port", "0");
+			System.setProperty("spring.application.class.name",
+					"org.springframework.boot.cli.CliTesterSpringApplication");
+			System.setProperty("portfile",
+					new File("target/server.port").getAbsolutePath());
+			try {
+				command.run(sources);
+				return command;
+			}
+			finally {
+				System.clearProperty("server.port");
+				System.clearProperty("spring.application.class.name");
+				System.clearProperty("portfile");
+				Thread.currentThread().setContextClassLoader(loader);
 			}
 		});
 	}
@@ -149,14 +152,16 @@ public class CliTester implements TestRule {
 				}
 			}
 			else {
-				sources[i] = this.prefix + arg;
+				sources[i] = new File(arg).isAbsolute() ? arg : this.prefix + arg;
 			}
 		}
 		return sources;
 	}
 
-	public String getOutput() {
-		return this.outputCapture.toString();
+	private String getOutput() {
+		String output = this.outputCapture.toString();
+		this.outputCapture.reset();
+		return output;
 	}
 
 	@Override
@@ -182,7 +187,9 @@ public class CliTester implements TestRule {
 
 	public String getHttpOutput(String uri) {
 		try {
-			InputStream stream = URI.create("http://localhost:" + this.port + uri).toURL()
+			int port = Integer.parseInt(
+					FileCopyUtils.copyToString(new FileReader("target/server.port")));
+			InputStream stream = URI.create("http://localhost:" + port + uri).toURL()
 					.openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -155,7 +155,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	}
 
-	static class ExampleWeb extends WebMvcConfigurerAdapter {
+	static class ExampleWeb implements WebMvcConfigurer {
 
 	}
 

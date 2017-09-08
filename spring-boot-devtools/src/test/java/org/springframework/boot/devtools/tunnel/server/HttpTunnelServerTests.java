@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer.HttpConnection;
@@ -48,8 +46,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -90,13 +88,10 @@ public class HttpTunnelServerTests {
 	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.server = new HttpTunnelServer(this.serverConnection);
-		given(this.serverConnection.open(anyInt())).willAnswer(new Answer<ByteChannel>() {
-			@Override
-			public ByteChannel answer(InvocationOnMock invocation) throws Throwable {
-				MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
-				channel.setTimeout((Integer) invocation.getArguments()[0]);
-				return channel;
-			}
+		given(this.serverConnection.open(anyInt())).willAnswer((invocation) -> {
+			MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
+			channel.setTimeout((Integer) invocation.getArguments()[0]);
+			return channel;
 		});
 		this.servletRequest = new MockHttpServletRequest();
 		this.servletRequest.setAsyncSupported(true);
@@ -311,15 +306,10 @@ public class HttpTunnelServerTests {
 				.willThrow(new IllegalArgumentException());
 		final HttpConnection connection = new HttpConnection(request, this.response);
 		final AtomicBoolean responded = new AtomicBoolean();
-		Thread connectionThread = new Thread() {
-
-			@Override
-			public void run() {
-				connection.waitForResponse();
-				responded.set(true);
-			}
-
-		};
+		Thread connectionThread = new Thread(() -> {
+			connection.waitForResponse();
+			responded.set(true);
+		});
 		connectionThread.start();
 		assertThat(responded.get()).isFalse();
 		Thread.sleep(sleepBeforeResponse);
@@ -345,7 +335,7 @@ public class HttpTunnelServerTests {
 
 		private int timeout;
 
-		private BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<ByteBuffer>();
+		private BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<>();
 
 		private ByteArrayOutputStream written = new ByteArrayOutputStream();
 

@@ -40,7 +40,7 @@ public class JerseyProperties {
 	/**
 	 * Init parameters to pass to Jersey via the servlet or filter.
 	 */
-	private Map<String, String> init = new HashMap<String, String>();
+	private Map<String, String> init = new HashMap<>();
 
 	private final Filter filter = new Filter();
 

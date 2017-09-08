@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -486,7 +487,7 @@ public class DataSourceProperties
 		/**
 		 * Properties to pass to the XA data source.
 		 */
-		private Map<String, String> properties = new LinkedHashMap<String, String>();
+		private Map<String, String> properties = new LinkedHashMap<>();
 
 		public String getDataSourceClassName() {
 			return this.dataSourceClassName;

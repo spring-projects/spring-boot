@@ -86,4 +86,15 @@ public class EmbeddedServletContainerWarPackagingIntegrationTests
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
+	@Test
+	public void loaderClassesAreNotAvailableViaHttp() throws Exception {
+		ResponseEntity<String> entity = this.rest.getForEntity(
+				"/org/springframework/boot/loader/Launcher.class", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		entity = this.rest.getForEntity(
+				"/org/springframework/../springframework/boot/loader/Launcher.class",
+				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
 }

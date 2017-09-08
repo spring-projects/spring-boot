@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
  * {@link ContextCustomizerFactory} to allow {@code @Import} annotations to be used
@@ -49,16 +48,12 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	}
 
 	private void assertHasNoBeanMethods(Class<?> testClass) {
-		ReflectionUtils.doWithMethods(testClass, new MethodCallback() {
+		ReflectionUtils.doWithMethods(testClass, this::assertHasNoBeanMethods);
+	}
 
-			@Override
-			public void doWith(Method method) {
-				Assert.state(!AnnotatedElementUtils.isAnnotated(method, Bean.class),
-						"Test classes cannot include @Bean methods");
-			}
-
-		});
-
+	private void assertHasNoBeanMethods(Method method) {
+		Assert.state(!AnnotatedElementUtils.isAnnotated(method, Bean.class),
+				"Test classes cannot include @Bean methods");
 	}
 
 }

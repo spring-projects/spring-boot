@@ -1,0 +1,192 @@
+[[packaging-executable]]
+== Packaging executable archives
+
+The plugin can create executable archives (jar files and war files) that contain all of
+an application's dependencies and can then be run with `java -jar`.
+
+
+
+[[packaging-executable-jars]]
+=== Packaging executable jars
+
+Executable jars can be built using the `bootJar` task. The task is automatically created
+when the `java` plugin is applied and is an instance of {boot-jar-javadoc}[`BootJar`].
+The `assemble` task is automatically configured to depend upon the `bootJar` task so
+running `assemble` (or `build`) will also run the `bootJar` task.
+
+
+
+[[packaging-executable-wars]]
+=== Packaging executable wars
+
+Executable wars can be built using the `bootWar` task. The task is automatically created
+when the `war` plugin is applied and is an instance of {boot-war-javadoc}[`BootWar`].
+The `assemble` task is automatically configured to depend upon the `bootWar` task so
+running `assemble` (or `build`) will also run the `bootWar` task.
+
+
+
+[[packaging-executable-wars-deployable]]
+==== Packaging executable and deployable wars
+
+A war file can be packaged such that it can be executed using `java -jar` and deployed
+to an external container. To do so, the embedded servlet container dependencies should
+be added to the `providedRuntime` configuration, for example:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/war-container-dependency.gradle[tags=dependencies]
+----
+
+This ensures that they are package in the war file's `WEB-INF/lib-provided` directory
+from where they will not conflict with the external container's own classes.
+
+NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among
+other limitations, `compileOnly` dependencies are not on the test classpath so any
+web-based integration tests will fail.
+
+
+
+[[packaging-executable-and-normal]]
+=== Packaging executable and normal archives
+
+By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war`
+tasks are disabled. A project can be configured to build both an executable archive
+and a normal archive at the same time by enabling the `jar` or `war` task:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle[tags=enable-jar]
+----
+
+To avoid the executable archive and the normal archive from being written to the same
+location, one or the other should be configured to use a different location. One way to
+do so is by configuring a classifier:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle[tags=classifier]
+----
+
+[[packaging-executable-configuring]]
+=== Configuring executable archive packaging
+
+The {boot-jar-javadoc}[`BootJar`] and {boot-war-javadoc}[`BootWar`] tasks are subclasses
+of Gradle's `Jar` and `War` tasks respectively. As a result, all of the standard
+configuration options that are available when packaging a jar or war are also available
+when packaging an executable jar or war. A number of configuration options that are
+specific to executable jars and wars are also provided.
+
+
+[[packaging-executable-configuring-main-class]]
+==== Configuring the main class
+
+By default, the executable archive's main class will be configured automatically by
+looking for a class with a `public static void main(String[])` method in directories on
+the task's classpath.
+
+The main class can also be configured explicitly using the task's `mainClass` property:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-main-class.gradle[tags=main-class]
+----
+
+Alternatively, if the {application-plugin}[`application` plugin] has been applied
+its `mainClassName` project property can be used:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/application-plugin-main-class.gradle[tags=main-class]
+----
+
+Lastly, the `Start-Class` attribute can be configured on the task's manifest:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-manifest-main-class.gradle[tags=main-class]
+----
+
+
+
+[[packaging-executable-configuring-excluding-devtools]]
+==== Excluding Devtools
+
+By default, Spring Boot's Devtools module,
+`org.springframework.boot:spring-boot-devtools`, will be excluded from an executable jar
+or war. If you want to include Devtools in your archive set the `excludeDevtools`
+property to `false`:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-war-include-devtools.gradle[tags=include-devtools]
+----
+
+
+
+[[packaging-executable-configuring-unpacking]]
+==== Configuring libraries that require unpacking
+
+Most libraries can be used directly when nested in an executable archive, however certain
+libraries can have problems. For example, JRuby includes its own nested jar support which
+assumes that `jruby-complete.jar` is always directly available on the file system.
+
+To deal with any problematic libraries, an executable archive can be configured to unpack
+specific nested jars to a temporary folder when the executable archive is run. Libraries
+can be identified as requiring unpacking using Ant-style patterns that match against
+the absolute path of the source jar file:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-requires-unpack.gradle[tags=requires-unpack]
+----
+
+For more control a closure can also be used. The closure is passed a `FileTreeElement`
+and should return a `boolean` indicating whether or not unpacking is required.
+
+
+
+[[packaging-executable-configuring-launch-script]]
+==== Making an archive fully executable
+
+Spring Boot provides support for fully executable archives. An archive is made fully
+executable by prepending a shell script that knows how to launch the application. On
+Unix-like platforms, this launch script allows the archive to be run directly like any
+other executable or to be installed as a service.
+
+To use this feature, the inclusion of the launch script must be enabled:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-include-launch-script.gradle[tags=include-launch-script]
+----
+
+This will add Spring Boot's default launch script to the archive. The default launch
+script includes several properties with sensible default values. The values can be
+customized using the `properties` property:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-launch-script-properties.gradle[tags=launch-script-properties]
+----
+
+If the default launch script does not meet your needs, the `script` property can be used
+to provide a custom launch script:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-custom-launch-script.gradle[tags=custom-launch-script]
+----
+
+
+
+[[packaging-executable-configuring-properties-launcher]]
+==== Using the `PropertiesLauncher`
+
+To use the `PropertiesLauncher` to launch an executable jar or war, configure the task's
+manifest to set the `Main-Class` attribute:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-war-properties-launcher.gradle[tags=properties-launcher]
+----

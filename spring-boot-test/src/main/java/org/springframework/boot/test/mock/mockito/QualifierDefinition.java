@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ class QualifierDefinition {
 	private static Set<Annotation> getQualifierAnnotations(Field field) {
 		// Assume that any annotations other than @MockBean/@SpyBean are qualifiers
 		Annotation[] candidates = field.getDeclaredAnnotations();
-		Set<Annotation> annotations = new HashSet<Annotation>(candidates.length);
+		Set<Annotation> annotations = new HashSet<>(candidates.length);
 		for (Annotation candidate : candidates) {
 			if (!isMockOrSpyAnnotation(candidate)) {
 				annotations.add(candidate);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.actuate.info;
 
+import java.util.Map;
+
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.util.TestPropertyValues.Type;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
@@ -35,8 +38,8 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	public void extractOnlyInfoProperty() {
-		EnvironmentTestUtils.addEnvironment(this.environment, "info.app=my app",
-				"info.version=1.0.0", "foo=bar");
+		TestPropertyValues.of("info.app=my app", "info.version=1.0.0", "foo=bar")
+				.applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
@@ -45,9 +48,18 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	public void extractNoEntry() {
-		EnvironmentTestUtils.addEnvironment(this.environment, "foo=bar");
+		TestPropertyValues.of("foo=bar").applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.getDetails().size()).isEqualTo(0);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void propertiesFromEnvironmentShouldBindCorrectly() throws Exception {
+		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment,
+				Type.SYSTEM);
+		Info actual = contributeFrom(this.environment);
+		assertThat(actual.get("environment", Map.class)).containsEntry("foo", "green");
 	}
 
 	private static Info contributeFrom(ConfigurableEnvironment environment) {

@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>spring-boot-starters</artifactId>
 		<groupId>org.springframework.boot</groupId>
-		<version>1.5.7.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-data-couchbase</artifactId>
 	<name>Spring Boot Data Couchbase Starter</name>
@@ -26,6 +26,16 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-couchbase</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.couchbase.mock</groupId>
+					<artifactId>CouchbaseMock</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,54 +32,45 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConfigurationPropertiesReportEndpoint} when used with bean methods.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	public void testNaming() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(Config.class)
+				.withPropertyValues("other.name:foo", "first.name:bar");
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor other = properties.getBeans()
+					.get("other");
+			assertThat(other).isNotNull();
+			assertThat(other.getPrefix()).isEqualTo("other");
+			assertThat(other.getProperties()).isNotNull();
+			assertThat(other.getProperties()).isNotEmpty();
+		});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	public void testNaming() throws Exception {
-		this.context.register(Config.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "other.name:foo",
-				"first.name:bar");
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = this.context
-				.getBean(ConfigurationPropertiesReportEndpoint.class);
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("other");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
-		assertThat(nestedProperties.get("properties")).isNotNull();
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testOverride() throws Exception {
-		this.context.register(Other.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "other.name:foo");
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = this.context
-				.getBean(ConfigurationPropertiesReportEndpoint.class);
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("bar");
-		assertThat(nestedProperties).isNotNull();
-		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
-		assertThat(nestedProperties.get("properties")).isNotNull();
+	public void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(OverriddenPrefix.class)
+				.withPropertyValues("other.name:foo");
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor bar = properties.getBeans().get("bar");
+			assertThat(bar).isNotNull();
+			assertThat(bar.getPrefix()).isEqualTo("other");
+			assertThat(bar.getProperties()).isNotNull();
+			assertThat(bar.getProperties()).isNotEmpty();
+		});
 	}
 
 	@Configuration
@@ -110,7 +98,7 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	public static class Other {
+	public static class OverriddenPrefix {
 
 		@Bean
 		public ConfigurationPropertiesReportEndpoint endpoint() {

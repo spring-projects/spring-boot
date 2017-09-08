@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,13 @@ import com.codahale.metrics.Reservoir;
  * @author Phillip Webb
  * @since 1.5.0
  */
+@FunctionalInterface
 public interface ReservoirFactory {
 
 	/**
 	 * Default empty {@link ReservoirFactory} implementation.
 	 */
-	ReservoirFactory NONE = new ReservoirFactory() {
-
-		@Override
-		public Reservoir getReservoir(String name) {
-			return null;
-		}
-
-	};
+	ReservoirFactory NONE = (name) -> null;
 
 	/**
 	 * Return the {@link Reservoir} instance to use or {@code null} if a custom reservoir

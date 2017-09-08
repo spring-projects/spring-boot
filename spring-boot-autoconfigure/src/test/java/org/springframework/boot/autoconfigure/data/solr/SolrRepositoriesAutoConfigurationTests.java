@@ -101,7 +101,7 @@ public class SolrRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@TestAutoConfigurationPackage(SolrRepositoriesAutoConfigurationTests.class)
-	@EnableSolrRepositories(basePackageClasses = CitySolrRepository.class, multicoreSupport = true)
+	@EnableSolrRepositories(basePackageClasses = CitySolrRepository.class)
 	protected static class CustomizedConfiguration {
 
 	}

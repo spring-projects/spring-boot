@@ -19,15 +19,21 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
@@ -44,6 +50,9 @@ public class ResourceServerPropertiesTests {
 
 	private Errors errors = mock(Errors.class);
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
 	@SuppressWarnings("unchecked")
 	public void json() throws Exception {
@@ -59,7 +68,7 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenClientIdNullShouldNotFail() throws Exception {
 		this.properties = new ResourceServerProperties(null, "secret");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -68,9 +77,10 @@ public class ResourceServerPropertiesTests {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		this.properties.getJwt().setKeyUri("http://my-auth-server/token_key");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
-		verify(this.errors).reject("ambiguous.keyUri",
-				"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should be configured.");
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) "
+				+ "and jwk.keySetUri should be configured.", null));
+		this.properties.validate();
 	}
 
 	@Test
@@ -79,16 +89,17 @@ public class ResourceServerPropertiesTests {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		this.properties.getJwt().setKeyValue("my-key");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
-		verify(this.errors).reject("ambiguous.keyUri",
-				"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should be configured.");
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) "
+				+ "and jwk.keySetUri should be configured.", null));
+		this.properties.validate();
 	}
 
 	@Test
 	public void validateWhenJwkKeySetUriProvidedShouldSucceed() throws Exception {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -96,7 +107,7 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenKeyValuePresentShouldSucceed() throws Exception {
 		this.properties.getJwt().setKeyValue("my-key");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -106,7 +117,7 @@ public class ResourceServerPropertiesTests {
 		this.properties = new ResourceServerProperties("client", "");
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -114,16 +125,17 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenKeyConfigAbsentAndInfoUrisNotConfiguredShouldFail()
 			throws Exception {
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
-		verify(this.errors).rejectValue("tokenInfoUri", "missing.tokenInfoUri",
-				"Missing tokenInfoUri and userInfoUri and there is no JWT verifier key");
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expect(getMatcher("Missing tokenInfoUri and userInfoUri and there"
+				+ " is no JWT verifier key", "tokenInfoUri"));
+		this.properties.validate();
 	}
 
 	@Test
 	public void validateWhenTokenUriConfiguredShouldNotFail() throws Exception {
 		this.properties.setTokenInfoUri("http://my-auth-server/userinfo");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -131,7 +143,7 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenUserInfoUriConfiguredShouldNotFail() throws Exception {
 		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -142,9 +154,9 @@ public class ResourceServerPropertiesTests {
 		this.properties.setTokenInfoUri("http://my-auth-server/check_token");
 		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
-		verify(this.errors).rejectValue("clientSecret", "missing.clientSecret",
-				"Missing client secret");
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expect(getMatcher("Missing client secret", "clientSecret"));
+		this.properties.validate();
 	}
 
 	@Test
@@ -153,7 +165,7 @@ public class ResourceServerPropertiesTests {
 		this.properties = new ResourceServerProperties("client", "");
 		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -165,7 +177,7 @@ public class ResourceServerPropertiesTests {
 		this.properties.setTokenInfoUri("http://my-auth-server/check_token");
 		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
 		setListableBeanFactory();
-		this.properties.validate(this.properties, this.errors);
+		this.properties.validate();
 		verifyZeroInteractions(this.errors);
 	}
 
@@ -184,6 +196,29 @@ public class ResourceServerPropertiesTests {
 
 		};
 		this.properties.setBeanFactory(beanFactory);
+	}
+
+	private BaseMatcher<BindException> getMatcher(String message, String field) {
+		return new BaseMatcher<BindException>() {
+
+			@Override
+			public void describeTo(Description description) {
+
+			}
+
+			@Override
+			public boolean matches(Object item) {
+				BindException ex = (BindException) ((Exception) item).getCause();
+				ObjectError error = ex.getAllErrors().get(0);
+				boolean messageMatches = message.equals(error.getDefaultMessage());
+				if (field == null) {
+					return messageMatches;
+				}
+				String fieldErrors = ((FieldError) error).getField();
+				return messageMatches && fieldErrors.equals(field);
+			}
+
+		};
 	}
 
 }

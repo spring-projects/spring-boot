@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.springframework.util.StreamUtils;
  * Helper class used to generate the project.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class ProjectGenerator {
 
@@ -106,16 +105,12 @@ class ProjectGenerator {
 		if (!outputFolder.exists()) {
 			outputFolder.mkdirs();
 		}
-		ZipInputStream zipStream = new ZipInputStream(
-				new ByteArrayInputStream(entity.getContent()));
-		try {
+		try (ZipInputStream zipStream = new ZipInputStream(
+				new ByteArrayInputStream(entity.getContent()))) {
 			extractFromStream(zipStream, overwrite, outputFolder);
 			fixExecutableFlag(outputFolder, "mvnw");
 			fixExecutableFlag(outputFolder, "gradlew");
 			Log.info("Project extracted to '" + outputFolder.getAbsolutePath() + "'");
-		}
-		finally {
-			zipStream.close();
 		}
 	}
 

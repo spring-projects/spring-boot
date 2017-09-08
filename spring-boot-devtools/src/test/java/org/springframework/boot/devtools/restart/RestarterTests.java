@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
@@ -44,8 +43,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -84,14 +83,7 @@ public class RestarterTests {
 	@Test
 	public void testRestart() throws Exception {
 		Restarter.clearInstance();
-		Thread thread = new Thread() {
-
-			@Override
-			public void run() {
-				SampleApplication.main();
-			};
-
-		};
+		Thread thread = new Thread(SampleApplication::main);
 		thread.start();
 		Thread.sleep(2600);
 		String output = this.out.toString();
@@ -150,12 +142,7 @@ public class RestarterTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void getOrAddAttributeWithExistingAttribute() throws Exception {
-		Restarter.getInstance().getOrAddAttribute("x", new ObjectFactory<String>() {
-			@Override
-			public String getObject() throws BeansException {
-				return "abc";
-			}
-		});
+		Restarter.getInstance().getOrAddAttribute("x", () -> "abc");
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
 		assertThat(attribute).isEqualTo("abc");
@@ -166,19 +153,16 @@ public class RestarterTests {
 	public void getThreadFactory() throws Exception {
 		final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
 		final ClassLoader contextClassLoader = new URLClassLoader(new URL[0]);
-		Thread thread = new Thread() {
-			@Override
-			public void run() {
-				Runnable runnable = mock(Runnable.class);
-				Thread regular = new Thread();
-				ThreadFactory factory = Restarter.getInstance().getThreadFactory();
-				Thread viaFactory = factory.newThread(runnable);
-				// Regular threads will inherit the current thread
-				assertThat(regular.getContextClassLoader()).isEqualTo(contextClassLoader);
-				// Factory threads should inherit from the initial thread
-				assertThat(viaFactory.getContextClassLoader()).isEqualTo(parentLoader);
-			};
-		};
+		Thread thread = new Thread(() -> {
+			Runnable runnable = mock(Runnable.class);
+			Thread regular = new Thread();
+			ThreadFactory factory = Restarter.getInstance().getThreadFactory();
+			Thread viaFactory = factory.newThread(runnable);
+			// Regular threads will inherit the current thread
+			assertThat(regular.getContextClassLoader()).isEqualTo(contextClassLoader);
+			// Factory threads should inherit from the initial thread
+			assertThat(viaFactory.getContextClassLoader()).isEqualTo(parentLoader);
+		});
 		thread.setContextClassLoader(contextClassLoader);
 		thread.start();
 		thread.join();

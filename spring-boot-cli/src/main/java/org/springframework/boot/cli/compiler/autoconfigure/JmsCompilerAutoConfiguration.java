@@ -41,7 +41,7 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-jms", "jms-api");
+		dependencies.add("spring-jms", "javax.jms-api");
 	}
 
 	@Override

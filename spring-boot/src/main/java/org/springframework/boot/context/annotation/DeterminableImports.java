@@ -40,6 +40,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Andy Wilkinson
  * @since 1.5.0
  */
+@FunctionalInterface
 public interface DeterminableImports {
 
 	/**

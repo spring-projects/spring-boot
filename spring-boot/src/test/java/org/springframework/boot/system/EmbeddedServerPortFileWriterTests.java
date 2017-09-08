@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,26 @@ package org.springframework.boot.system;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -44,10 +53,51 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@RunWith(Parameterized.class)
 public class EmbeddedServerPortFileWriterTests {
 
 	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@Parameters(name = "{0}")
+	public static Object[] parameters() {
+		Map<String, BiFunction<String, Integer, WebServerInitializedEvent>> parameters = new LinkedHashMap<>();
+		parameters.put("Servlet",
+				EmbeddedServerPortFileWriterTests::servletEventParameter);
+		parameters.put("Reactive",
+				EmbeddedServerPortFileWriterTests::reactiveEventParameter);
+		return parameters.entrySet().stream()
+				.map((e) -> new Object[] { e.getKey(), e.getValue() }).toArray();
+	}
+
+	private static WebServerInitializedEvent servletEventParameter(String name,
+			Integer port) {
+		ServletWebServerApplicationContext applicationContext = mock(
+				ServletWebServerApplicationContext.class);
+		given(applicationContext.getNamespace()).willReturn(name);
+		WebServer source = mock(WebServer.class);
+		given(source.getPort()).willReturn(port);
+		ServletWebServerInitializedEvent event = new ServletWebServerInitializedEvent(
+				source, applicationContext);
+		return event;
+	}
+
+	private static WebServerInitializedEvent reactiveEventParameter(String name,
+			Integer port) {
+		ReactiveWebServerApplicationContext applicationContext = mock(
+				ReactiveWebServerApplicationContext.class);
+		given(applicationContext.getNamespace()).willReturn(name);
+		WebServer source = mock(WebServer.class);
+		given(source.getPort()).willReturn(port);
+		return new ReactiveWebServerInitializedEvent(source, applicationContext);
+	}
+
+	private final BiFunction<String, Integer, ? extends WebServerInitializedEvent> eventFactory;
+
+	public EmbeddedServerPortFileWriterTests(String name,
+			BiFunction<String, Integer, ? extends WebServerInitializedEvent> eventFactory) {
+		this.eventFactory = eventFactory;
+	}
 
 	@Before
 	@After
@@ -117,19 +167,12 @@ public class EmbeddedServerPortFileWriterTests {
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
-	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
-		EmbeddedWebApplicationContext applicationContext = mock(
-				EmbeddedWebApplicationContext.class);
-		EmbeddedServletContainer source = mock(EmbeddedServletContainer.class);
-		given(applicationContext.getNamespace()).willReturn(name);
-		given(source.getPort()).willReturn(port);
-		EmbeddedServletContainerInitializedEvent event = new EmbeddedServletContainerInitializedEvent(
-				applicationContext, source);
-		return event;
+	private WebServerInitializedEvent mockEvent(String name, int port) {
+		return this.eventFactory.apply(name, port);
 	}
 
 	private Set<String> collectFileNames(File directory) {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		if (directory.isDirectory()) {
 			for (File file : directory.listFiles()) {
 				names.add(file.getName());

@@ -16,6 +16,8 @@
 
 package sample.secure.oauth2.resource;
 
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -30,7 +32,7 @@ public interface FlightRepository extends CrudRepository<Flight, Long> {
 	Iterable<Flight> findAll();
 
 	@Override
-	Flight findOne(Long aLong);
+	Optional<Flight> findById(Long aLong);
 
 	@Override
 	<S extends Flight> S save(S entity);

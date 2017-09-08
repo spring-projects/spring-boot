@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.InOrder;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CentralDirectoryParser}.
@@ -61,16 +55,13 @@ public class CentralDirectoryParserTests {
 
 	@Test
 	public void visitsInOrder() throws Exception {
-		CentralDirectoryVisitor visitor = mock(TestCentralDirectoryVisitor.class);
+		MockCentralDirectoryVisitor visitor = new MockCentralDirectoryVisitor();
 		CentralDirectoryParser parser = new CentralDirectoryParser();
 		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
-		InOrder ordered = inOrder(visitor);
-		ordered.verify(visitor).visitStart(any(CentralDirectoryEndRecord.class),
-				any(RandomAccessData.class));
-		ordered.verify(visitor, atLeastOnce())
-				.visitFileHeader(any(CentralDirectoryFileHeader.class), anyInt());
-		ordered.verify(visitor).visitEnd();
+		List<String> invocations = visitor.getInvocations();
+		assertThat(invocations).startsWith("visitStart").endsWith("visitEnd")
+				.contains("visitFileHeader");
 	}
 
 	@Test
@@ -95,7 +86,7 @@ public class CentralDirectoryParserTests {
 
 	private static class Collector implements CentralDirectoryVisitor {
 
-		private List<CentralDirectoryFileHeader> headers = new ArrayList<CentralDirectoryFileHeader>();
+		private List<CentralDirectoryFileHeader> headers = new ArrayList<>();
 
 		@Override
 		public void visitStart(CentralDirectoryEndRecord endRecord,
@@ -118,7 +109,30 @@ public class CentralDirectoryParserTests {
 
 	}
 
-	public interface TestCentralDirectoryVisitor extends CentralDirectoryVisitor {
+	private static class MockCentralDirectoryVisitor implements CentralDirectoryVisitor {
+
+		private final List<String> invocations = new ArrayList<>();
+
+		@Override
+		public void visitStart(CentralDirectoryEndRecord endRecord,
+				RandomAccessData centralDirectoryData) {
+			this.invocations.add("visitStart");
+		}
+
+		@Override
+		public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
+				int dataOffset) {
+			this.invocations.add("visitFileHeader");
+		}
+
+		@Override
+		public void visitEnd() {
+			this.invocations.add("visitEnd");
+		}
+
+		public List<String> getInvocations() {
+			return this.invocations;
+		}
 
 	}
 

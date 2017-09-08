@@ -24,6 +24,7 @@ import java.util.Random;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,7 +35,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,15 +68,13 @@ public class DataSourceInitializerTests {
 
 	@Before
 	public void init() {
-		EmbeddedDatabaseConnection.override = null;
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+		TestPropertyValues.of("spring.datasource.initialize:false",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
+				.applyTo(this.context);
 	}
 
 	@After
 	public void restore() {
-		EmbeddedDatabaseConnection.override = null;
 		if (this.context != null) {
 			this.context.close();
 		}
@@ -92,11 +91,8 @@ public class DataSourceInitializerTests {
 
 	@Test
 	public void testTwoDataSources() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"datasource.one.url=jdbc:hsqldb:mem:/one",
-				"datasource.one.driverClassName=org.hsqldb.Driver",
-				"datasource.two.url=jdbc:hsqldb:mem:/two",
-				"datasource.two.driverClassName=org.hsqldb.Driver");
+		TestPropertyValues.of("datasource.one.url=jdbc:hsqldb:mem:/one",
+				"datasource.two.url=jdbc:hsqldb:mem:/two").applyTo(this.context);
 		this.context.register(TwoDataSources.class, DataSourceInitializer.class,
 				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
@@ -106,13 +102,12 @@ public class DataSourceInitializerTests {
 
 	@Test
 	public void testDataSourceInitialized() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true");
+		TestPropertyValues.of("spring.datasource.initialize:true").applyTo(this.context);
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
@@ -123,15 +118,16 @@ public class DataSourceInitializerTests {
 	public void testDataSourceInitializedWithExplicitScript() throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:" + ClassUtils
-						.addResourcePathToPackagePath(getClass(), "schema.sql"),
-				"spring.datasource.data:" + ClassUtils
-						.addResourcePathToPackagePath(getClass(), "data.sql"));
+		TestPropertyValues
+				.of("spring.datasource.initialize:true",
+						"spring.datasource.schema:" + ClassUtils
+								.addResourcePathToPackagePath(getClass(), "schema.sql"),
+				"spring.datasource.data:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(), "data.sql"))
+				.applyTo(this.context);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
@@ -140,21 +136,22 @@ public class DataSourceInitializerTests {
 
 	@Test
 	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"schema.sql")
+		TestPropertyValues
+				.of("spring.datasource.initialize:true",
+						"spring.datasource.schema:"
+								+ ClassUtils.addResourcePathToPackagePath(getClass(),
+										"schema.sql")
 						+ ","
 						+ ClassUtils.addResourcePathToPackagePath(getClass(),
 								"another.sql"),
-				"spring.datasource.data:" + ClassUtils
-						.addResourcePathToPackagePath(getClass(), "data.sql"));
+				"spring.datasource.data:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(), "data.sql"))
+				.applyTo(this.context);
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
@@ -168,16 +165,16 @@ public class DataSourceInitializerTests {
 			throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
+		TestPropertyValues.of("spring.datasource.initialize:true",
 				"spring.datasource.sqlScriptEncoding:UTF-8",
 				"spring.datasource.schema:" + ClassUtils
 						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
 				"spring.datasource.data:" + ClassUtils
-						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"));
+						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"))
+				.applyTo(this.context);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
@@ -197,7 +194,7 @@ public class DataSourceInitializerTests {
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		this.context.publishEvent(new DataSourceInitializedEvent(dataSource));
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		try {
@@ -215,15 +212,14 @@ public class DataSourceInitializerTests {
 	public void testDataSourceInitializedWithSchemaCredentials() {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
+		TestPropertyValues.of("spring.datasource.initialize:true",
 				"spring.datasource.sqlScriptEncoding:UTF-8",
 				"spring.datasource.schema:" + ClassUtils
 						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
 				"spring.datasource.data:" + ClassUtils
 						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"),
 				"spring.datasource.schema-username:admin",
-				"spring.datasource.schema-password:admin");
+				"spring.datasource.schema-password:admin").applyTo(this.context);
 		try {
 			this.context.refresh();
 			fail("User does not exist");
@@ -237,15 +233,14 @@ public class DataSourceInitializerTests {
 	public void testDataSourceInitializedWithDataCredentials() {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
+		TestPropertyValues.of("spring.datasource.initialize:true",
 				"spring.datasource.sqlScriptEncoding:UTF-8",
 				"spring.datasource.schema:" + ClassUtils
 						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
 				"spring.datasource.data:" + ClassUtils
 						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"),
 				"spring.datasource.data-username:admin",
-				"spring.datasource.data-password:admin");
+				"spring.datasource.data-password:admin").applyTo(this.context);
 		try {
 			this.context.refresh();
 			fail("User does not exist");
@@ -257,12 +252,12 @@ public class DataSourceInitializerTests {
 
 	@Test
 	public void multipleScriptsAppliedInLexicalOrder() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
+		TestPropertyValues.of("spring.datasource.initialize:true",
 				"spring.datasource.schema:" + ClassUtils
 						.addResourcePathToPackagePath(getClass(), "lexical-schema-*.sql"),
-				"spring.datasource.data:" + ClassUtils
-						.addResourcePathToPackagePath(getClass(), "data.sql"));
+				"spring.datasource.data:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(), "data.sql"))
+				.applyTo(this.context);
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		ReverseOrderResourceLoader resourceLoader = new ReverseOrderResourceLoader(
@@ -270,7 +265,7 @@ public class DataSourceInitializerTests {
 		this.context.setResourceLoader(resourceLoader);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
@@ -281,9 +276,10 @@ public class DataSourceInitializerTests {
 	public void testDataSourceInitializedWithInvalidSchemaResource() {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:classpath:does/not/exist.sql");
+		TestPropertyValues
+				.of("spring.datasource.initialize:true",
+						"spring.datasource.schema:classpath:does/not/exist.sql")
+				.applyTo(this.context);
 
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("does/not/exist.sql");
@@ -295,11 +291,12 @@ public class DataSourceInitializerTests {
 	public void testDataSourceInitializedWithInvalidDataResource() {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:" + ClassUtils
-						.addResourcePathToPackagePath(getClass(), "schema.sql"),
-				"spring.datasource.data:classpath:does/not/exist.sql");
+		TestPropertyValues
+				.of("spring.datasource.initialize:true",
+						"spring.datasource.schema:" + ClassUtils
+								.addResourcePathToPackagePath(getClass(), "schema.sql"),
+				"spring.datasource.data:classpath:does/not/exist.sql")
+				.applyTo(this.context);
 
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("does/not/exist.sql");
@@ -351,14 +348,8 @@ public class DataSourceInitializerTests {
 		@Override
 		public Resource[] getResources(String locationPattern) throws IOException {
 			Resource[] resources = this.resolver.getResources(locationPattern);
-			Arrays.sort(resources, new Comparator<Resource>() {
-
-				@Override
-				public int compare(Resource r1, Resource r2) {
-					return r2.getFilename().compareTo(r1.getFilename());
-				}
-
-			});
+			Arrays.sort(resources,
+					Comparator.comparing(Resource::getFilename).reversed());
 			return resources;
 		}
 

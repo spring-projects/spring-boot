@@ -41,8 +41,7 @@ public class TransactionManagerCustomizers {
 
 	public TransactionManagerCustomizers(
 			Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers == null ? null
-				: new ArrayList<PlatformTransactionManagerCustomizer<?>>(customizers));
+		this.customizers = (customizers == null ? null : new ArrayList<>(customizers));
 	}
 
 	public void customize(PlatformTransactionManager transactionManager) {

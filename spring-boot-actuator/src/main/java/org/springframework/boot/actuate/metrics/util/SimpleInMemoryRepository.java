@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class SimpleInMemoryRepository<T> {
 
-	private ConcurrentNavigableMap<String, T> values = new ConcurrentSkipListMap<String, T>();
+	private ConcurrentNavigableMap<String, T> values = new ConcurrentSkipListMap<>();
 
-	private final ConcurrentMap<String, Object> locks = new ConcurrentHashMap<String, Object>();
+	private final ConcurrentMap<String, Object> locks = new ConcurrentHashMap<>();
 
 	public T update(String name, Callback<T> callback) {
 		Object lock = getLock(name);
@@ -75,7 +75,7 @@ public class SimpleInMemoryRepository<T> {
 	}
 
 	public Iterable<T> findAll() {
-		return new ArrayList<T>(this.values.values());
+		return new ArrayList<>(this.values.values());
 	}
 
 	public Iterable<T> findAllWithPrefix(String prefix) {
@@ -85,7 +85,7 @@ public class SimpleInMemoryRepository<T> {
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
 		}
-		return new ArrayList<T>(
+		return new ArrayList<>(
 				this.values.subMap(prefix, false, prefix + "~", true).values());
 	}
 
@@ -102,6 +102,7 @@ public class SimpleInMemoryRepository<T> {
 	 *
 	 * @param <T> the value type
 	 */
+	@FunctionalInterface
 	public interface Callback<T> {
 
 		/**

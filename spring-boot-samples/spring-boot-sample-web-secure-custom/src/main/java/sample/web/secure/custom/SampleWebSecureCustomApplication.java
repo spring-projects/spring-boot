@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -31,11 +29,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @Controller
-public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
+public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 
 	@GetMapping("/")
 	public String home(Map<String, Object> model) {
@@ -60,7 +58,6 @@ public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
 	}
 
 	@Configuration
-	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override

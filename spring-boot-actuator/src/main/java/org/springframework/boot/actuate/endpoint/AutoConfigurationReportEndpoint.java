@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,18 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.context.annotation.Condition;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,25 +46,26 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.autoconfig")
-public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
+@Endpoint(id = "autoconfig")
+public class AutoConfigurationReportEndpoint {
 
-	@Autowired
-	private ConditionEvaluationReport autoConfigurationReport;
+	private final ConditionEvaluationReport conditionEvaluationReport;
 
-	public AutoConfigurationReportEndpoint() {
-		super("autoconfig");
+	public AutoConfigurationReportEndpoint(
+			ConditionEvaluationReport conditionEvaluationReport) {
+		this.conditionEvaluationReport = conditionEvaluationReport;
 	}
 
-	@Override
-	public Report invoke() {
-		return new Report(this.autoConfigurationReport);
+	@ReadOperation
+	public Report getEvaluationReport() {
+		return new Report(this.conditionEvaluationReport);
 	}
 
 	/**
 	 * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
 	 */
-	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions" })
+	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions",
+			"unconditionalClasses" })
 	@JsonInclude(Include.NON_EMPTY)
 	public static class Report {
 
@@ -74,12 +75,15 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		private final List<String> exclusions;
 
+		private final Set<String> unconditionalClasses;
+
 		private final Report parent;
 
 		public Report(ConditionEvaluationReport report) {
-			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
-			this.negativeMatches = new LinkedHashMap<String, MessageAndConditions>();
+			this.positiveMatches = new LinkedMultiValueMap<>();
+			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
+			this.unconditionalClasses = report.getUnconditionalClasses();
 			for (Map.Entry<String, ConditionAndOutcomes> entry : report
 					.getConditionAndOutcomesBySource().entrySet()) {
 				if (entry.getValue().isFullMatch()) {
@@ -119,6 +123,10 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 			return this.exclusions;
 		}
 
+		public Set<String> getUnconditionalClasses() {
+			return this.unconditionalClasses;
+		}
+
 		public Report getParent() {
 			return this.parent;
 		}
@@ -131,9 +139,9 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	@JsonPropertyOrder({ "notMatched", "matched" })
 	public static class MessageAndConditions {
 
-		private final List<MessageAndCondition> notMatched = new ArrayList<MessageAndCondition>();
+		private final List<MessageAndCondition> notMatched = new ArrayList<>();
 
-		private final List<MessageAndCondition> matched = new ArrayList<MessageAndCondition>();
+		private final List<MessageAndCondition> matched = new ArrayList<>();
 
 		public MessageAndConditions(ConditionAndOutcomes conditionAndOutcomes) {
 			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {

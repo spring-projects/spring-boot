@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,38 +19,29 @@ package org.springframework.boot.actuate.metrics.buffer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
-
-import org.springframework.lang.UsesJava8;
 
 /**
  * Base class used to manage a map of {@link Buffer} objects.
  *
+ * @param <B> The buffer type
  * @author Dave Syer
  * @author Phillip Webb
- * @param <B> The buffer type
  */
-@UsesJava8
 abstract class Buffers<B extends Buffer<?>> {
 
-	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<String, B>();
+	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<>();
 
 	public void forEach(final Predicate<String> predicate,
-			final BiConsumer<String, B> consumer) {
-		this.buffers.forEach(new BiConsumer<String, B>() {
-
-			@Override
-			public void accept(String name, B value) {
-				if (predicate.test(name)) {
-					consumer.accept(name, value);
-				}
+			BiConsumer<String, B> consumer) {
+		this.buffers.forEach((name, value) -> {
+			if (predicate.test(name)) {
+				consumer.accept(name, value);
 			}
-
 		});
 	}
 
-	public B find(final String name) {
+	public B find(String name) {
 		return this.buffers.get(name);
 	}
 
@@ -58,15 +49,10 @@ abstract class Buffers<B extends Buffer<?>> {
 		return this.buffers.size();
 	}
 
-	protected final void doWith(final String name, final Consumer<B> consumer) {
+	protected final void doWith(String name, Consumer<B> consumer) {
 		B buffer = this.buffers.get(name);
 		if (buffer == null) {
-			buffer = this.buffers.computeIfAbsent(name, new Function<String, B>() {
-				@Override
-				public B apply(String name) {
-					return createBuffer();
-				}
-			});
+			buffer = this.buffers.computeIfAbsent(name, (k) -> createBuffer());
 		}
 		consumer.accept(buffer);
 	}

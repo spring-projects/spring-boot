@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class SpringApplicationBannerPrinter {
 	}
 
 	public Banner print(Environment environment, Class<?> sourceClass, Log logger) {
-		Banner banner = getBanner(environment, this.fallbackBanner);
+		Banner banner = getBanner(environment);
 		try {
 			logger.info(createStringFromBanner(banner, environment, sourceClass));
 		}
@@ -67,12 +67,12 @@ class SpringApplicationBannerPrinter {
 	}
 
 	public Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
-		Banner banner = getBanner(environment, this.fallbackBanner);
+		Banner banner = getBanner(environment);
 		banner.printBanner(environment, sourceClass, out);
 		return new PrintedBanner(banner, sourceClass);
 	}
 
-	private Banner getBanner(Environment environment, Banner definedBanner) {
+	private Banner getBanner(Environment environment) {
 		Banners banners = new Banners();
 		banners.addIfNotNull(getImageBanner(environment));
 		banners.addIfNotNull(getTextBanner(environment));
@@ -123,7 +123,7 @@ class SpringApplicationBannerPrinter {
 	 */
 	private static class Banners implements Banner {
 
-		private final List<Banner> banners = new ArrayList<Banner>();
+		private final List<Banner> banners = new ArrayList<>();
 
 		public void addIfNotNull(Banner banner) {
 			if (banner != null) {

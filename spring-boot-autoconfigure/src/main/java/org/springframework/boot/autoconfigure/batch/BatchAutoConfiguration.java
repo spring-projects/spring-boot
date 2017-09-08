@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.ListableJobLocator;
-import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.explore.support.JobExplorerFactoryBean;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobOperator;
@@ -37,13 +34,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -66,6 +62,7 @@ import org.springframework.util.StringUtils;
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
 @EnableConfigurationProperties(BatchProperties.class)
+@Import(BatchConfigurerConfiguration.class)
 public class BatchAutoConfiguration {
 
 	private final BatchProperties properties;
@@ -107,20 +104,6 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(DataSource.class)
-	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
-		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
-		factory.setDataSource(dataSource);
-		String tablePrefix = this.properties.getTablePrefix();
-		if (StringUtils.hasText(tablePrefix)) {
-			factory.setTablePrefix(tablePrefix);
-		}
-		factory.afterPropertiesSet();
-		return factory.getObject();
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
 	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
 			ListableJobLocator jobRegistry, JobRepository jobRepository)
@@ -134,40 +117,6 @@ public class BatchAutoConfiguration {
 			factory.setJobParametersConverter(this.jobParametersConverter);
 		}
 		return factory;
-	}
-
-	@EnableConfigurationProperties(BatchProperties.class)
-	@ConditionalOnClass(value = PlatformTransactionManager.class, name = "javax.persistence.EntityManagerFactory")
-	@ConditionalOnMissingBean(BatchConfigurer.class)
-	@Configuration
-	protected static class JpaBatchConfiguration {
-
-		private final BatchProperties properties;
-
-		protected JpaBatchConfiguration(BatchProperties properties) {
-			this.properties = properties;
-		}
-
-		// The EntityManagerFactory may not be discoverable by type when this condition
-		// is evaluated, so we need a well-known bean name. This is the one used by Spring
-		// Boot in the JPA auto configuration.
-		@Bean
-		@ConditionalOnBean(name = "entityManagerFactory")
-		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
-				EntityManagerFactory entityManagerFactory,
-				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			return new BasicBatchConfigurer(this.properties, dataSource,
-					entityManagerFactory, transactionManagerCustomizers.getIfAvailable());
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(name = "entityManagerFactory")
-		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource,
-				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			return new BasicBatchConfigurer(this.properties, dataSource,
-					transactionManagerCustomizers.getIfAvailable());
-		}
-
 	}
 
 }

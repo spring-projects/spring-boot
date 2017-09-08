@@ -22,8 +22,8 @@ import org.junit.After;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.session.SessionRepository;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -63,12 +63,11 @@ public abstract class AbstractSessionAutoConfigurationTests {
 
 	protected void load(Collection<Class<?>> configs, String... environment) {
 		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		if (configs != null) {
 			ctx.register(configs.toArray(new Class<?>[configs.size()]));
 		}
-		ctx.register(ServerPropertiesAutoConfiguration.class,
-				SessionAutoConfiguration.class,
+		ctx.register(ServerProperties.class, SessionAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

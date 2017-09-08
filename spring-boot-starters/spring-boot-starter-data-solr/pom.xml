@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.5.7.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-data-solr</artifactId>
 	<name>Spring Boot Data Solr Starter</name>
@@ -31,11 +31,21 @@
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-solr</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			 <groupId>org.apache.httpcomponents</groupId>

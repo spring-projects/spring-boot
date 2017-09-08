@@ -46,10 +46,10 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * well-behaved OS-level services than a model based on executable jars.
  * <p>
  * Looks in various places for a properties file to extract loader settings, defaulting to
- * {@code application.properties} either on the current classpath or in the current
- * working directory. The name of the properties file can be changed by setting a System
- * property {@code loader.config.name} (e.g. {@code -Dloader.config.name=foo} will look
- * for {@code foo.properties}. If that file doesn't exist then tries
+ * {@code loader.properties} either on the current classpath or in the current working
+ * directory. The name of the properties file can be changed by setting a System property
+ * {@code loader.config.name} (e.g. {@code -Dloader.config.name=foo} will look for
+ * {@code foo.properties}. If that file doesn't exist then tries
  * {@code loader.config.location} (with allowed prefixes {@code classpath:} and
  * {@code file:} or any valid URL). Once that file is located turns it into Properties and
  * extracts optional values (which can also be provided overridden as System properties in
@@ -123,7 +123,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private final File home;
 
-	private List<String> paths = new ArrayList<String>();
+	private List<String> paths = new ArrayList<>();
 
 	private final Properties properties = new Properties();
 
@@ -151,13 +151,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private void initializeProperties() throws Exception, IOException {
-		List<String> configs = new ArrayList<String>();
+		List<String> configs = new ArrayList<>();
 		if (getProperty(CONFIG_LOCATION) != null) {
 			configs.add(getProperty(CONFIG_LOCATION));
 		}
 		else {
-			String[] names = getPropertyWithDefault(CONFIG_NAME, "loader,application")
-					.split(",");
+			String[] names = getPropertyWithDefault(CONFIG_NAME, "loader").split(",");
 			for (String name : names) {
 				configs.add("file:" + getHomeDirectory() + "/" + name + ".properties");
 				configs.add("classpath:" + name + ".properties");
@@ -165,39 +164,34 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		for (String config : configs) {
-			InputStream resource = getResource(config);
-			if (resource != null) {
-				debug("Found: " + config);
-				try {
-					this.properties.load(resource);
+			try (InputStream resource = getResource(config)) {
+				if (resource != null) {
+					debug("Found: " + config);
+					loadResource(resource);
+					// Load the first one we find
+					return;
 				}
-				finally {
-					resource.close();
+				else {
+					debug("Not found: " + config);
 				}
-				for (Object key : Collections.list(this.properties.propertyNames())) {
-					if (config.endsWith("application.properties")
-							&& ((String) key).startsWith("loader.")) {
-						warn("Use of application.properties for PropertiesLauncher is deprecated");
-					}
-					String text = this.properties.getProperty((String) key);
-					String value = SystemPropertyUtils
-							.resolvePlaceholders(this.properties, text);
-					if (value != null) {
-						this.properties.put(key, value);
-					}
-				}
-				if ("true".equals(getProperty(SET_SYSTEM_PROPERTIES))) {
-					debug("Adding resolved properties to System properties");
-					for (Object key : Collections.list(this.properties.propertyNames())) {
-						String value = this.properties.getProperty((String) key);
-						System.setProperty((String) key, value);
-					}
-				}
-				// Load the first one we find
-				return;
 			}
-			else {
-				debug("Not found: " + config);
+		}
+	}
+
+	private void loadResource(InputStream resource) throws IOException, Exception {
+		this.properties.load(resource);
+		for (Object key : Collections.list(this.properties.propertyNames())) {
+			String text = this.properties.getProperty((String) key);
+			String value = SystemPropertyUtils.resolvePlaceholders(this.properties, text);
+			if (value != null) {
+				this.properties.put(key, value);
+			}
+		}
+		if ("true".equals(getProperty(SET_SYSTEM_PROPERTIES))) {
+			debug("Adding resolved properties to System properties");
+			for (Object key : Collections.list(this.properties.propertyNames())) {
+				String value = this.properties.getProperty((String) key);
+				System.setProperty((String) key, value);
 			}
 		}
 	}
@@ -298,7 +292,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
-		List<String> paths = new ArrayList<String>();
+		List<String> paths = new ArrayList<>();
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// "" means the user wants root of archive but not current directory
@@ -336,7 +330,7 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		Set<URL> urls = new LinkedHashSet<URL>(archives.size());
+		Set<URL> urls = new LinkedHashSet<>(archives.size());
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}
@@ -438,11 +432,11 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> lib = new ArrayList<Archive>();
+		List<Archive> lib = new ArrayList<>();
 		for (String path : this.paths) {
 			for (Archive archive : getClassPathArchives(path)) {
 				if (archive instanceof ExplodedArchive) {
-					List<Archive> nested = new ArrayList<Archive>(
+					List<Archive> nested = new ArrayList<>(
 							archive.getNestedArchives(new ArchiveEntryFilter()));
 					nested.add(0, archive);
 					lib.addAll(nested);
@@ -458,7 +452,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
 		String root = cleanupPath(stripFileUrlPrefix(path));
-		List<Archive> lib = new ArrayList<Archive>();
+		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
 		if (!"/".equals(root)) {
 			if (!isAbsolutePath(root)) {
@@ -528,7 +522,7 @@ public class PropertiesLauncher extends Launcher {
 			root = "";
 		}
 		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
-		List<Archive> archives = new ArrayList<Archive>(parent.getNestedArchives(filter));
+		List<Archive> archives = new ArrayList<>(parent.getNestedArchives(filter));
 		if (("".equals(root) || ".".equals(root)) && !path.endsWith(".jar")
 				&& parent != this.parent) {
 			// You can't find the root with an entry filter so it has to be added
@@ -543,16 +537,11 @@ public class PropertiesLauncher extends Launcher {
 		// directories, meaning we are running from an executable JAR. We add nested
 		// entries from there with low priority (i.e. at end).
 		try {
-			lib.addAll(this.parent.getNestedArchives(new EntryFilter() {
-
-				@Override
-				public boolean matches(Entry entry) {
-					if (entry.isDirectory()) {
-						return entry.getName().equals(JarLauncher.BOOT_INF_CLASSES);
-					}
-					return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
+			lib.addAll(this.parent.getNestedArchives((entry) -> {
+				if (entry.isDirectory()) {
+					return entry.getName().equals(JarLauncher.BOOT_INF_CLASSES);
 				}
-
+				return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
 			}));
 		}
 		catch (IOException ex) {
@@ -608,17 +597,8 @@ public class PropertiesLauncher extends Launcher {
 
 	private void debug(String message) {
 		if (Boolean.getBoolean(DEBUG)) {
-			log(message);
+			System.out.println(message);
 		}
-	}
-
-	private void warn(String message) {
-		log("WARNING: " + message);
-	}
-
-	private void log(String message) {
-		// We shouldn't use java.util.logging because of classpath issues
-		System.out.println(message);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.boot.cli.command.init.InitCommand;
 import org.springframework.boot.cli.command.install.InstallCommand;
 import org.springframework.boot.cli.command.install.UninstallCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.cli.command.test.TestCommand;
 
 /**
  * Default implementation of {@link CommandFactory}.
@@ -40,9 +39,9 @@ import org.springframework.boot.cli.command.test.TestCommand;
 public class DefaultCommandFactory implements CommandFactory {
 
 	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command>asList(
-			new VersionCommand(), new RunCommand(), new TestCommand(), new GrabCommand(),
-			new JarCommand(), new WarCommand(), new InstallCommand(),
-			new UninstallCommand(), new InitCommand());
+			new VersionCommand(), new RunCommand(), new GrabCommand(), new JarCommand(),
+			new WarCommand(), new InstallCommand(), new UninstallCommand(),
+			new InitCommand());
 
 	@Override
 	public Collection<Command> getCommands() {

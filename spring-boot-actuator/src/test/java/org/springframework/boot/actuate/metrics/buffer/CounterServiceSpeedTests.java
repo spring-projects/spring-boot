@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.junit.AfterClass;
@@ -37,8 +35,6 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(Theories.class)
-@UsesJava8
 public class CounterServiceSpeedTests {
 
 	@DataPoints
@@ -80,7 +75,7 @@ public class CounterServiceSpeedTests {
 	@BeforeClass
 	public static void prime() throws FileNotFoundException {
 		err = new NullPrintWriter();
-		final Random random = new Random();
+		Random random = new Random();
 		for (int i = 0; i < 1000; i++) {
 			sample[i] = names[random.nextInt(names.length)];
 		}
@@ -99,21 +94,11 @@ public class CounterServiceSpeedTests {
 		watch.start("readRaw" + count);
 		for (String name : names) {
 			this.counters.forEach(Pattern.compile(name).asPredicate(),
-					new BiConsumer<String, CounterBuffer>() {
-						@Override
-						public void accept(String name, CounterBuffer value) {
-							err.println(name + "=" + value);
-						}
-					});
+					(key, value) -> err.println(key + "=" + value));
 		}
-		final LongAdder total = new LongAdder();
+		LongAdder total = new LongAdder();
 		this.counters.forEach(Pattern.compile(".*").asPredicate(),
-				new BiConsumer<String, CounterBuffer>() {
-					@Override
-					public void accept(String name, CounterBuffer value) {
-						total.add(value.getValue());
-					}
-				});
+				(name, value) -> total.add(value.getValue()));
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
 		assertThat(total.longValue()).isEqualTo(number * threadCount);
@@ -125,19 +110,9 @@ public class CounterServiceSpeedTests {
 		double rate = number / watch.getLastTaskTimeMillis() * 1000;
 		System.err.println("Rate(" + count + ")=" + rate + ", " + watch);
 		watch.start("readReader" + count);
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> metric) {
-				err.println(metric);
-			}
-		});
-		final LongAdder total = new LongAdder();
-		this.reader.findAll().forEach(new Consumer<Metric<?>>() {
-			@Override
-			public void accept(Metric<?> value) {
-				total.add(value.getValue().intValue());
-			}
-		});
+		this.reader.findAll().forEach(err::println);
+		LongAdder total = new LongAdder();
+		this.reader.findAll().forEach((value) -> total.add(value.getValue().intValue()));
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
 		assertThat(total.longValue()).isEqualTo(number * threadCount);
@@ -146,16 +121,13 @@ public class CounterServiceSpeedTests {
 	private void iterate(String taskName) throws Exception {
 		watch.start(taskName + count++);
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				for (int i = 0; i < number; i++) {
-					String name = sample[i % sample.length];
-					CounterServiceSpeedTests.this.service.increment(name);
-				}
+		Runnable task = () -> {
+			for (int i = 0; i < number; i++) {
+				String name = sample[i % sample.length];
+				CounterServiceSpeedTests.this.service.increment(name);
 			}
 		};
-		Collection<Future<?>> futures = new HashSet<Future<?>>();
+		Collection<Future<?>> futures = new HashSet<>();
 		for (int i = 0; i < threadCount; i++) {
 			futures.add(pool.submit(task));
 		}

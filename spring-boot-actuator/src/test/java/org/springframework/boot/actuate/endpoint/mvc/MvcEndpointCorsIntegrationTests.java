@@ -19,18 +19,25 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointInfrastructureAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.BeansEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -55,27 +62,29 @@ public class MvcEndpointCorsIntegrationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
-				JolokiaAutoConfiguration.class, WebMvcAutoConfiguration.class);
+				WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				EndpointInfrastructureAutoConfiguration.class,
+				EndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				ServletEndpointAutoConfiguration.class);
+		TestPropertyValues.of("endpoints.default.web.enabled:true").applyTo(this.context);
 	}
 
 	@Test
 	public void corsIsDisabledByDefault() throws Exception {
-		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-				.andExpect(
+		MockMvc mockMvc = createMockMvc();
+		System.out.println(new ConditionEvaluationReportMessage(
+				this.context.getBean(ConditionEvaluationReport.class)));
+		mockMvc.perform(options("/application/beans").header("Origin", "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
 						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
 	}
 
 	@Test
 	public void settingAllowedOriginsEnablesCors() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com");
+		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "bar.example.com")
+				.perform(options("/application/beans").header("Origin", "bar.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(status().isForbidden());
 		performAcceptedCorsRequest();
@@ -83,27 +92,26 @@ public class MvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void maxAgeDefaultsTo30Minutes() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com");
+		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+				.applyTo(this.context);
 		performAcceptedCorsRequest()
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800"));
 	}
 
 	@Test
 	public void maxAgeCanBeConfigured() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com",
-				"endpoints.cors.max-age: 2400");
+		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com",
+				"management.endpoints.cors.max-age: 2400").applyTo(this.context);
 		performAcceptedCorsRequest()
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "2400"));
 	}
 
 	@Test
 	public void requestsWithDisallowedHeadersAreRejected() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com");
+		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isForbidden());
@@ -111,11 +119,12 @@ public class MvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void allowedHeadersCanBeConfigured() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com",
-				"endpoints.cors.allowed-headers:Alpha,Bravo");
+		TestPropertyValues
+				.of("management.endpoints.cors.allowed-origins:foo.example.com",
+						"management.endpoints.cors.allowed-headers:Alpha,Bravo")
+				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isOk()).andExpect(header()
@@ -124,21 +133,24 @@ public class MvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void requestsWithDisallowedMethodsAreRejected() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com");
+		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/health").header(HttpHeaders.ORIGIN, "foo.example.com")
+				.perform(options("/application/health")
+						.header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	public void allowedMethodsCanBeConfigured() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com",
-				"endpoints.cors.allowed-methods:GET,HEAD");
+		TestPropertyValues
+				.of("management.endpoints.cors.allowed-origins:foo.example.com",
+						"management.endpoints.cors.allowed-methods:GET,HEAD")
+				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/health").header(HttpHeaders.ORIGIN, "foo.example.com")
+				.perform(options("/application/beans")
+						.header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
 				.andExpect(status().isOk()).andExpect(header()
 						.string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD"));
@@ -146,31 +158,22 @@ public class MvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void credentialsCanBeAllowed() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com",
-				"endpoints.cors.allow-credentials:true");
+		TestPropertyValues
+				.of("management.endpoints.cors.allowed-origins:foo.example.com",
+						"management.endpoints.cors.allow-credentials:true")
+				.applyTo(this.context);
 		performAcceptedCorsRequest().andExpect(
 				header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
 	}
 
 	@Test
 	public void credentialsCanBeDisabled() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com",
-				"endpoints.cors.allow-credentials:false");
+		TestPropertyValues
+				.of("management.endpoints.cors.allowed-origins:foo.example.com",
+						"management.endpoints.cors.allow-credentials:false")
+				.applyTo(this.context);
 		performAcceptedCorsRequest().andExpect(
 				header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
-	}
-
-	@Test
-	public void jolokiaEndpointUsesGlobalCorsConfiguration() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.cors.allowed-origins:foo.example.com");
-		createMockMvc()
-				.perform(options("/jolokia").header("Origin", "bar.example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-				.andExpect(status().isForbidden());
-		performAcceptedCorsRequest("/jolokia");
 	}
 
 	private MockMvc createMockMvc() {
@@ -179,7 +182,7 @@ public class MvcEndpointCorsIntegrationTests {
 	}
 
 	private ResultActions performAcceptedCorsRequest() throws Exception {
-		return performAcceptedCorsRequest("/beans");
+		return performAcceptedCorsRequest("/application/beans");
 	}
 
 	private ResultActions performAcceptedCorsRequest(String url) throws Exception {
@@ -189,6 +192,26 @@ public class MvcEndpointCorsIntegrationTests {
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
 						"foo.example.com"))
 				.andExpect(status().isOk());
+	}
+
+	@Configuration
+	static class EndpointConfiguration {
+
+		@Bean
+		public BeansEndpoint beansEndpoint(
+				ConfigurableApplicationContext applicationContext) {
+			return new BeansEndpoint(applicationContext);
+		}
+
+	}
+
+	@Configuration
+	static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.cors();
+		}
 	}
 
 }

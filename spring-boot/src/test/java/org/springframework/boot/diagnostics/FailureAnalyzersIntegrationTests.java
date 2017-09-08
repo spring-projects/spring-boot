@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@ import javax.annotation.PostConstruct;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.PortInUseException;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,12 +38,13 @@ import static org.junit.Assert.fail;
 public class FailureAnalyzersIntegrationTests {
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void analysisIsPerformed() {
 		try {
-			new SpringApplicationBuilder(TestConfiguration.class).web(false).run();
+			new SpringApplicationBuilder(TestConfiguration.class)
+					.web(WebApplicationType.NONE).run();
 			fail("Application started successfully");
 		}
 		catch (Exception ex) {

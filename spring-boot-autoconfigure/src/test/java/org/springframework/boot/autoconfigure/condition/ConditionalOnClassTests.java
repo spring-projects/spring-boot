@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -30,41 +31,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConditionalOnClass}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class ConditionalOnClassTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
 	public void testVanillaOnClassCondition() {
-		this.context.register(BasicConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("bar")).isTrue();
-		assertThat(this.context.getBean("bar")).isEqualTo("bar");
+		this.contextRunner
+				.withUserConfiguration(BasicConfiguration.class, FooConfiguration.class)
+				.run(this::hasBarBean);
 	}
 
 	@Test
 	public void testMissingOnClassCondition() {
-		this.context.register(MissingConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("bar")).isFalse();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+		this.contextRunner
+				.withUserConfiguration(MissingConfiguration.class, FooConfiguration.class)
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean("bar");
+					assertThat(context).hasBean("foo");
+					assertThat(context.getBean("foo")).isEqualTo("foo");
+				});
 	}
 
 	@Test
 	public void testOnClassConditionWithXml() {
-		this.context.register(BasicConfiguration.class, XmlConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("bar")).isTrue();
-		assertThat(this.context.getBean("bar")).isEqualTo("bar");
+		this.contextRunner
+				.withUserConfiguration(BasicConfiguration.class, XmlConfiguration.class)
+				.run(this::hasBarBean);
 	}
 
 	@Test
 	public void testOnClassConditionWithCombinedXml() {
-		this.context.register(CombinedXmlConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("bar")).isTrue();
-		assertThat(this.context.getBean("bar")).isEqualTo("bar");
+		this.contextRunner.withUserConfiguration(CombinedXmlConfiguration.class)
+				.run(this::hasBarBean);
+	}
+
+	private void hasBarBean(AssertableApplicationContext context) {
+		assertThat(context).hasBean("bar");
+		assertThat(context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Configuration

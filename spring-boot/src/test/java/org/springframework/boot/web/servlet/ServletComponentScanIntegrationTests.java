@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import javax.servlet.MultipartConfigElement;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.testcomponents.TestMultipartServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ServletComponentScanIntegrationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@After
 	public void cleanUp() {
@@ -51,7 +51,7 @@ public class ServletComponentScanIntegrationTests {
 
 	@Test
 	public void componentsAreRegistered() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
@@ -63,13 +63,14 @@ public class ServletComponentScanIntegrationTests {
 
 	@Test
 	public void multipartConfigIsHonoured() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
+		@SuppressWarnings("rawtypes")
 		Map<String, ServletRegistrationBean> beans = this.context
 				.getBeansOfType(ServletRegistrationBean.class);
-		ServletRegistrationBean servletRegistrationBean = beans
+		ServletRegistrationBean<?> servletRegistrationBean = beans
 				.get(TestMultipartServlet.class.getName());
 		assertThat(servletRegistrationBean).isNotNull();
 		MultipartConfigElement multipartConfig = servletRegistrationBean
@@ -86,8 +87,8 @@ public class ServletComponentScanIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory servletContainerFactory() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory webServerFactory() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 	}

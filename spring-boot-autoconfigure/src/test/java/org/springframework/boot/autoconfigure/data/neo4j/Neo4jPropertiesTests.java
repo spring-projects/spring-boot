@@ -22,12 +22,12 @@ import java.net.URLClassLoader;
 import com.hazelcast.util.Base64;
 import org.junit.After;
 import org.junit.Test;
-import org.neo4j.ogm.authentication.Credentials;
+import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.config.DriverConfiguration;
+import org.neo4j.ogm.config.Credentials;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,11 +56,11 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
-	public void defaultUseHttpDriverIfEmbeddedDriverIsNotAvailable() {
+	public void defaultUseBoltDriverIfEmbeddedDriverIsNotAvailable() {
 		Neo4jProperties properties = load(false);
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				Neo4jProperties.DEFAULT_HTTP_URI);
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER,
+				Neo4jProperties.DEFAULT_BOLT_URI);
 	}
 
 	@Test
@@ -117,33 +117,46 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
-	public void embeddedModeDisabledUseHttpUri() {
+	public void autoIndexNoneByDefault() {
+		Neo4jProperties properties = load(true);
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.NONE);
+	}
+
+	@Test
+	public void autoIndexCanBeConfigured() {
+		Neo4jProperties properties = load(true, "spring.data.neo4j.auto-index=validate");
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.VALIDATE);
+	}
+
+	@Test
+	public void embeddedModeDisabledUseBoltUri() {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.embedded.enabled=false");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				Neo4jProperties.DEFAULT_HTTP_URI);
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER,
+				Neo4jProperties.DEFAULT_BOLT_URI);
 	}
 
 	@Test
 	public void embeddedModeWithRelativeLocation() {
 		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=target/neo4j/my.db");
+				"spring.data.neo4j.uri=file:target/neo4j/my.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
-				"target/neo4j/my.db");
+				"file:target/neo4j/my.db");
 	}
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {
 		assertThat(actual).isNotNull();
-		DriverConfiguration driverConfig = actual.driverConfiguration();
-		assertThat(driverConfig.getDriverClassName()).isEqualTo(driver);
-		assertThat(driverConfig.getURI()).isEqualTo(uri);
+		assertThat(actual.getDriverClassName()).isEqualTo(driver);
+		assertThat(actual.getURI()).isEqualTo(uri);
 	}
 
 	private static void assertCredentials(Configuration actual, String username,
 			String password) {
-		Credentials<?> credentials = actual.driverConfiguration().getCredentials();
+		Credentials<?> credentials = actual.getCredentials();
 		if (username == null & password == null) {
 			assertThat(credentials).isNull();
 		}
@@ -178,7 +191,7 @@ public class Neo4jPropertiesTests {
 			}
 
 		});
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.register(TestConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

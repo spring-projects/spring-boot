@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,11 +78,7 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 			MetadataReader reader = readerFactory.getMetadataReader(resource);
 			return ClassUtils.forName(reader.getClassMetadata().getClassName(), loader);
 		}
-		catch (ClassNotFoundException ex) {
-			handleFailure(resource, ex);
-			return null;
-		}
-		catch (LinkageError ex) {
+		catch (ClassNotFoundException | LinkageError ex) {
 			handleFailure(resource, ex);
 			return null;
 		}

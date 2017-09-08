@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"server.servletPath=/spring" })
+		"server.servlet.path=/spring" })
 @DirtiesContext
 public class ServletPathSampleActuatorApplicationTests {
 
@@ -49,7 +49,8 @@ public class ServletPathSampleActuatorApplicationTests {
 	@Test
 	public void testErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/error",
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
+				.getForEntity("/spring/error",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
@@ -60,8 +61,9 @@ public class ServletPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/spring/health",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword())
+				.getForEntity("/spring/application/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
@@ -76,6 +78,10 @@ public class ServletPathSampleActuatorApplicationTests {
 		Map<String, Object> body = entity.getBody();
 		assertThat(body.get("error")).isEqualTo("Unauthorized");
 		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
+	}
+
+	private String getPassword() {
+		return "password";
 	}
 
 }

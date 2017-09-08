@@ -16,16 +16,18 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.UnboundConfigurationPropertiesException;
+import org.springframework.boot.context.properties.bind.validation.BindValidationException;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
+import org.springframework.util.StringUtils;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
- * {@link BindException}.
+ * {@link BindException} excluding {@link BindValidationException} and
+ * {@link UnboundConfigurationPropertiesException}.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
@@ -34,22 +36,41 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
-		if (CollectionUtils.isEmpty(cause.getAllErrors())) {
+		Throwable rootCause = cause.getCause();
+		if (rootCause instanceof BindValidationException
+				|| rootCause instanceof UnboundConfigurationPropertiesException) {
 			return null;
 		}
+		return analyzeGenericBindException(cause);
+	}
+
+	private FailureAnalysis analyzeGenericBindException(BindException cause) {
 		StringBuilder description = new StringBuilder(
 				String.format("Binding to target %s failed:%n", cause.getTarget()));
-		for (ObjectError error : cause.getAllErrors()) {
-			if (error instanceof FieldError) {
-				FieldError fieldError = (FieldError) error;
-				description.append(String.format("%n    Property: %s",
-						cause.getObjectName() + "." + fieldError.getField()));
-				description.append(
-						String.format("%n    Value: %s", fieldError.getRejectedValue()));
-			}
-			description.append(
-					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
+		ConfigurationProperty property = cause.getProperty();
+		buildDescription(description, property);
+		description.append(String.format("%n    Reason: %s", getMessage(cause)));
+		return getFailureAnalysis(description, cause);
+	}
+
+	private void buildDescription(StringBuilder description,
+			ConfigurationProperty property) {
+		if (property != null) {
+			description.append(String.format("%n    Property: %s", property.getName()));
+			description.append(String.format("%n    Value: %s", property.getValue()));
+			description.append(String.format("%n    Origin: %s", property.getOrigin()));
 		}
+	}
+
+	private String getMessage(BindException cause) {
+		if (cause.getCause() != null
+				&& StringUtils.hasText(cause.getCause().getMessage())) {
+			return cause.getCause().getMessage();
+		}
+		return cause.getMessage();
+	}
+
+	private FailureAnalysis getFailureAnalysis(Object description, BindException cause) {
 		return new FailureAnalysis(description.toString(),
 				"Update your application's configuration", cause);
 	}

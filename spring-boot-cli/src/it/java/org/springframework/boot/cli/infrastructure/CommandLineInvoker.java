@@ -18,7 +18,6 @@ package org.springframework.boot.cli.infrastructure;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,7 +58,7 @@ public final class CommandLineInvoker {
 	}
 
 	private Process runCliProcess(String... args) throws IOException {
-		List<String> command = new ArrayList<String>();
+		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
 		ProcessBuilder processBuilder = new ProcessBuilder(command)
@@ -71,16 +70,9 @@ public final class CommandLineInvoker {
 	private File findLaunchScript() throws IOException {
 		File unpacked = new File("target/unpacked-cli");
 		if (!unpacked.isDirectory()) {
-			File zip = new File("target").listFiles(new FileFilter() {
-
-				@Override
-				public boolean accept(File pathname) {
-					return pathname.getName().endsWith("-bin.zip");
-				}
-
-			})[0];
-			ZipInputStream input = new ZipInputStream(new FileInputStream(zip));
-			try {
+			File zip = new File("target")
+					.listFiles((pathname) -> pathname.getName().endsWith("-bin.zip"))[0];
+			try (ZipInputStream input = new ZipInputStream(new FileInputStream(zip))) {
 				ZipEntry entry;
 				while ((entry = input.getNextEntry()) != null) {
 					File file = new File(unpacked, entry.getName());
@@ -89,21 +81,14 @@ public final class CommandLineInvoker {
 					}
 					else {
 						file.getParentFile().mkdirs();
-						FileOutputStream output = new FileOutputStream(file);
-						try {
+						try (FileOutputStream output = new FileOutputStream(file)) {
 							StreamUtils.copy(input, output);
 							if (entry.getName().endsWith("/bin/spring")) {
 								file.setExecutable(true);
 							}
 						}
-						finally {
-							output.close();
-						}
 					}
 				}
-			}
-			finally {
-				input.close();
 			}
 		}
 		File bin = new File(unpacked.listFiles()[0], "bin");
@@ -130,7 +115,7 @@ public final class CommandLineInvoker {
 
 		private final Process process;
 
-		private final List<Thread> streamReaders = new ArrayList<Thread>();
+		private final List<Thread> streamReaders = new ArrayList<>();
 
 		public Invocation(Process process) {
 			this.process = process;
@@ -174,7 +159,7 @@ public final class CommandLineInvoker {
 			BufferedReader reader = new BufferedReader(
 					new StringReader(buffer.toString()));
 			String line;
-			List<String> lines = new ArrayList<String>();
+			List<String> lines = new ArrayList<>();
 			try {
 				while ((line = reader.readLine()) != null) {
 					if (!line.startsWith("Picked up ")) {

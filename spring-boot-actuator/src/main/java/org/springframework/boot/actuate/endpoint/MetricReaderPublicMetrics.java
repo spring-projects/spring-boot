@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class MetricReaderPublicMetrics implements PublicMetrics {
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		List<Metric<?>> result = new ArrayList<Metric<?>>();
+		List<Metric<?>> result = new ArrayList<>();
 		for (Metric<?> metric : this.metricReader.findAll()) {
 			result.add(metric);
 		}

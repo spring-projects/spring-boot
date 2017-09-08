@@ -42,8 +42,8 @@ public class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 
 	@Test
 	public void testSpying() throws Exception {
-		assertThat(new MockUtil().isSpy(this.spy)).isTrue();
-		assertThat(new MockUtil().getMockName(this.spy).toString()).isEqualTo("two");
+		assertThat(MockUtil.isSpy(this.spy)).isTrue();
+		assertThat(MockUtil.getMockName(this.spy).toString()).isEqualTo("two");
 	}
 
 	@Configuration

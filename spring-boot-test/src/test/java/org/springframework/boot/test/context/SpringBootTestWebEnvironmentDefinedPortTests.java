@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties = {
 		"server.port=0", "value=123" })
 public class SpringBootTestWebEnvironmentDefinedPortTests
-		extends AbstractSpringBootTestEmbeddedWebEnvironmentTests {
+		extends AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Configuration
 	@EnableWebMvc

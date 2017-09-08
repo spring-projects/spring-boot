@@ -91,7 +91,7 @@ public class Metric<T extends Number> {
 	 * @return a new {@link Metric} instance
 	 */
 	public Metric<Long> increment(int amount) {
-		return new Metric<Long>(this.getName(),
+		return new Metric<>(this.getName(),
 				Long.valueOf(this.getValue().longValue() + amount));
 	}
 
@@ -102,7 +102,7 @@ public class Metric<T extends Number> {
 	 * @return a new {@link Metric} instance
 	 */
 	public <S extends Number> Metric<S> set(S value) {
-		return new Metric<S>(this.getName(), value);
+		return new Metric<>(this.getName(), value);
 	}
 
 	@Override

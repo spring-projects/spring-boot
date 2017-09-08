@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
 
 	private MBeanServer mBeanServer;
 
-	private final Map<String, ObjectNameWrapper> caches = new ConcurrentHashMap<String, ObjectNameWrapper>();
+	private final Map<String, ObjectNameWrapper> caches = new ConcurrentHashMap<>();
 
 	@Override
 	public CacheStatistics getCacheStatistics(CacheManager cacheManager, C cache) {
@@ -107,15 +107,12 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
 			Object attribute = getMBeanServer().getAttribute(objectName, attributeName);
 			return type.cast(attribute);
 		}
-		catch (MBeanException ex) {
+		catch (MBeanException | ReflectionException ex) {
 			throw new IllegalStateException(ex);
 		}
 		catch (AttributeNotFoundException ex) {
 			throw new IllegalStateException("Unexpected: MBean with name '" + objectName
 					+ "' " + "does not expose attribute with name " + attributeName, ex);
-		}
-		catch (ReflectionException ex) {
-			throw new IllegalStateException(ex);
 		}
 		catch (InstanceNotFoundException ex) {
 			logger.warn("Cache statistics are no longer available", ex);

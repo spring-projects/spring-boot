@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,14 +145,14 @@ public class ClassPathChangeUploaderTests {
 
 	private ClassPathChangedEvent createClassPathChangedEvent(File sourceFolder)
 			throws IOException {
-		Set<ChangedFile> files = new LinkedHashSet<ChangedFile>();
+		Set<ChangedFile> files = new LinkedHashSet<>();
 		File file1 = createFile(sourceFolder, "File1");
 		File file2 = createFile(sourceFolder, "File2");
 		File file3 = createFile(sourceFolder, "File3");
 		files.add(new ChangedFile(sourceFolder, file1, Type.ADD));
 		files.add(new ChangedFile(sourceFolder, file2, Type.MODIFY));
 		files.add(new ChangedFile(sourceFolder, file3, Type.DELETE));
-		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
+		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 		changeSet.add(new ChangedFiles(sourceFolder, files));
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		return event;

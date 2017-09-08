@@ -24,10 +24,9 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.junit.compiler.TestCompiler;
+import org.springframework.boot.testsupport.compiler.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,9 +39,6 @@ public class AutoConfigureAnnotationProcessorTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private TestCompiler compiler;
 
@@ -71,7 +67,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	@Test
 	public void annotatedMethod() throws Exception {
 		Properties properties = compile(TestMethodConfiguration.class);
-		List<String> matching = new ArrayList<String>();
+		List<String> matching = new ArrayList<>();
 		for (Object key : properties.keySet()) {
 			if (key.toString().startsWith(
 					"org.springframework.boot.autoconfigureprocessor.TestMethodConfiguration")) {

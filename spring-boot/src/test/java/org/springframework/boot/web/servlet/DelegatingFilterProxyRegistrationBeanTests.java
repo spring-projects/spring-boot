@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.GenericFilterBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.isA;
 
 /**
  * Tests for {@link DelegatingFilterProxyRegistrationBean}.
@@ -48,7 +48,7 @@ import static org.mockito.Matchers.isA;
 public class DelegatingFilterProxyRegistrationBeanTests
 		extends AbstractFilterRegistrationBeanTests {
 
-	private static ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<Boolean>();
+	private static ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<>();
 
 	private GenericWebApplicationContext applicationContext = new GenericWebApplicationContext(
 			new MockServletContext());
@@ -75,7 +75,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 
 	@Test
 	public void getFilterUsesDelegatingFilterProxy() throws Exception {
-		AbstractFilterRegistrationBean registrationBean = createFilterRegistrationBean();
+		DelegatingFilterProxyRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
 		assertThat(filter).isInstanceOf(DelegatingFilterProxy.class);
 		assertThat(ReflectionTestUtils.getField(filter, "webApplicationContext"))
@@ -88,7 +88,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 	public void initShouldNotCauseEarlyInitialization() throws Exception {
 		this.applicationContext.registerBeanDefinition("mockFilter",
 				new RootBeanDefinition(MockFilter.class));
-		AbstractFilterRegistrationBean registrationBean = createFilterRegistrationBean();
+		DelegatingFilterProxyRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
 		filter.init(new MockFilterConfig());
 		assertThat(mockFilterInitialized.get()).isNull();
@@ -106,8 +106,8 @@ public class DelegatingFilterProxyRegistrationBeanTests
 	}
 
 	@Override
-	protected AbstractFilterRegistrationBean createFilterRegistrationBean(
-			ServletRegistrationBean... servletRegistrationBeans) {
+	protected DelegatingFilterProxyRegistrationBean createFilterRegistrationBean(
+			ServletRegistrationBean<?>... servletRegistrationBeans) {
 		DelegatingFilterProxyRegistrationBean bean = new DelegatingFilterProxyRegistrationBean(
 				"mockFilter", servletRegistrationBeans);
 		bean.setApplicationContext(this.applicationContext);

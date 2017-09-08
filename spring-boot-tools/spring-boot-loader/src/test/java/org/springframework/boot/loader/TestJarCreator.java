@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ public abstract class TestJarCreator {
 
 	public static void createTestJar(File file, boolean unpackNested) throws Exception {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
-		JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
-		try {
+		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
 			writeManifest(jarOutputStream, "j1");
 			writeEntry(jarOutputStream, "1.dat", 1);
 			writeEntry(jarOutputStream, "2.dat", 2);
@@ -52,9 +51,6 @@ public abstract class TestJarCreator {
 
 			writeNestedEntry("nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("another-nested.jar", unpackNested, jarOutputStream);
-		}
-		finally {
-			jarOutputStream.close();
 		}
 	}
 

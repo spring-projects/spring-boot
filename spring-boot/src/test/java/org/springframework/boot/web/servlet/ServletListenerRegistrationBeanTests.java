@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -55,7 +55,7 @@ public class ServletListenerRegistrationBeanTests {
 
 	@Test
 	public void startupWithDefaults() throws Exception {
-		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<ServletContextListener>(
+		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addListener(this.listener);
@@ -63,7 +63,7 @@ public class ServletListenerRegistrationBeanTests {
 
 	@Test
 	public void disable() throws Exception {
-		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<ServletContextListener>(
+		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);

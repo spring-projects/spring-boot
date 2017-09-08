@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.security.auth.login.AppConfigurationEntry;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
@@ -31,15 +33,17 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link KafkaAutoConfiguration}.
@@ -74,6 +78,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.consumer.client-id=ccid", // test override common
 				"spring.kafka.consumer.enable-auto-commit=false",
 				"spring.kafka.consumer.fetch-max-wait=456",
+				"spring.kafka.consumer.properties.fiz.buz=fix.fox",
 				"spring.kafka.consumer.fetch-min-size=789",
 				"spring.kafka.consumer.group-id=bar",
 				"spring.kafka.consumer.heartbeat-interval=234",
@@ -81,9 +86,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer");
 		DefaultKafkaConsumerFactory<?, ?> consumerFactory = this.context
 				.getBean(DefaultKafkaConsumerFactory.class);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> configs = (Map<String, Object>) new DirectFieldAccessor(
-				consumerFactory).getPropertyValue("configs");
+		Map<String, Object> configs = consumerFactory.getConfigurationProperties();
 		// common
 		assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
 				.isEqualTo(Collections.singletonList("foo:1234"));
@@ -116,17 +119,20 @@ public class KafkaAutoConfigurationTests {
 		assertThat(configs.get("foo")).isEqualTo("bar");
 		assertThat(configs.get("baz")).isEqualTo("qux");
 		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
+		assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 	}
 
 	@Test
 	public void producerProperties() {
-		load("spring.kafka.clientId=cid", "spring.kafka.producer.acks=all",
-				"spring.kafka.producer.batch-size=20",
+		load("spring.kafka.clientId=cid",
+				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
+				"spring.kafka.producer.acks=all", "spring.kafka.producer.batch-size=20",
 				"spring.kafka.producer.bootstrap-servers=bar:1234", // test override
 				"spring.kafka.producer.buffer-memory=12345",
 				"spring.kafka.producer.compression-type=gzip",
 				"spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.LongSerializer",
 				"spring.kafka.producer.retries=2",
+				"spring.kafka.producer.properties.fiz.buz=fix.fox",
 				"spring.kafka.producer.ssl.key-password=p4",
 				"spring.kafka.producer.ssl.keystore-location=classpath:ksLocP",
 				"spring.kafka.producer.ssl.keystore-password=p5",
@@ -135,9 +141,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer");
 		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context
 				.getBean(DefaultKafkaProducerFactory.class);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> configs = (Map<String, Object>) new DirectFieldAccessor(
-				producerFactory).getPropertyValue("configs");
+		Map<String, Object> configs = producerFactory.getConfigurationProperties();
 		// common
 		assertThat(configs.get(ProducerConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
 		// producer
@@ -160,8 +164,13 @@ public class KafkaAutoConfigurationTests {
 		assertThat(configs.get(ProducerConfig.RETRIES_CONFIG)).isEqualTo(2);
 		assertThat(configs.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG))
 				.isEqualTo(IntegerSerializer.class);
+		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
+				.isEmpty();
+		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
+		assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void listenerProperties() {
 		load("spring.kafka.template.default-topic=testTopic",
@@ -169,7 +178,11 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.listener.ack-count=123",
 				"spring.kafka.listener.ack-time=456",
 				"spring.kafka.listener.concurrency=3",
-				"spring.kafka.listener.poll-timeout=2000");
+				"spring.kafka.listener.poll-timeout=2000",
+				"spring.kafka.listener.type=batch", "spring.kafka.jaas.enabled=true",
+				"spring.kafka.jaas.login-module=foo",
+				"spring.kafka.jaas.control-flag=REQUISITE",
+				"spring.kafka.jaas.options.useKeyTab=true");
 		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context
 				.getBean(DefaultKafkaProducerFactory.class);
 		DefaultKafkaConsumerFactory<?, ?> consumerFactory = this.context
@@ -189,12 +202,23 @@ public class KafkaAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
 		assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
 				.isEqualTo(2000L);
+		assertThat(dfa.getPropertyValue("batchListener")).isEqualTo(true);
+		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
+				.hasSize(1);
+		KafkaJaasLoginModuleInitializer jaas = this.context
+				.getBean(KafkaJaasLoginModuleInitializer.class);
+		dfa = new DirectFieldAccessor(jaas);
+		assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
+		assertThat(dfa.getPropertyValue("controlFlag"))
+				.isEqualTo(AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
+		assertThat(((Map<String, String>) dfa.getPropertyValue("options")))
+				.containsExactly(entry("useKeyTab", "true"));
 	}
 
 	private void load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(KafkaAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.refresh();
 		this.context = ctx;
 	}

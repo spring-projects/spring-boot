@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.Filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -52,11 +50,7 @@ import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.devtools.restart.Restarter;
-import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection;
-import org.springframework.boot.devtools.tunnel.client.TunnelClient;
-import org.springframework.boot.devtools.tunnel.client.TunnelConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -120,9 +114,8 @@ public class RemoteClientConfiguration {
 	@PostConstruct
 	private void logWarnings() {
 		RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
-		if (!remoteProperties.getDebug().isEnabled()
-				&& !remoteProperties.getRestart().isEnabled()) {
-			logger.warn("Remote restart and debug are both disabled.");
+		if (!remoteProperties.getRestart().isEnabled()) {
+			logger.warn("Remote restart is disabled.");
 		}
 		if (!this.remoteUrl.startsWith("https://")) {
 			logger.warn("The connection to " + this.remoteUrl
@@ -201,14 +194,7 @@ public class RemoteClientConfiguration {
 
 		@Bean
 		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
-			return new FileSystemWatcherFactory() {
-
-				@Override
-				public FileSystemWatcher getFileSystemWatcher() {
-					return newFileSystemWatcher();
-				}
-
-			};
+			return this::newFileSystemWatcher;
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {
@@ -235,34 +221,6 @@ public class RemoteClientConfiguration {
 			String url = this.remoteUrl + this.properties.getRemote().getContextPath()
 					+ "/restart";
 			return new ClassPathChangeUploader(url, requestFactory);
-		}
-
-	}
-
-	/**
-	 * Client configuration for remote debug HTTP tunneling.
-	 */
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.debug", name = "enabled", matchIfMissing = true)
-	@ConditionalOnClass(Filter.class)
-	@Conditional(LocalDebugPortAvailableCondition.class)
-	static class RemoteDebugTunnelClientConfiguration {
-
-		@Autowired
-		private DevToolsProperties properties;
-
-		@Value("${remoteUrl}")
-		private String remoteUrl;
-
-		@Bean
-		public TunnelClient remoteDebugTunnelClient(
-				ClientHttpRequestFactory requestFactory) {
-			RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
-			String url = this.remoteUrl + remoteProperties.getContextPath() + "/debug";
-			TunnelConnection connection = new HttpTunnelConnection(url, requestFactory);
-			int localPort = remoteProperties.getDebug().getLocalPort();
-			TunnelClient client = new TunnelClient(localPort, connection);
-			client.addListener(new LoggingTunnelClientListener());
-			return client;
 		}
 
 	}

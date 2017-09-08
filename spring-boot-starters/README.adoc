@@ -34,6 +34,12 @@ do as they were designed before this was clarified.
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
+| https://azure.microsoft.com/[Azure]
+| https://github.com/Microsoft/azure-spring-boot-starters
+
+| https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
+| https://github.com/MarcGiffing/bucket4j-spring-boot-starter
+
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
@@ -49,11 +55,23 @@ do as they were designed before this was clarified.
 | http://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
+| DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
+| https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
+
+| ErroREST exception handler
+| https://github.com/mkopylec/errorest-spring-boot-starter
+
 | http://ff4j.org/[Feature Flipping For Java (FF4J)]
 | https://github.com/clun/ff4j/
 
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
+
+| http://graphql.org/[GraphQL] with https://github.com/graphql-java/[GraphQL Java]
+| https://github.com/graphql-java/graphql-spring-boot
+
+| http://graphql.org/[GraphQL]
+| https://github.com/merapar/graphql-spring-boot-starter
 
 | http://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
@@ -118,8 +136,8 @@ do as they were designed before this was clarified.
 | http://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
-| https://github.com/oembedler/spring-graphql-common[Spring GraphQL] (GraphQL and GraphiQL)
-| https://github.com/oembedler/graphql-spring-boot
+| SSH Daemon
+| https://github.com/anand1st/sshd-shell-spring-boot
 
 | https://github.com/StripesFramework/stripes[Stripes]
 | https://github.com/juanpablo-santos/stripes-spring-boot

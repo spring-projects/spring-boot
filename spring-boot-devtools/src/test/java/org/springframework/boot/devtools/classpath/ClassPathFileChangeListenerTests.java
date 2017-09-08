@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ public class ClassPathFileChangeListenerTests {
 		File file = new File("f1");
 		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
 		ChangedFile file2 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
-		Set<ChangedFile> files = new LinkedHashSet<ChangedFile>();
+		Set<ChangedFile> files = new LinkedHashSet<>();
 		files.add(file1);
 		files.add(file2);
 		ChangedFiles changedFiles = new ChangedFiles(new File("source"), files);

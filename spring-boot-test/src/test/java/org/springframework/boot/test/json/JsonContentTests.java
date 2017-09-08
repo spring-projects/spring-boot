@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,38 +55,34 @@ public class JsonContentTests {
 
 	@Test
 	public void createWhenTypeIsNullShouldCreateContent() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
-				null, JSON);
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), null, JSON);
 		assertThat(content).isNotNull();
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void assertThatShouldReturnJsonContentAssert() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
-				TYPE, JSON);
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON);
 		assertThat(content.assertThat()).isInstanceOf(JsonContentAssert.class);
 	}
 
 	@Test
 	public void getJsonShouldReturnJson() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
-				TYPE, JSON);
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON);
 		assertThat(content.getJson()).isEqualTo(JSON);
 
 	}
 
 	@Test
 	public void toStringWhenHasTypeShouldReturnString() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
-				TYPE, JSON);
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON);
 		assertThat(content.toString())
 				.isEqualTo("JsonContent " + JSON + " created from " + TYPE);
 	}
 
 	@Test
 	public void toStringWhenHasNoTypeShouldReturnString() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
-				null, JSON);
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), null, JSON);
 		assertThat(content.toString()).isEqualTo("JsonContent " + JSON);
 	}
 

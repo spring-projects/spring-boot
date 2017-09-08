@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public final class Info {
 	private final Map<String, Object> details;
 
 	private Info(Builder builder) {
-		LinkedHashMap<String, Object> content = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> content = new LinkedHashMap<>();
 		content.putAll(builder.content);
 		this.details = Collections.unmodifiableMap(content);
 	}
@@ -98,7 +98,7 @@ public final class Info {
 		private final Map<String, Object> content;
 
 		public Builder() {
-			this.content = new LinkedHashMap<String, Object>();
+			this.content = new LinkedHashMap<>();
 		}
 
 		/**

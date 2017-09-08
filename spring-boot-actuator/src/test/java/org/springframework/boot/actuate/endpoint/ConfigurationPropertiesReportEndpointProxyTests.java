@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
 import javax.sql.DataSource;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -45,30 +43,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * class.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ConfigurationPropertiesReportEndpointProxyTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
-
 	@Test
 	public void testWithProxyClass() throws Exception {
-		this.context.register(Config.class, SqlExecutor.class);
-		this.context.refresh();
-		Map<String, Object> report = this.context
-				.getBean(ConfigurationPropertiesReportEndpoint.class).invoke();
-		assertThat(report.toString()).contains("prefix=executor.sql");
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(Config.class, SqlExecutor.class);
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesDescriptor report = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class)
+					.configurationProperties();
+			assertThat(report.getBeans().values().stream()
+					.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
+					.filter("executor.sql"::equals).findFirst()).isNotEmpty();
+		});
 	}
 
 	@Configuration

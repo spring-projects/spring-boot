@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.liquibase;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
@@ -60,10 +62,17 @@ import org.springframework.util.ReflectionUtils;
 @Configuration
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "liquibase", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {
+
+	@Bean
+	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
+			ObjectProvider<List<SpringLiquibase>> liquibases) {
+		return new LiquibaseSchemaManagementProvider(
+				liquibases.getIfAvailable(Collections::emptyList));
+	}
 
 	@Configuration
 	@ConditionalOnMissingBean(SpringLiquibase.class)

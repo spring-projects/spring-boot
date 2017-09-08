@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,36 +33,72 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MetricsEndpoint}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint> {
+public class MetricsEndpointTests {
 
-	private Metric<Number> metric1 = new Metric<Number>("a", 1);
+	private Metric<Number> metric1 = new Metric<>("a", 1);
 
-	private Metric<Number> metric2 = new Metric<Number>("b", 2);
+	private Metric<Number> metric2 = new Metric<>("b", 2);
 
-	private Metric<Number> metric3 = new Metric<Number>("c", 3);
+	private Metric<Number> metric3 = new Metric<>("c", 3);
 
-	public MetricsEndpointTests() {
-		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
+	@Test
+	public void basicMetrics() throws Exception {
+		MetricsEndpoint endpoint = new MetricsEndpoint(
+				Collections.singletonList(() -> Arrays.asList(new Metric<Number>("a", 5),
+						new Metric<Number>("b", 4))));
+		Map<String, Object> metrics = endpoint.metrics(null);
+		assertThat(metrics.get("a")).isEqualTo(5);
+		assertThat(metrics.get("b")).isEqualTo(4);
 	}
 
 	@Test
-	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a")).isEqualTo(0.5f);
+	public void metricsOrderingIsReflectedInOutput() {
+		List<PublicMetrics> publicMetrics = Arrays.asList(
+				new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3),
+				new TestPublicMetrics(1, this.metric1));
+		Map<String, Object> metrics = new MetricsEndpoint(publicMetrics).metrics(null);
+		assertThat(metrics.keySet()).containsExactly("a", "b", "c");
+		assertThat(metrics).hasSize(3);
 	}
 
 	@Test
-	public void ordered() {
-		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
-		publicMetrics
-				.add(new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3));
-		publicMetrics.add(new TestPublicMetrics(1, this.metric1));
-		Map<String, Object> metrics = new MetricsEndpoint(publicMetrics).invoke();
-		Iterator<Entry<String, Object>> iterator = metrics.entrySet().iterator();
-		assertThat(iterator.next().getKey()).isEqualTo("a");
-		assertThat(iterator.next().getKey()).isEqualTo("b");
-		assertThat(iterator.next().getKey()).isEqualTo("c");
-		assertThat(iterator.hasNext()).isFalse();
+	public void singleSelectedMetric() {
+		List<PublicMetrics> publicMetrics = Arrays.asList(
+				new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3),
+				new TestPublicMetrics(1, this.metric1));
+		Map<String, Object> selected = new MetricsEndpoint(publicMetrics)
+				.metricNamed("a");
+		assertThat(selected).hasSize(1);
+		assertThat(selected).containsEntry("a", 1);
+	}
+
+	@Test
+	public void multipleSelectedMetrics() {
+		List<PublicMetrics> publicMetrics = Arrays.asList(
+				new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3),
+				new TestPublicMetrics(1, this.metric1));
+		Map<String, Object> selected = new MetricsEndpoint(publicMetrics).metrics("[ab]");
+		assertThat(selected).hasSize(2);
+		assertThat(selected).containsEntry("a", 1);
+		assertThat(selected).containsEntry("b", 2);
+	}
+
+	@Test
+	public void noMetricMatchingName() {
+		List<PublicMetrics> publicMetrics = Arrays.asList(
+				new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3),
+				new TestPublicMetrics(1, this.metric1));
+		assertThat(new MetricsEndpoint(publicMetrics).metricNamed("z")).isNull();
+	}
+
+	@Test
+	public void noMetricMatchingPattern() {
+		List<PublicMetrics> publicMetrics = Arrays.asList(
+				new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3),
+				new TestPublicMetrics(1, this.metric1));
+		assertThat(new MetricsEndpoint(publicMetrics).metrics("[z]")).isEmpty();
 	}
 
 	private static class TestPublicMetrics implements PublicMetrics, Ordered {
@@ -90,24 +120,6 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 		@Override
 		public Collection<Metric<?>> metrics() {
 			return this.metrics;
-		}
-
-	}
-
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
-
-		@Bean
-		public MetricsEndpoint endpoint() {
-			final Metric<Float> metric = new Metric<Float>("a", 0.5f);
-			PublicMetrics metrics = new PublicMetrics() {
-				@Override
-				public Collection<Metric<?>> metrics() {
-					return Collections.<Metric<?>>singleton(metric);
-				}
-			};
-			return new MetricsEndpoint(metrics);
 		}
 
 	}

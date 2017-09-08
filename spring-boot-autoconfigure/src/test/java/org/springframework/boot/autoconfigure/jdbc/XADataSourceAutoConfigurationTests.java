@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.hsqldb.jdbc.pool.JDBCXADataSource;
 import org.junit.Test;
 
 import org.springframework.boot.jta.XADataSourceWrapper;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -65,18 +65,17 @@ public class XADataSourceAutoConfigurationTests {
 	public void createFromClass() throws Exception {
 		ApplicationContext context = createContext(FromProperties.class,
 				"spring.datasource.xa.data-source-class-name:org.hsqldb.jdbc.pool.JDBCXADataSource",
-				"spring.datasource.xa.properties.database-name:test");
+				"spring.datasource.xa.properties.login-timeout:123");
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
 		JDBCXADataSource dataSource = (JDBCXADataSource) wrapper.getXaDataSource();
 		assertThat(dataSource).isNotNull();
-		assertThat(dataSource.getDatabaseName()).isEqualTo("test");
-
+		assertThat(dataSource.getLoginTimeout()).isEqualTo(123);
 	}
 
 	private ApplicationContext createContext(Class<?> configuration, String... env) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, env);
+		TestPropertyValues.of(env).applyTo(context);
 		context.register(configuration, XADataSourceAutoConfiguration.class);
 		context.refresh();
 		return context;

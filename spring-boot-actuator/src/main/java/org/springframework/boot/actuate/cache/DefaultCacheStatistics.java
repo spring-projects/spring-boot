@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class DefaultCacheStatistics implements CacheStatistics {
 
 	@Override
 	public Collection<Metric<?>> toMetrics(String prefix) {
-		Collection<Metric<?>> result = new ArrayList<Metric<?>>();
+		Collection<Metric<?>> result = new ArrayList<>();
 		addMetric(result, prefix + "size", getSize());
 		addMetric(result, prefix + "hit.ratio", getHitRatio());
 		addMetric(result, prefix + "miss.ratio", getMissRatio());
@@ -83,7 +83,7 @@ public class DefaultCacheStatistics implements CacheStatistics {
 	private <T extends Number> void addMetric(Collection<Metric<?>> metrics, String name,
 			T value) {
 		if (value != null) {
-			metrics.add(new Metric<T>(name, value));
+			metrics.add(new Metric<>(name, value));
 		}
 	}
 

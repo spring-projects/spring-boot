@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class SampleWebMustacheApplicationTests {
 	public void testMustacheErrorTemplate() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> responseEntity = this.restTemplate
 				.exchange("/does-not-exist", HttpMethod.GET, requestEntity, String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -73,7 +73,7 @@ public class SampleWebMustacheApplicationTests {
 	public void test503HtmlResource() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/serviceUnavailable",
 				HttpMethod.GET, requestEntity, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
@@ -84,7 +84,7 @@ public class SampleWebMustacheApplicationTests {
 	public void test5xxHtmlResource() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/bang",
 				HttpMethod.GET, requestEntity, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -95,7 +95,7 @@ public class SampleWebMustacheApplicationTests {
 	public void test507Template() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/insufficientStorage",
 				HttpMethod.GET, requestEntity, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_STORAGE);

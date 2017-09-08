@@ -1,12 +1,12 @@
-@SpringBootTest(classes=ReactorApplication, webEnvironment=WebEnvironment.RANDOM_PORT)
-class RestTests {
+@SpringBootTest(classes=App)
+class AppTests {
 
 	@Autowired
-	EventBus eventBus
+	MyService myService
 
 	@Test
 	void test() {
-		assertNotNull(eventBus)
+		assertNotNull(myService)
 	}
 
 }

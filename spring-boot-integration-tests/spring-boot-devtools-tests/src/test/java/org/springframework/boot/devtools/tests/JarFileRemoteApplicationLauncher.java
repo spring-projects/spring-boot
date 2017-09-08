@@ -42,7 +42,13 @@ public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher 
 	@Override
 	protected String createApplicationClassPath() throws Exception {
 		File appDirectory = new File("target/app");
-		FileSystemUtils.deleteRecursively(appDirectory);
+		if (appDirectory.isDirectory()) {
+			FileSystemUtils.deleteRecursively(appDirectory.toPath());
+			if (appDirectory.isDirectory()) {
+				throw new IllegalStateException(
+						"Failed to delete '" + appDirectory.getAbsolutePath() + "'");
+			}
+		}
 		appDirectory.mkdirs();
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -52,7 +58,7 @@ public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher 
 				new File("target/app/com"));
 		addToJar(output, new File("target/app/"), new File("target/app/"));
 		output.close();
-		List<String> entries = new ArrayList<String>();
+		List<String> entries = new ArrayList<>();
 		entries.add("target/app/app.jar");
 		for (File jar : new File("target/dependencies").listFiles()) {
 			entries.add(jar.getAbsolutePath());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.SecurityAuthorizeMode;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -46,7 +46,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebServlet.class)
 @ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(H2ConsoleProperties.class)
@@ -60,10 +60,10 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	@Bean
-	public ServletRegistrationBean h2Console() {
+	public ServletRegistrationBean<WebServlet> h2Console() {
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean registration = new ServletRegistrationBean(
+		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(
 				new WebServlet(), urlMapping);
 		H2ConsoleProperties.Settings settings = this.properties.getSettings();
 		if (settings.isTrace()) {
@@ -93,9 +93,6 @@ public class H2ConsoleAutoConfiguration {
 			@Autowired
 			private H2ConsoleProperties console;
 
-			@Autowired
-			private SecurityProperties security;
-
 			@Override
 			public void configure(HttpSecurity http) throws Exception {
 				String path = this.console.getPath();
@@ -104,14 +101,7 @@ public class H2ConsoleAutoConfiguration {
 				h2Console.csrf().disable();
 				h2Console.httpBasic();
 				h2Console.headers().frameOptions().sameOrigin();
-				String[] roles = this.security.getUser().getRole().toArray(new String[0]);
-				SecurityAuthorizeMode mode = this.security.getBasic().getAuthorizeMode();
-				if (mode == null || mode == SecurityAuthorizeMode.ROLE) {
-					http.authorizeRequests().anyRequest().hasAnyRole(roles);
-				}
-				else if (mode == SecurityAuthorizeMode.AUTHENTICATED) {
-					http.authorizeRequests().anyRequest().authenticated();
-				}
+				http.authorizeRequests().anyRequest().authenticated();
 			}
 
 		}

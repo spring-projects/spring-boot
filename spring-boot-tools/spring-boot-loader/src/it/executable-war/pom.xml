@@ -33,7 +33,6 @@
 							<Start-Class>org.springframework.boot.load.it.war.embedded.EmbeddedWarStarter</Start-Class>
 						</manifestEntries>
 					</archive>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
 			<plugin>

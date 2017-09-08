@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package sample;
 
+import java.util.Base64;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
@@ -28,7 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -56,6 +57,7 @@ public class HelloWebSecurityApplicationTests {
 
 	@Test
 	public void requiresAuthentication() throws Exception {
+		this.request.addHeader("Accept", "application/json");
 		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 		assertThat(this.response.getStatus())
 				.isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
@@ -63,8 +65,9 @@ public class HelloWebSecurityApplicationTests {
 
 	@Test
 	public void userAuthenticates() throws Exception {
-		this.request.addHeader("Authorization",
-				"Basic " + new String(Base64.encode("user:password".getBytes("UTF-8"))));
+		this.request.addHeader("Accept", "application/json");
+		this.request.addHeader("Authorization", "Basic " + new String(
+				Base64.getEncoder().encode("user:password".getBytes("UTF-8"))));
 
 		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 

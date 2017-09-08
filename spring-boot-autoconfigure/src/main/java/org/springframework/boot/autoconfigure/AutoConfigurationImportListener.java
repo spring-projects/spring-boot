@@ -41,6 +41,7 @@ import org.springframework.context.ResourceLoaderAware;
  * @author Phillip Webb
  * @since 1.5.0
  */
+@FunctionalInterface
 public interface AutoConfigurationImportListener extends EventListener {
 
 	/**

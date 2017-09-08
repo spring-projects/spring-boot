@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.env;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,6 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -45,6 +50,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 public class SpringApplicationJsonEnvironmentPostProcessor
@@ -75,24 +81,25 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		String json = environment.resolvePlaceholders(
-				"${spring.application.json:${SPRING_APPLICATION_JSON:}}");
-		if (StringUtils.hasText(json)) {
-			processJson(environment, json);
-		}
+		MutablePropertySources propertySources = environment.getPropertySources();
+		StreamSupport.stream(propertySources.spliterator(), false)
+				.map(JsonPropertyValue::get).filter(Objects::nonNull).findFirst()
+				.ifPresent((v) -> processJson(environment, v));
 	}
 
-	private void processJson(ConfigurableEnvironment environment, String json) {
+	private void processJson(ConfigurableEnvironment environment,
+			JsonPropertyValue propertyValue) {
 		try {
 			JsonParser parser = JsonParserFactory.getJsonParser();
-			Map<String, Object> map = parser.parseMap(json);
+			Map<String, Object> map = parser.parseMap(propertyValue.getJson());
 			if (!map.isEmpty()) {
 				addJsonPropertySource(environment,
-						new MapPropertySource("spring.application.json", flatten(map)));
+						new JsonPropertySource(propertyValue, flatten(map)));
 			}
 		}
 		catch (Exception ex) {
-			logger.warn("Cannot parse JSON for spring.application.json: " + json, ex);
+			logger.warn("Cannot parse JSON for spring.application.json: "
+					+ propertyValue.getJson(), ex);
 		}
 	}
 
@@ -102,7 +109,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	 * @return the flattened map
 	 */
 	private Map<String, Object> flatten(Map<String, Object> map) {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		flatten(null, result, map);
 		return result;
 	}
@@ -151,6 +158,63 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 		}
 		return StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME;
+	}
+
+	private static class JsonPropertySource extends MapPropertySource
+			implements OriginLookup<String> {
+
+		private final JsonPropertyValue propertyValue;
+
+		JsonPropertySource(JsonPropertyValue propertyValue, Map<String, Object> source) {
+			super("spring.application.json", source);
+			this.propertyValue = propertyValue;
+		}
+
+		@Override
+		public Origin getOrigin(String key) {
+			return this.propertyValue.getOrigin();
+		}
+
+	}
+
+	private static class JsonPropertyValue {
+
+		private static final String[] CANDIDATES = { "spring.application.json",
+				"SPRING_APPLICATION_JSON" };
+
+		private final PropertySource<?> propertySource;
+
+		private final String propertyName;
+
+		private final String json;
+
+		JsonPropertyValue(PropertySource<?> propertySource, String propertyName,
+				String json) {
+			this.propertySource = propertySource;
+			this.propertyName = propertyName;
+			this.json = json;
+		}
+
+		public String getJson() {
+			return this.json;
+		}
+
+		public Origin getOrigin() {
+			return PropertySourceOrigin.get(this.propertySource, this.propertyName);
+		}
+
+		public static JsonPropertyValue get(PropertySource<?> propertySource) {
+			for (String candidate : CANDIDATES) {
+				Object value = propertySource.getProperty(candidate);
+				if (value != null && value instanceof String
+						&& StringUtils.hasLength((String) value)) {
+					return new JsonPropertyValue(propertySource, candidate,
+							(String) value);
+				}
+			}
+			return null;
+		}
+
 	}
 
 }

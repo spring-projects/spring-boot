@@ -214,7 +214,7 @@ public class RestartClassLoaderTests {
 	}
 
 	private <T> List<T> toList(Enumeration<T> enumeration) {
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 		if (enumeration != null) {
 			while (enumeration.hasMoreElements()) {
 				list.add(enumeration.nextElement());

@@ -47,7 +47,7 @@ class BeanCurrentlyInCreationFailureAnalyzer
 	}
 
 	private DependencyCycle findCycle(Throwable rootFailure) {
-		List<BeanInCycle> beansInCycle = new ArrayList<BeanInCycle>();
+		List<BeanInCycle> beansInCycle = new ArrayList<>();
 		Throwable candidate = rootFailure;
 		int cycleStart = -1;
 		while (candidate != null) {

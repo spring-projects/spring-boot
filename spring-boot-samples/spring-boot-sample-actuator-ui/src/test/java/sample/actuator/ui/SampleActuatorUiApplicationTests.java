@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,9 @@ public class SampleActuatorUiApplicationTests {
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword()).exchange("/", HttpMethod.GET,
+						new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Hello");
 	}
@@ -71,8 +72,8 @@ public class SampleActuatorUiApplicationTests {
 	@Test
 	public void testMetrics() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate
+				.getForEntity("/application/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
@@ -80,11 +81,16 @@ public class SampleActuatorUiApplicationTests {
 	public void testError() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/error",
-				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword()).exchange("/error", HttpMethod.GET,
+						new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(entity.getBody()).contains("<html>").contains("<body>")
 				.contains("Please contact the operator with the above information");
+	}
+
+	private String getPassword() {
+		return "password";
 	}
 
 }

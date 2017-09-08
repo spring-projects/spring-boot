@@ -5,8 +5,8 @@
 --
 Spring Boot includes a number of additional features to help you monitor and manage your
 application when it's pushed to production. You can choose to manage and monitor your
-application using HTTP endpoints, with JMX or even by remote shell (SSH or Telnet).
-Auditing, health and metrics gathering can be automatically applied to your application.
+application using HTTP endpoints or with JMX. Auditing, health and metrics gathering can
+be automatically applied to your application.
 
 Actuator HTTP endpoints are only available with a Spring MVC-based application. In
 particular, it will not work with Jersey <<howto.adoc#howto-use-actuator-with-jersey,
@@ -59,128 +59,151 @@ includes a number of built-in endpoints and you can also add your own. For examp
 `health` endpoint provides basic application health information.
 
 The way that endpoints are exposed will depend on the type of technology that you choose.
-Most applications choose HTTP monitoring, where the ID of the endpoint is mapped
-to a URL. For example, by default, the `health` endpoint will be mapped to `/health`.
+Most applications choose HTTP monitoring, where the ID of the endpoint along with a prefix of
+`/application` is mapped to a URL. For example, by default, the `health` endpoint will be mapped
+to `/application/health`.
 
 The following technology agnostic endpoints are available:
 
-[cols="2,5,1"]
+[cols="2,5"]
 |===
-| ID | Description | Sensitive Default
-
-|`actuator`
-|Provides a hypermedia-based "`discovery page`" for the other endpoints. Requires Spring
-HATEOAS to be on the classpath.
-|true
+| ID | Description
 
 |`auditevents`
 |Exposes audit events information for the current application.
-|true
 
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
  reason why they '`were`' or '`were not`' applied.
-|true
 
 |`beans`
 |Displays a complete list of all the Spring beans in your application.
-|true
 
 |`configprops`
 |Displays a collated list of all `@ConfigurationProperties`.
-|true
-
-|`dump`
-|Performs a thread dump.
-|true
 
 |`env`
 |Exposes properties from Spring's `ConfigurableEnvironment`.
-|true
 
 |`flyway`
 |Shows any Flyway database migrations that have been applied.
-|true
 
 |`health`
-|Shows application health information (when the application is secure, a simple '`status`'
-when accessed over an unauthenticated connection or full message details when
-authenticated).
-|false
+|Shows application health information.
 
 |`info`
 |Displays arbitrary application info.
-|false
 
 |`loggers`
 |Shows and modifies the configuration of loggers in the application.
-|true
 
 |`liquibase`
 |Shows any Liquibase database migrations that have been applied.
-|true
 
 |`metrics`
 |Shows '`metrics`' information for the current application.
-|true
 
 |`mappings`
 |Displays a collated list of all `@RequestMapping` paths.
-|true
 
 |`shutdown`
 |Allows the application to be gracefully shutdown (not enabled by default).
-|true
+
+|`status`
+|Show application status information (i.e. `health` status with no additional details)
+
+|`threaddump`
+|Performs a thread dump.
 
 |`trace`
 |Displays trace information (by default the last 100 HTTP requests).
-|true
 |===
 
-If you are using Spring MVC, the following additional endpoints can also be used:
+If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), the
+following additional endpoints can also be used:
 
-[cols="2,5,1"]
+[cols="2,5"]
 |===
-| ID | Description | Sensitive Default
-
-|`docs`
-|Displays documentation, including example requests and responses, for the Actuator's
-endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
-|false
+| ID | Description
 
 |`heapdump`
 |Returns a GZip compressed `hprof` heap dump file.
-|true
-
-|`jolokia`
-|Exposes JMX beans over HTTP (when Jolokia is on the classpath).
-|true
 
 |`logfile`
 |Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
 been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
 content.
-|true
 |===
 
-NOTE: Depending on how an endpoint is exposed, the `sensitive` property may be used as
-a security hint. For example, sensitive endpoints will require a username/password when
-they are accessed over HTTP (or simply disabled if web security is not enabled).
+[[production-ready-endpoints-security]]
+=== Securing endpoints
+By default all HTTP endpoints are secured such that only users that have an `ACTUATOR`
+role may access them. Security is enforced using the standard
+`HttpServletRequest.isUserInRole` method.
+
+TIP: Use the `management.security.roles` property if you want something different to
+`ACTUATOR`.
+
+If you are deploying applications behind a firewall, you may prefer that all your actuator
+endpoints can be accessed without requiring authentication. You can do this by changing
+the `management.security.enabled` property:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.security.enabled=false
+----
+
+NOTE: By default, actuator endpoints are exposed on the same port that serves regular
+HTTP traffic. Take care not to accidentally expose sensitive information if you change
+the `management.security.enabled` property.
+
+If you're deploying applications publicly, you may want to add '`Spring Security`' to
+handle user authentication. When '`Spring Security`' is added, by default '`basic`'
+authentication will be used with the username `user` and a generated password (which is
+printed on the console when the application starts).
+
+TIP: Generated passwords are logged as the application starts. Search for '`Using default
+security password`'.
+
+You can use Spring properties to change the username and password and to change the
+security role(s) required to access the endpoints. For example, you might set the following
+in your `application.properties`:
+
+[source,properties,indent=0]
+----
+	security.user.name=admin
+	security.user.password=secret
+	management.security.roles=SUPERUSER
+----
+
+If your application has custom security configuration and you want all your actuator
+endpoints to be accessible without authentication, you need to explicitly configure that
+in your security configuration. Along with that, you need to change the
+`management.security.enabled` property to `false`.
+
+If your custom security configuration secures your actuator endpoints, you also need to
+ensure that the authenticated user has the roles specified under
+`management.security.roles`.
+
+TIP: If you don't have a use case for exposing basic health information to unauthenticated
+users, and you have secured the actuator endpoints with custom security, you can set
+`management.security.enabled` to `false`. This will inform Spring Boot to skip the
+additional role check.
 
 
 
 [[production-ready-customizing-endpoints]]
 === Customizing endpoints
 Endpoints can be customized using Spring properties. You can change if an endpoint is
-`enabled`, if it is considered `sensitive` and even its `id`.
+`enabled` and its `id`.
 
-For example, here is an `application.properties` that changes the sensitivity and id
-of the `beans` endpoint and also enables `shutdown`.
+For example, here is an `application.properties` that changes the id of the `beans`
+endpoint and also enables `shutdown`.
 
 [source,properties,indent=0]
 ----
 	endpoints.beans.id=springbeans
-	endpoints.beans.sensitive=false
 	endpoints.shutdown.enabled=true
 ----
 
@@ -188,47 +211,26 @@ NOTE: The prefix ‟`endpoints` + `.` + `name`” is used to uniquely identify t
 that is being configured.
 
 By default, all endpoints except for `shutdown` are enabled. If you prefer to
-specifically "`opt-in`" endpoint enablement you can use the `endpoints.enabled` property.
-For example, the following will disable _all_ endpoints except for `info`:
+specifically "`opt-in`" endpoint enablement you can use the `endpoints.default.enabled`
+property. For example, the following will disable _all_ endpoints except for `info`:
 
 [source,properties,indent=0]
 ----
-	endpoints.enabled=false
+	endpoints.default.enabled=false
 	endpoints.info.enabled=true
-----
-
-Likewise, you can also choose to globally set the "`sensitive`" flag of all endpoints. By
-default, the sensitive flag depends on the type of endpoint (see the table above).
-For example, to mark _all_ endpoints as sensitive except `info`:
-
-[source,properties,indent=0]
-----
-	endpoints.sensitive=true
-	endpoints.info.sensitive=false
 ----
 
 
 
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for actuator MVC endpoints
-If `endpoints.hypermedia.enabled` is set to `true` and
-http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
-through the `spring-boot-starter-hateoas` or if you are using
-http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
-from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added
-with links to all the endpoints. The "`discovery page`" is available on `/actuator` by
-default. It is implemented as an endpoint, allowing properties to be used to configure
-its path (`endpoints.actuator.path`) and whether or not it is enabled
-(`endpoints.actuator.enabled`).
+A "`discovery page`" is added with links to all the endpoints. The "`discovery page`" is
+available on `/application` by default.
 
 When a custom management context path is configured, the "`discovery page`" will
-automatically move from `/actuator` to the root of the management context. For example,
+automatically move from `/application` to the root of the management context. For example,
 if the management context path is `/management` then the discovery page will be available
 from `/management`.
-
-If the https://github.com/mikekelly/hal-browser[HAL Browser] is on the classpath
-via its webjar (`org.webjars:hal-browser`), or via the `spring-data-rest-hal-browser` then
-an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
 
 
 
@@ -236,17 +238,18 @@ an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
 === CORS support
 http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
 (CORS) is a http://www.w3.org/TR/cors/[W3C specification] that allows you to specify in a
-flexible way what kind of cross domain requests are authorized. Actuator's MVC endpoints
-can be configured to support such scenarios.
+flexible way what kind of cross domain requests are authorized. If you are using Spring
+MVC or Spring WebFlux, Actuator's web endpoints can be configured to support such
+scenarios.
 
 CORS support is disabled by default and is only enabled once the
-`endpoints.cors.allowed-origins` property has been set. The configuration below permits
-`GET` and `POST` calls from the `example.com` domain:
+`management.endpoints.cors.allowed-origins` property has been set. The configuration below
+permits `GET` and `POST` calls from the `example.com` domain:
 
 [source,properties,indent=0]
 ----
-	endpoints.cors.allowed-origins=http://example.com
-	endpoints.cors.allowed-methods=GET,POST
+	management.endpoints.cors.allowed-origins=http://example.com
+	management.endpoints.cors.allowed-methods=GET,POST
 ----
 
 TIP: Check {sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties]
@@ -256,18 +259,15 @@ for a complete list of options.
 
 [[production-ready-customizing-endpoints-programmatically]]
 === Adding custom endpoints
-If you add a `@Bean` of type `Endpoint` then it will automatically be exposed over JMX and
-HTTP (if there is an server available). An HTTP endpoints can be customized further by
-creating a bean of type `MvcEndpoint`. Your `MvcEndpoint` is not a `@Controller` but it
-can use `@RequestMapping` (and `@Managed*`) to expose resources.
+If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with
+`@ReadOperation` or `@WriteOperation` will automatically be exposed over JMX and, in a web
+application, over HTTP as well.
 
 TIP: If you are doing this as a library feature consider adding a configuration class
 annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
 key `org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration`. If
-you do that then the endpoint will move to a child context with all the other MVC
-endpoints if your users ask for a separate management port or address. A configuration
-declared this way can be a `WebConfigurerAdapter` if it wants to add static resources (for
-instance) to the management endpoints.
+you do that then the endpoint will move to a child context with all the other web
+endpoints endpoints if your users ask for a separate management port or address.
 
 
 
@@ -288,19 +288,6 @@ derived by the `HealthAggregator` which sorts the statuses from each `HealthIndi
 based on an ordered list of statuses. The first status in the sorted list is used as the
 overall health status. If no `HealthIndicator` returns a status that is known to the
 `HealthAggregator`, an `UNKNOWN` status is used.
-
-
-
-=== Security with HealthIndicators
-Information returned by `HealthIndicators` is often somewhat sensitive in nature. For
-example, you probably don't want to publish details of your database server to the
-world. For this reason, by default, only the health status is exposed over an
-unauthenticated HTTP connection. If you are happy for complete health information to always
-be exposed you can set `endpoints.health.sensitive` to `false`.
-
-Health responses are also cached to prevent "`denial of service`" attacks. Use the
-`endpoints.health.time-to-live` property if you want to change the default cache period
-of 1000 milliseconds.
 
 
 
@@ -396,13 +383,15 @@ to your application properties:
 
 The HTTP status code in the response reflects the overall health status (e.g. `UP`
 maps to 200, `OUT_OF_SERVICE` or `DOWN` to 503). You might also want to register custom
-status mappings with the `HealthMvcEndpoint` if you access the health endpoint over HTTP.
-For example, the following maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
+status mappings if you access the health endpoint over HTTP. For example, the following
+maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
 
 [source,properties,indent=0]
 ----
-	endpoints.health.mapping.FATAL=503
+	management.health.status.http-mapping.FATAL=503
 ----
+
+TIP: If you need more control you can define your own `HealthStatusHttpMapper` bean.
 
 The default status mappings for the built-in statuses are:
 
@@ -560,99 +549,28 @@ additional entry:
 == Monitoring and management over HTTP
 If you are developing a Spring MVC application, Spring Boot Actuator will auto-configure
 all enabled endpoints to be exposed over HTTP. The default convention is to use the
-`id` of the endpoint as the URL path. For example, `health` is exposed as `/health`.
-
-
-
-[[production-ready-sensitive-endpoints]]
-=== Accessing sensitive endpoints
-By default all sensitive HTTP endpoints are secured such that only users that have an
-`ACTUATOR` role may access them. Security is enforced using the standard
-`HttpServletRequest.isUserInRole` method.
-
-TIP: Use the `management.security.roles` property if you want something different to
-`ACTUATOR`.
-
-If you are deploying applications behind a firewall, you may prefer that all your actuator
-endpoints can be accessed without requiring authentication. You can do this by changing
-the `management.security.enabled` property:
-
-.application.properties
-[source,properties,indent=0]
-----
-	management.security.enabled=false
-----
-
-NOTE: By default, actuator endpoints are exposed on the same port that serves regular
-HTTP traffic. Take care not to accidentally expose sensitive information if you change
-the `management.security.enabled` property.
-
-If you're deploying applications publicly, you may want to add '`Spring Security`' to
-handle user authentication. When '`Spring Security`' is added, by default '`basic`'
-authentication will be used with the username `user` and a generated password (which is
-printed on the console when the application starts).
-
-TIP: Generated passwords are logged as the application starts. Search for '`Using default
-security password`'.
-
-You can use Spring properties to change the username and password and to change the
-security role(s) required to access the endpoints. For example, you might set the following
-in your `application.properties`:
-
-[source,properties,indent=0]
-----
-	security.user.name=admin
-	security.user.password=secret
-	management.security.roles=SUPERUSER
-----
-
-If your application has custom security configuration and you want all your actuator endpoints
-to be accessible without authentication, you need to explicitly configure that in your
-security configuration. Along with that, you need to change the `management.security.enabled`
-property to `false`.
-
-If your custom security configuration secures your actuator endpoints, you also need to ensure that
-the authenticated user has the roles specified under `management.security.roles`.
-
-TIP: If you don't have a use case for exposing basic health information to unauthenticated users,
-and you have secured the actuator endpoints with custom security, you can set `management.security.enabled`
-to `false`. This will inform Spring Boot to skip the additional role check.
-
-
+`id` of the endpoint with a prefix of `/application` as the URL path. For example, `health`
+is exposed as `/application/health`.
 
 
 
 [[production-ready-customizing-management-server-context-path]]
 === Customizing the management endpoint paths
-Sometimes it is useful to group all management endpoints under a single path. For example,
-your application might already use `/info` for another purpose. You can use the
-`management.context-path` property to set a prefix for your management endpoint:
+Sometimes it is useful to customize the prefix for the management endpoints.
+For example, your application might already use `/application` for another purpose.
+You can use the `management.context-path` property to change the prefix for your
+management endpoint:
 
 [source,properties,indent=0]
 ----
 	management.context-path=/manage
 ----
 
-The `application.properties` example above will change the endpoint from `/{id}` to
+The `application.properties` example above will change the endpoint from `/application/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
-
-You can also change the "`id`" of an endpoint (using `endpoints.{name}.id`) which then
-changes the default resource path for the MVC endpoint. Legal endpoint ids are composed
-only of alphanumeric characters (because they can be exposed in a number of places,
-including JMX object names, where special characters are forbidden). The MVC path can be
-changed separately by configuring `endpoints.{name}.path`, and there is no validation on
-those values (so you can use anything that is legal in a URL path). For example, to change
-the location of the `/health` endpoint to `/ping/me` you can set
-`endpoints.health.path=/ping/me`.
 
 NOTE: Even if an endpoint path is configured separately, it is still relative to the
 `management.context-path`.
-
-TIP: If you provide a custom `MvcEndpoint` remember to include a settable `path` property,
-and default it to `/{id}` if you want your code to behave like the standard MVC endpoints.
-(Take a look at the `HealthMvcEndpoint` to see how you might do that.) If your custom
-endpoint is an `Endpoint` (not an `MvcEndpoint`) then Spring Boot will take care of the
-path for you.
 
 
 
@@ -754,10 +672,7 @@ The information exposed by the health endpoint varies depending on whether or no
 accessed anonymously, and whether or not the enclosing application is secure.
 By default, when accessed anonymously in a secure application, any details about the
 server's health are hidden and the endpoint will simply indicate whether or not the server
-is up or down. Furthermore the response is cached for a configurable period to prevent the
-endpoint being used in a denial of service attack. The `endpoints.health.time-to-live`
-property is used to configure the caching period in milliseconds. It defaults to 1000,
-i.e. one second.
+is up or down.
 
 Sample summarized HTTP response (default for anonymous request):
 
@@ -766,7 +681,7 @@ Sample summarized HTTP response (default for anonymous request):
 	$ curl -i localhost:8080/health
 	HTTP/1.1 200
 	X-Application-Context: application
-	Content-Type: application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
 	Content-Length: 15
 
 	{"status":"UP"}
@@ -779,20 +694,20 @@ Sample summarized HTTP response for status "DOWN" (notice the 503 status code):
 	$ curl -i localhost:8080/health
 	HTTP/1.1 503
 	X-Application-Context: application
-	Content-Type: application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
 	Content-Length: 17
 
 	{"status":"DOWN"}
 ----
 
-Sample detailed  HTTP response:
+Sample detailed HTTP response:
 
 [source,indent=0]
 ----
 	$ curl -i localhost:8080/health
 	HTTP/1.1 200 OK
 	X-Application-Context: application
-	Content-Type: application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
 	Content-Length: 221
 
 	{
@@ -811,30 +726,6 @@ Sample detailed  HTTP response:
 	}
 ----
 
-The above-described restrictions can be enhanced, thereby allowing only authenticated
-users full access to the health endpoint in a secure application. To do so, set
-`endpoints.health.sensitive` to `true`. Here's a summary of behavior (with default
-`sensitive` flag value "`false`" indicated in bold):
-
-|====
-| `management.security.enabled` | `endpoints.health.sensitive` | Unauthenticated | Authenticated (with right role)
-
-|false
-|*
-|Full content
-|Full content
-
-|true
-|**false**
-|Status only
-|Full content
-
-|true
-|true
-|No content
-|Full content
-|====
-
 
 
 [[production-ready-jmx]]
@@ -848,31 +739,31 @@ under the `org.springframework.boot` domain.
 [[production-ready-custom-mbean-names]]
 === Customizing MBean names
 The name of the MBean is usually generated from the `id` of the endpoint. For example
-the `health` endpoint is exposed as `org.springframework.boot/Endpoint/healthEndpoint`.
+the `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
 
 If your application contains more than one Spring `ApplicationContext` you may find that
-names clash. To solve this problem you can set the `endpoints.jmx.unique-names` property
-to `true` so that MBean names are always unique.
+names clash. To solve this problem you can set the `management.endpoints.jmx.unique-names`
+property to `true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. Here is an
 example `application.properties`:
 
 [source,properties,indent=0]
 ----
-	endpoints.jmx.domain=myapp
-	endpoints.jmx.unique-names=true
+	management.endpoints.jmx.domain=com.example.myapp
+	management.endpoints.jmx.unique-names=true
 ----
 
 
 
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX endpoints
-If you don't want to expose endpoints over JMX you can set the `endpoints.jmx.enabled`
+If you don't want to expose endpoints over JMX you can set the `endpoints.default.jmx.enabled`
 property to `false`:
 
 [source,properties,indent=0]
 ----
-	endpoints.jmx.enabled=false
+	endpoints.default.jmx.enabled=false
 ----
 
 
@@ -891,7 +782,7 @@ using Maven you would add the following:
  	</dependency>
 ----
 
-Jolokia can then be accessed using `/jolokia` on your management HTTP server.
+Jolokia can then be accessed using `/application/jolokia` on your management HTTP server.
 
 
 
@@ -899,11 +790,11 @@ Jolokia can then be accessed using `/jolokia` on your management HTTP server.
 ==== Customizing Jolokia
 Jolokia has a number of settings that you would traditionally configure using servlet
 parameters. With Spring Boot you can use your `application.properties`, simply prefix the
-parameter with `jolokia.config.`:
+parameter with `management.jolokia.config.`:
 
 [source,properties,indent=0]
 ----
-	jolokia.config.debug=true
+	management.jolokia.config.debug=true
 ----
 
 
@@ -911,157 +802,12 @@ parameter with `jolokia.config.`:
 [[production-ready-disabling-jolokia]]
 ==== Disabling Jolokia
 If you are using Jolokia but you don't want Spring Boot to configure it, simply set the
-`endpoints.jolokia.enabled` property to `false`:
+`management.jolokia.enabled` property to `false`:
 
 [source,properties,indent=0]
 ----
-	endpoints.jolokia.enabled=false
+	management.jolokia.enabled=false
 ----
-
-
-
-[[production-ready-remote-shell]]
-== Monitoring and management using a remote shell (deprecated)
-Spring Boot supports an integrated Java shell called '`CRaSH`'. You can use CRaSH to
-`ssh` or `telnet` into your running application. To enable remote shell support, add
-the following dependency to your project:
-
-[source,xml,indent=0]
-----
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-remote-shell</artifactId>
- 	</dependency>
-----
-
-NOTE: The remote shell is deprecated and will be removed in Spring Boot 2.0.
-
-TIP: If you want to also enable telnet access you will additionally need a dependency
-on `org.crsh:crsh.shell.telnet`.
-
-NOTE: CRaSH requires to run with a JDK as it compiles commands on the fly. If a basic
-`help` command fails, you are probably running with a JRE.
-
-
-[[production-ready-connecting-to-the-remote-shell]]
-=== Connecting to the remote shell
-By default the remote shell will listen for connections on port `2000`. The default user
-is `user` and the default password will be randomly generated and displayed in the log
-output. If your application is using Spring Security, the shell will use
-<<boot-features-security, the same configuration>> by default. If not, a simple
-authentication will be applied and you should see a message like this:
-
-[indent=0]
-----
-	Using default password for shell access: ec03e16c-4cf4-49ee-b745-7c8255c1dd7e
-----
-
-Linux and OSX users can use `ssh` to connect to the remote shell, Windows users can
-download and install http://www.putty.org/[PuTTY].
-
-[indent=0,subs="attributes"]
-----
-	$ ssh -p 2000 user@localhost
-
-	user@localhost's password:
-	  .   ____          _            __ _ _
-	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-	  '  |____| .__|_| |_|_| |_\__, | / / / /
-	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{spring-boot-version}) on myhost
-----
-
-Type `help` for a list of commands. Spring Boot provides `metrics`, `beans`, `autoconfig`
-and `endpoint` commands.
-
-
-
-[[production-ready-remote-shell-credentials]]
-==== Remote shell credentials
-You can use the `management.shell.auth.simple.user.name` and
-`management.shell.auth.simple.user.password` properties to configure custom connection
-credentials. It is also possible to use a '`Spring Security`' `AuthenticationManager` to
-handle login duties. See the
-{dc-spring-boot-actuator}/autoconfigure/CrshAutoConfiguration.{dc-ext}[`CrshAutoConfiguration`]
-and {dc-spring-boot-actuator}/autoconfigure/ShellProperties.{dc-ext}[`ShellProperties`]
-Javadoc for full details.
-
-
-
-[[production-ready-extending-the-remote-shell]]
-=== Extending the remote shell
-The remote shell can be extended in a number of interesting ways.
-
-
-
-[[production-ready-remote-commands]]
-==== Remote shell commands
-You can write additional shell commands using Groovy (see the CRaSH documentation for details).
-Due to limitations in CRaSH's Java compiler, commands written in Java are not supported.
-By default Spring Boot will search for commands in the following locations:
-
-* `+classpath*:/commands/**+`
-* `+classpath*:/crash/commands/**+`
-
-TIP: You can change the search path by settings a `shell.command-path-patterns` property.
-
-NOTE: If you are using an executable archive, any classes that a shell command depends
-upon must be packaged in a nested jar rather than directly in the executable jar or war.
-
-Here is a simple '`hello`' command that could be loaded from
-`src/main/resources/commands/hello.groovy`
-
-[source,groovy,indent=0]
-----
-	package commands
-
-	import org.crsh.cli.Command
-	import org.crsh.cli.Usage
-	import org.crsh.command.InvocationContext
-
-	class hello {
-
-		@Usage("Say Hello")
-		@Command
-		def main(InvocationContext context) {
-			return "Hello"
-		}
-
-	}
-----
-
-Spring Boot adds some additional attributes to `InvocationContext` that you can access
-from your command:
-
-[cols="2,3"]
-|===
-| Attribute Name | Description
-
-|`spring.boot.version`
-|The version of Spring Boot
-
-|`spring.version`
-|The version of the core Spring Framework
-
-|`spring.beanfactory`
-|Access to the Spring `BeanFactory`
-
-|`spring.environment`
-|Access to the Spring `Environment`
-|===
-
-
-
-[[production-ready-remote-shell-plugins]]
-==== Remote shell plugins
-In addition to new commands, it is also possible to extend other CRaSH shell features.
-All Spring Beans that extend `org.crsh.plugin.CRaSHPlugin` will be automatically
-registered with the shell.
-
-For more information please refer to the http://www.crashub.org/[CRaSH reference
-documentation].
 
 
 
@@ -1095,6 +841,9 @@ In order to configure a given logger, you `POST` a partial entity to the resourc
 		"configuredLevel": "DEBUG"
 	}
 ----
+
+TIP: You can also pass a `null` `configuredLevel` to "reset" the specific level of the
+logger (and use the default configuration instead).
 
 
 
@@ -1221,7 +970,7 @@ is prefixed by the name of the `CacheManager` bean.
 
 It is possible to override part or all of those defaults by registering a bean with a
 customized version of `CachePublicMetrics`. By default, Spring Boot provides cache
-statistics for EhCache, Hazelcast, Infinispan, JCache and Guava. You can add additional
+statistics for EhCache, Hazelcast, Infinispan, JCache and Caffeine. You can add additional
 `CacheStatisticsProvider` beans if your favorite caching library isn't supported out of
 the box. See `CacheStatisticsAutoConfiguration` for examples.
 
@@ -1279,25 +1028,6 @@ To add additional metrics that are computed every time the metrics endpoint is i
 simply register additional `PublicMetrics` implementation bean(s). By default, all such
 beans are gathered by the endpoint. You can easily change that by defining your own
 `MetricsEndpoint`.
-
-
-
-[[production-ready-metric-repositories]]
-=== Special features with Java 8
-The default implementation of `GaugeService` and `CounterService` provided by Spring Boot
-depends on the version of Java that you are using. With Java 8 (or better) the
-implementation switches to a high-performance version optimized for fast writes, backed by
-atomic in-memory buffers, rather than by the immutable but relatively expensive
-`Metric<?>` type (counters are approximately 5 times faster and gauges approximately twice
-as fast as the repository-based implementations). The Dropwizard metrics services (see
-below) are also very efficient even for Java 7 (they have backports of some of the Java 8
-concurrency libraries), but they do not record timestamps for metric values. If
-performance of metric gathering is a concern then it is always advisable to use one of the
-high-performance options, and also to only read metrics infrequently, so that the writes
-are buffered locally and only read when needed.
-
-NOTE: The old `MetricRepository` and its `InMemoryMetricRepository` implementation are not
-used by default if you are on Java 8 or if you are using Dropwizard metrics.
 
 
 
@@ -1682,7 +1412,7 @@ customize the file name and path via the `Writer` constructor.
 == Cloud Foundry support
 Spring Boot's actuator module includes additional support that is activated when you
 deploy to a compatible Cloud Foundry instance. The `/cloudfoundryapplication` path
-provides an alternative secured route to all `NamedMvcEndpoint` beans.
+provides an alternative secured route to all `@Endpoint` beans.
 
 The extended support allows Cloud Foundry management UIs (such as the web
 application that you can use to view deployed applications) to be augmented with Spring

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties
 public class RestDocsAutoConfiguration {
 

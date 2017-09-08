@@ -41,7 +41,7 @@ public class FreeMarkerTemplateAvailabilityProvider
 	static final class FreeMarkerTemplateAvailabilityProperties
 			extends TemplateAvailabilityProperties {
 
-		private List<String> templateLoaderPath = new ArrayList<String>(
+		private List<String> templateLoaderPath = new ArrayList<>(
 				Arrays.asList(FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH));
 
 		FreeMarkerTemplateAvailabilityProperties() {

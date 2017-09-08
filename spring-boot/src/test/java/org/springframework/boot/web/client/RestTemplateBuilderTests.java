@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.web.client;
 import java.util.Collections;
 import java.util.Set;
 
-import com.squareup.okhttp.OkHttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,9 +31,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.Netty4ClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.http.client.OkHttpClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -47,7 +44,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -364,14 +361,8 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void customizersShouldBeAppliedLast() throws Exception {
 		RestTemplate template = spy(new RestTemplate());
-		this.builder.additionalCustomizers(new RestTemplateCustomizer() {
-
-			@Override
-			public void customize(RestTemplate restTemplate) {
-				verify(restTemplate).setRequestFactory((ClientHttpRequestFactory) any());
-			}
-
-		});
+		this.builder.additionalCustomizers((restTemplate) -> verify(restTemplate)
+				.setRequestFactory((ClientHttpRequestFactory) any()));
 		this.builder.configure(template);
 	}
 
@@ -465,42 +456,6 @@ public class RestTemplateBuilderTests {
 				.build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
 				.isEqualTo(1234);
-	}
-
-	@Test
-	public void connectTimeoutCanBeConfiguredOnNetty4RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(Netty4ClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(1234);
-	}
-
-	@Test
-	public void readTimeoutCanBeConfiguredOnNetty4RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(Netty4ClientHttpRequestFactory.class).setReadTimeout(1234)
-				.build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
-	}
-
-	@Test
-	public void connectTimeoutCanBeConfiguredOnOkHttp2RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(OkHttpClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client"))
-				.getConnectTimeout()).isEqualTo(1234);
-	}
-
-	@Test
-	public void readTimeoutCanBeConfiguredOnOkHttp2RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(OkHttpClientHttpRequestFactory.class).setReadTimeout(1234)
-				.build().getRequestFactory();
-		assertThat(((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client"))
-				.getReadTimeout()).isEqualTo(1234);
 	}
 
 	@Test

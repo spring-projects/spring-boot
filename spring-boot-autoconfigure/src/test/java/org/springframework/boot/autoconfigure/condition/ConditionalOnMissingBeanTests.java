@@ -32,7 +32,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanConfiguration;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanWithBeanMethodArgumentsConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -176,7 +176,7 @@ public class ConditionalOnMissingBeanTests {
 		this.context.register(FactoryBeanWithBeanMethodArgumentsConfiguration.class,
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "theValue:foo");
+		TestPropertyValues.of("theValue:foo").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBean(ExampleBean.class).toString())
 				.isEqualTo("fromFactory");
@@ -263,23 +263,6 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void grandparentIsConsideredWhenUsingParentsStrategy() {
-		this.context.register(ExampleBeanConfiguration.class);
-		this.context.refresh();
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.setParent(this.context);
-		parent.refresh();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.setParent(parent);
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInParentsConfiguration.class);
-		child.refresh();
-		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
-		child.close();
-		parent.close();
-	}
-
-	@Test
 	public void grandparentIsConsideredWhenUsingAncestorsStrategy() {
 		this.context.register(ExampleBeanConfiguration.class);
 		this.context.refresh();
@@ -294,17 +277,6 @@ public class ConditionalOnMissingBeanTests {
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
 		child.close();
 		parent.close();
-	}
-
-	@Test
-	public void currentContextIsIgnoredWhenUsingParentsStrategy() {
-		this.context.refresh();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInParentsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
 	}
 
 	@Test
@@ -325,18 +297,6 @@ public class ConditionalOnMissingBeanTests {
 		this.context.refresh();
 		assertThat(this.context.containsBean("bar")).isFalse();
 		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(1);
-	}
-
-	@Configuration
-	protected static class OnBeanInParentsConfiguration {
-
-		@SuppressWarnings("deprecation")
-		@Bean
-		@ConditionalOnMissingBean(search = SearchStrategy.PARENTS)
-		public ExampleBean exampleBean2() {
-			return new ExampleBean("test");
-		}
-
 	}
 
 	@Configuration
@@ -646,7 +606,7 @@ public class ConditionalOnMissingBeanTests {
 	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
 
 		public ExampleFactoryBean(String value) {
-			Assert.state(!value.contains("$"), "value must not contain $");
+			Assert.state(!value.contains("$"), "value should not contain '$'");
 		}
 
 		@Override
@@ -669,7 +629,7 @@ public class ConditionalOnMissingBeanTests {
 	public static class NonspecificFactoryBean implements FactoryBean<Object> {
 
 		public NonspecificFactoryBean(String value) {
-			Assert.state(!value.contains("$"), "value must not contain $");
+			Assert.state(!value.contains("$"), "value should not contain '$'");
 		}
 
 		@Override

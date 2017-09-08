@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class ClassPathChangeUploader
 	private static final Map<ChangedFile.Type, ClassLoaderFile.Kind> TYPE_MAPPINGS;
 
 	static {
-		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new HashMap<ChangedFile.Type, ClassLoaderFile.Kind>();
+		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new HashMap<>();
 		map.put(ChangedFile.Type.ADD, ClassLoaderFile.Kind.ADDED);
 		map.put(ChangedFile.Type.DELETE, ClassLoaderFile.Kind.DELETED);
 		map.put(ChangedFile.Type.MODIFY, ClassLoaderFile.Kind.MODIFIED);
@@ -80,10 +80,7 @@ public class ClassPathChangeUploader
 		try {
 			this.uri = new URL(url).toURI();
 		}
-		catch (URISyntaxException ex) {
-			throw new IllegalArgumentException("Malformed URL '" + url + "'");
-		}
-		catch (MalformedURLException ex) {
+		catch (URISyntaxException | MalformedURLException ex) {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		this.requestFactory = requestFactory;

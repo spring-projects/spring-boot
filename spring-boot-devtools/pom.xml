@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.7.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-devtools</artifactId>
@@ -46,7 +46,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
+			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -71,7 +71,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
+			<artifactId>spring-session-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- Annotation processing -->
@@ -86,12 +86,6 @@
 			<optional>true</optional>
 		</dependency>
 		<!-- Test -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot</artifactId>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-support</artifactId>
@@ -110,6 +104,11 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -175,17 +174,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
-			<artifactId>thymeleaf-spring4</artifactId>
+			<artifactId>thymeleaf-spring5</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>nz.net.ultraq.thymeleaf</groupId>
 			<artifactId>thymeleaf-layout-dialect</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-jdbc</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

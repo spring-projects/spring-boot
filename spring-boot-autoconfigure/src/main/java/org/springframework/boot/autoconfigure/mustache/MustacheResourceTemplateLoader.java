@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Mustache.TemplateLoader;
 
 import org.springframework.context.ResourceLoaderAware;
@@ -30,8 +31,8 @@ import org.springframework.core.io.ResourceLoader;
 /**
  * Mustache TemplateLoader implementation that uses a prefix, suffix and the Spring
  * Resource abstraction to load a template from a file, classpath, URL etc. A
- * TemplateLoader is needed in the Compiler when you want to render partials (i.e.
- * tiles-like features).
+ * {@link TemplateLoader} is needed in the {@link Compiler} when you want to render
+ * partials (i.e. tiles-like features).
  *
  * @author Dave Syer
  * @since 1.2.2

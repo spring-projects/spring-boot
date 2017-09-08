@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class CachePublicMetricsTests {
 
-	private Map<String, CacheManager> cacheManagers = new HashMap<String, CacheManager>();
+	private Map<String, CacheManager> cacheManagers = new HashMap<>();
 
 	@Before
 	public void setup() {
@@ -98,7 +98,7 @@ public class CachePublicMetricsTests {
 	private Map<String, Number> metrics(CachePublicMetrics cpm) {
 		Collection<Metric<?>> metrics = cpm.metrics();
 		assertThat(metrics).isNotNull();
-		Map<String, Number> result = new HashMap<String, Number>();
+		Map<String, Number> result = new HashMap<>();
 		for (Metric<?> metric : metrics) {
 			result.put(metric.getName(), metric.getValue());
 		}

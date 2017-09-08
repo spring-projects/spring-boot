@@ -1,0 +1,82 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+def addDependency(configurationName, dependency) {
+	def coordinates = [
+		'group': dependency.groupId.text(),
+		'name': dependency.artifactId.text(),
+		'version': dependency.version.text()
+	]
+	dependencies {
+		add configurationName, coordinates
+	}
+}
+
+def effectivePomFile = file('target/effective-pom.xml')
+if (effectivePomFile.file) {
+	def pom = new XmlSlurper().parseText(file('target/effective-pom.xml').text)
+	pom.dependencies.dependency.each { dependency ->
+		def scope = dependency.scope.text()
+		if (scope == 'compile') {
+			addDependency scope, dependency
+		}
+		else if (scope == 'test') {
+			addDependency 'testCompile', dependency
+		}
+	}
+}
+
+dependencies {
+	compile localGroovy()
+	compile gradleApi()
+	testCompile gradleTestKit()
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Version': (version ? version : 'unknown')
+	}
+}
+
+eclipseJdt {
+	inputFile = rootProject.file('../../eclipse/org.eclipse.jdt.core.prefs')
+		doLast {
+			project.file('.settings/org.eclipse.jdt.ui.prefs').withWriter { writer ->
+			writer << file('../../eclipse/org.eclipse.jdt.ui.prefs').text
+		}
+	}
+}
+
+javadoc {
+	options {
+		author()
+		stylesheetFile = file('src/main/javadoc/spring-javadoc.css')
+		links = [
+			'http://docs.oracle.com/javase/8/docs/api/',
+			'https://docs.gradle.org/current/javadoc/'
+		]
+	}
+	title = "${project.description} $version API"
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+	classifier = "javadoc"
+	from javadoc
+}
+
+artifacts {
+	archives sourcesJar
+	archives javadocJar
+}

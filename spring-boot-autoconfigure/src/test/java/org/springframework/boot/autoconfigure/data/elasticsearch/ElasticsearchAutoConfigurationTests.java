@@ -16,16 +16,16 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.node.NodeClient;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import java.util.List;
 
-import org.springframework.beans.factory.BeanCreationException;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.cluster.node.DiscoveryNode;
+import org.junit.After;
+import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,11 +37,9 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ElasticsearchAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ElasticsearchAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -50,42 +48,6 @@ public class ElasticsearchAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Test
-	public void createNodeClientWithDefaults() {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.home:target");
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
-		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
-		assertThat(client.settings().get("node.local")).isEqualTo("true");
-		assertThat(client.settings().get("http.enabled")).isEqualTo("false");
-	}
-
-	@Test
-	public void createNodeClientWithOverrides() {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.home:target",
-				"spring.data.elasticsearch.properties.node.local:false",
-				"spring.data.elasticsearch.properties.node.data:true",
-				"spring.data.elasticsearch.properties.http.enabled:true");
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
-		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
-		assertThat(client.settings().get("node.local")).isEqualTo("false");
-		assertThat(client.settings().get("node.data")).isEqualTo("true");
-		assertThat(client.settings().get("http.enabled")).isEqualTo("true");
 	}
 
 	@Test
@@ -102,17 +64,20 @@ public class ElasticsearchAutoConfigurationTests {
 
 	@Test
 	public void createTransportClient() throws Exception {
-		// We don't have a local elasticsearch server so use an address that's missing
-		// a port and check the exception
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.cluster-nodes:localhost",
-				"spring.data.elasticsearch.properties.path.home:target");
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class);
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("port");
-		this.context.refresh();
+		new ElasticsearchNodeTemplate().doWithNode((node) -> {
+			TestPropertyValues
+					.of("spring.data.elasticsearch.cluster-nodes:localhost:"
+							+ node.getTcpPort(),
+					"spring.data.elasticsearch.properties.path.home:target/es/client")
+					.applyTo(this.context);
+			this.context.register(PropertyPlaceholderAutoConfiguration.class,
+					ElasticsearchAutoConfiguration.class);
+			this.context.refresh();
+			List<DiscoveryNode> connectedNodes = this.context
+					.getBean(TransportClient.class).connectedNodes();
+			assertThat(connectedNodes).hasSize(1);
+		});
 	}
 
 	@Configuration

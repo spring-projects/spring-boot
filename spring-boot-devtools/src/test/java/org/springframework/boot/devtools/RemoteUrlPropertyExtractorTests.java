@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.rules.ExpectedException;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -85,7 +86,7 @@ public class RemoteUrlPropertyExtractorTests {
 
 	private ApplicationContext doTest(String... args) {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		application.addListeners(new RemoteUrlPropertyExtractor());
 		return application.run(args);
 	}

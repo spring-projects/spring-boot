@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param healthAggregator the health aggregator
 	 */
 	public CompositeHealthIndicator(HealthAggregator healthAggregator) {
-		this(healthAggregator, new LinkedHashMap<String, HealthIndicator>());
+		this(healthAggregator, new LinkedHashMap<>());
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 			Map<String, HealthIndicator> indicators) {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(indicators, "Indicators must not be null");
-		this.indicators = new LinkedHashMap<String, HealthIndicator>(indicators);
+		this.indicators = new LinkedHashMap<>(indicators);
 		this.healthAggregator = healthAggregator;
 	}
 
@@ -63,7 +63,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 
 	@Override
 	public Health health() {
-		Map<String, Health> healths = new LinkedHashMap<String, Health>();
+		Map<String, Health> healths = new LinkedHashMap<>();
 		for (Map.Entry<String, HealthIndicator> entry : this.indicators.entrySet()) {
 			healths.put(entry.getKey(), entry.getValue().health());
 		}

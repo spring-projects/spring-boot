@@ -22,10 +22,11 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.autoconfigure.web.servlet.MockServletWebServerFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,8 +55,8 @@ public class OAuth2RestOperationsConfigurationTests {
 
 	@Test
 	public void clientCredentialsWithClientId() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.client.client-id=acme");
+		TestPropertyValues.of("security.oauth2.client.client-id=acme")
+				.applyTo(this.environment);
 		initializeContext(OAuth2RestOperationsConfiguration.class, true);
 		assertThat(this.context.getBean(OAuth2RestOperationsConfiguration.class))
 				.isNotNull();
@@ -65,7 +66,6 @@ public class OAuth2RestOperationsConfigurationTests {
 
 	@Test
 	public void clientCredentialsWithNoClientId() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment);
 		initializeContext(OAuth2RestOperationsConfiguration.class, true);
 		assertThat(this.context.getBean(OAuth2RestOperationsConfiguration.class))
 				.isNotNull();
@@ -75,16 +75,14 @@ public class OAuth2RestOperationsConfigurationTests {
 
 	@Test
 	public void requestScopedWithClientId() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.client.client-id=acme");
+		TestPropertyValues.of("security.oauth2.client.client-id=acme")
+				.applyTo(this.environment);
 		initializeContext(ConfigForRequestScopedConfiguration.class, false);
-		assertThat(this.context.containsBean("oauth2ClientContext"))
-				.isTrue();
+		assertThat(this.context.containsBean("oauth2ClientContext")).isTrue();
 	}
 
 	@Test
 	public void requestScopedWithNoClientId() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment);
 		initializeContext(ConfigForRequestScopedConfiguration.class, false);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(DefaultOAuth2ClientContext.class);
@@ -92,25 +90,24 @@ public class OAuth2RestOperationsConfigurationTests {
 
 	@Test
 	public void sessionScopedWithClientId() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.client.client-id=acme");
+		TestPropertyValues.of("security.oauth2.client.client-id=acme")
+				.applyTo(this.environment);
 		initializeContext(ConfigForSessionScopedConfiguration.class, false);
-		assertThat(this.context.containsBean("oauth2ClientContext"))
-				.isTrue();
+		assertThat(this.context.containsBean("oauth2ClientContext")).isTrue();
 	}
 
 	@Test
 	public void sessionScopedWithNoClientId() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment);
 		initializeContext(ConfigForSessionScopedConfiguration.class, false);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(DefaultOAuth2ClientContext.class);
 	}
 
-	private void initializeContext(Class<?> configuration, boolean isClientCredentials) {
+	private void initializeContext(Class<?> configuration, boolean clientCredentials) {
 		this.context = new SpringApplicationBuilder(configuration)
-				.environment(this.environment)
-				.web(!isClientCredentials).run();
+				.environment(this.environment).web(clientCredentials
+						? WebApplicationType.NONE : WebApplicationType.SERVLET)
+				.run();
 	}
 
 	@Configuration
@@ -118,15 +115,16 @@ public class OAuth2RestOperationsConfigurationTests {
 	protected static class WebApplicationConfiguration {
 
 		@Bean
-		public MockEmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new MockEmbeddedServletContainerFactory();
+		public MockServletWebServerFactory webServerFactory() {
+			return new MockServletWebServerFactory();
 		}
 
 	}
 
 	@Configuration
 	@Import({ OAuth2ClientConfiguration.class, OAuth2RestOperationsConfiguration.class })
-	protected static class ConfigForSessionScopedConfiguration extends WebApplicationConfiguration {
+	protected static class ConfigForSessionScopedConfiguration
+			extends WebApplicationConfiguration {
 
 		@Bean
 		public SecurityProperties securityProperties() {
@@ -136,7 +134,8 @@ public class OAuth2RestOperationsConfigurationTests {
 	}
 
 	@Configuration
-	protected static class ConfigForRequestScopedConfiguration extends WebApplicationConfiguration {
+	protected static class ConfigForRequestScopedConfiguration
+			extends WebApplicationConfiguration {
 
 	}
 

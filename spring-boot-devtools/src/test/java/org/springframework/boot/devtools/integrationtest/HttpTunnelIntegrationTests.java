@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
 
 package org.springframework.boot.devtools.integrationtest;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.devtools.integrationtest.HttpTunnelIntegrationTests.TunnelConfiguration.TestTunnelClient;
 import org.springframework.boot.devtools.remote.server.AccessManager;
 import org.springframework.boot.devtools.remote.server.Dispatcher;
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
@@ -35,20 +34,19 @@ import org.springframework.boot.devtools.tunnel.client.TunnelClient;
 import org.springframework.boot.devtools.tunnel.client.TunnelConnection;
 import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.devtools.tunnel.server.HttpTunnelServerHandler;
-import org.springframework.boot.devtools.tunnel.server.PortProvider;
 import org.springframework.boot.devtools.tunnel.server.SocketTargetServerConnection;
-import org.springframework.boot.devtools.tunnel.server.StaticPortProvider;
 import org.springframework.boot.devtools.tunnel.server.TargetServerConnection;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -61,62 +59,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class HttpTunnelIntegrationTests {
-
-	@Autowired
-	private Config config;
 
 	@Test
 	public void httpServerDirect() throws Exception {
-		String url = "http://localhost:" + this.config.httpServerPort + "/hello";
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+		context.register(ServerConfiguration.class);
+		context.refresh();
+		String url = "http://localhost:" + context.getWebServer().getPort() + "/hello";
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
+		context.close();
 	}
 
 	@Test
 	public void viaTunnel() throws Exception {
-		String url = "http://localhost:" + this.config.clientPort + "/hello";
+		AnnotationConfigServletWebServerApplicationContext serverContext = new AnnotationConfigServletWebServerApplicationContext();
+		serverContext.register(ServerConfiguration.class);
+		serverContext.refresh();
+		AnnotationConfigApplicationContext tunnelContext = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("server.port:" + serverContext.getWebServer().getPort())
+				.applyTo(tunnelContext);
+		tunnelContext.register(TunnelConfiguration.class);
+		tunnelContext.refresh();
+		String url = "http://localhost:"
+				+ tunnelContext.getBean(TestTunnelClient.class).port + "/hello";
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
+		serverContext.close();
+		tunnelContext.close();
 	}
 
 	@Configuration
 	@EnableWebMvc
-	static class Config {
-
-		private int clientPort = SocketUtils.findAvailableTcpPort();
-
-		private int httpServerPort = SocketUtils.findAvailableTcpPort();
+	static class ServerConfiguration {
 
 		@Bean
-		public EmbeddedServletContainerFactory container() {
-			return new TomcatEmbeddedServletContainerFactory(this.httpServerPort);
-		}
-
-		@Bean
-		public DispatcherFilter filter() {
-			PortProvider port = new StaticPortProvider(this.httpServerPort);
-			TargetServerConnection connection = new SocketTargetServerConnection(port);
-			HttpTunnelServer server = new HttpTunnelServer(connection);
-			HandlerMapper mapper = new UrlHandlerMapper("/httptunnel",
-					new HttpTunnelServerHandler(server));
-			Collection<HandlerMapper> mappers = Collections.singleton(mapper);
-			Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
-			return new DispatcherFilter(dispatcher);
-		}
-
-		@Bean
-		public TunnelClient tunnelClient() {
-			String url = "http://localhost:" + this.httpServerPort + "/httptunnel";
-			TunnelConnection connection = new HttpTunnelConnection(url,
-					new SimpleClientHttpRequestFactory());
-			return new TunnelClient(this.clientPort, connection);
+		public ServletWebServerFactory container() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
@@ -127,6 +111,47 @@ public class HttpTunnelIntegrationTests {
 		@Bean
 		public MyController myController() {
 			return new MyController();
+		}
+
+		@Bean
+		public DispatcherFilter filter(
+				AnnotationConfigServletWebServerApplicationContext context) {
+			TargetServerConnection connection = new SocketTargetServerConnection(
+					() -> context.getWebServer().getPort());
+			HttpTunnelServer server = new HttpTunnelServer(connection);
+			HandlerMapper mapper = new UrlHandlerMapper("/httptunnel",
+					new HttpTunnelServerHandler(server));
+			Collection<HandlerMapper> mappers = Collections.singleton(mapper);
+			Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
+			return new DispatcherFilter(dispatcher);
+		}
+
+	}
+
+	static class TunnelConfiguration {
+
+		@Bean
+		public TunnelClient tunnelClient(@Value("${server.port}") int serverPort) {
+			String url = "http://localhost:" + serverPort + "/httptunnel";
+			TunnelConnection connection = new HttpTunnelConnection(url,
+					new SimpleClientHttpRequestFactory());
+			return new TestTunnelClient(0, connection);
+		}
+
+		static class TestTunnelClient extends TunnelClient {
+
+			private int port;
+
+			TestTunnelClient(int listenPort, TunnelConnection tunnelConnection) {
+				super(listenPort, tunnelConnection);
+			}
+
+			@Override
+			public int start() throws IOException {
+				this.port = super.start();
+				return this.port;
+			}
+
 		}
 
 	}

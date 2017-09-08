@@ -20,7 +20,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -82,7 +82,7 @@ public class LdapAutoConfigurationTests {
 
 	private void load(String... properties) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, properties);
+		TestPropertyValues.of(properties).applyTo(this.context);
 		this.context.register(LdapAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,14 +93,8 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
-		ArrayList<Dependency> dependencies = new ArrayList<Dependency>(
-				metadata.getDependencies());
-		Collections.sort(dependencies, new Comparator<Dependency>() {
-			@Override
-			public int compare(Dependency o1, Dependency o2) {
-				return o1.getId().compareTo(o2.getId());
-			}
-		});
+		ArrayList<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
+		dependencies.sort(Comparator.comparing(Dependency::getId));
 		return dependencies;
 	}
 
@@ -108,16 +102,8 @@ class ServiceCapabilitiesReportGenerator {
 			StringBuilder report) {
 		report.append("Available project types:" + NEW_LINE);
 		report.append("------------------------" + NEW_LINE);
-		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<Entry<String, ProjectType>>(
-				new Comparator<Entry<String, ProjectType>>() {
-
-					@Override
-					public int compare(Entry<String, ProjectType> o1,
-							Entry<String, ProjectType> o2) {
-						return o1.getKey().compareTo(o2.getKey());
-					}
-
-				});
+		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(
+				Comparator.comparing(Entry::getKey));
 		entries.addAll(metadata.getProjectTypes().entrySet());
 		for (Entry<String, ProjectType> entry : entries) {
 			ProjectType type = entry.getValue();
@@ -150,8 +136,7 @@ class ServiceCapabilitiesReportGenerator {
 			InitializrServiceMetadata metadata) {
 		report.append("Defaults:" + NEW_LINE);
 		report.append("---------" + NEW_LINE);
-		List<String> defaultsKeys = new ArrayList<String>(
-				metadata.getDefaults().keySet());
+		List<String> defaultsKeys = new ArrayList<>(metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {
 			String defaultsValue = metadata.getDefaults().get(defaultsKey);

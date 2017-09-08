@@ -62,7 +62,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	private final Properties properties = new Properties();
 
 	public AutoConfigureAnnotationProcessor() {
-		Map<String, String> annotations = new LinkedHashMap<String, String>();
+		Map<String, String> annotations = new LinkedHashMap<>();
 		addAnnotations(annotations);
 		this.annotations = Collections.unmodifiableMap(annotations);
 	}
@@ -152,7 +152,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	@SuppressWarnings("unchecked")
 	private List<Object> getValues(AnnotationMirror annotation) {
-		List<Object> result = new ArrayList<Object>();
+		List<Object> result = new ArrayList<>();
 		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
 				.getElementValues().entrySet()) {
 			String attributeName = entry.getKey().getSimpleName().toString();
@@ -201,12 +201,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		if (!this.properties.isEmpty()) {
 			FileObject file = this.processingEnv.getFiler()
 					.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
-			OutputStream outputStream = file.openOutputStream();
-			try {
+			try (OutputStream outputStream = file.openOutputStream()) {
 				this.properties.store(outputStream, null);
-			}
-			finally {
-				outputStream.close();
 			}
 		}
 	}

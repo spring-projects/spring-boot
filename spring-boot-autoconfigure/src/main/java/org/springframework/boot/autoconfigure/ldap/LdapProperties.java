@@ -58,7 +58,7 @@ public class LdapProperties {
 	/**
 	 * LDAP specification settings.
 	 */
-	private Map<String, String> baseEnvironment = new HashMap<String, String>();
+	private Map<String, String> baseEnvironment = new HashMap<>();
 
 	public String[] getUrls() {
 		return this.urls;

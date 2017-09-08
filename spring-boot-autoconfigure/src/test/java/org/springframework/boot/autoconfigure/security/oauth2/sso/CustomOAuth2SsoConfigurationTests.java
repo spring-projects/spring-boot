@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -74,12 +73,6 @@ public class CustomOAuth2SsoConfigurationTests {
 	public void init() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.addFilters(this.filter).build();
-	}
-
-	@Test
-	public void homePageIsBasicAuth() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isUnauthorized())
-				.andExpect(header().string("WWW-Authenticate", startsWith("Basic")));
 	}
 
 	@Test

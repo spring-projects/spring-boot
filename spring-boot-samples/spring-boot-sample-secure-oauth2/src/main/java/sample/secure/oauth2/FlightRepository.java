@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package sample.secure.oauth2;
+
+import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,7 +35,7 @@ public interface FlightRepository extends CrudRepository<Flight, Long> {
 
 	@Override
 	@PreAuthorize("#oauth2.hasScope('read')")
-	Flight findOne(Long aLong);
+	Optional<Flight> findById(Long aLong);
 
 	@Override
 	@PreAuthorize("#oauth2.hasScope('write')")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +27,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.FlywayCallback;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -61,12 +63,13 @@ import org.springframework.util.ObjectUtils;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Jacques-Etienne Beaudet
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "flyway", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
@@ -75,6 +78,13 @@ public class FlywayAutoConfiguration {
 	@ConfigurationPropertiesBinding
 	public StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
 		return new StringOrNumberToMigrationVersionConverter();
+	}
+
+	@Bean
+	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(
+			ObjectProvider<List<Flyway>> flyways) {
+		return new FlywaySchemaManagementProvider(
+				flyways.getIfAvailable(Collections::emptyList));
 	}
 
 	@Configuration
@@ -92,15 +102,19 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
+		private List<FlywayCallback> flywayCallbacks;
+
 		public FlywayConfiguration(FlywayProperties properties,
 				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
-				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
+				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
+				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
+			this.flywayCallbacks = flywayCallbacks.getIfAvailable(Collections::emptyList);
 		}
 
 		@PostConstruct
@@ -126,7 +140,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "flyway")
+		@ConfigurationProperties(prefix = "spring.flyway")
 		public Flyway flyway() {
 			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {
@@ -140,6 +154,8 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
+			flyway.setCallbacks(this.flywayCallbacks
+					.toArray(new FlywayCallback[this.flywayCallbacks.size()]));
 			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
 			return flyway;
 		}
@@ -229,7 +245,7 @@ public class FlywayAutoConfiguration {
 		private static final Set<ConvertiblePair> CONVERTIBLE_TYPES;
 
 		static {
-			Set<ConvertiblePair> types = new HashSet<ConvertiblePair>(2);
+			Set<ConvertiblePair> types = new HashSet<>(2);
 			types.add(new ConvertiblePair(String.class, MigrationVersion.class));
 			types.add(new ConvertiblePair(Number.class, MigrationVersion.class));
 			CONVERTIBLE_TYPES = Collections.unmodifiableSet(types);

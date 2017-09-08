@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class RichGaugeExporter extends AbstractMetricExporter {
 	@Override
 	protected Iterable<Metric<?>> next(String group) {
 		RichGauge rich = this.reader.findOne(group);
-		Collection<Metric<?>> metrics = new ArrayList<Metric<?>>();
+		Collection<Metric<?>> metrics = new ArrayList<>();
 		metrics.add(new Metric<Number>(group + MIN, rich.getMin()));
 		metrics.add(new Metric<Number>(group + MAX, rich.getMax()));
 		metrics.add(new Metric<Number>(group + COUNT, rich.getCount()));
@@ -83,7 +83,7 @@ public class RichGaugeExporter extends AbstractMetricExporter {
 
 	@Override
 	protected Iterable<String> groups() {
-		Collection<String> names = new HashSet<String>();
+		Collection<String> names = new HashSet<>();
 		for (RichGauge rich : this.reader.findAll()) {
 			names.add(rich.getName());
 		}

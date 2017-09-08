@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,9 @@ import javax.cache.configuration.Configuration;
 import javax.cache.configuration.OptionalFeature;
 import javax.cache.spi.CachingProvider;
 
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -50,26 +47,19 @@ public class MockCachingProvider implements CachingProvider {
 		CacheManager cacheManager = mock(CacheManager.class);
 		given(cacheManager.getURI()).willReturn(uri);
 		given(cacheManager.getClassLoader()).willReturn(classLoader);
-		final Map<String, Cache> caches = new HashMap<String, Cache>();
+		final Map<String, Cache> caches = new HashMap<>();
 		given(cacheManager.getCacheNames()).willReturn(caches.keySet());
-		given(cacheManager.getCache(anyString())).willAnswer(new Answer<Cache>() {
-			@Override
-			public Cache answer(InvocationOnMock invocationOnMock) throws Throwable {
-				String cacheName = (String) invocationOnMock.getArguments()[0];
-				return caches.get(cacheName);
-			}
+		given(cacheManager.getCache(anyString())).willAnswer((invocation) -> {
+			String cacheName = (String) invocation.getArguments()[0];
+			return caches.get(cacheName);
 		});
 		given(cacheManager.createCache(anyString(), any(Configuration.class)))
-				.will(new Answer<Cache>() {
-					@Override
-					public Cache answer(InvocationOnMock invocationOnMock)
-							throws Throwable {
-						String cacheName = (String) invocationOnMock.getArguments()[0];
-						Cache cache = mock(Cache.class);
-						given(cache.getName()).willReturn(cacheName);
-						caches.put(cacheName, cache);
-						return cache;
-					}
+				.will((invocation) -> {
+					String cacheName = (String) invocation.getArguments()[0];
+					Cache cache = mock(Cache.class);
+					given(cache.getName()).willReturn(cacheName);
+					caches.put(cacheName, cache);
+					return cache;
 				});
 		return cacheManager;
 	}

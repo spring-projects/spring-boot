@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class InitCommand extends OptionParsingCommand {
 
 	@Override
 	public Collection<HelpExample> getExamples() {
-		List<HelpExample> examples = new ArrayList<HelpExample>();
+		List<HelpExample> examples = new ArrayList<>();
 		examples.add(new HelpExample("To list all the capabilities of the service",
 				"spring init --list"));
 		examples.add(new HelpExample("To creates a default project", "spring init"));

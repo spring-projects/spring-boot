@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -51,15 +49,10 @@ public class MessageChannelMetricWriterTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.channel.send(any(Message.class))).willAnswer(new Answer<Object>() {
-
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				MessageChannelMetricWriterTests.this.handler
-						.handleMessage(invocation.getArgumentAt(0, Message.class));
-				return true;
-			}
-
+		given(this.channel.send(any(Message.class))).willAnswer((invocation) -> {
+			MessageChannelMetricWriterTests.this.handler
+					.handleMessage(invocation.getArgument(0));
+			return true;
 		});
 		this.writer = new MessageChannelMetricWriter(this.channel);
 		this.handler = new MetricWriterMessageHandler(this.observer);
@@ -67,14 +60,14 @@ public class MessageChannelMetricWriterTests {
 
 	@Test
 	public void messageSentOnAdd() {
-		this.writer.increment(new Delta<Integer>("foo", 1));
+		this.writer.increment(new Delta<>("foo", 1));
 		verify(this.channel).send(any(Message.class));
 		verify(this.observer).increment(any(Delta.class));
 	}
 
 	@Test
 	public void messageSentOnSet() {
-		this.writer.set(new Metric<Double>("foo", 1d));
+		this.writer.set(new Metric<>("foo", 1d));
 		verify(this.channel).send(any(Message.class));
 		verify(this.observer).set(any(Metric.class));
 	}

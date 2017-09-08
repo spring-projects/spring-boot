@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,24 +28,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConditionalOnExpression}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class ConditionalOnExpressionTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void testResourceExists() {
-		this.context.register(BasicConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isTrue();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+	public void expressionIsTrue() {
+		this.contextRunner.withUserConfiguration(BasicConfiguration.class)
+				.run((context) -> assertThat(context.getBean("foo")).isEqualTo("foo"));
 	}
 
 	@Test
-	public void testResourceNotExists() {
-		this.context.register(MissingConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isFalse();
+	public void expressionIsFalse() {
+		this.contextRunner.withUserConfiguration(MissingConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
+	}
+
+	@Test
+	public void expressionIsNull() {
+		this.contextRunner.withUserConfiguration(NullConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Configuration
@@ -62,6 +66,17 @@ public class ConditionalOnExpressionTests {
 	@Configuration
 	@ConditionalOnExpression("true")
 	protected static class BasicConfiguration {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnExpression("true ? null : false")
+	protected static class NullConfiguration {
 
 		@Bean
 		public String foo() {

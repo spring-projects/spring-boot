@@ -24,16 +24,16 @@ import org.apache.solr.common.util.NamedList;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -67,29 +67,29 @@ public class SolrHealthIndicatorTests {
 	@Test
 	public void solrIsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("solrStatus")).isEqualTo("OK");
+		assertThat(health.getDetails().get("status")).isEqualTo(0);
 	}
 
 	@Test
 	public void solrIsUpAndRequestFailed() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willReturn(mockResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("solrStatus")).isEqualTo(400);
+		assertThat(health.getDetails().get("status")).isEqualTo(400);
 	}
 
 	@Test
 	public void solrIsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willThrow(new IOException("Connection failed"));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
@@ -99,8 +99,8 @@ public class SolrHealthIndicatorTests {
 	}
 
 	private NamedList<Object> mockResponse(int status) {
-		NamedList<Object> response = new NamedList<Object>();
-		NamedList<Object> headers = new NamedList<Object>();
+		NamedList<Object> response = new NamedList<>();
+		NamedList<Object> headers = new NamedList<>();
 		headers.add("status", status);
 		response.add("responseHeader", headers);
 		return response;

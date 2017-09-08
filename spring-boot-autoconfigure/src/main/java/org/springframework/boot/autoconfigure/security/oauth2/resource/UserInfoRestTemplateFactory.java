@@ -26,6 +26,7 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface UserInfoRestTemplateFactory {
 
 	/**

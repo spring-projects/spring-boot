@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -36,6 +35,7 @@ import org.springframework.util.Assert;
  * {@code spring.template.provider.cache} property is set to {@code false}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 public class TemplateAvailabilityProviders {
@@ -49,7 +49,7 @@ public class TemplateAvailabilityProviders {
 	/**
 	 * Resolved template views, returning already cached instances without a global lock.
 	 */
-	private final Map<String, TemplateAvailabilityProvider> resolved = new ConcurrentHashMap<String, TemplateAvailabilityProvider>(
+	private final Map<String, TemplateAvailabilityProvider> resolved = new ConcurrentHashMap<>(
 			CACHE_LIMIT);
 
 	/**
@@ -96,7 +96,7 @@ public class TemplateAvailabilityProviders {
 	protected TemplateAvailabilityProviders(
 			Collection<? extends TemplateAvailabilityProvider> providers) {
 		Assert.notNull(providers, "Providers must not be null");
-		this.providers = new ArrayList<TemplateAvailabilityProvider>(providers);
+		this.providers = new ArrayList<>(providers);
 	}
 
 	/**
@@ -134,10 +134,9 @@ public class TemplateAvailabilityProviders {
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
-				environment, "spring.template.provider.");
-		if (!propertyResolver.getProperty("cache", Boolean.class, true)) {
+		Boolean useCache = environment.getProperty("spring.template.provider.cache",
+				Boolean.class, true);
+		if (!useCache) {
 			return findProvider(view, environment, classLoader, resourceLoader);
 		}
 		TemplateAvailabilityProvider provider = this.resolved.get(view);

@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.cache;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import com.couchbase.client.spring.cache.CouchbaseCache;
 import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
-import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -46,17 +44,19 @@ import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
 import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
-import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -66,21 +66,17 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.guava.GuavaCache;
-import org.springframework.cache.guava.GuavaCacheManager;
-import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -93,451 +89,508 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Mark Paluch
  */
+@RunWith(ModifiedClassPathRunner.class)
+@ClassPathExclusions("hazelcast-client-*.jar")
 public class CacheAutoConfigurationTests {
 
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
-
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void tearDown() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
 
 	@Test
 	public void noEnableCaching() {
-		load(EmptyConfiguration.class);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(CacheManager.class);
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run(
+				(context) -> assertThat(context).doesNotHaveBean(CacheManager.class));
 	}
 
 	@Test
 	public void cacheManagerBackOff() {
-		load(CustomCacheManagerConfiguration.class);
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(
-				ConcurrentMapCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("custom1");
+		this.contextRunner.withUserConfiguration(CustomCacheManagerConfiguration.class)
+				.run((context) -> assertThat(
+						getCacheManager(context, ConcurrentMapCacheManager.class)
+								.getCacheNames()).containsOnly("custom1"));
 	}
 
 	@Test
 	public void cacheManagerFromSupportBackOff() {
-		load(CustomCacheManagerFromSupportConfiguration.class);
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(
-				ConcurrentMapCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("custom1");
+		this.contextRunner
+				.withUserConfiguration(CustomCacheManagerFromSupportConfiguration.class)
+				.run((context) -> assertThat(
+						getCacheManager(context, ConcurrentMapCacheManager.class)
+								.getCacheNames()).containsOnly("custom1"));
 	}
 
 	@Test
 	public void cacheResolverFromSupportBackOff() throws Exception {
-		load(CustomCacheResolverFromSupportConfiguration.class);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(CacheManager.class);
+		this.contextRunner
+				.withUserConfiguration(CustomCacheResolverFromSupportConfiguration.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(CacheManager.class));
 	}
 
 	@Test
 	public void customCacheResolverCanBeDefined() throws Exception {
-		load(SpecificCacheResolverConfiguration.class, "spring.cache.type=simple");
-		validateCacheManager(ConcurrentMapCacheManager.class);
-		assertThat(this.context.getBeansOfType(CacheResolver.class)).hasSize(1);
+		this.contextRunner.withUserConfiguration(SpecificCacheResolverConfiguration.class)
+				.withPropertyValues("spring.cache.type=simple").run((context) -> {
+					getCacheManager(context, ConcurrentMapCacheManager.class);
+					assertThat(context).hasSingleBean(CacheResolver.class);
+				});
 	}
 
 	@Test
 	public void notSupportedCachingMode() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("cache");
-		this.thrown.expectMessage("foobar");
-		load(DefaultCacheConfiguration.class, "spring.cache.type=foobar");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=foobar")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class).hasMessageContaining(
+								"Failed to bind properties under 'spring.cache.type'"));
 	}
 
 	@Test
 	public void simpleCacheExplicit() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=simple");
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(
-				ConcurrentMapCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).isEmpty();
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=simple")
+				.run((context) -> assertThat(
+						getCacheManager(context, ConcurrentMapCacheManager.class)
+								.getCacheNames()).isEmpty());
 	}
 
 	@Test
 	public void simpleCacheWithCustomizers() {
-		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "simple",
-				"allCacheManagerCustomizer", "simpleCacheManagerCustomizer");
+		this.contextRunner
+				.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "simple")
+				.run(dunno("allCacheManagerCustomizer", "simpleCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void simpleCacheExplicitWithCacheNames() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=simple",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(
-				ConcurrentMapCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=simple",
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> {
+					ConcurrentMapCacheManager cacheManager = getCacheManager(context,
+							ConcurrentMapCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+				});
 	}
 
 	@Test
 	public void genericCacheWithCaches() {
-		load(GenericCacheConfiguration.class);
-		SimpleCacheManager cacheManager = validateCacheManager(SimpleCacheManager.class);
-		assertThat(cacheManager.getCache("first"))
-				.isEqualTo(this.context.getBean("firstCache"));
-		assertThat(cacheManager.getCache("second"))
-				.isEqualTo(this.context.getBean("secondCache"));
-		assertThat(cacheManager.getCacheNames()).hasSize(2);
+		this.contextRunner.withUserConfiguration(GenericCacheConfiguration.class)
+				.run((context) -> {
+					SimpleCacheManager cacheManager = getCacheManager(context,
+							SimpleCacheManager.class);
+					assertThat(cacheManager.getCache("first"))
+							.isEqualTo(context.getBean("firstCache"));
+					assertThat(cacheManager.getCache("second"))
+							.isEqualTo(context.getBean("secondCache"));
+					assertThat(cacheManager.getCacheNames()).hasSize(2);
+				});
 	}
 
 	@Test
 	public void genericCacheExplicit() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("No cache manager could be auto-configured");
-		this.thrown.expectMessage("GENERIC");
-		load(DefaultCacheConfiguration.class, "spring.cache.type=generic");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=generic")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining("No cache manager could be auto-configured")
+						.hasMessageContaining("GENERIC"));
 	}
 
 	@Test
 	public void genericCacheWithCustomizers() {
-		testCustomizers(GenericCacheAndCustomizersConfiguration.class, "generic",
-				"allCacheManagerCustomizer", "genericCacheManagerCustomizer");
+		this.contextRunner
+				.withUserConfiguration(GenericCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "generic")
+				.run(dunno("allCacheManagerCustomizer", "genericCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void genericCacheExplicitWithCaches() {
-		load(GenericCacheConfiguration.class, "spring.cache.type=generic");
-		SimpleCacheManager cacheManager = validateCacheManager(SimpleCacheManager.class);
-		assertThat(cacheManager.getCache("first"))
-				.isEqualTo(this.context.getBean("firstCache"));
-		assertThat(cacheManager.getCache("second"))
-				.isEqualTo(this.context.getBean("secondCache"));
-		assertThat(cacheManager.getCacheNames()).hasSize(2);
+		this.contextRunner.withUserConfiguration(GenericCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=generic").run((context) -> {
+					SimpleCacheManager cacheManager = getCacheManager(context,
+							SimpleCacheManager.class);
+					assertThat(cacheManager.getCache("first"))
+							.isEqualTo(context.getBean("firstCache"));
+					assertThat(cacheManager.getCache("second"))
+							.isEqualTo(context.getBean("secondCache"));
+					assertThat(cacheManager.getCacheNames()).hasSize(2);
+				});
 	}
 
 	@Test
 	public void couchbaseCacheExplicit() {
-		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase");
-		CouchbaseCacheManager cacheManager = validateCacheManager(
-				CouchbaseCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).isEmpty();
+		this.contextRunner.withUserConfiguration(CouchbaseCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=couchbase").run((context) -> {
+					CouchbaseCacheManager cacheManager = getCacheManager(context,
+							CouchbaseCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).isEmpty();
+				});
 	}
 
 	@Test
 	public void couchbaseCacheWithCustomizers() {
-		testCustomizers(CouchbaseCacheAndCustomizersConfiguration.class, "couchbase",
-				"allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer");
+		this.contextRunner
+				.withUserConfiguration(CouchbaseCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "couchbase").run(dunno(
+						"allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void couchbaseCacheExplicitWithCaches() {
-		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		CouchbaseCacheManager cacheManager = validateCacheManager(
-				CouchbaseCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-		Cache cache = cacheManager.getCache("foo");
-		assertThat(cache).isInstanceOf(CouchbaseCache.class);
-		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(0);
-		assertThat(((CouchbaseCache) cache).getNativeCache())
-				.isEqualTo(this.context.getBean("bucket"));
+		this.contextRunner.withUserConfiguration(CouchbaseCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=couchbase",
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> {
+					CouchbaseCacheManager cacheManager = getCacheManager(context,
+							CouchbaseCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+					Cache cache = cacheManager.getCache("foo");
+					assertThat(cache).isInstanceOf(CouchbaseCache.class);
+					assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(0);
+					assertThat(((CouchbaseCache) cache).getNativeCache())
+							.isEqualTo(context.getBean("bucket"));
+				});
 	}
 
 	@Test
 	public void couchbaseCacheExplicitWithTtl() {
-		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase",
-				"spring.cache.cacheNames=foo,bar",
-				"spring.cache.couchbase.expiration=2000");
-		CouchbaseCacheManager cacheManager = validateCacheManager(
-				CouchbaseCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-		Cache cache = cacheManager.getCache("foo");
-		assertThat(cache).isInstanceOf(CouchbaseCache.class);
-		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2);
-		assertThat(((CouchbaseCache) cache).getNativeCache())
-				.isEqualTo(this.context.getBean("bucket"));
+		this.contextRunner.withUserConfiguration(CouchbaseCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=couchbase",
+						"spring.cache.cacheNames=foo,bar",
+						"spring.cache.couchbase.expiration=2000")
+				.run((context) -> {
+					CouchbaseCacheManager cacheManager = getCacheManager(context,
+							CouchbaseCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+					Cache cache = cacheManager.getCache("foo");
+					assertThat(cache).isInstanceOf(CouchbaseCache.class);
+					assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2);
+					assertThat(((CouchbaseCache) cache).getNativeCache())
+							.isEqualTo(context.getBean("bucket"));
+				});
 	}
 
 	@Test
 	public void redisCacheExplicit() {
-		load(RedisCacheConfiguration.class, "spring.cache.type=redis");
-		RedisCacheManager cacheManager = validateCacheManager(RedisCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).isEmpty();
-		assertThat((Boolean) new DirectFieldAccessor(cacheManager)
-				.getPropertyValue("usePrefix")).isTrue();
+		this.contextRunner.withUserConfiguration(RedisCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=redis").run((context) -> {
+					RedisCacheManager cacheManager = getCacheManager(context,
+							RedisCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).isEmpty();
+					assertThat(
+							((org.springframework.data.redis.cache.RedisCacheConfiguration) new DirectFieldAccessor(
+									cacheManager).getPropertyValue("defaultCacheConfig"))
+											.usePrefix()).isTrue();
+				});
 	}
 
 	@Test
 	public void redisCacheWithCustomizers() {
-		testCustomizers(RedisCacheAndCustomizersConfiguration.class, "redis",
-				"allCacheManagerCustomizer", "redisCacheManagerCustomizer");
+		this.contextRunner
+				.withUserConfiguration(RedisCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "redis")
+				.run(dunno("allCacheManagerCustomizer", "redisCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void redisCacheExplicitWithCaches() {
-		load(RedisCacheConfiguration.class, "spring.cache.type=redis",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		RedisCacheManager cacheManager = validateCacheManager(RedisCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		this.contextRunner.withUserConfiguration(RedisCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=redis",
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> {
+					RedisCacheManager cacheManager = getCacheManager(context,
+							RedisCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+				});
 	}
 
 	@Test
 	public void noOpCacheExplicit() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=none");
-		NoOpCacheManager cacheManager = validateCacheManager(NoOpCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).isEmpty();
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=none").run((context) -> {
+					NoOpCacheManager cacheManager = getCacheManager(context,
+							NoOpCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).isEmpty();
+				});
 	}
 
 	@Test
 	public void jCacheCacheNoProviderExplicit() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("No cache manager could be auto-configured");
-		this.thrown.expectMessage("JCACHE");
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining("No cache manager could be auto-configured")
+						.hasMessageContaining("JCACHE"));
 	}
 
 	@Test
 	public void jCacheCacheWithProvider() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn);
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).isEmpty();
-		assertThat(this.context.getBean(javax.cache.CacheManager.class))
-				.isEqualTo(cacheManager.getCacheManager());
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn)
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).isEmpty();
+					assertThat(context.getBean(javax.cache.CacheManager.class))
+							.isEqualTo(cacheManager.getCacheManager());
+				});
 	}
 
 	@Test
 	public void jCacheCacheWithCaches() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn,
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+				});
 	}
 
 	@Test
 	public void jCacheCacheWithCachesAndCustomConfig() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
-		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.cacheNames[0]=one", "spring.cache.cacheNames[1]=two");
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
-		CompleteConfiguration<?, ?> defaultCacheConfiguration = this.context
-				.getBean(CompleteConfiguration.class);
-		verify(cacheManager.getCacheManager()).createCache("one",
-				defaultCacheConfiguration);
-		verify(cacheManager.getCacheManager()).createCache("two",
-				defaultCacheConfiguration);
+		this.contextRunner.withUserConfiguration(JCacheCustomConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn,
+						"spring.cache.cacheNames[0]=one",
+						"spring.cache.cacheNames[1]=two")
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
+					CompleteConfiguration<?, ?> defaultCacheConfiguration = context
+							.getBean(CompleteConfiguration.class);
+					verify(cacheManager.getCacheManager()).createCache("one",
+							defaultCacheConfiguration);
+					verify(cacheManager.getCacheManager()).createCache("two",
+							defaultCacheConfiguration);
+				});
 	}
 
 	@Test
 	public void jCacheCacheWithExistingJCacheManager() {
-		load(JCacheCustomCacheManager.class, "spring.cache.type=jcache");
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		assertThat(cacheManager.getCacheManager())
-				.isEqualTo(this.context.getBean("customJCacheCacheManager"));
+		this.contextRunner.withUserConfiguration(JCacheCustomCacheManager.class)
+				.withPropertyValues("spring.cache.type=jcache").run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					assertThat(cacheManager.getCacheManager())
+							.isEqualTo(context.getBean("customJCacheCacheManager"));
+				});
 	}
 
 	@Test
 	public void jCacheCacheWithUnknownProvider() {
-		String wrongCachingProviderFqn = "org.acme.FooBar";
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage(wrongCachingProviderFqn);
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + wrongCachingProviderFqn);
+		String wrongCachingProviderClassName = "org.acme.FooBar";
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + wrongCachingProviderClassName)
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining(wrongCachingProviderClassName));
 	}
 
 	@Test
-	public void jCacheCacheWithConfig() throws IOException {
+	public void jCacheCacheWithConfig() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
-		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
-		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation);
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		Resource configResource = new ClassPathResource(configLocation);
-		assertThat(cacheManager.getCacheManager().getURI())
-				.isEqualTo(configResource.getURI());
+		String configLocation = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
+		this.contextRunner.withUserConfiguration(JCacheCustomConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn,
+						"spring.cache.jcache.config=" + configLocation)
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					Resource configResource = new ClassPathResource(configLocation);
+					assertThat(cacheManager.getCacheManager().getURI())
+							.isEqualTo(configResource.getURI());
+				});
 	}
 
 	@Test
 	public void jCacheCacheWithWrongConfig() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
 		String configLocation = "org/springframework/boot/autoconfigure/cache/does-not-exist.xml";
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("does not exist");
-		this.thrown.expectMessage(configLocation);
-		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation);
+		this.contextRunner.withUserConfiguration(JCacheCustomConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn,
+						"spring.cache.jcache.config=" + configLocation)
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining("does not exist")
+						.hasMessageContaining(configLocation));
 	}
 
 	@Test
 	public void ehcacheCacheWithCaches() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache");
-		EhCacheCacheManager cacheManager = validateCacheManager(
-				EhCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("cacheTest1", "cacheTest2");
-		assertThat(this.context.getBean(net.sf.ehcache.CacheManager.class))
-				.isEqualTo(cacheManager.getCacheManager());
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=ehcache").run((context) -> {
+					EhCacheCacheManager cacheManager = getCacheManager(context,
+							EhCacheCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("cacheTest1",
+							"cacheTest2");
+					assertThat(context.getBean(net.sf.ehcache.CacheManager.class))
+							.isEqualTo(cacheManager.getCacheManager());
+				});
 	}
 
 	@Test
 	public void ehcacheCacheWithCustomizers() {
-		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "ehcache",
-				"allCacheManagerCustomizer", "ehcacheCacheManagerCustomizer");
+		this.contextRunner
+				.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "ehcache")
+				.run(dunno("allCacheManagerCustomizer", "ehcacheCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void ehcacheCacheWithConfig() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache",
-				"spring.cache.ehcache.config=cache/ehcache-override.xml");
-		EhCacheCacheManager cacheManager = validateCacheManager(
-				EhCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("cacheOverrideTest1",
-				"cacheOverrideTest2");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=ehcache",
+						"spring.cache.ehcache.config=cache/ehcache-override.xml")
+				.run((context) -> {
+					EhCacheCacheManager cacheManager = getCacheManager(context,
+							EhCacheCacheManager.class);
+					assertThat(cacheManager.getCacheNames())
+							.containsOnly("cacheOverrideTest1", "cacheOverrideTest2");
+				});
 	}
 
 	@Test
 	public void ehcacheCacheWithExistingCacheManager() {
-		load(EhCacheCustomCacheManager.class, "spring.cache.type=ehcache");
-		EhCacheCacheManager cacheManager = validateCacheManager(
-				EhCacheCacheManager.class);
-		assertThat(cacheManager.getCacheManager())
-				.isEqualTo(this.context.getBean("customEhCacheCacheManager"));
+		this.contextRunner.withUserConfiguration(EhCacheCustomCacheManager.class)
+				.withPropertyValues("spring.cache.type=ehcache").run((context) -> {
+					EhCacheCacheManager cacheManager = getCacheManager(context,
+							EhCacheCacheManager.class);
+					assertThat(cacheManager.getCacheManager())
+							.isEqualTo(context.getBean("customEhCacheCacheManager"));
+				});
 	}
 
 	@Test
 	public void ehcache3AsJCacheWithCaches() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn,
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+				});
 	}
 
 	@Test
 	public void ehcache3AsJCacheWithConfig() throws IOException {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation);
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn,
+						"spring.cache.jcache.config=" + configLocation)
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
 
-		Resource configResource = new ClassPathResource(configLocation);
-		assertThat(cacheManager.getCacheManager().getURI())
-				.isEqualTo(configResource.getURI());
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+					Resource configResource = new ClassPathResource(configLocation);
+					assertThat(cacheManager.getCacheManager().getURI())
+							.isEqualTo(configResource.getURI());
+					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+				});
 	}
 
 	@Test
 	public void hazelcastCacheExplicit() {
-		load(new Class[] { HazelcastAutoConfiguration.class,
-				DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast");
-		HazelcastCacheManager cacheManager = validateCacheManager(
-				HazelcastCacheManager.class);
-		// NOTE: the hazelcast implementation knows about a cache in a lazy manner.
-		cacheManager.getCache("defaultCache");
-		assertThat(cacheManager.getCacheNames()).containsOnly("defaultCache");
-		assertThat(this.context.getBean(HazelcastInstance.class))
-				.isEqualTo(cacheManager.getHazelcastInstance());
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(HazelcastAutoConfiguration.class))
+				.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=hazelcast").run((context) -> {
+					HazelcastCacheManager cacheManager = getCacheManager(context,
+							HazelcastCacheManager.class);
+					// NOTE: the hazelcast implementation knows about a cache in a lazy
+					// manner.
+					cacheManager.getCache("defaultCache");
+					assertThat(cacheManager.getCacheNames()).containsOnly("defaultCache");
+					assertThat(context.getBean(HazelcastInstance.class))
+							.isEqualTo(cacheManager.getHazelcastInstance());
+				});
 	}
 
 	@Test
 	public void hazelcastCacheWithCustomizers() {
-		testCustomizers(HazelcastCacheAndCustomizersConfiguration.class, "hazelcast",
-				"allCacheManagerCustomizer", "hazelcastCacheManagerCustomizer");
-	}
-
-	@Test
-	@Deprecated
-	public void hazelcastCacheWithConfig() throws IOException {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
-				"spring.cache.hazelcast.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		HazelcastCacheManager cacheManager = validateCacheManager(
-				HazelcastCacheManager.class);
-		HazelcastInstance actual = cacheManager.getHazelcastInstance();
-		assertThat(actual).isSameAs(hazelcastInstance);
-		assertThat(actual.getConfig().getConfigurationUrl())
-				.isEqualTo(new ClassPathResource(
-						"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml")
-								.getURL());
-		cacheManager.getCache("foobar");
-		assertThat(cacheManager.getCacheNames()).containsOnly("foobar");
-	}
-
-	@Test
-	@Deprecated
-	public void hazelcastWithWrongConfig() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("foo/bar/unknown.xml");
-		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
-				"spring.cache.hazelcast.config=foo/bar/unknown.xml");
+		this.contextRunner
+				.withUserConfiguration(HazelcastCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "hazelcast").run(dunno(
+						"allCacheManagerCustomizer", "hazelcastCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void hazelcastCacheWithExistingHazelcastInstance() {
-		load(HazelcastCustomHazelcastInstance.class, "spring.cache.type=hazelcast");
-		HazelcastCacheManager cacheManager = validateCacheManager(
-				HazelcastCacheManager.class);
-		assertThat(cacheManager.getHazelcastInstance())
-				.isEqualTo(this.context.getBean("customHazelcastInstance"));
+		this.contextRunner.withUserConfiguration(HazelcastCustomHazelcastInstance.class)
+				.withPropertyValues("spring.cache.type=hazelcast").run((context) -> {
+					HazelcastCacheManager cacheManager = getCacheManager(context,
+							HazelcastCacheManager.class);
+					assertThat(cacheManager.getHazelcastInstance())
+							.isEqualTo(context.getBean("customHazelcastInstance"));
+				});
 	}
 
 	@Test
 	public void hazelcastCacheWithHazelcastAutoConfiguration() throws IOException {
-		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
-		load(new Class[] { HazelcastAutoConfiguration.class,
-				DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast",
-				"spring.hazelcast.config=" + mainConfig);
-		HazelcastCacheManager cacheManager = validateCacheManager(
-				HazelcastCacheManager.class);
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		assertThat(cacheManager.getHazelcastInstance()).isEqualTo(hazelcastInstance);
-		assertThat(hazelcastInstance.getConfig().getConfigurationFile())
-				.isEqualTo(new ClassPathResource(mainConfig).getFile());
-		assertThat(cacheManager.getCache("foobar")).isNotNull();
-		assertThat(cacheManager.getCacheNames()).containsOnly("foobar");
-	}
-
-	@Test
-	@Deprecated
-	public void hazelcastCacheWithMainHazelcastAutoConfigurationAndSeparateCacheConfig()
-			throws IOException {
-		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
-		String cacheConfig = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
-		load(new Class[] { HazelcastAutoConfiguration.class,
-				DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast",
-				"spring.cache.hazelcast.config=" + cacheConfig,
-				"spring.hazelcast.config=" + mainConfig);
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		HazelcastCacheManager cacheManager = validateCacheManager(
-				HazelcastCacheManager.class);
-		HazelcastInstance cacheHazelcastInstance = cacheManager.getHazelcastInstance();
-		assertThat(cacheHazelcastInstance).isNotEqualTo(hazelcastInstance); // Our custom
-		assertThat(hazelcastInstance.getConfig().getConfigurationFile())
-				.isEqualTo(new ClassPathResource(mainConfig).getFile());
-		assertThat(cacheHazelcastInstance.getConfig().getConfigurationFile())
-				.isEqualTo(new ClassPathResource(cacheConfig).getFile());
+		String hazelcastConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(HazelcastAutoConfiguration.class))
+				.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=hazelcast",
+						"spring.hazelcast.config=" + hazelcastConfig)
+				.run((context) -> {
+					HazelcastCacheManager cacheManager = getCacheManager(context,
+							HazelcastCacheManager.class);
+					HazelcastInstance hazelcastInstance = context
+							.getBean(HazelcastInstance.class);
+					assertThat(cacheManager.getHazelcastInstance())
+							.isSameAs(hazelcastInstance);
+					assertThat(hazelcastInstance.getConfig().getConfigurationFile())
+							.isEqualTo(new ClassPathResource(hazelcastConfig).getFile());
+					assertThat(cacheManager.getCache("foobar")).isNotNull();
+					assertThat(cacheManager.getCacheNames()).containsOnly("foobar");
+				});
 	}
 
 	@Test
 	public void hazelcastAsJCacheWithCaches() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		try {
-			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-					"spring.cache.jcache.provider=" + cachingProviderFqn,
-					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-			JCacheCacheManager cacheManager = validateCacheManager(
-					JCacheCacheManager.class);
-			assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-			assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(1);
+			this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+					.withPropertyValues("spring.cache.type=jcache",
+							"spring.cache.jcache.provider=" + cachingProviderFqn,
+							"spring.cache.cacheNames[0]=foo",
+							"spring.cache.cacheNames[1]=bar")
+					.run((context) -> {
+						JCacheCacheManager cacheManager = getCacheManager(context,
+								JCacheCacheManager.class);
+						assertThat(cacheManager.getCacheNames()).containsOnly("foo",
+								"bar");
+						assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(1);
+					});
 		}
 		finally {
 			Caching.getCachingProvider(cachingProviderFqn).close();
@@ -548,17 +601,19 @@ public class CacheAutoConfigurationTests {
 	public void hazelcastAsJCacheWithConfig() throws IOException {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		try {
-			String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
-			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-					"spring.cache.jcache.provider=" + cachingProviderFqn,
-					"spring.cache.jcache.config=" + configLocation);
-			JCacheCacheManager cacheManager = validateCacheManager(
-					JCacheCacheManager.class);
-
-			Resource configResource = new ClassPathResource(configLocation);
-			assertThat(cacheManager.getCacheManager().getURI())
-					.isEqualTo(configResource.getURI());
-			assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(1);
+			String configLocation = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
+			this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+					.withPropertyValues("spring.cache.type=jcache",
+							"spring.cache.jcache.provider=" + cachingProviderFqn,
+							"spring.cache.jcache.config=" + configLocation)
+					.run((context) -> {
+						JCacheCacheManager cacheManager = getCacheManager(context,
+								JCacheCacheManager.class);
+						Resource configResource = new ClassPathResource(configLocation);
+						assertThat(cacheManager.getCacheManager().getURI())
+								.isEqualTo(configResource.getURI());
+						assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(1);
+					});
 		}
 		finally {
 			Caching.getCachingProvider(cachingProviderFqn).close();
@@ -568,256 +623,211 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void hazelcastAsJCacheWithExistingHazelcastInstance() throws IOException {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
-		load(new Class[] { HazelcastAutoConfiguration.class,
-				DefaultCacheConfiguration.class }, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn);
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		javax.cache.CacheManager jCacheManager = cacheManager.getCacheManager();
-		assertThat(jCacheManager)
-				.isInstanceOf(com.hazelcast.cache.HazelcastCacheManager.class);
-		assertThat(this.context.getBeansOfType(HazelcastInstance.class)).hasSize(1);
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		assertThat(((com.hazelcast.cache.HazelcastCacheManager) jCacheManager)
-				.getHazelcastInstance()).isSameAs(hazelcastInstance);
-		assertThat(hazelcastInstance.getName()).isEqualTo("default-instance");
-		assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(1);
-	}
-
-	@Test
-	public void hazelcastAsJCacheWithMainHazelcastAutoConfigurationAndSeparateCacheConfig()
-			throws IOException {
-		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
-		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
-		String cacheConfig = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
-		load(new Class[] { HazelcastAutoConfiguration.class,
-				DefaultCacheConfiguration.class }, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + cacheConfig,
-				"spring.hazelcast.config=" + mainConfig);
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		javax.cache.CacheManager jCacheManager = cacheManager.getCacheManager();
-		assertThat(jCacheManager)
-				.isInstanceOf(com.hazelcast.cache.HazelcastCacheManager.class);
-		assertThat(this.context.getBeansOfType(HazelcastInstance.class)).hasSize(1);
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		assertThat(((com.hazelcast.cache.HazelcastCacheManager) jCacheManager)
-				.getHazelcastInstance()).isNotSameAs(hazelcastInstance);
-		assertThat(hazelcastInstance.getConfig().getConfigurationFile())
-				.isEqualTo(new ClassPathResource(mainConfig).getFile());
-		assertThat(cacheManager.getCacheManager().getURI())
-				.isEqualTo(new ClassPathResource(cacheConfig).getURI());
-		assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(2);
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(HazelcastAutoConfiguration.class))
+				.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn)
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					javax.cache.CacheManager jCacheManager = cacheManager
+							.getCacheManager();
+					assertThat(jCacheManager).isInstanceOf(
+							com.hazelcast.cache.HazelcastCacheManager.class);
+					assertThat(context).hasSingleBean(HazelcastInstance.class);
+					HazelcastInstance hazelcastInstance = context
+							.getBean(HazelcastInstance.class);
+					assertThat(((com.hazelcast.cache.HazelcastCacheManager) jCacheManager)
+							.getHazelcastInstance()).isSameAs(hazelcastInstance);
+					assertThat(hazelcastInstance.getName()).isEqualTo("default-instance");
+					assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(1);
+				});
 	}
 
 	@Test
 	public void infinispanCacheWithConfig() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
-				"spring.cache.infinispan.config=infinispan.xml");
-		SpringEmbeddedCacheManager cacheManager = validateCacheManager(
-				SpringEmbeddedCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).contains("foo", "bar");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=infinispan",
+						"spring.cache.infinispan.config=infinispan.xml")
+				.run((context) -> {
+					SpringEmbeddedCacheManager cacheManager = getCacheManager(context,
+							SpringEmbeddedCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).contains("foo", "bar");
+				});
 	}
 
 	@Test
 	public void infinispanCacheWithCustomizers() {
-		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "infinispan",
-				"allCacheManagerCustomizer", "infinispanCacheManagerCustomizer");
+		this.contextRunner
+				.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "infinispan").run(dunno(
+						"allCacheManagerCustomizer", "infinispanCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void infinispanCacheWithCaches() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		SpringEmbeddedCacheManager cacheManager = validateCacheManager(
-				SpringEmbeddedCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=infinispan",
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> assertThat(
+						getCacheManager(context, SpringEmbeddedCacheManager.class)
+								.getCacheNames()).containsOnly("foo", "bar"));
 	}
 
 	@Test
 	public void infinispanCacheWithCachesAndCustomConfig() {
-		load(InfinispanCustomConfiguration.class, "spring.cache.type=infinispan",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		SpringEmbeddedCacheManager cacheManager = validateCacheManager(
-				SpringEmbeddedCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-		ConfigurationBuilder defaultConfigurationBuilder = this.context
-				.getBean(ConfigurationBuilder.class);
-		verify(defaultConfigurationBuilder, times(2)).build();
+		this.contextRunner.withUserConfiguration(InfinispanCustomConfiguration.class)
+				.withPropertyValues("spring.cache.type=infinispan",
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> {
+					assertThat(getCacheManager(context, SpringEmbeddedCacheManager.class)
+							.getCacheNames()).containsOnly("foo", "bar");
+					verify(context.getBean(ConfigurationBuilder.class), times(2)).build();
+				});
 	}
 
 	@Test
 	public void infinispanAsJCacheWithCaches() {
-		String cachingProviderFqn = JCachingProvider.class.getName();
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		String cachingProviderClassName = JCachingProvider.class.getName();
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderClassName,
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run((context) -> assertThat(
+						getCacheManager(context, JCacheCacheManager.class)
+								.getCacheNames()).containsOnly("foo", "bar"));
 	}
 
 	@Test
 	public void infinispanAsJCacheWithConfig() throws IOException {
-		String cachingProviderFqn = JCachingProvider.class.getName();
+		String cachingProviderClassName = JCachingProvider.class.getName();
 		String configLocation = "infinispan.xml";
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation);
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-
-		Resource configResource = new ClassPathResource(configLocation);
-		assertThat(cacheManager.getCacheManager().getURI())
-				.isEqualTo(configResource.getURI());
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderClassName,
+						"spring.cache.jcache.config=" + configLocation)
+				.run((context) -> {
+					Resource configResource = new ClassPathResource(configLocation);
+					assertThat(getCacheManager(context, JCacheCacheManager.class)
+							.getCacheManager().getURI())
+									.isEqualTo(configResource.getURI());
+				});
 	}
 
 	@Test
 	public void jCacheCacheWithCachesAndCustomizer() {
-		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
+		String cachingProviderClassName = HazelcastCachingProvider.class.getName();
 		try {
-			load(JCacheWithCustomizerConfiguration.class, "spring.cache.type=jcache",
-					"spring.cache.jcache.provider=" + cachingProviderFqn,
-					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-			JCacheCacheManager cacheManager = validateCacheManager(
-					JCacheCacheManager.class);
-			// see customizer
-			assertThat(cacheManager.getCacheNames()).containsOnly("foo", "custom1");
+			this.contextRunner
+					.withUserConfiguration(JCacheWithCustomizerConfiguration.class)
+					.withPropertyValues("spring.cache.type=jcache",
+							"spring.cache.jcache.provider=" + cachingProviderClassName,
+							"spring.cache.cacheNames[0]=foo",
+							"spring.cache.cacheNames[1]=bar")
+					.run((context) ->
+					// see customizer
+					assertThat(getCacheManager(context, JCacheCacheManager.class)
+							.getCacheNames()).containsOnly("foo", "custom1"));
 		}
 		finally {
-			Caching.getCachingProvider(cachingProviderFqn).close();
+			Caching.getCachingProvider(cachingProviderClassName).close();
 		}
-	}
-
-	@Test
-	public void guavaCacheExplicitWithCaches() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=guava",
-				"spring.cache.cacheNames=foo");
-		GuavaCacheManager cacheManager = validateCacheManager(GuavaCacheManager.class);
-		Cache foo = cacheManager.getCache("foo");
-		foo.get("1");
-		// See next tests: no spec given so stats should be disabled
-		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(0L);
-	}
-
-	@Test
-	public void guavaCacheWithCustomizers() {
-		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "guava",
-				"allCacheManagerCustomizer", "guavaCacheManagerCustomizer");
-	}
-
-	@Test
-	public void guavaCacheExplicitWithSpec() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=guava",
-				"spring.cache.guava.spec=recordStats", "spring.cache.cacheNames[0]=foo",
-				"spring.cache.cacheNames[1]=bar");
-		validateGuavaCacheWithStats();
-	}
-
-	@Test
-	public void guavaCacheExplicitWithCacheBuilder() {
-		load(GuavaCacheBuilderConfiguration.class, "spring.cache.type=guava",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		validateGuavaCacheWithStats();
-	}
-
-	private void validateGuavaCacheWithStats() {
-		GuavaCacheManager cacheManager = validateCacheManager(GuavaCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-		Cache foo = cacheManager.getCache("foo");
-		foo.get("1");
-		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
 	}
 
 	@Test
 	public void caffeineCacheWithExplicitCaches() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.cacheNames=foo");
-		CaffeineCacheManager cacheManager = validateCacheManager(
-				CaffeineCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo");
-		Cache foo = cacheManager.getCache("foo");
-		foo.get("1");
-		// See next tests: no spec given so stats should be disabled
-		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount())
-				.isEqualTo(0L);
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=caffeine",
+						"spring.cache.cacheNames=foo")
+				.run((context) -> {
+					CaffeineCacheManager manager = getCacheManager(context,
+							CaffeineCacheManager.class);
+					assertThat(manager.getCacheNames()).containsOnly("foo");
+					Cache foo = manager.getCache("foo");
+					foo.get("1");
+					// See next tests: no spec given so stats should be disabled
+					assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount())
+							.isEqualTo(0L);
+				});
 	}
 
 	@Test
 	public void caffeineCacheWithCustomizers() {
-		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "caffeine",
-				"allCacheManagerCustomizer", "caffeineCacheManagerCustomizer");
+		this.contextRunner
+				.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=" + "caffeine").run(dunno(
+						"allCacheManagerCustomizer", "caffeineCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void caffeineCacheWithExplicitCacheBuilder() {
-		load(CaffeineCacheBuilderConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.cacheNames=foo,bar");
-		validateCaffeineCacheWithStats();
+		this.contextRunner.withUserConfiguration(CaffeineCacheBuilderConfiguration.class)
+				.withPropertyValues("spring.cache.type=caffeine",
+						"spring.cache.cacheNames=foo,bar")
+				.run(this::validateCaffeineCacheWithStats);
 	}
 
 	@Test
 	public void caffeineCacheExplicitWithSpec() {
-		load(CaffeineCacheSpecConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		validateCaffeineCacheWithStats();
+		this.contextRunner.withUserConfiguration(CaffeineCacheSpecConfiguration.class)
+				.withPropertyValues("spring.cache.type=caffeine",
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run(this::validateCaffeineCacheWithStats);
 	}
 
 	@Test
 	public void caffeineCacheExplicitWithSpecString() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.caffeine.spec=recordStats",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		validateCaffeineCacheWithStats();
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=caffeine",
+						"spring.cache.caffeine.spec=recordStats",
+						"spring.cache.cacheNames[0]=foo",
+						"spring.cache.cacheNames[1]=bar")
+				.run(this::validateCaffeineCacheWithStats);
 	}
 
-	private void validateCaffeineCacheWithStats() {
-		CaffeineCacheManager cacheManager = validateCacheManager(
+	private void validateCaffeineCacheWithStats(AssertableApplicationContext context) {
+		CaffeineCacheManager manager = getCacheManager(context,
 				CaffeineCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-		Cache foo = cacheManager.getCache("foo");
+		assertThat(manager.getCacheNames()).containsOnly("foo", "bar");
+		Cache foo = manager.getCache("foo");
 		foo.get("1");
 		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount())
 				.isEqualTo(1L);
 	}
 
-	private <T extends CacheManager> T validateCacheManager(Class<T> type) {
-		CacheManager cacheManager = this.context.getBean(CacheManager.class);
+	@SuppressWarnings("rawtypes")
+	private ContextConsumer<AssertableApplicationContext> dunno(
+			String... expectedCustomizerNames) {
+		return (context) -> {
+			CacheManager cacheManager = getCacheManager(context, CacheManager.class);
+			List<String> expected = new ArrayList<>(
+					Arrays.asList(expectedCustomizerNames));
+			Map<String, CacheManagerTestCustomizer> customizer = context
+					.getBeansOfType(CacheManagerTestCustomizer.class);
+			customizer.forEach((key, value) -> {
+				if (expected.contains(key)) {
+					expected.remove(key);
+					assertThat(value.cacheManager).isSameAs(cacheManager);
+				}
+				else {
+					assertThat(value.cacheManager).isNull();
+				}
+			});
+			assertThat(expected).hasSize(0);
+		};
+	}
+
+	private <T extends CacheManager> T getCacheManager(
+			AssertableApplicationContext loaded, Class<T> type) {
+		CacheManager cacheManager = loaded.getBean(CacheManager.class);
 		assertThat(cacheManager).as("Wrong cache manager type").isInstanceOf(type);
 		return type.cast(cacheManager);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void testCustomizers(Class<?> config, String cacheType,
-			String... expectedCustomizerNames) {
-		load(config, "spring.cache.type=" + cacheType);
-		CacheManager cacheManager = validateCacheManager(CacheManager.class);
-		List<String> expected = new ArrayList<String>();
-		expected.addAll(Arrays.asList(expectedCustomizerNames));
-		Map<String, CacheManagerTestCustomizer> map = this.context
-				.getBeansOfType(CacheManagerTestCustomizer.class);
-		for (Map.Entry<String, CacheManagerTestCustomizer> entry : map.entrySet()) {
-			if (expected.contains(entry.getKey())) {
-				expected.remove(entry.getKey());
-				assertThat(entry.getValue().cacheManager).isSameAs(cacheManager);
-			}
-			else {
-				assertThat(entry.getValue().cacheManager).isNull();
-			}
-		}
-		assertThat(expected).hasSize(0);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		load(new Class[] { config }, environment);
-	}
-
-	private void load(Class<?>[] configs, String... environment) {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-		applicationContext.register(configs);
-		applicationContext.register(CacheAutoConfiguration.class);
-		applicationContext.refresh();
-		this.context = applicationContext;
 	}
 
 	@Configuration
@@ -895,8 +905,8 @@ public class CacheAutoConfigurationTests {
 	static class RedisCacheConfiguration {
 
 		@Bean
-		public RedisTemplate<?, ?> redisTemplate() {
-			return mock(RedisTemplate.class);
+		public RedisConnectionFactory redisConnectionFactory() {
+			return mock(RedisConnectionFactory.class);
 		}
 
 	}
@@ -938,16 +948,13 @@ public class CacheAutoConfigurationTests {
 
 		@Bean
 		JCacheManagerCustomizer myCustomizer() {
-			return new JCacheManagerCustomizer() {
-				@Override
-				public void customize(javax.cache.CacheManager cacheManager) {
-					MutableConfiguration<?, ?> config = new MutableConfiguration<Object, Object>();
-					config.setExpiryPolicyFactory(
-							CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
-					config.setStatisticsEnabled(true);
-					cacheManager.createCache("custom1", config);
-					cacheManager.destroyCache("bar");
-				}
+			return (cacheManager) -> {
+				MutableConfiguration<?, ?> config = new MutableConfiguration<>();
+				config.setExpiryPolicyFactory(
+						CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
+				config.setStatisticsEnabled(true);
+				cacheManager.createCache("custom1", config);
+				cacheManager.destroyCache("bar");
 			};
 		}
 
@@ -1026,15 +1033,7 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheResolver cacheResolver() {
-			return new CacheResolver() {
-
-				@Override
-				public Collection<? extends Cache> resolveCaches(
-						CacheOperationInvocationContext<?> context) {
-					return Collections.singleton(mock(Cache.class));
-				}
-
-			};
+			return (context) -> Collections.singleton(mock(Cache.class));
 
 		}
 
@@ -1047,17 +1046,6 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheResolver myCacheResolver() {
 			return mock(CacheResolver.class);
-		}
-
-	}
-
-	@Configuration
-	@EnableCaching
-	static class GuavaCacheBuilderConfiguration {
-
-		@Bean
-		CacheBuilder<Object, Object> cacheBuilder() {
-			return CacheBuilder.newBuilder().recordStats();
 		}
 
 	}
@@ -1090,60 +1078,63 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<CacheManager> allCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<ConcurrentMapCacheManager> simpleCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<ConcurrentMapCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SimpleCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CouchbaseCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<RedisCacheManager> redisCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<RedisCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<EhCacheCacheManager> ehcacheCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<EhCacheCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<HazelcastCacheManager>() {
+
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() {
-			};
-		}
 
-		@Bean
-		public CacheManagerCustomizer<GuavaCacheManager> guavaCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<GuavaCacheManager>() {
 			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
+
 			};
 		}
 

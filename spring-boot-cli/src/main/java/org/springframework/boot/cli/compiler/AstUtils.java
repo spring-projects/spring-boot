@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ public abstract class AstUtils {
 	 * @return {@code true} if at least one of the types is found, otherwise {@code false}
 	 */
 	public static boolean hasAtLeastOneFieldOrMethod(ClassNode node, String... types) {
-		Set<String> typesSet = new HashSet<String>(Arrays.asList(types));
+		Set<String> typesSet = new HashSet<>(Arrays.asList(types));
 		for (FieldNode field : node.getFields()) {
 			if (typesSet.contains(field.getType().getName())) {
 				return true;
@@ -130,7 +130,7 @@ public abstract class AstUtils {
 	}
 
 	public static boolean hasAtLeastOneInterface(ClassNode classNode, String... types) {
-		Set<String> typesSet = new HashSet<String>(Arrays.asList(types));
+		Set<String> typesSet = new HashSet<>(Arrays.asList(types));
 		for (ClassNode inter : classNode.getInterfaces()) {
 			if (typesSet.contains(inter.getName())) {
 				return true;
@@ -167,7 +167,7 @@ public abstract class AstUtils {
 
 	private static List<ExpressionStatement> getExpressionStatements(
 			BlockStatement block) {
-		ArrayList<ExpressionStatement> statements = new ArrayList<ExpressionStatement>();
+		ArrayList<ExpressionStatement> statements = new ArrayList<>();
 		for (Statement statement : block.getStatements()) {
 			if (statement instanceof ExpressionStatement) {
 				statements.add((ExpressionStatement) statement);

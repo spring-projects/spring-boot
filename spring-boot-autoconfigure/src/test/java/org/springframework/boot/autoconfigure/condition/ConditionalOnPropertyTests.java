@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -48,7 +52,9 @@ public class ConditionalOnPropertyTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigApplicationContext context;
+	private ConfigurableApplicationContext context;
+
+	private ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@After
 	public void tearDown() {
@@ -96,13 +102,6 @@ public class ConditionalOnPropertyTests {
 		load(RelaxedPropertiesRequiredConfigurationWithShortPrefix.class,
 				"spring.property=value1");
 		assertThat(this.context.containsBean("foo")).isTrue();
-	}
-
-	@Test
-	public void nonRelaxedName() throws Exception {
-		load(NonRelaxedPropertiesRequiredConfiguration.class,
-				"theRelaxedProperty=value1");
-		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
@@ -186,18 +185,6 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	public void strictNameMatch() {
-		load(StrictNameConfig.class, "simple.my-property:bar");
-		assertThat(this.context.containsBean("foo")).isTrue();
-	}
-
-	@Test
-	public void strictNameNoMatch() {
-		load(StrictNameConfig.class, "simple.myProperty:bar");
-		assertThat(this.context.containsBean("foo")).isFalse();
-	}
-
-	@Test
 	public void multiValuesAllSet() {
 		load(MultiValuesConfig.class, "simple.my-property:bar",
 				"simple.my-another-property:bar");
@@ -271,10 +258,9 @@ public class ConditionalOnPropertyTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
-		this.context.register(config);
-		this.context.refresh();
+		TestPropertyValues.of(environment).applyTo(this.environment);
+		this.context = new SpringApplicationBuilder(config).environment(this.environment)
+				.web(WebApplicationType.NONE).run();
 	}
 
 	@Configuration
@@ -302,17 +288,6 @@ public class ConditionalOnPropertyTests {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring", name = "property")
 	protected static class RelaxedPropertiesRequiredConfigurationWithShortPrefix {
-
-		@Bean
-		public String foo() {
-			return "foo";
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnProperty(name = "the-relaxed-property", relaxedNames = false)
-	protected static class NonRelaxedPropertiesRequiredConfiguration {
 
 		@Bean
 		public String foo() {
@@ -379,17 +354,6 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "bar", relaxedNames = false)
-	static class StrictNameConfig {
-
-		@Bean
-		public String foo() {
-			return "foo";
-		}
-
-	}
-
-	@Configuration
 	@ConditionalOnProperty(prefix = "simple", name = { "my-property",
 			"my-another-property" }, havingValue = "bar")
 	static class MultiValuesConfig {
@@ -434,6 +398,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
+	@Configuration
 	@ConditionalOnMyFeature
 	protected static class MetaAnnotation {
 
@@ -444,6 +409,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
+	@Configuration
 	@ConditionalOnMyFeature
 	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
 	protected static class MetaAnnotationAndDirectAnnotation {

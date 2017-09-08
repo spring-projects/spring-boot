@@ -25,14 +25,13 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -111,10 +110,9 @@ public class UserInfoTokenServicesRefreshTokenTests {
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 
 	@RestController

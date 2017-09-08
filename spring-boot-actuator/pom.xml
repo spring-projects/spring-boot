@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.7.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-actuator</artifactId>
@@ -47,33 +48,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.searchbox</groupId>
-			<artifactId>jest</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.hateoas</groupId>
-			<artifactId>spring-hateoas</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.plugin</groupId>
-			<artifactId>spring-plugin-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>hal-browser</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -97,13 +73,33 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.searchbox</groupId>
+			<artifactId>jest</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>javax.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -120,6 +116,37 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-el</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -127,8 +154,23 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -143,17 +185,27 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-messaging</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -191,7 +243,8 @@
 			<artifactId>spring-data-solr</artifactId>
 			<optional>true</optional>
 			<exclusions>
-				<!-- the version of solr here is incompatible with jackson-xml because of an old woodstox -->
+				<!-- the version of solr here is incompatible with jackson-xml because
+					of an old woodstox -->
 				<exclusion>
 					<artifactId>wstx-asl</artifactId>
 					<groupId>org.codehaus.woodstox</groupId>
@@ -204,73 +257,13 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-el</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.shell</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.cli</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.embed.spring</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jolokia</groupId>
-			<artifactId>jolokia-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.amqp</groupId>
-			<artifactId>spring-rabbit</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-jdbc</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP-java6</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- Annotation processing -->
@@ -287,24 +280,12 @@
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot</artifactId>
-			<type>test-jar</type>
+			<artifactId>spring-boot-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-support</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-test</artifactId>
-			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -315,6 +296,16 @@
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -339,23 +330,23 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.connectors.telnet</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.skyscreamer</groupId>
-			<artifactId>jsonassert</artifactId>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-spring4</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.skyscreamer</groupId>
+			<artifactId>jsonassert</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -382,6 +373,11 @@
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 </project>

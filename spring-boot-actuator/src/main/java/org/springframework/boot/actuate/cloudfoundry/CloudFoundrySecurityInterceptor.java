@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,21 @@
 package org.springframework.boot.actuate.cloudfoundry;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * {@link HandlerInterceptor} to check the cloud foundry token.
+ * Security interceptor to validate the cloud foundry token.
  *
  * @author Madhura Bhave
  */
-class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
+class CloudFoundrySecurityInterceptor {
 
 	private static final Log logger = LogFactory
 			.getLog(CloudFoundrySecurityInterceptor.class);
@@ -48,6 +42,8 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 
 	private final String applicationId;
 
+	private static SecurityResponse SUCCESS = SecurityResponse.success();
+
 	CloudFoundrySecurityInterceptor(TokenValidator tokenValidator,
 			CloudFoundrySecurityService cloudFoundrySecurityService,
 			String applicationId) {
@@ -56,48 +52,47 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 		this.applicationId = applicationId;
 	}
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+	SecurityResponse preHandle(HttpServletRequest request, String endpointId) {
 		if (CorsUtils.isPreFlightRequest(request)) {
-			return true;
+			return SecurityResponse.success();
 		}
 		try {
 			if (!StringUtils.hasText(this.applicationId)) {
-				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
+				throw new CloudFoundryAuthorizationException(
+						CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
 						"Application id is not available");
 			}
 			if (this.cloudFoundrySecurityService == null) {
-				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
+				throw new CloudFoundryAuthorizationException(
+						CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
 						"Cloud controller URL is not available");
 			}
-			HandlerMethod handlerMethod = (HandlerMethod) handler;
-			if (HttpMethod.OPTIONS.matches(request.getMethod())
-					&& !(handlerMethod.getBean() instanceof MvcEndpoint)) {
-				return true;
+			if (HttpMethod.OPTIONS.matches(request.getMethod())) {
+				return SUCCESS;
 			}
-			MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
-			check(request, mvcEndpoint);
+			check(request, endpointId);
 		}
-		catch (CloudFoundryAuthorizationException ex) {
+		catch (Exception ex) {
 			logger.error(ex);
-			response.setContentType(MediaType.APPLICATION_JSON.toString());
-			response.getWriter()
-					.write("{\"security_error\":\"" + ex.getMessage() + "\"}");
-			response.setStatus(ex.getStatusCode().value());
-			return false;
+			if (ex instanceof CloudFoundryAuthorizationException) {
+				CloudFoundryAuthorizationException cfException = (CloudFoundryAuthorizationException) ex;
+				return new SecurityResponse(cfException.getStatusCode(),
+						"{\"security_error\":\"" + cfException.getMessage() + "\"}");
+			}
+			return new SecurityResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					ex.getMessage());
 		}
-		return true;
+		return SecurityResponse.success();
 	}
 
-	private void check(HttpServletRequest request, MvcEndpoint mvcEndpoint)
-			throws Exception {
+	private void check(HttpServletRequest request, String path) throws Exception {
 		Token token = getToken(request);
 		this.tokenValidator.validate(token);
 		AccessLevel accessLevel = this.cloudFoundrySecurityService
 				.getAccessLevel(token.toString(), this.applicationId);
-		if (!accessLevel.isAccessAllowed(mvcEndpoint.getPath())) {
-			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
+		if (!accessLevel.isAccessAllowed(path)) {
+			throw new CloudFoundryAuthorizationException(
+					CloudFoundryAuthorizationException.Reason.ACCESS_DENIED,
 					"Access denied");
 		}
 		accessLevel.put(request);
@@ -108,10 +103,43 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 		String bearerPrefix = "bearer ";
 		if (authorization == null
 				|| !authorization.toLowerCase().startsWith(bearerPrefix)) {
-			throw new CloudFoundryAuthorizationException(Reason.MISSING_AUTHORIZATION,
+			throw new CloudFoundryAuthorizationException(
+					CloudFoundryAuthorizationException.Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}
 		return new Token(authorization.substring(bearerPrefix.length()));
+	}
+
+	/**
+	 * Response from the security interceptor.
+	 */
+	static class SecurityResponse {
+
+		private final HttpStatus status;
+
+		private final String message;
+
+		SecurityResponse(HttpStatus status) {
+			this(status, null);
+		}
+
+		SecurityResponse(HttpStatus status, String message) {
+			this.status = status;
+			this.message = message;
+		}
+
+		public HttpStatus getStatus() {
+			return this.status;
+		}
+
+		public String getMessage() {
+			return this.message;
+		}
+
+		static SecurityResponse success() {
+			return new SecurityResponse(HttpStatus.OK);
+		}
+
 	}
 
 }

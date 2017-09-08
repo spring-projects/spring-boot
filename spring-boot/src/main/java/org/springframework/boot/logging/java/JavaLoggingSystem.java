@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
-	private static final LogLevels<Level> LEVELS = new LogLevels<Level>();
+	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.FINEST);
@@ -117,7 +117,6 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
-		Assert.notNull(level, "Level must not be null");
 		if (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) {
 			loggerName = "";
 		}
@@ -129,12 +128,12 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
-		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
+		List<LoggerConfiguration> result = new ArrayList<>();
 		Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
 		while (names.hasMoreElements()) {
 			result.add(getLoggerConfiguration(names.nextElement()));
 		}
-		Collections.sort(result, CONFIGURATION_COMPARATOR);
+		result.sort(CONFIGURATION_COMPARATOR);
 		return Collections.unmodifiableList(result);
 	}
 

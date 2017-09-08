@@ -46,4 +46,12 @@ import org.springframework.core.annotation.Order;
 @Configuration
 public @interface ManagementContextConfiguration {
 
+	/**
+	 * Specifies the type of management context that is required for this configuration to
+	 * be applied.
+	 * @return the required management context type
+	 * @since 2.0.0
+	 */
+	ManagementContextType value() default ManagementContextType.ANY;
+
 }

@@ -147,7 +147,7 @@ public class MessageSourceAutoConfiguration {
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {
 
-		private static ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<String, ConditionOutcome>();
+		private static ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<>();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,

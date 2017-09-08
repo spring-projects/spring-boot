@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,8 +53,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private static final String SPRING_LOADED_AGENT_CLASS_NAME = "org.springsource.loaded.agent.SpringLoadedAgent";
-
 	/**
 	 * The Maven project.
 	 * @since 1.0
@@ -71,7 +68,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * this feature and many more.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.addResources", defaultValue = "false")
+	@Parameter(property = "spring-boot.run.addResources", defaultValue = "false")
 	private boolean addResources = false;
 
 	/**
@@ -79,15 +76,15 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * forking a new JVM.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.agent")
+	@Parameter(property = "spring-boot.run.agent")
 	private File[] agent;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.noverify")
-	private Boolean noverify;
+	@Parameter(property = "spring-boot.run.noverify")
+	private boolean noverify = false;
 
 	/**
 	 * Current working directory to use for the application. If not specified, basedir
@@ -95,7 +92,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * started by forking a new JVM.
 	 * @since 1.5
 	 */
-	@Parameter(property = "run.workingDirectory")
+	@Parameter(property = "spring-boot.run.workingDirectory")
 	private File workingDirectory;
 
 	/**
@@ -105,7 +102,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * new JVM.
 	 * @since 1.1
 	 */
-	@Parameter(property = "run.jvmArguments")
+	@Parameter(property = "spring-boot.run.jvmArguments")
 	private String jvmArguments;
 
 	/**
@@ -113,7 +110,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * separate multiple arguments.
 	 * @since 1.0
 	 */
-	@Parameter(property = "run.arguments")
+	@Parameter(property = "spring-boot.run.arguments")
 	private String[] arguments;
 
 	/**
@@ -122,7 +119,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * profiles.
 	 * @since 1.3
 	 */
-	@Parameter(property = "run.profiles")
+	@Parameter(property = "spring-boot.run.profiles")
 	private String[] profiles;
 
 	/**
@@ -130,7 +127,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * contains a 'main' method will be used.
 	 * @since 1.0
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.run.main-class")
 	private String mainClass;
 
 	/**
@@ -138,7 +135,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * classpath.
 	 * @since 1.0
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.run.folders")
 	private String[] folders;
 
 	/**
@@ -155,21 +152,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * or if devtools is present.
 	 * @since 1.2
 	 */
-	@Parameter(property = "fork")
+	@Parameter(property = "spring-boot.run.fork")
 	private Boolean fork;
 
 	/**
 	 * Flag to include the test classpath when running.
 	 * @since 1.3
 	 */
-	@Parameter(property = "useTestClasspath", defaultValue = "false")
+	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
 	private Boolean useTestClasspath;
 
 	/**
 	 * Skip the execution.
 	 * @since 1.3.2
 	 */
-	@Parameter(property = "skip", defaultValue = "false")
+	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
 	private boolean skip;
 
 	@Override
@@ -211,33 +208,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return this.workingDirectory != null;
 	}
 
-	private void findAgent() {
-		try {
-			if (this.agent == null || this.agent.length == 0) {
-				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASS_NAME);
-				if (loaded != null) {
-					if (this.noverify == null) {
-						this.noverify = true;
-					}
-					CodeSource source = loaded.getProtectionDomain().getCodeSource();
-					if (source != null) {
-						this.agent = new File[] {
-								new File(source.getLocation().getFile()) };
-					}
-				}
-			}
-		}
-		catch (ClassNotFoundException ex) {
-			// ignore;
-		}
-		if (this.noverify == null) {
-			this.noverify = false;
-		}
-	}
-
 	private void run(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
-		findAgent();
 		boolean fork = isFork();
 		this.project.getProperties().setProperty("_spring.boot.fork.enabled",
 				Boolean.toString(fork));
@@ -270,7 +242,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void doRunWithForkedJvm(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
 		addClasspath(args);
@@ -392,15 +364,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
-			List<URL> urls = new ArrayList<URL>();
+			List<URL> urls = new ArrayList<>();
 			addUserDefinedFolders(urls);
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
 			return urls.toArray(new URL[urls.size()]);
-		}
-		catch (MalformedURLException ex) {
-			throw new MojoExecutionException("Unable to build classpath", ex);
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException("Unable to build classpath", ex);

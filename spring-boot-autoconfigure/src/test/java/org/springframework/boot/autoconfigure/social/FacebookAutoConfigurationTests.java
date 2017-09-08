@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -34,10 +35,10 @@ public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurat
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.social.facebook.appId:12345");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.social.facebook.appSecret:secret");
+		TestPropertyValues.of("spring.social.facebook.appId:12345").applyTo(this.context);
+		TestPropertyValues.of("spring.social.facebook.appSecret:secret")
+				.applyTo(this.context);
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,19 +24,13 @@ import org.springframework.http.server.ServerHttpRequest;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface AccessManager {
 
 	/**
 	 * {@link AccessManager} that permits all requests.
 	 */
-	AccessManager PERMIT_ALL = new AccessManager() {
-
-		@Override
-		public boolean isAllowed(ServerHttpRequest request) {
-			return true;
-		}
-
-	};
+	AccessManager PERMIT_ALL = (request) -> true;
 
 	/**
 	 * Determine if the specific request is allowed to be handled by the

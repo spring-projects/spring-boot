@@ -38,7 +38,7 @@ public class MetricExportProperties extends TriggerProperties {
 	/**
 	 * Specific trigger properties per MetricWriter bean name.
 	 */
-	private Map<String, SpecificTriggerProperties> triggers = new LinkedHashMap<String, SpecificTriggerProperties>();
+	private Map<String, SpecificTriggerProperties> triggers = new LinkedHashMap<>();
 
 	private Aggregate aggregate = new Aggregate();
 

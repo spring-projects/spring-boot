@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
  *
  * @author Michael Stummvoll
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.3.0
  */
 public class ErrorProperties {
@@ -32,6 +33,11 @@ public class ErrorProperties {
 	 */
 	@Value("${error.path:/error}")
 	private String path = "/error";
+
+	/**
+	 * Include the "exception" attribute.
+	 */
+	private boolean includeException;
 
 	/**
 	 * When to include a "stacktrace" attribute.
@@ -44,6 +50,14 @@ public class ErrorProperties {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public boolean isIncludeException() {
+		return this.includeException;
+	}
+
+	public void setIncludeException(boolean includeException) {
+		this.includeException = includeException;
 	}
 
 	public IncludeStacktrace getIncludeStacktrace() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.WriteOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,9 +33,8 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.shutdown")
-public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
-		implements ApplicationContextAware {
+@Endpoint(id = "shutdown", enabledByDefault = false)
+public class ShutdownEndpoint implements ApplicationContextAware {
 
 	private static final Map<String, Object> NO_CONTEXT_MESSAGE = Collections
 			.unmodifiableMap(Collections.<String, Object>singletonMap("message",
@@ -46,15 +46,8 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 
 	private ConfigurableApplicationContext context;
 
-	/**
-	 * Create a new {@link ShutdownEndpoint} instance.
-	 */
-	public ShutdownEndpoint() {
-		super("shutdown", true, false);
-	}
-
-	@Override
-	public Map<String, Object> invoke() {
+	@WriteOperation
+	public Map<String, Object> shutdown() {
 		if (this.context == null) {
 			return NO_CONTEXT_MESSAGE;
 		}
@@ -62,21 +55,20 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 			return SHUTDOWN_MESSAGE;
 		}
 		finally {
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(500L);
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					ShutdownEndpoint.this.context.close();
-				}
-			});
+			Thread thread = new Thread(this::performShutdown);
 			thread.setContextClassLoader(getClass().getClassLoader());
 			thread.start();
 		}
+	}
+
+	private void performShutdown() {
+		try {
+			Thread.sleep(500L);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+		this.context.close();
 	}
 
 	@Override

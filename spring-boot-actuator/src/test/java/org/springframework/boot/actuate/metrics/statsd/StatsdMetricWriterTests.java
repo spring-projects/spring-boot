@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,12 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StatsdMetricWriterTests {
 
-	private int port = SocketUtils.findAvailableTcpPort();
-
-	private DummyStatsDServer server = new DummyStatsDServer(this.port);
+	private DummyStatsDServer server = new DummyStatsDServer(0);
 
 	private StatsdMetricWriter writer = new StatsdMetricWriter("me", "localhost",
-			this.port);
+			this.server.getPort());
 
 	@After
 	public void close() {
@@ -55,21 +52,21 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void increment() {
-		this.writer.increment(new Delta<Long>("counter.foo", 3L));
+		this.writer.increment(new Delta<>("counter.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.foo:3|c");
 	}
 
 	@Test
 	public void setLongMetric() throws Exception {
-		this.writer.set(new Metric<Long>("gauge.foo", 3L));
+		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo:3|g");
 	}
 
 	@Test
 	public void setDoubleMetric() throws Exception {
-		this.writer.set(new Metric<Double>("gauge.foo", 3.7));
+		this.writer.set(new Metric<>("gauge.foo", 3.7));
 		this.server.waitForMessage();
 		// Doubles are truncated
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo:3.7|g");
@@ -77,30 +74,30 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void setTimerMetric() throws Exception {
-		this.writer.set(new Metric<Long>("timer.foo", 37L));
+		this.writer.set(new Metric<>("timer.foo", 37L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.timer.foo:37|ms");
 	}
 
 	@Test
 	public void nullPrefix() throws Exception {
-		this.writer = new StatsdMetricWriter("localhost", this.port);
-		this.writer.set(new Metric<Long>("gauge.foo", 3L));
+		this.writer = new StatsdMetricWriter("localhost", this.server.getPort());
+		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("gauge.foo:3|g");
 	}
 
 	@Test
 	public void periodPrefix() throws Exception {
-		this.writer = new StatsdMetricWriter("my.", "localhost", this.port);
-		this.writer.set(new Metric<Long>("gauge.foo", 3L));
+		this.writer = new StatsdMetricWriter("my.", "localhost", this.server.getPort());
+		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("my.gauge.foo:3|g");
 	}
 
 	@Test
 	public void incrementMetricWithInvalidCharsInName() throws Exception {
-		this.writer.increment(new Delta<Long>("counter.fo:o", 3L));
+		this.writer.increment(new Delta<>("counter.fo:o", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0))
 				.isEqualTo("me.counter.fo-o:3|c");
@@ -108,14 +105,14 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void setMetricWithInvalidCharsInName() throws Exception {
-		this.writer.set(new Metric<Long>("gauge.f:o:o", 3L));
+		this.writer.set(new Metric<>("gauge.f:o:o", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.f-o-o:3|g");
 	}
 
 	private static final class DummyStatsDServer implements Runnable {
 
-		private final List<String> messagesReceived = new ArrayList<String>();
+		private final List<String> messagesReceived = new ArrayList<>();
 
 		private final DatagramSocket server;
 
@@ -127,6 +124,10 @@ public class StatsdMetricWriterTests {
 				throw new IllegalStateException(ex);
 			}
 			new Thread(this).start();
+		}
+
+		int getPort() {
+			return this.server.getLocalPort();
 		}
 
 		public void stop() {
@@ -158,7 +159,7 @@ public class StatsdMetricWriterTests {
 		}
 
 		public List<String> messagesReceived() {
-			return new ArrayList<String>(this.messagesReceived);
+			return new ArrayList<>(this.messagesReceived);
 		}
 
 	}

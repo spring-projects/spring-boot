@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.7.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-starters</artifactId>
@@ -29,14 +29,16 @@
 		<module>spring-boot-starter-cache</module>
 		<module>spring-boot-starter-cloud-connectors</module>
 		<module>spring-boot-starter-data-cassandra</module>
+		<module>spring-boot-starter-data-cassandra-reactive</module>
 		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
-		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-ldap</module>
 		<module>spring-boot-starter-data-mongodb</module>
+		<module>spring-boot-starter-data-mongodb-reactive</module>
 		<module>spring-boot-starter-data-neo4j</module>
 		<module>spring-boot-starter-data-redis</module>
+		<module>spring-boot-starter-data-redis-reactive</module>
 		<module>spring-boot-starter-data-rest</module>
 		<module>spring-boot-starter-data-solr</module>
 		<module>spring-boot-starter-freemarker</module>
@@ -47,6 +49,7 @@
 		<module>spring-boot-starter-jersey</module>
 		<module>spring-boot-starter-jetty</module>
 		<module>spring-boot-starter-jooq</module>
+		<module>spring-boot-starter-json</module>
 		<module>spring-boot-starter-jta-atomikos</module>
 		<module>spring-boot-starter-jta-bitronix</module>
 		<module>spring-boot-starter-jta-narayana</module>
@@ -57,17 +60,19 @@
 		<module>spring-boot-starter-mustache</module>
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
+		<module>spring-boot-starter-quartz</module>
+		<module>spring-boot-starter-reactor-netty</module>
 		<module>spring-boot-starter-security</module>
 		<module>spring-boot-starter-social-facebook</module>
 		<module>spring-boot-starter-social-twitter</module>
 		<module>spring-boot-starter-social-linkedin</module>
-		<module>spring-boot-starter-remote-shell</module>
 		<module>spring-boot-starter-test</module>
 		<module>spring-boot-starter-thymeleaf</module>
 		<module>spring-boot-starter-tomcat</module>
 		<module>spring-boot-starter-undertow</module>
 		<module>spring-boot-starter-validation</module>
 		<module>spring-boot-starter-web</module>
+		<module>spring-boot-starter-webflux</module>
 		<module>spring-boot-starter-websocket</module>
 		<module>spring-boot-starter-web-services</module>
 	</modules>
@@ -131,13 +136,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.basepom.maven</groupId>

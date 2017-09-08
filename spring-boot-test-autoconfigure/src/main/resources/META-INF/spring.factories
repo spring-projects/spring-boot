@@ -13,12 +13,33 @@ org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
+# AutoConfigureDataLdap auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap=\
+org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration,\
+org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration
+
 # AutoConfigureDataMongo auto-configuration imports
 org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo=\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
+org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+
+# AutoConfigureDataNeo4j auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j=\
+org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+
+# AutoConfigureDataRedis auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis=\
+org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
 # AutoConfigureJdbc auto-configuration imports
 org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc=\
@@ -34,6 +55,15 @@ org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase=\
 org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
+# AutoConfigureJooq auto-configuration imports
+org.springframework.boot.test.autoconfigure.jooq.AutoConfigureJooq=\
+org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
+org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
+org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
+org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration,\
+org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+
 # AutoConfigureJson auto-configuration imports
 org.springframework.boot.test.autoconfigure.json.AutoConfigureJson=\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
@@ -44,6 +74,16 @@ org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters=\
 org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
+
+# AutoConfigureWebClient auto-configuration imports
+org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient=\
+org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration
+
+# AutoConfigureWebFlux auto-configuration imports
+org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebFlux=\
+org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration,\
+org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration
 
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\
@@ -60,11 +100,6 @@ org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerAuto
 org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsAutoConfiguration
 
-# AutoConfigureTestDatabase auto-configuration imports
-org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase=\
-org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration,\
-org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-
 # AutoConfigureTestEntityManager auto-configuration imports
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager=\
 org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration
@@ -73,9 +108,11 @@ org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfigu
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient=\
 org.springframework.boot.test.autoconfigure.web.client.WebClientRestTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
+org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
+org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration
+org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration
 
 # AutoConfigureWebMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc=\
@@ -84,14 +121,13 @@ org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
+org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration
+org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 
 # DefaultTestExecutionListenersPostProcessors
 org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\

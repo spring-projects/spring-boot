@@ -33,14 +33,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "spring.flyway", ignoreUnknownFields = true)
 public class FlywayProperties {
 
 	/**
 	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
 	 * use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<String>(
+	private List<String> locations = new ArrayList<>(
 			Collections.singletonList("db/migration"));
 
 	/**
@@ -73,7 +73,7 @@ public class FlywayProperties {
 	 * SQL statements to execute to initialize a connection immediately after obtaining
 	 * it.
 	 */
-	private List<String> initSqls = new ArrayList<String>();
+	private List<String> initSqls = new ArrayList<>();
 
 	public void setLocations(List<String> locations) {
 		this.locations = locations;

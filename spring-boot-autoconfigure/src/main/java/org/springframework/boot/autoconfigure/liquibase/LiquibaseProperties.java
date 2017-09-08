@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  * @author Marcel Overdijk
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "liquibase", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
 public class LiquibaseProperties {
 
 	/**

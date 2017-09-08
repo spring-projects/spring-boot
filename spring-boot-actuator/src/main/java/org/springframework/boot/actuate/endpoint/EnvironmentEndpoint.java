@@ -16,11 +16,22 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
+import org.springframework.boot.endpoint.Selector;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -31,6 +42,9 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * {@link Endpoint} to expose {@link ConfigurableEnvironment environment} information.
@@ -40,48 +54,69 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Christian Dupuis
  * @author Madhura Bhave
  */
-@ConfigurationProperties(prefix = "endpoints.env")
-public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
+@Endpoint(id = "env")
+@ConfigurationProperties("endpoints.env")
+public class EnvironmentEndpoint {
 
 	private final Sanitizer sanitizer = new Sanitizer();
 
-	/**
-	 * Create a new {@link EnvironmentEndpoint} instance.
-	 */
-	public EnvironmentEndpoint() {
-		super("env");
+	private final Environment environment;
+
+	public EnvironmentEndpoint(Environment environment) {
+		this.environment = environment;
 	}
 
 	public void setKeysToSanitize(String... keysToSanitize) {
 		this.sanitizer.setKeysToSanitize(keysToSanitize);
 	}
 
-	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		result.put("profiles", getEnvironment().getActiveProfiles());
-		PropertyResolver resolver = getResolver();
-		for (Entry<String, PropertySource<?>> entry : getPropertySourcesAsMap()
-				.entrySet()) {
-			PropertySource<?> source = entry.getValue();
-			String sourceName = entry.getKey();
-			if (source instanceof EnumerablePropertySource) {
-				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				Map<String, Object> properties = new LinkedHashMap<String, Object>();
-				for (String name : enumerable.getPropertyNames()) {
-					Object resolved = resolver.getProperty(name, Object.class);
-					properties.put(name, sanitize(name, resolved));
-				}
-				properties = postProcessSourceProperties(sourceName, properties);
-				if (properties != null) {
-					result.put(sourceName, properties);
-				}
-			}
+	@ReadOperation
+	public EnvironmentDescriptor environment(String pattern) {
+		if (StringUtils.hasText(pattern)) {
+			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate());
 		}
-		return result;
+		return getEnvironmentDescriptor((name) -> true);
 	}
 
-	public PropertyResolver getResolver() {
+	@ReadOperation
+	public EnvironmentDescriptor environmentEntry(@Selector String toMatch) {
+		return getEnvironmentDescriptor(toMatch::equals);
+	}
+
+	private EnvironmentDescriptor getEnvironmentDescriptor(
+			Predicate<String> propertyNamePredicate) {
+		PropertyResolver resolver = getResolver();
+		List<PropertySourceDescriptor> propertySources = new ArrayList<>();
+		getPropertySourcesAsMap().forEach((sourceName, source) -> {
+			if (source instanceof EnumerablePropertySource) {
+				propertySources.add(
+						describeSource(sourceName, (EnumerablePropertySource<?>) source,
+								resolver, propertyNamePredicate));
+			}
+		});
+		return new EnvironmentDescriptor(
+				Arrays.asList(this.environment.getActiveProfiles()), propertySources);
+	}
+
+	private PropertySourceDescriptor describeSource(String sourceName,
+			EnumerablePropertySource<?> source, PropertyResolver resolver,
+			Predicate<String> namePredicate) {
+		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
+		Stream.of(source.getPropertyNames()).filter(namePredicate).forEach(
+				(name) -> properties.put(name, describeValueOf(name, source, resolver)));
+		return new PropertySourceDescriptor(sourceName, properties);
+	}
+
+	private PropertyValueDescriptor describeValueOf(String name,
+			EnumerablePropertySource<?> source, PropertyResolver resolver) {
+		Object resolved = resolver.getProperty(name, Object.class);
+		@SuppressWarnings("unchecked")
+		String origin = (source instanceof OriginLookup)
+				? ((OriginLookup<Object>) source).getOrigin(name).toString() : null;
+		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
+	}
+
+	private PropertyResolver getResolver() {
 		PlaceholderSanitizingPropertyResolver resolver = new PlaceholderSanitizingPropertyResolver(
 				getPropertySources(), this.sanitizer);
 		resolver.setIgnoreUnresolvableNestedPlaceholders(true);
@@ -89,7 +124,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
-		Map<String, PropertySource<?>> map = new LinkedHashMap<String, PropertySource<?>>();
+		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		for (PropertySource<?> source : getPropertySources()) {
 			extract("", map, source);
 		}
@@ -98,9 +133,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private MutablePropertySources getPropertySources() {
 		MutablePropertySources sources;
-		Environment environment = getEnvironment();
-		if (environment != null && environment instanceof ConfigurableEnvironment) {
-			sources = ((ConfigurableEnvironment) environment).getPropertySources();
+		if (this.environment instanceof ConfigurableEnvironment) {
+			sources = ((ConfigurableEnvironment) this.environment).getPropertySources();
 		}
 		else {
 			sources = new StandardEnvironment().getPropertySources();
@@ -123,19 +157,6 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	public Object sanitize(String name, Object object) {
 		return this.sanitizer.sanitize(name, object);
-	}
-
-	/**
-	 * Apply any post processing to source data before it is added.
-	 * @param sourceName the source name
-	 * @param properties the properties
-	 * @return the post-processed properties or {@code null} if the source should not be
-	 * added
-	 * @since 1.4.0
-	 */
-	protected Map<String, Object> postProcessSourceProperties(String sourceName,
-			Map<String, Object> properties) {
-		return properties;
 	}
 
 	/**
@@ -162,6 +183,92 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		protected String getPropertyAsRawString(String key) {
 			String value = super.getPropertyAsRawString(key);
 			return (String) this.sanitizer.sanitize(key, value);
+		}
+
+	}
+
+	/**
+	 * A description of an {@link Environment}.
+	 */
+	static final class EnvironmentDescriptor {
+
+		private final List<String> activeProfiles;
+
+		private final List<PropertySourceDescriptor> propertySources;
+
+		private EnvironmentDescriptor(List<String> activeProfiles,
+				List<PropertySourceDescriptor> propertySources) {
+			this.activeProfiles = activeProfiles;
+			this.propertySources = propertySources;
+		}
+
+		public List<String> getActiveProfiles() {
+			return this.activeProfiles;
+		}
+
+		public List<PropertySourceDescriptor> getPropertySources() {
+			return this.propertySources;
+		}
+
+		/**
+		 * A description of a {@link PropertySource}.
+		 */
+		static final class PropertySourceDescriptor {
+
+			private final String name;
+
+			private final Map<String, PropertyValueDescriptor> properties;
+
+			private PropertySourceDescriptor(String name,
+					Map<String, PropertyValueDescriptor> properties) {
+				this.name = name;
+				this.properties = properties;
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public Map<String, PropertyValueDescriptor> getProperties() {
+				return this.properties;
+			}
+
+			/**
+			 * A description of a property's value, including its origin if available.
+			 */
+			static final class PropertyValueDescriptor {
+
+				private final Object value;
+
+				private final String origin;
+
+				private PropertyValueDescriptor(Object value, String origin) {
+					this.value = value;
+					this.origin = origin;
+				}
+
+				public Object getValue() {
+					return this.value;
+				}
+
+				public String getOrigin() {
+					return this.origin;
+				}
+
+			}
+
+		}
+	}
+
+	/**
+	 * Exception thrown when the specified property cannot be found.
+	 */
+	@SuppressWarnings("serial")
+	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such property")
+	public static class NoSuchPropertyException extends RuntimeException {
+
+		public NoSuchPropertyException(String string) {
+			super(string);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 	private void addTransactionManagerDependencies(
 			ConfigurableListableBeanFactory beanFactory, String transactionManager) {
 		BeanDefinition bean = beanFactory.getBeanDefinition(transactionManager);
-		Set<String> dependsOn = new LinkedHashSet<String>(asList(bean.getDependsOn()));
+		Set<String> dependsOn = new LinkedHashSet<>(asList(bean.getDependsOn()));
 		int initialSize = dependsOn.size();
 		addDependencies(beanFactory, "javax.jms.ConnectionFactory", dependsOn);
 		addDependencies(beanFactory, "javax.sql.DataSource", dependsOn);
@@ -75,8 +75,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 				"com.atomikos.jms.extra.MessageDrivenContainer");
 		for (String messageDrivenContainer : messageDrivenContainers) {
 			BeanDefinition bean = beanFactory.getBeanDefinition(messageDrivenContainer);
-			Set<String> dependsOn = new LinkedHashSet<String>(
-					asList(bean.getDependsOn()));
+			Set<String> dependsOn = new LinkedHashSet<>(asList(bean.getDependsOn()));
 			dependsOn.addAll(asList(transactionManagers));
 			bean.setDependsOn(dependsOn.toArray(new String[dependsOn.size()]));
 		}
@@ -92,10 +91,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 		try {
 			return beanFactory.getBeanNamesForType(Class.forName(type), true, false);
 		}
-		catch (ClassNotFoundException ex) {
-			// Ignore
-		}
-		catch (NoClassDefFoundError ex) {
+		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			// Ignore
 		}
 		return NO_BEANS;

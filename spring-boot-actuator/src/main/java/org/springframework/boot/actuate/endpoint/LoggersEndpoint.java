@@ -24,7 +24,10 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
+import org.springframework.boot.endpoint.Selector;
+import org.springframework.boot.endpoint.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -37,8 +40,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "endpoints.loggers")
-public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
+@Endpoint(id = "loggers")
+public class LoggersEndpoint {
 
 	private final LoggingSystem loggingSystem;
 
@@ -47,49 +50,49 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * @param loggingSystem the logging system to expose
 	 */
 	public LoggersEndpoint(LoggingSystem loggingSystem) {
-		super("loggers");
 		Assert.notNull(loggingSystem, "LoggingSystem must not be null");
 		this.loggingSystem = loggingSystem;
 	}
 
-	@Override
-	public Map<String, Object> invoke() {
+	@ReadOperation
+	public Map<String, Object> loggers() {
 		Collection<LoggerConfiguration> configurations = this.loggingSystem
 				.getLoggerConfigurations();
 		if (configurations == null) {
 			return Collections.emptyMap();
 		}
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("levels", getLevels());
 		result.put("loggers", getLoggers(configurations));
 		return result;
 	}
 
-	private NavigableSet<LogLevel> getLevels() {
-		Set<LogLevel> levels = this.loggingSystem.getSupportedLogLevels();
-		return new TreeSet<LogLevel>(levels).descendingSet();
-	}
-
-	private Map<String, LoggerLevels> getLoggers(
-			Collection<LoggerConfiguration> configurations) {
-		Map<String, LoggerLevels> loggers = new LinkedHashMap<String, LoggerLevels>(
-				configurations.size());
-		for (LoggerConfiguration configuration : configurations) {
-			loggers.put(configuration.getName(), new LoggerLevels(configuration));
-		}
-		return loggers;
-	}
-
-	public LoggerLevels invoke(String name) {
+	@ReadOperation
+	public LoggerLevels loggerLevels(@Selector String name) {
 		Assert.notNull(name, "Name must not be null");
 		LoggerConfiguration configuration = this.loggingSystem
 				.getLoggerConfiguration(name);
 		return (configuration == null ? null : new LoggerLevels(configuration));
 	}
 
-	public void setLogLevel(String name, LogLevel level) {
+	@WriteOperation
+	public void configureLogLevel(@Selector String name, LogLevel configuredLevel) {
 		Assert.notNull(name, "Name must not be empty");
-		this.loggingSystem.setLogLevel(name, level);
+		this.loggingSystem.setLogLevel(name, configuredLevel);
+	}
+
+	private NavigableSet<LogLevel> getLevels() {
+		Set<LogLevel> levels = this.loggingSystem.getSupportedLogLevels();
+		return new TreeSet<>(levels).descendingSet();
+	}
+
+	private Map<String, LoggerLevels> getLoggers(
+			Collection<LoggerConfiguration> configurations) {
+		Map<String, LoggerLevels> loggers = new LinkedHashMap<>(configurations.size());
+		for (LoggerConfiguration configuration : configurations) {
+			loggers.put(configuration.getName(), new LoggerLevels(configuration));
+		}
+		return loggers;
 	}
 
 	/**

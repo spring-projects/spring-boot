@@ -7,6 +7,8 @@
 	<version>0.0.1.BUILD-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>@java.version@</maven.compiler.source>
+		<maven.compiler.target>@java.version@</maven.compiler.target>
 	</properties>
 	<!-- Devtools cannot be added here but the project has the class
 	     that the code is looking for -->

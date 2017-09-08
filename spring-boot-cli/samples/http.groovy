@@ -16,7 +16,7 @@ class Example implements CommandLineRunner {
 	}
 
 	void run(String... args) {
-		def port = context.embeddedServletContainer.port;
+		def port = context.webServer.port;
 		def world = new RESTClient("http://localhost:" + port).get(path:"/").data.text
 		print "Hello " + world
 	}

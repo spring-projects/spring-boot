@@ -201,12 +201,6 @@ the appropriate launcher:
 properties (System properties, environment variables, manifest entries or
 `loader.properties`).
 
-NOTE: `PropertiesLauncher` supports loading properties from
-`loader.properties` and also (for historic reasons)
-`application.properties`. We recommend using
-`loader.properties` exclusively, as support for
-`application.properties` is deprecated and may be removed in the future.
-
 |===
 |Key |Purpose
 

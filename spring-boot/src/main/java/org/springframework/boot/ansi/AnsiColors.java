@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public final class AnsiColors {
 	private static final Map<AnsiColor, LabColor> ANSI_COLOR_MAP;
 
 	static {
-		Map<AnsiColor, LabColor> colorMap = new LinkedHashMap<AnsiColor, LabColor>();
+		Map<AnsiColor, LabColor> colorMap = new LinkedHashMap<>();
 		colorMap.put(AnsiColor.BLACK, new LabColor(0x000000));
 		colorMap.put(AnsiColor.RED, new LabColor(0xAA0000));
 		colorMap.put(AnsiColor.GREEN, new LabColor(0x00AA00));

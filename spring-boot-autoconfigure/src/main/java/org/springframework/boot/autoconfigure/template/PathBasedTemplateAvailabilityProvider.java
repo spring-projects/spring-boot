@@ -18,10 +18,7 @@ package org.springframework.boot.autoconfigure.template;
 
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
@@ -32,6 +29,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.4.6
  */
 public abstract class PathBasedTemplateAvailabilityProvider
@@ -39,15 +37,16 @@ public abstract class PathBasedTemplateAvailabilityProvider
 
 	private final String className;
 
-	private final Class<? extends TemplateAvailabilityProperties> propertiesClass;
+	private final Class<TemplateAvailabilityProperties> propertiesClass;
 
 	private final String propertyPrefix;
 
+	@SuppressWarnings("unchecked")
 	public PathBasedTemplateAvailabilityProvider(String className,
 			Class<? extends TemplateAvailabilityProperties> propertiesClass,
 			String propertyPrefix) {
 		this.className = className;
-		this.propertiesClass = propertiesClass;
+		this.propertiesClass = (Class<TemplateAvailabilityProperties>) propertiesClass;
 		this.propertyPrefix = propertyPrefix;
 	}
 
@@ -55,12 +54,11 @@ public abstract class PathBasedTemplateAvailabilityProvider
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent(this.className, classLoader)) {
-			TemplateAvailabilityProperties properties = BeanUtils
-					.instantiateClass(this.propertiesClass);
-			RelaxedDataBinder binder = new RelaxedDataBinder(properties,
-					this.propertyPrefix);
-			binder.bind(new PropertySourcesPropertyValues(
-					((ConfigurableEnvironment) environment).getPropertySources()));
+			Binder binder = Binder.get(environment);
+			TemplateAvailabilityProperties properties1 = binder
+					.bind(this.propertyPrefix, this.propertiesClass)
+					.orElseCreate(this.propertiesClass);
+			TemplateAvailabilityProperties properties = properties1;
 			return isTemplateAvailable(view, resourceLoader, properties);
 		}
 		return false;

@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -225,7 +225,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 			Class<?>... classes) {
 		ConditionEvaluationReport report = (ConditionEvaluationReport) new DirectFieldAccessor(
 				analyzer).getPropertyValue("report");
-		List<String> exclusions = new ArrayList<String>(report.getExclusions());
+		List<String> exclusions = new ArrayList<>(report.getExclusions());
 		for (Class<?> c : classes) {
 			exclusions.add(c.getName());
 		}
@@ -233,19 +233,15 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private FatalBeanException createFailure(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		this.analyzer.setBeanFactory(context.getBeanFactory());
-		EnvironmentTestUtils.addEnvironment(context, environment);
-		context.register(config);
-		try {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			this.analyzer.setBeanFactory(context.getBeanFactory());
+			TestPropertyValues.of(environment).applyTo(context);
+			context.register(config);
 			context.refresh();
 			return null;
 		}
 		catch (FatalBeanException ex) {
 			return ex;
-		}
-		finally {
-			context.close();
 		}
 	}
 

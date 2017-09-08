@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,20 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.actuate.endpoint.BeansEndpoint.ApplicationContextDescriptor;
+import org.springframework.boot.actuate.endpoint.BeansEndpoint.BeanDescriptor;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,27 +39,102 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BeansEndpoint}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
+public class BeansEndpointTests {
 
-	public BeansEndpointTests() {
-		super(Config.class, BeansEndpoint.class, "beans", true, "endpoints.beans");
+	@Test
+	public void beansAreFound() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfiguration.class);
+		contextRunner.run((context) -> {
+			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
+					.beans();
+			assertThat(result.getParent()).isNull();
+			assertThat(result.getId()).isEqualTo(context.getId());
+			Map<String, BeanDescriptor> beans = result.getBeans();
+			assertThat(beans.size())
+					.isLessThanOrEqualTo(context.getBeanDefinitionCount());
+			assertThat(beans).containsKey("endpoint");
+		});
 	}
 
 	@Test
-	public void invoke() throws Exception {
-		List<Object> result = getEndpointBean().invoke();
-		assertThat(result).hasSize(1);
-		assertThat(result.get(0)).isInstanceOf(Map.class);
+	public void infrastructureBeansAreOmitted() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfiguration.class);
+		contextRunner.run((context) -> {
+			ConfigurableListableBeanFactory factory = (ConfigurableListableBeanFactory) context
+					.getAutowireCapableBeanFactory();
+			List<String> infrastructureBeans = Stream.of(context.getBeanDefinitionNames())
+					.filter((name) -> BeanDefinition.ROLE_INFRASTRUCTURE == factory
+							.getBeanDefinition(name).getRole())
+					.collect(Collectors.toList());
+			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
+					.beans();
+			Map<String, BeanDescriptor> beans = result.getBeans();
+			for (String infrastructureBean : infrastructureBeans) {
+				assertThat(beans).doesNotContainKey(infrastructureBean);
+			}
+		});
+	}
+
+	@Test
+	public void lazyBeansAreOmitted() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfiguration.class,
+						LazyBeanConfiguration.class);
+		contextRunner.run((context) -> {
+			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
+					.beans();
+			assertThat(context).hasBean("lazyBean");
+			assertThat(result.getBeans()).doesNotContainKey("lazyBean");
+		});
+	}
+
+	@Test
+	public void beansInParentContextAreFound() {
+		ApplicationContextRunner parentRunner = new ApplicationContextRunner()
+				.withUserConfiguration(BeanConfiguration.class);
+		parentRunner.run((parent) -> {
+			new ApplicationContextRunner()
+					.withUserConfiguration(EndpointConfiguration.class).withParent(parent)
+					.run(child -> {
+				BeansEndpoint endpoint = child.getBean(BeansEndpoint.class);
+				ApplicationContextDescriptor result = endpoint.beans();
+				assertThat(result.getParent().getBeans()).containsKey("bean");
+				assertThat(result.getBeans()).containsKey("endpoint");
+			});
+		});
 	}
 
 	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+	public static class EndpointConfiguration {
 
 		@Bean
-		public BeansEndpoint endpoint() {
-			return new BeansEndpoint();
+		public BeansEndpoint endpoint(ConfigurableApplicationContext context) {
+			return new BeansEndpoint(context);
+		}
+
+	}
+
+	@Configuration
+	static class BeanConfiguration {
+
+		@Bean
+		public String bean() {
+			return "bean";
+		}
+
+	}
+
+	@Configuration
+	static class LazyBeanConfiguration {
+
+		@Lazy
+		@Bean
+		public String lazyBean() {
+			return "lazyBean";
 		}
 
 	}

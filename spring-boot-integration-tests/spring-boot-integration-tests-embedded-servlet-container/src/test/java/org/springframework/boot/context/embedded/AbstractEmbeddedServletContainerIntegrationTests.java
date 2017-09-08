@@ -19,8 +19,6 @@ package org.springframework.boot.context.embedded;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,35 +49,29 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 	public static Object[] parameters(String packaging,
 			List<Class<? extends AbstractApplicationLauncher>> applicationLaunchers) {
-		List<Object> parameters = new ArrayList<Object>();
-		parameters.addAll(createParameters(packaging, "jetty",
-				Arrays.asList("current", "9.3.16.v20170120"), applicationLaunchers));
-		parameters.addAll(createParameters(packaging, "tomcat",
-				Arrays.asList("current", "8.0.41", "7.0.75"), applicationLaunchers));
-		parameters.addAll(createParameters(packaging, "undertow",
-				Collections.singletonList("current"), applicationLaunchers));
+		List<Object> parameters = new ArrayList<>();
+		parameters.addAll(createParameters(packaging, "jetty", applicationLaunchers));
+		parameters.addAll(createParameters(packaging, "tomcat", applicationLaunchers));
+		parameters.addAll(createParameters(packaging, "undertow", applicationLaunchers));
 		return parameters.toArray(new Object[parameters.size()]);
 	}
 
 	private static List<Object> createParameters(String packaging, String container,
-			List<String> versions,
 			List<Class<? extends AbstractApplicationLauncher>> applicationLaunchers) {
-		List<Object> parameters = new ArrayList<Object>();
-		for (String version : versions) {
-			ApplicationBuilder applicationBuilder = new ApplicationBuilder(
-					temporaryFolder, packaging, container, version);
-			for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {
-				try {
-					AbstractApplicationLauncher launcher = launcherClass
-							.getDeclaredConstructor(ApplicationBuilder.class)
-							.newInstance(applicationBuilder);
-					String name = StringUtils.capitalise(container) + " " + version + ": "
-							+ launcher.getDescription(packaging);
-					parameters.add(new Object[] { name, launcher });
-				}
-				catch (Exception ex) {
-					throw new RuntimeException(ex);
-				}
+		List<Object> parameters = new ArrayList<>();
+		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder,
+				packaging, container);
+		for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {
+			try {
+				AbstractApplicationLauncher launcher = launcherClass
+						.getDeclaredConstructor(ApplicationBuilder.class)
+						.newInstance(applicationBuilder);
+				String name = StringUtils.capitalise(container) + ": "
+						+ launcher.getDescription(packaging);
+				parameters.add(new Object[] { name, launcher });
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
 			}
 		}
 		return parameters;

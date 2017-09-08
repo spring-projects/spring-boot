@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
@@ -37,6 +36,7 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -45,7 +45,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	private static final Map<String, Object> PROPERTIES;
 
 	static {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.thymeleaf.cache", "false");
 		properties.put("spring.freemarker.cache", "false");
 		properties.put("spring.groovy.template.cache", "false");
@@ -56,7 +56,8 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("spring.resources.chain.cache", "false");
 		properties.put("spring.template.provider.cache", "false");
 		properties.put("spring.mvc.log-resolved-exception", "true");
-		properties.put("server.jsp-servlet.init-parameters.development", "true");
+		properties.put("server.servlet.jsp.init-parameters.development", "true");
+		properties.put("spring.reactor.stacktrace-mode.enabled", "true");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 
@@ -89,9 +90,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	}
 
 	private boolean isRemoteRestartEnabled(Environment environment) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-				"spring.devtools.remote.");
-		return resolver.containsProperty("secret");
+		return environment.containsProperty("spring.devtools.remote.secret");
 	}
 
 }

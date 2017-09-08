@@ -243,7 +243,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			this.file = file;
 			this.size = size;
 			this.available = new Semaphore(size);
-			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
+			this.files = new ConcurrentLinkedQueue<>();
 		}
 
 		public RandomAccessFile acquire() throws IOException {

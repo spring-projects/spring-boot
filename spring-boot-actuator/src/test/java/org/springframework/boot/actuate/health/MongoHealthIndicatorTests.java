@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.health;
 
-import com.mongodb.CommandResult;
 import com.mongodb.MongoException;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -65,7 +65,7 @@ public class MongoHealthIndicatorTests {
 
 	@Test
 	public void mongoIsUp() throws Exception {
-		CommandResult commandResult = mock(CommandResult.class);
+		Document commandResult = mock(Document.class);
 		given(commandResult.getString("version")).willReturn("2.6.4");
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
 		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(commandResult);

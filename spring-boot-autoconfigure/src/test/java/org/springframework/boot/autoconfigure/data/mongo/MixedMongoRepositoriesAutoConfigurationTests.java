@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -62,8 +62,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -72,8 +71,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testMixedRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -83,8 +81,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithMongoTemplate() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -93,8 +90,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithMongoOverlap() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -104,9 +100,10 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled()
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
-				"spring.data.mongodb.repositories.enabled:false");
+		TestPropertyValues
+				.of("spring.datasource.initialize:false",
+						"spring.data.mongodb.repositories.enabled:false")
+				.applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -156,7 +153,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			List<String> names = new ArrayList<String>();
+			List<String> names = new ArrayList<>();
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class,
 					JpaRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class,

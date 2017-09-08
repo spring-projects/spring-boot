@@ -59,7 +59,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private List<AutoConfigurationImportFilter> filters = new ArrayList<AutoConfigurationImportFilter>();
+	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
@@ -249,15 +249,7 @@ public class AutoConfigurationImportSelectorTests {
 		@Override
 		protected List<AutoConfigurationImportListener> getAutoConfigurationImportListeners() {
 			return Collections.<AutoConfigurationImportListener>singletonList(
-					new AutoConfigurationImportListener() {
-
-						@Override
-						public void onAutoConfigurationImportEvent(
-								AutoConfigurationImportEvent event) {
-							TestAutoConfigurationImportSelector.this.lastEvent = event;
-						}
-
-					});
+					(event) -> this.lastEvent = event);
 		}
 
 		public AutoConfigurationImportEvent getLastEvent() {
@@ -269,7 +261,7 @@ public class AutoConfigurationImportSelectorTests {
 	private static class TestAutoConfigurationImportFilter
 			implements AutoConfigurationImportFilter, BeanFactoryAware {
 
-		private final Set<String> nonMatching = new HashSet<String>();
+		private final Set<String> nonMatching = new HashSet<>();
 
 		private BeanFactory beanFactory;
 

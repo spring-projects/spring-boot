@@ -19,9 +19,13 @@ package org.springframework.boot.configurationprocessor;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -70,6 +74,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.DeprecatedConfigurationProperty";
 
+	static final String ENDPOINT_ANNOTATION = "org.springframework.boot."
+			+ "endpoint.Endpoint";
+
 	static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
 
 	static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
@@ -96,6 +103,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String deprecatedConfigurationPropertyAnnotation() {
 		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	protected String endpointAnnotation() {
+		return ENDPOINT_ANNOTATION;
 	}
 
 	@Override
@@ -130,6 +141,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (annotationType != null) { // Is @ConfigurationProperties available
 			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
 				processElement(element);
+			}
+		}
+		TypeElement endpointType = elementUtils.getTypeElement(endpointAnnotation());
+		if (endpointType != null) { // Is @Endpoint available
+			for (Element element : roundEnv.getElementsAnnotatedWith(endpointType)) {
+				processEndpoint(element);
 			}
 		}
 		if (roundEnv.processingOver()) {
@@ -321,8 +338,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		boolean isNested = isNested(returnElement, field, element);
 		AnnotationMirror annotation = getAnnotation(getter,
 				configurationPropertiesAnnotation());
-		if (returnElement != null && returnElement instanceof TypeElement
-				&& annotation == null && isNested) {
+		if (returnElement instanceof TypeElement && annotation == null && isNested) {
 			String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
 			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
 					this.typeUtils.getQualifiedName(returnElement),
@@ -332,21 +348,89 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
+	private void processEndpoint(Element element) {
+		try {
+			AnnotationMirror annotation = getAnnotation(element, endpointAnnotation());
+			if (element instanceof TypeElement) {
+				processEndpoint(annotation, (TypeElement) element);
+			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Error processing configuration meta-data on " + element, ex);
+		}
+	}
+
+	private void processEndpoint(AnnotationMirror annotation, TypeElement element) {
+		Map<String, Object> elementValues = getAnnotationElementValues(annotation);
+		String endpointId = (String) elementValues.get("id");
+		if (endpointId == null || "".equals(endpointId)) {
+			return; // Can't process that endpoint
+		}
+		Boolean enabledByDefault = (Boolean) elementValues.get("enabledByDefault");
+		if (enabledByDefault == null) {
+			enabledByDefault = Boolean.TRUE;
+		}
+		String type = this.typeUtils.getQualifiedName(element);
+		this.metadataCollector
+				.add(ItemMetadata.newGroup(endpointKey(endpointId), type, type, null));
+		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
+				"enabled", Boolean.class.getName(), type, null,
+				String.format("Enable the %s endpoint.", endpointId), enabledByDefault,
+				null));
+		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
+				"cache.time-to-live", Long.class.getName(), type, null,
+				"Maximum time in milliseconds that a response can be cached.", 0, null));
+		EndpointExposure endpointTypes = EndpointExposure
+				.parse(elementValues.get("exposure"));
+		if (endpointTypes.hasJmx()) {
+			this.metadataCollector.add(ItemMetadata.newProperty(
+					endpointKey(endpointId + ".jmx"), "enabled", Boolean.class.getName(),
+					type, null,
+					String.format("Expose the %s endpoint as a JMX MBean.", endpointId),
+					enabledByDefault, null));
+		}
+		if (endpointTypes.hasWeb()) {
+			this.metadataCollector.add(ItemMetadata.newProperty(
+					endpointKey(endpointId + ".web"), "enabled", Boolean.class.getName(),
+					type, null, String.format("Expose the %s endpoint as a Web endpoint.",
+							endpointId),
+					false, null));
+		}
+	}
+
+	private String endpointKey(String suffix) {
+		return "endpoints." + suffix;
+	}
+
 	private boolean isNested(Element returnType, VariableElement field,
 			TypeElement element) {
 		if (hasAnnotation(field, nestedConfigurationPropertyAnnotation())) {
 			return true;
 		}
-		return this.typeUtils.isEnclosedIn(returnType, element)
+		return (isParentTheSame(returnType, element))
 				&& returnType.getKind() != ElementKind.ENUM;
+	}
+
+	private boolean isParentTheSame(Element returnType, TypeElement element) {
+		if (returnType == null || element == null) {
+			return false;
+		}
+		return getTopLevelType(returnType).equals(getTopLevelType(element));
+	}
+
+	private Element getTopLevelType(Element element) {
+		if (!(element.getEnclosingElement() instanceof TypeElement)) {
+			return element;
+		}
+		return getTopLevelType(element.getEnclosingElement());
 	}
 
 	private boolean isDeprecated(Element element) {
 		if (isElementDeprecated(element)) {
 			return true;
 		}
-		if (element != null && (element instanceof VariableElement
-				|| element instanceof ExecutableElement)) {
+		if (element instanceof VariableElement || element instanceof ExecutableElement) {
 			return isElementDeprecated(element.getEnclosingElement());
 		}
 		return false;
@@ -386,7 +470,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
 				.getElementValues().entrySet()) {
 			values.put(entry.getKey().getSimpleName().toString(),
@@ -437,6 +521,48 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void log(Kind kind, String msg) {
 		this.processingEnv.getMessager().printMessage(kind, msg);
+	}
+
+	private static class EndpointExposure {
+
+		private static final List<String> ALL = Arrays.asList("JMX", "WEB");
+
+		private final List<String> types;
+
+		EndpointExposure(List<String> types) {
+			this.types = types;
+		}
+
+		static EndpointExposure parse(Object exposureAttribute) {
+			List<AnnotationValue> values = asAnnotationValues(exposureAttribute);
+			if (values.isEmpty()) {
+				return new EndpointExposure(ALL);
+			}
+			return new EndpointExposure(
+					values.stream().map(EndpointExposure::getValueAttribute)
+							.collect(Collectors.toList()));
+		}
+
+		@SuppressWarnings("unchecked")
+		private static List<AnnotationValue> asAnnotationValues(Object typesAttribute) {
+			if (!(typesAttribute instanceof List)) {
+				return Collections.emptyList();
+			}
+			return (List<AnnotationValue>) typesAttribute;
+		}
+
+		private static String getValueAttribute(AnnotationValue value) {
+			return ((VariableElement) value.getValue()).getSimpleName().toString();
+		}
+
+		public boolean hasJmx() {
+			return this.types.contains("JMX");
+		}
+
+		public boolean hasWeb() {
+			return this.types.contains("WEB");
+		}
+
 	}
 
 }

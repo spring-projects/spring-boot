@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ public abstract class AbstractFailureAnalyzer<T extends Throwable>
 	}
 
 	/**
-	 * Returns an analysis of the given {@code failure}, or {@code null} if no analysis
-	 * was possible.
+	 * Returns an analysis of the given {@code rootFailure}, or {@code null} if no
+	 * analysis was possible.
 	 * @param rootFailure the root failure passed to the analyzer
 	 * @param cause the actual found cause
 	 * @return the analysis or {@code null}
@@ -59,10 +59,10 @@ public abstract class AbstractFailureAnalyzer<T extends Throwable>
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final <E extends Throwable> T findCause(Throwable failure, Class<E> type) {
+	protected final <E extends Throwable> E findCause(Throwable failure, Class<E> type) {
 		while (failure != null) {
 			if (type.isInstance(failure)) {
-				return (T) failure;
+				return (E) failure;
 			}
 			failure = failure.getCause();
 		}

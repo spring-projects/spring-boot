@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,29 +44,29 @@ public class MetricsEndpointMetricReader implements MetricReader {
 	@Override
 	public Metric<?> findOne(String metricName) {
 		Metric<Number> metric = null;
-		Object value = this.endpoint.invoke().get(metricName);
+		Object value = this.endpoint.metrics(null).get(metricName);
 		if (value != null) {
-			metric = new Metric<Number>(metricName, (Number) value);
+			metric = new Metric<>(metricName, (Number) value);
 		}
 		return metric;
 	}
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-		Map<String, Object> values = this.endpoint.invoke();
+		List<Metric<?>> metrics = new ArrayList<>();
+		Map<String, Object> values = this.endpoint.metrics(null);
 		Date timestamp = new Date();
 		for (Entry<String, Object> entry : values.entrySet()) {
 			String name = entry.getKey();
 			Object value = entry.getValue();
-			metrics.add(new Metric<Number>(name, (Number) value, timestamp));
+			metrics.add(new Metric<>(name, (Number) value, timestamp));
 		}
 		return metrics;
 	}
 
 	@Override
 	public long count() {
-		return this.endpoint.invoke().size();
+		return this.endpoint.metrics(null).size();
 	}
 
 }

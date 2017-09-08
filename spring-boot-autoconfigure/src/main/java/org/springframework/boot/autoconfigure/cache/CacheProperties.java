@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -44,7 +43,7 @@ public class CacheProperties {
 	 * Comma-separated list of cache names to create if supported by the underlying cache
 	 * manager. Usually, this disables the ability to create additional caches on-the-fly.
 	 */
-	private List<String> cacheNames = new ArrayList<String>();
+	private List<String> cacheNames = new ArrayList<>();
 
 	private final Caffeine caffeine = new Caffeine();
 
@@ -52,13 +51,9 @@ public class CacheProperties {
 
 	private final EhCache ehcache = new EhCache();
 
-	private final Hazelcast hazelcast = new Hazelcast();
-
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
-
-	private final Guava guava = new Guava();
 
 	public CacheType getType() {
 		return this.type;
@@ -88,21 +83,12 @@ public class CacheProperties {
 		return this.ehcache;
 	}
 
-	@Deprecated
-	public Hazelcast getHazelcast() {
-		return this.hazelcast;
-	}
-
 	public Infinispan getInfinispan() {
 		return this.infinispan;
 	}
 
 	public JCache getJcache() {
 		return this.jcache;
-	}
-
-	public Guava getGuava() {
-		return this.guava;
 	}
 
 	/**
@@ -192,29 +178,6 @@ public class CacheProperties {
 	}
 
 	/**
-	 * Hazelcast specific cache properties.
-	 */
-	@Deprecated
-	public static class Hazelcast {
-
-		/**
-		 * The location of the configuration file to use to initialize Hazelcast.
-		 */
-		private Resource config;
-
-		@DeprecatedConfigurationProperty(replacement = "spring.hazelcast.config", reason = "Use general hazelcast auto-configuration instead.")
-		@Deprecated
-		public Resource getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Resource config) {
-			this.config = config;
-		}
-
-	}
-
-	/**
 	 * Infinispan specific cache properties.
 	 */
 	public static class Infinispan {
@@ -266,30 +229,6 @@ public class CacheProperties {
 
 		public void setConfig(Resource config) {
 			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Guava specific cache properties.
-	 */
-	public static class Guava {
-
-		/**
-		 * The spec to use to create caches. Check CacheBuilderSpec for more details on
-		 * the spec format.
-		 */
-		private String spec;
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "Caffeine will supersede the Guava support in Spring Boot 2.0", replacement = "spring.cache.caffeine.spec")
-		public String getSpec() {
-			return this.spec;
-		}
-
-		@Deprecated
-		public void setSpec(String spec) {
-			this.spec = spec;
 		}
 
 	}

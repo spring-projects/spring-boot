@@ -43,7 +43,7 @@ final class DatabaseLookup {
 	private static final Map<DatabaseDriver, Database> LOOKUP;
 
 	static {
-		Map<DatabaseDriver, Database> map = new HashMap<DatabaseDriver, Database>();
+		Map<DatabaseDriver, Database> map = new HashMap<>();
 		map.put(DatabaseDriver.DERBY, Database.DERBY);
 		map.put(DatabaseDriver.H2, Database.H2);
 		map.put(DatabaseDriver.HSQLDB, Database.HSQL);

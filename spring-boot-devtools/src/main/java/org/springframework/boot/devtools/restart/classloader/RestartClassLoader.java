@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 				resources.nextElement();
 			}
 			if (file.getKind() != Kind.DELETED) {
-				return new CompoundEnumeration<URL>(createFileUrl(name, file), resources);
+				return new CompoundEnumeration<>(createFileUrl(name, file), resources);
 			}
 		}
 		return resources;
@@ -126,12 +126,8 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		if (file.getKind() == Kind.DELETED) {
 			return null;
 		}
-		return AccessController.doPrivileged(new PrivilegedAction<URL>() {
-			@Override
-			public URL run() {
-				return createFileUrl(name, file);
-			}
-		});
+		return AccessController
+				.doPrivileged((PrivilegedAction<URL>) () -> createFileUrl(name, file));
 	}
 
 	@Override
@@ -167,12 +163,9 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		if (file.getKind() == Kind.DELETED) {
 			throw new ClassNotFoundException(name);
 		}
-		return AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
-			@Override
-			public Class<?> run() {
-				byte[] bytes = file.getContents();
-				return defineClass(name, bytes, 0, bytes.length);
-			}
+		return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
+			byte[] bytes = file.getContents();
+			return defineClass(name, bytes, 0, bytes.length);
 		});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ import java.util.List;
 
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.endpoint.Endpoint;
+import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.util.Assert;
 
 /**
@@ -28,8 +29,8 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.trace")
-public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
+@Endpoint(id = "trace")
+public class TraceEndpoint {
 
 	private final TraceRepository repository;
 
@@ -38,14 +39,31 @@ public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 	 * @param repository the trace repository
 	 */
 	public TraceEndpoint(TraceRepository repository) {
-		super("trace");
 		Assert.notNull(repository, "Repository must not be null");
 		this.repository = repository;
 	}
 
-	@Override
-	public List<Trace> invoke() {
-		return this.repository.findAll();
+	@ReadOperation
+	public TraceDescriptor traces() {
+		return new TraceDescriptor(this.repository.findAll());
+	}
+
+	/**
+	 * A description of an application's {@link Trace} entries. Primarily intended for
+	 * serialization to JSON.
+	 */
+	public static final class TraceDescriptor {
+
+		private final List<Trace> traces;
+
+		private TraceDescriptor(List<Trace> traces) {
+			this.traces = traces;
+		}
+
+		public List<Trace> getTraces() {
+			return this.traces;
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,24 +23,24 @@ import java.util.List;
 import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.logging.ClasspathLoggingApplicationListener;
+import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
-import org.springframework.boot.logging.ClasspathLoggingApplicationListener;
-import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
 
 /**
  * Application that can be used to establish a link to remotely running Spring Boot code.
- * Allows remote debugging and remote updates (if enabled). This class should be launched
- * from within your IDE and should have the same classpath configuration as the locally
- * developed application. The remote URL of the application should be provided as a
- * non-option argument.
+ * Allows remote updates (if enabled). This class should be launched from within your IDE
+ * and should have the same classpath configuration as the locally developed application.
+ * The remote URL of the application should be provided as a non-option argument.
  *
  * @author Phillip Webb
  * @since 1.3.0
@@ -55,7 +55,7 @@ public final class RemoteSpringApplication {
 		Restarter.initialize(args, RestartInitializer.NONE);
 		SpringApplication application = new SpringApplication(
 				RemoteClientConfiguration.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setBanner(getBanner());
 		application.setInitializers(getInitializers());
 		application.setListeners(getListeners());
@@ -64,13 +64,13 @@ public final class RemoteSpringApplication {
 	}
 
 	private Collection<ApplicationContextInitializer<?>> getInitializers() {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		initializers.add(new RestartScopeInitializer());
 		return initializers;
 	}
 
 	private Collection<ApplicationListener<?>> getListeners() {
-		List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
+		List<ApplicationListener<?>> listeners = new ArrayList<>();
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(new ConfigFileApplicationListener());
 		listeners.add(new ClasspathLoggingApplicationListener());

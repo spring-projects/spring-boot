@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,18 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
-import java.util.function.Consumer;
-
-import org.springframework.lang.UsesJava8;
-
 /**
  * Fast writes to in-memory metrics store using {@link GaugeBuffer}.
  *
  * @author Dave Syer
  * @since 1.3.0
  */
-@UsesJava8
 public class GaugeBuffers extends Buffers<GaugeBuffer> {
 
-	public void set(final String name, final double value) {
-		doWith(name, new Consumer<GaugeBuffer>() {
-			@Override
-			public void accept(GaugeBuffer buffer) {
-				buffer.setTimestamp(System.currentTimeMillis());
-				buffer.setValue(value);
-			}
+	public void set(String name, double value) {
+		doWith(name, (buffer) -> {
+			buffer.setTimestamp(System.currentTimeMillis());
+			buffer.setValue(value);
 		});
 	}
 

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:fragment="head (title)">
+		<title th:text="${title}">Fragments</title>
+		<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+			href="../../css/bootstrap.min.css" />
+	</head>
+	<body>
+		<div class="container">
+			<div th:fragment="navbar" class="navbar">
+				<div class="navbar-inner">
+					<a class="brand" href="http://thymeleaf.org">Thymeleaf</a>
+					<ul class="nav">
+						<li><a th:href="@{/}" href="messages.html"> Messages </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

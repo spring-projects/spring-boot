@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import java.nio.channels.SocketChannel;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.util.SocketUtils;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -41,18 +39,14 @@ public class SocketTargetServerConnectionTests {
 
 	private static final int DEFAULT_TIMEOUT = 1000;
 
-	private int port;
-
 	private MockServer server;
 
 	private SocketTargetServerConnection connection;
 
 	@Before
 	public void setup() throws IOException {
-		this.port = SocketUtils.findAvailableTcpPort();
-		this.server = new MockServer(this.port);
-		StaticPortProvider portProvider = new StaticPortProvider(this.port);
-		this.connection = new SocketTargetServerConnection(portProvider);
+		this.server = new MockServer();
+		this.connection = new SocketTargetServerConnection(() -> this.server.getPort());
 	}
 
 	@Test
@@ -107,9 +101,13 @@ public class SocketTargetServerConnectionTests {
 
 		private ServerThread thread;
 
-		MockServer(int port) throws IOException {
+		MockServer() throws IOException {
 			this.serverSocket = ServerSocketChannel.open();
-			this.serverSocket.bind(new InetSocketAddress(port));
+			this.serverSocket.bind(new InetSocketAddress(0));
+		}
+
+		int getPort() {
+			return this.serverSocket.socket().getLocalPort();
 		}
 
 		public void delay(int delay) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class MainMethodTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<MainMethod>();
+	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
 	private Method actualMain;
 
@@ -55,12 +55,7 @@ public class MainMethodTests {
 
 	@Test
 	public void validMainMethod() throws Exception {
-		MainMethod method = new TestThread(new Runnable() {
-			@Override
-			public void run() {
-				Valid.main();
-			}
-		}).test();
+		MainMethod method = new TestThread(Valid::main).test();
 		assertThat(method.getMethod()).isEqualTo(this.actualMain);
 		assertThat(method.getDeclaringClassName())
 				.isEqualTo(this.actualMain.getDeclaringClass().getName());
@@ -70,24 +65,14 @@ public class MainMethodTests {
 	public void missingArgsMainMethod() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to find main method");
-		new TestThread(new Runnable() {
-			@Override
-			public void run() {
-				MissingArgs.main();
-			}
-		}).test();
+		new TestThread(MissingArgs::main).test();
 	}
 
 	@Test
 	public void nonStatic() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to find main method");
-		new TestThread(new Runnable() {
-			@Override
-			public void run() {
-				new NonStaticMain().main();
-			}
-		}).test();
+		new TestThread(() -> new NonStaticMain().main()).test();
 	}
 
 	private static class TestThread extends Thread {

@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.data.alt.redis.CityRedisRepository
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.redis.city.City;
 import org.springframework.boot.autoconfigure.data.redis.city.CityRepository;
-import org.springframework.boot.redis.RedisTestServer;
+import org.springframework.boot.testsupport.rule.RedisTestServer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -51,8 +50,8 @@ class DefinitionsParser {
 	}
 
 	DefinitionsParser(Collection<? extends Definition> existing) {
-		this.definitions = new LinkedHashSet<Definition>();
-		this.definitionFields = new LinkedHashMap<Definition, Field>();
+		this.definitions = new LinkedHashSet<>();
+		this.definitionFields = new LinkedHashMap<>();
 		if (existing != null) {
 			this.definitions.addAll(existing);
 		}
@@ -60,15 +59,7 @@ class DefinitionsParser {
 
 	public void parse(Class<?> source) {
 		parseElement(source);
-		ReflectionUtils.doWithFields(source, new FieldCallback() {
-
-			@Override
-			public void doWith(Field field)
-					throws IllegalArgumentException, IllegalAccessException {
-				parseElement(field);
-			}
-
-		});
+		ReflectionUtils.doWithFields(source, this::parseElement);
 	}
 
 	private void parseElement(AnnotatedElement element) {
@@ -127,7 +118,7 @@ class DefinitionsParser {
 
 	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element,
 			Class<?>[] value) {
-		Set<ResolvableType> types = new LinkedHashSet<ResolvableType>();
+		Set<ResolvableType> types = new LinkedHashSet<>();
 		for (Class<?> clazz : value) {
 			types.add(ResolvableType.forClass(clazz));
 		}

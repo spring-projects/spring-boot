@@ -27,7 +27,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -59,7 +58,6 @@ class ActiveMQConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
 		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true", matchIfMissing = false)
-		@ConfigurationProperties(prefix = "spring.activemq.pool.configuration")
 		public PooledConnectionFactory pooledJmsConnectionFactory(
 				ActiveMQProperties properties,
 				ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {

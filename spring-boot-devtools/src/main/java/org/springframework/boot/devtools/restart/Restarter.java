@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,13 +89,13 @@ public class Restarter {
 
 	private static Restarter instance;
 
-	private final Set<URL> urls = new LinkedHashSet<URL>();
+	private final Set<URL> urls = new LinkedHashSet<>();
 
 	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 
-	private final Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, Object> attributes = new HashMap<>();
 
-	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
+	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<>();
 
 	private final Lock stopLock = new ReentrantLock();
 
@@ -119,7 +119,7 @@ public class Restarter {
 
 	private boolean finished = false;
 
-	private final List<ConfigurableApplicationContext> rootContexts = new CopyOnWriteArrayList<ConfigurableApplicationContext>();
+	private final List<ConfigurableApplicationContext> rootContexts = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
@@ -167,15 +167,10 @@ public class Restarter {
 
 	private void immediateRestart() {
 		try {
-			getLeakSafeThread().callAndWait(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {
-					start(FailureHandler.NONE);
-					cleanupCaches();
-					return null;
-				}
-
+			getLeakSafeThread().callAndWait(() -> {
+				start(FailureHandler.NONE);
+				cleanupCaches();
+				return null;
 			});
 		}
 		catch (Exception ex) {
@@ -251,15 +246,10 @@ public class Restarter {
 			return;
 		}
 		this.logger.debug("Restarting application");
-		getLeakSafeThread().call(new Callable<Void>() {
-
-			@Override
-			public Void call() throws Exception {
-				Restarter.this.stop();
-				Restarter.this.start(failureHandler);
-				return null;
-			}
-
+		getLeakSafeThread().call(() -> {
+			Restarter.this.stop();
+			Restarter.this.start(failureHandler);
+			return null;
 		});
 	}
 
@@ -387,7 +377,7 @@ public class Restarter {
 	 */
 	private void forceReferenceCleanup() {
 		try {
-			final List<long[]> memory = new LinkedList<long[]>();
+			final List<long[]> memory = new LinkedList<>();
 			while (true) {
 				memory.add(new long[102400]);
 			}
@@ -641,15 +631,10 @@ public class Restarter {
 
 		@Override
 		public Thread newThread(final Runnable runnable) {
-			return getLeakSafeThread().callAndWait(new Callable<Thread>() {
-
-				@Override
-				public Thread call() throws Exception {
-					Thread thread = new Thread(runnable);
-					thread.setContextClassLoader(Restarter.this.applicationClassLoader);
-					return thread;
-				}
-
+			return getLeakSafeThread().callAndWait(() -> {
+				Thread thread = new Thread(runnable);
+				thread.setContextClassLoader(Restarter.this.applicationClassLoader);
+				return thread;
 			});
 		}
 

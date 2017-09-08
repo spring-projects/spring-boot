@@ -25,6 +25,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  * @author Stephane Nicoll
  * @since 1.5.5
  */
+@FunctionalInterface
 public interface ActiveMQConnectionFactoryCustomizer {
 
 	/**

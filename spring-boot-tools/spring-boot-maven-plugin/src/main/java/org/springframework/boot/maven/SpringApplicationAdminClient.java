@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,10 +73,7 @@ class SpringApplicationAdminClient {
 			throw new MojoExecutionException("Failed to retrieve Ready attribute",
 					ex.getCause());
 		}
-		catch (MBeanException ex) {
-			throw new MojoExecutionException(ex.getMessage(), ex);
-		}
-		catch (IOException ex) {
+		catch (MBeanException | IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 	}

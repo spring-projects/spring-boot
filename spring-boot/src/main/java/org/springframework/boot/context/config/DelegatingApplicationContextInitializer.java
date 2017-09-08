@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -59,7 +58,7 @@ public class DelegatingApplicationContextInitializer implements
 
 	private List<Class<?>> getInitializerClasses(ConfigurableEnvironment env) {
 		String classNames = env.getProperty(PROPERTY_NAME);
-		List<Class<?>> classes = new ArrayList<Class<?>>();
+		List<Class<?>> classes = new ArrayList<>();
 		if (StringUtils.hasLength(classNames)) {
 			for (String className : StringUtils.tokenizeToStringArray(classNames, ",")) {
 				classes.add(getInitializerClass(className));
@@ -84,7 +83,7 @@ public class DelegatingApplicationContextInitializer implements
 	private void applyInitializerClasses(ConfigurableApplicationContext context,
 			List<Class<?>> initializerClasses) {
 		Class<?> contextClass = context.getClass();
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		for (Class<?> initializerClass : initializerClasses) {
 			initializers.add(instantiateInitializer(contextClass, initializerClass));
 		}
@@ -110,7 +109,7 @@ public class DelegatingApplicationContextInitializer implements
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void applyInitializers(ConfigurableApplicationContext context,
 			List<ApplicationContextInitializer<?>> initializers) {
-		Collections.sort(initializers, new AnnotationAwareOrderComparator());
+		initializers.sort(new AnnotationAwareOrderComparator());
 		for (ApplicationContextInitializer initializer : initializers) {
 			initializer.initialize(context);
 		}

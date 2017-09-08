@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,10 +191,7 @@ class BeanDefinitionLoader {
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
 		}
-		catch (IllegalArgumentException ex) {
-			// swallow exception and continue
-		}
-		catch (ClassNotFoundException ex) {
+		catch (IllegalArgumentException | ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
 		// Attempt as resources
@@ -305,7 +302,7 @@ class BeanDefinitionLoader {
 	private static class ClassExcludeFilter
 			extends AbstractTypeHierarchyTraversingFilter {
 
-		private final Set<String> classNames = new HashSet<String>();
+		private final Set<String> classNames = new HashSet<>();
 
 		ClassExcludeFilter(Object... sources) {
 			super(false, false);
@@ -326,6 +323,7 @@ class BeanDefinitionLoader {
 	/**
 	 * Source for Bean definitions defined in Groovy.
 	 */
+	@FunctionalInterface
 	protected interface GroovyBeanDefinitionSource {
 
 		Closure<?> getBeans();

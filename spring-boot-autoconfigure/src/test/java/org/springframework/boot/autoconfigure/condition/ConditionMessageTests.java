@@ -98,7 +98,7 @@ public class ConditionMessageTests {
 
 	@Test
 	public void ofCollectionShouldCombine() throws Exception {
-		List<ConditionMessage> messages = new ArrayList<ConditionMessage>();
+		List<ConditionMessage> messages = new ArrayList<>();
 		messages.add(ConditionMessage.of("a"));
 		messages.add(ConditionMessage.of("b"));
 		ConditionMessage message = ConditionMessage.of(messages);

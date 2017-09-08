@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,39 +30,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConditionalOnCloudPlatformTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
-	@After
-	public void cleanUp() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	public void outcomeWhenCloudfoundryPlatformNotPresentShouldNotMatch() {
+		this.contextRunner.withUserConfiguration(CloudFoundryPlatformConfig.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void outcomeWhenCloudfoundryPlatformNotPresentShouldNotMatch()
-			throws Exception {
-		load(CloudFoundryPlatformConfig.class, "");
-		assertThat(this.context.containsBean("foo")).isFalse();
+	public void outcomeWhenCloudfoundryPlatformPresentShouldMatch() {
+		this.contextRunner.withUserConfiguration(CloudFoundryPlatformConfig.class)
+				.withPropertyValues("VCAP_APPLICATION:---")
+				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void outcomeWhenCloudfoundryPlatformPresentShouldMatch() throws Exception {
-		load(CloudFoundryPlatformConfig.class, "VCAP_APPLICATION:---");
-		assertThat(this.context.containsBean("foo")).isTrue();
-	}
-
-	@Test
-	public void outcomeWhenCloudfoundryPlatformPresentAndMethodTargetShouldMatch()
-			throws Exception {
-		load(CloudFoundryPlatformOnMethodConfig.class, "VCAP_APPLICATION:---");
-		assertThat(this.context.containsBean("foo")).isTrue();
-	}
-
-	private void load(Class<?> config, String... environment) {
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
-		this.context.register(config);
-		this.context.refresh();
+	public void outcomeWhenCloudfoundryPlatformPresentAndMethodTargetShouldMatch() {
+		this.contextRunner.withUserConfiguration(CloudFoundryPlatformOnMethodConfig.class)
+				.withPropertyValues("VCAP_APPLICATION:---")
+				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration

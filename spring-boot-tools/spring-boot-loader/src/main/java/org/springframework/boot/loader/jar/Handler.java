@@ -68,7 +68,7 @@ public class Handler extends URLStreamHandler {
 	private static SoftReference<Map<File, JarFile>> rootFileCache;
 
 	static {
-		rootFileCache = new SoftReference<Map<File, JarFile>>(null);
+		rootFileCache = new SoftReference<>(null);
 	}
 
 	private final JarFile jarFile;
@@ -328,8 +328,8 @@ public class Handler extends URLStreamHandler {
 	static void addToRootFileCache(File sourceFile, JarFile jarFile) {
 		Map<File, JarFile> cache = rootFileCache.get();
 		if (cache == null) {
-			cache = new ConcurrentHashMap<File, JarFile>();
-			rootFileCache = new SoftReference<Map<File, JarFile>>(cache);
+			cache = new ConcurrentHashMap<>();
+			rootFileCache = new SoftReference<>(cache);
 		}
 		cache.put(sourceFile, jarFile);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
-import org.springframework.boot.loader.archive.Archive.Entry;
-import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * Base class for executable archive {@link Launcher}s.
@@ -68,15 +66,8 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> archives = new ArrayList<Archive>(
-				this.archive.getNestedArchives(new EntryFilter() {
-
-					@Override
-					public boolean matches(Entry entry) {
-						return isNestedArchive(entry);
-					}
-
-				}));
+		List<Archive> archives = new ArrayList<>(
+				this.archive.getNestedArchives(this::isNestedArchive));
 		postProcessClassPathArchives(archives);
 		return archives;
 	}

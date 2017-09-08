@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.DispatcherType;
 
@@ -26,8 +25,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +47,8 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  * @since 1.3
  */
 @Configuration
-@ConditionalOnWebApplication
-@EnableConfigurationProperties
+@ConditionalOnWebApplication(type = Type.SERVLET)
+@EnableConfigurationProperties(SecurityProperties.class)
 @ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class,
 		SessionCreationPolicy.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
@@ -68,22 +67,14 @@ public class SecurityFilterAutoConfiguration {
 		return registration;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public SecurityProperties securityProperties() {
-		return new SecurityProperties();
-	}
-
 	private EnumSet<DispatcherType> getDispatcherTypes(
 			SecurityProperties securityProperties) {
 		if (securityProperties.getFilterDispatcherTypes() == null) {
 			return null;
 		}
-		Set<DispatcherType> dispatcherTypes = new HashSet<DispatcherType>();
-		for (String dispatcherType : securityProperties.getFilterDispatcherTypes()) {
-			dispatcherTypes.add(DispatcherType.valueOf(dispatcherType));
-		}
-		return EnumSet.copyOf(dispatcherTypes);
+		return securityProperties.getFilterDispatcherTypes().stream()
+				.map((type) -> DispatcherType.valueOf(type.name())).collect(Collectors
+						.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
 	}
 
 }

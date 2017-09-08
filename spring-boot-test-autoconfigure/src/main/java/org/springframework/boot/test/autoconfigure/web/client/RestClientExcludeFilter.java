@@ -40,8 +40,8 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
-		Set<Class<?>> includes = new LinkedHashSet<Class<?>>();
-		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.Module",
+		Set<Class<?>> includes = new LinkedHashSet<>();
+		if (ClassUtils.isPresent(DATABIND_MODULE_CLASS_NAME,
 				RestClientExcludeFilter.class.getClassLoader())) {
 			try {
 				includes.add(Class.forName(DATABIND_MODULE_CLASS_NAME, true,
@@ -91,7 +91,7 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<Class<?>>(Arrays.asList(this.annotation.components()));
+		return new LinkedHashSet<>(Arrays.asList(this.annotation.components()));
 	}
 
 }

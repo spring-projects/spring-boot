@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,37 +48,32 @@ public class ObjectContentTests {
 
 	@Test
 	public void createWhenTypeIsNullShouldCreateContent() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(null,
-				OBJECT);
+		ObjectContent<ExampleObject> content = new ObjectContent<>(null, OBJECT);
 		assertThat(content).isNotNull();
 	}
 
 	@Test
 	public void assertThatShouldReturnObjectContentAssert() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(TYPE,
-				OBJECT);
+		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE, OBJECT);
 		assertThat(content.assertThat()).isInstanceOf(ObjectContentAssert.class);
 	}
 
 	@Test
 	public void getObjectShouldReturnObject() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(TYPE,
-				OBJECT);
+		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE, OBJECT);
 		assertThat(content.getObject()).isEqualTo(OBJECT);
 	}
 
 	@Test
 	public void toStringWhenHasTypeShouldReturnString() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(TYPE,
-				OBJECT);
+		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE, OBJECT);
 		assertThat(content.toString())
 				.isEqualTo("ObjectContent " + OBJECT + " created from " + TYPE);
 	}
 
 	@Test
 	public void toStringWhenHasNoTypeShouldReturnString() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(null,
-				OBJECT);
+		ObjectContent<ExampleObject> content = new ObjectContent<>(null, OBJECT);
 		assertThat(content.toString()).isEqualTo("ObjectContent " + OBJECT);
 	}
 

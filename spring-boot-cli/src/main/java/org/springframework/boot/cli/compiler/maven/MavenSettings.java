@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ public class MavenSettings {
 		if (!problemCollector.getProblems().isEmpty()) {
 			throw new IllegalStateException(createFailureMessage(problemCollector));
 		}
-		List<Profile> activeProfiles = new ArrayList<Profile>();
+		List<Profile> activeProfiles = new ArrayList<>();
 		Map<String, Profile> profiles = settings.getProfilesAsMap();
 		for (org.apache.maven.model.Profile modelProfile : activeModelProfiles) {
 			activeProfiles.add(profiles.get(modelProfile.getId()));
@@ -200,7 +200,7 @@ public class MavenSettings {
 
 	private List<org.apache.maven.model.Profile> createModelProfiles(
 			List<Profile> profiles) {
-		List<org.apache.maven.model.Profile> modelProfiles = new ArrayList<org.apache.maven.model.Profile>();
+		List<org.apache.maven.model.Profile> modelProfiles = new ArrayList<>();
 		for (Profile profile : profiles) {
 			org.apache.maven.model.Profile modelProfile = new org.apache.maven.model.Profile();
 			modelProfile.setId(profile.getId());
@@ -310,7 +310,7 @@ public class MavenSettings {
 	private static final class SpringBootCliModelProblemCollector
 			implements ModelProblemCollector {
 
-		private final List<ModelProblemCollectorRequest> problems = new ArrayList<ModelProblemCollectorRequest>();
+		private final List<ModelProblemCollectorRequest> problems = new ArrayList<>();
 
 		@Override
 		public void add(ModelProblemCollectorRequest req) {

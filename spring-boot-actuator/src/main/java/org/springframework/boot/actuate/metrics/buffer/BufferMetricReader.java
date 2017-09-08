@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,12 @@ package org.springframework.boot.actuate.metrics.buffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
-import org.springframework.lang.UsesJava8;
 
 /**
  * {@link MetricReader} implementation using {@link CounterBuffers} and
@@ -35,7 +33,6 @@ import org.springframework.lang.UsesJava8;
  * @author Dave Syer
  * @since 1.3.0
  */
-@UsesJava8
 public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 
 	private static final Predicate<String> ALL = Pattern.compile(".*").asPredicate();
@@ -50,7 +47,7 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 	}
 
 	@Override
-	public Metric<?> findOne(final String name) {
+	public Metric<?> findOne(String name) {
 		Buffer<?> buffer = this.counterBuffers.find(name);
 		if (buffer == null) {
 			buffer = this.gaugeBuffers.find(name);
@@ -74,7 +71,7 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 	}
 
 	private Iterable<Metric<?>> findAll(Predicate<String> predicate) {
-		final List<Metric<?>> metrics = new ArrayList<Metric<?>>();
+		final List<Metric<?>> metrics = new ArrayList<>();
 		collectMetrics(this.gaugeBuffers, predicate, metrics);
 		collectMetrics(this.counterBuffers, predicate, metrics);
 		return metrics;
@@ -83,18 +80,11 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 	private <T extends Number, B extends Buffer<T>> void collectMetrics(
 			Buffers<B> buffers, Predicate<String> predicate,
 			final List<Metric<?>> metrics) {
-		buffers.forEach(predicate, new BiConsumer<String, B>() {
-
-			@Override
-			public void accept(String name, B value) {
-				metrics.add(asMetric(name, value));
-			}
-
-		});
+		buffers.forEach(predicate, (name, value) -> metrics.add(asMetric(name, value)));
 	}
 
-	private <T extends Number> Metric<T> asMetric(final String name, Buffer<T> buffer) {
-		return new Metric<T>(name, buffer.getValue(), new Date(buffer.getTimestamp()));
+	private <T extends Number> Metric<T> asMetric(String name, Buffer<T> buffer) {
+		return new Metric<>(name, buffer.getValue(), new Date(buffer.getTimestamp()));
 	}
 
 }

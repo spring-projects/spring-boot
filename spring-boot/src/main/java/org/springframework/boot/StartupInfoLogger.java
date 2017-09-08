@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,45 +100,20 @@ class StartupInfoLogger {
 	}
 
 	private String getVersion(final Class<?> source) {
-		return getValue(" v", new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				return source.getPackage().getImplementationVersion();
-			}
-		}, "");
+		return getValue(" v", () -> source.getPackage().getImplementationVersion(), "");
 	}
 
 	private String getOn() {
-		return getValue(" on ", new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				return InetAddress.getLocalHost().getHostName();
-			}
-		});
+		return getValue(" on ", () -> InetAddress.getLocalHost().getHostName());
 	}
 
 	private String getPid() {
-		return getValue(" with PID ", new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				return System.getProperty("PID");
-			}
-		});
+		return getValue(" with PID ", () -> System.getProperty("PID"));
 	}
 
 	private String getContext() {
-		String startedBy = getValue("started by ", new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				return System.getProperty("user.name");
-			}
-		});
-		String in = getValue("in ", new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				return System.getProperty("user.dir");
-			}
-		});
+		String startedBy = getValue("started by ", () -> System.getProperty("user.name"));
+		String in = getValue("in ", () -> System.getProperty("user.dir"));
 		ApplicationHome home = new ApplicationHome(this.sourceClass);
 		String path = (home.getSource() == null ? ""
 				: home.getSource().getAbsolutePath());

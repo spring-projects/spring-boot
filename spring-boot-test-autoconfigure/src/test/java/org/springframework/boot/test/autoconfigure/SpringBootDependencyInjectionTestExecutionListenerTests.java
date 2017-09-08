@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
@@ -64,7 +65,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		TestContext testContext = mock(TestContext.class);
 		given(testContext.getTestInstance()).willThrow(new IllegalStateException());
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext applicationContext = application.run();
 		given(testContext.getApplicationContext()).willReturn(applicationContext);
 		try {
@@ -84,7 +85,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		IllegalStateException originalFailure = new IllegalStateException();
 		given(testContext.getTestInstance()).willThrow(originalFailure);
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		given(testContext.getApplicationContext()).willThrow(new RuntimeException());
 		this.thrown.expect(is(originalFailure));
 		this.reportListener.prepareTestInstance(testContext);

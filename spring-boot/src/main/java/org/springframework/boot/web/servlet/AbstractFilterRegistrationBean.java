@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,10 @@ import org.springframework.util.Assert;
  * Abstract base {@link ServletContextInitializer} to register {@link Filter}s in a
  * Servlet 3.0+ container.
  *
+ * @param <T> the type of {@link Filter} to register
  * @author Phillip Webb
  */
-abstract class AbstractFilterRegistrationBean extends RegistrationBean {
+abstract class AbstractFilterRegistrationBean<T extends Filter> extends RegistrationBean {
 
 	/**
 	 * Filters that wrap the servlet request should be ordered less than or equal to this.
@@ -49,20 +50,13 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
-			DispatcherType.ASYNC);
-
-	private static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
-			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
-
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 
-	private Set<ServletRegistrationBean> servletRegistrationBeans = new LinkedHashSet<ServletRegistrationBean>();
+	private Set<ServletRegistrationBean<?>> servletRegistrationBeans = new LinkedHashSet<>();
 
-	private Set<String> servletNames = new LinkedHashSet<String>();
+	private Set<String> servletNames = new LinkedHashSet<>();
 
-	private Set<String> urlPatterns = new LinkedHashSet<String>();
+	private Set<String> urlPatterns = new LinkedHashSet<>();
 
 	private EnumSet<DispatcherType> dispatcherTypes;
 
@@ -73,7 +67,8 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 * {@link ServletRegistrationBean}s.
 	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
 	 */
-	AbstractFilterRegistrationBean(ServletRegistrationBean... servletRegistrationBeans) {
+	AbstractFilterRegistrationBean(
+			ServletRegistrationBean<?>... servletRegistrationBeans) {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
 		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
@@ -84,11 +79,10 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 * @param servletRegistrationBeans the Servlet registration beans
 	 */
 	public void setServletRegistrationBeans(
-			Collection<? extends ServletRegistrationBean> servletRegistrationBeans) {
+			Collection<? extends ServletRegistrationBean<?>> servletRegistrationBeans) {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
-		this.servletRegistrationBeans = new LinkedHashSet<ServletRegistrationBean>(
-				servletRegistrationBeans);
+		this.servletRegistrationBeans = new LinkedHashSet<>(servletRegistrationBeans);
 	}
 
 	/**
@@ -98,7 +92,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 * @see #setServletNames
 	 * @see #setUrlPatterns
 	 */
-	public Collection<ServletRegistrationBean> getServletRegistrationBeans() {
+	public Collection<ServletRegistrationBean<?>> getServletRegistrationBeans() {
 		return this.servletRegistrationBeans;
 	}
 
@@ -108,7 +102,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 * @see #setServletRegistrationBeans
 	 */
 	public void addServletRegistrationBeans(
-			ServletRegistrationBean... servletRegistrationBeans) {
+			ServletRegistrationBean<?>... servletRegistrationBeans) {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
 		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
@@ -123,7 +117,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 */
 	public void setServletNames(Collection<String> servletNames) {
 		Assert.notNull(servletNames, "ServletNames must not be null");
-		this.servletNames = new LinkedHashSet<String>(servletNames);
+		this.servletNames = new LinkedHashSet<>(servletNames);
 	}
 
 	/**
@@ -153,7 +147,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 */
 	public void setUrlPatterns(Collection<String> urlPatterns) {
 		Assert.notNull(urlPatterns, "UrlPatterns must not be null");
-		this.urlPatterns = new LinkedHashSet<String>(urlPatterns);
+		this.urlPatterns = new LinkedHashSet<>(urlPatterns);
 	}
 
 	/**
@@ -235,7 +229,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 * Return the {@link Filter} to be registered.
 	 * @return the filter
 	 */
-	public abstract Filter getFilter();
+	public abstract T getFilter();
 
 	/**
 	 * Configure registration settings. Subclasses can override this method to perform
@@ -246,11 +240,10 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 		super.configure(registration);
 		EnumSet<DispatcherType> dispatcherTypes = this.dispatcherTypes;
 		if (dispatcherTypes == null) {
-			dispatcherTypes = (isAsyncSupported() ? ASYNC_DISPATCHER_TYPES
-					: NON_ASYNC_DISPATCHER_TYPES);
+			dispatcherTypes = EnumSet.of(DispatcherType.REQUEST);
 		}
-		Set<String> servletNames = new LinkedHashSet<String>();
-		for (ServletRegistrationBean servletRegistrationBean : this.servletRegistrationBeans) {
+		Set<String> servletNames = new LinkedHashSet<>();
+		for (ServletRegistrationBean<?> servletRegistrationBean : this.servletRegistrationBeans) {
 			servletNames.add(servletRegistrationBean.getServletName());
 		}
 		servletNames.addAll(this.servletNames);

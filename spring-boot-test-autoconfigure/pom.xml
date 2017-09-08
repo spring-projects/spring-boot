@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.7.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-test-autoconfigure</artifactId>
@@ -45,6 +45,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 			<optional>true</optional>
@@ -56,7 +61,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
+			<artifactId>hibernate-core</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.spec.javax.transaction</groupId>
@@ -96,6 +101,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
 			<exclusions>
@@ -108,7 +118,22 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-ldap</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-neo4j</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -126,6 +151,7 @@
 			<artifactId>spring-security-test</artifactId>
 			<optional>true</optional>
 		</dependency>
+
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -143,6 +169,26 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.unboundid</groupId>
+			<artifactId>unboundid-ldapsdk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<scope>test</scope>
@@ -156,6 +202,21 @@
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-async</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-reactivestreams</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.skyscreamer</groupId>

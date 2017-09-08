@@ -34,9 +34,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -80,7 +81,7 @@ public class FreeMarkerAutoConfiguration {
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
 			TemplateLocation templatePathLocation = null;
-			List<TemplateLocation> locations = new ArrayList<TemplateLocation>();
+			List<TemplateLocation> locations = new ArrayList<>();
 			for (String templateLoaderPath : this.properties.getTemplateLoaderPath()) {
 				TemplateLocation location = new TemplateLocation(templateLoaderPath);
 				locations.add(location);
@@ -130,7 +131,7 @@ public class FreeMarkerAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, FreeMarkerConfigurer.class })
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	public static class FreeMarkerWebConfiguration extends FreeMarkerConfiguration {
 
 		@Bean

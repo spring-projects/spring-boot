@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 	private List<AutoConfigurationResult> getAutoConfigurationResults(
 			NoSuchBeanDefinitionException cause) {
-		List<AutoConfigurationResult> results = new ArrayList<AutoConfigurationResult>();
+		List<AutoConfigurationResult> results = new ArrayList<>();
 		collectReportedConditionOutcomes(cause, results);
 		collectExcludedAutoConfiguration(cause, results);
 		return results;
@@ -197,7 +197,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 						.getMetadataReader(source.getClassName());
 				Set<MethodMetadata> candidates = classMetadata.getAnnotationMetadata()
 						.getAnnotatedMethods(Bean.class.getName());
-				List<MethodMetadata> result = new ArrayList<MethodMetadata>();
+				List<MethodMetadata> result = new ArrayList<>();
 				for (MethodMetadata candidate : candidates) {
 					if (isMatch(candidate, source, cause)) {
 						result.add(candidate);

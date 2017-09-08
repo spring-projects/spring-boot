@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public final class ConditionEvaluationReport {
 
 	private static final AncestorsMatchedCondition ANCESTOR_CONDITION = new AncestorsMatchedCondition();
 
-	private final SortedMap<String, ConditionAndOutcomes> outcomes = new TreeMap<String, ConditionAndOutcomes>();
+	private final SortedMap<String, ConditionAndOutcomes> outcomes = new TreeMap<>();
 
 	private boolean addedAncestorOutcomes;
 
@@ -59,7 +59,7 @@ public final class ConditionEvaluationReport {
 
 	private List<String> exclusions = Collections.emptyList();
 
-	private Set<String> unconditionalClasses = new HashSet<String>();
+	private Set<String> unconditionalClasses = new HashSet<>();
 
 	/**
 	 * Private constructor.
@@ -93,7 +93,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public void recordExclusions(Collection<String> exclusions) {
 		Assert.notNull(exclusions, "exclusions must not be null");
-		this.exclusions = new ArrayList<String>(exclusions);
+		this.exclusions = new ArrayList<>(exclusions);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public void recordEvaluationCandidates(List<String> evaluationCandidates) {
 		Assert.notNull(evaluationCandidates, "evaluationCandidates must not be null");
-		this.unconditionalClasses = new HashSet<String>(evaluationCandidates);
+		this.unconditionalClasses = new HashSet<>(evaluationCandidates);
 	}
 
 	/**
@@ -193,7 +193,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public static class ConditionAndOutcomes implements Iterable<ConditionAndOutcome> {
 
-		private final Set<ConditionAndOutcome> outcomes = new LinkedHashSet<ConditionAndOutcome>();
+		private final Set<ConditionAndOutcome> outcomes = new LinkedHashSet<>();
 
 		public void add(Condition condition, ConditionOutcome outcome) {
 			this.outcomes.add(new ConditionAndOutcome(condition, outcome));
