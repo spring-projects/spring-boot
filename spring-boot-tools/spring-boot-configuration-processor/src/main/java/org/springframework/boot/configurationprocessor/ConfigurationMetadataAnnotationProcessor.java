@@ -367,10 +367,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (endpointId == null || "".equals(endpointId)) {
 			return; // Can't process that endpoint
 		}
-		Boolean enabledByDefault = (Boolean) elementValues.get("enabledByDefault");
-		if (enabledByDefault == null) {
-			enabledByDefault = Boolean.TRUE;
-		}
+		Boolean enabledByDefault = determineEnabledByDefault(elementValues.get(
+				"defaultEnablement"));
 		String type = this.typeUtils.getQualifiedName(element);
 		this.metadataCollector
 				.add(ItemMetadata.newGroup(endpointKey(endpointId), type, type, null));
@@ -395,8 +393,21 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					endpointKey(endpointId + ".web"), "enabled", Boolean.class.getName(),
 					type, null, String.format("Expose the %s endpoint as a Web endpoint.",
 							endpointId),
-					false, null));
+					enabledByDefault, null));
 		}
+	}
+
+	private Boolean determineEnabledByDefault(Object defaultEnablement) {
+		if (defaultEnablement != null) {
+			String value = String.valueOf(defaultEnablement);
+			if ("ENABLED".equals(value)) {
+				return true;
+			}
+			if ("DISABLED".equals(value)) {
+				return false;
+			}
+		}
+		return null;
 	}
 
 	private String endpointKey(String suffix) {

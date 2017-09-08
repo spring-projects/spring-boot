@@ -14,34 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.annotation;
+package org.springframework.boot.configurationsample.endpoint;
+
+import org.springframework.boot.configurationsample.DefaultEnablement;
+import org.springframework.boot.configurationsample.Endpoint;
 
 /**
- * An enumeration of the available {@link Endpoint} exposure technologies.
+ * An endpoint that is enabled unless configured explicitly..
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-public enum EndpointExposure {
-
-	/**
-	 * Expose the endpoint as a JMX MBean.
-	 */
-	JMX(true),
-
-	/**
-	 * Expose the endpoint as a Web endpoint.
-	 */
-	WEB(false);
-
-	private final boolean enabledByDefault;
-
-	EndpointExposure(boolean enabledByDefault) {
-		this.enabledByDefault = enabledByDefault;
-	}
-
-	public boolean isEnabledByDefault() {
-		return this.enabledByDefault;
-	}
+@Endpoint(id = "enabled", defaultEnablement = DefaultEnablement.ENABLED)
+public class EnabledEndpoint {
 
 }

@@ -14,29 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.springframework.boot.actuate.endpoint;
 
 /**
- * Alternative to Spring Boot's {@code @Endpoint} for testing (removes the need for a
- * dependency on the real annotation).
+ * An enumeration of the available exposure technologies for an endpoint.
  *
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Endpoint {
+public enum EndpointExposure {
 
-	String id();
+	/**
+	 * Expose the endpoint as a JMX MBean.
+	 */
+	JMX(true),
 
-	DefaultEnablement defaultEnablement() default DefaultEnablement.NEUTRAL;
+	/**
+	 * Expose the endpoint as a Web endpoint.
+	 */
+	WEB(false);
 
-	EndpointExposure[] exposure() default {};
+	private final boolean enabledByDefault;
+
+	EndpointExposure(boolean enabledByDefault) {
+		this.enabledByDefault = enabledByDefault;
+	}
+
+	public boolean isEnabledByDefault() {
+		return this.enabledByDefault;
+	}
 
 }

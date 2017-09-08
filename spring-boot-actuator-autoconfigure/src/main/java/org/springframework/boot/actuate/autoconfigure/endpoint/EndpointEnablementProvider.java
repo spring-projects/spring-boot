@@ -16,7 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
@@ -42,24 +43,24 @@ public class EndpointEnablementProvider {
 	 * Return the {@link EndpointEnablement} of an endpoint with no specific tech
 	 * exposure.
 	 * @param endpointId the id of the endpoint
-	 * @param enabledByDefault whether the endpoint is enabled by default or not
+	 * @param defaultEnablement the {@link DefaultEnablement} of the endpoint
 	 * @return the {@link EndpointEnablement} of that endpoint
 	 */
 	public EndpointEnablement getEndpointEnablement(String endpointId,
-			boolean enabledByDefault) {
-		return getEndpointEnablement(endpointId, enabledByDefault, null);
+			DefaultEnablement defaultEnablement) {
+		return getEndpointEnablement(endpointId, defaultEnablement, null);
 	}
 
 	/**
 	 * Return the {@link EndpointEnablement} of an endpoint for a specific tech exposure.
 	 * @param endpointId the id of the endpoint
-	 * @param enabledByDefault whether the endpoint is enabled by default or not
+	 * @param defaultEnablement the {@link DefaultEnablement} of the endpoint
 	 * @param exposure the requested {@link EndpointExposure}
 	 * @return the {@link EndpointEnablement} of that endpoint for the specified
 	 * {@link EndpointExposure}
 	 */
 	public EndpointEnablement getEndpointEnablement(String endpointId,
-			boolean enabledByDefault, EndpointExposure exposure) {
+			DefaultEnablement defaultEnablement, EndpointExposure exposure) {
 		Assert.hasText(endpointId, "Endpoint id must have a value");
 		Assert.isTrue(!endpointId.equals("default"),
 				"Endpoint id 'default' is a reserved "
@@ -74,10 +75,11 @@ public class EndpointEnablementProvider {
 		}
 		// All endpoints specific attributes have been looked at. Checking default value
 		// for the endpoint
-		if (!enabledByDefault) {
-			return getDefaultEndpointEnablement(endpointId, false, exposure);
+		if (defaultEnablement != DefaultEnablement.NEUTRAL) {
+			return getDefaultEndpointEnablement(endpointId,
+					(defaultEnablement == DefaultEnablement.ENABLED), exposure);
 		}
-		return getGlobalEndpointEnablement(endpointId, enabledByDefault, exposure);
+		return getGlobalEndpointEnablement(endpointId, defaultEnablement, exposure);
 	}
 
 	private EndpointEnablement findEnablement(String endpointId,
@@ -89,7 +91,7 @@ public class EndpointEnablementProvider {
 	}
 
 	private EndpointEnablement getGlobalEndpointEnablement(String endpointId,
-			boolean enabledByDefault, EndpointExposure exposure) {
+			DefaultEnablement defaultEnablement, EndpointExposure exposure) {
 		EndpointEnablement result = findGlobalEndpointEnablement(exposure);
 		if (result != null) {
 			return result;
@@ -98,7 +100,42 @@ public class EndpointEnablementProvider {
 		if (result != null) {
 			return result;
 		}
-		return getDefaultEndpointEnablement(endpointId, enabledByDefault, exposure);
+		boolean enablement = determineGlobalDefaultEnablement(defaultEnablement, exposure);
+		String message = determineGlobalDefaultMessage(endpointId, enablement, exposure,
+				defaultEnablement);
+		return new EndpointEnablement(enablement, message);
+	}
+
+	private boolean determineGlobalDefaultEnablement(DefaultEnablement defaultEnablement,
+			EndpointExposure exposure) {
+		if (defaultEnablement == DefaultEnablement.NEUTRAL) {
+			return exposure == null || exposure.isEnabledByDefault();
+		}
+		return (defaultEnablement == DefaultEnablement.ENABLED);
+	}
+
+	private String determineGlobalDefaultMessage(String endpointId, boolean enablement,
+			EndpointExposure exposure, DefaultEnablement defaultEnablement) {
+		StringBuilder message = new StringBuilder();
+		message.append(String.format("endpoint '%s' ", endpointId));
+		if (exposure != null) {
+			message.append(String.format("(%s) ", exposure.name().toLowerCase()));
+		}
+		message.append(String.format("is %s ", (enablement ? "enabled" : "disabled")));
+		if (defaultEnablement == DefaultEnablement.NEUTRAL) {
+			if (exposure != null) {
+				message.append(String.format("(default for %s endpoints)",
+						exposure.name().toLowerCase()));
+			}
+			else {
+				message.append("(default)");
+			}
+		}
+		else {
+			message.append("by default");
+		}
+		return message.toString();
+
 	}
 
 	private EndpointEnablement findGlobalEndpointEnablement(EndpointExposure exposure) {

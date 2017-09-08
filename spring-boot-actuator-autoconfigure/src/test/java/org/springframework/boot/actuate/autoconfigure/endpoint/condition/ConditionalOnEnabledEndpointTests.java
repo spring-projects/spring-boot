@@ -18,8 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -297,7 +298,7 @@ public class ConditionalOnEnabledEndpointTests {
 	}
 
 	@Endpoint(id = "bar", exposure = { EndpointExposure.WEB,
-			EndpointExposure.JMX }, enabledByDefault = false)
+			EndpointExposure.JMX }, defaultEnablement = DefaultEnablement.DISABLED)
 	static class BarEndpoint {
 
 	}

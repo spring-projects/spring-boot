@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.Operation;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.core.env.Environment;
 
 /**
@@ -61,7 +61,7 @@ public class EndpointProvider<T extends Operation> {
 
 	private boolean isEnabled(EndpointInfo<?> endpoint) {
 		return this.endpointEnablementProvider.getEndpointEnablement(endpoint.getId(),
-				endpoint.isEnabledByDefault(), this.exposure).isEnabled();
+				endpoint.getDefaultEnablement(), this.exposure).isEnabled();
 	}
 
 }

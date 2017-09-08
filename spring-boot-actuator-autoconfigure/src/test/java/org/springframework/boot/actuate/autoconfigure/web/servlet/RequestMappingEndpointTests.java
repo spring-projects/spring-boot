@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
@@ -140,8 +141,8 @@ public class RequestMappingEndpointTests {
 				(arguments) -> "Invoked", true, requestPredicate, "test");
 		WebMvcEndpointHandlerMapping mapping = new WebMvcEndpointHandlerMapping(
 				new EndpointMapping("application"),
-				Collections.singleton(new EndpointInfo<>("test", true,
-						Collections.singleton(operation))));
+				Collections.singleton(new EndpointInfo<>("test",
+				DefaultEnablement.ENABLED, Collections.singleton(operation))));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
 		return mapping;

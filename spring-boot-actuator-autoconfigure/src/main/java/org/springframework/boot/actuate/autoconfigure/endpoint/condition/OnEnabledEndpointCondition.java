@@ -18,8 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointEnablement;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointEnablementProvider;
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -106,7 +107,7 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		}
 		// If both types are set, all exposure technologies are exposed
 		EndpointExposure[] exposures = endpoint.exposure();
-		return new EndpointAttributes(endpoint.id(), endpoint.enabledByDefault(),
+		return new EndpointAttributes(endpoint.id(), endpoint.defaultEnablement(),
 				(exposures.length == 1 ? exposures[0] : null));
 	}
 
@@ -114,21 +115,23 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 		private final String id;
 
-		private final boolean enabled;
+		private final DefaultEnablement defaultEnablement;
 
 		private final EndpointExposure exposure;
 
-		EndpointAttributes(String id, boolean enabled, EndpointExposure exposure) {
+		EndpointAttributes(String id, DefaultEnablement defaultEnablement,
+				EndpointExposure exposure) {
 			if (!StringUtils.hasText(id)) {
 				throw new IllegalStateException("Endpoint id could not be determined");
 			}
 			this.id = id;
-			this.enabled = enabled;
+			this.defaultEnablement = defaultEnablement;
 			this.exposure = exposure;
 		}
 
 		public EndpointEnablement getEnablement(EndpointEnablementProvider provider) {
-			return provider.getEndpointEnablement(this.id, this.enabled, this.exposure);
+			return provider.getEndpointEnablement(this.id, this.defaultEnablement,
+					this.exposure);
 		}
 
 	}

@@ -22,14 +22,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
 
 /**
  * Identifies a type as being an endpoint.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
- * @see EndpointDiscoverer
+ * @see AnnotationEndpointDiscoverer
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -50,9 +51,10 @@ public @interface Endpoint {
 	EndpointExposure[] exposure() default {};
 
 	/**
-	 * Whether or not the endpoint is enabled by default.
-	 * @return {@code true} if the endpoint is enabled by default, otherwise {@code false}
+	 * Defines the {@link DefaultEnablement} of the endpoint. By default, the endpoint's
+	 * enablement defaults to the "default" settings.
+	 * @return the default enablement
 	 */
-	boolean enabledByDefault() default true;
+	DefaultEnablement defaultEnablement() default DefaultEnablement.NEUTRAL;
 
 }

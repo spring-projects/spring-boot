@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;

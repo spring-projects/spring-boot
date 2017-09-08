@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.springframework.boot.actuate.endpoint;
 
 /**
- * Alternative to Spring Boot's {@code @Endpoint} for testing (removes the need for a
- * dependency on the real annotation).
+ * Enumerate the enablement options for an endpoint.
  *
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Endpoint {
+public enum DefaultEnablement {
 
-	String id();
+	/**
+	 * The endpoint is enabled unless explicitly disabled.
+	 */
+	ENABLED,
 
-	DefaultEnablement defaultEnablement() default DefaultEnablement.NEUTRAL;
+	/**
+	 * The endpoint is disabled unless explicitly enabled.
+	 */
+	DISABLED,
 
-	EndpointExposure[] exposure() default {};
+	/**
+	 * The endpoint's enablement defaults to the "default" settings.
+	 */
+	NEUTRAL
 
 }
