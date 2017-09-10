@@ -1,23 +1,7 @@
 {"properties": [
   {
-    "name": "security.basic.authorize-mode",
-    "defaultValue": "role"
-  },
-  {
-    "name": "security.headers.content-security-policy-mode",
-    "defaultValue": "default"
-  },
-  {
-    "name": "security.headers.hsts",
-    "defaultValue": "all"
-  },
-  {
     "name": "security.filter-dispatcher-types",
     "defaultValue": ["async", "error", "request"]
-  },
-  {
-    "name": "security.sessions",
-    "defaultValue": "stateless"
   },
   {
     "name": "server.error.include-stacktrace",
