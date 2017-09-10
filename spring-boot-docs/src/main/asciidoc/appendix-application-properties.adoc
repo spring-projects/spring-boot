@@ -1235,7 +1235,7 @@ content into your application; rather pick only the properties that you need.
 
 	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint/infrastructure/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
 	management.endpoints.cors.allow-credentials= # Set whether credentials are supported. When not set, credentials are not supported.
-	management.cors.allowed-headers= # Comma-separated list of headers to allow in a request. '*' allows all headers.
+	management.endpoints.cors.allowed-headers= # Comma-separated list of headers to allow in a request. '*' allows all headers.
 	management.endpoints.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
 	management.endpoints.cors.allowed-origins= # Comma-separated list of origins to allow. '*' allows all origins. When not set, CORS support is disabled.
 	management.endpoints.cors.exposed-headers= # Comma-separated list of headers to include in a response.
