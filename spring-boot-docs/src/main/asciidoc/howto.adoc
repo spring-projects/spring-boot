@@ -2255,8 +2255,8 @@ by adding some entries to `application.properties`, e.g.
 
 [source,properties,indent=0]
 ----
-	server.tomcat.remote_ip_header=x-forwarded-for
-	server.tomcat.protocol_header=x-forwarded-proto
+	server.tomcat.remote-ip-header=x-forwarded-for
+	server.tomcat.protocol-header=x-forwarded-proto
 ----
 
 (The presence of either of those properties will switch on the valve. Or you can add the
