@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
+import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -315,6 +316,11 @@ public class RabbitProperties {
 		private String keyStore;
 
 		/**
+		 * Set the key store type. See {@link RabbitConnectionFactoryBean#getKeyStoreType()}
+		 */
+		private String keyStoreType;
+
+		/**
 		 * Password used to access the key store.
 		 */
 		private String keyStorePassword;
@@ -323,6 +329,11 @@ public class RabbitProperties {
 		 * Trust store that holds SSL certificates.
 		 */
 		private String trustStore;
+
+		/**
+		 * Set the trust store type. See {@link RabbitConnectionFactoryBean#getTrustStoreType()}
+		 */
+		private String trustStoreType;
 
 		/**
 		 * Password used to access the trust store.
@@ -351,6 +362,14 @@ public class RabbitProperties {
 			this.keyStore = keyStore;
 		}
 
+		public String getKeyStoreType() {
+			return this.keyStoreType;
+		}
+
+		public void setKeyStoreType(String keyStoreType) {
+			this.keyStoreType = keyStoreType;
+		}
+
 		public String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
@@ -365,6 +384,14 @@ public class RabbitProperties {
 
 		public void setTrustStore(String trustStore) {
 			this.trustStore = trustStore;
+		}
+
+		public String getTrustStoreType() {
+			return this.trustStoreType;
+		}
+
+		public void setTrustStoreType(String trustStoreType) {
+			this.trustStoreType = trustStoreType;
 		}
 
 		public String getTrustStorePassword() {
