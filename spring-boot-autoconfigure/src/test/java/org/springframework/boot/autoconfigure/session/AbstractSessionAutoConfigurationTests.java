@@ -16,16 +16,9 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.util.Collection;
-
-import org.junit.After;
-
 import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.session.SessionRepository;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,18 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractSessionAutoConfigurationTests {
 
-	protected AnnotationConfigWebApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
-
 	protected <T extends SessionRepository<?>> T validateSessionRepository(
+			AssertableWebApplicationContext context,
 			Class<T> type) {
-		SessionRepository<?> repository = this.context.getBean(SessionRepository.class);
+		assertThat(context).hasSingleBean(SessionRepository.class);
+		SessionRepository<?> repository = context.getBean(SessionRepository.class);
 		assertThat(repository).as("Wrong session repository type").isInstanceOf(type);
 		return type.cast(repository);
 	}
@@ -55,22 +41,6 @@ public abstract class AbstractSessionAutoConfigurationTests {
 	protected Integer getSessionTimeout(SessionRepository<?> sessionRepository) {
 		return (Integer) new DirectFieldAccessor(sessionRepository)
 				.getPropertyValue("defaultMaxInactiveInterval");
-	}
-
-	protected void load(String... environment) {
-		load(null, environment);
-	}
-
-	protected void load(Collection<Class<?>> configs, String... environment) {
-		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of(environment).applyTo(ctx);
-		if (configs != null) {
-			ctx.register(configs.toArray(new Class<?>[configs.size()]));
-		}
-		ctx.register(ServerProperties.class, SessionAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
 	}
 
 }
