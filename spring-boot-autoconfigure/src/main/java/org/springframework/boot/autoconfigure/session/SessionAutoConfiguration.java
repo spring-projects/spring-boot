@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -50,15 +50,21 @@ import org.springframework.session.SessionRepository;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, RedisAutoConfiguration.class })
-@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class,
+@Import({ SessionRepositoryConfiguration.class, SessionRepositoryValidator.class,
 		SessionRepositoryFilterConfiguration.class })
 public class SessionAutoConfiguration {
+
+	@Configuration
+	@ConditionalOnMissingBean(SessionRepository.class)
+	@Import(SessionConfigurationImportSelector.class)
+	static class SessionRepositoryConfiguration {
+
+	}
 
 	/**
 	 * {@link ImportSelector} to add {@link StoreType} configuration classes.

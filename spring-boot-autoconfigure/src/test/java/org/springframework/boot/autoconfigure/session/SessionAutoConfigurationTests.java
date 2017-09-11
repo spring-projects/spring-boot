@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -148,6 +149,17 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		});
 	}
 
+	@Test
+	public void filterOrderCanBeCustomizedWithCustomStore() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("spring.session.servlet.filter-order=123")
+				.run((context) -> {
+					FilterRegistrationBean<?> registration = context
+							.getBean(FilterRegistrationBean.class);
+					assertThat(registration.getOrder()).isEqualTo(123);
+				});
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void filterDispatcherTypesCanBeCustomized() {
@@ -163,6 +175,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Configuration
+	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
 
 		@Bean
