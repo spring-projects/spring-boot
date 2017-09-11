@@ -66,6 +66,6 @@ public class ClientPropertyDefaultsEnvironmentPostProcessor implements Environme
 	}
 
 	private boolean isClientsConfigured(ConfigurableEnvironment environment) {
-		return !OAuth2ClientAutoConfiguration.getClientKeys(environment).isEmpty();
+		return !ClientPropertiesUtil.getClientKeys(environment).isEmpty();
 	}
 }
