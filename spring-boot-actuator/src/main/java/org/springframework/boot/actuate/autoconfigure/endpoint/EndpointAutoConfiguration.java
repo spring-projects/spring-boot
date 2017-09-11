@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.endpoint.*;
 import org.springframework.boot.actuate.health.*;
 import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -97,12 +99,13 @@ public class EndpointAutoConfiguration {
 		return new LoggersEndpoint(loggingSystem);
 	}
 
-	// FIXME replace with micrometer metrics endpoint
-//	@Bean
-//	@ConditionalOnMissingBean
-//	@ConditionalOnEnabledEndpoint
-//	public MetricsEndpoint metricsEndpoint() {
-//	}
+	@Bean
+	@ConditionalOnBean(MeterRegistry.class)
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	public MetricsEndpoint metricsEndpoint(MeterRegistry registry) {
+		return new MetricsEndpoint(registry);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
