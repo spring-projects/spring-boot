@@ -160,7 +160,7 @@
 		<spring-amqp.version>2.0.0.M5</spring-amqp.version>
 		<spring-cloud-connectors.version>2.0.0.M1</spring-cloud-connectors.version>
 		<spring-batch.version>4.0.0.M3</spring-batch.version>
-		<spring-data-releasetrain.version>Kay-RC2</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Kay-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.23.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.0.0.M6</spring-integration.version>
 		<spring-kafka.version>2.0.0.M3</spring-kafka.version>
