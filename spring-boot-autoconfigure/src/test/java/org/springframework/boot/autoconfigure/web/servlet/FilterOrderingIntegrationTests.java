@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Filter;
 
@@ -29,7 +30,6 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -40,6 +40,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.session.MapSessionRepository;
+import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,10 +86,10 @@ public class FilterOrderingIntegrationTests {
 
 	private void load() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		TestPropertyValues.of("spring.session.store-type=hash-map").applyTo(this.context);
 		this.context.register(MockWebServerConfiguration.class,
-				TestRedisConfiguration.class, WebMvcAutoConfiguration.class,
-				SecurityAutoConfiguration.class, SessionAutoConfiguration.class,
+				TestSessionConfiguration.class, TestRedisConfiguration.class,
+				WebMvcAutoConfiguration.class, SecurityAutoConfiguration.class,
+				SessionAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpEncodingAutoConfiguration.class);
@@ -105,6 +107,17 @@ public class FilterOrderingIntegrationTests {
 		@Bean
 		public WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
 			return new WebServerFactoryCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class TestSessionConfiguration {
+
+		@Bean
+		public MapSessionRepository mapSessionRepository() {
+			return new MapSessionRepository(new ConcurrentHashMap<>());
 		}
 
 	}

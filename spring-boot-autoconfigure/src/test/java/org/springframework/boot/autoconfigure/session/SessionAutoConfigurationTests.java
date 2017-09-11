@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -93,30 +92,8 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
-	public void hashMapSessionStore() {
-		this.contextRunner
-				.withPropertyValues("spring.session.store-type=hash-map")
-				.run((context) -> {
-					MapSessionRepository repository = validateSessionRepository(context,
-							MapSessionRepository.class);
-					assertThat(getSessionTimeout(repository)).isNull();
-				});
-	}
-
-	@Test
-	public void hashMapSessionStoreCustomTimeout() {
-		this.contextRunner.withUserConfiguration(ServerProperties.class).
-				withPropertyValues("spring.session.store-type=hash-map",
-						"server.session.timeout=3000").run((context) -> {
-			MapSessionRepository repository = validateSessionRepository(context,
-					MapSessionRepository.class);
-			assertThat(getSessionTimeout(repository)).isEqualTo(3000);
-		});
-	}
-
-	@Test
 	public void springSessionTimeoutIsNotAValidProperty() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hash-map",
+		this.contextRunner.withPropertyValues(
 				"spring.session.timeout=3000").run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
@@ -127,8 +104,8 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	@SuppressWarnings("unchecked")
 	@Test
 	public void filterIsRegisteredWithAsyncErrorAndRequestDispatcherTypes() {
-		this.contextRunner.withPropertyValues(
-				"spring.session.store-type=hash-map").run((context) -> {
+		this.contextRunner.withUserConfiguration(
+				SessionRepositoryConfiguration.class).run((context) -> {
 			FilterRegistrationBean<?> registration = context
 					.getBean(FilterRegistrationBean.class);
 			assertThat(registration.getFilter())
@@ -136,16 +113,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 			assertThat((EnumSet<DispatcherType>) ReflectionTestUtils.getField(registration,
 					"dispatcherTypes")).containsOnly(DispatcherType.ASYNC,
 					DispatcherType.ERROR, DispatcherType.REQUEST);
-		});
-	}
-
-	@Test
-	public void filterOrderCanBeCustomized() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hash-map",
-				"spring.session.servlet.filter-order=123").run((context) -> {
-			FilterRegistrationBean<?> registration = context
-					.getBean(FilterRegistrationBean.class);
-			assertThat(registration.getOrder()).isEqualTo(123);
 		});
 	}
 
@@ -163,8 +130,8 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	@SuppressWarnings("unchecked")
 	@Test
 	public void filterDispatcherTypesCanBeCustomized() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hash-map",
-				"spring.session.servlet.filter-dispatcher-types=error, request")
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("spring.session.servlet.filter-dispatcher-types=error, request")
 				.run((context) -> {
 					FilterRegistrationBean<?> registration = context
 							.getBean(FilterRegistrationBean.class);

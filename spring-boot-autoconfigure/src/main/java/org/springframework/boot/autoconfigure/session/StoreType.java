@@ -42,11 +42,6 @@ public enum StoreType {
 	HAZELCAST,
 
 	/**
-	 * Simple in-memory map of sessions.
-	 */
-	HASH_MAP,
-
-	/**
 	 * No session data-store.
 	 */
 	NONE;

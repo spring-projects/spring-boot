@@ -5597,7 +5597,6 @@ Spring Boot provides Spring Session auto-configuration for a wide range of store
 * JDBC
 * Redis
 * Hazelcast
-* HashMap
 
 If Spring Session is available, you must choose the
 {sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish to

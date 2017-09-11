@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
@@ -64,6 +65,16 @@ public class SessionAutoConfigurationJdbcTests
 					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 			assertThat(context.getBean(JdbcOperations.class)
 					.queryForList("select * from SPRING_SESSION")).isEmpty();
+		});
+	}
+
+	@Test
+	public void filterOrderCanBeCustomized() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc",
+						"spring.session.servlet.filter-order=123").run((context) -> {
+			FilterRegistrationBean<?> registration = context
+					.getBean(FilterRegistrationBean.class);
+			assertThat(registration.getOrder()).isEqualTo(123);
 		});
 	}
 
