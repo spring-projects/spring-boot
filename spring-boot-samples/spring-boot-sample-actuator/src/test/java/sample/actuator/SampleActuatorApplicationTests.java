@@ -89,6 +89,7 @@ public class SampleActuatorApplicationTests {
 		assertThat(body.get("message")).isEqualTo("Hello Phil");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
@@ -97,9 +98,10 @@ public class SampleActuatorApplicationTests {
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/application/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat(body).containsKey("counter.status.200.root");
+		assertThat(body).containsKey("names");
+		assertThat((List<String>) body.get("names")).contains("jvm.buffer.count");
+
 	}
 
 	@Test

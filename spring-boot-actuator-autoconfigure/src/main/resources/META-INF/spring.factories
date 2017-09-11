@@ -3,7 +3,6 @@ org.springframework.boot.actuate.autoconfigure.amqp.RabbitHealthIndicatorAutoCon
 org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditEventsEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.cache.CacheStatisticsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryActuatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.condition.AutoConfigurationReportEndpointAutoConfiguration,\
@@ -26,13 +25,7 @@ org.springframework.boot.actuate.autoconfigure.liquibase.LiquibaseEndpointAutoCo
 org.springframework.boot.actuate.autoconfigure.logging.LoggersEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.mail.MailHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MetricExportAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MetricFilterAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MetricRepositoryAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MetricsChannelAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MetricsDropwizardAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.PublicMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.mongo.MongoHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisHealthIndicatorAutoConfiguration,\

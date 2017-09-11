@@ -132,6 +132,7 @@
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.18</lombok.version>
 		<mariadb.version>2.1.1</mariadb.version>
+		<micrometer.version>0.11.0.RELEASE</micrometer.version>
 		<mssql-jdbc.version>6.2.1.jre8</mssql-jdbc.version>
 		<mockito.version>2.9.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.5.0</mongo-driver-reactivestreams.version>
@@ -833,6 +834,46 @@
 				<groupId>io.lettuce</groupId>
 				<artifactId>lettuce-core</artifactId>
 				<version>${lettuce.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-core</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-atlas-starter</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-datadog-starter</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-influx-starter</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-ganglia-starter</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-graphite-starter</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-jmx-starter</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-prometheus-starter</artifactId>
+				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.netty</groupId>

@@ -1161,6 +1161,11 @@ content into your application; rather pick only the properties that you need.
 	endpoints.metrics.jmx.enabled= # Expose the metrics endpoint as a JMX MBean.
 	endpoints.metrics.web.enabled= # Expose the metrics endpoint as a Web endpoint.
 
+	# PROMETHEUS ENDPOINT ({sc-spring-boot-actuator}/metrics/export/prometheus/PrometheusScrapeEndpoint.{sc-ext}[PrometheusScrapeEndpoint])
+	endpoints.prometheus.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	endpoints.prometheus.enabled= # Enable the metrics endpoint.
+	endpoints.prometheus.web.enabled= # Expose the metrics endpoint as a Web endpoint.
+
 	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/context/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
 	endpoints.shutdown.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.shutdown.enabled=false # Enable the shutdown endpoint.
@@ -1257,29 +1262,18 @@ content into your application; rather pick only the properties that you need.
 	management.jolokia.enabled=false # Enable Jolokia.
 	management.jolokia.path=/jolokia # Path at which Jolokia will be available.
 
-	# METRICS FILTER ({sc-spring-boot-actuator}/autoconfigure/metrics/MetricFilterProperties.{sc-ext}[MetricFilterProperties])
-	management.metrics.filter.counter-submissions= # Submissions that should be made to the counter.
-	management.metrics.filter.enabled=true # Enable the metrics servlet filter.
-	management.metrics.filter.gauge-submissions= # Submissions that should be made to the gauge.
-
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
 	management.trace.filter.enabled=true # Enable the trace servlet filter.
 	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
-	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
-	spring.metrics.export.aggregate.key-pattern= # Pattern that tells the aggregator what to do with the keys from the source repository.
-	spring.metrics.export.aggregate.prefix= # Prefix for global repository if active.
-	spring.metrics.export.delay-millis=5000 # Delay in milliseconds between export ticks. Metrics are exported to external sources on a schedule with this delay.
-	spring.metrics.export.enabled=true # Flag to enable metric export (assuming a MetricWriter is available).
-	spring.metrics.export.excludes= # List of patterns for metric names to exclude. Applied after the includes.
-	spring.metrics.export.includes= # List of patterns for metric names to include.
-	spring.metrics.export.redis.key=keys.spring.metrics # Key for redis repository export (if active).
-	spring.metrics.export.redis.prefix=spring.metrics # Prefix for redis repository if active.
-	spring.metrics.export.send-latest= # Flag to switch off any available optimizations based on not exporting unchanged metric values.
-	spring.metrics.export.statsd.host= # Host of a statsd server to receive exported metrics.
-	spring.metrics.export.statsd.port=8125 # Port of a statsd server to receive exported metrics.
-	spring.metrics.export.statsd.prefix= # Prefix for statsd exported metrics.
-	spring.metrics.export.triggers.*= # Specific trigger properties per MetricWriter bean name.
+	# METRICS
+	spring.metrics.use-global-registry=true #  Whether or not auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics
+	spring.metrics.web.client.record-request-percentiles=false # Whether or not instrumented requests record percentiles histogram buckets by default.
+	spring.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
+	spring.metrics.web.server.auto-time-requests=true Whether or not requests handled by Spring MVC or WebFlux should be automatically timed.
+	spring.metrics.web.server.record-request-percentiles=false # Whether or not instrumented requests record percentiles histogram buckets by default.
+	spring.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
+
 
 
 	# ----------------------------------------

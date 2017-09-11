@@ -62,9 +62,6 @@
 		<module>spring-boot-sample-junit-jupiter</module>
 		<module>spring-boot-sample-liquibase</module>
 		<module>spring-boot-sample-logback</module>
-		<module>spring-boot-sample-metrics-dropwizard</module>
-		<module>spring-boot-sample-metrics-opentsdb</module>
-		<module>spring-boot-sample-metrics-redis</module>
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-property-validation</module>

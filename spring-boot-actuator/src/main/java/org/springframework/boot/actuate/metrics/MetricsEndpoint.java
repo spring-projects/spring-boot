@@ -16,93 +16,100 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose a collection of {@link PublicMetrics}.
+ * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
  *
- * @author Dave Syer
+ * @author Jon Schneider
  * @since 2.0.0
  */
 @Endpoint(id = "metrics")
 public class MetricsEndpoint {
 
-	private final List<PublicMetrics> publicMetrics;
+	private final MeterRegistry registry;
 
-	/**
-	 * Create a new {@link MetricsEndpoint} instance.
-	 * @param publicMetrics the metrics to expose
-	 */
-	public MetricsEndpoint(PublicMetrics publicMetrics) {
-		this(Collections.singleton(publicMetrics));
-	}
-
-	/**
-	 * Create a new {@link MetricsEndpoint} instance.
-	 * @param publicMetrics the metrics to expose. The collection will be sorted using the
-	 * {@link AnnotationAwareOrderComparator}.
-	 */
-	public MetricsEndpoint(Collection<PublicMetrics> publicMetrics) {
-		Assert.notNull(publicMetrics, "PublicMetrics must not be null");
-		this.publicMetrics = new ArrayList<>(publicMetrics);
-		AnnotationAwareOrderComparator.sort(this.publicMetrics);
-	}
-
-	public void registerPublicMetrics(PublicMetrics metrics) {
-		this.publicMetrics.add(metrics);
-		AnnotationAwareOrderComparator.sort(this.publicMetrics);
-	}
-
-	public void unregisterPublicMetrics(PublicMetrics metrics) {
-		this.publicMetrics.remove(metrics);
+	public MetricsEndpoint(MeterRegistry registry) {
+		this.registry = registry;
 	}
 
 	@ReadOperation
-	public Map<String, Object> metrics(String pattern) {
-		return metrics(StringUtils.hasText(pattern)
-				? Pattern.compile(pattern).asPredicate() : (name) -> true);
+	public Map<String, List<String>> listNames() {
+		return Collections.singletonMap("names", this.registry.getMeters().stream()
+				.map(this::getMeterIdName).collect(Collectors.toList()));
+	}
+
+	private String getMeterIdName(Meter meter) {
+		return meter.getId().getName();
 	}
 
 	@ReadOperation
-	public Map<String, Object> metricNamed(@Selector String requiredName) {
-		Map<String, Object> metrics = metrics((name) -> name.equals(requiredName));
-		if (metrics.isEmpty()) {
-			return null;
-		}
-		return metrics;
+	public Map<String, Collection<MeasurementSample>> metric(
+			@Selector String requiredMetricName) {
+		return this.registry.find(requiredMetricName).meters().stream()
+				.collect(Collectors.toMap(this::getHierarchicalName, this::getSamples));
 	}
 
-	private Map<String, Object> metrics(Predicate<String> namePredicate) {
-		Map<String, Object> result = new LinkedHashMap<>();
-		List<PublicMetrics> metrics = new ArrayList<>(this.publicMetrics);
-		for (PublicMetrics publicMetric : metrics) {
-			try {
-				for (Metric<?> metric : publicMetric.metrics()) {
-					if (namePredicate.test(metric.getName())
-							&& metric.getValue() != null) {
-						result.put(metric.getName(), metric.getValue());
-					}
-				}
-			}
-			catch (Exception ex) {
-				// Could not evaluate metrics
-			}
+	private List<MeasurementSample> getSamples(Meter meter) {
+		return stream(meter.measure()).map(this::getSample).collect(Collectors.toList());
+	}
+
+	private MeasurementSample getSample(Measurement measurement) {
+		return new MeasurementSample(measurement.getStatistic(), measurement.getValue());
+	}
+
+	private String getHierarchicalName(Meter meter) {
+		return HierarchicalNameMapper.DEFAULT.toHierarchicalName(meter.getId());
+	}
+
+	private <T> Stream<T> stream(Iterable<T> measure) {
+		return StreamSupport.stream(measure.spliterator(), false);
+	}
+
+	/**
+	 * A measurement sample combining a {@link Statistic statistic} and a value.
+	 */
+	static class MeasurementSample {
+
+		private final Statistic statistic;
+
+		private final Double value;
+
+		MeasurementSample(Statistic statistic, Double value) {
+			this.statistic = statistic;
+			this.value = value;
 		}
-		return result;
+
+		public Statistic getStatistic() {
+			return this.statistic;
+		}
+
+		public Double getValue() {
+			return this.value;
+		}
+
+		@Override
+		public String toString() {
+			return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
+					+ this.value + '}';
+		}
+
 	}
 
 }

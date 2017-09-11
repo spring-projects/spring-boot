@@ -19,13 +19,8 @@ package sample.actuator.noweb;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for service demo application.
@@ -34,15 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@DirtiesContext
 public class SampleActuatorNoWebApplicationTests {
 
-	@Autowired
-	private MetricsEndpoint endpoint;
-
 	@Test
-	public void endpointsExist() throws Exception {
-		assertThat(this.endpoint).isNotNull();
+	public void contextLoads() {
+
 	}
 
 }

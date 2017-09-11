@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAut
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.trace.TraceEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.RequestMappingEndpointAutoConfiguration;
 
@@ -50,7 +49,6 @@ final class EndpointAutoConfigurationClasses {
 		all.add(HealthEndpointAutoConfiguration.class);
 		all.add(InfoEndpointAutoConfiguration.class);
 		all.add(ThreadDumpEndpointAutoConfiguration.class);
-		all.add(MetricsEndpointAutoConfiguration.class);
 		all.add(TraceEndpointAutoConfiguration.class);
 		all.add(RequestMappingEndpointAutoConfiguration.class);
 		ALL = all.toArray(new Class<?>[] {});

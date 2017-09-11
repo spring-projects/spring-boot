@@ -40,33 +40,6 @@
     ]
   },
   {
-    "name": "endpoints.metrics.filter.counter-submissions",
-    "type": "java.util.Set<org.springframework.boot.actuate.metrics.web.servlet.MetricsFilterSubmission>",
-    "description": "Submissions that should be made to the counter.",
-    "deprecation": {
-      "replacement": "management.metrics.filter.counter-submissions",
-      "level": "error"
-    }
-  },
-  {
-    "name": "endpoints.metrics.filter.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable the metrics servlet filter.",
-    "deprecation": {
-      "replacement": "management.metrics.filter.enabled",
-      "level": "error"
-    }
-  },
-  {
-    "name": "endpoints.metrics.filter.gauge-submissions",
-    "type": "java.util.Set<org.springframework.boot.actuate.metrics.web.servlet.MetricsFilterSubmission>",
-    "description": "Submissions that should be made to the gauge.",
-    "deprecation": {
-      "replacement": "management.metrics.filter.gauge-submissions",
-      "level": "error"
-    }
-  },
-  {
     "name": "endpoints.trace.filter.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the trace servlet filter.",
@@ -204,12 +177,6 @@
   {
     "name": "management.info.git.mode",
     "defaultValue": "simple"
-  },
-  {
-    "name": "management.metrics.filter.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable the metrics servlet filter.",
-    "defaultValue": true
   },
   {
     "name": "management.trace.filter.enabled",
@@ -783,33 +750,6 @@
   },
   {
     "name": "endpoints.mappings.sensitive",
-    "type": "java.lang.Boolean",
-    "description": "Mark if the endpoint exposes sensitive information.",
-    "deprecation": {
-      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
-      "level": "error"
-    }
-  },
-  {
-    "name": "endpoints.metrics.id",
-    "type": "java.lang.String",
-    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
-    "deprecation": {
-      "reason": "Endpoint identifier is no longer customizable.",
-      "level": "error"
-    }
-  },
-  {
-    "name": "endpoints.metrics.path",
-    "type": "java.lang.String",
-    "description": "Endpoint URL path.",
-    "deprecation": {
-      "reason": "Endpoint path is no longer customizable.",
-      "level": "error"
-    }
-  },
-  {
-    "name": "endpoints.metrics.sensitive",
     "type": "java.lang.Boolean",
     "description": "Mark if the endpoint exposes sensitive information.",
     "deprecation": {

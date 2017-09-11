@@ -133,6 +133,10 @@ following additional endpoints can also be used:
 |Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
 been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
 content.
+
+|`prometheus`
+|Exposes metrics in a format that can be scraped by a Prometheus server.
+
 |===
 
 [[production-ready-endpoints-security]]
@@ -851,433 +855,162 @@ logger (and use the default configuration instead).
 
 [[production-ready-metrics]]
 == Metrics
-Spring Boot Actuator includes a metrics service with '`gauge`' and '`counter`' support.
-A '`gauge`' records a single value; and a '`counter`' records a delta (an increment or
-decrement). Spring Boot Actuator also provides a
-{sc-spring-boot-actuator}/endpoint/PublicMetrics.{sc-ext}[`PublicMetrics`] interface that
-you can implement to expose metrics that you cannot record via one of those two
-mechanisms. Look at {sc-spring-boot-actuator}/endpoint/SystemPublicMetrics.{sc-ext}[`SystemPublicMetrics`]
-for an example.
-
-Metrics for all HTTP requests are automatically recorded, so if you hit the `metrics`
-endpoint you should see a response similar to this:
-
-[source,json,indent=0]
-----
-	{
-		"counter.status.200.root": 20,
-		"counter.status.200.metrics": 3,
-		"counter.status.200.star-star": 5,
-		"counter.status.401.root": 4,
-		"gauge.response.star-star": 6,
-		"gauge.response.root": 2,
-		"gauge.response.metrics": 3,
-		"classes": 5808,
-		"classes.loaded": 5808,
-		"classes.unloaded": 0,
-		"heap": 3728384,
-		"heap.committed": 986624,
-		"heap.init": 262144,
-		"heap.used": 52765,
-		"nonheap": 0,
-		"nonheap.committed": 77568,
-		"nonheap.init": 2496,
-		"nonheap.used": 75826,
-		"mem": 986624,
-		"mem.free": 933858,
-		"processors": 8,
-		"threads": 15,
-		"threads.daemon": 11,
-		"threads.peak": 15,
-		"threads.totalStarted": 42,
-		"uptime": 494836,
-		"instance.uptime": 489782,
-		"datasource.primary.active": 5,
-		"datasource.primary.usage": 0.25
-	}
-----
-
-Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
-information along with some HTTP metrics. In this instance the `root` ('`/`') and `/metrics`
-URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
-that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterisks (`star-star`)
-comes from a request matched by Spring MVC as `+/**+` (normally a static resource).
-
-The `gauge` shows the last response time for a request. So the last request to `root` took
-`2ms` to respond and the last to `/metrics` took `3ms`.
-
-NOTE: In this example we are actually accessing the endpoint over HTTP using the
-`/metrics` URL, this explains why `metrics` appears in the response.
-
-
-
-[[production-ready-system-metrics]]
-=== System metrics
-The following system metrics are exposed by Spring Boot:
-
-* The total system memory in KB (`mem`)
-* The amount of free memory in KB (`mem.free`)
-* The number of processors (`processors`)
-* The system uptime in milliseconds (`uptime`)
-* The application context uptime in milliseconds (`instance.uptime`)
-* The average system load (`systemload.average`)
-* Heap information in KB (`heap`, `heap.committed`, `heap.init`, `heap.used`)
-* Thread information (`threads`, `thread.peak`, `thread.daemon`)
-* Class load information (`classes`, `classes.loaded`, `classes.unloaded`)
-* Garbage collection information (`gc.xxx.count`, `gc.xxx.time`)
-
-
-
-[[production-ready-datasource-metrics]]
-=== DataSource metrics
-The following metrics are exposed for each supported `DataSource` defined in your
-application:
-
-* The number of active connections (`datasource.xxx.active`)
-* The current usage of the connection pool (`datasource.xxx.usage`).
-
-All data source metrics share the `datasource.` prefix. The prefix is further qualified
-for each data source:
-
-* If the data source is the primary data source (that is either the only available data
-  source or the one flagged `@Primary` amongst the existing ones), the prefix is
-  `datasource.primary`.
-* If the data source bean name ends with `DataSource`, the prefix is the name of the bean
-  without `DataSource` (i.e. `datasource.batch` for `batchDataSource`).
-* In all other cases, the name of the bean is used.
-
-It is possible to override part or all of those defaults by registering a bean with a
-customized version of `DataSourcePublicMetrics`. By default, Spring Boot provides metadata
-for all supported data sources; you can add additional `DataSourcePoolMetadataProvider`
-beans if your favorite data source isn't supported out of the box. See
-`DataSourcePoolMetadataProvidersConfiguration` for examples.
-
+Spring Boot Actuator provides dependency management and auto-configuration for
+https://micrometer.io[Micrometer], an application metrics facade that supports numerous
+monitoring systems:
 
+- https://github.com/Netflix/atlas[Atlas]
+- https://www.datadoghq.com[Datadog]
+- http://ganglia.sourceforge.net[Ganglia]
+- https://graphiteapp.org[Graphite]
+- https://www.influxdata.com[Influx]
+- https://prometheus.io[Prometheus]
 
-[[production-ready-datasource-cache]]
-=== Cache metrics
-The following metrics are exposed for each supported cache defined in your application:
+Micrometer provides a separate module for each supported monitoring system. Depending on
+one (or more) of these modules is sufficient to get started with Micrometer in your
+Spring Boot application. To learn more about Micrometer's capabilities, please refer to
+its https://micrometer.io/docs[reference documentation].
 
-* The current size of the cache (`cache.xxx.size`)
-* Hit ratio (`cache.xxx.hit.ratio`)
-* Miss ratio (`cache.xxx.miss.ratio`)
 
-NOTE: Cache providers do not expose the hit/miss ratio in a consistent way. While some
-expose an **aggregated** value (i.e. the hit ratio since the last time the stats were
-cleared), others expose a **temporal** value (i.e. the hit ratio of the last second).
-Check your caching provider documentation for more details.
 
-If two different cache managers happen to define the same cache, the name of the cache
-is prefixed by the name of the `CacheManager` bean.
+[[production-ready-metrics-spring-mvc]]
+=== Spring MVC metrics
+Auto-configuration will enable the instrumentation of requests handled by Spring MVC.
+When `metrics.web.server.auto-time-requests` is `true`, this instrumentation will occur
+for all requests. Alternatively, when set to `false`, instrumentation can be enabled
+by adding `@Timed` to a request-handling method.
 
-It is possible to override part or all of those defaults by registering a bean with a
-customized version of `CachePublicMetrics`. By default, Spring Boot provides cache
-statistics for EhCache, Hazelcast, Infinispan, JCache and Caffeine. You can add additional
-`CacheStatisticsProvider` beans if your favorite caching library isn't supported out of
-the box. See `CacheStatisticsAutoConfiguration` for examples.
+Metrics will, by default, be generated with the name `http.server.requests`. The name
+can be customized using the `metrics.web.server.requests-metrics-name` property.
 
 
-[[production-ready-session-metrics]]
-=== Tomcat session metrics
-If you are using Tomcat as your embedded servlet container, session metrics will
-automatically be exposed. The `httpsessions.active` and `httpsessions.max` keys provide
-the number of active and maximum sessions.
 
+[[production-ready-metrics-spring-mvc-tags]]
+==== Spring MVC metric tags
+Spring MVC-related metrics will, by default, be tagged with the following:
 
+- Request's method,
+- Request's URI (templated if possible)
+- Simple class name of any exception that was thrown while handling the request
+- Response's status
 
-[[production-ready-recording-metrics]]
-=== Recording your own metrics
-To record your own metrics inject a
-{sc-spring-boot-actuator}/metrics/CounterService.{sc-ext}[`CounterService`] and/or
-{sc-spring-boot-actuator}/metrics/GaugeService.{sc-ext}[`GaugeService`] into
-your bean. The `CounterService` exposes `increment`, `decrement` and `reset` methods; the
-`GaugeService` provides a `submit` method.
+To customize the tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
-Here is a simple example that counts the number of times that a method is invoked:
 
-[source,java,indent=0]
-----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.actuate.metrics.CounterService;
-	import org.springframework.stereotype.Service;
-
-	@Service
-	public class MyService {
+[[production-ready-metrics-web-flux]]
+=== WebFlux metrics
+Auto-configuration will enable the instrumentation of all requests handled by WebFlux
+controllers. A helper class, `RouterFunctionMetrics`, is also provided that can be
+used to instrument applications using WebFlux's funtional programming model.
 
-		private final CounterService counterService;
-
-		@Autowired
-		public MyService(CounterService counterService) {
-			this.counterService = counterService;
-		}
-
-		public void exampleMethod() {
-			this.counterService.increment("services.system.myservice.invoked");
-		}
-
-	}
-----
+Metrics will, by default, be generated with the name `http.server.requests`. The name
+can be customized using the `metrics.web.server.requests-metrics-name` property.
 
-TIP: You can use any string as a metric name but you should follow guidelines of your chosen
-store/graphing technology. Some good guidelines for Graphite are available on
-http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/[Matt Aimonetti's Blog].
-
-
-
-[[production-ready-public-metrics]]
-=== Adding your own public metrics
-To add additional metrics that are computed every time the metrics endpoint is invoked,
-simply register additional `PublicMetrics` implementation bean(s). By default, all such
-beans are gathered by the endpoint. You can easily change that by defining your own
-`MetricsEndpoint`.
-
-
-
-[[production-ready-metric-writers]]
-=== Metric writers, exporters and aggregation
-Spring Boot provides a couple of implementations of a marker interface called `Exporter`
-which can be used to copy metric readings from the in-memory buffers to a place where they
-can be analyzed and displayed. Indeed, if you provide a `@Bean` that implements the
-`MetricWriter` interface (or `GaugeWriter` for simple use cases) and mark it
-`@ExportMetricWriter`, then it will automatically be hooked up to an `Exporter` and fed
-metric updates every 5 seconds (configured via `spring.metrics.export.delay-millis`).
-In addition, any `MetricReader` that you define and mark as `@ExportMetricReader` will
-have its values exported by the default exporter.
-
-NOTE: This feature is enabling scheduling in your application (`@EnableScheduling`) which
-can be a problem if you run an integration test as your own scheduled tasks will start.
-You can disable this behaviour by setting `spring.metrics.export.enabled` to `false`.
-
-The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
-copying values that haven't changed since it was last called (the optimization can be
-switched off using a flag `spring.metrics.export.send-latest`). Note also that the
-Dropwizard `MetricRegistry` has no support for timestamps, so the optimization is not
-available if you are using Dropwizard metrics (all metrics will be copied on every tick).
-
-The default values for the export trigger (`delay-millis`, `includes`, `excludes`
-and `send-latest`) can be set as `spring.metrics.export.\*`. Individual
-values for specific `MetricWriters` can be set as
-`spring.metrics.export.triggers.<name>.*` where `<name>` is a bean name (or pattern for
-matching bean names).
-
-WARNING: The automatic export of metrics is disabled if you switch off the default
-`MetricRepository` (e.g. by using Dropwizard metrics). You can get back the same
-functionality be declaring a bean of your own of type `MetricReader` and  declaring it to
-be `@ExportMetricReader`.
-
-
-
-[[production-ready-metric-writers-export-to-redis]]
-==== Example: Export to Redis
-If you provide a `@Bean` of type `RedisMetricRepository` and mark it `@ExportMetricWriter`
-the metrics are exported to a Redis cache for aggregation. The `RedisMetricRepository` has
-two important parameters to configure it for this purpose: `prefix` and `key` (passed into
-its constructor). It is best to use a prefix that is unique to the application instance
-(e.g. using a random value and maybe the logical name of the application to make it
-possible to correlate with other instances of the same application).  The "`key`" is used
-to keep a global index of all metric names, so it should be unique "`globally`", whatever
-that means for your system (e.g. two instances of the same system could share a Redis cache
-if they have distinct keys).
-
-Example:
-
-[source,java,indent=0]
-----
-	@Bean
-	@ExportMetricWriter
-	MetricWriter metricWriter(MetricExportProperties export) {
-		return new RedisMetricRepository(connectionFactory,
-			export.getRedis().getPrefix(), export.getRedis().getKey());
-	}
-----
-
-.application.properties
-[source,properties,indent=0]
-----
-	spring.metrics.export.redis.prefix: metrics.mysystem.${spring.application.name:application}.${random.value:0000}
-	spring.metrics.export.redis.key: keys.metrics.mysystem
-----
-
-The prefix is constructed with the application name and id at the end, so it can easily be used
-to identify a group of processes with the same logical name later.
-
-NOTE: It's important to set both the `key` and the `prefix`. The key is used for all
-repository operations, and can be shared by multiple repositories. If multiple
-repositories share a key (like in the case where you need to aggregate across them), then
-you normally have a read-only "`master`" repository that has a short, but identifiable,
-prefix (like "`metrics.mysystem`"), and many write-only repositories with prefixes that
-start with the master prefix (like `metrics.mysystem.*` in the example above). It is
-efficient to read all the keys from a "`master`" repository like that, but inefficient to
-read a subset with a longer prefix (e.g. using one of the writing repositories).
-
-TIP: The example above uses `MetricExportProperties` to inject and extract the key and
-prefix. This is provided to you as a convenience by Spring Boot, configured with sensible
-defaults. There is nothing to stop you using your own values as long as they follow the
-recommendations.
-
-
-
-[[production-ready-metric-writers-export-to-open-tsdb]]
-==== Example: Export to Open TSDB
-If you provide a `@Bean` of type `OpenTsdbGaugeWriter` and mark it
-`@ExportMetricWriter` metrics are exported to http://opentsdb.net/[Open TSDB] for
-aggregation. The `OpenTsdbGaugeWriter` has a `url` property that you need to set
-to the Open TSDB "`/put`" endpoint, e.g. `http://localhost:4242/api/put`). It also has a
-`namingStrategy` that you can customize or configure to make the metrics match the data
-structure you need on the server. By default it just passes through the metric name as an
-Open TSDB metric name, and adds the tags "`domain`" (with value
-"`org.springframework.metrics`") and "`process`" (with the value equal to the object hash
-of the naming strategy). Thus, after running the application and generating some metrics
-you can inspect the metrics in the TSD UI (http://localhost:4242 by default).
-
-Example:
-
-[source,indent=0]
-----
-	curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
-	[
-		{
-			"metric": "counter.status.200.root",
-			"tags": {
-				"domain": "org.springframework.metrics",
-				"process": "b968a76"
-			},
-			"aggregateTags": [],
-			"dps": {
-				"1430492872": 2,
-				"1430492875": 6
-			}
-		}
-	]
-----
-
-
-
-[[production-ready-metric-writers-export-to-statsd]]
-==== Example: Export to Statsd
-To export metrics to Statsd, make sure first that you have added
-`com.timgroup:java-statsd-client` as a dependency of your project (Spring Boot
-provides a dependency management for it). Then add a `spring.metrics.export.statsd.host`
-value to your `application.properties` file. Connections will be opened to port `8125`
-unless a `spring.metrics.export.statsd.port` override is provided. You can use
-`spring.metrics.export.statsd.prefix` if you want a custom prefix.
-
-Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark it
-`@ExportMetricWriter`:
-
-[source,java,indent=0]
-----
-	@Value("${spring.application.name:application}.${random.value:0000}")
-	private String prefix = "metrics";
-
-	@Bean
-	@ExportMetricWriter
-	MetricWriter metricWriter() {
-		return new StatsdMetricWriter(prefix, "localhost", 8125);
-	}
-----
-
-
-
-[[production-ready-metric-writers-export-to-jmx]]
-==== Example: Export to JMX
-If you provide a `@Bean` of type `JmxMetricWriter` marked `@ExportMetricWriter` the metrics are exported as MBeans to
-the local server (the `MBeanExporter` is provided by Spring Boot JMX auto-configuration as
-long as it is switched on). Metrics can then be inspected, graphed, alerted etc. using any
-tool that understands JMX (e.g. JConsole or JVisualVM).
-
-Example:
-
-[source,java,indent=0]
-----
-	@Bean
-	@ExportMetricWriter
-	MetricWriter metricWriter(MBeanExporter exporter) {
-		return new JmxMetricWriter(exporter);
-	}
-----
-
-Each metric is exported as an individual MBean. The format for the `ObjectNames` is given
-by an `ObjectNamingStrategy` which can be injected into the `JmxMetricWriter` (the default
-breaks up the metric name and tags the first two period-separated sections in a way that
-should make the metrics group nicely in JVisualVM or JConsole).
-
-
-
-[[production-ready-metric-aggregation]]
-=== Aggregating metrics from multiple sources
-There is an `AggregateMetricReader` that you can use to consolidate metrics from different
-physical sources. Sources for the same logical metric just need to publish them with a
-period-separated prefix, and the reader will aggregate (by truncating the metric names,
-and dropping the prefix). Counters are summed and everything else (i.e. gauges) take their
-most recent value.
-
-This is very useful if multiple application instances are feeding to a central (e.g.
-Redis) repository and you want to display the results. Particularly recommended in
-conjunction with a `MetricReaderPublicMetrics` for hooking up to the results to the
-"`/metrics`" endpoint.
-
-Example:
-
-[source,java,indent=0]
-----
-	@Autowired
-	private MetricExportProperties export;
-
-	@Bean
-	public PublicMetrics metricsAggregate() {
-		return new MetricReaderPublicMetrics(aggregatesMetricReader());
-	}
-
-	private MetricReader globalMetricsForAggregation() {
-		return new RedisMetricRepository(this.connectionFactory,
-			this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
-	}
-
-	private MetricReader aggregatesMetricReader() {
-		AggregateMetricReader repository = new AggregateMetricReader(
-			globalMetricsForAggregation());
-		return repository;
-	}
-----
-
-NOTE: The example above uses `MetricExportProperties` to inject and extract the key and
-prefix. This is provided to you as a convenience by Spring Boot, and the defaults will be
-sensible. They are set up in `MetricExportAutoConfiguration`.
-
-NOTE: The `MetricReaders` above are not `@Beans` and are not marked as
-`@ExportMetricReader` because they are just collecting and analyzing data from other
-repositories, and don't want to export their values.
-
-
-
-[[production-ready-dropwizard-metrics]]
-=== Dropwizard Metrics
-A default `MetricRegistry` Spring bean will be created when you declare a dependency to
-the `io.dropwizard.metrics:metrics-core` library; you can also register you own `@Bean`
-instance if you need customizations. Users of the
-https://dropwizard.github.io/metrics/[Dropwizard '`Metrics`' library] will find that
-Spring Boot metrics are automatically published to `com.codahale.metrics.MetricRegistry`.
-Metrics from the `MetricRegistry` are also automatically exposed via the `/metrics`
-endpoint
-
-When Dropwizard metrics are in use, the default `CounterService` and `GaugeService` are
-replaced with a `DropwizardMetricServices`, which is a wrapper around the `MetricRegistry`
-(so you can `@Autowired` one of those services and use it as normal). You can also create
-"`special`" Dropwizard metrics by prefixing your metric names with the appropriate type
-(i.e. `+timer.*+`, `+histogram.*+` for gauges, and `+meter.*+` for counters).
-
-
-
-[[production-ready-metrics-message-channel-integration]]
-=== Message channel integration
-If a `MessageChannel` bean called `metricsChannel` exists, then a `MetricWriter` will be
-created that writes metrics to that channel. Each message sent to the channel will contain
-a {dc-spring-boot-actuator}/metrics/writer/Delta.{dc-ext}[`Delta`] or
-{dc-spring-boot-actuator}/metrics/Metric.{dc-ext}[`Metric`] payload and have a `metricName`
-header. The writer is automatically hooked up to an exporter (as for all writers), so all
-metric values will appear on the channel, and additional analysis or actions can be taken
-by subscribers (it's up to you to provide the channel and any subscribers you need).
+
+
+[[production-ready-metrics-web-flux-tags]]
+==== WebFlux metric tags
+WebFlux-related metrics for the annotation-based programming model will, by default,
+be tagged with the following:
+
+- Request's method,
+- Request's URI (templated if possible)
+- Simple class name of any exception that was thrown while handling the request
+- Response's status
+
+To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
+
+Metrics for the functional programming model will, by default, be tagged with the
+following:
+
+- Request's method,
+- Request's URI (templated if possible)
+- Response's status
+
+To customize the tags, use the `defaultTags` method on the `RouterFunctionMetrics`
+instance that you are using.
+
+
+
+[[production-ready-metrics-rest-template]]
+=== RestTemplate metrics
+Auto-configuration will customize the auto-configured `RestTemplate` to enable the
+instrumentation of its requests. `MetricsRestTemplateCustomizer` can be used to
+customize your own `RestTemplate` instances.
+
+Metrics will, by default, be generated with the name `http.client.requests`. The name
+can be customized using the `metrics.web.client.requests-metrics-name` property.
+
+
+
+[[production-ready-metrics-rest-template-tags]]
+==== RestTemplate metric tags
+Metrics generated by an instrumeted `RestTemplate` will, by default, be tagged with
+the following:
+
+- Request's method
+- Request's URI (templated if possible)
+- Response's status
+- Request URI's host
+
+
+
+[[production-ready-metrics-integration]]
+Auto-configuration will enable binding of a number of Spring Integration-related
+metrics:
+
+.General metrics
+|===
+| Metric | Description
+
+| `spring.integration.channelNames`
+| Number of Spring Integration channels
+
+| `spring.integration.handlerNames`
+| Number of Spring Integration handlers
+
+| `spring.integration.sourceNames`
+| Number of Spring Integration sources
+|===
+
+.Channel metrics
+|===
+| Metric | Description
+
+| `spring.integration.channel.receives`
+| Number of receives
+
+| `spring.integration.channel.sendErrors`
+| Number of failed sends
+
+| `spring.integration.channel.sends`
+| Number of successful sends
+|===
+
+.Handler metrics
+|===
+| Metric | Description
+
+| `spring.integration.handler.duration.max`
+| Maximum handler duration in milliseconds
+
+| `spring.integration.handler.duration.min`
+| Minimum handler duration in milliseconds
+
+| `spring.integration.handler.duration.mean`
+| Mean handler duration in milliseconds
+
+| `spring.integration.handler.activeCount`
+| Number of active handlers
+|===
+
+.Source metrics
+|===
+| Metric | Description
+
+| `spring.integration.source.messages`
+| Number of successful source calls
+|===
 
 
 

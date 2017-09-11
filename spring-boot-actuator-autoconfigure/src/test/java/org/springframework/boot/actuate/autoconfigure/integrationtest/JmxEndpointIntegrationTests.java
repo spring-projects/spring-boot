@@ -55,7 +55,7 @@ public class JmxEndpointIntegrationTests {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer,
 					new String[] { "autoconfig", "beans", "configprops", "env", "health",
-							"info", "mappings", "metrics", "status", "threaddump",
+							"info", "mappings", "status", "threaddump",
 							"trace" },
 					new String[] { "shutdown" });
 		});
@@ -68,7 +68,7 @@ public class JmxEndpointIntegrationTests {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[0],
 							new String[] { "autoconfig", "beans", "configprops", "env",
-									"health", "mappings", "metrics", "shutdown",
+									"health", "mappings", "shutdown",
 									"threaddump", "trace" });
 
 				});
@@ -81,7 +81,7 @@ public class JmxEndpointIntegrationTests {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans" },
 							new String[] { "autoconfig", "configprops", "env", "health",
-									"mappings", "metrics", "shutdown",
+									"mappings", "shutdown",
 									"threaddump", "trace" });
 				});
 	}
