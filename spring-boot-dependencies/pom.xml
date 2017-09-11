@@ -156,7 +156,7 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.18</snakeyaml.version>
 		<solr.version>6.6.1</solr.version>
-		<spring.version>5.0.0.BUILD-SNAPSHOT</spring.version>
+		<spring.version>5.0.0.RC4</spring.version>
 		<spring-amqp.version>2.0.0.M5</spring-amqp.version>
 		<spring-cloud-connectors.version>2.0.0.M1</spring-cloud-connectors.version>
 		<spring-batch.version>4.0.0.M3</spring-batch.version>
