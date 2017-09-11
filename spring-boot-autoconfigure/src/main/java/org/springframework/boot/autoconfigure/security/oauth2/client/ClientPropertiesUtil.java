@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.AbstractMap;
@@ -26,8 +27,8 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
 
 /**
- * Internal class that provides utilities for searching the {@link Environment}
- * for OAuth 2.0 / OpenID Connect 1.0 client properties.
+ * Internal class that provides utilities for searching the {@link Environment} for OAuth
+ * 2.0 / OpenID Connect 1.0 client properties.
  *
  * @author Joe Grandja
  * @since 2.0.0
@@ -42,6 +43,9 @@ final class ClientPropertiesUtil {
 
 	static final String USER_NAME_ATTR_NAME_PROPERTY = "user-name-attribute-name";
 
+	private ClientPropertiesUtil() {
+	}
+
 	static Set<String> getClientKeys(Environment environment) {
 		return getClientPropertiesByClient(environment).keySet();
 	}
@@ -53,7 +57,8 @@ final class ClientPropertiesUtil {
 
 		// Filter out clients that don't have the client-id property set
 		return clientPropertiesByClient.entrySet().stream()
-				.map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey(), (Map) e.getValue()))
+				.map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey(),
+						(Map) e.getValue()))
 				.filter(e -> e.getValue().containsKey(CLIENT_ID_PROPERTY))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}

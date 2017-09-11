@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.ArrayList;
@@ -99,5 +100,4 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 			return ConditionOutcome.noMatch(message.notAvailable("OAuth2 Client(s)"));
 		}
 	}
-
 }

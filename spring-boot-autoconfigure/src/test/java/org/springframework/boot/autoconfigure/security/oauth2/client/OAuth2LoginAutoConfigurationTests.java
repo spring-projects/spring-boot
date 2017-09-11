@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.List;
@@ -28,6 +26,7 @@ import javax.servlet.Filter;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
@@ -52,6 +51,9 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link OAuth2LoginAutoConfiguration}.

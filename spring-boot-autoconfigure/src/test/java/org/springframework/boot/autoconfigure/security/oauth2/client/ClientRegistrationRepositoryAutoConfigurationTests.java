@@ -16,14 +16,13 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
@@ -40,6 +39,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ClientRegistrationRepositoryAutoConfiguration}.

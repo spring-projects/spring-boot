@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.net.URI;
@@ -73,7 +74,7 @@ public class OAuth2LoginAutoConfiguration {
 		// @formatter:on
 
 		private void registerUserNameAttributeNames(OAuth2LoginConfigurer<HttpSecurity> oauth2LoginConfigurer) throws Exception {
-			ClientPropertiesUtil.getClientPropertiesByClient(this.environment).entrySet().stream().forEach(e -> {
+			ClientPropertiesUtil.getClientPropertiesByClient(this.environment).entrySet().forEach(e -> {
 				String userInfoUriValue = (String) e.getValue().get(ClientPropertiesUtil.USER_INFO_URI_PROPERTY);
 				String userNameAttributeNameValue = (String) e.getValue().get(ClientPropertiesUtil.USER_NAME_ATTR_NAME_PROPERTY);
 				if (userInfoUriValue != null && userNameAttributeNameValue != null) {
