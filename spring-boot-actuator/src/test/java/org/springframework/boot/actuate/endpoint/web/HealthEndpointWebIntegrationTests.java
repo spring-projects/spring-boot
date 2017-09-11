@@ -49,8 +49,9 @@ public class HealthEndpointWebIntegrationTests {
 	@Test
 	public void whenHealthIsUp200ResponseIsReturned() throws Exception {
 		client.get().uri("/application/health").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("status").isEqualTo("UP").jsonPath("alpha.status")
-				.isEqualTo("UP").jsonPath("bravo.status").isEqualTo("UP");
+				.expectBody().jsonPath("status").isEqualTo("UP")
+				.jsonPath("details.alpha.status").isEqualTo("UP")
+				.jsonPath("details.bravo.status").isEqualTo("UP");
 	}
 
 	@Test
@@ -59,8 +60,8 @@ public class HealthEndpointWebIntegrationTests {
 				.setHealth(Health.down().build());
 		client.get().uri("/application/health").exchange().expectStatus()
 				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
-				.isEqualTo("DOWN").jsonPath("alpha.status").isEqualTo("DOWN")
-				.jsonPath("bravo.status").isEqualTo("UP");
+				.isEqualTo("DOWN").jsonPath("details.alpha.status").isEqualTo("DOWN")
+				.jsonPath("details.bravo.status").isEqualTo("UP");
 	}
 
 	@Configuration

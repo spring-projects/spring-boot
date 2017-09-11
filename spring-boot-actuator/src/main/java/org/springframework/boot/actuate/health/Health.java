@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -80,7 +79,6 @@ public final class Health {
 	 * Return the details of the health.
 	 * @return the details (or an empty map)
 	 */
-	@JsonAnyGetter
 	public Map<String, Object> getDetails() {
 		return this.details;
 	}
