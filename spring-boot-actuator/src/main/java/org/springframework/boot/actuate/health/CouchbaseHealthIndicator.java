@@ -18,18 +18,20 @@ package org.springframework.boot.actuate.health;
 
 import java.util.List;
 
+import com.couchbase.client.java.bucket.BucketInfo;
 import com.couchbase.client.java.util.features.Version;
 
 import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+
 /**
  * {@link HealthIndicator} for Couchbase.
  *
- * @author Eddú Meléndez
+ * @author  Kris Krishna
  * @since 1.4.0
- */
+**/
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
 	private CouchbaseOperations couchbaseOperations;
@@ -41,10 +43,16 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
-				.getAllVersions();
-		builder.up().withDetail("versions",
-				StringUtils.collectionToCommaDelimitedString(versions));
+		try {
+			List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo().getAllVersions();
+			BucketInfo bucketInfo = this.couchbaseOperations.getCouchbaseBucket().bucketManager().info();
+			builder.up().withDetail("versions", StringUtils.collectionToCommaDelimitedString(versions));
+			builder.up().withDetail("NodeInfo", StringUtils.collectionToCommaDelimitedString(bucketInfo.nodeList()));
+			builder.up().withDetail("NodeCount", (bucketInfo.nodeCount()));
+		}
+		catch (Exception ex) {
+			builder.down(ex);
+		}
 	}
 
 }
