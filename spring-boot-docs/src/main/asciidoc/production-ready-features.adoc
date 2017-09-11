@@ -570,8 +570,9 @@ management endpoint:
 The `application.properties` example above will change the endpoint from `/application/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
 
-NOTE: Even if an endpoint path is configured separately, it is still relative to the
-`management.context-path`.
+NOTE: Unless the management port has been configured to
+<<production-ready-customizing-management-server-port,expose endpoints using a different
+HTTP port>>, `management.context-path` is relative to `server.context-path`.
 
 
 
