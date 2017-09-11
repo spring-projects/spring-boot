@@ -22,44 +22,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
-import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
-import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
-import org.springframework.boot.actuate.endpoint.BeansEndpoint;
-import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
-import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
-import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
-import org.springframework.boot.actuate.endpoint.InfoEndpoint;
-import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
-import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
-import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
-import org.springframework.boot.actuate.endpoint.PublicMetrics;
-import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
-import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
-import org.springframework.boot.actuate.endpoint.StatusEndpoint;
-import org.springframework.boot.actuate.endpoint.ThreadDumpEndpoint;
-import org.springframework.boot.actuate.endpoint.TraceEndpoint;
-import org.springframework.boot.actuate.health.CompositeHealthIndicatorFactory;
-import org.springframework.boot.actuate.health.HealthAggregator;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.endpoint.*;
+import org.springframework.boot.actuate.health.*;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.endpoint.Endpoint;
@@ -68,10 +41,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
@@ -123,16 +97,12 @@ public class EndpointAutoConfiguration {
 		return new LoggersEndpoint(loggingSystem);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	public MetricsEndpoint metricsEndpoint(
-			ObjectProvider<List<PublicMetrics>> publicMetrics) {
-		List<PublicMetrics> sortedPublicMetrics = publicMetrics
-				.getIfAvailable(Collections::emptyList);
-		Collections.sort(sortedPublicMetrics, AnnotationAwareOrderComparator.INSTANCE);
-		return new MetricsEndpoint(sortedPublicMetrics);
-	}
+	// FIXME replace with micrometer metrics endpoint
+//	@Bean
+//	@ConditionalOnMissingBean
+//	@ConditionalOnEnabledEndpoint
+//	public MetricsEndpoint metricsEndpoint() {
+//	}
 
 	@Bean
 	@ConditionalOnMissingBean
