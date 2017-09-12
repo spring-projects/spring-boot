@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.info;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
@@ -31,7 +32,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Endpoint(id = "info")
+@Endpoint(id = "info", defaultEnablement = DefaultEnablement.ENABLED)
 public class InfoEndpoint {
 
 	private final List<InfoContributor> infoContributors;

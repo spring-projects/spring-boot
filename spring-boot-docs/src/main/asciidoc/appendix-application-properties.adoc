@@ -1128,9 +1128,9 @@ content into your application; rather pick only the properties that you need.
 
 	# INFO ENDPOINT ({sc-spring-boot-actuator}/endpoint/InfoEndpoint.{sc-ext}[InfoEndpoint])
 	endpoints.info.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
-	endpoints.info.enabled= # Enable the info endpoint.
-	endpoints.info.jmx.enabled= # Expose the info endpoint as a JMX MBean.
-	endpoints.info.web.enabled= # Expose the info endpoint as a Web endpoint.
+	endpoints.info.enabled=true # Enable the info endpoint.
+	endpoints.info.jmx.enabled=true # Expose the info endpoint as a JMX MBean.
+	endpoints.info.web.enabled=true # Expose the info endpoint as a Web endpoint.
 
 	# LIQUIBASE ENDPOINT ({sc-spring-boot-actuator}/endpoint/LiquibaseEndpoint.{sc-ext}[LiquibaseEndpoint])
 	endpoints.liquibase.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
@@ -1170,9 +1170,9 @@ content into your application; rather pick only the properties that you need.
 
 	# STATUS ENDPOINT ({sc-spring-boot-actuator}/endpoint/StatusEndpoint.{sc-ext}[StatusEndpoint])
 	endpoints.status.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
-	endpoints.status.enabled= # Enable the status endpoint.
-	endpoints.status.jmx.enabled= # Expose the status endpoint as a JMX MBean.
-	endpoints.status.web.enabled= # Expose the status endpoint as a Web endpoint.
+	endpoints.status.enabled=true # Enable the status endpoint.
+	endpoints.status.jmx.enabled=true # Expose the status endpoint as a JMX MBean.
+	endpoints.status.web.enabled=true # Expose the status endpoint as a Web endpoint.
 
 	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/endpoint/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])
 	endpoints.threaddump.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.

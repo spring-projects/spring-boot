@@ -69,10 +69,11 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isFalse();
-			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "metrics")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "status")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isFalse();
 		});
@@ -93,6 +94,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "metrics")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "status")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isTrue();
 		});
@@ -110,10 +112,11 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isFalse();
-			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "metrics")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "status")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isFalse();
 		});

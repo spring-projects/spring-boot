@@ -42,6 +42,12 @@ public class InfoEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	public void runShouldHaveEndpointBeanEvenIfDefaultIsDisabled() {
+		this.contextRunner.withPropertyValues("endpoints.default.enabled:false")
+				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
+	}
+
+	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
 			throws Exception {
 		this.contextRunner.withPropertyValues("endpoints.info.enabled:false").run(

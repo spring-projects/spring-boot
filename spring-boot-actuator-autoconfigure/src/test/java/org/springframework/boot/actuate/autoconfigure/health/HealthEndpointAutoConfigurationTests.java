@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.actuate.health.StatusEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -79,6 +80,19 @@ public class HealthEndpointAutoConfigurationTests {
 					verify(indicator, times(1)).health();
 					verify(reactiveHealthIndicator, times(1)).health();
 				});
+	}
+
+	@Test
+	public void runShouldHaveStatusEndpointBeanEvenIfDefaultIsDisabled() {
+		this.contextRunner.withPropertyValues("endpoints.default.enabled:false")
+				.run((context) -> assertThat(context).hasSingleBean(StatusEndpoint.class));
+	}
+
+	@Test
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
+			throws Exception {
+		this.contextRunner.withPropertyValues("endpoints.status.enabled:false").run(
+				(context) -> assertThat(context).doesNotHaveBean(StatusEndpoint.class));
 	}
 
 	@Configuration

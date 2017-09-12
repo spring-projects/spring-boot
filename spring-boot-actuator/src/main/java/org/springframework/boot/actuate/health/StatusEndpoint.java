@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
@@ -25,7 +26,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Endpoint(id = "status")
+@Endpoint(id = "status", defaultEnablement = DefaultEnablement.ENABLED)
 public class StatusEndpoint {
 
 	private final HealthIndicator healthIndicator;
