@@ -26,9 +26,9 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -121,11 +121,14 @@ public class RedisAutoConfigurationTests {
 				"spring.redis.lettuce.shutdown-timeout:1000");
 		LettuceConnectionFactory cf = this.context
 				.getBean(LettuceConnectionFactory.class);
-		assertThat(getDefaultLettucePool(cf).getHostName()).isEqualTo("foo");
-		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMinIdle()).isEqualTo(1);
-		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxIdle()).isEqualTo(4);
-		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxTotal()).isEqualTo(16);
-		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxWaitMillis())
+		assertThat(cf.getHostName()).isEqualTo("foo");
+		assertThat(getPoolingClientConfiguration(cf).getPoolConfig().getMinIdle())
+				.isEqualTo(1);
+		assertThat(getPoolingClientConfiguration(cf).getPoolConfig().getMaxIdle())
+				.isEqualTo(4);
+		assertThat(getPoolingClientConfiguration(cf).getPoolConfig().getMaxTotal())
+				.isEqualTo(16);
+		assertThat(getPoolingClientConfiguration(cf).getPoolConfig().getMaxWaitMillis())
 				.isEqualTo(2000);
 		assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
 	}
@@ -177,8 +180,10 @@ public class RedisAutoConfigurationTests {
 				.isEqualTo("password");
 	}
 
-	private DefaultLettucePool getDefaultLettucePool(LettuceConnectionFactory factory) {
-		return (DefaultLettucePool) ReflectionTestUtils.getField(factory, "pool");
+	private LettucePoolingClientConfiguration getPoolingClientConfiguration(
+			LettuceConnectionFactory factory) {
+		return (LettucePoolingClientConfiguration) ReflectionTestUtils.getField(factory,
+				"clientConfiguration");
 	}
 
 	private void load(String... environment) {
