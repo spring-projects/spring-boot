@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.OAuth2Properties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -59,7 +60,7 @@ import org.springframework.util.ObjectUtils;
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ EnableWebSecurity.class, ClientRegistration.class })
-@EnableConfigurationProperties(OAuth2ClientsProperties.class)
+@EnableConfigurationProperties(OAuth2Properties.class)
 public class ClientRegistrationRepositoryAutoConfiguration {
 
 	@Configuration
@@ -67,17 +68,12 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
 	@PropertySource("classpath:/META-INF/spring-security-oauth2-client-defaults.properties")
 	protected static class ClientRegistrationRepositoryConfiguration {
-		private final Environment environment;
-
-		protected ClientRegistrationRepositoryConfiguration(Environment environment) {
-			this.environment = environment;
-		}
 
 		@Bean
-		public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientsProperties clientsProperties) {
+		public ClientRegistrationRepository clientRegistrationRepository(OAuth2Properties oauth2Properties) {
 			List<ClientRegistration> clientRegistrations = new ArrayList<>();
 
-			clientsProperties.values().stream()
+			oauth2Properties.getClients().values().stream()
 					.filter(e -> !ObjectUtils.isEmpty(e.getClientId()))
 					.collect(Collectors.toList())
 					.forEach(clientProperties -> clientRegistrations.add(
@@ -107,7 +103,7 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 
 		private Set<String> getClientKeys(Environment environment) {
 			Map<String, ClientRegistrationProperties> clientsProperties = Binder.get(environment)
-					.bind(OAuth2ClientsProperties.CLIENT_PROPERTY_PREFIX,
+					.bind("security.oauth2.clients",
 							Bindable.mapOf(String.class, ClientRegistrationProperties.class))
 					.orElse(new HashMap<>());
 

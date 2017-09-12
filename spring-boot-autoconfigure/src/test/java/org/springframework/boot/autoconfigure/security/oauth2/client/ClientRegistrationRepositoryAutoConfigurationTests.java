@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Joe Grandja
  */
 public class ClientRegistrationRepositoryAutoConfigurationTests {
-	private static final String CLIENT_PROPERTY_PREFIX = "security.oauth2.client";
+	private static final String CLIENTS_PROPERTY_PREFIX = "security.oauth2.clients";
 
 	private static final String CLIENT_ID_PROPERTY = "client-id";
 
@@ -57,28 +57,28 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 
 	private static final String GOOGLE_CLIENT_ALIAS = GOOGLE_CLIENT_KEY;
 
-	private static final String GOOGLE_CLIENT_PROPERTY_BASE = CLIENT_PROPERTY_PREFIX + "."
+	private static final String GOOGLE_CLIENT_PROPERTY_BASE = CLIENTS_PROPERTY_PREFIX + "."
 			+ GOOGLE_CLIENT_KEY;
 
 	private static final String GITHUB_CLIENT_KEY = "github";
 
 	private static final String GITHUB_CLIENT_ALIAS = GITHUB_CLIENT_KEY;
 
-	private static final String GITHUB_CLIENT_PROPERTY_BASE = CLIENT_PROPERTY_PREFIX + "."
+	private static final String GITHUB_CLIENT_PROPERTY_BASE = CLIENTS_PROPERTY_PREFIX + "."
 			+ GITHUB_CLIENT_KEY;
 
 	private static final String OKTA_CLIENT_KEY = "okta";
 
 	private static final String OKTA_CLIENT_ALIAS = OKTA_CLIENT_KEY;
 
-	private static final String OKTA_CLIENT_PROPERTY_BASE = CLIENT_PROPERTY_PREFIX + "."
+	private static final String OKTA_CLIENT_PROPERTY_BASE = CLIENTS_PROPERTY_PREFIX + "."
 			+ OKTA_CLIENT_KEY;
 
 	private static final String FACEBOOK_CLIENT_KEY = "facebook";
 
 	private static final String FACEBOOK_CLIENT_ALIAS = FACEBOOK_CLIENT_KEY;
 
-	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENT_PROPERTY_PREFIX
+	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENTS_PROPERTY_PREFIX
 			+ "." + FACEBOOK_CLIENT_KEY;
 
 	private AnnotationConfigWebApplicationContext context;
