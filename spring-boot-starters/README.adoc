@@ -67,7 +67,7 @@ do as they were designed before this was clarified.
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
-| http://graphql.org/[GraphQL] with https://github.com/graphql-java/[GraphQL Java]
+| http://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
 
 | http://graphql.org/[GraphQL]
