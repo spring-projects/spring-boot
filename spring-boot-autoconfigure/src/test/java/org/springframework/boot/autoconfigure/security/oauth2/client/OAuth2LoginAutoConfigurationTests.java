@@ -29,11 +29,8 @@ import org.junit.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +50,6 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link OAuth2LoginAutoConfiguration}.
@@ -81,10 +77,6 @@ public class OAuth2LoginAutoConfigurationTests {
 
 	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENT_PROPERTY_PREFIX
 			+ "." + FACEBOOK_CLIENT_KEY;
-
-	private final SpringApplication application = new SpringApplication();
-
-	private final ConfigFileApplicationListener environmentPostProcessor = new ConfigFileApplicationListener();
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -116,7 +108,6 @@ public class OAuth2LoginAutoConfigurationTests {
 						+ "=facebook-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 
 		ClientRegistrationRepository clientRegistrationRepository = this
@@ -176,7 +167,6 @@ public class OAuth2LoginAutoConfigurationTests {
 						+ "=google-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 
 		ClientRegistrationRepository clientRegistrationRepository = this
@@ -214,7 +204,6 @@ public class OAuth2LoginAutoConfigurationTests {
 	public void refreshContextWhenNoClientsConfiguredThenConfigurationBacksOff()
 			throws Exception {
 		this.prepareContext(DefaultConfiguration.class);
-		this.processEnvironment();
 		this.context.refresh();
 		this.assertDefaultConfigurationBacksOff();
 	}
@@ -230,7 +219,6 @@ public class OAuth2LoginAutoConfigurationTests {
 		TestPropertyValues.of(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 				+ "=github-client-secret").applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 		this.assertDefaultConfigurationBacksOff();
 	}
@@ -250,7 +238,6 @@ public class OAuth2LoginAutoConfigurationTests {
 						+ "=google-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 		this.assertDefaultConfigurationBacksOff();
 	}
@@ -268,7 +255,6 @@ public class OAuth2LoginAutoConfigurationTests {
 						+ "=google-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 
 		this.assertOAuth2SecurityFiltersConfigured();
@@ -373,16 +359,6 @@ public class OAuth2LoginAutoConfigurationTests {
 		this.context.register(ClientRegistrationRepositoryAutoConfiguration.class,
 				OAuth2LoginAutoConfiguration.class, SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-	}
-
-	private void processEnvironment() {
-		this.environmentPostProcessor
-				.postProcessEnvironment(this.context.getEnvironment(), this.application);
-		// Trigger the loading of the default client properties via
-		// ClientPropertyDefaultsEnvironmentPostProcessor
-		this.environmentPostProcessor.onApplicationEvent(
-				new ApplicationEnvironmentPreparedEvent(this.application, new String[0],
-						this.context.getEnvironment()));
 	}
 
 	private <T> T getBean(Class<T> requiredType) {

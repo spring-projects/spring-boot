@@ -25,11 +25,8 @@ import org.mockito.Mockito;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -84,10 +81,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENT_PROPERTY_PREFIX
 			+ "." + FACEBOOK_CLIENT_KEY;
 
-	private final SpringApplication application = new SpringApplication();
-
-	private final ConfigFileApplicationListener environmentPostProcessor = new ConfigFileApplicationListener();
-
 	private AnnotationConfigWebApplicationContext context;
 
 	@After
@@ -130,7 +123,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=facebook-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 
 		ClientRegistrationRepository clientRegistrationRepository = this
@@ -193,7 +185,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=google-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 
 		ClientRegistrationRepository clientRegistrationRepository = this
@@ -225,7 +216,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 	public void refreshContextWhenNoClientsConfiguredThenConfigurationBacksOff()
 			throws Exception {
 		this.prepareContext(DefaultConfiguration.class);
-		this.processEnvironment();
 		this.context.refresh();
 		ClientRegistrationRepository clientRegistrationRepository = this
 				.getBean(ClientRegistrationRepository.class);
@@ -243,7 +233,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 		TestPropertyValues.of(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 				+ "=github-client-secret").applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 		ClientRegistrationRepository clientRegistrationRepository = this
 				.getBean(ClientRegistrationRepository.class);
@@ -265,7 +254,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=google-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 		ClientRegistrationRepository clientRegistrationRepository = this
 				.getBean(ClientRegistrationRepository.class);
@@ -297,7 +285,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=facebook-client-secret")
 				.applyTo(this.context.getEnvironment());
 
-		this.processEnvironment();
 		this.context.refresh();
 
 		ClientRegistrationRepository clientRegistrationRepository = this
@@ -391,16 +378,6 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 		}
 		this.context.register(ClientRegistrationRepositoryAutoConfiguration.class,
 				SecurityAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
-	}
-
-	private void processEnvironment() {
-		this.environmentPostProcessor
-				.postProcessEnvironment(this.context.getEnvironment(), this.application);
-		// Trigger the loading of the default client properties via
-		// ClientPropertyDefaultsEnvironmentPostProcessor
-		this.environmentPostProcessor.onApplicationEvent(
-				new ApplicationEnvironmentPreparedEvent(this.application, new String[0],
-						this.context.getEnvironment()));
 	}
 
 	private <T> T getBean(Class<T> requiredType) {

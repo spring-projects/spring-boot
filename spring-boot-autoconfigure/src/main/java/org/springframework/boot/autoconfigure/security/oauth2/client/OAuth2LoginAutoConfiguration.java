@@ -47,16 +47,23 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 @ConditionalOnBean(ClientRegistrationRepository.class)
 @AutoConfigureBefore(ClientRegistrationRepositoryAutoConfiguration.class)
 public class OAuth2LoginAutoConfiguration {
+	private static final String USER_NAME_ATTR_NAME_PROPERTY = "user-name-attribute-name";
 
 	@Configuration
 	protected static class OAuth2LoginConfiguration extends WebSecurityConfigurerAdapter {
-		private final Environment environment;
-
 		private final ClientRegistrationRepository clientRegistrationRepository;
 
-		protected OAuth2LoginConfiguration(Environment environment, ClientRegistrationRepository clientRegistrationRepository) {
-			this.environment = environment;
+		private final OAuth2ClientsProperties clientsProperties;
+
+		private final Environment environment;
+
+		protected OAuth2LoginConfiguration(
+				ClientRegistrationRepository clientRegistrationRepository,
+				OAuth2ClientsProperties clientsProperties, Environment environment) {
+
 			this.clientRegistrationRepository = clientRegistrationRepository;
+			this.clientsProperties = clientsProperties;
+			this.environment = environment;
 		}
 
 		// @formatter:off
@@ -74,9 +81,10 @@ public class OAuth2LoginAutoConfiguration {
 		// @formatter:on
 
 		private void registerUserNameAttributeNames(OAuth2LoginConfigurer<HttpSecurity> oauth2LoginConfigurer) throws Exception {
-			ClientPropertiesUtil.getClientPropertiesByClient(this.environment).entrySet().forEach(e -> {
-				String userInfoUriValue = (String) e.getValue().get(ClientPropertiesUtil.USER_INFO_URI_PROPERTY);
-				String userNameAttributeNameValue = (String) e.getValue().get(ClientPropertiesUtil.USER_NAME_ATTR_NAME_PROPERTY);
+			this.clientsProperties.forEach((key, value) -> {
+				String userInfoUriValue = value.getUserInfoUri();
+				String userNameAttributeNameValue = this.environment.getProperty(
+						OAuth2ClientsProperties.CLIENT_PROPERTY_PREFIX + "." + key + "." + USER_NAME_ATTR_NAME_PROPERTY);
 				if (userInfoUriValue != null && userNameAttributeNameValue != null) {
 					// @formatter:off
 					oauth2LoginConfigurer
