@@ -35,9 +35,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.alpn.ALPN;
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.http2.HTTP2Cipher;
+import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
@@ -45,6 +49,7 @@ import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.NegotiatingServerConnectionFactory;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
@@ -122,6 +127,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	private int selectors = -1;
 
+	/**
+	 * Dump jetty configuration in the logs after starting.
+	 */
+	private boolean dumpAfterStart = false;
+
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
 
 	private ResourceLoader resourceLoader;
@@ -176,12 +186,22 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		if (this.useForwardHeaders) {
 			new ForwardHeadersCustomizer().customize(server);
 		}
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			SslContextFactory sslContextFactory = null;
+			if (getHttp2().getSsl() != null && getHttp2().getSsl().isEnabled()) {
+				sslContextFactory = new SslContextFactory();
+				configureSsl(sslContextFactory, getHttp2().getSsl());
+			}
+			AbstractConnector connector = createHttp2Connector(server, sslContextFactory);
+			server.setConnectors(new Connector[] { connector });
+		}
 		return getJettyWebServer(server);
 	}
 
 	private Server createServer(InetSocketAddress address) {
 		Server server = new Server(getThreadPool());
 		server.setConnectors(new Connector[] { createConnector(address, server) });
+		server.setDumpAfterStart(this.dumpAfterStart);
 		return server;
 	}
 
@@ -211,6 +231,43 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				sslConnectionFactory, connectionFactory);
 		serverConnector.setPort(port);
 		return serverConnector;
+	}
+
+	private AbstractConnector createHttp2Connector(Server server, SslContextFactory sslContextFactory) {
+
+		if (sslContextFactory != null) {
+			sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
+		}
+		// HTTPS Configuration
+		HttpConfiguration https_config = new HttpConfiguration();
+		https_config.setSecureScheme("https");
+		https_config.setSecurePort(getHttp2().getPort());
+		https_config.addCustomizer(new SecureRequestCustomizer());
+
+		// HTTP/2 Connection Factory
+		HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(https_config);
+		NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
+		ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
+		alpn.setDefaultProtocol("h2");
+
+		// HTTP/2 Connector
+		ServerConnector http2Connector = null;
+		if (sslContextFactory != null) {
+			// SSL Connection Factory
+			SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
+			http2Connector = new ServerConnector(server, ssl, alpn, h2, new HttpConnectionFactory(https_config));
+		}
+		else {
+			http2Connector = new ServerConnector(server, alpn, h2, new HttpConnectionFactory(https_config));
+		}
+
+
+		http2Connector.setPort(getHttp2().getPort());
+		//?
+		//http2Connector.setHost(getHttp2().getAddress().getHostName());
+
+		ALPN.debug = getHttp2().getAlpnDebug();
+		return http2Connector;
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
@@ -576,6 +633,14 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	public void setSelectors(int selectors) {
 		this.selectors = selectors;
+	}
+
+	/**
+	 * To dump the Jetty configuration in the logs.
+	 * @param dumpAfterStart <code>true</code> to dump configuration
+	 */
+	public void setDumpAfterStart(boolean dumpAfterStart) {
+		this.dumpAfterStart = dumpAfterStart;
 	}
 
 	/**

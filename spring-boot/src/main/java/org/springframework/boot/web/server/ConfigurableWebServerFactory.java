@@ -75,4 +75,10 @@ public interface ConfigurableWebServerFactory
 	 */
 	void setServerHeader(String serverHeader);
 
+	/**
+	 * Sets the Http2 configuration that will be applied to the server's default connector.
+	 * @param http2 the {@link Http2} configuration
+	 */
+	void setHttp2(Http2 http2);
+
 }
