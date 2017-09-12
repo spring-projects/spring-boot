@@ -30,8 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractSessionAutoConfigurationTests {
 
 	protected <T extends SessionRepository<?>> T validateSessionRepository(
-			AssertableWebApplicationContext context,
-			Class<T> type) {
+			AssertableWebApplicationContext context, Class<T> type) {
 		assertThat(context).hasSingleBean(SessionRepository.class);
 		SessionRepository<?> repository = context.getBean(SessionRepository.class);
 		assertThat(repository).as("Wrong session repository type").isInstanceOf(type);

@@ -54,10 +54,10 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	public void contextFailsIfStoreTypeNotSet() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasMessageContaining(
-					"No Spring Session store is configured");
-			assertThat(context).getFailure().hasMessageContaining(
-					"set the 'spring.session.store-type' property");
+			assertThat(context).getFailure()
+					.hasMessageContaining("No Spring Session store is configured");
+			assertThat(context).getFailure()
+					.hasMessageContaining("set the 'spring.session.store-type' property");
 		});
 	}
 
@@ -66,11 +66,12 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc")
 				.run((context) -> {
 					assertThat(context).hasFailed();
-					assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
+					assertThat(context).getFailure()
+							.isInstanceOf(BeanCreationException.class);
 					assertThat(context).getFailure().hasMessageContaining(
 							"No session repository could be auto-configured");
-					assertThat(context).getFailure().hasMessageContaining(
-							"session store type is 'jdbc'");
+					assertThat(context).getFailure()
+							.hasMessageContaining("session store type is 'jdbc'");
 				});
 	}
 
@@ -85,35 +86,39 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	public void backOffIfSessionRepositoryIsPresent() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 				.withPropertyValues("spring.session.store-type=redis").run((context) -> {
-			MapSessionRepository repository = validateSessionRepository(context,
-					MapSessionRepository.class);
-			assertThat(context).getBean("mySessionRepository").isSameAs(repository);
-		});
+					MapSessionRepository repository = validateSessionRepository(context,
+							MapSessionRepository.class);
+					assertThat(context).getBean("mySessionRepository")
+							.isSameAs(repository);
+				});
 	}
 
 	@Test
 	public void springSessionTimeoutIsNotAValidProperty() {
-		this.contextRunner.withPropertyValues(
-				"spring.session.timeout=3000").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
-			assertThat(context).getFailure().hasMessageContaining("Could not bind");
-		});
+		this.contextRunner.withPropertyValues("spring.session.timeout=3000")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure()
+							.isInstanceOf(BeanCreationException.class);
+					assertThat(context).getFailure()
+							.hasMessageContaining("Could not bind");
+				});
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void filterIsRegisteredWithAsyncErrorAndRequestDispatcherTypes() {
-		this.contextRunner.withUserConfiguration(
-				SessionRepositoryConfiguration.class).run((context) -> {
-			FilterRegistrationBean<?> registration = context
-					.getBean(FilterRegistrationBean.class);
-			assertThat(registration.getFilter())
-					.isSameAs(context.getBean(SessionRepositoryFilter.class));
-			assertThat((EnumSet<DispatcherType>) ReflectionTestUtils.getField(registration,
-					"dispatcherTypes")).containsOnly(DispatcherType.ASYNC,
-					DispatcherType.ERROR, DispatcherType.REQUEST);
-		});
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.run((context) -> {
+					FilterRegistrationBean<?> registration = context
+							.getBean(FilterRegistrationBean.class);
+					assertThat(registration.getFilter())
+							.isSameAs(context.getBean(SessionRepositoryFilter.class));
+					assertThat((EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(registration, "dispatcherTypes")).containsOnly(
+									DispatcherType.ASYNC, DispatcherType.ERROR,
+									DispatcherType.REQUEST);
+				});
 	}
 
 	@Test
@@ -131,13 +136,14 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	@Test
 	public void filterDispatcherTypesCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.withPropertyValues("spring.session.servlet.filter-dispatcher-types=error, request")
+				.withPropertyValues(
+						"spring.session.servlet.filter-dispatcher-types=error, request")
 				.run((context) -> {
 					FilterRegistrationBean<?> registration = context
 							.getBean(FilterRegistrationBean.class);
-					assertThat((EnumSet<DispatcherType>) ReflectionTestUtils.getField(registration,
-							"dispatcherTypes")).containsOnly(DispatcherType.ERROR,
-							DispatcherType.REQUEST);
+					assertThat((EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(registration, "dispatcherTypes")).containsOnly(
+									DispatcherType.ERROR, DispatcherType.REQUEST);
 				});
 	}
 

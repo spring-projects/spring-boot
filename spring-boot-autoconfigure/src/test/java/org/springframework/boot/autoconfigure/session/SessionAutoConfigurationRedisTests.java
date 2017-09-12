@@ -45,10 +45,10 @@ public class SessionAutoConfigurationRedisTests
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
-
 	@Test
 	public void redisSessionStore() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis")
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
 						RedisFlushMode.ON_SAVE));
@@ -56,7 +56,8 @@ public class SessionAutoConfigurationRedisTests
 
 	@Test
 	public void redisSessionStoreWithCustomizations() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis",
 						"spring.session.redis.namespace=foo",
 						"spring.session.redis.flush-mode=immediate")
@@ -67,12 +68,12 @@ public class SessionAutoConfigurationRedisTests
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
 			String sessionCreatedChannelPrefix, RedisFlushMode flushMode) {
 		return context -> {
-			RedisOperationsSessionRepository repository = validateSessionRepository(context,
-					RedisOperationsSessionRepository.class);
+			RedisOperationsSessionRepository repository = validateSessionRepository(
+					context, RedisOperationsSessionRepository.class);
 			assertThat(repository.getSessionCreatedChannelPrefix())
 					.isEqualTo(sessionCreatedChannelPrefix);
-			assertThat(new DirectFieldAccessor(repository).getPropertyValue("redisFlushMode"))
-					.isEqualTo(flushMode);
+			assertThat(new DirectFieldAccessor(repository)
+					.getPropertyValue("redisFlushMode")).isEqualTo(flushMode);
 		};
 	}
 

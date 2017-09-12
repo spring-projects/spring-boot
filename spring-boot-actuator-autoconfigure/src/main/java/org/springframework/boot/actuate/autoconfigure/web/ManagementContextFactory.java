@@ -26,6 +26,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface ManagementContextFactory {
 
 	/**

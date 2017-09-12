@@ -48,8 +48,8 @@ public final class StaticResourceRequest {
 
 	/**
 	 * Returns a matcher that includes all commonly used {@link Location Locations}. The
-	 * {@link StaticResourceRequestMatcher#excluding(Location, Location...) excluding} method
-	 * can be used to remove specific locations if required. For example:
+	 * {@link StaticResourceRequestMatcher#excluding(Location, Location...) excluding}
+	 * method can be used to remove specific locations if required. For example:
 	 * <pre class="code">
 	 * StaticResourceRequest.toCommonLocations().excluding(Location.CSS)
 	 * </pre>
@@ -140,8 +140,8 @@ public final class StaticResourceRequest {
 		}
 
 		/**
-		 * Return a new {@link StaticResourceRequestMatcher} based on this one but excluding the
-		 * specified locations.
+		 * Return a new {@link StaticResourceRequestMatcher} based on this one but
+		 * excluding the specified locations.
 		 * @param first the first location to exclude
 		 * @param rest additional locations to exclude
 		 * @return a new {@link StaticResourceRequestMatcher}
@@ -151,8 +151,8 @@ public final class StaticResourceRequest {
 		}
 
 		/**
-		 * Return a new {@link StaticResourceRequestMatcher} based on this one but excluding the
-		 * specified locations.
+		 * Return a new {@link StaticResourceRequestMatcher} based on this one but
+		 * excluding the specified locations.
 		 * @param locations the locations to exclude
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */

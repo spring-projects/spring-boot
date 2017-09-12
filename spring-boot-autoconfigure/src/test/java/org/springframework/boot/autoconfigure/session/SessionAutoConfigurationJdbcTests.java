@@ -54,60 +54,63 @@ public class SessionAutoConfigurationJdbcTests
 
 	@Test
 	public void defaultConfig() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(
-				JdbcTemplateAutoConfiguration.class))
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=jdbc").run((context) -> {
-			JdbcOperationsSessionRepository repository = validateSessionRepository(context,
-					JdbcOperationsSessionRepository.class);
-			assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-					.isEqualTo("SPRING_SESSION");
-			assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
-			assertThat(context.getBean(JdbcOperations.class)
-					.queryForList("select * from SPRING_SESSION")).isEmpty();
-		});
+					JdbcOperationsSessionRepository repository = validateSessionRepository(
+							context, JdbcOperationsSessionRepository.class);
+					assertThat(new DirectFieldAccessor(repository)
+							.getPropertyValue("tableName")).isEqualTo("SPRING_SESSION");
+					assertThat(context.getBean(JdbcSessionProperties.class)
+							.getInitializeSchema())
+									.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+					assertThat(context.getBean(JdbcOperations.class)
+							.queryForList("select * from SPRING_SESSION")).isEmpty();
+				});
 	}
 
 	@Test
 	public void filterOrderCanBeCustomized() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc",
-						"spring.session.servlet.filter-order=123").run((context) -> {
-			FilterRegistrationBean<?> registration = context
-					.getBean(FilterRegistrationBean.class);
-			assertThat(registration.getOrder()).isEqualTo(123);
-		});
+				"spring.session.servlet.filter-order=123").run((context) -> {
+					FilterRegistrationBean<?> registration = context
+							.getBean(FilterRegistrationBean.class);
+					assertThat(registration.getOrder()).isEqualTo(123);
+				});
 	}
 
 	@Test
 	public void disableDatabaseInitializer() {
-		this.contextRunner.withPropertyValues(
-				"spring.session.store-type=jdbc",
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc",
 				"spring.session.jdbc.initialize-schema=never").run((context) -> {
-			JdbcOperationsSessionRepository repository = validateSessionRepository(context,
-					JdbcOperationsSessionRepository.class);
-			assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-					.isEqualTo("SPRING_SESSION");
-			assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-					.isEqualTo(DatabaseInitializationMode.NEVER);
-			this.thrown.expect(BadSqlGrammarException.class);
-			context.getBean(JdbcOperations.class).queryForList(
-					"select * from SPRING_SESSION");
-		});
+					JdbcOperationsSessionRepository repository = validateSessionRepository(
+							context, JdbcOperationsSessionRepository.class);
+					assertThat(new DirectFieldAccessor(repository)
+							.getPropertyValue("tableName")).isEqualTo("SPRING_SESSION");
+					assertThat(context.getBean(JdbcSessionProperties.class)
+							.getInitializeSchema())
+									.isEqualTo(DatabaseInitializationMode.NEVER);
+					this.thrown.expect(BadSqlGrammarException.class);
+					context.getBean(JdbcOperations.class)
+							.queryForList("select * from SPRING_SESSION");
+				});
 	}
 
 	@Test
 	public void customTableName() {
-		this.contextRunner.withPropertyValues(
-				"spring.session.store-type=jdbc",
-				"spring.session.jdbc.table-name=FOO_BAR",
-				"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc",
+						"spring.session.jdbc.table-name=FOO_BAR",
+						"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
 				.run((context) -> {
-					JdbcOperationsSessionRepository repository = validateSessionRepository(context,
-							JdbcOperationsSessionRepository.class);
-					assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-							.isEqualTo("FOO_BAR");
-					assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+					JdbcOperationsSessionRepository repository = validateSessionRepository(
+							context, JdbcOperationsSessionRepository.class);
+					assertThat(new DirectFieldAccessor(repository)
+							.getPropertyValue("tableName")).isEqualTo("FOO_BAR");
+					assertThat(context.getBean(JdbcSessionProperties.class)
+							.getInitializeSchema())
+									.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 					assertThat(context.getBean(JdbcOperations.class)
 							.queryForList("select * from FOO_BAR")).isEmpty();
 				});

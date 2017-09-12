@@ -368,7 +368,7 @@ public class ValidationAutoConfigurationTests {
 
 		static class TestBeanPostProcessor implements BeanPostProcessor {
 
-			private Set<String> postProcessed = new HashSet<String>();
+			private Set<String> postProcessed = new HashSet<>();
 
 			@Override
 			public Object postProcessAfterInitialization(Object bean, String name) {

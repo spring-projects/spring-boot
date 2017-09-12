@@ -46,7 +46,6 @@ public class SessionAutoConfigurationHazelcastTests
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
 			.withUserConfiguration(HazelcastConfiguration.class);
 
-
 	@Test
 	public void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast")
@@ -60,25 +59,29 @@ public class SessionAutoConfigurationHazelcastTests
 
 	@Test
 	public void customMapName() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
-				"spring.session.hazelcast.map-name=foo:bar:biz").run((context) -> {
-			validateSessionRepository(context, HazelcastSessionRepository.class);
-			HazelcastInstance hazelcastInstance = context
-					.getBean(HazelcastInstance.class);
-			verify(hazelcastInstance, times(1)).getMap("foo:bar:biz");
-		});
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=hazelcast",
+						"spring.session.hazelcast.map-name=foo:bar:biz")
+				.run((context) -> {
+					validateSessionRepository(context, HazelcastSessionRepository.class);
+					HazelcastInstance hazelcastInstance = context
+							.getBean(HazelcastInstance.class);
+					verify(hazelcastInstance, times(1)).getMap("foo:bar:biz");
+				});
 	}
 
 	@Test
 	public void customFlushMode() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
-				"spring.session.hazelcast.flush-mode=immediate").run((context) -> {
-			HazelcastSessionRepository repository = validateSessionRepository(context,
-					HazelcastSessionRepository.class);
-			assertThat(new DirectFieldAccessor(repository)
-					.getPropertyValue("hazelcastFlushMode"))
-					.isEqualTo(HazelcastFlushMode.IMMEDIATE);
-		});
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=hazelcast",
+						"spring.session.hazelcast.flush-mode=immediate")
+				.run((context) -> {
+					HazelcastSessionRepository repository = validateSessionRepository(
+							context, HazelcastSessionRepository.class);
+					assertThat(new DirectFieldAccessor(repository)
+							.getPropertyValue("hazelcastFlushMode"))
+									.isEqualTo(HazelcastFlushMode.IMMEDIATE);
+				});
 	}
 
 	@Configuration
