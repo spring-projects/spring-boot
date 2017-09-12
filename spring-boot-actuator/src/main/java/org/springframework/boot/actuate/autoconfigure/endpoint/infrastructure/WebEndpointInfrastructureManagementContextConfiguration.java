@@ -16,13 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -47,6 +44,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * Management context configuration for the infrastructure for web endpoints.
  *
  * @author Andy Wilkinson
+ * @author Venil Noronha
  */
 @ConditionalOnWebApplication
 @ManagementContextConfiguration
@@ -80,14 +78,6 @@ class WebEndpointInfrastructureManagementContextConfiguration {
 	@ConditionalOnBean(DispatcherServlet.class)
 	static class MvcWebEndpointConfiguration {
 
-		private final List<WebEndpointHandlerMappingCustomizer> mappingCustomizers;
-
-		MvcWebEndpointConfiguration(
-				ObjectProvider<List<WebEndpointHandlerMappingCustomizer>> mappingCustomizers) {
-			this.mappingCustomizers = mappingCustomizers
-					.getIfUnique(Collections::emptyList);
-		}
-
 		@Bean
 		@ConditionalOnMissingBean
 		public WebEndpointServletHandlerMapping webEndpointServletHandlerMapping(
@@ -97,9 +87,6 @@ class WebEndpointInfrastructureManagementContextConfiguration {
 			WebEndpointServletHandlerMapping handlerMapping = new WebEndpointServletHandlerMapping(
 					new EndpointMapping(managementServerProperties.getContextPath()),
 					provider.getEndpoints(), getCorsConfiguration(corsProperties));
-			for (WebEndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
-				customizer.customize(handlerMapping);
-			}
 			return handlerMapping;
 		}
 
