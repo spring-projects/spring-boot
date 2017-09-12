@@ -607,10 +607,10 @@ public class RabbitAutoConfigurationTests {
 				.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(
 						"spring.rabbitmq.ssl.enabled:true",
-						"spring.rabbitmq.ssl.keyStore=test.jks",
+						"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
 						"spring.rabbitmq.ssl.keyStoreType=jks",
 						"spring.rabbitmq.ssl.keyStorePassword=secret",
-						"spring.rabbitmq.ssl.trustStore=test.jks",
+						"spring.rabbitmq.ssl.trustStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
 						"spring.rabbitmq.ssl.trustStoreType=jks",
 						"spring.rabbitmq.ssl.trustStorePassword=secret")
 				.run(context -> assertThat(context).hasNotFailed());
