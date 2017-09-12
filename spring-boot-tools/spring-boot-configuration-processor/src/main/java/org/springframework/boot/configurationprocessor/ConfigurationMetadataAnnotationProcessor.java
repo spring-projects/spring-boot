@@ -74,8 +74,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.DeprecatedConfigurationProperty";
 
-	static final String ENDPOINT_ANNOTATION = "org.springframework.boot."
-			+ "endpoint.Endpoint";
+	static final String ENDPOINT_ANNOTATION = "org.springframework.boot.actuate."
+			+ "endpoint.annotation.Endpoint";
 
 	static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
 
