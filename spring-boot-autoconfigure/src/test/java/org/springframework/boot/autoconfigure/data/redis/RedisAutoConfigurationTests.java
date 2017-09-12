@@ -18,18 +18,24 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
@@ -46,8 +52,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 public class RedisAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -61,8 +71,7 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testDefaultRedisConfiguration() {
 		load();
-		assertThat(this.context.getBean("redisTemplate", RedisOperations.class))
-				.isNotNull();
+		assertThat(this.context.getBean(RedisOperations.class)).isNotNull();
 		assertThat(this.context.getBean(StringRedisTemplate.class)).isNotNull();
 	}
 
@@ -85,6 +94,28 @@ public class RedisAutoConfigurationTests {
 		LettuceConnectionFactory cf = this.context
 				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.isUseSsl()).isTrue();
+	}
+
+	@Test
+	public void testCustomRedisTemplateNamedRedisTemplateConfiguration() {
+		load(CustomRedisTemplateNamedRedisTemplateConfiguration.class);
+		Map<String, RedisOperations> beans = this.context
+				.getBeansOfType(RedisOperations.class);
+		assertThat(beans).hasSize(2);
+		assertThat(beans).containsKeys("redisTemplate", "stringRedisTemplate");
+		this.thrown.expect(NoUniqueBeanDefinitionException.class);
+		assertThat(this.context.getBean(RedisOperations.class));
+	}
+
+	@Test
+	public void testCustomRedisTemplateNotNamedRedisTemplateConfiguration() {
+		load(CustomRedisTemplateNotNamedRedisTemplateConfiguration.class);
+		Map<String, RedisOperations> beans = this.context
+				.getBeansOfType(RedisOperations.class);
+		assertThat(beans).hasSize(3);
+		assertThat(beans).containsKeys("redisTemplate", "stringRedisTemplate",
+				"myRedisTemplate");
+		assertThat(this.context.getBean(RedisOperations.class)).isNotNull();
 	}
 
 	@Test
@@ -202,6 +233,32 @@ public class RedisAutoConfigurationTests {
 		@Bean
 		LettuceClientConfigurationBuilderCustomizer customizer() {
 			return LettuceClientConfigurationBuilder::useSsl;
+		}
+
+	}
+
+	@Configuration
+	static class CustomRedisTemplateNamedRedisTemplateConfiguration {
+
+		@Bean
+		public RedisTemplate<Object, Object> redisTemplate(
+				RedisConnectionFactory connectionFactory) {
+			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+			redisTemplate.setConnectionFactory(connectionFactory);
+			return redisTemplate;
+		}
+
+	}
+
+	@Configuration
+	static class CustomRedisTemplateNotNamedRedisTemplateConfiguration {
+
+		@Bean
+		public RedisTemplate<Object, Object> myRedisTemplate(
+				RedisConnectionFactory connectionFactory) {
+			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+			redisTemplate.setConnectionFactory(connectionFactory);
+			return redisTemplate;
 		}
 
 	}
