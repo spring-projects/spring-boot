@@ -67,7 +67,7 @@ public class SessionAutoConfigurationRedisTests
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
 			String sessionCreatedChannelPrefix, RedisFlushMode flushMode) {
-		return context -> {
+		return (context) -> {
 			RedisOperationsSessionRepository repository = validateSessionRepository(
 					context, RedisOperationsSessionRepository.class);
 			assertThat(repository.getSessionCreatedChannelPrefix())
