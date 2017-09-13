@@ -116,8 +116,7 @@ is automatically set if you use the maven wrapper.
 _Also see link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] if you wish to submit pull requests,
 and in particular please fill out the
 https://support.springsource.com/spring_committer_signup[Contributor's Agreement]
-before your first change, however trivial. (Or if you filed such an agreement already for
-another project just mention that in your pull request.)_
+before your first change, however trivial._
 
 === Building reference documentation
 

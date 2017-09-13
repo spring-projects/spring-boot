@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 import java.util.List;
 
 /**
- * Interface that provides path information for web mapped endpints.
+ * Interface that provides path information for web mapped endpoints.
  *
  * @author Phillip Webb
  * @since 2.0.0
