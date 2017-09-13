@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link Neo4jHealthIndicatorAutoConfiguration}.
  *
- * @author Phillp Webb
+ * @author Phillip Webb
  */
 public class Neo4jHealthIndicatorAutoConfigurationTests {
 

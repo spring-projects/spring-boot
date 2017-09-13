@@ -22,9 +22,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.assertj.core.api.AssertDelegateTarget;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -42,9 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class EndpointRequestTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void toAnyEndpointShouldMatchEndpointPath() throws Exception {
