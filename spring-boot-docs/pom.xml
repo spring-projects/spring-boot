@@ -821,7 +821,7 @@
 									<quiet>true</quiet>
 									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
 									<links>
-										<link>http://docs.oracle.com/javase/7/docs/api/</link>
+										<link>http://docs.oracle.com/javase/8/docs/api/</link>
 										<link>http://docs.oracle.com/javaee/7/api/</link>
 										<link>http://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
 										<link>http://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
