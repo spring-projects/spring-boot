@@ -1900,10 +1900,11 @@ can be achieved as follows:
 ----
 
 You can also customize the static resource locations using
-`spring.resources.static-locations` (replacing the default values with a list of directory
-locations). If you do this the default welcome page detection will switch to your custom
-locations, so if there is an `index.html` in any of your locations on startup, it will be
-the home page of the application.
+`spring.resources.static-locations` (replacing the default values with a list
+of directory locations). The root Servlet context path `"/"` will be automatically
+added as a location as well. If you do this the default welcome page detection will
+switch to your custom locations, so if there is an `index.html` in any of your locations
+on startup, it will be the home page of the application.
 
 In addition to the '`standard`' static resource locations above, a special case is made
 for http://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+`
@@ -2249,7 +2250,7 @@ Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous an
 non-blocking, and implements the http://www.reactive-streams.org/[Reactive Streams]
 specification through http://projectreactor.io/[the Reactor project].
 
-Spring WebFlux comes in two flavors — the annotation-based one is quite close to the
+Spring WebFlux comes in two flavors; the annotation-based one is quite close to the
 Spring MVC model we know:
 
 [source,java,indent=0]
@@ -3066,7 +3067,7 @@ auto-configured. In this example it's pulled in transitively via
 `spring-boot-starter-data-jpa`.
 
 TIP: If, for whatever reason, you do configure the connection URL for an embedded
-database, care should be taken to ensure that the database’s automatic shutdown is
+database, care should be taken to ensure that the database's automatic shutdown is
 disabled. If you're using H2 you should use `DB_CLOSE_ON_EXIT=FALSE` to do so. If you're
 using HSQLDB, you should ensure that `shutdown=true` is not used. Disabling the database's
 automatic shutdown allows Spring Boot to control when the database is closed, thereby
@@ -4573,7 +4574,7 @@ recommend to keep this setting enabled if you create your own `RedisCacheManager
 
 [[boot-features-caching-provider-caffeine]]
 ==== Caffeine
-Caffeine is a Java 8 rewrite of Guava’s cache that supersede the Guava support. If
+Caffeine is a Java 8 rewrite of Guava's cache that supersede the Guava support. If
 Caffeine is present, a `CaffeineCacheManager` (provided by the
 `spring-boot-starter-cache` '`Starter`') is auto-configured. Caches can be created
 on startup using the `spring.cache.cache-names` property and customized by one of the

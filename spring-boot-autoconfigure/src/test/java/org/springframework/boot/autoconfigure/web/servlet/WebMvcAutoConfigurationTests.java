@@ -442,7 +442,7 @@ public class WebMvcAutoConfigurationTests {
 				.withPropertyValues("spring.resources.static-locations=classpath:/static")
 				.run((context) -> assertThat(
 						getFaviconMappingLocations(context).get("/**/favicon.ico"))
-								.hasSize(2));
+								.hasSize(3));
 	}
 
 	@Test

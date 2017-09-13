@@ -127,7 +127,7 @@ public class WebFluxAutoConfigurationTests {
 				SimpleUrlHandlerMapping.class);
 		assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 		ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
-		assertThat(staticHandler.getLocations()).hasSize(5);
+		assertThat(staticHandler.getLocations()).hasSize(4);
 		assertThat(hm.getUrlMap().get("/webjars/**"))
 				.isInstanceOf(ResourceWebHandler.class);
 		ResourceWebHandler webjarsHandler = (ResourceWebHandler) hm.getUrlMap()
@@ -146,7 +146,7 @@ public class WebFluxAutoConfigurationTests {
 				.isInstanceOf(ResourceWebHandler.class);
 		ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap()
 				.get("/static/**");
-		assertThat(staticHandler.getLocations()).hasSize(5);
+		assertThat(staticHandler.getLocations()).hasSize(4);
 	}
 
 	@Test
