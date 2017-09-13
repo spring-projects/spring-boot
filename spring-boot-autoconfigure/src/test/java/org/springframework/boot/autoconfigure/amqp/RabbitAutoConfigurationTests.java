@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.security.NoSuchAlgorithmException;
+
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -415,14 +417,60 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	// Make sure that we at least attempt to load the store
-	public void enableSslWithExtraConfig() {
+	public void enableSslWithNonexistingKeystoreShouldFail() {
 		this.thrown.expectMessage("foo");
 		this.thrown.expectMessage("does not exist");
 		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
 				"spring.rabbitmq.ssl.keyStore=foo",
-				"spring.rabbitmq.ssl.keyStorePassword=secret",
+				"spring.rabbitmq.ssl.keyStorePassword=secret");
+	}
+
+	@Test
+	// Make sure that we at least attempt to load the store
+	public void enableSslWithNonexistingTruststoreShouldFail() {
+		this.thrown.expectMessage("bar");
+		this.thrown.expectMessage("does not exist");
+		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
 				"spring.rabbitmq.ssl.trustStore=bar",
 				"spring.rabbitmq.ssl.trustStorePassword=secret");
+	}
+
+	@Test
+	public void enableSslWithInvalidKeystoreTypeShouldFail() throws Exception {
+		try {
+			load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
+					"spring.rabbitmq.ssl.keyStore=foo",
+					"spring.rabbitmq.ssl.keyStoreType=fooType");
+		}
+		catch (Exception e) {
+			assertThat(e.getMessage()).contains("fooType");
+			assertThat(e).hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
+		}
+	}
+
+	@Test
+	public void enableSslWithInvalidTruststoreTypeShouldFail() throws Exception {
+		try {
+			load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
+					"spring.rabbitmq.ssl.trustStore=bar",
+					"spring.rabbitmq.ssl.trustStoreType=barType");
+		}
+		catch (Exception e) {
+			assertThat(e.getMessage()).contains("barType");
+			assertThat(e).hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
+		}
+	}
+
+	@Test
+	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() throws Exception {
+		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
+				"spring.rabbitmq.ssl.keyStore=test.jks",
+				"spring.rabbitmq.ssl.keyStoreType=jks",
+				"spring.rabbitmq.ssl.keyStorePassword=secret",
+				"spring.rabbitmq.ssl.trustStore=test.jks",
+				"spring.rabbitmq.ssl.trustStoreType=jks",
+				"spring.rabbitmq.ssl.trustStorePassword=secret"
+		);
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
