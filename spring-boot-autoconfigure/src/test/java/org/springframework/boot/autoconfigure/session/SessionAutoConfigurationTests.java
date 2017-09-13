@@ -51,13 +51,13 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void contextFailsIfStoreTypeNotSet() {
+	public void contextFailsIfMultipleStoresAreAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context).getFailure()
-					.hasMessageContaining("No Spring Session store is configured");
-			assertThat(context).getFailure()
-					.hasMessageContaining("set the 'spring.session.store-type' property");
+					.hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
+			assertThat(context).getFailure().hasMessageContaining(
+					"Multiple session repository candidates are available");
 		});
 	}
 
@@ -67,11 +67,11 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure()
-							.isInstanceOf(BeanCreationException.class);
+							.hasCauseInstanceOf(SessionRepositoryUnavailableException.class);
 					assertThat(context).getFailure().hasMessageContaining(
 							"No session repository could be auto-configured");
-					assertThat(context).getFailure()
-							.hasMessageContaining("session store type is 'jdbc'");
+					assertThat(context).getFailure().hasMessageContaining(
+							"session store type is 'jdbc'");
 				});
 	}
 
@@ -86,16 +86,17 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	public void backOffIfSessionRepositoryIsPresent() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 				.withPropertyValues("spring.session.store-type=redis").run((context) -> {
-					MapSessionRepository repository = validateSessionRepository(context,
-							MapSessionRepository.class);
-					assertThat(context).getBean("mySessionRepository")
-							.isSameAs(repository);
-				});
+			MapSessionRepository repository = validateSessionRepository(context,
+					MapSessionRepository.class);
+			assertThat(context).getBean("mySessionRepository")
+					.isSameAs(repository);
+		});
 	}
 
 	@Test
 	public void springSessionTimeoutIsNotAValidProperty() {
-		this.contextRunner.withPropertyValues("spring.session.timeout=3000")
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("spring.session.timeout=3000")
 				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure()

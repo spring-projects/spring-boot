@@ -22,12 +22,15 @@ import org.junit.Test;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.test.context.HideClassesClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.rule.RedisTestServer;
 import org.springframework.session.data.redis.RedisFlushMode;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.hazelcast.HazelcastSessionRepository;
+import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,10 +49,21 @@ public class SessionAutoConfigurationRedisTests
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void redisSessionStore() {
+	public void defaultConfig() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis")
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
+						RedisFlushMode.ON_SAVE));
+	}
+
+	@Test
+	public void defaultConfigWithUniqueStoreImplementation() {
+		this.contextRunner
+				.withClassLoader(new HideClassesClassLoader(
+						HazelcastSessionRepository.class,
+						JdbcOperationsSessionRepository.class))
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
 						RedisFlushMode.ON_SAVE));
 	}

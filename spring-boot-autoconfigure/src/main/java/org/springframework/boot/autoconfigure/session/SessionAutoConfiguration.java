@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -32,6 +35,7 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -61,7 +65,8 @@ public class SessionAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(SessionRepository.class)
-	@Import(SessionConfigurationImportSelector.class)
+	@Import({ SessionRepositoryImplementationValidator.class,
+			SessionConfigurationImportSelector.class })
 	static class SessionRepositoryConfiguration {
 
 	}
@@ -81,6 +86,51 @@ public class SessionAutoConfiguration {
 			return imports;
 		}
 
+	}
+
+	/**
+	 * Bean used to validate that only one supported implementation is available in the
+	 * classpath when the store-type property is not set.
+	 */
+	static class SessionRepositoryImplementationValidator {
+
+		private final ClassLoader classLoader;
+
+		private final SessionProperties sessionProperties;
+
+		SessionRepositoryImplementationValidator(ApplicationContext applicationContext,
+				SessionProperties sessionProperties) {
+			this.classLoader = applicationContext.getClassLoader();
+			this.sessionProperties = sessionProperties;
+		}
+
+		@PostConstruct
+		public void checkAvailableImplementations() {
+			List<Class<? extends SessionRepository>> candidates = new ArrayList<>();
+			addCandidate(candidates,
+					"org.springframework.session.hazelcast.HazelcastSessionRepository");
+			addCandidate(candidates,
+					"org.springframework.session.jdbc.JdbcOperationsSessionRepository");
+			addCandidate(candidates,
+					"org.springframework.session.data.redis.RedisOperationsSessionRepository");
+			StoreType storeType = this.sessionProperties.getStoreType();
+			if (candidates.size() > 1 && storeType == null) {
+				throw new NonUniqueSessionRepositoryException(candidates);
+			}
+		}
+
+		private void addCandidate(
+				List<Class<? extends SessionRepository>> candidates, String fqn) {
+			try {
+				Class<? extends SessionRepository> candidate = (Class<? extends SessionRepository>) this.classLoader.loadClass(fqn);
+				if (candidate != null) {
+					candidates.add(candidate);
+				}
+			}
+			catch (Throwable ex) {
+				// Ignore
+			}
+		}
 	}
 
 	/**
@@ -105,12 +155,11 @@ public class SessionAutoConfiguration {
 			if (storeType != StoreType.NONE
 					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
 				if (storeType != null) {
-					throw new IllegalArgumentException("No session repository could be "
-							+ "auto-configured, check your configuration (session store "
-							+ "type is '" + storeType.name().toLowerCase() + "')");
+					throw new SessionRepositoryUnavailableException("No session "
+							+ "repository could be auto-configured, check your "
+							+ "configuration (session store type is '"
+							+ storeType.name().toLowerCase() + "')", storeType);
 				}
-				throw new IllegalArgumentException("No Spring Session store is "
-						+ "configured: set the 'spring.session.store-type' property");
 			}
 		}
 

@@ -22,11 +22,15 @@ import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.hazelcast.HazelcastFlushMode;
 import org.springframework.session.hazelcast.HazelcastSessionRepository;
+import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -48,13 +52,24 @@ public class SessionAutoConfigurationHazelcastTests
 
 	@Test
 	public void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast")
-				.run((context) -> {
-					validateSessionRepository(context, HazelcastSessionRepository.class);
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					verify(hazelcastInstance, times(1)).getMap("spring:session:sessions");
-				});
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=hazelcast")
+				.run(this::validateDefaultConfig);
+	}
+
+	@Test
+	public void defaultConfigWithUniqueStoreImplementation() {
+		this.contextRunner.withClassLoader(new HideClassesClassLoader(
+				JdbcOperationsSessionRepository.class,
+				RedisOperationsSessionRepository.class)).run(
+						this::validateDefaultConfig);
+	}
+
+	private void validateDefaultConfig(AssertableWebApplicationContext context) {
+		validateSessionRepository(context, HazelcastSessionRepository.class);
+		HazelcastInstance hazelcastInstance = context
+				.getBean(HazelcastInstance.class);
+		verify(hazelcastInstance, times(1)).getMap("spring:session:sessions");
 	}
 
 	@Test
@@ -80,7 +95,7 @@ public class SessionAutoConfigurationHazelcastTests
 							context, HazelcastSessionRepository.class);
 					assertThat(new DirectFieldAccessor(repository)
 							.getPropertyValue("hazelcastFlushMode"))
-									.isEqualTo(HazelcastFlushMode.IMMEDIATE);
+							.isEqualTo(HazelcastFlushMode.IMMEDIATE);
 				});
 	}
 

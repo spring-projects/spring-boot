@@ -26,10 +26,14 @@ import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.hazelcast.HazelcastSessionRepository;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,19 +59,35 @@ public class SessionAutoConfigurationJdbcTests
 	@Test
 	public void defaultConfig() {
 		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc")
 				.withConfiguration(
 						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=jdbc").run((context) -> {
-					JdbcOperationsSessionRepository repository = validateSessionRepository(
-							context, JdbcOperationsSessionRepository.class);
-					assertThat(new DirectFieldAccessor(repository)
-							.getPropertyValue("tableName")).isEqualTo("SPRING_SESSION");
-					assertThat(context.getBean(JdbcSessionProperties.class)
-							.getInitializeSchema())
-									.isEqualTo(DatabaseInitializationMode.EMBEDDED);
-					assertThat(context.getBean(JdbcOperations.class)
-							.queryForList("select * from SPRING_SESSION")).isEmpty();
-				});
+				.run(this::validateDefaultConfig);
+	}
+
+	@Test
+	public void defaultConfigWithUniqueStoreImplementation() {
+		this.contextRunner
+				.withClassLoader(new HideClassesClassLoader(
+						HazelcastSessionRepository.class,
+						RedisOperationsSessionRepository.class)
+				)
+				.withConfiguration(
+						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
+				.run(this::validateDefaultConfig);
+	}
+
+	private void validateDefaultConfig(AssertableWebApplicationContext context) {
+		JdbcOperationsSessionRepository repository = validateSessionRepository(
+				context, JdbcOperationsSessionRepository.class);
+		assertThat(new DirectFieldAccessor(repository)
+				.getPropertyValue("tableName")).isEqualTo("SPRING_SESSION");
+		assertThat(context.getBean(JdbcSessionProperties.class)
+				.getInitializeSchema())
+				.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+		assertThat(context.getBean(JdbcOperations.class)
+				.queryForList("select * from SPRING_SESSION")).isEmpty();
+
 	}
 
 	@Test

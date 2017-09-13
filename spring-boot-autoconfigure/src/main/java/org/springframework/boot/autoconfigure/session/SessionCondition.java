@@ -44,8 +44,8 @@ class SessionCondition extends SpringBootCondition {
 		StoreType required = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
 		if (!environment.containsProperty("spring.session.store-type")) {
-			return ConditionOutcome.noMatch(
-					message.didNotFind("spring.session.store-type property").atAll());
+			return ConditionOutcome.match(message.didNotFind("property", "properties")
+					.items(ConditionMessage.Style.QUOTE, "spring.session.store-type"));
 		}
 		try {
 			Binder binder = Binder.get(environment);
