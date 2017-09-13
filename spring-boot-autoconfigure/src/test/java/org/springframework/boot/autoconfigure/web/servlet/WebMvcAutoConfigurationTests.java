@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -367,8 +368,13 @@ public class WebMvcAutoConfigurationTests {
 				.run((context) -> {
 					FormattingConversionService conversionService = context
 							.getBean(FormattingConversionService.class);
+
 					Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-					assertThat(conversionService.convert(date, String.class))
+					assertThat(conversionService.convert(date, String.class)).as("java.util.Date")
+							.isEqualTo("25*06*1988");
+
+					LocalDate localDate = LocalDate.of(1988, 6, 25);
+					assertThat(conversionService.convert(localDate, String.class)).as("java.time.LocalDate")
 							.isEqualTo("25*06*1988");
 				});
 	}

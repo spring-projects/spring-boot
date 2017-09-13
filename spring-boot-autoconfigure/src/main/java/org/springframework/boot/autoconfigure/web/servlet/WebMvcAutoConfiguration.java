@@ -16,11 +16,15 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -253,6 +257,26 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnProperty(prefix = "spring.mvc", name = "date-format")
 		public Formatter<Date> dateFormatter() {
 			return new DateFormatter(this.mvcProperties.getDateFormat());
+		}
+
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.mvc", name = "date-format")
+		public Formatter<LocalDate> localDateFormatter() {
+			return new Formatter<LocalDate>() {
+
+				@Override
+				public LocalDate parse(String text, Locale locale) throws ParseException {
+					return LocalDate.parse(text,
+							DateTimeFormatter.ofPattern(
+									WebMvcAutoConfigurationAdapter.this.mvcProperties.getDateFormat(), locale));
+				}
+
+				@Override
+				public String print(LocalDate object, Locale locale) {
+					return DateTimeFormatter.ofPattern(
+							WebMvcAutoConfigurationAdapter.this.mvcProperties.getDateFormat(), locale).format(object);
+				}
+			};
 		}
 
 		@Override
