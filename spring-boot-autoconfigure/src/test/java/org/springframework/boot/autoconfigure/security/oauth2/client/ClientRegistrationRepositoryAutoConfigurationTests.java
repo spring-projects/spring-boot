@@ -305,9 +305,9 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 				.isEqualTo(Stream.of("openid", "profile", "email", "address", "phone")
 						.collect(Collectors.toSet()));
 		assertThat(clientRegistration.getProviderDetails().getAuthorizationUri())
-				.isEqualTo("https://accounts.google.com/o/oauth2/auth");
+				.isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
 		assertThat(clientRegistration.getProviderDetails().getTokenUri())
-				.isEqualTo("https://accounts.google.com/o/oauth2/token");
+				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
 		assertThat(clientRegistration.getProviderDetails().getUserInfoUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
 		assertThat(clientRegistration.getProviderDetails().getJwkSetUri())
