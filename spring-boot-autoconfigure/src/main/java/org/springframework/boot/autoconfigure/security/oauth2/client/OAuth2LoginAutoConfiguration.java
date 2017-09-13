@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2Properties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -56,15 +56,15 @@ public class OAuth2LoginAutoConfiguration {
 
 		private final OAuth2Properties oauth2Properties;
 
-		private final Environment environment;
+		private final PropertiesPropertySource clientDefaultsPropertySource;
 
 		protected OAuth2LoginConfiguration(
 				ClientRegistrationRepository clientRegistrationRepository,
-				OAuth2Properties oauth2Properties, Environment environment) {
+				OAuth2Properties oauth2Properties) {
 
 			this.clientRegistrationRepository = clientRegistrationRepository;
 			this.oauth2Properties = oauth2Properties;
-			this.environment = environment;
+			this.clientDefaultsPropertySource = ClientPropertiesUtil.loadDefaultsPropertySource();
 		}
 
 		// @formatter:off
@@ -84,8 +84,8 @@ public class OAuth2LoginAutoConfiguration {
 		private void registerUserNameAttributeNames(OAuth2LoginConfigurer<HttpSecurity> oauth2LoginConfigurer) throws Exception {
 			this.oauth2Properties.getClients().forEach((key, value) -> {
 				String userInfoUriValue = value.getUserInfoUri();
-				String userNameAttributeNameValue = this.environment.getProperty(
-						"security.oauth2.clients." + key + "." + USER_NAME_ATTR_NAME_PROPERTY);
+				String userNameAttributeNameValue = (String) this.clientDefaultsPropertySource.getProperty(
+						ClientPropertiesUtil.CLIENTS_PROPERTY_PREFIX + "." + key + "." + USER_NAME_ATTR_NAME_PROPERTY);
 				if (userInfoUriValue != null && userNameAttributeNameValue != null) {
 					// @formatter:off
 					oauth2LoginConfigurer

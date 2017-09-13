@@ -34,19 +34,23 @@ import org.springframework.boot.autoconfigure.security.oauth2.OAuth2Properties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationProperties;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -66,12 +70,16 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 	@Configuration
 	@Conditional(ClientsConfiguredCondition.class)
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
-	@PropertySource("classpath:/META-INF/spring-security-oauth2-client-defaults.properties")
 	protected static class ClientRegistrationRepositoryConfiguration {
 
 		@Bean
-		public ClientRegistrationRepository clientRegistrationRepository(OAuth2Properties oauth2Properties) {
+		public ClientRegistrationRepository clientRegistrationRepository(
+				Environment environment, OAuth2Properties oauth2Properties) {
+
+			this.mergeClientDefaults(environment, oauth2Properties);
+
 			List<ClientRegistration> clientRegistrations = new ArrayList<>();
+
 
 			oauth2Properties.getClients().values().stream()
 					.filter(e -> !ObjectUtils.isEmpty(e.getClientId()))
@@ -80,6 +88,27 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 							new ClientRegistration.Builder(clientProperties).build()));
 
 			return new InMemoryClientRegistrationRepository(clientRegistrations);
+		}
+
+		private void mergeClientDefaults(Environment environment, OAuth2Properties oauth2Properties) {
+			Assert.isInstanceOf(ConfigurableEnvironment.class, environment, "environment must be a ConfigurableEnvironment");
+
+			MutablePropertySources propertySources = new MutablePropertySources();
+			((ConfigurableEnvironment) environment).getPropertySources().forEach(propertySource -> {
+				if (MapPropertySource.class.isAssignableFrom(propertySource.getClass())) {
+					propertySources.addLast(propertySource);
+				}
+			});
+			propertySources.addLast(ClientPropertiesUtil.loadDefaultsPropertySource());
+
+			Map<String, ClientRegistrationProperties> mergedClients =
+					new Binder(ConfigurationPropertySources.from(propertySources))
+							.bind(ClientPropertiesUtil.CLIENTS_PROPERTY_PREFIX,
+									Bindable.mapOf(String.class, ClientRegistrationProperties.class))
+							.get();
+
+			// Override with merged client properties
+			oauth2Properties.setClients(mergedClients);
 		}
 	}
 
@@ -103,7 +132,7 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 
 		private Set<String> getClientKeys(Environment environment) {
 			Map<String, ClientRegistrationProperties> clientsProperties = Binder.get(environment)
-					.bind("security.oauth2.clients",
+					.bind(ClientPropertiesUtil.CLIENTS_PROPERTY_PREFIX,
 							Bindable.mapOf(String.class, ClientRegistrationProperties.class))
 					.orElse(new HashMap<>());
 
