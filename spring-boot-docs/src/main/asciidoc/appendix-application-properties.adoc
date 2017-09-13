@@ -1191,7 +1191,6 @@ content into your application; rather pick only the properties that you need.
 	management.address= # Network address that the management endpoints should bind to.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
 	management.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
-	management.security.sessions=stateless # Session creating policy to use (always, never, if_required, stateless).
 	management.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
 	management.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.port.
 	management.ssl.enabled= # Enable SSL support. Requires a custom management.port.

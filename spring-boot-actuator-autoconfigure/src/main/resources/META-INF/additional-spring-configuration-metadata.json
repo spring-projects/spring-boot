@@ -2,7 +2,7 @@
   {
     "name": "endpoints.configprops.keys-to-sanitize",
     "type": "java.lang.String[]",
-    "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",
+    "sourceType": "org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint",
     "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.",
     "defaultValue": [
       "password",
@@ -34,7 +34,7 @@
   {
     "name": "endpoints.env.keys-to-sanitize",
     "type": "java.lang.String[]",
-    "sourceType": "org.springframework.boot.actuate.endpoint.EnvironmentEndpoint",
+    "sourceType": "org.springframework.boot.actuate.env.EnvironmentEndpoint",
     "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.",
     "defaultValue": [
       "password",
@@ -216,10 +216,6 @@
     "type": "java.lang.Boolean",
     "description": "Enable the metrics servlet filter.",
     "defaultValue": true
-  },
-  {
-    "name": "management.security.sessions",
-    "defaultValue": "stateless"
   },
   {
     "name": "management.trace.filter.enabled",
@@ -943,7 +939,6 @@
     "description" : "Comma-separated list of required roles to login to the CRaSH console.",
     "defaultValue" : [ "ACTUATOR" ],
     "deprecation" : {
-      "replacement" : "management.security.roles",
       "reason" : "CRaSH support is no longer available.",
       "level" : "error"
     }
