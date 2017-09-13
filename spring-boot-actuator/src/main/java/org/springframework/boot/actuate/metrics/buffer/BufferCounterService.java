@@ -25,6 +25,7 @@ import org.springframework.lang.UsesJava8;
  * Fast implementation of {@link CounterService} using {@link CounterBuffers}.
  *
  * @author Dave Syer
+ * @author Venil Noronha
  * @since 1.3.0
  */
 @UsesJava8
@@ -62,7 +63,7 @@ public class BufferCounterService implements CounterService {
 		if (cached != null) {
 			return cached;
 		}
-		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
+		if (metricName.startsWith("counter.") || metricName.startsWith("meter.")) {
 			return metricName;
 		}
 		String name = "counter." + metricName;
