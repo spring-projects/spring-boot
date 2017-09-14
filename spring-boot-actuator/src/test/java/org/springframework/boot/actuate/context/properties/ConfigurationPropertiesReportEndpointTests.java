@@ -101,25 +101,6 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
-		ApplicationContextRunner tester = new ApplicationContextRunner()
-				.withPropertyValues(
-						"endpoints.configprops.keys-to-sanitize: .*pass.*, property")
-				.withUserConfiguration(Config.class);
-		tester.run((context) -> {
-			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ConfigurationPropertiesDescriptor properties = endpoint
-					.configurationProperties();
-			Map<String, Object> nestedProperties = properties.getBeans()
-					.get("testProperties").getProperties();
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
-			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
-		});
-	}
-
-	@Test
 	@SuppressWarnings("unchecked")
 	public void keySanitizationWithCustomPatternUsingCompositeKeys() throws Exception {
 		// gh-4415

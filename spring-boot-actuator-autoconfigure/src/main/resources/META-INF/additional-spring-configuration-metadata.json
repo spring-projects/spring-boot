@@ -1,9 +1,6 @@
 {"properties": [
   {
     "name": "endpoints.configprops.keys-to-sanitize",
-    "type": "java.lang.String[]",
-    "sourceType": "org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint",
-    "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.",
     "defaultValue": [
       "password",
       "secret",

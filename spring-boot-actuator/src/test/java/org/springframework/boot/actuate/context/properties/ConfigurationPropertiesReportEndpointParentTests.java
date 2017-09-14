@@ -48,7 +48,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 						ConfigurationPropertiesDescriptor result = endpoint
 								.configurationProperties();
 						assertThat(result.getBeans().keySet())
-								.containsExactlyInAnyOrder("endpoint", "someProperties");
+								.containsExactlyInAnyOrder("someProperties");
 						assertThat((result.getParent().getBeans().keySet()))
 								.containsExactly("testProperties");
 					});
@@ -68,7 +68,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 						ConfigurationPropertiesDescriptor result = endpoint
 								.configurationProperties();
 						assertThat(result.getBeans().keySet())
-								.containsExactlyInAnyOrder("endpoint", "otherProperties");
+								.containsExactlyInAnyOrder("otherProperties");
 						assertThat((result.getParent().getBeans().keySet()))
 								.containsExactly("testProperties");
 					});

@@ -16,11 +16,20 @@
 
 package org.springframework.boot.actuate.autoconfigure.context.properties;
 
+import java.util.Map;
+
 import org.junit.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,8 +46,8 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ConfigurationPropertiesReportEndpoint.class));
+		this.contextRunner.withUserConfiguration(Config.class)
+				.run(validateTestProperties("******", "654321"));
 	}
 
 	@Test
@@ -47,6 +56,66 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("endpoints.configprops.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
+	}
+
+	@Test
+	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
+		this.contextRunner.withUserConfiguration(Config.class)
+				.withPropertyValues("endpoints.configprops.keys-to-sanitize: .*pass.*, property")
+				.run(validateTestProperties("******", "******"));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> validateTestProperties(String dbPassword,
+			String myTestProperty) {
+		return context -> {
+			assertThat(context).hasSingleBean(
+					ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties).isNotNull();
+			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
+			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);
+		};
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class Config {
+
+		@Bean
+		public TestProperties testProperties() {
+			return new TestProperties();
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	private static class TestProperties {
+
+		private String dbPassword = "123456";
+
+		private String myTestProperty = "654321";
+
+		public String getDbPassword() {
+			return this.dbPassword;
+		}
+
+		public void setDbPassword(String dbPassword) {
+			this.dbPassword = dbPassword;
+		}
+
+		public String getMyTestProperty() {
+			return this.myTestProperty;
+		}
+
+		public void setMyTestProperty(String myTestProperty) {
+			this.myTestProperty = myTestProperty;
+		}
+
 	}
 
 }
