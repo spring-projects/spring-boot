@@ -890,6 +890,32 @@
     }
   },
   {
+    "name" : "management.security.enabled",
+    "type" : "java.lang.Boolean",
+    "description" : "Enable security.",
+    "defaultValue" : true,
+    "deprecation" : {
+      "reason": "A global security auto-configuration is now provided. Provide your own WebSecurityConfigurer bean instead.",
+      "level" : "error"
+    }
+  }, {
+    "name" : "management.security.roles",
+    "type" : "java.util.List<java.lang.String>",
+    "description" : "Comma-separated list of roles that can access the management endpoint.",
+    "deprecation" : {
+      "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+      "level" : "error"
+    }
+  }, {
+    "name" : "management.security.sessions",
+    "description" : "Session creating policy for security use (always, never, if_required,\n stateless).",
+    "defaultValue" : "stateless",
+    "deprecation" : {
+      "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+      "level" : "error"
+    }
+  },
+  {
     "name" : "management.shell.auth.jaas.domain",
     "type" : "java.lang.String",
     "description" : "JAAS domain.",
