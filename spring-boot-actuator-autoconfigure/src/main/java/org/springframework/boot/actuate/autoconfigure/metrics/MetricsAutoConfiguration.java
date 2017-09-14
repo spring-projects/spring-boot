@@ -114,10 +114,12 @@ public class MetricsAutoConfiguration {
 
 		MeterRegistryConfigurationSupport(MeterRegistry registry,
 				ObjectProvider<Collection<MeterRegistryConfigurer>> configurers,
-				MetricsProperties config, Collection<MeterBinder> binders) {
+				MetricsProperties config,
+				ObjectProvider<Collection<MeterBinder>> binders) {
 			configurers.getIfAvailable(Collections::emptyList)
 					.forEach((configurer) -> configurer.configureRegistry(registry));
-			binders.forEach((binder) -> binder.bindTo(registry));
+			binders.getIfAvailable(Collections::emptyList)
+					.forEach((binder) -> binder.bindTo(registry));
 			if (config.isUseGlobalRegistry()) {
 				Metrics.addRegistry(registry);
 			}
