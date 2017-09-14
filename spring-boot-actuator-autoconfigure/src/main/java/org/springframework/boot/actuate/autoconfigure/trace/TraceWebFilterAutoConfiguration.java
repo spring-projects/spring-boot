@@ -19,9 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.trace;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -46,28 +44,28 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "management.trace.filter", name = "enabled", matchIfMissing = true)
-@EnableConfigurationProperties(TraceProperties.class)
+@EnableConfigurationProperties(TraceEndpointProperties.class)
 public class TraceWebFilterAutoConfiguration {
 
 	private final TraceRepository traceRepository;
 
-	private final TraceProperties traceProperties;
+	private final TraceEndpointProperties endpointProperties;
 
 	private final ErrorAttributes errorAttributes;
 
 	public TraceWebFilterAutoConfiguration(TraceRepository traceRepository,
-			TraceProperties traceProperties,
+			TraceEndpointProperties endpointProperties,
 			ObjectProvider<ErrorAttributes> errorAttributes) {
 		this.traceRepository = traceRepository;
-		this.traceProperties = traceProperties;
+		this.endpointProperties = endpointProperties;
 		this.errorAttributes = errorAttributes.getIfAvailable();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
+	public WebRequestTraceFilter webRequestLoggingFilter() {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository,
-				this.traceProperties);
+				this.endpointProperties.getInclude());
 		if (this.errorAttributes != null) {
 			filter.setErrorAttributes(this.errorAttributes);
 		}

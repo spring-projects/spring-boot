@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.trace.TraceProperties.Include;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -55,17 +54,13 @@ public class WebRequestTraceFilterTests {
 
 	private final InMemoryTraceRepository repository = new InMemoryTraceRepository();
 
-	private TraceProperties properties = new TraceProperties();
-
-	private WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
-			this.properties);
-
 	@Test
 	@SuppressWarnings("unchecked")
 	public void filterAddsTraceWithDefaultIncludes() {
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository);
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		request.addHeader("Accept", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
+		Map<String, Object> trace = filter.getTrace(request);
 		assertThat(trace.get("method")).isEqualTo("GET");
 		assertThat(trace.get("path")).isEqualTo("/foo");
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
@@ -76,7 +71,8 @@ public class WebRequestTraceFilterTests {
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void filterAddsTraceWithCustomIncludes() throws IOException, ServletException {
-		this.properties.setInclude(EnumSet.allOf(Include.class));
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
+				EnumSet.allOf(Include.class));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Accept", "application/json");
 		request.addHeader("Cookie", "testCookie=testValue;");
@@ -95,7 +91,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
 		response.addHeader("Set-Cookie", "a=b");
-		this.filter.doFilterInternal(request, response, (req, resp) -> {
+		filter.doFilterInternal(request, response, (req, resp) -> {
 			BufferedReader bufferedReader = req.getReader();
 			while (bufferedReader.readLine() != null) {
 				// read the contents as normal (forces cache to fill up)
@@ -126,11 +122,12 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings({ "unchecked" })
 	public void filterDoesNotAddResponseHeadersWithoutResponseHeadersInclude()
 			throws ServletException, IOException {
-		this.properties.setInclude(Collections.singleton(Include.REQUEST_HEADERS));
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
+				Collections.singleton(Include.REQUEST_HEADERS));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
-		this.filter.doFilterInternal(request, response, (req, resp) -> {
+		filter.doFilterInternal(request, response, (req, resp) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -141,11 +138,12 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings({ "unchecked" })
 	public void filterDoesNotAddRequestCookiesWithCookiesExclude()
 			throws ServletException, IOException {
-		this.properties.setInclude(Collections.singleton(Include.REQUEST_HEADERS));
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
+				Collections.singleton(Include.REQUEST_HEADERS));
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		request.addHeader("Accept", "application/json");
 		request.addHeader("Cookie", "testCookie=testValue;");
-		Map<String, Object> map = (Map<String, Object>) this.filter.getTrace(request)
+		Map<String, Object> map = (Map<String, Object>) filter.getTrace(request)
 				.get("headers");
 		assertThat(map.get("request").toString()).isEqualTo("{Accept=application/json}");
 	}
@@ -154,10 +152,11 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings({ "unchecked" })
 	public void filterDoesNotAddAuthorizationHeaderWithoutAuthorizationHeaderInclude()
 			throws ServletException, IOException {
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository);
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilterInternal(request, response, (req, resp) -> {
+		filter.doFilterInternal(request, response, (req, resp) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -168,12 +167,12 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings({ "unchecked" })
 	public void filterAddsAuthorizationHeaderWhenAuthorizationHeaderIncluded()
 			throws ServletException, IOException {
-		this.properties.setInclude(
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
 				EnumSet.of(Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilterInternal(request, response, (req, resp) -> {
+		filter.doFilterInternal(request, response, (req, resp) -> {
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
@@ -185,13 +184,14 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings({ "unchecked" })
 	public void filterDoesNotAddResponseCookiesWithCookiesExclude()
 			throws ServletException, IOException {
-		this.properties.setInclude(Collections.singleton(Include.RESPONSE_HEADERS));
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
+				Collections.singleton(Include.RESPONSE_HEADERS));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
 		response.addHeader("Set-Cookie", "testCookie=testValue;");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
+		Map<String, Object> trace = filter.getTrace(request);
+		filter.enhanceTrace(trace, response);
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
 		assertThat(map.get("response").toString())
 				.isEqualTo("{Content-Type=application/json, status=200}");
@@ -199,12 +199,13 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	public void filterHasResponseStatus() {
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository);
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(404);
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
+		Map<String, Object> trace = filter.getTrace(request);
+		filter.enhanceTrace(trace, response);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
 				.get("headers")).get("response");
@@ -213,10 +214,11 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	public void filterAddsTimeTaken() throws Exception {
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository);
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockFilterChain chain = new MockFilterChain();
-		this.filter.doFilter(request, response, chain);
+		filter.doFilter(request, response, chain);
 		String timeTaken = (String) this.repository.findAll().iterator().next().getInfo()
 				.get("timeTaken");
 		assertThat(timeTaken).isNotNull();
@@ -224,15 +226,16 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	public void filterHasError() {
-		this.filter.setErrorAttributes(new DefaultErrorAttributes());
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository);
+		filter.setErrorAttributes(new DefaultErrorAttributes());
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(500);
 		request.setAttribute("javax.servlet.error.exception",
 				new IllegalStateException("Foo"));
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
+		Map<String, Object> trace = filter.getTrace(request);
+		filter.enhanceTrace(trace, response);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("error");
 		System.err.println(map);
@@ -243,11 +246,12 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings("unchecked")
 	public void filterHas500ResponseStatusWhenExceptionIsThrown()
 			throws ServletException, IOException {
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository);
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		try {
-			this.filter.doFilterInternal(request, response, (req, resp) -> {
+			filter.doFilterInternal(request, response, (req, resp) -> {
 				throw new RuntimeException();
 			});
 			fail("Exception was swallowed");
@@ -264,7 +268,7 @@ public class WebRequestTraceFilterTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void postProcessRequestHeaders() throws Exception {
-		this.filter = new WebRequestTraceFilter(this.repository, this.properties) {
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository) {
 
 			@Override
 			protected void postProcessRequestHeaders(Map<String, Object> headers) {
@@ -275,7 +279,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		request.addHeader("Accept", "application/json");
 		request.addHeader("Test", "spring");
-		Map<String, Object> map = (Map<String, Object>) this.filter.getTrace(request)
+		Map<String, Object> map = (Map<String, Object>) filter.getTrace(request)
 				.get("headers");
 		assertThat(map.get("request").toString()).isEqualTo("{Accept=application/json}");
 	}

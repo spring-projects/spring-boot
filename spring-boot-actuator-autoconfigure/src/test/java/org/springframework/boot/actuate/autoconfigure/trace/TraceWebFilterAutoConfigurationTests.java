@@ -21,7 +21,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -91,7 +90,7 @@ public class TraceWebFilterAutoConfigurationTests {
 
 		@Bean
 		public TestWebRequestTraceFilter testWebRequestTraceFilter(
-				TraceRepository repository, TraceProperties properties) {
+				TraceRepository repository, TraceEndpointProperties properties) {
 			return new TestWebRequestTraceFilter(repository, properties);
 		}
 
@@ -100,8 +99,8 @@ public class TraceWebFilterAutoConfigurationTests {
 	static class TestWebRequestTraceFilter extends WebRequestTraceFilter {
 
 		TestWebRequestTraceFilter(TraceRepository repository,
-				TraceProperties properties) {
-			super(repository, properties);
+				TraceEndpointProperties properties) {
+			super(repository, properties.getInclude());
 		}
 
 		@Override

@@ -38,7 +38,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.trace.TraceProperties.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
@@ -68,16 +67,26 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private ErrorAttributes errorAttributes;
 
-	private final TraceProperties properties;
+	private final Set<Include> includes;
 
 	/**
 	 * Create a new {@link WebRequestTraceFilter} instance.
 	 * @param repository the trace repository
-	 * @param properties the trace properties
+	 * @param includes the {@link Include} to apply
 	 */
-	public WebRequestTraceFilter(TraceRepository repository, TraceProperties properties) {
+	public WebRequestTraceFilter(TraceRepository repository, Set<Include> includes) {
 		this.repository = repository;
-		this.properties = properties;
+		this.includes = includes;
+	}
+
+	/**
+	 * Create a new {@link WebRequestTraceFilter} instance with the default
+	 * {@link Include} to apply.
+	 * @param repository the trace repository
+	 * @see Include#defaultIncludes()
+	 */
+	public WebRequestTraceFilter(TraceRepository repository) {
+		this(repository, Include.defaultIncludes());
 	}
 
 	/**
@@ -247,7 +256,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	}
 
 	private boolean isIncluded(Include include) {
-		return this.properties.getInclude().contains(include);
+		return this.includes.contains(include);
 	}
 
 	public void setErrorAttributes(ErrorAttributes errorAttributes) {
