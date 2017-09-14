@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Actuator support for logging.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.logger;

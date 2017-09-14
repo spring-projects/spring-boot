@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Core classes for exporting actuator metrics.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.autoconfigure.metrics.export;

@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Actuator support for WebFlux metrics.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.metrics.web.reactive.server;

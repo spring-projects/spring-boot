@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Auto-configuration for WebFlux actuator metrics.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.autoconfigure.metrics.reactive.server;

@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Core actuator support for metrics.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.metrics;

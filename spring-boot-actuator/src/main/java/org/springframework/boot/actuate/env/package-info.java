@@ -15,6 +15,7 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Actuator support for Spring Framework's
+ * {@link org.springframework.core.env.Environment}.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.env;

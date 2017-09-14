@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Actuator support for exporting metrics to Prometheus.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.metrics.export.prometheus;

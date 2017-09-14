@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Auto-configuration for exposing actuator web endpoints using WebFlux.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;

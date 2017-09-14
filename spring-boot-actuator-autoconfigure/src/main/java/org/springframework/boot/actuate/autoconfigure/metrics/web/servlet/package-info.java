@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator endpoint infrastructure.
+ * Auto-configuration for Spring MVC actuator metrics.
  */
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;

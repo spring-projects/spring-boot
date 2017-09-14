@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Java Mail concerns.
+ * Auto-configuration for actuator JavaMail concerns.
  */
 package org.springframework.boot.actuate.autoconfigure.mail;
