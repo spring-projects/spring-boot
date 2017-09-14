@@ -1,31 +1,31 @@
 {"properties": [
   {
-    "name" : "security.basic.enabled",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable basic authentication.",
-    "defaultValue" : true,
-    "deprecation" : {
+    "name": "security.basic.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable basic authentication.",
+    "defaultValue": true,
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
   },
   {
-    "name" : "security.filter-dispatcher-types",
-    "type" : "java.util.Set<java.lang.String>",
-    "description" : "Security filter chain dispatcher types.",
-    "deprecation" : {
-      "replacement" : "spring.security.filter.dispatcher-types",
-      "level" : "error"
+    "name": "security.filter-dispatcher-types",
+    "type": "java.util.Set<java.lang.String>",
+    "description": "Security filter chain dispatcher types.",
+    "deprecation": {
+      "replacement": "spring.security.filter.dispatcher-types",
+      "level": "error"
     }
   },
   {
-    "name" : "security.filter-order",
-    "type" : "java.lang.Integer",
-    "description" : "Security filter chain order.",
-    "defaultValue" : 0,
-    "deprecation" : {
-      "replacement" : "spring.security.filter.order",
-      "level" : "error"
+    "name": "security.filter-order",
+    "type": "java.lang.Integer",
+    "description": "Security filter chain order.",
+    "defaultValue": 0,
+    "deprecation": {
+      "replacement": "spring.security.filter.order",
+      "level": "error"
     }
   },
   {
@@ -171,7 +171,9 @@
   },
   {
     "name": "spring.elasticsearch.jest.uris",
-    "defaultValue": ["http://localhost:9200"]
+    "defaultValue": [
+      "http://localhost:9200"
+    ]
   },
   {
     "name": "spring.http.encoding.enabled",
@@ -180,9 +182,9 @@
     "defaultValue": true
   },
   {
-  	"name": "spring.http.converters.preferred-json-mapper",
-  	"type": "java.lang.String",
-  	"description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
+    "name": "spring.http.converters.preferred-json-mapper",
+    "type": "java.lang.String",
+    "description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
   },
   {
     "name": "spring.jersey.type",
@@ -382,7 +384,11 @@
   },
   {
     "name": "spring.security.filter.dispatcher-types",
-    "defaultValue": ["async", "error", "request"]
+    "defaultValue": [
+      "async",
+      "error",
+      "request"
+    ]
   },
   {
     "name": "spring.session.hazelcast.flush-mode",
@@ -390,7 +396,11 @@
   },
   {
     "name": "spring.session.servlet.filter-dispatcher-types",
-    "defaultValue": ["async", "error", "request"]
+    "defaultValue": [
+      "async",
+      "error",
+      "request"
+    ]
   },
   {
     "name": "spring.session.redis.flush-mode",
@@ -403,18 +413,19 @@
     "defaultValue": false
   },
   {
-    "name" : "flyway.baseline-description",
-    "type" : "java.lang.String",
-    "deprecation" : {
-      "replacement" : "spring.flyway.baseline-description",
-      "level" : "error"
+    "name": "flyway.baseline-description",
+    "type": "java.lang.String",
+    "deprecation": {
+      "replacement": "spring.flyway.baseline-description",
+      "level": "error"
     }
-  }, {
-    "name" : "flyway.baseline-on-migrate",
-    "type" : "java.lang.Boolean",
-    "deprecation" : {
-      "replacement" : "spring.flyway.baseline-on-migrate",
-      "level" : "error"
+  },
+  {
+    "name": "flyway.baseline-on-migrate",
+    "type": "java.lang.Boolean",
+    "deprecation": {
+      "replacement": "spring.flyway.baseline-on-migrate",
+      "level": "error"
     }
   },
   {
@@ -744,167 +755,187 @@
     }
   },
   {
-    "name" : "security.basic.authorize-mode",
-    "description" : "Security authorize mode to apply.",
-    "defaultValue" : "role",
-    "deprecation" : {
+    "name": "security.basic.authorize-mode",
+    "description": "Security authorize mode to apply.",
+    "defaultValue": "role",
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.basic.path",
-    "type" : "java.lang.String[]",
-    "description" : "Comma-separated list of paths to secure.",
-    "defaultValue" : [ "/**" ],
-    "deprecation" : {
+  },
+  {
+    "name": "security.basic.path",
+    "type": "java.lang.String[]",
+    "description": "Comma-separated list of paths to secure.",
+    "defaultValue": [
+      "/**"
+    ],
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.basic.realm",
-    "type" : "java.lang.String",
-    "description" : "HTTP basic realm name.",
-    "defaultValue" : "Spring",
-    "deprecation" : {
+  },
+  {
+    "name": "security.basic.realm",
+    "type": "java.lang.String",
+    "description": "HTTP basic realm name.",
+    "defaultValue": "Spring",
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.enable-csrf",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable Cross Site Request Forgery support.",
-    "defaultValue" : false,
-    "deprecation" : {
+  },
+  {
+    "name": "security.enable-csrf",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cross Site Request Forgery support.",
+    "defaultValue": false,
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.headers.cache",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable cache control HTTP headers.",
-    "defaultValue" : true,
-    "deprecation" : {
+  },
+  {
+    "name": "security.headers.cache",
+    "type": "java.lang.Boolean",
+    "description": "Enable cache control HTTP headers.",
+    "defaultValue": true,
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.headers.content-security-policy",
-    "type" : "java.lang.String",
-    "description" : "Value for content security policy header.",
-    "deprecation" : {
+  },
+  {
+    "name": "security.headers.content-security-policy",
+    "type": "java.lang.String",
+    "description": "Value for content security policy header.",
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.headers.content-security-policy-mode",
-    "description" : "Content security policy mode.",
-    "defaultValue" : "default",
-    "deprecation" : {
+  },
+  {
+    "name": "security.headers.content-security-policy-mode",
+    "description": "Content security policy mode.",
+    "defaultValue": "default",
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.headers.content-type",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable \"X-Content-Type-Options\" header.",
-    "defaultValue" : true,
-    "deprecation" : {
+  },
+  {
+    "name": "security.headers.content-type",
+    "type": "java.lang.Boolean",
+    "description": "Enable \"X-Content-Type-Options\" header.",
+    "defaultValue": true,
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.headers.frame",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable \"X-Frame-Options\" header.",
-    "defaultValue" : true,
-    "deprecation" : {
+  },
+  {
+    "name": "security.headers.frame",
+    "type": "java.lang.Boolean",
+    "description": "Enable \"X-Frame-Options\" header.",
+    "defaultValue": true,
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.headers.hsts",
-    "description" : "HTTP Strict Transport Security (HSTS) mode (none, domain, all).",
-    "defaultValue" : "all",
-    "deprecation" : {
+  },
+  {
+    "name": "security.headers.hsts",
+    "description": "HTTP Strict Transport Security (HSTS) mode (none, domain, all).",
+    "defaultValue": "all",
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.headers.xss",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable cross site scripting (XSS) protection.",
-    "defaultValue" : true,
-    "deprecation" : {
+  },
+  {
+    "name": "security.headers.xss",
+    "type": "java.lang.Boolean",
+    "description": "Enable cross site scripting (XSS) protection.",
+    "defaultValue": true,
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.ignored",
-    "type" : "java.util.List<java.lang.String>",
-    "description" : "Comma-separated list of paths to exclude from the default secured paths.",
-    "deprecation" : {
+  },
+  {
+    "name": "security.ignored",
+    "type": "java.util.List<java.lang.String>",
+    "description": "Comma-separated list of paths to exclude from the default secured paths.",
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.oauth2.resource.filter-order",
-    "type" : "java.lang.Integer",
-    "description" : "The order of the filter chain used to authenticate tokens. Default puts it after\n the actuator endpoints and before the default HTTP basic filter chain (catchall).",
-    "defaultValue" : 0,
-    "deprecation" : {
+  },
+  {
+    "name": "security.oauth2.resource.filter-order",
+    "type": "java.lang.Integer",
+    "description": "The order of the filter chain used to authenticate tokens. Default puts it after\n the actuator endpoints and before the default HTTP basic filter chain (catchall).",
+    "defaultValue": 0,
+    "deprecation": {
       "reason": "The security auto-configuration does no longer provide several security configurations. Their ordering is now explicit in your own security configuration.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.oauth2.sso.filter-order",
-    "type" : "java.lang.Integer",
-    "description" : "Filter order to apply if not providing an explicit WebSecurityConfigurerAdapter (in\n which case the order can be provided there instead).",
-    "deprecation" : {
+  },
+  {
+    "name": "security.oauth2.sso.filter-order",
+    "type": "java.lang.Integer",
+    "description": "Filter order to apply if not providing an explicit WebSecurityConfigurerAdapter (in\n which case the order can be provided there instead).",
+    "deprecation": {
       "reason": "The security auto-configuration does no longer provide several security configurations. Their ordering is now explicit in your own security configuration.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.require-ssl",
-    "type" : "java.lang.Boolean",
-    "description" : "Enable secure channel for all requests.",
-    "defaultValue" : false,
-    "deprecation" : {
+  },
+  {
+    "name": "security.require-ssl",
+    "type": "java.lang.Boolean",
+    "description": "Enable secure channel for all requests.",
+    "defaultValue": false,
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.sessions",
-    "type" : "org.springframework.security.config.http.SessionCreationPolicy",
-    "description" : "Session creation policy (always, never, if_required, stateless).",
-    "defaultValue" : "stateless",
-    "deprecation" : {
+  },
+  {
+    "name": "security.sessions",
+    "type": "org.springframework.security.config.http.SessionCreationPolicy",
+    "description": "Session creation policy (always, never, if_required, stateless).",
+    "defaultValue": "stateless",
+    "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.user.name",
-    "type" : "java.lang.String",
-    "description" : "Default user name.",
-    "defaultValue" : "user",
-    "deprecation" : {
+  },
+  {
+    "name": "security.user.name",
+    "type": "java.lang.String",
+    "description": "Default user name.",
+    "defaultValue": "user",
+    "deprecation": {
       "reason": "The default user is no longer customizable. You can, for instance, define a bean of type UserDetailsService.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.user.password",
-    "type" : "java.lang.String",
-    "description" : "Password for the default user name.",
-    "deprecation" : {
+  },
+  {
+    "name": "security.user.password",
+    "type": "java.lang.String",
+    "description": "Password for the default user name.",
+    "deprecation": {
       "reason": "The default user is no longer customizable. You can, for instance, define a bean of type UserDetailsService.",
-      "level" : "error"
+      "level": "error"
     }
-  }, {
-    "name" : "security.user.role",
-    "type" : "java.util.List<java.lang.String>",
-    "description" : "Granted roles for the default user name.",
-    "deprecation" : {
+  },
+  {
+    "name": "security.user.role",
+    "type": "java.util.List<java.lang.String>",
+    "description": "Granted roles for the default user name.",
+    "deprecation": {
       "reason": "The default user is no longer customizable. You can, for instance, define a bean of type UserDetailsService.",
-      "level" : "error"
+      "level": "error"
     }
   },
   {

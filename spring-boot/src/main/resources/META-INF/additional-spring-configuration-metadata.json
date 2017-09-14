@@ -162,7 +162,9 @@
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Display the banner when the application runs.",
     "defaultValue": true,
-    "deprecation": {"replacement": "spring.main.banner-mode"}
+    "deprecation": {
+      "replacement": "spring.main.banner-mode"
+    }
   },
   {
     "name": "spring.main.sources",
@@ -182,7 +184,9 @@
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Run the application in a web environment (auto-detected by default).",
     "deprecated": true,
-    "deprecation": {"replacement": "spring.main.web-application-type"}
+    "deprecation": {
+      "replacement": "spring.main.web-application-type"
+    }
   },
   {
     "name": "spring.output.ansi.enabled",
@@ -260,7 +264,6 @@
       {
         "value": "off"
       }
-
     ],
     "providers": [
       {
