@@ -16,19 +16,23 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.actuate.autoconfigure.cache.CacheStatisticsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.MockServletWebServerFactory;
 import org.springframework.boot.actuate.cache.CachePublicMetrics;
@@ -44,6 +48,8 @@ import org.springframework.boot.actuate.metrics.rich.RichGaugeReaderPublicMetric
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.cache.CacheManager;
@@ -57,10 +63,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Tests for {@link PublicMetricsAutoConfiguration}.
@@ -166,6 +169,15 @@ public class PublicMetricsAutoConfigurationTests {
 		Collection<Metric<?>> metrics = bean.metrics();
 		assertMetrics(metrics, "datasource.primary.active", "datasource.primary.usage",
 				"datasource.dataSource.active", "datasource.dataSource.usage");
+	}
+
+	@Test
+	public void customDataSourcePublicMetrics() {
+		load(CustomDataSourcePublicMetricsConfig.class);
+		PublicMetrics bean = this.context.getBean(DataSourcePublicMetrics.class);
+		Collection<Metric<?>> metrics = bean.metrics();
+		assertMetrics(metrics, "datasource.primary.active", "datasource.primary.usage",
+				"datasource.primary.idle", "datasource.primary.poolSize");
 	}
 
 	@Test
@@ -305,6 +317,36 @@ public class PublicMetricsAutoConfigurationTests {
 		}
 
 	}
+
+	@Configuration
+	static class CustomDataSourcePublicMetricsConfig {
+
+		@Bean
+		public DataSource myDataSource() {
+			return InitializedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
+		}
+
+		@Bean
+		public TomcatDataSourcePublicMetrics tomcatDataSourcePublicMetrics() {
+			return new TomcatDataSourcePublicMetrics();
+		}
+
+		static class TomcatDataSourcePublicMetrics extends DataSourcePublicMetrics {
+
+			@Override
+			protected void addMetricsForDataSourcePoolMetadata(Set<Metric<?>> metrics, DataSourcePoolMetadata metadata, String prefix) {
+				super.addMetricsForDataSourcePoolMetadata(metrics, metadata, prefix);
+				if (metadata instanceof TomcatDataSourcePoolMetadata) {
+					TomcatDataSourcePoolMetadata tomcatMetadata = (TomcatDataSourcePoolMetadata) metadata;
+					addMetric(metrics, prefix + "idle", tomcatMetadata.getIdle());
+					addMetric(metrics, prefix + "poolSize", tomcatMetadata.getPoolSize());
+				}
+			}
+		}
+
+	}
+
 
 	@Configuration
 	static class CustomDataSourcePublicMetrics {
