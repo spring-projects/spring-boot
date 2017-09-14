@@ -103,8 +103,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 					ConfigurationPropertyName entryName = getEntryName(source, name);
 					Object key = getContext().getConversionService()
 							.convert(getKeyName(entryName), this.keyType);
-					Object value = this.elementBinder.bind(entryName, valueBindable);
-					map.putIfAbsent(key, value);
+					map.computeIfAbsent(key,
+							(k) -> this.elementBinder.bind(entryName, valueBindable));
 				}
 			}
 		}
