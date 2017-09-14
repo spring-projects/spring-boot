@@ -71,4 +71,9 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 		return this.filter;
 	}
 
+	@Override
+	public String toString() {
+		return this.source.toString() + " (filtered)";
+	}
+
 }
