@@ -33,6 +33,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.View;
@@ -91,7 +92,8 @@ public class MustacheView extends AbstractUrlBasedView {
 				writer.flush();
 			}
 		}
-		catch (Throwable ex) {
+		catch (Exception ex) {
+			DataBufferUtils.release(dataBuffer);
 			return Mono.error(ex);
 		}
 		return exchange.getResponse().writeWith(Flux.just(dataBuffer));
