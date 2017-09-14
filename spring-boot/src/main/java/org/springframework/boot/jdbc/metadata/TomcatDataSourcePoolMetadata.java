@@ -53,4 +53,11 @@ public class TomcatDataSourcePoolMetadata
 		return getDataSource().getValidationQuery();
 	}
 
+	public Integer getIdle() {
+		return getDataSource().getIdle();
+	}
+
+	public Integer getPoolSize() {
+		return getDataSource().getPoolSize();
+	}
 }
