@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.WebApplicationType;
@@ -122,14 +121,10 @@ public class OAuth2RestOperationsConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ OAuth2ClientConfiguration.class, OAuth2RestOperationsConfiguration.class })
+	@Import({ SecurityProperties.class,
+			OAuth2ClientConfiguration.class, OAuth2RestOperationsConfiguration.class })
 	protected static class ConfigForSessionScopedConfiguration
 			extends WebApplicationConfiguration {
-
-		@Bean
-		public SecurityProperties securityProperties() {
-			return Mockito.mock(SecurityProperties.class);
-		}
 
 	}
 

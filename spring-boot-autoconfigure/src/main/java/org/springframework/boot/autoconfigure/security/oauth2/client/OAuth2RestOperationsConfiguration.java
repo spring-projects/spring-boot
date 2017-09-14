@@ -95,7 +95,7 @@ public class OAuth2RestOperationsConfiguration {
 				OAuth2ClientContextFilter filter, SecurityProperties security) {
 			FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
 			registration.setFilter(filter);
-			registration.setOrder(security.getFilterOrder() - 10);
+			registration.setOrder(security.getFilter().getOrder() - 10);
 			return registration;
 		}
 

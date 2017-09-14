@@ -476,9 +476,8 @@ content into your application; rather pick only the properties that you need.
 	# SECURITY PROPERTIES
 	# ----------------------------------------
 	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
-    security.basic.enabled=true # Enable basic authentication.
-    security.filter-order=0 # Security filter chain order.
-    security.filter-dispatcher-types=ASYNC,ERROR,REQUEST # Security filter chain dispatcher types.
+    spring.security.filter.order=0 # Security filter chain order.
+    spring.security.filter.dispatcher-types=ASYNC,ERROR,REQUEST # Security filter chain dispatcher types.
 
 	# SECURITY OAUTH2 CLIENT ({sc-spring-boot-autoconfigure}/security/oauth2/OAuth2ClientProperties.{sc-ext}[OAuth2ClientProperties])
 	security.oauth2.client.client-id= # OAuth2 client id.

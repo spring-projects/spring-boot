@@ -1,7 +1,32 @@
 {"properties": [
   {
-    "name": "security.filter-dispatcher-types",
-    "defaultValue": ["async", "error", "request"]
+    "name" : "security.basic.enabled",
+    "type" : "java.lang.Boolean",
+    "description" : "Enable basic authentication.",
+    "defaultValue" : true,
+    "deprecation" : {
+      "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "security.filter-dispatcher-types",
+    "type" : "java.util.Set<java.lang.String>",
+    "description" : "Security filter chain dispatcher types.",
+    "deprecation" : {
+      "replacement" : "spring.security.filter.dispatcher-types",
+      "level" : "error"
+    }
+  },
+  {
+    "name" : "security.filter-order",
+    "type" : "java.lang.Integer",
+    "description" : "Security filter chain order.",
+    "defaultValue" : 0,
+    "deprecation" : {
+      "replacement" : "spring.security.filter.order",
+      "level" : "error"
+    }
   },
   {
     "name": "server.error.include-stacktrace",
@@ -354,6 +379,10 @@
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.security.filter.dispatcher-types",
+    "defaultValue": ["async", "error", "request"]
   },
   {
     "name": "spring.session.hazelcast.flush-mode",

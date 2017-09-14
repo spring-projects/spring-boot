@@ -136,7 +136,7 @@ public class SecurityAutoConfigurationTests {
 	@Test
 	public void testCustomFilterOrder() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of("security.filter-order:12345").applyTo(this.context);
+		TestPropertyValues.of("spring.security.filter.order:12345").applyTo(this.context);
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
@@ -157,19 +157,6 @@ public class SecurityAutoConfigurationTests {
 		// Just the application endpoints now
 		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
 				.hasSize(1);
-	}
-
-	@Test
-	public void testDisableDefaultSecurity() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		TestPropertyValues.of("security.basic.enabled:false").applyTo(this.context);
-		this.context.refresh();
-		// Ignores and the "matches-none" filter only
-		assertThat(this.context.getBeanNamesForType(FilterChainProxy.class).length)
-				.isEqualTo(0);
 	}
 
 	@Test
@@ -357,7 +344,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestPropertyValues.of("security.filter-dispatcher-types:INCLUDE,ERROR")
+		TestPropertyValues.of("spring.security.filter.dispatcher-types:INCLUDE,ERROR")
 				.applyTo(this.context);
 		this.context.refresh();
 		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(

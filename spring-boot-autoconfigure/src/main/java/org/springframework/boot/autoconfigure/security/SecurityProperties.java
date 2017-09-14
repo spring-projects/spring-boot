@@ -26,12 +26,12 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 
 /**
- * Properties for the security aspects of an application.
+ * Configuration properties for Spring Security.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "security")
+@ConfigurationProperties(prefix = "spring.security")
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
@@ -56,56 +56,39 @@ public class SecurityProperties implements SecurityPrerequisite {
 	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
 			- 100;
 
-	private Basic basic = new Basic();
+	private final Filter filter = new Filter();
 
-	/**
-	 * Security filter chain order.
-	 */
-	private int filterOrder = DEFAULT_FILTER_ORDER;
-
-	/**
-	 * Security filter chain dispatcher types.
-	 */
-	private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(Arrays
-			.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
-
-	public Basic getBasic() {
-		return this.basic;
+	public Filter getFilter() {
+		return this.filter;
 	}
 
-	public void setBasic(Basic basic) {
-		this.basic = basic;
-	}
-
-	public int getFilterOrder() {
-		return this.filterOrder;
-	}
-
-	public void setFilterOrder(int filterOrder) {
-		this.filterOrder = filterOrder;
-	}
-
-	public Set<DispatcherType> getFilterDispatcherTypes() {
-		return this.filterDispatcherTypes;
-	}
-
-	public void setFilterDispatcherTypes(Set<DispatcherType> filterDispatcherTypes) {
-		this.filterDispatcherTypes = filterDispatcherTypes;
-	}
-
-	public static class Basic {
+	public static class Filter {
 
 		/**
-		 * Enable basic authentication.
+		 * Security filter chain order.
 		 */
-		private boolean enabled = true;
+		private int order = DEFAULT_FILTER_ORDER;
 
-		public boolean isEnabled() {
-			return this.enabled;
+		/**
+		 * Security filter chain dispatcher types.
+		 */
+		private Set<DispatcherType> dispatcherTypes = new HashSet<>(Arrays
+				.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
+
+		public int getOrder() {
+			return this.order;
 		}
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
+		public void setOrder(int order) {
+			this.order = order;
+		}
+
+		public Set<DispatcherType> getDispatcherTypes() {
+			return this.dispatcherTypes;
+		}
+
+		public void setDispatcherTypes(Set<DispatcherType> dispatcherTypes) {
+			this.dispatcherTypes = dispatcherTypes;
 		}
 
 	}

@@ -38,8 +38,8 @@ public class SecurityPropertiesTests {
 
 	@Test
 	public void testBinding() {
-		bind("security.basic.enabled", "false");
-		assertThat(this.security.getBasic().isEnabled()).isFalse();
+		bind("spring.security.filter.order", "55");
+		assertThat(this.security.getFilter().getOrder()).isEqualTo(55);
 	}
 
 	private void bind(String name, String value) {
@@ -47,7 +47,7 @@ public class SecurityPropertiesTests {
 	}
 
 	private void bind(ConfigurationPropertySource source) {
-		new Binder(source).bind("security", Bindable.ofInstance(this.security));
+		new Binder(source).bind("spring.security", Bindable.ofInstance(this.security));
 	}
 
 }

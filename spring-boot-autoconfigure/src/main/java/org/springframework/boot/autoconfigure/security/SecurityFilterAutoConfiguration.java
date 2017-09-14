@@ -62,17 +62,17 @@ public class SecurityFilterAutoConfiguration {
 			SecurityProperties securityProperties) {
 		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean(
 				DEFAULT_FILTER_NAME);
-		registration.setOrder(securityProperties.getFilterOrder());
+		registration.setOrder(securityProperties.getFilter().getOrder());
 		registration.setDispatcherTypes(getDispatcherTypes(securityProperties));
 		return registration;
 	}
 
 	private EnumSet<DispatcherType> getDispatcherTypes(
 			SecurityProperties securityProperties) {
-		if (securityProperties.getFilterDispatcherTypes() == null) {
+		if (securityProperties.getFilter().getDispatcherTypes() == null) {
 			return null;
 		}
-		return securityProperties.getFilterDispatcherTypes().stream()
+		return securityProperties.getFilter().getDispatcherTypes().stream()
 				.map((type) -> DispatcherType.valueOf(type.name())).collect(Collectors
 						.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
 	}
