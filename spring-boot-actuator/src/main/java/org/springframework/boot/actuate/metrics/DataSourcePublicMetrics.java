@@ -43,6 +43,9 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 
 	private static final String DATASOURCE_SUFFIX = "dataSource";
 
+	protected static final String ACTIVE_METRIC_SUFFIX = "active";
+	protected static final String USAGE_METRIC_SUFFIX = "usage";
+
 	@Autowired
 	private ApplicationContext applicationContext;
 
@@ -77,13 +80,17 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 			String prefix = entry.getKey();
 			prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
 			DataSourcePoolMetadata metadata = entry.getValue();
-			addMetric(metrics, prefix + "active", metadata.getActive());
-			addMetric(metrics, prefix + "usage", metadata.getUsage());
+			addMetricsForDataSourcePoolMetadata(metrics, metadata, prefix);
 		}
 		return metrics;
 	}
 
-	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name,
+	protected void addMetricsForDataSourcePoolMetadata(Set<Metric<?>> metrics, DataSourcePoolMetadata metadata, String prefix) {
+		addMetric(metrics, prefix + ACTIVE_METRIC_SUFFIX, metadata.getActive());
+		addMetric(metrics, prefix + USAGE_METRIC_SUFFIX, metadata.getUsage());
+	}
+
+	protected  <T extends Number> void addMetric(Set<Metric<?>> metrics, String name,
 			T value) {
 		if (value != null) {
 			metrics.add(new Metric<>(name, value));
