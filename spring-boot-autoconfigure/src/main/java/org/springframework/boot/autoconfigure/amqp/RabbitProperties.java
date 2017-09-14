@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
-import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -316,7 +315,7 @@ public class RabbitProperties {
 		private String keyStore;
 
 		/**
-		 * Set the key store type. See {@link RabbitConnectionFactoryBean#getKeyStoreType()}
+		 * Set the key store type (jks, pkcs12, etc).
 		 */
 		private String keyStoreType;
 
@@ -331,7 +330,7 @@ public class RabbitProperties {
 		private String trustStore;
 
 		/**
-		 * Set the trust store type. See {@link RabbitConnectionFactoryBean#getTrustStoreType()}
+		 * Set the trust store type (jks, pkcs12, etc).
 		 */
 		private String trustStoreType;
 
