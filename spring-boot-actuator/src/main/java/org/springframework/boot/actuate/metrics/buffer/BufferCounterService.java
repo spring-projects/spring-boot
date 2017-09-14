@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.metrics.CounterService;
  * Fast implementation of {@link CounterService} using {@link CounterBuffers}.
  *
  * @author Dave Syer
+ * @author Venil Noronha
  * @since 1.3.0
  */
 public class BufferCounterService implements CounterService {
@@ -60,7 +61,7 @@ public class BufferCounterService implements CounterService {
 		if (cached != null) {
 			return cached;
 		}
-		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
+		if (metricName.startsWith("counter.") || metricName.startsWith("meter.")) {
 			return metricName;
 		}
 		String name = "counter." + metricName;
