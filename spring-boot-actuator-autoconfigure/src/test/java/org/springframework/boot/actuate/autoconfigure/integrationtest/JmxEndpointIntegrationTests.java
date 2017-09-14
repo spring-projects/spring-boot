@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for endpints over JMX.
+ * Integration tests for endpoints over JMX.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson

@@ -104,7 +104,7 @@ public class ApplicationContextRequestMatcherTests {
 	static class TestApplicationContextRequestMatcher<C>
 			extends ApplicationContextRequestMatcher<C> {
 
-		private C provdedContext;
+		private C providedContext;
 
 		TestApplicationContextRequestMatcher(Class<? extends C> context) {
 			super(context);
@@ -117,17 +117,17 @@ public class ApplicationContextRequestMatcherTests {
 
 		public C callMatchesAndReturnProvidedContext(HttpServletRequest request) {
 			matches(request);
-			return getProvdedContext();
+			return getProvidedContext();
 		}
 
 		@Override
 		protected boolean matches(HttpServletRequest request, C context) {
-			this.provdedContext = context;
+			this.providedContext = context;
 			return false;
 		}
 
-		public C getProvdedContext() {
-			return this.provdedContext;
+		public C getProvidedContext() {
+			return this.providedContext;
 		}
 
 	}

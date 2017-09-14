@@ -1094,7 +1094,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.configprops.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.configprops.enabled= # Enable the configprops endpoint.
 	endpoints.configprops.jmx.enabled= # Expose the configprops endpoint as a JMX MBean.
-	endpoints.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
+	endpoints.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 	endpoints.configprops.web.enabled= # Expose the configprops endpoint as a Web endpoint.
 
 	# ENDPOINT DEFAULT SETTINGS
@@ -1106,7 +1106,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.env.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.env.enabled= # Enable the env endpoint.
 	endpoints.env.jmx.enabled= # Expose the env endpoint as a JMX MBean.
-	endpoints.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
+	endpoints.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 	endpoints.env.web.enabled= # Expose the env endpoint as a Web endpoint.
 
 	# FLYWAY ENDPOINT ({sc-spring-boot-actuator}/endpoint/FlywayEndpoint.{sc-ext}[FlywayEndpoint])
