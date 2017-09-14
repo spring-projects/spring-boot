@@ -31,7 +31,6 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -57,7 +56,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @since 2.0.0
  */
 @Endpoint(id = "env")
-@ConfigurationProperties("endpoints.env")
 public class EnvironmentEndpoint {
 
 	private final Sanitizer sanitizer = new Sanitizer();
@@ -192,7 +190,7 @@ public class EnvironmentEndpoint {
 	/**
 	 * A description of an {@link Environment}.
 	 */
-	static final class EnvironmentDescriptor {
+	public static final class EnvironmentDescriptor {
 
 		private final List<String> activeProfiles;
 
@@ -215,7 +213,7 @@ public class EnvironmentEndpoint {
 		/**
 		 * A description of a {@link PropertySource}.
 		 */
-		static final class PropertySourceDescriptor {
+		public static final class PropertySourceDescriptor {
 
 			private final String name;
 
@@ -238,7 +236,7 @@ public class EnvironmentEndpoint {
 			/**
 			 * A description of a property's value, including its origin if available.
 			 */
-			static final class PropertyValueDescriptor {
+			public static final class PropertyValueDescriptor {
 
 				private final Object value;
 

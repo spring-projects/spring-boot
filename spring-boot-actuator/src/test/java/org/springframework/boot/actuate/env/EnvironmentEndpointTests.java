@@ -27,7 +27,6 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescr
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -150,22 +149,6 @@ public class EnvironmentEndpointTests {
 		assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey").getValue()).isEqualTo("123456");
 		clearSystemProperties("dbPassword", "apiKey");
-	}
-
-	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
-		ApplicationContextRunner tester = new ApplicationContextRunner()
-				.withSystemProperties("dbPassword=123456", "apiKey=123456")
-				.withPropertyValues("endpoints.env.keys-to-sanitize=.*pass.*")
-				.withUserConfiguration(Config.class);
-		tester.run((context) -> {
-			EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
-			EnvironmentDescriptor env = endpoint.environment(null);
-			Map<String, PropertyValueDescriptor> systemProperties = getSource(
-					"systemProperties", env).getProperties();
-			assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo("******");
-			assertThat(systemProperties.get("apiKey").getValue()).isEqualTo("123456");
-		});
 	}
 
 	@Test
