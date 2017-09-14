@@ -102,7 +102,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
 				.description("Timer of RestTemplate operation");
 		if (this.recordPercentiles) {
-			builder = builder.histogram(Histogram.percentiles());
+			builder = builder.histogram(Histogram.percentilesTime());
 		}
 		return builder;
 	}
