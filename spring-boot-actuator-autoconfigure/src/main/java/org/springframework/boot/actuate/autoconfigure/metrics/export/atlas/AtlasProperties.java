@@ -29,12 +29,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 2.0.0
  * @author Jon Schneider
  */
-@ConfigurationProperties(prefix = "metrics.atlas")
+@ConfigurationProperties(prefix = "spring.metrics.atlas")
 public class AtlasProperties extends RegistryProperties implements AtlasConfig {
 
 	@Override
 	protected String prefix() {
-		return "atlas";
+		return "spring.metrics.atlas";
 	}
 
 	public void setStep(Duration step) {

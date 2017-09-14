@@ -28,12 +28,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "metrics.influx")
+@ConfigurationProperties(prefix = "spring.metrics.influx")
 public class InfluxProperties extends StepRegistryProperties implements InfluxConfig {
 
 	@Override
 	public String prefix() {
-		return "metrics.influx";
+		return "spring.metrics.influx";
 	}
 
 	public void setDb(String db) {

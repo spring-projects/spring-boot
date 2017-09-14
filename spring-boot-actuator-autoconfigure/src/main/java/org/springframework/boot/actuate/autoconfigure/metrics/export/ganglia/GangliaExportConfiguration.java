@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Import;
 public class GangliaExportConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "metrics.ganglia.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "spring.metrics.ganglia.enabled", matchIfMissing = true)
 	public MetricsExporter gangliaExporter(GangliaConfig config,
 			HierarchicalNameMapper nameMapper, Clock clock) {
 		return () -> new GangliaMeterRegistry(config, nameMapper, clock);

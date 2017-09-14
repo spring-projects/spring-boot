@@ -31,12 +31,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "metrics.ganglia")
+@ConfigurationProperties(prefix = "spring.metrics.ganglia")
 public class GangliaProperties extends RegistryProperties implements GangliaConfig {
 
 	@Override
 	public String prefix() {
-		return "metrics.ganglia";
+		return "spring.metrics.ganglia";
 	}
 
 	public void setStep(Duration step) {

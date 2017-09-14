@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 public class SimpleExportConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "metrics.simple.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "spring.metrics.simple.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean(MetricsExporter.class)
 	public MetricsExporter simpleExporter(Clock clock) {
 		return () -> new SimpleMeterRegistry(clock);

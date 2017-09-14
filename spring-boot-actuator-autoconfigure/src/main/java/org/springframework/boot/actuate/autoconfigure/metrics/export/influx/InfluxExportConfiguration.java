@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Import;
 public class InfluxExportConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "metrics.influx.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "spring.metrics.influx.enabled", matchIfMissing = true)
 	public MetricsExporter influxExporter(InfluxConfig config, Clock clock) {
 		return () -> new InfluxMeterRegistry(config, clock);
 	}

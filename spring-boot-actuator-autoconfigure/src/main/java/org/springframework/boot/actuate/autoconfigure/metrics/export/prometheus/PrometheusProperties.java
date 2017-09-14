@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "metrics.prometheus")
+@ConfigurationProperties(prefix = "spring.metrics.prometheus")
 public class PrometheusProperties extends RegistryProperties implements PrometheusConfig {
 
 	private boolean enabled = true;
@@ -46,7 +46,7 @@ public class PrometheusProperties extends RegistryProperties implements Promethe
 
 	@Override
 	public String prefix() {
-		return "metrics.prometheus";
+		return "spring.metrics.prometheus";
 	}
 
 }

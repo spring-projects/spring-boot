@@ -27,12 +27,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "metrics.datadog")
+@ConfigurationProperties(prefix = "spring.metrics.datadog")
 public class DatadogProperties extends StepRegistryProperties implements DatadogConfig {
 
 	@Override
 	public String prefix() {
-		return "metrics.datadog";
+		return "spring.metrics.datadog";
 	}
 
 	public DatadogProperties() {

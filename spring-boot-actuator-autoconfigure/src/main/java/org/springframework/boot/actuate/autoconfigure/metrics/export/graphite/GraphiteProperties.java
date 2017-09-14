@@ -30,12 +30,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "metrics.graphite")
+@ConfigurationProperties(prefix = "spring.metrics.graphite")
 public class GraphiteProperties extends RegistryProperties implements GraphiteConfig {
 
 	@Override
 	public String prefix() {
-		return "metrics.graphite";
+		return "spring.metrics.graphite";
 	}
 
 	public void setStep(Duration step) {
