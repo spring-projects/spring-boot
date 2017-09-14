@@ -40,7 +40,6 @@ import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -56,7 +55,6 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "endpoints.heapdump")
 @Endpoint(id = "heapdump", exposure = EndpointExposure.WEB)
 public class HeapDumpWebEndpoint {
 
