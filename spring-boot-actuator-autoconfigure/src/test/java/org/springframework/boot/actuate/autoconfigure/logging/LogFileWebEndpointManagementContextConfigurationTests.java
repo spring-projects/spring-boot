@@ -16,10 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure.logging;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.actuate.logger.LogFileWebEndpoint;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,6 +40,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class LogFileWebEndpointManagementContextConfigurationTests {
+
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
+
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(
@@ -63,6 +76,23 @@ public class LogFileWebEndpointManagementContextConfigurationTests {
 						"endpoints.logfile.enabled:false")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
+	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
+		File file = this.temp.newFile("logfile");
+		FileCopyUtils.copy("--TEST--" .getBytes(), file);
+		this.contextRunner
+				.withPropertyValues("endpoints.logfile.external-file:"
+						+ file.getAbsolutePath()).run((context) -> {
+			assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
+			LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
+			Resource resource = endpoint.logFile();
+			assertThat(resource).isNotNull();
+			assertThat(StreamUtils.copyToString(resource.getInputStream(),
+					StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		});
+
 	}
 
 }

@@ -78,8 +78,9 @@ public class LogFileWebEndpointTests {
 
 	@Test
 	public void resourceResponseWithExternalLogFile() throws Exception {
-		this.endpoint.setExternalFile(this.logFile);
-		Resource resource = this.endpoint.logFile();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment,
+				this.logFile);
+		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
 		assertThat(StreamUtils.copyToString(resource.getInputStream(),
 				StandardCharsets.UTF_8)).isEqualTo("--TEST--");

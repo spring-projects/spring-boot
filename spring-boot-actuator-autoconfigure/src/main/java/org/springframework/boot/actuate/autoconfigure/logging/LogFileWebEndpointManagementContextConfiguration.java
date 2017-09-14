@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -36,13 +37,21 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 @ManagementContextConfiguration
+@EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointManagementContextConfiguration {
+
+	private final LogFileWebEndpointProperties properties;
+
+	public LogFileWebEndpointManagementContextConfiguration(
+			LogFileWebEndpointProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(LogFileCondition.class)
 	public LogFileWebEndpoint logFileWebEndpoint(Environment environment) {
-		return new LogFileWebEndpoint(environment);
+		return new LogFileWebEndpoint(environment, this.properties.getExternalFile());
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {

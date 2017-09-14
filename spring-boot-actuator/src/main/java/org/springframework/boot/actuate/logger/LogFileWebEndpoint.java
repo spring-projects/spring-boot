@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
@@ -38,7 +37,6 @@ import org.springframework.core.io.Resource;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "endpoints.logfile")
 @Endpoint(id = "logfile", exposure = EndpointExposure.WEB)
 public class LogFileWebEndpoint {
 
@@ -46,22 +44,15 @@ public class LogFileWebEndpoint {
 
 	private final Environment environment;
 
-	/**
-	 * External Logfile to be accessed. Can be used if the logfile is written by output
-	 * redirect and not by the logging system itself.
-	 */
 	private File externalFile;
 
-	public LogFileWebEndpoint(Environment environment) {
+	public LogFileWebEndpoint(Environment environment, File externalFile) {
 		this.environment = environment;
-	}
-
-	public File getExternalFile() {
-		return this.externalFile;
-	}
-
-	public void setExternalFile(File externalFile) {
 		this.externalFile = externalFile;
+	}
+
+	public LogFileWebEndpoint(Environment environment) {
+		this(environment, null);
 	}
 
 	@ReadOperation
