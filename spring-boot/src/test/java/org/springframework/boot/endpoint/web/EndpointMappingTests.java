@@ -69,7 +69,7 @@ public class EndpointMappingTests {
 	}
 
 	@Test
-	public void subPathWithoutALeadingSlashIsSeparaedFromBasePathBySingleSlash() {
+	public void subPathWithoutALeadingSlashIsSeparatedFromBasePathBySingleSlash() {
 		assertThat(new EndpointMapping("/test").createSubPath("one")).isEqualTo("/test/one");
 	}
 

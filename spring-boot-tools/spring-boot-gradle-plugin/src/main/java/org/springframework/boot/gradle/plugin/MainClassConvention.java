@@ -28,7 +28,7 @@ import org.gradle.api.file.FileCollection;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
- * A {@link Callable} that provide a convention for the project's main class name.
+ * A {@link Callable} that provides a convention for the project's main class name.
  *
  * @author Andy Wilkinson
  */

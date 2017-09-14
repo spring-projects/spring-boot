@@ -2828,8 +2828,8 @@ you can configure `security.oauth2.resource.jwk.key-set-uri`. E.g. on PWS:
 NOTE: Configuring both JWT and JWK properties will cause an error. Only one of `security.oauth2.resource.jwt.key-uri`
 (or `security.oauth2.resource.jwt.key-value`) and `security.oauth2.resource.jwk.key-set-uri` should be configured.
 
-WARNING: If you use the `security.oauth2.resource.jwt.key-uri` or `security.oauth2.resource.jwk.key-set-uri,
-` the authorization server needs to be running when your application starts up. It will log a warning if it can't
+WARNING: If you use the `security.oauth2.resource.jwt.key-uri` or `security.oauth2.resource.jwk.key-set-uri`,
+the authorization server needs to be running when your application starts up. It will log a warning if it can't
 find the key, and tell you what to do to fix it.
 
 OAuth2 resources are protected by a filter chain with order

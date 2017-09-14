@@ -16,9 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
@@ -34,9 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class EndpointEnablementProviderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void defaultEnablementDisabled() {

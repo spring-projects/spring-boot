@@ -30,7 +30,7 @@ public class ConfigurationPropertiesReportEndpointProperties {
 
 	/**
 	 * Keys that should be sanitized. Keys can be simple strings that the property ends
-	 * with or regex expressions.
+	 * with or regular expressions.
 	 */
 	private String[] keysToSanitize;
 
