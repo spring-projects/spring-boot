@@ -758,6 +758,59 @@
     }
   },
   {
+    "name": "endpoints.metrics.filter.counter-submissions",
+    "description": "Submissions that should be made to the counter.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.filter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the metrics servlet filter.",
+    "defaultValue": true,
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.filter.gauge-submissions",
+    "description": "Submissions that should be made to the gauge.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.id",
+    "type": "java.lang.String",
+    "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+    "deprecation": {
+      "reason": "Endpoint identifier is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path.",
+    "deprecation": {
+      "reason": "Endpoint path is no longer customizable.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "endpoints.metrics.sensitive",
+    "type": "java.lang.Boolean",
+    "description": "Mark if the endpoint exposes sensitive information.",
+    "deprecation": {
+      "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
+      "level": "error"
+    }
+  },
+  {
     "name": "endpoints.sensitive",
     "type": "java.lang.Boolean",
     "description": "Default endpoint sensitive setting.",
@@ -1028,6 +1081,129 @@
     "deprecation" : {
       "reason" : "CRaSH support is no longer available.",
       "level" : "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.aggregate.key-pattern",
+    "type": "java.lang.String",
+    "description": "Pattern that tells the aggregator what to do with the keys from the source\n repository. The keys in the source repository are assumed to be period\n separated, and the pattern is in the same format, e.g. \"d.d.k.d\". Here \"d\"\n means \"discard\" and \"k\" means \"keep\" the key segment in the corresponding\n position in the source.",
+    "defaultValue": "",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.aggregate.prefix",
+    "type": "java.lang.String",
+    "description": "Prefix for global repository if active. Should be unique for this JVM, but most\n useful if it also has the form \"a.b\" where \"a\" is unique to this logical\n process (this application) and \"b\" is unique to this physical process. If you\n set spring.application.name elsewhere, then the default will be in the right\n form.",
+    "defaultValue": "",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.delay-millis",
+    "type": "java.lang.Long",
+    "description": "Delay in milliseconds between export ticks. Metrics are exported to external\n sources on a schedule with this delay.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Flag to enable metric export (assuming a MetricWriter is available).",
+    "defaultValue": true,
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.excludes",
+    "type": "java.lang.String[]",
+    "description": "List of patterns for metric names to exclude. Applied after the includes.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.includes",
+    "type": "java.lang.String[]",
+    "description": "List of patterns for metric names to include.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.redis.key",
+    "type": "java.lang.String",
+    "description": "Key for redis repository export (if active). Should be globally unique for a\n system sharing a redis repository across multiple processes.",
+    "defaultValue": "keys.spring.metrics",
+    "deprecation": {
+      "replacement": "spring.sendgrid.api-key",
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.redis.prefix",
+    "type": "java.lang.String",
+    "description": "Prefix for redis repository if active. Should be globally unique across all\n processes sharing the same repository.",
+    "defaultValue": "spring.metrics",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.send-latest",
+    "type": "java.lang.Boolean",
+    "description": "Flag to switch off any available optimizations based on not exporting unchanged\n metric values.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.statsd.host",
+    "type": "java.lang.String",
+    "description": "Host of a statsd server to receive exported metrics.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.statsd.port",
+    "type": "java.lang.Integer",
+    "description": "Port of a statsd server to receive exported metrics.",
+    "defaultValue": 8125,
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.statsd.prefix",
+    "type": "java.lang.String",
+    "description": "Prefix for statsd exported metrics.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.metrics.export.triggers",
+    "description": "Specific trigger properties per MetricWriter bean name.",
+    "deprecation": {
+      "reason": "Metrics support is now using Micrometer.",
+      "level": "error"
     }
   }
 ],"hints": [
