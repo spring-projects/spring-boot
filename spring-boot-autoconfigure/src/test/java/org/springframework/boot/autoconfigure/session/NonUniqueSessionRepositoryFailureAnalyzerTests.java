@@ -49,7 +49,9 @@ public class NonUniqueSessionRepositoryFailureAnalyzerTests {
 		assertThat(analysis.getAction()).contains("spring.session.store-type");
 	}
 
-	private Exception createFailure(Class<? extends SessionRepository>... candidates) {
+	@SafeVarargs
+	private final Exception createFailure(
+			Class<? extends SessionRepository<?>>... candidates) {
 		return new NonUniqueSessionRepositoryException(Arrays.asList(candidates));
 	}
 

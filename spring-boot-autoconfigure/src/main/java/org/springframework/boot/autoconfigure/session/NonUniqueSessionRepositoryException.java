@@ -23,25 +23,25 @@ import org.springframework.session.SessionRepository;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Exception thrown when multiple {@link SessionRepository} implementations are
- * available with no way to know which implementation should be used.
+ * Exception thrown when multiple {@link SessionRepository} implementations are available
+ * with no way to know which implementation should be used.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class NonUniqueSessionRepositoryException extends RuntimeException {
 
-	private final List<Class<? extends SessionRepository>> availableCandidates;
+	private final List<Class<? extends SessionRepository<?>>> availableCandidates;
 
 	public NonUniqueSessionRepositoryException(
-			List<Class<? extends SessionRepository>> availableCandidates) {
+			List<Class<? extends SessionRepository<?>>> availableCandidates) {
 		super("Multiple session repository candidates are available, set the "
 				+ "'spring.session.store-type' property accordingly");
 		this.availableCandidates = (!ObjectUtils.isEmpty(availableCandidates)
 				? availableCandidates : Collections.emptyList());
 	}
 
-	public List<Class<? extends SessionRepository>> getAvailableCandidates() {
+	public List<Class<? extends SessionRepository<?>>> getAvailableCandidates() {
 		return this.availableCandidates;
 	}
 
