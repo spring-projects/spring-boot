@@ -31,10 +31,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
 class AtlasPropertiesConfigAdapter extends
 		PropertiesConfigAdapter<AtlasProperties, AtlasConfig> implements AtlasConfig {
 
-	private static final AtlasConfig DEFAUTLS = (k) -> null;
+	private static final AtlasConfig DEFAULTS = (k) -> null;
 
 	AtlasPropertiesConfigAdapter(AtlasProperties properties) {
-		super(properties, DEFAUTLS);
+		super(properties, DEFAULTS);
 	}
 
 	@Override

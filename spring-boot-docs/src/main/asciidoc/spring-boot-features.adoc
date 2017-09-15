@@ -1350,7 +1350,7 @@ http://logging.apache.org/log4j/2.x/[Log4J2] and http://logback.qos.ch/[Logback]
 case loggers are pre-configured to use console output with optional file output also
 available.
 
-By default, If you use the '`Starters`', Logback will be used for logging. Appropriate
+By default, if you use the '`Starters`', Logback will be used for logging. Appropriate
 Logback routing is also included to ensure that dependent libraries that use
 Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly.
 
