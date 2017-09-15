@@ -119,8 +119,8 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 	private EndpointInfo<T> createEndpointInfo(String beanName, Class<?> beanType,
 			AnnotationAttributes attributes) {
 		String id = attributes.getString("id");
-		DefaultEnablement defaultEnablement = (DefaultEnablement) attributes.get(
-				"defaultEnablement");
+		DefaultEnablement defaultEnablement = (DefaultEnablement) attributes
+				.get("defaultEnablement");
 		Map<Method, T> operations = discoverOperations(id, beanName, beanType);
 		return new EndpointInfo<>(id, defaultEnablement, operations.values());
 	}

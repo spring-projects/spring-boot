@@ -106,7 +106,7 @@ public class SessionAutoConfiguration {
 
 		@PostConstruct
 		public void checkAvailableImplementations() {
-			List<Class<? extends SessionRepository<?>>> candidates = new ArrayList<>();
+			List<Class<?>> candidates = new ArrayList<>();
 			addCandidate(candidates,
 					"org.springframework.session.hazelcast.HazelcastSessionRepository");
 			addCandidate(candidates,
@@ -119,12 +119,9 @@ public class SessionAutoConfiguration {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		private void addCandidate(List<Class<? extends SessionRepository<?>>> candidates,
-				String fqn) {
+		private void addCandidate(List<Class<?>> candidates, String type) {
 			try {
-				Class<? extends SessionRepository<?>> candidate = (Class<? extends SessionRepository<?>>) this.classLoader
-						.loadClass(fqn);
+				Class<?> candidate = this.classLoader.loadClass(type);
 				if (candidate != null) {
 					candidates.add(candidate);
 				}

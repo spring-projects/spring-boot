@@ -46,32 +46,32 @@ public class SessionAutoConfigurationIntegrationTests
 					SessionAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
-
 	@Test
 	public void severalCandidatesWithNoSessionStore() {
-		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class).run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context).getFailure()
-					.hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
-			assertThat(context).getFailure().hasMessageContaining(
-					"Multiple session repository candidates are available");
-			assertThat(context).getFailure().hasMessageContaining(
-					"set the 'spring.session.store-type' property accordingly");
-		});
+		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasCauseInstanceOf(
+							NonUniqueSessionRepositoryException.class);
+					assertThat(context).getFailure().hasMessageContaining(
+							"Multiple session repository candidates are available");
+					assertThat(context).getFailure().hasMessageContaining(
+							"set the 'spring.session.store-type' property accordingly");
+				});
 	}
 
 	@Test
 	public void severalCandidatesWithWrongSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
 				.withPropertyValues("spring.session.store-type=redis").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context).getFailure()
-					.hasCauseInstanceOf(SessionRepositoryUnavailableException.class);
-			assertThat(context).getFailure().hasMessageContaining(
-					"No session repository could be auto-configured");
-			assertThat(context).getFailure().hasMessageContaining(
-					"session store type is 'redis'");
-		});
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasCauseInstanceOf(
+							SessionRepositoryUnavailableException.class);
+					assertThat(context).getFailure().hasMessageContaining(
+							"No session repository could be auto-configured");
+					assertThat(context).getFailure()
+							.hasMessageContaining("session store type is 'redis'");
+				});
 	}
 
 	@Test
@@ -81,7 +81,6 @@ public class SessionAutoConfigurationIntegrationTests
 				.run((context) -> validateSessionRepository(context,
 						JdbcOperationsSessionRepository.class));
 	}
-
 
 	@Configuration
 	static class HazelcastConfiguration {

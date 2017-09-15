@@ -123,9 +123,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
-				.withDefaultValue(false)
-				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
-				.withDeprecation(null, null));
+				.withDefaultValue(false).fromSource(SimpleProperties.class)
+				.withDescription("A simple flag.").withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.counter"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.size"));
@@ -163,8 +162,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 						.withDefaultValue(false));
 		assertThat(metadata)
 				.has(Metadata.withProperty("simple.type.my-short", Short.class));
-		assertThat(metadata).has(
-				Metadata.withProperty("simple.type.my-primitive-short", Short.class)
+		assertThat(metadata)
+				.has(Metadata.withProperty("simple.type.my-primitive-short", Short.class)
 						.withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("simple.type.my-integer", Integer.class));
@@ -245,9 +244,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("boxing").fromSource(type));
-		assertThat(metadata).has(
-				Metadata.withProperty("boxing.flag", Boolean.class)
-						.withDefaultValue(false).fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("boxing.flag", Boolean.class)
+				.withDefaultValue(false).fromSource(type));
 		assertThat(metadata).has(
 				Metadata.withProperty("boxing.counter", Integer.class).fromSource(type));
 	}
@@ -316,8 +314,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(DeprecatedMethodConfig.Foo.class)
 				.withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false)
-				.fromSource(DeprecatedMethodConfig.Foo.class)
+				.withDefaultValue(false).fromSource(DeprecatedMethodConfig.Foo.class)
 				.withDeprecation(null, null));
 	}
 
@@ -331,10 +328,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(
 						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false)
-				.fromSource(
-						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+		assertThat(metadata).has(
+				Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+						.fromSource(
+								org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
 	}
 
@@ -879,34 +876,30 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isFalse();
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isTrue();
-		assertThat(metadata).has(
-				Metadata.withProperty("foo.counter").fromSource(FooProperties.class)
-						.withDefaultValue(0));
-		assertThat(metadata).has(
-				Metadata.withProperty("bar.counter").fromSource(BarProperties.class)
-						.withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("foo.counter")
+				.fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("bar.counter")
+				.fromSource(BarProperties.class).withDefaultValue(0));
 		metadata = project.incrementalBuild(BarProperties.class);
-		assertThat(metadata).has(
-				Metadata.withProperty("foo.counter").fromSource(FooProperties.class)
-						.withDefaultValue(0));
-		assertThat(metadata).has(
-				Metadata.withProperty("bar.counter").fromSource(BarProperties.class)
-						.withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("foo.counter")
+				.fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("bar.counter")
+				.fromSource(BarProperties.class).withDefaultValue(0));
 		project.addSourceCode(BarProperties.class,
 				BarProperties.class.getResourceAsStream("BarProperties.snippet"));
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("bar.extra"));
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter")
-				.withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").withDefaultValue(0));
 		project.revert(BarProperties.class);
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.extra"));
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter")
-				.withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").withDefaultValue(0));
 	}
 
 	@Test
@@ -914,15 +907,15 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter")
-				.withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").withDefaultValue(0));
 		project.replaceText(BarProperties.class, "@ConfigurationProperties",
 				"//@ConfigurationProperties");
 		metadata = project.incrementalBuild(BarProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.counter"));
 	}
 
@@ -931,25 +924,21 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(
-				Metadata.withProperty("foo.counter").fromSource(FooProperties.class)
-						.withDefaultValue(0));
-		assertThat(metadata).has(
-				Metadata.withProperty("bar.counter").fromSource(BarProperties.class)
-						.withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("foo.counter")
+				.fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("bar.counter")
+				.fromSource(BarProperties.class).withDefaultValue(0));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter")
 				.fromSource(RenamedBarProperties.class));
 		project.delete(BarProperties.class);
 		project.add(RenamedBarProperties.class);
 		metadata = project.incrementalBuild(RenamedBarProperties.class);
-		assertThat(metadata).has(
-				Metadata.withProperty("foo.counter").fromSource(FooProperties.class)
-						.withDefaultValue(0));
-		assertThat(metadata).doesNotHave(
-				Metadata.withProperty("bar.counter").fromSource(BarProperties.class)
-						.withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter")
-				.withDefaultValue(0).fromSource(RenamedBarProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("foo.counter")
+				.fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter")
+				.fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0)
+				.fromSource(RenamedBarProperties.class));
 	}
 
 	private void assertSimpleLombokProperties(ConfigurationMetadata metadata,

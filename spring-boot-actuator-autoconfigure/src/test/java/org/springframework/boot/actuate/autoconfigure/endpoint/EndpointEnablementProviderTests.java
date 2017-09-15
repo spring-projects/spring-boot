@@ -127,16 +127,14 @@ public class EndpointEnablementProviderTests {
 	public void defaultEnablementNeutral() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL);
-		validate(enablement, true,
-				"endpoint 'biz' is enabled (default)");
+		validate(enablement, true, "endpoint 'biz' is enabled (default)");
 	}
 
 	@Test
 	public void defaultEnablementNeutralWeb() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.WEB);
-		validate(enablement, false,
-				"endpoint 'default' (web) is disabled by default");
+		validate(enablement, false, "endpoint 'default' (web) is disabled by default");
 	}
 
 	@Test
@@ -151,8 +149,7 @@ public class EndpointEnablementProviderTests {
 	public void defaultEnablementNeutralWithGeneralDisablement() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, "endpoints.default.enabled=false");
-		validate(enablement, false,
-				"found property endpoints.default.enabled");
+		validate(enablement, false, "found property endpoints.default.enabled");
 	}
 
 	@Test
@@ -160,18 +157,15 @@ public class EndpointEnablementProviderTests {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
 				"endpoints.default.jmx.enabled=false");
-		validate(enablement, false,
-				"found property endpoints.default.jmx.enabled");
+		validate(enablement, false, "found property endpoints.default.jmx.enabled");
 	}
 
 	@Test
 	public void defaultEnablementNeutralTechTakesPrecedence() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
-				"endpoints.default.enabled=true",
-				"endpoints.default.jmx.enabled=false");
-		validate(enablement, false,
-				"found property endpoints.default.jmx.enabled");
+				"endpoints.default.enabled=true", "endpoints.default.jmx.enabled=false");
+		validate(enablement, false, "found property endpoints.default.jmx.enabled");
 	}
 
 	@Test
@@ -179,8 +173,7 @@ public class EndpointEnablementProviderTests {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.WEB,
 				"endpoints.default.web.enabled=true");
-		validate(enablement, true,
-				"found property endpoints.default.web.enabled");
+		validate(enablement, true, "found property endpoints.default.web.enabled");
 	}
 
 	@Test
@@ -196,8 +189,7 @@ public class EndpointEnablementProviderTests {
 	public void defaultEnablementNeutralWithOverride() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, "endpoints.biz.enabled=false");
-		validate(enablement, false,
-				"found property endpoints.biz.enabled");
+		validate(enablement, false, "found property endpoints.biz.enabled");
 	}
 
 	@Test
@@ -205,8 +197,7 @@ public class EndpointEnablementProviderTests {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.WEB,
 				"endpoints.biz.web.enabled=true");
-		validate(enablement, true,
-				"found property endpoints.biz.web.enabled");
+		validate(enablement, true, "found property endpoints.biz.web.enabled");
 	}
 
 	@Test
@@ -214,41 +205,33 @@ public class EndpointEnablementProviderTests {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
 				"endpoints.biz.jmx.enabled=false");
-		validate(enablement, false,
-				"found property endpoints.biz.jmx.enabled");
+		validate(enablement, false, "found property endpoints.biz.jmx.enabled");
 	}
 
 	@Test
 	public void defaultEnablementNeutralTechTakesPrecedenceOnEverything() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
-				"endpoints.default.enabled=false",
-				"endpoints.default.jmx.enabled=false",
-				"endpoints.biz.enabled=false",
-				"endpoints.biz.jmx.enabled=true");
-		validate(enablement, true,
-				"found property endpoints.biz.jmx.enabled");
+				"endpoints.default.enabled=false", "endpoints.default.jmx.enabled=false",
+				"endpoints.biz.enabled=false", "endpoints.biz.jmx.enabled=true");
+		validate(enablement, true, "found property endpoints.biz.jmx.enabled");
 	}
 
 	@Test
 	public void defaultEnablementNeutralSpecificTakesPrecedenceOnDefaults() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
-				"endpoints.default.enabled=false",
-				"endpoints.default.jmx.enabled=false",
+				"endpoints.default.enabled=false", "endpoints.default.jmx.enabled=false",
 				"endpoints.biz.enabled=true");
-		validate(enablement, true,
-				"found property endpoints.biz.enabled");
+		validate(enablement, true, "found property endpoints.biz.enabled");
 	}
 
 	@Test
 	public void defaultEnablementNeutralDefaultTechTakesPrecedenceOnGeneralDefault() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
-				"endpoints.default.enabled=false",
-				"endpoints.default.jmx.enabled=true");
-		validate(enablement, true,
-				"found property endpoints.default.jmx.enabled");
+				"endpoints.default.enabled=false", "endpoints.default.jmx.enabled=true");
+		validate(enablement, true, "found property endpoints.default.jmx.enabled");
 	}
 
 	private EndpointEnablement getEndpointEnablement(String id,

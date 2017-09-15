@@ -44,7 +44,6 @@ public class LogFileWebEndpointManagementContextConfigurationTests {
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
-
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(
 					LogFileWebEndpointManagementContextConfiguration.class);
@@ -81,18 +80,19 @@ public class LogFileWebEndpointManagementContextConfigurationTests {
 	@Test
 	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
 		File file = this.temp.newFile("logfile");
-		FileCopyUtils.copy("--TEST--" .getBytes(), file);
+		FileCopyUtils.copy("--TEST--".getBytes(), file);
 		this.contextRunner
-				.withPropertyValues("endpoints.logfile.external-file:"
-						+ file.getAbsolutePath()).run((context) -> {
-			assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
-			LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
-			Resource resource = endpoint.logFile();
-			assertThat(resource).isNotNull();
-			assertThat(StreamUtils.copyToString(resource.getInputStream(),
-					StandardCharsets.UTF_8)).isEqualTo("--TEST--");
-		});
-
+				.withPropertyValues(
+						"endpoints.logfile.external-file:" + file.getAbsolutePath())
+				.run((context) -> {
+					assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
+					LogFileWebEndpoint endpoint = context
+							.getBean(LogFileWebEndpoint.class);
+					Resource resource = endpoint.logFile();
+					assertThat(resource).isNotNull();
+					assertThat(StreamUtils.copyToString(resource.getInputStream(),
+							StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+				});
 	}
 
 }

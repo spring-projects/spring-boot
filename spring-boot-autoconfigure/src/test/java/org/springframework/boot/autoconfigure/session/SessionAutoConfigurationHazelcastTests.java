@@ -52,23 +52,22 @@ public class SessionAutoConfigurationHazelcastTests
 
 	@Test
 	public void defaultConfig() {
-		this.contextRunner
-				.withPropertyValues("spring.session.store-type=hazelcast")
+		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast")
 				.run(this::validateDefaultConfig);
 	}
 
 	@Test
 	public void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner.withClassLoader(new HideClassesClassLoader(
-				JdbcOperationsSessionRepository.class,
-				RedisOperationsSessionRepository.class)).run(
-						this::validateDefaultConfig);
+		this.contextRunner
+				.withClassLoader(
+						new HideClassesClassLoader(JdbcOperationsSessionRepository.class,
+								RedisOperationsSessionRepository.class))
+				.run(this::validateDefaultConfig);
 	}
 
 	private void validateDefaultConfig(AssertableWebApplicationContext context) {
 		validateSessionRepository(context, HazelcastSessionRepository.class);
-		HazelcastInstance hazelcastInstance = context
-				.getBean(HazelcastInstance.class);
+		HazelcastInstance hazelcastInstance = context.getBean(HazelcastInstance.class);
 		verify(hazelcastInstance, times(1)).getMap("spring:session:sessions");
 	}
 
@@ -95,7 +94,7 @@ public class SessionAutoConfigurationHazelcastTests
 							context, HazelcastSessionRepository.class);
 					assertThat(new DirectFieldAccessor(repository)
 							.getPropertyValue("hazelcastFlushMode"))
-							.isEqualTo(HazelcastFlushMode.IMMEDIATE);
+									.isEqualTo(HazelcastFlushMode.IMMEDIATE);
 				});
 	}
 

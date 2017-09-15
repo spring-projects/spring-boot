@@ -100,7 +100,8 @@ public class EndpointEnablementProvider {
 		if (result != null) {
 			return result;
 		}
-		boolean enablement = determineGlobalDefaultEnablement(defaultEnablement, exposure);
+		boolean enablement = determineGlobalDefaultEnablement(defaultEnablement,
+				exposure);
 		String message = determineGlobalDefaultMessage(endpointId, enablement, exposure,
 				defaultEnablement);
 		return new EndpointEnablement(enablement, message);

@@ -52,7 +52,6 @@ public class ResourceProperties {
 
 	private final Chain chain = new Chain();
 
-
 	public String[] getStaticLocations() {
 		return this.staticLocations;
 	}

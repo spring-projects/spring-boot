@@ -56,7 +56,6 @@ public class EnvironmentEndpointAutoConfigurationTests {
 						.doesNotHaveBean(EnvironmentEndpoint.class));
 	}
 
-
 	@Test
 	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
 		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
@@ -83,6 +82,5 @@ public class EnvironmentEndpointAutoConfigurationTests {
 		return descriptor.getPropertySources().stream()
 				.filter((source) -> name.equals(source.getName())).findFirst().get();
 	}
-
 
 }

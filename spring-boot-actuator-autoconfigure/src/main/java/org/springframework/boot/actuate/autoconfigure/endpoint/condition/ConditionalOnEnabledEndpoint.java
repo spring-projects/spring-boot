@@ -48,10 +48,10 @@ import org.springframework.context.annotation.Conditional;
  * If any properties are set, they are evaluated from most to least specific, e.g.
  * considering a web endpoint with id {@code foo}:
  * <ol>
- *     <li>endpoints.foo.web.enabled</li>
- *     <li>endpoints.foo.enabled</li>
- *     <li>endpoints.default.web.enabled</li>
- *     <li>endpoints.default.enabled</li>
+ * <li>endpoints.foo.web.enabled</li>
+ * <li>endpoints.foo.enabled</li>
+ * <li>endpoints.default.web.enabled</li>
+ * <li>endpoints.default.enabled</li>
  * </ol>
  * For instance if {@code endpoints.default.enabled} is {@code false} but
  * {@code endpoints.<name>.enabled} is {@code true}, the condition will match.

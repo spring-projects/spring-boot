@@ -19,4 +19,5 @@ package org.springframework.boot.configurationsample;
 public enum DefaultEnablement {
 
 	ENABLED, DISABLED, NEUTRAL
+
 }

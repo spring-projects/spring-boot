@@ -61,15 +61,16 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	@Test
 	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
 		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("endpoints.configprops.keys-to-sanitize: .*pass.*, property")
+				.withPropertyValues(
+						"endpoints.configprops.keys-to-sanitize: .*pass.*, property")
 				.run(validateTestProperties("******", "******"));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateTestProperties(String dbPassword,
-			String myTestProperty) {
+	private ContextConsumer<AssertableApplicationContext> validateTestProperties(
+			String dbPassword, String myTestProperty) {
 		return context -> {
-			assertThat(context).hasSingleBean(
-					ConfigurationPropertiesReportEndpoint.class);
+			assertThat(context)
+					.hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesDescriptor properties = endpoint
@@ -94,7 +95,7 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@ConfigurationProperties("test")
-	private static class TestProperties {
+	static class TestProperties {
 
 		private String dbPassword = "123456";
 

@@ -142,7 +142,7 @@ public class RequestMappingEndpointTests {
 		WebMvcEndpointHandlerMapping mapping = new WebMvcEndpointHandlerMapping(
 				new EndpointMapping("application"),
 				Collections.singleton(new EndpointInfo<>("test",
-				DefaultEnablement.ENABLED, Collections.singleton(operation))));
+						DefaultEnablement.ENABLED, Collections.singleton(operation))));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
 		return mapping;

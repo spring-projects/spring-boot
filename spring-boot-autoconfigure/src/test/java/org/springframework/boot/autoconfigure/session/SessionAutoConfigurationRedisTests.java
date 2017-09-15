@@ -50,8 +50,7 @@ public class SessionAutoConfigurationRedisTests
 
 	@Test
 	public void defaultConfig() {
-		this.contextRunner
-				.withPropertyValues("spring.session.store-type=redis")
+		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
 						RedisFlushMode.ON_SAVE));
@@ -60,9 +59,9 @@ public class SessionAutoConfigurationRedisTests
 	@Test
 	public void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
-				.withClassLoader(new HideClassesClassLoader(
-						HazelcastSessionRepository.class,
-						JdbcOperationsSessionRepository.class))
+				.withClassLoader(
+						new HideClassesClassLoader(HazelcastSessionRepository.class,
+								JdbcOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
 						RedisFlushMode.ON_SAVE));

@@ -166,7 +166,8 @@ public class WebMvcAutoConfiguration {
 	@Configuration
 	@Import(EnableWebMvcConfiguration.class)
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
-	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ResourceLoaderAware {
+	public static class WebMvcAutoConfigurationAdapter
+			implements WebMvcConfigurer, ResourceLoaderAware {
 
 		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
 
@@ -316,8 +317,8 @@ public class WebMvcAutoConfiguration {
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
 				customizeResourceHandlerRegistration(
 						registry.addResourceHandler(staticPathPattern)
-								.addResourceLocations(
-										getResourceLocations(this.resourceProperties.getStaticLocations()))
+								.addResourceLocations(getResourceLocations(
+										this.resourceProperties.getStaticLocations()))
 						.setCachePeriod(cachePeriod));
 			}
 		}
@@ -329,29 +330,32 @@ public class WebMvcAutoConfiguration {
 		}
 
 		static String[] getResourceLocations(String[] staticLocations) {
-			String[] locations = new String[staticLocations.length + SERVLET_LOCATIONS.length];
+			String[] locations = new String[staticLocations.length
+					+ SERVLET_LOCATIONS.length];
 			System.arraycopy(staticLocations, 0, locations, 0, staticLocations.length);
-			System.arraycopy(SERVLET_LOCATIONS, 0, locations,
-					staticLocations.length, SERVLET_LOCATIONS.length);
+			System.arraycopy(SERVLET_LOCATIONS, 0, locations, staticLocations.length,
+					SERVLET_LOCATIONS.length);
 			return locations;
 		}
 
 		private Optional<Resource> getWelcomePage() {
-			return Arrays.stream(getResourceLocations(this.resourceProperties.getStaticLocations()))
-					.map(location -> this.resourceLoader.getResource(location + "index.html"))
-					.filter(resource -> {
-						try {
-							if (resource.exists()) {
-								resource.getURL();
-								return true;
-							}
-						}
-						catch (Exception ex) {
-							// Ignore
-						}
-						return false;
-					})
-					.findFirst();
+			String[] locations = getResourceLocations(
+					this.resourceProperties.getStaticLocations());
+			return Arrays.stream(locations).map(this::getIndexHtml)
+					.filter(this::isReadable).findFirst();
+		}
+
+		private Resource getIndexHtml(String location) {
+			return this.resourceLoader.getResource(location + "index.html");
+		}
+
+		private boolean isReadable(Resource resource) {
+			try {
+				return resource.exists() && (resource.getURL() != null);
+			}
+			catch (Exception ex) {
+				return false;
+			}
 		}
 
 		private void customizeResourceHandlerRegistration(
@@ -359,7 +363,6 @@ public class WebMvcAutoConfiguration {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
-
 		}
 
 		@Bean
@@ -403,10 +406,11 @@ public class WebMvcAutoConfiguration {
 			}
 
 			private List<Resource> resolveFaviconLocations() {
-				String[] resourceLocations = getResourceLocations(this.resourceProperties.getStaticLocations());
-				List<Resource> locations = new ArrayList<>(resourceLocations.length + 1);
-				Arrays.stream(resourceLocations)
-						.forEach(location -> locations.add(this.resourceLoader.getResource(location)));
+				String[] staticLocations = getResourceLocations(
+						this.resourceProperties.getStaticLocations());
+				List<Resource> locations = new ArrayList<>(staticLocations.length + 1);
+				Arrays.stream(staticLocations).map(this.resourceLoader::getResource)
+						.forEach(locations::add);
 				locations.add(new ClassPathResource("/"));
 				return Collections.unmodifiableList(locations);
 			}

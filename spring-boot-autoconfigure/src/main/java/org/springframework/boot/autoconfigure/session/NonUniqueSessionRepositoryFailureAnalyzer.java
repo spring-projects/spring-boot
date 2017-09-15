@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.session.SessionRepository;
 
 /**
  * A {@link AbstractFailureAnalyzer} for {@link NonUniqueSessionRepositoryException}.
@@ -34,8 +33,7 @@ class NonUniqueSessionRepositoryFailureAnalyzer
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("Multiple Spring Session store implementations are "
 				+ "available on the classpath:%n"));
-		for (Class<? extends SessionRepository<?>> candidate : cause
-				.getAvailableCandidates()) {
+		for (Class<?> candidate : cause.getAvailableCandidates()) {
 			message.append(String.format("    - %s%n", candidate.getName()));
 		}
 		StringBuilder action = new StringBuilder();
