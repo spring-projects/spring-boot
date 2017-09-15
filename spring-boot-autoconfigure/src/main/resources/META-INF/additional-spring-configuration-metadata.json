@@ -176,6 +176,22 @@
     ]
   },
   {
+    "name": "spring.freemarker.prefix",
+    "defaultValue": ""
+  },
+  {
+    "name": "spring.freemarker.suffix",
+    "defaultValue": ".ftl"
+  },
+  {
+    "name": "spring.groovy.template.prefix",
+    "defaultValue": ""
+  },
+  {
+    "name": "spring.groovy.template.suffix",
+    "defaultValue": ".tpl"
+  },
+  {
     "name": "spring.http.encoding.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable http encoding support.",
@@ -351,6 +367,14 @@
     "type": "java.lang.Boolean",
     "description": "Enable SitePreferenceHandler.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.mustache.prefix",
+    "defaultValue": "classpath:/templates/"
+  },
+  {
+    "name": "spring.mustache.suffix",
+    "defaultValue": ".html"
   },
   {
     "name": "spring.mvc.favicon.enabled",
@@ -1170,6 +1194,14 @@
       "replacement": "spring.thymeleaf.servlet.content-type",
       "level": "error"
     }
+  },
+  {
+    "name": "spring.thymeleaf.prefix",
+    "defaultValue": "classpath:/templates/"
+  },
+  {
+    "name": "spring.thymeleaf.suffix",
+    "defaultValue": ".html"
   }
 ],"hints": [
   {
