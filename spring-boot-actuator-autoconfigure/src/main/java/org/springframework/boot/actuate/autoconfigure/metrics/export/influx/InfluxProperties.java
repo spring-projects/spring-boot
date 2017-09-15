@@ -16,7 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
-import io.micrometer.influx.InfluxConfig;
+import java.time.Duration;
+
 import io.micrometer.influx.InfluxConsistency;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryProperties;
@@ -29,39 +30,127 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.metrics.influx")
-public class InfluxProperties extends StepRegistryProperties implements InfluxConfig {
+public class InfluxProperties extends StepRegistryProperties {
+	/**
+	 * The tag that will be mapped to "host" when shipping metrics to Influx, or
+	 * {@code null} if host should be omitted on publishing.
+	 */
+	private String db;
 
-	@Override
-	public String prefix() {
-		return "spring.metrics.influx";
+	/**
+	 * The write consistency for each point.
+	 */
+	private InfluxConsistency consistency;
+
+	/**
+	 * Authenticate requests with this user. If not specified, the registry will not
+	 * attempt to present credentials to Influx.
+	 */
+	private String userName;
+
+	/**
+	 * Authenticate requests with this password.
+	 */
+	private String password;
+
+	/**
+	 * Influx writes to the DEFAULT retention policy if one is not specified.
+	 */
+	private String retentionPolicy;
+
+	/**
+	 * The URI for the Influx backend.
+	 */
+	private String uri;
+
+	/**
+	 * Enable GZIP compression of metrics batches published to Influx.
+	 */
+	private Boolean compressed;
+
+	/**
+	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
+	 * some max value. This is used to limit the number of buckets shipped to Prometheus
+	 * to save on storage.
+	 */
+	private Duration timerPercentilesMax = Duration.ofMinutes(2);
+
+	/**
+	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
+	 * some min value. This is used to limit the number of buckets shipped to Prometheus
+	 * to save on storage.
+	 */
+	private Duration timerPercentilesMin = Duration.ofMillis(10);
+
+	public String getDb() {
+		return this.db;
 	}
 
 	public void setDb(String db) {
-		set("db", db);
+		this.db = db;
+	}
+
+	public InfluxConsistency getConsistency() {
+		return this.consistency;
 	}
 
 	public void setConsistency(InfluxConsistency consistency) {
-		set("consistency", consistency);
+		this.consistency = consistency;
+	}
+
+	public String getUserName() {
+		return this.userName;
 	}
 
 	public void setUserName(String userName) {
-		set("userName", userName);
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return this.password;
 	}
 
 	public void setPassword(String password) {
-		set("password", password);
+		this.password = password;
+	}
+
+	public String getRetentionPolicy() {
+		return this.retentionPolicy;
 	}
 
 	public void setRetentionPolicy(String retentionPolicy) {
-		set("retentionPolicy", retentionPolicy);
+		this.retentionPolicy = retentionPolicy;
+	}
+
+	public String getUri() {
+		return this.uri;
 	}
 
 	public void setUri(String uri) {
-		set("uri", uri);
+		this.uri = uri;
+	}
+
+	public Boolean getCompressed() {
+		return this.compressed;
 	}
 
 	public void setCompressed(Boolean compressed) {
-		set("compressed", compressed);
+		this.compressed = compressed;
 	}
 
+	public Duration getTimerPercentilesMax() {
+		return this.timerPercentilesMax;
+	}
+
+	public void setTimerPercentilesMax(Duration timerPercentilesMax) {
+		this.timerPercentilesMax = timerPercentilesMax;
+	}
+
+	public Duration getTimerPercentilesMin() {
+		return this.timerPercentilesMin;
+	}
+
+	public void setTimerPercentilesMin(Duration timerPercentilesMin) {
+		this.timerPercentilesMin = timerPercentilesMin;
+	}
 }

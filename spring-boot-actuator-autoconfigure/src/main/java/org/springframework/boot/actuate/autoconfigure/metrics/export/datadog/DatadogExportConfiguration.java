@@ -38,14 +38,21 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ConditionalOnClass(DatadogMeterRegistry.class)
+@ConditionalOnProperty("spring.metrics.datadog.api-key")
 @Import(StringToDurationConverter.class)
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogExportConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean
+	public DatadogConfig datadogConfig(DatadogProperties datadogProperties) {
+		return new DatadogPropertiesConfigAdapter(datadogProperties);
+	}
+
+	@Bean
 	@ConditionalOnProperty(value = "spring.metrics.datadog.enabled", matchIfMissing = true)
-	public MetricsExporter datadogExporter(DatadogConfig config, Clock clock) {
-		return () -> new DatadogMeterRegistry(config, clock);
+	public MetricsExporter datadogExporter(DatadogConfig datadogConfig, Clock clock) {
+		return () -> new DatadogMeterRegistry(datadogConfig, clock);
 	}
 
 	@Bean

@@ -18,41 +18,93 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import java.time.Duration;
 
-import io.micrometer.core.instrument.spectator.step.StepRegistryConfig;
-
 /**
- * Specialization of {@link RegistryProperties} for configuring a metrics registry that
- * pushes aggregated metrics on a regular interval.
+ * Base class for properties that configure a metrics registry that pushes aggregated
+ * metrics on a regular interval.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public abstract class StepRegistryProperties extends RegistryProperties
-		implements StepRegistryConfig {
+public abstract class StepRegistryProperties {
+
+	/**
+	 * The step size (reporting frequency) to use.
+	 */
+	private Duration step = Duration.ofMinutes(1);
+
+	/**
+	 * Enable publishing to the backend.
+	 */
+	private Boolean enabled = true;
+
+	/**
+	 * The connection timeout for requests to the backend.
+	 */
+	private Duration connectTimeout;
+
+	/**
+	 * The read timeout for requests to the backend.
+	 */
+	private Duration readTimeout;
+
+	/**
+	 * The number of threads to use with the metrics publishing scheduler.
+	 */
+	private Integer numThreads;
+
+	/**
+	 * The number of measurements per request to use for the backend. If more measurements
+	 * are found, then multiple requests will be made.
+	 */
+	private Integer batchSize;
+
+	public Duration getStep() {
+		return this.step;
+	}
 
 	public void setStep(Duration step) {
-		set("step", step);
+		this.step = step;
+	}
+
+	public Boolean getEnabled() {
+		return this.enabled;
 	}
 
 	public void setEnabled(Boolean enabled) {
-		set("enabled", enabled);
+		this.enabled = enabled;
 	}
 
-	public void setBatchSize(Integer batchSize) {
-		set("batchSize", batchSize);
+	public Duration getConnectTimeout() {
+		return this.connectTimeout;
 	}
 
 	public void setConnectTimeout(Duration connectTimeout) {
-		set("connectTimeout", connectTimeout);
+		this.connectTimeout = connectTimeout;
+	}
+
+	public Duration getReadTimeout() {
+		return this.readTimeout;
 	}
 
 	public void setReadTimeout(Duration readTimeout) {
-		set("readTimeout", readTimeout);
+		this.readTimeout = readTimeout;
+	}
+
+	public Integer getNumThreads() {
+		return this.numThreads;
 	}
 
 	public void setNumThreads(Integer numThreads) {
-		set("numThreads", numThreads);
+		this.numThreads = numThreads;
+	}
+
+	public Integer getBatchSize() {
+		return this.batchSize;
+	}
+
+	public void setBatchSize(Integer batchSize) {
+		this.batchSize = batchSize;
 	}
 
 }

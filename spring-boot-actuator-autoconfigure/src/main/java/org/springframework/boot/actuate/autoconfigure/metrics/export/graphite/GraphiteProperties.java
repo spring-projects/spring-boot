@@ -19,9 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.graphite;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import io.micrometer.graphite.GraphiteConfig;
-
-import org.springframework.boot.actuate.autoconfigure.metrics.export.RegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -31,35 +28,82 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.metrics.graphite")
-public class GraphiteProperties extends RegistryProperties implements GraphiteConfig {
+public class GraphiteProperties {
+	/**
+	 * Enable publishing to the backend.
+	 */
+	private Boolean enabled = true;
 
-	@Override
-	public String prefix() {
-		return "spring.metrics.graphite";
-	}
+	/**
+	 * The step size (reporting frequency) to use.
+	 */
+	private Duration step = Duration.ofMinutes(1);
 
-	public void setStep(Duration step) {
-		set("step", step);
-	}
+	/**
+	 * The base time unit used to report rates.
+	 */
+	private TimeUnit rateUnits;
 
-	public void setRateUnits(TimeUnit rateUnits) {
-		set("rateUnits", rateUnits);
-	}
+	/**
+	 * The base time unit used to report durations.
+	 */
+	private TimeUnit durationUnits;
 
-	public void setDurationUnits(TimeUnit durationUnits) {
-		set("durationUnits", durationUnits);
-	}
+	/**
+	 * Graphite host used for publishing.
+	 */
+	private String host;
 
-	public void setHost(String host) {
-		set("host", host);
-	}
+	/**
+	 * Graphite port used for publishing.
+	 */
+	private Integer port;
 
-	public void setPort(Integer port) {
-		set("port", port);
+	public Boolean getEnabled() {
+		return this.enabled;
 	}
 
 	public void setEnabled(Boolean enabled) {
-		set("enabled", enabled);
+		this.enabled = enabled;
 	}
 
+	public Duration getStep() {
+		return this.step;
+	}
+
+	public void setStep(Duration step) {
+		this.step = step;
+	}
+
+	public TimeUnit getRateUnits() {
+		return this.rateUnits;
+	}
+
+	public void setRateUnits(TimeUnit rateUnits) {
+		this.rateUnits = rateUnits;
+	}
+
+	public TimeUnit getDurationUnits() {
+		return this.durationUnits;
+	}
+
+	public void setDurationUnits(TimeUnit durationUnits) {
+		this.durationUnits = durationUnits;
+	}
+
+	public String getHost() {
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public Integer getPort() {
+		return this.port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
 }

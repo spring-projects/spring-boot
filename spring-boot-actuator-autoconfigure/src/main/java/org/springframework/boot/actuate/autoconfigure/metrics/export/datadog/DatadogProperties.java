@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
-import io.micrometer.datadog.DatadogConfig;
+import java.time.Duration;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,23 +28,63 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.metrics.datadog")
-public class DatadogProperties extends StepRegistryProperties implements DatadogConfig {
+public class DatadogProperties extends StepRegistryProperties {
 
-	@Override
-	public String prefix() {
-		return "spring.metrics.datadog";
-	}
+	/**
+	 * Your API key, found in your account settings at datadoghq. This property is
+	 * required.
+	 */
+	private String apiKey;
 
-	public DatadogProperties() {
-		set("apiKey", "dummyKey"); // FIXME otherwise tests fail
+	/**
+	 * The tag that will be mapped to "host" when shipping metrics to datadog, or
+	 * {@code null} if host should be omitted on publishing.
+	 */
+	private String hostTag;
+
+	/**
+	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
+	 * some max value. This is used to limit the number of buckets shipped to Prometheus
+	 * to save on storage.
+	 */
+	private Duration timerPercentilesMax = Duration.ofMinutes(2);
+
+	/**
+	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
+	 * some min value. This is used to limit the number of buckets shipped to Prometheus
+	 * to save on storage.
+	 */
+	private Duration timerPercentilesMin = Duration.ofMillis(10);
+
+	public String getApiKey() {
+		return this.apiKey;
 	}
 
 	public void setApiKey(String apiKey) {
-		set("apiKey", apiKey);
+		this.apiKey = apiKey;
 	}
 
-	public void setHostTag(String hostTag) {
-		set("hostTag", hostTag);
+	public String getHostTag() {
+		return this.hostTag;
 	}
 
+	public void setHostKey(String hostKey) {
+		this.hostTag = hostKey;
+	}
+
+	public Duration getTimerPercentilesMax() {
+		return this.timerPercentilesMax;
+	}
+
+	public void setTimerPercentilesMax(Duration timerPercentilesMax) {
+		this.timerPercentilesMax = timerPercentilesMax;
+	}
+
+	public Duration getTimerPercentilesMin() {
+		return this.timerPercentilesMin;
+	}
+
+	public void setTimerPercentilesMin(Duration timerPercentilesMin) {
+		this.timerPercentilesMin = timerPercentilesMin;
+	}
 }
