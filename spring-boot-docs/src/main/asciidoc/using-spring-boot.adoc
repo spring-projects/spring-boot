@@ -433,7 +433,7 @@ annotation to load XML configuration files.
 [[using-boot-auto-configuration]]
 == Auto-configuration
 Spring Boot auto-configuration attempts to automatically configure your Spring
-application based on the jar dependencies that you have added. For example, If
+application based on the jar dependencies that you have added. For example, if
 `HSQLDB` is on your classpath, and you have not manually configured any database
 connection beans, then we will auto-configure an in-memory database.
 
@@ -579,7 +579,7 @@ One of the biggest advantages of packaging your application as jar and using an 
 HTTP server is that you can run your application as you would any other. Debugging Spring
 Boot applications is also easy; you don't need any special IDE plugins or extensions.
 
-NOTE: This section only covers jar based packaging, If you choose to package your
+NOTE: This section only covers jar based packaging, if you choose to package your
 application as a war file you should refer to your server and IDE documentation.
 
 
