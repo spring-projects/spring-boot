@@ -250,7 +250,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.prefix= # Prefix that gets prepended to view names when building a URL.
 	spring.freemarker.request-context-attribute= # Name of the RequestContext attribute for all views.
 	spring.freemarker.settings.*= # Well-known FreeMarker keys which will be passed to FreeMarker's Configuration.
-	spring.freemarker.suffix= # Suffix that gets appended to view names when building a URL.
+	spring.freemarker.suffix=.ftl # Suffix that gets appended to view names when building a URL.
 	spring.freemarker.template-loader-path=classpath:/templates/ # Comma-separated list of template paths.
 	spring.freemarker.view-names= # White list of view names that can be resolved.
 
