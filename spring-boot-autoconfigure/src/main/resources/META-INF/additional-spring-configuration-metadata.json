@@ -226,7 +226,9 @@
   },
   {
     "name": "spring.elasticsearch.jest.uris",
-    "defaultValue": ["http://localhost:9200"]
+    "defaultValue": [
+      "http://localhost:9200"
+    ]
   },
   {
     "name": "spring.http.encoding.enabled",
@@ -235,9 +237,9 @@
     "defaultValue": true
   },
   {
-  	"name": "spring.http.converters.preferred-json-mapper",
-  	"type": "java.lang.String",
-  	"description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
+    "name": "spring.http.converters.preferred-json-mapper",
+    "type": "java.lang.String",
+    "description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
   },
   {
     "name": "spring.jersey.type",
