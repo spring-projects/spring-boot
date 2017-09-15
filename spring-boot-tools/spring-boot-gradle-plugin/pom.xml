@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-tools</artifactId>
-		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<version>2.0.0.M4</version>
 	</parent>
 	<artifactId>spring-boot-gradle-plugin</artifactId>
 	<packaging>pom</packaging>
@@ -195,7 +195,7 @@
 											<zipfileset dir="${project.build.directory}/generated-docs" includes="index.html" prefix="reference/html" />
 											<mappedresources>
 												<fileset dir="${project.build.directory}/generated-docs" includes="index.pdf" />
-												<globmapper from="index.pdf" to="reference/pdf/spring-boot-gradle-plugin-reference.pdf"/>
+												<globmapper from="index.pdf" to="reference/pdf/spring-boot-gradle-plugin-reference.pdf" />
 											</mappedresources>
 										</zip>
 									</target>
