@@ -62,8 +62,8 @@ public class MetricsEndpointWebIntegrationTests {
 		MetricsEndpointWebIntegrationTests.client.get()
 				.uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
 				.isOk().expectBody()
-				.jsonPath("['jvm_memory_used.area.nonheap.id.Compressed Class Space']")
-				.exists().jsonPath("['jvm_memory_used.area.heap.id.PS Old Gen']");
+				.jsonPath("['jvmMemoryUsed.area.nonheap.id.Compressed_Class_Space']")
+				.exists().jsonPath("['jvmMemoryUsed.area.heap.id.PS_Old_Gen']");
 	}
 
 	@Configuration

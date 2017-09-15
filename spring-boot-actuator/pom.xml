@@ -53,7 +53,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-prometheus-starter</artifactId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

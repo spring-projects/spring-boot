@@ -132,7 +132,7 @@
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.18</lombok.version>
 		<mariadb.version>2.1.1</mariadb.version>
-		<micrometer.version>0.11.0.RELEASE</micrometer.version>
+		<micrometer.version>1.0.0-rc.1</micrometer.version>
 		<mssql-jdbc.version>6.2.1.jre8</mssql-jdbc.version>
 		<mockito.version>2.9.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.5.0</mongo-driver-reactivestreams.version>
@@ -568,7 +568,6 @@
 				<artifactId>spring-boot-starter-web-services</artifactId>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
-
 			<!-- Third Party -->
 			<dependency>
 				<groupId>antlr</groupId>
@@ -842,37 +841,37 @@
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-atlas-starter</artifactId>
+				<artifactId>micrometer-registry-atlas</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-datadog-starter</artifactId>
+				<artifactId>micrometer-registry-datadog</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-influx-starter</artifactId>
+				<artifactId>micrometer-registry-influx</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-ganglia-starter</artifactId>
+				<artifactId>micrometer-registry-ganglia</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-graphite-starter</artifactId>
+				<artifactId>micrometer-registry-graphite</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-jmx-starter</artifactId>
+				<artifactId>micrometer-registry-jmx</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-prometheus-starter</artifactId>
+				<artifactId>micrometer-registry-prometheus</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
@@ -2008,7 +2007,7 @@
 				<version>${mongodb.version}</version>
 			</dependency>
 			<dependency>
-		 		<groupId>org.mongodb</groupId>
+				<groupId>org.mongodb</groupId>
 				<artifactId>mongodb-driver-reactivestreams</artifactId>
 				<version>${mongo-driver-reactivestreams.version}</version>
 			</dependency>

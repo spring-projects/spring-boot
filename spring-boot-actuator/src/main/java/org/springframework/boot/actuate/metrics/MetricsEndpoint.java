@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.NamingConvention;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 
@@ -75,7 +76,8 @@ public class MetricsEndpoint {
 	}
 
 	private String getHierarchicalName(Meter meter) {
-		return HierarchicalNameMapper.DEFAULT.toHierarchicalName(meter.getId());
+		return HierarchicalNameMapper.DEFAULT.toHierarchicalName(meter.getId(),
+				NamingConvention.camelCase);
 	}
 
 	private <T> Stream<T> stream(Iterable<T> measure) {
