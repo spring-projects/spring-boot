@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -101,6 +102,14 @@ public class KafkaAutoConfiguration {
 		}
 		jaas.setOptions(jaasProperties.getOptions());
 		return jaas;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(KafkaAdmin.class)
+	public KafkaAdmin kafkaAdmin() {
+		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
+		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailIfNoBrokers());
+		return kafkaAdmin;
 	}
 
 }

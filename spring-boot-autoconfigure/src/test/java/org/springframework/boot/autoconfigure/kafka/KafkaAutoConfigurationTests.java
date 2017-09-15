@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.security.auth.login.AppConfigurationEntry;
 
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
@@ -38,9 +39,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -168,6 +171,38 @@ public class KafkaAutoConfigurationTests {
 				.isEmpty();
 		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 		assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
+	}
+
+	@Test
+	public void adminProperties() {
+		load("spring.kafka.clientId=cid",
+				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
+				"spring.kafka.admin.fail-if-no-brokers=true",
+				"spring.kafka.admin.properties.fiz.buz=fix.fox",
+				"spring.kafka.admin.ssl.key-password=p4",
+				"spring.kafka.admin.ssl.keystore-location=classpath:ksLocP",
+				"spring.kafka.admin.ssl.keystore-password=p5",
+				"spring.kafka.admin.ssl.truststore-location=classpath:tsLocP",
+				"spring.kafka.admin.ssl.truststore-password=p6");
+		KafkaAdmin admin = this.context
+				.getBean(KafkaAdmin.class);
+		Map<String, Object> configs = admin.getConfig();
+		// common
+		assertThat(configs.get(AdminClientConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
+		// admin
+		assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p4");
+		assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
+				.endsWith(File.separator + "ksLocP");
+		assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG)).isEqualTo("p5");
+		assertThat((String) configs.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
+				.endsWith(File.separator + "tsLocP");
+		assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
+				.isEqualTo("p6");
+		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
+				.isEmpty();
+		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
+		assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
+		assertThat(KafkaTestUtils.getPropertyValue(admin, "fatalIfBrokerNotAvailable", Boolean.class)).isTrue();
 	}
 
 	@SuppressWarnings("unchecked")
