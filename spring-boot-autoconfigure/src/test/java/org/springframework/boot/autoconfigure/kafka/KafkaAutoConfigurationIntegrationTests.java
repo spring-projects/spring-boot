@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.kafka;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.Producer;
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -27,6 +29,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.rule.KafkaEmbedded;
@@ -43,6 +46,8 @@ public class KafkaAutoConfigurationIntegrationTests {
 
 	private static final String TEST_TOPIC = "testTopic";
 
+	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
+
 	@ClassRule
 	public static final KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true,
 			TEST_TOPIC);
@@ -56,13 +61,13 @@ public class KafkaAutoConfigurationIntegrationTests {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testEndToEnd() throws Exception {
 		load(KafkaConfig.class,
 				"spring.kafka.bootstrap-servers:" + kafkaEmbedded.getBrokersAsString(),
 				"spring.kafka.consumer.group-id=testGroup",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
-		@SuppressWarnings("unchecked")
 		KafkaTemplate<String, String> template = this.context
 				.getBean(KafkaTemplate.class);
 		template.send(TEST_TOPIC, "foo", "bar");
@@ -70,6 +75,11 @@ public class KafkaAutoConfigurationIntegrationTests {
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
 		assertThat(listener.key).isEqualTo("foo");
 		assertThat(listener.received).isEqualTo("bar");
+
+		DefaultKafkaProducerFactory producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
+		Producer producer = producerFactory.createProducer();
+		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC).size()).isEqualTo(10);
+		producer.close();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -91,6 +101,11 @@ public class KafkaAutoConfigurationIntegrationTests {
 		@Bean
 		public Listener listener() {
 			return new Listener();
+		}
+
+		@Bean
+		public NewTopic adminCreated() {
+			return new NewTopic(ADMIN_CREATED_TOPIC, 10, (short) 1);
 		}
 
 	}
