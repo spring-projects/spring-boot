@@ -114,8 +114,7 @@
   {
     "name": "spring.aop.proxy-target-class",
     "type": "java.lang.Boolean",
-    "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
-    "defaultValue": false
+    "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false). Defaults to \"true\" when using Spring Transaction Management, otherwise \"false\"."
   },
   {
     "name": "spring.application.admin.enabled",
