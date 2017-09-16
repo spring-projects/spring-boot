@@ -85,7 +85,7 @@ public class WebMvcMetrics {
 		this.recordAsPercentiles = recordAsPercentiles;
 	}
 
-	void tagWithException(Throwable exception) {
+	public void tagWithException(Throwable exception) {
 		RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
 		attributes.setAttribute(EXCEPTION_ATTRIBUTE, exception,
 				RequestAttributes.SCOPE_REQUEST);
