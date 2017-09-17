@@ -876,8 +876,8 @@ its https://micrometer.io/docs[reference documentation].
 [[production-ready-metrics-spring-mvc]]
 === Spring MVC metrics
 Auto-configuration will enable the instrumentation of requests handled by Spring MVC.
-When `spring.metrics.web.server.auto-time-requests` is `true`, this instrumentation will occur
-for all requests. Alternatively, when set to `false`, instrumentation can be enabled
+When `spring.metrics.web.server.auto-time-requests` is `true`, this instrumentation will
+occur for all requests. Alternatively, when set to `false`, instrumentation can be enabled
 by adding `@Timed` to a request-handling method.
 
 Metrics will, by default, be generated with the name `http.server.requests`. The name
