@@ -876,12 +876,12 @@ its https://micrometer.io/docs[reference documentation].
 [[production-ready-metrics-spring-mvc]]
 === Spring MVC metrics
 Auto-configuration will enable the instrumentation of requests handled by Spring MVC.
-When `metrics.web.server.auto-time-requests` is `true`, this instrumentation will occur
-for all requests. Alternatively, when set to `false`, instrumentation can be enabled
+When `spring.metrics.web.server.auto-time-requests` is `true`, this instrumentation will
+occur for all requests. Alternatively, when set to `false`, instrumentation can be enabled
 by adding `@Timed` to a request-handling method.
 
 Metrics will, by default, be generated with the name `http.server.requests`. The name
-can be customized using the `metrics.web.server.requests-metrics-name` property.
+can be customized using the `spring.metrics.web.server.requests-metrics-name` property.
 
 
 
@@ -904,7 +904,7 @@ controllers. A helper class, `RouterFunctionMetrics`, is also provided that can 
 used to instrument applications using WebFlux's funtional programming model.
 
 Metrics will, by default, be generated with the name `http.server.requests`. The name
-can be customized using the `metrics.web.server.requests-metrics-name` property.
+can be customized using the `spring.metrics.web.server.requests-metrics-name` property.
 
 
 
@@ -939,7 +939,7 @@ instrumentation of its requests. `MetricsRestTemplateCustomizer` can be used to
 customize your own `RestTemplate` instances.
 
 Metrics will, by default, be generated with the name `http.client.requests`. The name
-can be customized using the `metrics.web.client.requests-metrics-name` property.
+can be customized using the `spring.metrics.web.client.requests-metrics-name` property.
 
 
 
