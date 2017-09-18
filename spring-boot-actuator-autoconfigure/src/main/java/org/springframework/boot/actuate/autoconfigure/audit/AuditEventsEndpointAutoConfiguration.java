@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.audit;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
 import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
+import org.springframework.boot.actuate.audit.AuditEventsWebEndpointExtension;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.logging.LoggersEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 @Configuration
@@ -55,6 +57,15 @@ public class AuditEventsEndpointAutoConfiguration {
 	public AuditEventsJmxEndpointExtension auditEventsJmxEndpointExtension(
 			AuditEventsEndpoint auditEventsEndpoint) {
 		return new AuditEventsJmxEndpointExtension(auditEventsEndpoint);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	@ConditionalOnBean(AuditEventsEndpoint.class)
+	public AuditEventsWebEndpointExtension auditEventsWebEndpointExtension(
+			AuditEventsEndpoint auditEventsEndpoint) {
+		return new AuditEventsWebEndpointExtension(auditEventsEndpoint);
 	}
 
 }
