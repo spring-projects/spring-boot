@@ -379,7 +379,7 @@ The `Application.java` file would declare the `main` method, along with the basi
 
 [source,java,indent=0]
 ----
-	package com.example.myproject;
+	package com.example.myapplication;
 
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -553,7 +553,7 @@ The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 
 [source,java,indent=0]
 ----
-	package com.example.myproject;
+	package com.example.myapplication;
 
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -610,7 +610,7 @@ run your application using `java -jar`. For example:
 
 [indent=0,subs="attributes"]
 ----
-	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+	$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 
 It is also possible to run a packaged application with remote debugging support enabled.
@@ -619,7 +619,7 @@ This allows you to attach a debugger to your packaged application:
 [indent=0,subs="attributes"]
 ----
 	$ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
-	       -jar target/myproject-0.0.1-SNAPSHOT.jar
+	       -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 
 
