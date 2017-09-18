@@ -56,7 +56,7 @@ public class SpringIntegrationMetricsIntegrationTests {
 
 	@Test
 	public void springIntegrationMetrics() {
-		this.converter.fahrenheitToCelcius(68.0);
+		this.converter.fahrenheitToCelsius(68.0);
 		assertThat(this.registry.find("spring.integration.channel.sends")
 				.tags("channel", "convert.input").value(Statistic.Count, 1).meter())
 						.isPresent();
@@ -98,7 +98,7 @@ public class SpringIntegrationMetricsIntegrationTests {
 			return (f) -> f
 					.transform((payload) -> "{\"fahrenheit\":" + payload + "}",
 							(e) -> e.id("toJson"))
-					.handle(String.class, this::fahrenheitToCelcius,
+					.handle(String.class, this::fahrenheitToCelsius,
 							(e) -> e.id("temperatureConverter"))
 					.transform(this::extractResult, e -> e.id("toResponse"));
 		}
@@ -106,19 +106,19 @@ public class SpringIntegrationMetricsIntegrationTests {
 		private double extractResult(String json) {
 			try {
 				return (double) new ObjectMapper().readValue(json, Map.class)
-						.get("celcius");
+						.get("celsius");
 			}
 			catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 		}
 
-		private String fahrenheitToCelcius(String payload, Map<String, Object> headers) {
+		private String fahrenheitToCelsius(String payload, Map<String, Object> headers) {
 			try {
 				double fahrenheit = (double) new ObjectMapper()
 						.readValue(payload, Map.class).get("fahrenheit");
-				double celcius = (fahrenheit - 32) * (5.0 / 9.0);
-				return "{\"celcius\":" + celcius + "}";
+				double celsius = (fahrenheit - 32) * (5.0 / 9.0);
+				return "{\"celsius\":" + celsius + "}";
 			}
 			catch (Exception ex) {
 				throw new RuntimeException(ex);
@@ -129,7 +129,7 @@ public class SpringIntegrationMetricsIntegrationTests {
 		public interface TempConverter {
 
 			@Gateway(requestChannel = "convert.input")
-			double fahrenheitToCelcius(double fahren);
+			double fahrenheitToCelsius(double fahrenheit);
 
 		}
 

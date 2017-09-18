@@ -36,7 +36,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 /**
  * Enable auto-configuration of the Spring Application Context, attempting to guess and
  * configure beans that you are likely to need. Auto-configuration classes are usually
- * applied based on your classpath and what beans you have defined. For example, If you
+ * applied based on your classpath and what beans you have defined. For example, if you
  * have {@code tomcat-embedded.jar} on your classpath you are likely to want a
  * {@link TomcatServletWebServerFactory} (unless you have defined your own
  * {@link ServletWebServerFactory} bean).

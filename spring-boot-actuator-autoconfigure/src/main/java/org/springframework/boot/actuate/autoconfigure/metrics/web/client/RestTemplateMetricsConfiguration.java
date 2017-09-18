@@ -85,12 +85,12 @@ public class RestTemplateMetricsConfiguration {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			if (bean instanceof RestTemplate) {
-				geCustomizer().customize((RestTemplate) bean);
+				getCustomizer().customize((RestTemplate) bean);
 			}
 			return bean;
 		}
 
-		private MetricsRestTemplateCustomizer geCustomizer() {
+		private MetricsRestTemplateCustomizer getCustomizer() {
 			if (this.customizer == null) {
 				this.customizer = this.applicationContext
 						.getBean(MetricsRestTemplateCustomizer.class);
