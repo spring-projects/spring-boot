@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
 import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
+import org.springframework.boot.actuate.audit.AuditEventsWebEndpointExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Vedran Pavic
  */
 public class AuditEventsEndpointAutoConfigurationTests {
 
@@ -47,6 +49,12 @@ public class AuditEventsEndpointAutoConfigurationTests {
 	public void runShouldHaveJmxExtensionBean() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(AuditEventsJmxEndpointExtension.class));
+	}
+
+	@Test
+	public void runShouldHaveWebExtensionBean() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(AuditEventsWebEndpointExtension.class));
 	}
 
 	@Test

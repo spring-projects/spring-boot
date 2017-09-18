@@ -42,6 +42,12 @@ public class AuditEventsEndpointWebIntegrationTests {
 	private static WebTestClient client;
 
 	@Test
+	public void eventsWithoutParams() throws Exception {
+		client.get().uri((builder) -> builder.path("/application/auditevents").build())
+				.exchange().expectStatus().isBadRequest();
+	}
+
+	@Test
 	public void eventsWithDateAfter() throws Exception {
 		client.get()
 				.uri((builder) -> builder.path("/application/auditevents")
@@ -90,6 +96,12 @@ public class AuditEventsEndpointWebIntegrationTests {
 		@Bean
 		public AuditEventsEndpoint auditEventsEndpoint() {
 			return new AuditEventsEndpoint(auditEventsRepository());
+		}
+
+		@Bean
+		public AuditEventsWebEndpointExtension auditEventsWebEndpointExtension(
+				AuditEventsEndpoint auditEventsEndpoint) {
+			return new AuditEventsWebEndpointExtension(auditEventsEndpoint);
 		}
 
 		private AuditEvent createEvent(String instant, String principal, String type) {
