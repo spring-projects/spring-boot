@@ -543,77 +543,72 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	// Make sure that we at least attempt to load the store
 	public void enableSslWithNonExistingKeystoreShouldFail() {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=foo",
 						"spring.rabbitmq.ssl.keyStorePassword=secret")
-				.run(context -> {
+				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure().hasMessageContaining("foo");
-					assertThat(context).getFailure().hasMessageContaining("does not exist");
+					assertThat(context).getFailure()
+							.hasMessageContaining("does not exist");
 				});
 	}
 
 	@Test
 	// Make sure that we at least attempt to load the store
 	public void enableSslWithNonExistingTrustStoreShouldFail() {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues(
-						"spring.rabbitmq.ssl.enabled:true",
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.trustStore=bar",
 						"spring.rabbitmq.ssl.trustStorePassword=secret")
 				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure().hasMessageContaining("bar");
-					assertThat(context).getFailure().hasMessageContaining("does not exist");
+					assertThat(context).getFailure()
+							.hasMessageContaining("does not exist");
 				});
 	}
 
 	@Test
 	public void enableSslWithInvalidKeystoreTypeShouldFail() throws Exception {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues(
-						"spring.rabbitmq.ssl.enabled:true",
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=foo",
 						"spring.rabbitmq.ssl.keyStoreType=fooType")
-				.run(context -> {
+				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure().hasMessageContaining("fooType");
-					assertThat(context).getFailure().hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
+					assertThat(context).getFailure()
+							.hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
 				});
 	}
 
 	@Test
 	public void enableSslWithInvalidTrustStoreTypeShouldFail() throws Exception {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues(
-						"spring.rabbitmq.ssl.enabled:true",
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.trustStore=bar",
 						"spring.rabbitmq.ssl.trustStoreType=barType")
-				.run(context -> {
+				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure().hasMessageContaining("barType");
-					assertThat(context).getFailure().hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
+					assertThat(context).getFailure()
+							.hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
 				});
 	}
 
 	@Test
 	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() throws Exception {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues(
-						"spring.rabbitmq.ssl.enabled:true",
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
 						"spring.rabbitmq.ssl.keyStoreType=jks",
 						"spring.rabbitmq.ssl.keyStorePassword=secret",
 						"spring.rabbitmq.ssl.trustStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
 						"spring.rabbitmq.ssl.trustStoreType=jks",
 						"spring.rabbitmq.ssl.trustStorePassword=secret")
-				.run(context -> assertThat(context).hasNotFailed());
+				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(

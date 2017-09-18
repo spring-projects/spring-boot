@@ -68,7 +68,7 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 
 	private ContextConsumer<AssertableApplicationContext> validateTestProperties(
 			String dbPassword, String myTestProperty) {
-		return context -> {
+		return (context) -> {
 			assertThat(context)
 					.hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context

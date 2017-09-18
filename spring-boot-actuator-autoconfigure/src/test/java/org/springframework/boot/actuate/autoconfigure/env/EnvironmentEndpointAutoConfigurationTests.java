@@ -65,7 +65,7 @@ public class EnvironmentEndpointAutoConfigurationTests {
 
 	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(
 			String dbPassword, String apiKey) {
-		return context -> {
+		return (context) -> {
 			assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 			EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
 			EnvironmentDescriptor env = endpoint.environment(null);
