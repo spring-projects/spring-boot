@@ -542,7 +542,7 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	// Make sure that we at least attempt to load the store
-	public void enableSslWithNonexistingKeystoreShouldFail() {
+	public void enableSslWithNonExistingKeystoreShouldFail() {
 		this.contextRunner
 				.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
@@ -557,7 +557,7 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	// Make sure that we at least attempt to load the store
-	public void enableSslWithNonexistingTruststoreShouldFail() {
+	public void enableSslWithNonExistingTrustStoreShouldFail() {
 		this.contextRunner
 				.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(
@@ -587,7 +587,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithInvalidTruststoreTypeShouldFail() throws Exception {
+	public void enableSslWithInvalidTrustStoreTypeShouldFail() throws Exception {
 		this.contextRunner
 				.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(

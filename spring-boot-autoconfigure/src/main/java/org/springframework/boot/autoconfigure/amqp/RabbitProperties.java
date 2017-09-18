@@ -315,9 +315,9 @@ public class RabbitProperties {
 		private String keyStore;
 
 		/**
-		 * Set the key store type (jks, pkcs12, etc).
+		 * Key store type.
 		 */
-		private String keyStoreType;
+		private String keyStoreType = "PKCS12";
 
 		/**
 		 * Password used to access the key store.
@@ -330,9 +330,9 @@ public class RabbitProperties {
 		private String trustStore;
 
 		/**
-		 * Set the trust store type (jks, pkcs12, etc).
+		 * Trust store type.
 		 */
-		private String trustStoreType;
+		private String trustStoreType = "JKS";
 
 		/**
 		 * Password used to access the trust store.

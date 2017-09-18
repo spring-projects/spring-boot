@@ -1051,11 +1051,11 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.requested-heartbeat= # Requested heartbeat timeout, in seconds; zero for none.
 	spring.rabbitmq.ssl.enabled=false # Enable SSL support.
 	spring.rabbitmq.ssl.key-store= # Path to the key store that holds the SSL certificate.
-	spring.rabbitmq.ssl.key-store-type= # Type of key store (jks, pkcs12,..). Defaults to pkcs12 if not set
 	spring.rabbitmq.ssl.key-store-password= # Password used to access the key store.
+	spring.rabbitmq.ssl.key-store-type=PKCS12 # Key store type.
 	spring.rabbitmq.ssl.trust-store= # Trust store that holds SSL certificates.
-	spring.rabbitmq.ssl.trust-store-type= # Type of trust store (jks, pkcs12,..). Defaults to jks if not set
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
+	spring.rabbitmq.ssl.trust-store-type=JKS # Trust store type.
 	spring.rabbitmq.ssl.algorithm= # SSL algorithm to use. By default configure by the rabbit client library.
 	spring.rabbitmq.template.mandatory=false # Enable mandatory messages.
 	spring.rabbitmq.template.receive-timeout=0 # Timeout for `receive()` methods.
