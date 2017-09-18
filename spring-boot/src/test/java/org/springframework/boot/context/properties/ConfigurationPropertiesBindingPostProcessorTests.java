@@ -16,9 +16,11 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -585,6 +587,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			this.lastName = lastName;
 		}
 
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class ListProperty {
+
+		private List<String> colors = new ArrayList<>();
+
+		public List<String> getColors() {
+			return this.colors;
+		}
+
+		public void setColors(List<String> colors) {
+			this.colors = colors;
+		}
 	}
 
 }
