@@ -49,6 +49,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void allMongoClientOptionsCanBeSet() {
 		MongoClientOptions.Builder builder = MongoClientOptions.builder();
 		builder.alwaysUseMBeans(true);
@@ -57,7 +58,7 @@ public class MongoPropertiesTests {
 		builder.cursorFinalizerEnabled(false);
 		builder.description("test");
 		builder.maxWaitTime(120001);
-		builder.socketKeepAlive(true);
+		builder.socketKeepAlive(false);
 		builder.socketTimeout(1000);
 		builder.threadsAllowedToBlockForConnectionMultiplier(6);
 		builder.minConnectionsPerHost(0);
