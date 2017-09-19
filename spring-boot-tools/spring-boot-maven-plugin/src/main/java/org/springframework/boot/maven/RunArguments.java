@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 
@@ -31,14 +32,16 @@ class RunArguments {
 
 	private static final String[] NO_ARGS = {};
 
-	private final LinkedList<String> args;
+	private final LinkedList<String> args = new LinkedList<>();
 
 	RunArguments(String arguments) {
 		this(parseArgs(arguments));
 	}
 
 	RunArguments(String[] args) {
-		this.args = new LinkedList<>(Arrays.asList(args));
+		if (args != null) {
+			Arrays.stream(args).filter(Objects::nonNull).forEach(this.args::add);
+		}
 	}
 
 	public LinkedList<String> getArgs() {
