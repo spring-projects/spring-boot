@@ -177,7 +177,7 @@
 		<spring-security-oauth.version>2.2.0.RELEASE</spring-security-oauth.version>
 		<spring-session.version>2.0.0.M4</spring-session.version>
 		<spring-social.version>2.0.0.M4</spring-social.version>
-		<spring-social-facebook.version>3.0.0.M2</spring-social-facebook.version>
+		<spring-social-facebook.version>3.0.0.M3</spring-social-facebook.version>
 		<spring-social-linkedin.version>2.0.0.M2</spring-social-linkedin.version>
 		<spring-social-twitter.version>2.0.0.M2</spring-social-twitter.version>
 		<spring-ws.version>2.4.0.RELEASE</spring-ws.version>
