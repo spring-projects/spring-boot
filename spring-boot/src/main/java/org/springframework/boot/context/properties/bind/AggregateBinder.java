@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.bind;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.core.ResolvableType;
 
 /**
  * Internal strategy used by {@link Binder} to bind aggregates (Maps, Lists, Arrays).
@@ -47,9 +46,7 @@ abstract class AggregateBinder<T> {
 	public final Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder itemBinder) {
 		Supplier<?> value = target.getValue();
-		Class<?> type = (value == null ? target.getType().resolve()
-				: ResolvableType.forClass(AggregateBinder.class, getClass())
-						.resolveGeneric());
+		Class<?> type = (value == null ? target.getType().resolve() : null);
 		Object result = bind(name, target, itemBinder, type);
 		if (result == null || value == null || value.get() == null) {
 			return result;

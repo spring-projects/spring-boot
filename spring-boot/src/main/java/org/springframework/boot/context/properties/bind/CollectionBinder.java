@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.CollectionFactory;
@@ -37,10 +38,12 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	@Override
 	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder, Class<?> type) {
+		Class<?> collectionType = (type != null ? type
+				: ResolvableType.forClassWithGenerics(List.class, Object.class).resolve());
 		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(
-				() -> CollectionFactory.createCollection(type, 0));
+				() -> CollectionFactory.createCollection(collectionType, 0));
 		ResolvableType elementType = target.getType().asCollection().getGeneric();
-		bindIndexed(name, target, elementBinder, collection, target.getType(),
+		bindIndexed(name, target, elementBinder, collection, ResolvableType.forClass(collectionType),
 				elementType);
 		if (collection.wasSupplied()) {
 			return collection.get();

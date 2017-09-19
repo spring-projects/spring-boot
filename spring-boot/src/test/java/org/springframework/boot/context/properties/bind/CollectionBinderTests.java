@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -316,9 +317,44 @@ public class CollectionBinderTests {
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "d");
 	}
 
+	@Test
+	public void bindToCollectionWithNoDefaultConstructor() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items", "a,b,c,c");
+		this.sources.add(source);
+		ExampleCustomBean result = this.binder
+				.bind("foo", ExampleCustomBean.class).get();
+		assertThat(result.getItems()).hasSize(4);
+		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
+	}
+
+	@Test
+	public void bindToListShouldAllowDuplicateValues() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items", "a,b,c,c");
+		this.sources.add(source);
+		ExampleCollectionBean result = this.binder
+				.bind("foo", ExampleCollectionBean.class).get();
+		assertThat(result.getItems()).hasSize(5);
+		assertThat(result.getItems()).containsExactly("a", "b", "c", "c", "d");
+	}
+
+	@Test
+	public void bindToSetShouldNotAllowDuplicateValues() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items-set", "a,b,c,c");
+		this.sources.add(source);
+		ExampleCollectionBean result = this.binder
+				.bind("foo", ExampleCollectionBean.class).get();
+		assertThat(result.getItemsSet()).hasSize(3);
+		assertThat(result.getItemsSet()).containsExactly("a", "b", "c");
+	}
+
 	public static class ExampleCollectionBean {
 
 		private List<String> items = new ArrayList<>();
+
+		private Set<String> itemsSet = new HashSet<>();
 
 		public List<String> getItems() {
 			return this.items;
@@ -326,6 +362,36 @@ public class CollectionBinderTests {
 
 		public void setItems(List<String> items) {
 			this.items.add("d");
+		}
+
+		public Set<String> getItemsSet() {
+			return this.itemsSet;
+		}
+
+		public void setItemsSet(Set<String> itemsSet) {
+			this.itemsSet = itemsSet;
+		}
+	}
+
+	public static class ExampleCustomBean {
+
+		private MyCustomList items = new MyCustomList(Collections.singletonList("foo"));
+
+		public MyCustomList getItems() {
+			return this.items;
+		}
+
+		public void setItems(MyCustomList items) {
+			this.items = items;
+		}
+	}
+
+	public static class MyCustomList extends ArrayList {
+
+		private List<String> items = new ArrayList<>(Collections.singletonList("foo"));
+
+		public MyCustomList(List<String> items) {
+			this.items = items;
 		}
 
 	}
