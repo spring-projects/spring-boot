@@ -93,6 +93,7 @@
 								<bannedDependencies>
 									<excludes>
 										<exclude>commons-logging:*:*</exclude>
+										<exclude>org.hibernate:hibernate-validator:*</exclude>
 									</excludes>
 									<searchTransitive>true</searchTransitive>
 								</bannedDependencies>
