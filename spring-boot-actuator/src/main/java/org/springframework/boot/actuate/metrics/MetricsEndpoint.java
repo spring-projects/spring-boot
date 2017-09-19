@@ -53,7 +53,7 @@ public class MetricsEndpoint {
 	@ReadOperation
 	public Map<String, List<String>> listNames() {
 		return Collections.singletonMap("names", this.registry.getMeters().stream()
-				.map(this::getMeterIdName).collect(Collectors.toList()));
+				.map(this::getMeterIdName).distinct().collect(Collectors.toList()));
 	}
 
 	private String getMeterIdName(Meter meter) {

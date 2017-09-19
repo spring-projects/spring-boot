@@ -54,7 +54,7 @@ public class MetricsEndpointWebIntegrationTests {
 				.uri("/application/metrics").exchange().expectStatus().isOk()
 				.expectBody(String.class).returnResult().getResponseBody();
 		Map<String, List<String>> names = this.mapper.readValue(responseBody, Map.class);
-		assertThat(names.get("names")).contains("jvm.memory.used");
+		assertThat(names.get("names")).containsOnlyOnce("jvm.memory.used");
 	}
 
 	@Test
