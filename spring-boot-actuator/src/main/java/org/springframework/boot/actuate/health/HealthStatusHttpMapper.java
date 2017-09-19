@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.util.Assert;
 
 /**
@@ -40,8 +41,9 @@ public class HealthStatusHttpMapper {
 	}
 
 	private void setupDefaultStatusMapping() {
-		addStatusMapping(Status.DOWN, 503);
-		addStatusMapping(Status.OUT_OF_SERVICE, 503);
+		addStatusMapping(Status.DOWN, WebEndpointResponse.SERVICE_UNAVAILABLE_STATUS);
+		addStatusMapping(Status.OUT_OF_SERVICE,
+				WebEndpointResponse.SERVICE_UNAVAILABLE_STATUS);
 	}
 
 	/**
@@ -102,9 +104,10 @@ public class HealthStatusHttpMapper {
 		if (code != null) {
 			return this.statusMapping.keySet().stream()
 					.filter((key) -> code.equals(getUniformValue(key)))
-					.map(this.statusMapping::get).findFirst().orElse(200);
+					.map(this.statusMapping::get).findFirst()
+					.orElse(WebEndpointResponse.OK_STATUS);
 		}
-		return 200;
+		return WebEndpointResponse.OK_STATUS;
 	}
 
 	private String getUniformValue(String code) {

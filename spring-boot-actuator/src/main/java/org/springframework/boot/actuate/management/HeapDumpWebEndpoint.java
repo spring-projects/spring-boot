@@ -57,12 +57,6 @@ import org.springframework.util.ReflectionUtils;
 @Endpoint(id = "heapdump", exposure = EndpointExposure.WEB)
 public class HeapDumpWebEndpoint {
 
-	private static final int INTERNAL_SERVER_ERROR_STATUS = 500;
-
-	private static final int SERVICE_UNAVAILABLE_STATUS = 503;
-
-	private static final int TOO_MANY_REQUESTS_STATUS = 429;
-
 	private final long timeout;
 
 	private final Lock lock = new ReentrantLock();
@@ -94,12 +88,14 @@ public class HeapDumpWebEndpoint {
 			Thread.currentThread().interrupt();
 		}
 		catch (IOException ex) {
-			return new WebEndpointResponse<>(INTERNAL_SERVER_ERROR_STATUS);
+			return new WebEndpointResponse<>(
+					WebEndpointResponse.INTERNAL_SERVER_ERROR_STATUS);
 		}
 		catch (HeapDumperUnavailableException ex) {
-			return new WebEndpointResponse<>(SERVICE_UNAVAILABLE_STATUS);
+			return new WebEndpointResponse<>(
+					WebEndpointResponse.SERVICE_UNAVAILABLE_STATUS);
 		}
-		return new WebEndpointResponse<>(TOO_MANY_REQUESTS_STATUS);
+		return new WebEndpointResponse<>(WebEndpointResponse.TOO_MANY_REQUESTS_STATUS);
 	}
 
 	private Resource dumpHeap(boolean live) throws IOException, InterruptedException {

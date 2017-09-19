@@ -26,9 +26,35 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExten
  * @param <T> the type of the response body
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 public final class WebEndpointResponse<T> {
+
+	/**
+	 * {@code 200 OK}.
+	 */
+	public static final int OK_STATUS = 200;
+
+	/**
+	 * {@code 400 Bad Request}.
+	 */
+	public static final int BAD_REQUEST_STATUS = 400;
+
+	/**
+	 * {@code 429 Too Many Requests}.
+	 */
+	public static final int TOO_MANY_REQUESTS_STATUS = 429;
+
+	/**
+	 * {@code 500 Internal Server Error}.
+	 */
+	public static final int INTERNAL_SERVER_ERROR_STATUS = 500;
+
+	/**
+	 * {@code 503 Service Unavailable}.
+	 */
+	public static final int SERVICE_UNAVAILABLE_STATUS = 503;
 
 	private final T body;
 
@@ -56,7 +82,7 @@ public final class WebEndpointResponse<T> {
 	 * @param body the body
 	 */
 	public WebEndpointResponse(T body) {
-		this(body, 200);
+		this(body, OK_STATUS);
 	}
 
 	/**

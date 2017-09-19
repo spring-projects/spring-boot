@@ -32,8 +32,6 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExten
 @WebEndpointExtension(endpoint = AuditEventsEndpoint.class)
 public class AuditEventsWebEndpointExtension {
 
-	private static final int BAD_REQUEST_STATUS = 400;
-
 	private final AuditEventsEndpoint delegate;
 
 	public AuditEventsWebEndpointExtension(AuditEventsEndpoint delegate) {
@@ -44,7 +42,7 @@ public class AuditEventsWebEndpointExtension {
 	public WebEndpointResponse<AuditEventsDescriptor> eventsWithPrincipalDateAfterAndType(
 			String principal, Date after, String type) {
 		if (after == null) {
-			return new WebEndpointResponse<>(BAD_REQUEST_STATUS);
+			return new WebEndpointResponse<>(WebEndpointResponse.BAD_REQUEST_STATUS);
 		}
 		AuditEventsDescriptor auditEvents = this.delegate
 				.eventsWithPrincipalDateAfterAndType(principal, after, type);
