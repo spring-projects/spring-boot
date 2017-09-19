@@ -202,8 +202,8 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 			this.operationInvoker = operationInvoker;
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		Publisher<ResponseEntity<? extends Object>> doHandle(ServerWebExchange exchange,
+		@SuppressWarnings({ "unchecked" })
+		Publisher<ResponseEntity<Object>> doHandle(ServerWebExchange exchange,
 				Map<String, String> body) {
 			Map<String, Object> arguments = new HashMap<>((Map<String, String>) exchange
 					.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
@@ -212,8 +212,7 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 			}
 			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
 					.put(name, values.size() == 1 ? values.get(0) : values));
-			return (Publisher) handleResult(
-					(Publisher<?>) this.operationInvoker.invoke(arguments),
+			return handleResult((Publisher<?>) this.operationInvoker.invoke(arguments),
 					exchange.getRequest().getMethod());
 		}
 
@@ -247,7 +246,7 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 		}
 
 		@ResponseBody
-		public Publisher<ResponseEntity<?>> handle(ServerWebExchange exchange,
+		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				@RequestBody(required = false) Map<String, String> body) {
 			return doHandle(exchange, body);
 		}
@@ -264,7 +263,7 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 		}
 
 		@ResponseBody
-		public Publisher<ResponseEntity<?>> handle(ServerWebExchange exchange) {
+		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return doHandle(exchange, null);
 		}
 
