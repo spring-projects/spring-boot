@@ -210,7 +210,7 @@
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
 		<maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
-		<maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
+		<maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
 		<maven-invoker-plugin.version>3.0.0</maven-invoker-plugin.version>
 		<maven-help-plugin.version>2.2</maven-help-plugin.version>
@@ -220,7 +220,7 @@
 		<maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
 		<maven-site-plugin.version>3.5.1</maven-site-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.1.0</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.3</versions-maven-plugin.version>
 	</properties>
