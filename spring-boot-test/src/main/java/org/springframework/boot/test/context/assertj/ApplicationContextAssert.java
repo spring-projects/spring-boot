@@ -16,6 +16,12 @@
 
 package org.springframework.boot.test.context.assertj;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractObjectArrayAssert;
 import org.assertj.core.api.AbstractObjectAssert;
@@ -37,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @param <C> The application context type
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 2.0.0
  * @see ApplicationContextRunner
  * @see AssertableApplicationContext
@@ -70,9 +77,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> hasBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto have bean named:%n <%s>%nbut context failed to start",
-					getApplicationContext(), name));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"to have bean named:%n <%s>", name));
 		}
 		if (findBean(name) == null) {
 			throwAssertionError(new BasicErrorMessageFactory(
@@ -96,9 +102,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> hasSingleBean(Class<?> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto have a single bean of type:%n <%s>%nbut context failed to start",
-					getApplicationContext(), type));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"to have a single bean of type:%n <%s>", type));
 		}
 		String[] names = getApplicationContext().getBeanNamesForType(type);
 		if (names.length == 0) {
@@ -127,9 +132,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> doesNotHaveBean(Class<?> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nnot to have any beans of type:%n <%s>%nbut context failed to start",
-					getApplicationContext(), type));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"not to have any beans of type:%n <%s>", type));
 		}
 		String[] names = getApplicationContext().getBeanNamesForType(type);
 		if (names.length > 0) {
@@ -153,9 +157,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> doesNotHaveBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nnot to have any beans of name:%n <%s>%nbut context failed to start",
-					getApplicationContext(), name));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"not to have any beans of name:%n <%s>", name));
 		}
 		try {
 			Object bean = getApplicationContext().getBean(name);
@@ -181,9 +184,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public <T> AbstractObjectArrayAssert<?, String> getBeanNames(Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto get beans names with type:%n <%s>%nbut context failed to start",
-					getApplicationContext(), type));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"to get beans names with type:%n <%s>", type));
 		}
 		return Assertions.assertThat(getApplicationContext().getBeanNamesForType(type))
 				.as("Bean names of type <%s> from <%s>", type, getApplicationContext());
@@ -207,9 +209,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto contain bean of type:%n <%s>%nbut context failed to start",
-					getApplicationContext(), type));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"to contain bean of type:%n <%s>", type));
 		}
 		String[] names = getApplicationContext().getBeanNamesForType(type);
 		if (names.length > 1) {
@@ -238,9 +239,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public AbstractObjectAssert<?, Object> getBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto contain a bean of name:%n <%s>%nbut context failed to start",
-					getApplicationContext(), name));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"to contain a bean of name:%n <%s>", name));
 		}
 		Object bean = findBean(name);
 		return Assertions.assertThat(bean).as("Bean of name <%s> from <%s>", name,
@@ -267,9 +267,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	@SuppressWarnings("unchecked")
 	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto contain a bean of name:%n <%s> (%s)%nbut context failed to start",
-					getApplicationContext(), name, type));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"to contain a bean of name:%n <%s> (%s)", name, type));
 		}
 		Object bean = findBean(name);
 		if (bean != null && type != null && !type.isInstance(bean)) {
@@ -307,9 +306,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public <T> MapAssert<String, T> getBeans(Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto get beans of type:%n <%s> (%s)%nbut context failed to start",
-					getApplicationContext(), type, type));
+			throwAssertionError(contextFailedToStartWhenExpecting(
+					"to get beans of type:%n <%s>", type));
 		}
 		return Assertions.assertThat(getApplicationContext().getBeansOfType(type))
 				.as("Beans of type <%s> from <%s>", type, getApplicationContext());
@@ -357,9 +355,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> hasNotFailed() {
 		if (this.startupFailure != null) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto have not failed:%nbut context failed to start",
-					getApplicationContext()));
+			throwAssertionError(contextFailedToStartWhenExpecting("to have not failed"));
 		}
 		return this;
 	}
@@ -370,6 +366,63 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 
 	protected final Throwable getStartupFailure() {
 		return this.startupFailure;
+	}
+
+	private ContextFailedToStart<C> contextFailedToStartWhenExpecting(
+			String expectationFormat, Object... arguments) {
+		return new ContextFailedToStart<C>(getApplicationContext(), this.startupFailure,
+				expectationFormat, arguments);
+	}
+
+	private static final class ContextFailedToStart<C extends ApplicationContext>
+			extends BasicErrorMessageFactory {
+
+		private ContextFailedToStart(C context, Throwable ex, String expectationFormat,
+				Object... arguments) {
+			super("%nExpecting:%n <%s>%n" + expectationFormat
+					+ ":%nbut context failed to start:%n%s",
+					combineArguments(context.toString(), ex, arguments));
+		}
+
+		private static Object[] combineArguments(String context, Throwable ex,
+				Object[] arguments) {
+			Object[] combinedArguments = new Object[arguments.length + 2];
+			combinedArguments[0] = unquotedString(context);
+			System.arraycopy(arguments, 0, combinedArguments, 1, arguments.length);
+			combinedArguments[combinedArguments.length - 1] = unquotedString(
+					getIndentedStackTraceAsString(ex));
+			return combinedArguments;
+		}
+
+		private static String getIndentedStackTraceAsString(Throwable ex) {
+			String stackTrace = getStackTraceAsString(ex);
+			return indent(stackTrace);
+		}
+
+		private static String getStackTraceAsString(Throwable ex) {
+			StringWriter writer = new StringWriter();
+			PrintWriter printer = new PrintWriter(writer);
+			ex.printStackTrace(printer);
+			return writer.toString();
+		}
+
+		private static String indent(String input) {
+			BufferedReader reader = new BufferedReader(new StringReader(input));
+			StringWriter writer = new StringWriter();
+			PrintWriter printer = new PrintWriter(writer);
+			try {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					printer.print(" ");
+					printer.println(line);
+				}
+				return writer.toString();
+			}
+			catch (IOException ex) {
+				return input;
+			}
+		}
+
 	}
 
 }
