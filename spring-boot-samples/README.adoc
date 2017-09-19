@@ -158,8 +158,8 @@ The following sample applications are provided:
 | link:spring-boot-sample-servlet[spring-boot-sample-servlet]
 | Web application with a "raw" `Servlet` returning plain text content
 
-| link:spring-boot-sample-session-redis[spring-boot-sample-session-redis]
-| Web Application that uses Spring Session to store session data in Redis
+| link:spring-boot-sample-session[spring-boot-sample-session]
+| Web Application that uses Spring Session to manage session data
 
 | link:spring-boot-sample-simple[spring-boot-sample-simple]
 | Simple command line application

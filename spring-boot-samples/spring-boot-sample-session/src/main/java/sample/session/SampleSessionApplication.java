@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,14 @@
 
 package sample.session.redis;
 
-import java.util.UUID;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.servlet.http.HttpSession;
+@SpringBootApplication
+public class SampleSessionApplication {
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class HelloRestController {
-
-	@GetMapping("/")
-	String uid(HttpSession session) {
-		UUID uid = (UUID) session.getAttribute("uid");
-		if (uid == null) {
-			uid = UUID.randomUUID();
-		}
-		session.setAttribute("uid", uid);
-		return uid.toString();
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleSessionApplication.class);
 	}
 
 }
