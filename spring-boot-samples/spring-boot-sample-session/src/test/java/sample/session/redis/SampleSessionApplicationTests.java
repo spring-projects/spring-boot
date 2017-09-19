@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -33,31 +32,20 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SampleSessionRedisApplication}.
+ * Tests for {@link SampleSessionApplication}.
  *
  * @author Andy Wilkinson
  */
-public class SampleSessionRedisApplicationTests {
+public class SampleSessionApplicationTests {
 
 	@Test
 	public void sessionExpiry() throws Exception {
-
-		String port = null;
-
-		try {
-			ConfigurableApplicationContext context = new SpringApplicationBuilder()
-					.sources(SampleSessionRedisApplication.class)
-					.properties("server.port:0")
-					.initializers(new ServerPortInfoApplicationContextInitializer())
-					.run();
-			port = context.getEnvironment().getProperty("local.server.port");
-		}
-		catch (RuntimeException ex) {
-			if (!redisServerRunning(ex)) {
-				return;
-			}
-			throw ex;
-		}
+		ConfigurableApplicationContext context = new SpringApplicationBuilder()
+				.sources(SampleSessionApplication.class)
+				.properties("server.port:0")
+				.initializers(new ServerPortInfoApplicationContextInitializer())
+				.run();
+		String port = context.getEnvironment().getProperty("local.server.port");
 
 		URI uri = URI.create("http://localhost:" + port + "/");
 		RestTemplate restTemplate = new RestTemplate();
@@ -77,13 +65,6 @@ public class SampleSessionRedisApplicationTests {
 
 		String uuid3 = restTemplate.exchange(request, String.class).getBody();
 		assertThat(uuid2).isNotEqualTo(uuid3);
-	}
-
-	private boolean redisServerRunning(Throwable ex) {
-		if (ex instanceof RedisConnectionFailureException) {
-			return false;
-		}
-		return (ex.getCause() == null || redisServerRunning(ex.getCause()));
 	}
 
 }
