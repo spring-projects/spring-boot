@@ -21,6 +21,8 @@ import java.util.LinkedList;
 
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Parse and expose arguments specified in a single string.
  *
@@ -31,14 +33,16 @@ class RunArguments {
 
 	private static final String[] NO_ARGS = {};
 
-	private final LinkedList<String> args;
+	private final LinkedList<String> args = new LinkedList<>();
 
 	RunArguments(String arguments) {
 		this(parseArgs(arguments));
 	}
 
 	RunArguments(String[] args) {
-		this.args = new LinkedList<>(Arrays.asList(args));
+		if (args != null) {
+			Arrays.stream(args).filter(StringUtils::hasLength).forEach(this.args::add);
+		}
 	}
 
 	public LinkedList<String> getArgs() {
