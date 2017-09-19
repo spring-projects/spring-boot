@@ -268,7 +268,6 @@ you don't want to use the `spring-boot-antlib` module.
 
 
 
-[[using-boot-starter-poms]]
 [[using-boot-starter]]
 === Starters
 Starters are a set of convenient dependency descriptors that you can include in your
