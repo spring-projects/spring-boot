@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
+import org.mockito.Mockito;
 import org.mockito.mock.MockCreationSettings;
 
 import org.springframework.boot.test.mock.mockito.example.ExampleExtraInterface;
@@ -85,7 +86,8 @@ public class MockDefinitionTests {
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, null);
 		ExampleService mock = definition.createMock();
-		MockCreationSettings<?> settings = MockitoApi.get().getMockSettings(mock);
+		MockCreationSettings<?> settings = Mockito.mockingDetails(mock)
+				.getMockCreationSettings();
 		assertThat(mock).isInstanceOf(ExampleService.class);
 		assertThat(mock).isInstanceOf(ExampleExtraInterface.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");

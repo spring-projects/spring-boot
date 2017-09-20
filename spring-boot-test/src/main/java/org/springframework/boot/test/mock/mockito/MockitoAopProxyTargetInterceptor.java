@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.aopalliance.aop.Advice;
@@ -25,6 +26,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.mockito.internal.matchers.LocalizedMatcher;
 import org.mockito.internal.progress.ArgumentMatcherStorage;
 import org.mockito.internal.progress.MockingProgress;
+import org.mockito.internal.progress.ThreadSafeMockingProgress;
 import org.mockito.internal.verification.MockAwareVerificationMode;
 import org.mockito.verification.VerificationMode;
 
@@ -48,12 +50,11 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 	private final Object target;
 
-	private final Verification verification;
+	private final Verification verification = new Verification();
 
 	MockitoAopProxyTargetInterceptor(Object source, Object target) throws Exception {
 		this.source = source;
 		this.target = target;
-		this.verification = new Verification(target);
 	}
 
 	@Override
@@ -89,11 +90,8 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 		private final Object monitor = new Object();
 
-		private final MockingProgress progress;
-
-		Verification(Object target) {
-			this.progress = MockitoApi.get().mockingProgress(target);
-		}
+		private final MockingProgress progress = ThreadSafeMockingProgress
+				.mockingProgress();
 
 		public boolean isVerifying() {
 			synchronized (this.monitor) {
@@ -113,8 +111,8 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 					if (mode instanceof MockAwareVerificationMode) {
 						MockAwareVerificationMode mockAwareMode = (MockAwareVerificationMode) mode;
 						if (mockAwareMode.getMock() == source) {
-							mode = MockitoApi.get().createMockAwareVerificationMode(
-									target, mockAwareMode);
+							mode = new MockAwareVerificationMode(target, mode,
+									Collections.emptySet());
 						}
 					}
 					resetVerificationStarted(mode);
@@ -126,7 +124,8 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 			ArgumentMatcherStorage storage = this.progress.getArgumentMatcherStorage();
 			List<LocalizedMatcher> matchers = storage.pullLocalizedMatchers();
 			this.progress.verificationStarted(mode);
-			MockitoApi.get().reportMatchers(storage, matchers);
+			matchers.stream().map(LocalizedMatcher::getMatcher)
+					.forEach(storage::reportMatcher);
 		}
 
 	}
