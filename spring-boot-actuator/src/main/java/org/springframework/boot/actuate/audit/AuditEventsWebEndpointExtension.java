@@ -42,7 +42,7 @@ public class AuditEventsWebEndpointExtension {
 	public WebEndpointResponse<AuditEventsDescriptor> eventsWithPrincipalDateAfterAndType(
 			String principal, Date after, String type) {
 		if (after == null) {
-			return new WebEndpointResponse<>(WebEndpointResponse.BAD_REQUEST_STATUS);
+			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
 		}
 		AuditEventsDescriptor auditEvents = this.delegate
 				.eventsWithPrincipalDateAfterAndType(principal, after, type);

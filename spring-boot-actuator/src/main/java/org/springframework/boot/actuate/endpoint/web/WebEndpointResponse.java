@@ -34,27 +34,32 @@ public final class WebEndpointResponse<T> {
 	/**
 	 * {@code 200 OK}.
 	 */
-	public static final int OK_STATUS = 200;
+	public static final int STATUS_OK = 200;
 
 	/**
 	 * {@code 400 Bad Request}.
 	 */
-	public static final int BAD_REQUEST_STATUS = 400;
+	public static final int STATUS_BAD_REQUEST = 400;
+
+	/**
+	 * {@code 404 Not Found}.
+	 */
+	public static final int STATUS_NOT_FOUND = 404;
 
 	/**
 	 * {@code 429 Too Many Requests}.
 	 */
-	public static final int TOO_MANY_REQUESTS_STATUS = 429;
+	public static final int STATUS_TOO_MANY_REQUESTS = 429;
 
 	/**
 	 * {@code 500 Internal Server Error}.
 	 */
-	public static final int INTERNAL_SERVER_ERROR_STATUS = 500;
+	public static final int STATUS_INTERNAL_SERVER_ERROR = 500;
 
 	/**
 	 * {@code 503 Service Unavailable}.
 	 */
-	public static final int SERVICE_UNAVAILABLE_STATUS = 503;
+	public static final int STATUS_SERVICE_UNAVAILABLE = 503;
 
 	private final T body;
 
@@ -82,7 +87,7 @@ public final class WebEndpointResponse<T> {
 	 * @param body the body
 	 */
 	public WebEndpointResponse(T body) {
-		this(body, OK_STATUS);
+		this(body, STATUS_OK);
 	}
 
 	/**

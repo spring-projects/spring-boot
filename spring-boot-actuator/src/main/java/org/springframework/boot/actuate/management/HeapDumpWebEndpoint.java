@@ -89,13 +89,13 @@ public class HeapDumpWebEndpoint {
 		}
 		catch (IOException ex) {
 			return new WebEndpointResponse<>(
-					WebEndpointResponse.INTERNAL_SERVER_ERROR_STATUS);
+					WebEndpointResponse.STATUS_INTERNAL_SERVER_ERROR);
 		}
 		catch (HeapDumperUnavailableException ex) {
 			return new WebEndpointResponse<>(
-					WebEndpointResponse.SERVICE_UNAVAILABLE_STATUS);
+					WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
 		}
-		return new WebEndpointResponse<>(WebEndpointResponse.TOO_MANY_REQUESTS_STATUS);
+		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_TOO_MANY_REQUESTS);
 	}
 
 	private Resource dumpHeap(boolean live) throws IOException, InterruptedException {
