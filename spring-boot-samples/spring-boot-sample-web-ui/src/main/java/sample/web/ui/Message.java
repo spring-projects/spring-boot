@@ -18,7 +18,7 @@ package sample.web.ui;
 
 import java.util.Calendar;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * @author Rob Winch
@@ -66,4 +66,5 @@ public class Message {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
+
 }

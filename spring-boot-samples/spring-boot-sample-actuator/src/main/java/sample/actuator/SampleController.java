@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;

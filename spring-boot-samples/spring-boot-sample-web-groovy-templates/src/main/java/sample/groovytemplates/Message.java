@@ -18,7 +18,7 @@ package sample.groovytemplates;
 
 import java.util.Date;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 public class Message {
 
@@ -63,4 +63,5 @@ public class Message {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
+
 }
