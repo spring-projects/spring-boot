@@ -168,16 +168,16 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		public static <T> Bean<T> get(Bindable<T> bindable,
-				boolean useExistingValueForType) {
+		public static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
 			Class<?> type = bindable.getType().resolve();
 			Supplier<T> value = bindable.getValue();
-			if (value == null && !isInstantiable(type)) {
-				return null;
-			}
-			if (useExistingValueForType && value != null) {
-				T instance = value.get();
+			T instance = null;
+			if (canCallGetValue && value != null) {
+				instance = value.get();
 				type = (instance != null ? instance.getClass() : type);
+			}
+			if (instance == null && !isInstantiable(type)) {
+				return null;
 			}
 			Bean<?> bean = Bean.cached;
 			if (bean == null || !type.equals(bean.getType())) {
