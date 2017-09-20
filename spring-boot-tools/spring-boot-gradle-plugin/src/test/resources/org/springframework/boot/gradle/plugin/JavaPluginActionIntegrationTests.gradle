@@ -10,6 +10,24 @@ if (project.hasProperty('applyJavaPlugin')) {
 	apply plugin: 'java'
 }
 
+if (project.hasProperty('parametersRemove')) {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs.remove('-parameters')
+	}
+}
+
+if (project.hasProperty('parametersClear')) {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs.clear()
+	}
+}
+
+if (project.hasProperty('parametersAddOther')) {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs.add('-Xlint:all')
+	}
+}
+
 task('taskExists') {
 	doFirst {
 		println "$taskName exists = ${tasks.findByName(taskName) != null}"
@@ -20,6 +38,23 @@ task('javaCompileEncoding') {
 	doFirst {
 		tasks.withType(JavaCompile) {
 			println "$name = ${options.encoding}"
+		}
+	}
+}
+
+task('javaParametersCompilerArg') {
+	doFirst {
+		tasks.withType(JavaCompile) {
+			def contains = options.compilerArgs.contains('-parameters')
+			if (project.hasProperty('parametersRemove')) {
+				println "$name has -parameters when removed = ${contains}"
+			} else if (project.hasProperty('parametersClear')) {
+				println "$name has -parameters when cleared = ${contains}"
+			} else if (project.hasProperty('parametersAddOther')) {
+				println "$name has -parameters when another arg has been added = ${contains}"
+			} else {
+				println "$name has -parameters by default = ${contains}"
+			}
 		}
 	}
 }
