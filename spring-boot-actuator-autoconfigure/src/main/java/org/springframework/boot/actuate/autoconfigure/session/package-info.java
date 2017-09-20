@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package sample.session;
-
-import javax.servlet.http.HttpSession;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class HelloRestController {
-
-	@GetMapping("/")
-	String uid(HttpSession session) {
-		return session.getId();
-	}
-
-}
+/**
+ * Auto-configuration for actuator Spring Sessions concerns.
+ */
+package org.springframework.boot.actuate.autoconfigure.session;

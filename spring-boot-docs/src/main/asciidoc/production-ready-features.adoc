@@ -106,6 +106,10 @@ The following technology agnostic endpoints are available:
 |`mappings`
 |Displays a collated list of all `@RequestMapping` paths.
 
+|`sessions`
+|Allows retrieval and deletion of user's sessions from Spring Session backed session
+ store.
+
 |`shutdown`
 |Allows the application to be gracefully shutdown (not enabled by default).
 

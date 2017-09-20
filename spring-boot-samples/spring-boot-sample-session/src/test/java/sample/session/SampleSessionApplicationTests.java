@@ -17,6 +17,7 @@
 package sample.session;
 
 import java.net.URI;
+import java.util.Base64;
 
 import org.junit.Test;
 
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SampleSessionApplication}.
  *
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class SampleSessionApplicationTests {
 
@@ -42,29 +44,33 @@ public class SampleSessionApplicationTests {
 	public void sessionExpiry() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder()
 				.sources(SampleSessionApplication.class)
-				.properties("server.port:0")
-				.initializers(new ServerPortInfoApplicationContextInitializer())
-				.run();
+				.properties("server.port:0", "server.session.timeout:1")
+				.initializers(new ServerPortInfoApplicationContextInitializer()).run();
 		String port = context.getEnvironment().getProperty("local.server.port");
 
 		URI uri = URI.create("http://localhost:" + port + "/");
 		RestTemplate restTemplate = new RestTemplate();
 
-		ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
-		String uuid1 = response.getBody();
 		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Authorization", "Basic "
+				+ Base64.getEncoder().encodeToString("user:password".getBytes()));
+
+		ResponseEntity<String> response = restTemplate.exchange(
+				new RequestEntity<>(requestHeaders, HttpMethod.GET, uri), String.class);
+		String sessionId1 = response.getBody();
+		requestHeaders.clear();
 		requestHeaders.set("Cookie", response.getHeaders().getFirst("Set-Cookie"));
 
 		RequestEntity<Void> request = new RequestEntity<>(requestHeaders, HttpMethod.GET,
 				uri);
 
-		String uuid2 = restTemplate.exchange(request, String.class).getBody();
-		assertThat(uuid1).isEqualTo(uuid2);
+		String sessionId2 = restTemplate.exchange(request, String.class).getBody();
+		assertThat(sessionId1).isEqualTo(sessionId2);
 
-		Thread.sleep(5000);
+		Thread.sleep(1000);
 
-		String uuid3 = restTemplate.exchange(request, String.class).getBody();
-		assertThat(uuid2).isNotEqualTo(uuid3);
+		String loginPage = restTemplate.exchange(request, String.class).getBody();
+		assertThat(loginPage).containsIgnoringCase("login");
 	}
 
 }
