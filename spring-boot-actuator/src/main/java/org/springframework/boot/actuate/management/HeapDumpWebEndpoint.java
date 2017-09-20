@@ -42,7 +42,6 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -89,12 +88,14 @@ public class HeapDumpWebEndpoint {
 			Thread.currentThread().interrupt();
 		}
 		catch (IOException ex) {
-			return new WebEndpointResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new WebEndpointResponse<>(
+					WebEndpointResponse.STATUS_INTERNAL_SERVER_ERROR);
 		}
 		catch (HeapDumperUnavailableException ex) {
-			return new WebEndpointResponse<>(HttpStatus.SERVICE_UNAVAILABLE.value());
+			return new WebEndpointResponse<>(
+					WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
 		}
-		return new WebEndpointResponse<>(HttpStatus.TOO_MANY_REQUESTS.value());
+		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_TOO_MANY_REQUESTS);
 	}
 
 	private Resource dumpHeap(boolean live) throws IOException, InterruptedException {
