@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.lang.UsesJava8;
  * Fast implementation of {@link CounterService} using {@link CounterBuffers}.
  *
  * @author Dave Syer
+ * @author Venil Noronha
  * @since 1.3.0
  */
 @UsesJava8
@@ -62,7 +63,7 @@ public class BufferCounterService implements CounterService {
 		if (cached != null) {
 			return cached;
 		}
-		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
+		if (metricName.startsWith("counter.") || metricName.startsWith("meter.")) {
 			return metricName;
 		}
 		String name = "counter." + metricName;
