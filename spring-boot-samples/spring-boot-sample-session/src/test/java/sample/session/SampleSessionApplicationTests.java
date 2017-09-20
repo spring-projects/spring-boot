@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.session.redis;
+package sample.session;
 
 import java.net.URI;
 
