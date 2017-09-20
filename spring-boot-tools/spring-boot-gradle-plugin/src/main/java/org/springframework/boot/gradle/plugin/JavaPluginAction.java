@@ -125,11 +125,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureParametersCompilerArg(Project project) {
-		project.getTasks().withType(JavaCompile.class, compile -> {
-			final List<String> compilerArgs = compile.getOptions().getCompilerArgs();
+		project.getTasks().withType(JavaCompile.class, (compile) -> {
+			List<String> compilerArgs = compile.getOptions().getCompilerArgs();
 			if (!compilerArgs.contains(PARAMETERS_COMPILER_ARG)) {
 				compilerArgs.add(PARAMETERS_COMPILER_ARG);
 			}
 		});
 	}
+
 }

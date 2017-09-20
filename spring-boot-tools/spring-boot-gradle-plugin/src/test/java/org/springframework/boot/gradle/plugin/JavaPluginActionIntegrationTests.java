@@ -75,33 +75,23 @@ public class JavaPluginActionIntegrationTests {
 
 	@Test
 	public void javaCompileTasksUseParametersCompilerFlagByDefault() {
-		assertThat(this.gradleBuild.build("javaParametersCompilerArg", "-PapplyJavaPlugin")
-				.getOutput()).contains("compileJava has -parameters by default = true")
-				.contains("compileTestJava has -parameters by default = true");
+		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
+				.contains("compileJava compiler args: [-parameters]")
+				.contains("compileTestJava compiler args: [-parameters]");
 	}
 
-	// -parameters and an additional compiler arg
 	@Test
-	public void javaCompileTasksUseParametersCompilerFlagWhenOtherAdded() {
-		assertThat(this.gradleBuild.build("javaParametersCompilerArg", "-PapplyJavaPlugin", "-PparametersAddOther")
-				.getOutput()).contains("compileJava has -parameters when another arg has been added = true")
-				.contains("compileTestJava has -parameters when another arg has been added = true");
+	public void javaCompileTasksUseParametersAndAdditionalCompilerFlags() {
+		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
+				.contains("compileJava compiler args: [-parameters, -Xlint:all]")
+				.contains("compileTestJava compiler args: [-parameters, -Xlint:all]");
 	}
 
-	// -parameters removed
 	@Test
-	public void javaCompileTasksDoesNotUseParametersWhenParametersRemoved() {
-		assertThat(this.gradleBuild.build("javaParametersCompilerArg", "-PapplyJavaPlugin", "-PparametersRemove")
-				.getOutput()).contains("compileJava has -parameters when removed = false")
-				.contains("compileTestJava has -parameters when removed = false");
-	}
-
-	// compiler args cleared
-	@Test
-	public void javaCompileTasksDoesNotUseParametersWhenArgsCleared() {
-		assertThat(this.gradleBuild.build("javaParametersCompilerArg", "-PapplyJavaPlugin", "-PparametersClear")
-				.getOutput()).contains("compileJava has -parameters when cleared = false")
-				.contains("compileTestJava has -parameters when cleared = false");
+	public void javaCompileTasksCanOverrideDefaultParametersCompilerFlag() {
+		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
+				.contains("compileJava compiler args: [-Xlint:all]")
+				.contains("compileTestJava compiler args: [-Xlint:all]");
 	}
 
 	@Test
