@@ -49,7 +49,17 @@ public class BufferCounterServiceTests {
 	}
 
 	@Test
-	public void matchCounter() {
+	public void matchCounterPrefix() {
+		this.service.increment("counterfoo");
+		Metric<?> counterfooMetric = this.reader.findOne("counterfoo");
+		Metric<?> counterCounterfooMetric = this.reader.findOne("counter.counterfoo");
+		assertNull(counterfooMetric);
+		assertNotNull(counterCounterfooMetric);
+		assertEquals(1L, counterCounterfooMetric.getValue());
+	}
+
+	@Test
+	public void matchCounterDotPrefix() {
 		this.service.increment("counter.foo");
 		Metric<?> counterFooMetric = this.reader.findOne("counter.foo");
 		Metric<?> counterCounterFooMetric = this.reader.findOne("counter.counter.foo");
@@ -59,7 +69,17 @@ public class BufferCounterServiceTests {
 	}
 
 	@Test
-	public void matchMeter() {
+	public void matchMeterPrefix() {
+		this.service.increment("meterfoo");
+		Metric<?> meterfooMetric = this.reader.findOne("meterfoo");
+		Metric<?> counterMeterfooMetric = this.reader.findOne("counter.meterfoo");
+		assertNull(meterfooMetric);
+		assertNotNull(counterMeterfooMetric);
+		assertEquals(1L, counterMeterfooMetric.getValue());
+	}
+
+	@Test
+	public void matchMeterDotPrefix() {
 		this.service.increment("meter.foo");
 		Metric<?> meterFooMetric = this.reader.findOne("meter.foo");
 		Metric<?> counterMeterFooMetric = this.reader.findOne("counter.meter.foo");
