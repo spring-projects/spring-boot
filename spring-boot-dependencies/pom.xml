@@ -194,7 +194,7 @@
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>1.10</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
-		<git-commit-id-plugin.version>2.2.2</git-commit-id-plugin.version>
+		<git-commit-id-plugin.version>2.2.3</git-commit-id-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 		<maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
