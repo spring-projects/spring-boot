@@ -26,16 +26,16 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @SpringBootApplication
 public class SampleSessionApplication {
 
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleSessionApplication.class);
+	}
+
 	@Bean
 	public UserDetailsService userDetailsService() {
 		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
 		manager.createUser(
 				User.withUsername("user").password("password").roles("USER").build());
 		return manager;
-	}
-
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleSessionApplication.class);
 	}
 
 }
