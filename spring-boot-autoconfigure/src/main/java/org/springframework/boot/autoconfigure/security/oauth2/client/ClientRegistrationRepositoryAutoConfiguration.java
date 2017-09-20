@@ -39,18 +39,18 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.oauth2.client.OAuth2ClientPropertiesUtil;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationProperties;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for a <code>ClientRegistrationRepository</code> bean,
@@ -66,52 +66,156 @@ import org.springframework.util.ObjectUtils;
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 public class ClientRegistrationRepositoryAutoConfiguration {
 
+	private static final String CLIENT_REGISTRATIONS_PROPERTY_PREFIX = "spring.security.oauth2.client.registrations";
+
 	@Configuration
 	@Conditional(ClientsConfiguredCondition.class)
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
 	protected static class ClientRegistrationRepositoryConfiguration {
 
-		@Bean
-		public ClientRegistrationRepository clientRegistrationRepository(
-				Environment environment, OAuth2ClientProperties oauth2ClientProperties) {
+		private static Map<OAuth2ClientProperties.ClientAuthenticationMethod, ClientAuthenticationMethod> clientAuthenticationMethodMappings;
 
-			this.mergeClientDefaults(environment, oauth2ClientProperties);
+		private static Map<OAuth2ClientProperties.AuthorizationGrantType, AuthorizationGrantType> authorizationGrantTypeMappings;
+
+		static {
+			clientAuthenticationMethodMappings = new HashMap<>();
+			clientAuthenticationMethodMappings.put(
+					OAuth2ClientProperties.ClientAuthenticationMethod.BASIC,
+					ClientAuthenticationMethod.BASIC);
+			clientAuthenticationMethodMappings.put(
+					OAuth2ClientProperties.ClientAuthenticationMethod.POST,
+					ClientAuthenticationMethod.POST);
+
+			authorizationGrantTypeMappings = new HashMap<>();
+			authorizationGrantTypeMappings.put(
+					OAuth2ClientProperties.AuthorizationGrantType.AUTHORIZATION_CODE,
+					AuthorizationGrantType.AUTHORIZATION_CODE);
+		}
+
+		@Bean
+		public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties oauth2ClientProperties) {
+			this.applyDefaultProperties(oauth2ClientProperties);
 
 			List<ClientRegistration> clientRegistrations = new ArrayList<>();
 
-
 			oauth2ClientProperties.getRegistrations().values().stream()
-					.filter(e -> !ObjectUtils.isEmpty(e.getClientId()))
-					.collect(Collectors.toList())
-					.forEach(clientProperties -> clientRegistrations.add(
-							new ClientRegistration.Builder(clientProperties).build()));
+					.filter(clientProperties -> !StringUtils.isEmpty(clientProperties.getClientId()))
+					.forEach(clientProperties -> clientRegistrations.add(this.mapProperties(clientProperties)));
 
 			return new InMemoryClientRegistrationRepository(clientRegistrations);
 		}
 
-		private void mergeClientDefaults(Environment environment, OAuth2ClientProperties oauth2ClientProperties) {
-			Assert.isInstanceOf(ConfigurableEnvironment.class, environment, "environment must be a ConfigurableEnvironment");
-
+		private void applyDefaultProperties(OAuth2ClientProperties oauth2ClientProperties) {
 			MutablePropertySources propertySources = new MutablePropertySources();
-			((ConfigurableEnvironment) environment).getPropertySources().forEach(propertySource -> {
-				if (MapPropertySource.class.isAssignableFrom(propertySource.getClass())) {
-					propertySources.addLast(propertySource);
-				}
-			});
-			propertySources.addLast(ClientPropertiesUtil.loadDefaultsPropertySource());
+			propertySources.addLast(OAuth2ClientPropertiesUtil.loadClientTypesPropertySource());
 
-			Map<String, ClientRegistrationProperties> mergedClients =
+			Map<String, OAuth2ClientProperties.ClientRegistration> clientTypesProperties =
 					new Binder(ConfigurationPropertySources.from(propertySources))
-							.bind(ClientPropertiesUtil.CLIENT_REGISTRATIONS_PROPERTY_PREFIX,
-									Bindable.mapOf(String.class, ClientRegistrationProperties.class))
+							.bind(OAuth2ClientPropertiesUtil.CLIENT_TYPES_PROPERTY_PREFIX,
+									Bindable.mapOf(String.class, OAuth2ClientProperties.ClientRegistration.class))
 							.get();
 
-			// Override with merged client properties
-			oauth2ClientProperties.setRegistrations(mergedClients);
+			oauth2ClientProperties.getRegistrations().values().stream()
+					.filter(clientProperties -> clientProperties.getClientType() != null &&
+							clientTypesProperties.keySet().stream()
+									.anyMatch(clientType -> clientType.equalsIgnoreCase(clientProperties.getClientType().toString())))
+					.forEach(clientProperties -> {
+						OAuth2ClientProperties.ClientRegistration clientTypeProperties =
+								clientTypesProperties.entrySet().stream()
+								.filter(e -> e.getKey().equalsIgnoreCase(clientProperties.getClientType().toString()))
+								.findFirst().get().getValue();
+						this.applyDefaultProperties(clientProperties, clientTypeProperties);
+					});
+		}
+
+		private void applyDefaultProperties(
+				OAuth2ClientProperties.ClientRegistration clientProperties,
+				OAuth2ClientProperties.ClientRegistration clientTypeProperties) {
+
+			// clientAuthenticationMethod
+			if (clientProperties.getClientAuthenticationMethod() == null &&
+					clientTypeProperties.getClientAuthenticationMethod() != null) {
+				clientProperties.setClientAuthenticationMethod(clientTypeProperties.getClientAuthenticationMethod());
+			}
+			// authorizationGrantType
+			if (clientProperties.getAuthorizationGrantType() == null &&
+					clientTypeProperties.getAuthorizationGrantType() != null) {
+				clientProperties.setAuthorizationGrantType(clientTypeProperties.getAuthorizationGrantType());
+			}
+			// redirectUri
+			if (StringUtils.isEmpty(clientProperties.getRedirectUri()) &&
+					!StringUtils.isEmpty(clientTypeProperties.getRedirectUri())) {
+				clientProperties.setRedirectUri(clientTypeProperties.getRedirectUri());
+			}
+			// scope
+			if (CollectionUtils.isEmpty(clientProperties.getScope()) &&
+					!CollectionUtils.isEmpty(clientTypeProperties.getScope())) {
+				clientProperties.setScope(clientTypeProperties.getScope());
+			}
+			// authorizationUri
+			if (StringUtils.isEmpty(clientProperties.getAuthorizationUri()) &&
+					!StringUtils.isEmpty(clientTypeProperties.getAuthorizationUri())) {
+				clientProperties.setAuthorizationUri(clientTypeProperties.getAuthorizationUri());
+			}
+			// tokenUri
+			if (StringUtils.isEmpty(clientProperties.getTokenUri()) &&
+					!StringUtils.isEmpty(clientTypeProperties.getTokenUri())) {
+				clientProperties.setTokenUri(clientTypeProperties.getTokenUri());
+			}
+			// userInfoUri
+			if (StringUtils.isEmpty(clientProperties.getUserInfoUri()) &&
+					!StringUtils.isEmpty(clientTypeProperties.getUserInfoUri())) {
+				clientProperties.setUserInfoUri(clientTypeProperties.getUserInfoUri());
+			}
+			// jwkSetUri
+			if (StringUtils.isEmpty(clientProperties.getJwkSetUri()) &&
+					!StringUtils.isEmpty(clientTypeProperties.getJwkSetUri())) {
+				clientProperties.setJwkSetUri(clientTypeProperties.getJwkSetUri());
+			}
+			// clientName
+			if (StringUtils.isEmpty(clientProperties.getClientName()) &&
+					!StringUtils.isEmpty(clientTypeProperties.getClientName())) {
+				clientProperties.setClientName(clientTypeProperties.getClientName());
+			}
+			// clientAlias
+			if (StringUtils.isEmpty(clientProperties.getClientAlias()) &&
+					!StringUtils.isEmpty(clientTypeProperties.getClientAlias())) {
+				clientProperties.setClientAlias(clientTypeProperties.getClientAlias());
+			}
+		}
+
+		private ClientRegistration mapProperties(OAuth2ClientProperties.ClientRegistration clientProperties) {
+			ClientAuthenticationMethod clientAuthenticationMethod = null;
+			if (clientProperties.getClientAuthenticationMethod() != null) {
+				clientAuthenticationMethod = clientAuthenticationMethodMappings.get(
+						clientProperties.getClientAuthenticationMethod());
+			}
+			AuthorizationGrantType authorizationGrantType = null;
+			if (clientProperties.getAuthorizationGrantType() != null) {
+				authorizationGrantType = authorizationGrantTypeMappings.get(
+						clientProperties.getAuthorizationGrantType());
+			}
+			String[] scope = new String[0];
+			if (!CollectionUtils.isEmpty(clientProperties.getScope())) {
+				scope = clientProperties.getScope().toArray(new String[0]);
+			}
+			return new ClientRegistration.Builder(clientProperties.getClientId())
+					.clientSecret(clientProperties.getClientSecret())
+					.clientAuthenticationMethod(clientAuthenticationMethod)
+					.authorizationGrantType(authorizationGrantType)
+					.redirectUri(clientProperties.getRedirectUri())
+					.scope(scope)
+					.authorizationUri(clientProperties.getAuthorizationUri())
+					.tokenUri(clientProperties.getTokenUri())
+					.userInfoUri(clientProperties.getUserInfoUri())
+					.jwkSetUri(clientProperties.getJwkSetUri())
+					.clientName(clientProperties.getClientName())
+					.clientAlias(clientProperties.getClientAlias())
+					.build();
 		}
 	}
 
-	private static class ClientsConfiguredCondition extends SpringBootCondition implements ConfigurationCondition {
+	protected static class ClientsConfiguredCondition extends SpringBootCondition implements ConfigurationCondition {
 
 		@Override
 		public ConfigurationCondition.ConfigurationPhase getConfigurationPhase() {
@@ -130,14 +234,14 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 		}
 
 		private Set<String> getClientKeys(Environment environment) {
-			Map<String, ClientRegistrationProperties> clientsProperties = Binder.get(environment)
-					.bind(ClientPropertiesUtil.CLIENT_REGISTRATIONS_PROPERTY_PREFIX,
-							Bindable.mapOf(String.class, ClientRegistrationProperties.class))
+			Map<String, OAuth2ClientProperties.ClientRegistration> clientsProperties = Binder.get(environment)
+					.bind(CLIENT_REGISTRATIONS_PROPERTY_PREFIX,
+							Bindable.mapOf(String.class, OAuth2ClientProperties.ClientRegistration.class))
 					.orElse(new HashMap<>());
 
 			// Filter out clients that don't have the client-id property set
 			return clientsProperties.entrySet().stream()
-					.filter(e -> !ObjectUtils.isEmpty(e.getValue().getClientId()))
+					.filter(e -> !StringUtils.isEmpty(e.getValue().getClientId()))
 					.map(Map.Entry::getKey)
 					.collect(Collectors.toSet());
 		}

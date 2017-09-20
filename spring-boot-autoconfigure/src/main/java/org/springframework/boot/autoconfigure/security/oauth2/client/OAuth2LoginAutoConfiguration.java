@@ -18,18 +18,21 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.net.URI;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
+import org.springframework.security.config.oauth2.client.OAuth2ClientPropertiesUtil;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
@@ -45,8 +48,10 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 @ConditionalOnClass({EnableWebSecurity.class, ClientRegistration.class})
 @ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnBean(ClientRegistrationRepository.class)
-@AutoConfigureBefore(ClientRegistrationRepositoryAutoConfiguration.class)
+@AutoConfigureBefore(SecurityAutoConfiguration.class)
+@AutoConfigureAfter(ClientRegistrationRepositoryAutoConfiguration.class)
 public class OAuth2LoginAutoConfiguration {
+
 	private static final String USER_NAME_ATTR_NAME_PROPERTY = "user-name-attribute-name";
 
 	@Configuration
@@ -55,7 +60,7 @@ public class OAuth2LoginAutoConfiguration {
 
 		private final OAuth2ClientProperties oauth2ClientProperties;
 
-		private final PropertiesPropertySource clientDefaultsPropertySource;
+		private final PropertiesPropertySource clientTypesPropertySource;
 
 		protected OAuth2LoginConfiguration(
 				ClientRegistrationRepository clientRegistrationRepository,
@@ -63,7 +68,7 @@ public class OAuth2LoginAutoConfiguration {
 
 			this.clientRegistrationRepository = clientRegistrationRepository;
 			this.oauth2ClientProperties = oauth2ClientProperties;
-			this.clientDefaultsPropertySource = ClientPropertiesUtil.loadDefaultsPropertySource();
+			this.clientTypesPropertySource = OAuth2ClientPropertiesUtil.loadClientTypesPropertySource();
 		}
 
 		// @formatter:off
@@ -81,10 +86,12 @@ public class OAuth2LoginAutoConfiguration {
 		// @formatter:on
 
 		private void registerUserNameAttributeNames(OAuth2LoginConfigurer<HttpSecurity> oauth2LoginConfigurer) throws Exception {
-			this.oauth2ClientProperties.getRegistrations().forEach((key, value) -> {
-				String userInfoUriValue = value.getUserInfoUri();
-				String userNameAttributeNameValue = (String) this.clientDefaultsPropertySource.getProperty(
-						ClientPropertiesUtil.CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + key + "." + USER_NAME_ATTR_NAME_PROPERTY);
+			this.oauth2ClientProperties.getRegistrations().forEach((clientKey, clientProperties) -> {
+				String userInfoUriValue = clientProperties.getUserInfoUri();
+				String userNameAttributeNameValue = (String) this.clientTypesPropertySource.getProperty(
+						OAuth2ClientPropertiesUtil.CLIENT_TYPES_PROPERTY_PREFIX + "." +
+								clientProperties.getClientType().toString().toLowerCase() + "." +
+								USER_NAME_ATTR_NAME_PROPERTY);
 				if (userInfoUriValue != null && userNameAttributeNameValue != null) {
 					// @formatter:off
 					oauth2LoginConfigurer

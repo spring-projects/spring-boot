@@ -45,7 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Joe Grandja
  */
 public class ClientRegistrationRepositoryAutoConfigurationTests {
+
 	private static final String CLIENT_REGISTRATIONS_PROPERTY_PREFIX = "spring.security.oauth2.client.registrations";
+
+	private static final String CLIENT_TYPE_PROPERTY = "client-type";
 
 	private static final String CLIENT_ID_PROPERTY = "client-id";
 
@@ -101,14 +104,20 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=google-client-id")
 				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=google-client-secret")
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + GOOGLE_CLIENT_KEY)
 				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_ID_PROPERTY
 						+ "=github-client-id")
 				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=github-client-secret")
+				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + GITHUB_CLIENT_KEY)
 				.and(OKTA_CLIENT_PROPERTY_BASE + "." + CLIENT_ID_PROPERTY
 						+ "=okta-client-id")
 				.and(OKTA_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=okta-client-secret")
+				.and(OKTA_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + OKTA_CLIENT_KEY)
 				.and(OKTA_CLIENT_PROPERTY_BASE
 						+ ".authorization-uri=https://your-subdomain.oktapreview.com/oauth2/v1/authorize")
 				.and(OKTA_CLIENT_PROPERTY_BASE
@@ -121,6 +130,8 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=facebook-client-id")
 				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=facebook-client-secret")
+				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + FACEBOOK_CLIENT_KEY)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
@@ -183,6 +194,8 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=google-client-id")
 				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=google-client-secret")
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + GOOGLE_CLIENT_KEY)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
@@ -199,6 +212,88 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 		assertThat(googleClientRegistration.getClientSecret())
 				.isEqualTo("google-client-secret");
 		this.assertGoogleClientPropertyDefaults(googleClientRegistration);
+	}
+
+	@Test
+	public void refreshContextWhenGitHubCustomClientKeyConfiguredNoOverridesThenLoadDefaultConfiguration()
+			throws Exception {
+		this.prepareContext(DefaultConfiguration.class);
+
+		String customClientKey = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + "github-custom";
+
+		// Prepare environment
+		TestPropertyValues
+				.of(customClientKey + "." + CLIENT_ID_PROPERTY
+						+ "=github-client-id")
+				.and(customClientKey + "." + CLIENT_SECRET_PROPERTY
+						+ "=github-client-secret")
+				.and(customClientKey + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + GITHUB_CLIENT_KEY)
+				.applyTo(this.context.getEnvironment());
+
+		this.context.refresh();
+
+		ClientRegistrationRepository clientRegistrationRepository = this
+				.getBean(ClientRegistrationRepository.class);
+		assertThat(clientRegistrationRepository).isNotNull();
+		assertThat(clientRegistrationRepository.getRegistrations().size()).isEqualTo(1);
+
+		ClientRegistration githubClientRegistration = clientRegistrationRepository
+				.getRegistrationByClientAlias(GITHUB_CLIENT_ALIAS);
+		assertThat(githubClientRegistration).isNotNull();
+		assertThat(githubClientRegistration.getClientId()).isEqualTo("github-client-id");
+		assertThat(githubClientRegistration.getClientSecret())
+				.isEqualTo("github-client-secret");
+		this.assertGitHubClientPropertyDefaults(githubClientRegistration);
+	}
+
+	@Test
+	public void refreshContextWhenGitHubCustomClientKeyConfiguredAndOverridesThenLoadCustomConfiguration()
+			throws Exception {
+		this.prepareContext(DefaultConfiguration.class);
+
+		String customClientKey = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + "github-custom";
+
+		// Prepare environment
+		TestPropertyValues
+				.of(customClientKey + "." + CLIENT_ID_PROPERTY
+						+ "=github-client-id")
+				.and(customClientKey + "." + CLIENT_SECRET_PROPERTY
+						+ "=github-client-secret")
+				.and(customClientKey + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + GITHUB_CLIENT_KEY)
+				.and(customClientKey + ".scope"
+						+ "=scope1, scope2, scope3")
+				.and(customClientKey + ".client-authentication-method"
+						+ "=post")
+				.and(customClientKey + ".redirect-uri"
+						+ "=https://localhost:8080/callback/github-custom")
+				.and(customClientKey + ".client-alias"
+						+ "=github-custom-alias")
+				.and(customClientKey + ".client-name"
+						+ "=GitHub Custom")
+				.applyTo(this.context.getEnvironment());
+
+		this.context.refresh();
+
+		ClientRegistrationRepository clientRegistrationRepository = this
+				.getBean(ClientRegistrationRepository.class);
+		assertThat(clientRegistrationRepository).isNotNull();
+		assertThat(clientRegistrationRepository.getRegistrations().size()).isEqualTo(1);
+
+		ClientRegistration githubClientRegistration = clientRegistrationRepository
+				.getRegistrationByClientAlias("github-custom-alias");
+		assertThat(githubClientRegistration).isNotNull();
+		assertThat(githubClientRegistration.getClientId()).isEqualTo("github-client-id");
+		assertThat(githubClientRegistration.getClientSecret())
+				.isEqualTo("github-client-secret");
+		assertThat(githubClientRegistration.getScope()).isEqualTo(
+				Stream.of("scope1", "scope2", "scope3").collect(Collectors.toSet()));
+		assertThat(githubClientRegistration.getClientAuthenticationMethod())
+				.isEqualTo(ClientAuthenticationMethod.POST);
+		assertThat(githubClientRegistration.getRedirectUri()).isEqualTo("https://localhost:8080/callback/github-custom");
+		assertThat(githubClientRegistration.getClientAlias()).isEqualTo("github-custom-alias");
+		assertThat(githubClientRegistration.getClientName()).isEqualTo("GitHub Custom");
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -283,6 +378,8 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=facebook-client-id")
 				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=facebook-client-secret")
+				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
+						+ "=" + FACEBOOK_CLIENT_KEY)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
