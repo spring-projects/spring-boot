@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.oauth2.OAuth2Properties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -54,16 +53,16 @@ public class OAuth2LoginAutoConfiguration {
 	protected static class OAuth2LoginConfiguration extends WebSecurityConfigurerAdapter {
 		private final ClientRegistrationRepository clientRegistrationRepository;
 
-		private final OAuth2Properties oauth2Properties;
+		private final OAuth2ClientProperties oauth2ClientProperties;
 
 		private final PropertiesPropertySource clientDefaultsPropertySource;
 
 		protected OAuth2LoginConfiguration(
 				ClientRegistrationRepository clientRegistrationRepository,
-				OAuth2Properties oauth2Properties) {
+				OAuth2ClientProperties oauth2ClientProperties) {
 
 			this.clientRegistrationRepository = clientRegistrationRepository;
-			this.oauth2Properties = oauth2Properties;
+			this.oauth2ClientProperties = oauth2ClientProperties;
 			this.clientDefaultsPropertySource = ClientPropertiesUtil.loadDefaultsPropertySource();
 		}
 
@@ -82,10 +81,10 @@ public class OAuth2LoginAutoConfiguration {
 		// @formatter:on
 
 		private void registerUserNameAttributeNames(OAuth2LoginConfigurer<HttpSecurity> oauth2LoginConfigurer) throws Exception {
-			this.oauth2Properties.getClients().forEach((key, value) -> {
+			this.oauth2ClientProperties.getRegistrations().forEach((key, value) -> {
 				String userInfoUriValue = value.getUserInfoUri();
 				String userNameAttributeNameValue = (String) this.clientDefaultsPropertySource.getProperty(
-						ClientPropertiesUtil.CLIENTS_PROPERTY_PREFIX + "." + key + "." + USER_NAME_ATTR_NAME_PROPERTY);
+						ClientPropertiesUtil.CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + key + "." + USER_NAME_ATTR_NAME_PROPERTY);
 				if (userInfoUriValue != null && userNameAttributeNameValue != null) {
 					// @formatter:off
 					oauth2LoginConfigurer

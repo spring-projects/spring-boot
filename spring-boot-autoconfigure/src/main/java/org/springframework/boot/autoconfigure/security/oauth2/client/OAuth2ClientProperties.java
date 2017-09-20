@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2;
+package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,21 +23,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationProperties;
 
 /**
- * Configuration properties for Spring Security OAuth 2.0 / OpenID Connect 1.0 support.
+ * Configuration properties for Spring Security OAuth 2.0 / OpenID Connect 1.0 client support.
  *
  * @author Joe Grandja
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "security.oauth2")
-public class OAuth2Properties {
+@ConfigurationProperties(prefix = "spring.security.oauth2.client")
+public class OAuth2ClientProperties {
 
-	private Map<String, ClientRegistrationProperties> clients = new LinkedHashMap<>();
+	private Map<String, ClientRegistrationProperties> registrations = new LinkedHashMap<>();
 
-	public Map<String, ClientRegistrationProperties> getClients() {
-		return this.clients;
+	public Map<String, ClientRegistrationProperties> getRegistrations() {
+		return this.registrations;
 	}
 
-	public void setClients(Map<String, ClientRegistrationProperties> clients) {
-		this.clients = clients;
+	public void setRegistrations(Map<String, ClientRegistrationProperties> registrations) {
+		this.registrations = registrations;
 	}
 }

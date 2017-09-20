@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.List;
@@ -26,7 +28,6 @@ import javax.servlet.Filter;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -38,18 +39,16 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.client.authentication.AuthorizationCodeAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.authentication.AuthorizationCodeAuthenticationProvider;
-import org.springframework.security.oauth2.client.authentication.AuthorizationCodeRequestRedirectFilter;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.user.nimbus.NimbusOAuth2UserService;
+import org.springframework.security.oauth2.client.user.web.nimbus.NimbusOAuth2UserService;
+import org.springframework.security.oauth2.client.web.AuthorizationCodeAuthenticationProcessingFilter;
+import org.springframework.security.oauth2.client.web.AuthorizationCodeRequestRedirectFilter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link OAuth2LoginAutoConfiguration}.
@@ -57,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Joe Grandja
  */
 public class OAuth2LoginAutoConfigurationTests {
-	private static final String CLIENTS_PROPERTY_PREFIX = "security.oauth2.clients";
+	private static final String CLIENT_REGISTRATIONS_PROPERTY_PREFIX = "spring.security.oauth2.client.registrations";
 
 	private static final String CLIENT_ID_PROPERTY = "client-id";
 
@@ -65,17 +64,17 @@ public class OAuth2LoginAutoConfigurationTests {
 
 	private static final String GOOGLE_CLIENT_KEY = "google";
 
-	private static final String GOOGLE_CLIENT_PROPERTY_BASE = CLIENTS_PROPERTY_PREFIX + "."
+	private static final String GOOGLE_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "."
 			+ GOOGLE_CLIENT_KEY;
 
 	private static final String GITHUB_CLIENT_KEY = "github";
 
-	private static final String GITHUB_CLIENT_PROPERTY_BASE = CLIENTS_PROPERTY_PREFIX + "."
+	private static final String GITHUB_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "."
 			+ GITHUB_CLIENT_KEY;
 
 	private static final String FACEBOOK_CLIENT_KEY = "facebook";
 
-	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENTS_PROPERTY_PREFIX
+	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX
 			+ "." + FACEBOOK_CLIENT_KEY;
 
 	private AnnotationConfigWebApplicationContext context;

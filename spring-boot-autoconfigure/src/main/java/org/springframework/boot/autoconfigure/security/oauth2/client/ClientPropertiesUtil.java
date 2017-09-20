@@ -34,7 +34,7 @@ final class ClientPropertiesUtil {
 
 	private static final String CLIENT_DEFAULTS_RESOURCE_LOCATION = "META-INF/spring-security-oauth2-client-defaults.properties";
 
-	static final String CLIENTS_PROPERTY_PREFIX = "security.oauth2.clients";
+	static final String CLIENT_REGISTRATIONS_PROPERTY_PREFIX = "spring.security.oauth2.client.registrations";
 
 	private ClientPropertiesUtil() {
 	}

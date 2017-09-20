@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.security.oauth2.OAuth2Properties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -64,7 +63,7 @@ import org.springframework.util.ObjectUtils;
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ EnableWebSecurity.class, ClientRegistration.class })
-@EnableConfigurationProperties(OAuth2Properties.class)
+@EnableConfigurationProperties(OAuth2ClientProperties.class)
 public class ClientRegistrationRepositoryAutoConfiguration {
 
 	@Configuration
@@ -74,14 +73,14 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 
 		@Bean
 		public ClientRegistrationRepository clientRegistrationRepository(
-				Environment environment, OAuth2Properties oauth2Properties) {
+				Environment environment, OAuth2ClientProperties oauth2ClientProperties) {
 
-			this.mergeClientDefaults(environment, oauth2Properties);
+			this.mergeClientDefaults(environment, oauth2ClientProperties);
 
 			List<ClientRegistration> clientRegistrations = new ArrayList<>();
 
 
-			oauth2Properties.getClients().values().stream()
+			oauth2ClientProperties.getRegistrations().values().stream()
 					.filter(e -> !ObjectUtils.isEmpty(e.getClientId()))
 					.collect(Collectors.toList())
 					.forEach(clientProperties -> clientRegistrations.add(
@@ -90,7 +89,7 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 			return new InMemoryClientRegistrationRepository(clientRegistrations);
 		}
 
-		private void mergeClientDefaults(Environment environment, OAuth2Properties oauth2Properties) {
+		private void mergeClientDefaults(Environment environment, OAuth2ClientProperties oauth2ClientProperties) {
 			Assert.isInstanceOf(ConfigurableEnvironment.class, environment, "environment must be a ConfigurableEnvironment");
 
 			MutablePropertySources propertySources = new MutablePropertySources();
@@ -103,12 +102,12 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 
 			Map<String, ClientRegistrationProperties> mergedClients =
 					new Binder(ConfigurationPropertySources.from(propertySources))
-							.bind(ClientPropertiesUtil.CLIENTS_PROPERTY_PREFIX,
+							.bind(ClientPropertiesUtil.CLIENT_REGISTRATIONS_PROPERTY_PREFIX,
 									Bindable.mapOf(String.class, ClientRegistrationProperties.class))
 							.get();
 
 			// Override with merged client properties
-			oauth2Properties.setClients(mergedClients);
+			oauth2ClientProperties.setRegistrations(mergedClients);
 		}
 	}
 
@@ -132,7 +131,7 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 
 		private Set<String> getClientKeys(Environment environment) {
 			Map<String, ClientRegistrationProperties> clientsProperties = Binder.get(environment)
-					.bind(ClientPropertiesUtil.CLIENTS_PROPERTY_PREFIX,
+					.bind(ClientPropertiesUtil.CLIENT_REGISTRATIONS_PROPERTY_PREFIX,
 							Bindable.mapOf(String.class, ClientRegistrationProperties.class))
 					.orElse(new HashMap<>());
 
