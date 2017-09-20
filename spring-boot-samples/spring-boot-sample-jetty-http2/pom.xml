@@ -43,7 +43,6 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-alpn-java-server</artifactId>
-			<version>9.4.7.RC0</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>
