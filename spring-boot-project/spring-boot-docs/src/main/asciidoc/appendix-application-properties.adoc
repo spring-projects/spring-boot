@@ -1191,6 +1191,12 @@ content into your application; rather pick only the properties that you need.
 	management.endpoint.scheduledtasks.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	management.endpoint.scheduledtasks.enabled= # Enable the scheduled tasks endpoint.
 
+	# QUARTZ ENDPOINT ({sc-spring-boot-actuator}/audit/QuartzEndpoint.{sc-ext}[QuartzEndpoint])
+	endpoints.quartz.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	endpoints.quartz.enabled= # Enable the quartz endpoint.
+	endpoints.quartz.jmx.enabled= # Expose the quartz endpoint as a JMX MBean.
+	endpoints.quartz.web.enabled= # Expose the quartz endpoint as a Web endpoint.
+
 	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
 	management.endpoint.sessions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	management.endpoint.sessions.enabled= # Enable the sessions endpoint.
