@@ -184,7 +184,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void launchScriptCanBePrepended() throws IOException {
 		this.task.setMainClass("com.example.Main");
-		this.task.getLaunchScript().setIncluded(true);
+		this.task.launchScript();
 		this.task.execute();
 		assertThat(Files.readAllBytes(this.task.getArchivePath().toPath()))
 				.startsWith(new DefaultLaunchScript(null, null).toByteArray());
@@ -201,12 +201,10 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void customLaunchScriptCanBePrepended() throws IOException {
 		this.task.setMainClass("com.example.Main");
-		LaunchScriptConfiguration launchScript = this.task.getLaunchScript();
-		launchScript.setIncluded(true);
 		File customScript = this.temp.newFile("custom.script");
 		Files.write(customScript.toPath(), Arrays.asList("custom script"),
 				StandardOpenOption.CREATE);
-		launchScript.setScript(customScript);
+		this.task.launchScript((configuration) -> configuration.setScript(customScript));
 		this.task.execute();
 		assertThat(Files.readAllBytes(this.task.getArchivePath().toPath()))
 				.startsWith("custom script".getBytes());
@@ -215,9 +213,8 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void launchScriptPropertiesAreReplaced() throws IOException {
 		this.task.setMainClass("com.example.Main");
-		LaunchScriptConfiguration launchScript = this.task.getLaunchScript();
-		launchScript.setIncluded(true);
-		launchScript.getProperties().put("initInfoProvides", "test property value");
+		this.task.launchScript((configuration) -> configuration.getProperties()
+				.put("initInfoProvides", "test property value"));
 		this.task.execute();
 		assertThat(Files.readAllBytes(this.task.getArchivePath().toPath()))
 				.containsSequence("test property value".getBytes());

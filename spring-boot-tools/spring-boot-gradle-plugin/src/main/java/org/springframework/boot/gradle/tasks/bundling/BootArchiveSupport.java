@@ -61,7 +61,7 @@ class BootArchiveSupport {
 
 	private final String loaderMainClass;
 
-	private LaunchScriptConfiguration launchScript = new LaunchScriptConfiguration();
+	private LaunchScriptConfiguration launchScript;
 
 	private boolean excludeDevtools = true;
 

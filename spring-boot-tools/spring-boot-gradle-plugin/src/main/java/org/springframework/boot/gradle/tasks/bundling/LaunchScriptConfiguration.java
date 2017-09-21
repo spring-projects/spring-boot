@@ -32,29 +32,9 @@ import org.springframework.boot.loader.tools.FileUtils;
  */
 public class LaunchScriptConfiguration implements Serializable {
 
-	private boolean included = false;
-
 	private final Map<String, String> properties = new HashMap<>();
 
 	private File script;
-
-	/**
-	 * Returns whether the launch script is included. Defaults to {@code false}.
-	 *
-	 * @return {@code true} is the script is included, otherwise {@code false}.
-	 */
-	public boolean isIncluded() {
-		return this.included;
-	}
-
-	/**
-	 * Sets whether the launch script is included. Defaults to {@code false}.
-	 *
-	 * @param included {@code true} is the script is included, otherwise {@code false}.
-	 */
-	public void setIncluded(boolean included) {
-		this.included = included;
-	}
 
 	/**
 	 * Returns the properties that are applied to the launch script when it's being
@@ -100,7 +80,6 @@ public class LaunchScriptConfiguration implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (this.included ? 1231 : 1237);
 		result = prime * result
 				+ ((this.properties == null) ? 0 : this.properties.hashCode());
 		result = prime * result + ((this.script == null) ? 0 : this.script.hashCode());
@@ -119,9 +98,6 @@ public class LaunchScriptConfiguration implements Serializable {
 			return false;
 		}
 		LaunchScriptConfiguration other = (LaunchScriptConfiguration) obj;
-		if (this.included != other.included) {
-			return false;
-		}
 		if (!this.properties.equals(other.properties)) {
 			return false;
 		}

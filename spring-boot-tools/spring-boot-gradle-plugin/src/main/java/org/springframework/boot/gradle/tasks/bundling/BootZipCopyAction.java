@@ -183,7 +183,7 @@ class BootZipCopyAction implements CopyAction {
 
 	private void writeLaunchScriptIfNecessary(FileOutputStream fileStream) {
 		try {
-			if (this.launchScript.isIncluded()) {
+			if (this.launchScript != null) {
 				fileStream.write(new DefaultLaunchScript(this.launchScript.getScript(),
 						this.launchScript.getProperties()).toByteArray());
 				this.output.setExecutable(true);

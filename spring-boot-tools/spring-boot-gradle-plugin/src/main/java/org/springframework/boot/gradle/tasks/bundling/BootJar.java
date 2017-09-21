@@ -98,8 +98,13 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	@Override
+	public void launchScript() {
+		enableLaunchScriptIfNecessary();
+	}
+
+	@Override
 	public void launchScript(Action<LaunchScriptConfiguration> action) {
-		action.execute(getLaunchScript());
+		action.execute(enableLaunchScriptIfNecessary());
 	}
 
 	@Override
@@ -140,6 +145,15 @@ public class BootJar extends Jar implements BootArchive {
 			return ZipCompression.STORED;
 		}
 		return ZipCompression.DEFLATED;
+	}
+
+	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
+		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
+		if (launchScript == null) {
+			launchScript = new LaunchScriptConfiguration();
+			this.support.setLaunchScript(launchScript);
+		}
+		return launchScript;
 	}
 
 }

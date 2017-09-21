@@ -14,7 +14,6 @@ bootJar {
 // tag::launch-script-properties[]
 bootJar {
 	launchScript {
-		included = true
 		properties 'logFilename': 'example-app.log'
 	}
 }

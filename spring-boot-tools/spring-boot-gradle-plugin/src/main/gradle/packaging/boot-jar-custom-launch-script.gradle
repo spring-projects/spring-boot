@@ -14,7 +14,6 @@ bootJar {
 // tag::custom-launch-script[]
 bootJar {
 	launchScript {
-		included = true
 		script = file('src/custom.script')
 	}
 }
