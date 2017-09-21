@@ -526,8 +526,8 @@ With Gradle, the equivalent configuration is:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	springBoot {
-		executable = true
+	bootJar {
+		launchScript()
 	}
 ----
 
