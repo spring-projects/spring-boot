@@ -90,7 +90,7 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 	}
 
 	private BasicDataSource createDataSource() {
-		return (BasicDataSource) initializeBuilder().type(BasicDataSource.class).build();
+		return initializeBuilder().type(BasicDataSource.class).build();
 	}
 
 }

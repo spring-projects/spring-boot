@@ -51,8 +51,7 @@ public class TomcatDataSourcePoolMetadataTests
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {
-		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class)
-				.build();
+		DataSource dataSource = initializeBuilder().type(DataSource.class).build();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);
 

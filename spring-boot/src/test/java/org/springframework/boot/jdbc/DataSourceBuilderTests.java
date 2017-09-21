@@ -71,6 +71,13 @@ public class DataSourceBuilderTests {
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
 	}
 
+	@Test
+	public void specificTypeOfDataSource() {
+		HikariDataSource hikariDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
+				.build();
+		assertThat(hikariDataSource).isInstanceOf(HikariDataSource.class);
+	}
+
 	final class HidePackagesClassLoader extends URLClassLoader {
 
 		private final String[] hiddenPackages;

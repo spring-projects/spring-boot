@@ -39,11 +39,12 @@ import org.springframework.util.ClassUtils;
  * inject additional properties into the result you can downcast it, or use
  * {@code @ConfigurationProperties}.
  *
+ * @param <T> type of DataSource produced by the builder
  * @author Dave Syer
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public class DataSourceBuilder {
+public final class DataSourceBuilder<T extends DataSource> {
 
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
 			"com.zaxxer.hikari.HikariDataSource",
@@ -56,24 +57,25 @@ public class DataSourceBuilder {
 
 	private Map<String, String> properties = new HashMap<>();
 
-	public static DataSourceBuilder create() {
-		return new DataSourceBuilder(null);
+	public static DataSourceBuilder<?> create() {
+		return new DataSourceBuilder<DataSource>(null);
 	}
 
-	public static DataSourceBuilder create(ClassLoader classLoader) {
-		return new DataSourceBuilder(classLoader);
+	public static DataSourceBuilder<?> create(ClassLoader classLoader) {
+		return new DataSourceBuilder<DataSource>(classLoader);
 	}
 
-	public DataSourceBuilder(ClassLoader classLoader) {
+	private DataSourceBuilder(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
-	public DataSource build() {
+	@SuppressWarnings("unchecked")
+	public T build() {
 		Class<? extends DataSource> type = getType();
 		DataSource result = BeanUtils.instantiateClass(type);
 		maybeGetDriverClassName();
 		bind(result);
-		return result;
+		return (T) result;
 	}
 
 	private void maybeGetDriverClassName() {
@@ -95,40 +97,38 @@ public class DataSourceBuilder {
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(result));
 	}
 
-	public DataSourceBuilder type(Class<? extends DataSource> type) {
+	@SuppressWarnings("unchecked")
+	public <D extends DataSource> DataSourceBuilder<D> type(Class<D> type) {
 		this.type = type;
-		return this;
+		return (DataSourceBuilder<D>) this;
 	}
 
-	public DataSourceBuilder url(String url) {
+	public DataSourceBuilder<T> url(String url) {
 		this.properties.put("url", url);
 		return this;
 	}
 
-	public DataSourceBuilder driverClassName(String driverClassName) {
+	public DataSourceBuilder<T> driverClassName(String driverClassName) {
 		this.properties.put("driverClassName", driverClassName);
 		return this;
 	}
 
-	public DataSourceBuilder username(String username) {
+	public DataSourceBuilder<T> username(String username) {
 		this.properties.put("username", username);
 		return this;
 	}
 
-	public DataSourceBuilder password(String password) {
+	public DataSourceBuilder<T> password(String password) {
 		this.properties.put("password", password);
 		return this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Class<? extends DataSource> findType() {
-		if (this.type != null) {
-			return this.type;
-		}
+	public static Class<? extends DataSource> findType(ClassLoader classLoader) {
 		for (String name : DATA_SOURCE_TYPE_NAMES) {
 			try {
 				return (Class<? extends DataSource>) ClassUtils.forName(name,
-						this.classLoader);
+						classLoader);
 			}
 			catch (Exception ex) {
 				// Swallow and continue
@@ -138,7 +138,8 @@ public class DataSourceBuilder {
 	}
 
 	private Class<? extends DataSource> getType() {
-		Class<? extends DataSource> type = findType();
+		Class<? extends DataSource> type = this.type != null ? this.type
+				: findType(this.classLoader);
 		if (type != null) {
 			return type;
 		}

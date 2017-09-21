@@ -180,7 +180,7 @@ public class DataSourceProperties
 	 * @return a {@link DataSourceBuilder} initialized with the customizations defined on
 	 * this instance
 	 */
-	public DataSourceBuilder initializeDataSourceBuilder() {
+	public DataSourceBuilder<?> initializeDataSourceBuilder() {
 		return DataSourceBuilder.create(getClassLoader()).type(getType())
 				.driverClassName(determineDriverClassName()).url(determineUrl())
 				.username(determineUsername()).password(determinePassword());

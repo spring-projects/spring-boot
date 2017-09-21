@@ -58,8 +58,7 @@ public class SimpleTwoDataSourcesExample {
 		@Bean
 		@ConfigurationProperties("app.datasource.bar")
 		public BasicDataSource barDataSource() {
-			return (BasicDataSource) DataSourceBuilder.create()
-					.type(BasicDataSource.class).build();
+			return DataSourceBuilder.create().type(BasicDataSource.class).build();
 		}
 		// end::configuration[]
 
