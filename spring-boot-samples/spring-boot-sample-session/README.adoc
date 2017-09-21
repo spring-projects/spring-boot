@@ -6,6 +6,7 @@ supports multiple session store types, including:
 * `Redis`
 * `JDBC`
 * `Hazelcast`
+* `MongoDB`
 
 
 
@@ -46,3 +47,14 @@ automatically configure the underlying `HazelcastInstance`.
 
 TIP: Run sample application using Hazelcast session store with
 `$mvn spring-boot:run -Phazelcast`.
+
+
+
+=== MongoDB
+Add `org.springframework.session:spring-session-data-mongodb` and
+`spring-boot-starter-data-mongodb` dependencies to the project and make sure it is
+configured properly (by default, a MongoDB instance with the default settings is expected
+on your local box).
+
+TIP: Run sample application using MongoDB session store using
+`$mvn spring-boot:run -Pmongodb`.
