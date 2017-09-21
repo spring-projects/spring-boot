@@ -46,6 +46,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>javax.json.bind</groupId>
+			<artifactId>javax.json.bind-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 		<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
@@ -117,6 +122,11 @@
 		</dependency>
 		<!-- Test -->
 		<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>javax.json-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-support</artifactId>
 			<scope>test</scope>
@@ -140,6 +150,11 @@
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-xml</artifactId>
 			<optional>true</optional>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-jsonb</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

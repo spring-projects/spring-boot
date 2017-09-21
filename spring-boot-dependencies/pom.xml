@@ -118,8 +118,11 @@
 		<jna.version>4.4.0</jna.version>
 		<joda-time.version>2.9.9</joda-time.version>
 		<jolokia.version>1.3.7</jolokia.version>
+		<johnzon-jsonb.version>1.1.2</johnzon-jsonb.version>
 		<jooq.version>3.9.5</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
+		<javax-json.version>1.1</javax-json.version>
+		<javax-jsonb.version>1.0</javax-jsonb.version>
 		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<jtds.version>1.3.1</jtds.version>
@@ -939,6 +942,16 @@
 				<version>${javax-jms.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>javax.json</groupId>
+				<artifactId>javax.json-api</artifactId>
+				<version>${javax-json.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.json.bind</groupId>
+				<artifactId>javax.json.bind-api</artifactId>
+				<version>${javax-jsonb.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.mail</groupId>
 				<artifactId>javax.mail-api</artifactId>
 				<version>${javax-mail.version}</version>
@@ -1304,6 +1317,11 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpmime</artifactId>
 				<version>${httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.johnzon</groupId>
+				<artifactId>johnzon-jsonb</artifactId>
+				<version>${johnzon-jsonb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>

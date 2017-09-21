@@ -28,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonbTester;
 
 /**
  * Annotation that can be applied to a test class to enable and configure
@@ -45,8 +46,8 @@ import org.springframework.boot.test.json.JacksonTester;
 public @interface AutoConfigureJsonTesters {
 
 	/**
-	 * If {@link BasicJsonTester}, {@link JacksonTester} and {@link GsonTester} beans
-	 * should be registered. Defaults to {@code true}
+	 * If {@link BasicJsonTester}, {@link JacksonTester}, {@link JsonbTester} and
+	 * {@link GsonTester} beans should be registered. Defaults to {@code true}
 	 * @return if tester support is enabled
 	 */
 	boolean enabled() default true;
