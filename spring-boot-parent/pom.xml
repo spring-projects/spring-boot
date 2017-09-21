@@ -736,8 +736,6 @@
 					<plugin>
 						<!-- Up the compiler version so the correct execution environment is
 							used -->
-						<!-- The profile is only active in eclipse so we still target 1.6 on
-							the command line -->
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
