@@ -297,7 +297,7 @@ content into your application; rather pick only the properties that you need.
 	spring.hateoas.use-hal-as-default-json-media-type=true # Specify if application/hal+json responses should be sent to requests that accept application/json.
 
 	# HTTP message conversion
-	spring.http.converters.preferred-json-mapper=jackson # Preferred JSON mapper to use for HTTP message conversion. Set to "gson" to force the use of Gson when both it and Jackson are on the classpath.
+	spring.http.converters.preferred-json-mapper= # Preferred JSON mapper to use for HTTP message conversion, auto-detected according to the environment by default.
 
 	# HTTP encoding ({sc-spring-boot-autoconfigure}/http/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
 	spring.http.encoding.charset=UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.

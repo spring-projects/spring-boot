@@ -18,11 +18,10 @@ package org.springframework.boot.autoconfigure.jsonb;
 
 import javax.json.bind.Jsonb;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,26 +32,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonbAutoConfigurationTests {
 
-	AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setUp() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
-
-	@After
-	public void tearDown() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
 
 	@Test
 	public void jsonbRegistration() {
-		this.context.register(JsonbAutoConfiguration.class);
-		this.context.refresh();
-		Jsonb jsonb = this.context.getBean(Jsonb.class);
-		assertThat(jsonb.toJson(new DataObject())).isEqualTo("{\"data\":\"hello\"}");
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Jsonb.class);
+			Jsonb jsonb = context.getBean(Jsonb.class);
+			assertThat(jsonb.toJson(new DataObject())).isEqualTo("{\"data\":\"hello\"}");
+		});
 	}
 
 	public class DataObject {
