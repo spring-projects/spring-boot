@@ -31,11 +31,14 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for web endpoints exposed using WebFlux.
@@ -61,6 +64,18 @@ public class WebFluxEndpointIntegrationTests
 						.valueEquals("Access-Control-Allow-Origin", "http://example.com")
 						.expectHeader()
 						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+	}
+
+	@Test
+	public void readOperationsThatReturnAResourceSupportRangeRequests() {
+		load(ResourceEndpointConfiguration.class, (client) -> {
+			byte[] responseBody = client.get().uri("/resource")
+					.header("Range", "bytes=0-3").exchange().expectStatus()
+					.isEqualTo(HttpStatus.PARTIAL_CONTENT).expectHeader()
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.returnResult(byte[].class).getResponseBodyContent();
+			assertThat(responseBody).containsExactly(0, 1, 2, 3);
+		});
 	}
 
 	@Override

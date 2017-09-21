@@ -447,7 +447,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	@Configuration
 	@Import(BaseConfiguration.class)
-	static class ResourceEndpointConfiguration {
+	protected static class ResourceEndpointConfiguration {
 
 		@Bean
 		public ResourceEndpoint resourceEndpoint() {
