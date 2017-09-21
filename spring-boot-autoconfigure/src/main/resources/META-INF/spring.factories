@@ -102,6 +102,7 @@ org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration,
 org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.LinkedInAutoConfiguration,\

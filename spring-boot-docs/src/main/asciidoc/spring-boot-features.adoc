@@ -2750,6 +2750,58 @@ NOTE: By default, a `WebSecurityConfigurerAdapter` will match any path. If you d
 to completely override Spring Boot's auto-configured access rules, your adapter must
 explicitly configure the paths that you do want to override.
 
+[[boot-features-security-oauth2]]
+=== OAuth2
+
+=== Client
+
+If you have `spring-security-oauth2-client` on your classpath you can take advantage of some
+auto-configuration to make it easy to set up an OAuth2 Client. This configuration makes use of
+the properties under `OAuth2ClientProperties`.
+You can register multiple OAuth2 clients and providers under the `spring.security.oauth2.client` prefix.
+For example,
+
+[source,yaml,indent=0]
+----
+# application.yml
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-client-1:
+            client-id: abcd
+            client-secret: password
+            client-name: Client for user scope
+            provider: my-oauth-provider
+            scope: user
+            redirect-uri: http://my-redirect-uri.com
+            authentication-method: basic
+            authorization-grant-type: authorization_code
+          my-client2:
+            client-id: abcd
+            client-secret: password
+            client-name: Client for email scope
+            provider: my-oauth-provider
+            scope: email
+            redirect-uri: http://my-redirect-uri.com
+            authentication-method: basic
+            authorization-grant-type: authorization_code
+        provider:
+          my-oauth-provider:
+            authorization-uri: http://my-auth-server/oauth/authorize
+            token-uri: http://my-auth-server/oauth/token
+            user-info-uri: http://my-auth-server/userinfo
+            jwk-set-uri: http://my-auth-server/token_keys
+            user-name-attribute: name
+
+# additional configuration as required
+----
+
+NOTE: For common OAuth2 and OpenID providers such as Google, Github, Facebook and Okta, we provide a set of
+provider defaults. If you don't need to customize these providers, you do not need to provide the `provider`
+configuration. The client registration `provider` key should reference one these providers.
 
 
 [[boot-features-security-actuator]]
