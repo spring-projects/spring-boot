@@ -95,8 +95,7 @@ requests. If you want to raise an issue, please follow the recommendations below
 You don't need to build from source to use Spring Boot (binaries in
 http://repo.spring.io[repo.spring.io]), but if you want to try out the latest and
 greatest, Spring Boot can be easily built with the
-https://github.com/takari/maven-wrapper[maven wrapper]. You also need JDK 1.8 (although
-Boot applications can run on Java 1.6).
+https://github.com/takari/maven-wrapper[maven wrapper]. You also need JDK 1.8.
 
 [indent=0]
 ----
