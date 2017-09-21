@@ -896,25 +896,6 @@
     }
   },
   {
-    "name": "security.oauth2.resource.filter-order",
-    "type": "java.lang.Integer",
-    "description": "The order of the filter chain used to authenticate tokens. Default puts it after\n the actuator endpoints and before the default HTTP basic filter chain (catchall).",
-    "defaultValue": 0,
-    "deprecation": {
-      "reason": "The security auto-configuration does no longer provide several security configurations. Their ordering is now explicit in your own security configuration.",
-      "level": "error"
-    }
-  },
-  {
-    "name": "security.oauth2.sso.filter-order",
-    "type": "java.lang.Integer",
-    "description": "Filter order to apply if not providing an explicit WebSecurityConfigurerAdapter (in\n which case the order can be provided there instead).",
-    "deprecation": {
-      "reason": "The security auto-configuration does no longer provide several security configurations. Their ordering is now explicit in your own security configuration.",
-      "level": "error"
-    }
-  },
-  {
     "name": "security.require-ssl",
     "type": "java.lang.Boolean",
     "description": "Enable secure channel for all requests.",

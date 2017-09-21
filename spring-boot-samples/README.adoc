@@ -146,15 +146,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-secure[spring-boot-sample-secure]
 | Non-web application that uses Spring Security
 
-| link:spring-boot-sample-secure-oauth2-actuator[spring-boot-sample-secure-oauth2-actuator]
-| RESTful service secured using OAuth2 and Actuator
-
-| link:spring-boot-sample-secure-oauth2[spring-boot-sample-secure-oauth2]
-| RESTful service secured using OAuth2
-
-| link:spring-boot-sample-secure-oauth2-resource[spring-boot-sample-secure-oauth2-resource]
-| OAuth2 resource server
-
 | link:spring-boot-sample-servlet[spring-boot-sample-servlet]
 | Web application with a "raw" `Servlet` returning plain text content
 
@@ -214,9 +205,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-web-secure-custom[spring-boot-sample-web-secure-custom]
 | Web application with custom Spring Security configuration
-
-| link:spring-boot-sample-web-secure-github[spring-boot-sample-web-secure-github]
-| Web application with Spring Security configured to authenticate with GitHub using OAuth2
 
 | link:spring-boot-sample-web-secure-jdbc[spring-boot-sample-web-secure-jdbc]
 | Web application with Spring Security configured to use JDBC authentication

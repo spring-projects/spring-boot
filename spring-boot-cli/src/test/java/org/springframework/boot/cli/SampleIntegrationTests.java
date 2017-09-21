@@ -72,13 +72,6 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	public void oauth2Sample() throws Exception {
-		String output = this.cli.run("oauth2.groovy");
-		assertThat(output).contains("security.oauth2.client.client-id");
-		assertThat(output).contains("security.oauth2.client.client-secret =");
-	}
-
-	@Test
 	public void jobWebSample() throws Exception {
 		String output = this.cli.run("job.groovy", "web.groovy", "foo=bar");
 		assertThat(output).contains("completed with the following parameters");
