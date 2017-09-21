@@ -62,7 +62,7 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 		try {
 			Constructor<?> constructor = getTypeExcludeFilterConstructor(filterClass);
 			ReflectionUtils.makeAccessible(constructor);
-			if (constructor.getParameterTypes().length == 1) {
+			if (constructor.getParameterCount() == 1) {
 				return (TypeExcludeFilter) constructor.newInstance(testClass);
 			}
 			return (TypeExcludeFilter) constructor.newInstance();
