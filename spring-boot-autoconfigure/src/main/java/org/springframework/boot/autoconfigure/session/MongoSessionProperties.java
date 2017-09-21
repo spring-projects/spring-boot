@@ -16,39 +16,28 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * Supported Spring Session data store types.
+ * Configuration properties for Mongo-backed Spring Session.
  *
- * @author Tommy Ludwig
- * @author Eddú Meléndez
- * @author Vedran Pavic
- * @since 1.4.0
+ * @author Andy Wilkinson
+ * @since 2.0.0
  */
-public enum StoreType {
+@ConfigurationProperties(prefix = "spring.session.mongo")
+public class MongoSessionProperties {
 
 	/**
-	 * Redis backed sessions.
+	 * Collection name used to store sessions.
 	 */
-	REDIS,
+	private String collectionName = "sessions";
 
-	/**
-	 * Mongo backed sessions.
-	 */
-	MONGO,
+	public String getCollectionName() {
+		return this.collectionName;
+	}
 
-	/**
-	 * JDBC backed sessions.
-	 */
-	JDBC,
-
-	/**
-	 * Hazelcast backed sessions.
-	 */
-	HAZELCAST,
-
-	/**
-	 * No session data-store.
-	 */
-	NONE;
+	public void setCollectionName(String collectionName) {
+		this.collectionName = collectionName;
+	}
 
 }

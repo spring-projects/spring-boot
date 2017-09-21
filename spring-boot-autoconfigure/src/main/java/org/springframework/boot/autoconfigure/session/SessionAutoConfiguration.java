@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -58,7 +59,8 @@ import org.springframework.session.SessionRepository;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		JdbcTemplateAutoConfiguration.class, RedisAutoConfiguration.class })
+		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class,
+		RedisAutoConfiguration.class })
 @Import({ SessionRepositoryConfiguration.class, SessionRepositoryValidator.class,
 		SessionRepositoryFilterConfiguration.class })
 public class SessionAutoConfiguration {

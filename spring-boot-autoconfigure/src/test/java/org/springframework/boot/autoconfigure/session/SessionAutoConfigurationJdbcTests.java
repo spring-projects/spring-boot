@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.hazelcast.HazelcastSessionRepository;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
@@ -69,6 +70,7 @@ public class SessionAutoConfigurationJdbcTests
 		this.contextRunner
 				.withClassLoader(
 						new HideClassesClassLoader(HazelcastSessionRepository.class,
+								MongoOperationsSessionRepository.class,
 								RedisOperationsSessionRepository.class))
 				.withConfiguration(
 						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))

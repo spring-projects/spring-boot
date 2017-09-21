@@ -16,19 +16,18 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.HideClassesClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.RedisTestServer;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.data.redis.RedisFlushMode;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.hazelcast.HazelcastSessionRepository;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
@@ -36,25 +35,23 @@ import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Redis specific tests for {@link SessionAutoConfiguration}.
+ * Mongo-specific tests for {@link SessionAutoConfiguration}.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-public class SessionAutoConfigurationRedisTests
+public class SessionAutoConfigurationMongoTests
 		extends AbstractSessionAutoConfigurationTests {
 
-	@Rule
-	public final RedisTestServer redis = new RedisTestServer();
-
-	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
 	public void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
-						RedisFlushMode.ON_SAVE));
+		this.contextRunner.withPropertyValues("spring.session.store-type=mongo")
+				.withConfiguration(AutoConfigurations.of(
+						EmbeddedMongoAutoConfiguration.class,
+						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
+				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
@@ -63,32 +60,31 @@ public class SessionAutoConfigurationRedisTests
 				.withClassLoader(
 						new HideClassesClassLoader(HazelcastSessionRepository.class,
 								JdbcOperationsSessionRepository.class,
-								MongoOperationsSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
-						RedisFlushMode.ON_SAVE));
+								RedisOperationsSessionRepository.class))
+				.withConfiguration(AutoConfigurations.of(
+						EmbeddedMongoAutoConfiguration.class,
+						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
+				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
-	public void redisSessionStoreWithCustomizations() {
+	public void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis",
-						"spring.session.redis.namespace=foo",
-						"spring.session.redis.flush-mode=immediate")
-				.run(validateSpringSessionUsesRedis("spring:session:foo:event:created:",
-						RedisFlushMode.IMMEDIATE));
+				.withConfiguration(AutoConfigurations.of(
+						EmbeddedMongoAutoConfiguration.class,
+						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=mongo",
+						"spring.session.mongo.collection-name=foo")
+				.run(validateSpringSessionUsesMongo("foo"));
 	}
 
-	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
-			String sessionCreatedChannelPrefix, RedisFlushMode flushMode) {
+	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(
+			String collectionName) {
 		return (context) -> {
-			RedisOperationsSessionRepository repository = validateSessionRepository(
-					context, RedisOperationsSessionRepository.class);
-			assertThat(repository.getSessionCreatedChannelPrefix())
-					.isEqualTo(sessionCreatedChannelPrefix);
+			MongoOperationsSessionRepository repository = validateSessionRepository(
+					context, MongoOperationsSessionRepository.class);
 			assertThat(new DirectFieldAccessor(repository)
-					.getPropertyValue("redisFlushMode")).isEqualTo(flushMode);
+					.getPropertyValue("collectionName")).isEqualTo(collectionName);
 		};
 	}
 

@@ -529,6 +529,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-data-mongodb</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-data-redis</artifactId>
 			<optional>true</optional>
 		</dependency>
