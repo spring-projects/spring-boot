@@ -48,7 +48,7 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 
 	private static final String CLIENT_REGISTRATIONS_PROPERTY_PREFIX = "spring.security.oauth2.client.registrations";
 
-	private static final String CLIENT_TYPE_PROPERTY = "client-type";
+	private static final String TEMPLATE_ID_PROPERTY = "template-id";
 
 	private static final String CLIENT_ID_PROPERTY = "client-id";
 
@@ -56,33 +56,33 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 
 	private static final String DEFAULT_REDIRECT_URI = "{scheme}://{serverName}:{serverPort}{contextPath}/oauth2/authorize/code/{clientAlias}";
 
-	private static final String GOOGLE_CLIENT_KEY = "google";
+	private static final String GOOGLE_REGISTRATION_ID = "google";
 
-	private static final String GOOGLE_CLIENT_ALIAS = GOOGLE_CLIENT_KEY;
+	private static final String GOOGLE_CLIENT_ALIAS = GOOGLE_REGISTRATION_ID;
 
 	private static final String GOOGLE_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "."
-			+ GOOGLE_CLIENT_KEY;
+			+ GOOGLE_REGISTRATION_ID;
 
-	private static final String GITHUB_CLIENT_KEY = "github";
+	private static final String GITHUB_REGISTRATION_ID = "github";
 
-	private static final String GITHUB_CLIENT_ALIAS = GITHUB_CLIENT_KEY;
+	private static final String GITHUB_CLIENT_ALIAS = GITHUB_REGISTRATION_ID;
 
 	private static final String GITHUB_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "."
-			+ GITHUB_CLIENT_KEY;
+			+ GITHUB_REGISTRATION_ID;
 
-	private static final String OKTA_CLIENT_KEY = "okta";
+	private static final String OKTA_REGISTRATION_ID = "okta";
 
-	private static final String OKTA_CLIENT_ALIAS = OKTA_CLIENT_KEY;
+	private static final String OKTA_CLIENT_ALIAS = OKTA_REGISTRATION_ID;
 
 	private static final String OKTA_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "."
-			+ OKTA_CLIENT_KEY;
+			+ OKTA_REGISTRATION_ID;
 
-	private static final String FACEBOOK_CLIENT_KEY = "facebook";
+	private static final String FACEBOOK_REGISTRATION_ID = "facebook";
 
-	private static final String FACEBOOK_CLIENT_ALIAS = FACEBOOK_CLIENT_KEY;
+	private static final String FACEBOOK_CLIENT_ALIAS = FACEBOOK_REGISTRATION_ID;
 
 	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX
-			+ "." + FACEBOOK_CLIENT_KEY;
+			+ "." + FACEBOOK_REGISTRATION_ID;
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -104,20 +104,20 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=google-client-id")
 				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=google-client-secret")
-				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GOOGLE_CLIENT_KEY)
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GOOGLE_REGISTRATION_ID)
 				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_ID_PROPERTY
 						+ "=github-client-id")
 				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=github-client-secret")
-				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GITHUB_CLIENT_KEY)
+				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GITHUB_REGISTRATION_ID)
 				.and(OKTA_CLIENT_PROPERTY_BASE + "." + CLIENT_ID_PROPERTY
 						+ "=okta-client-id")
 				.and(OKTA_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=okta-client-secret")
-				.and(OKTA_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + OKTA_CLIENT_KEY)
+				.and(OKTA_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + OKTA_REGISTRATION_ID)
 				.and(OKTA_CLIENT_PROPERTY_BASE
 						+ ".authorization-uri=https://your-subdomain.oktapreview.com/oauth2/v1/authorize")
 				.and(OKTA_CLIENT_PROPERTY_BASE
@@ -130,8 +130,8 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=facebook-client-id")
 				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=facebook-client-secret")
-				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + FACEBOOK_CLIENT_KEY)
+				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + FACEBOOK_REGISTRATION_ID)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
@@ -194,8 +194,8 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=google-client-id")
 				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=google-client-secret")
-				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GOOGLE_CLIENT_KEY)
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GOOGLE_REGISTRATION_ID)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
@@ -215,20 +215,20 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void refreshContextWhenGitHubCustomClientKeyConfiguredNoOverridesThenLoadDefaultConfiguration()
+	public void refreshContextWhenGitHubCustomRegistrationIdConfiguredNoOverridesThenLoadDefaultConfiguration()
 			throws Exception {
 		this.prepareContext(DefaultConfiguration.class);
 
-		String customClientKey = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + "github-custom";
+		String customRegistrationId = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + "github-custom";
 
 		// Prepare environment
 		TestPropertyValues
-				.of(customClientKey + "." + CLIENT_ID_PROPERTY
+				.of(customRegistrationId + "." + CLIENT_ID_PROPERTY
 						+ "=github-client-id")
-				.and(customClientKey + "." + CLIENT_SECRET_PROPERTY
+				.and(customRegistrationId + "." + CLIENT_SECRET_PROPERTY
 						+ "=github-client-secret")
-				.and(customClientKey + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GITHUB_CLIENT_KEY)
+				.and(customRegistrationId + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GITHUB_REGISTRATION_ID)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
@@ -248,29 +248,29 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void refreshContextWhenGitHubCustomClientKeyConfiguredAndOverridesThenLoadCustomConfiguration()
+	public void refreshContextWhenGitHubCustomRegistrationIdConfiguredAndOverridesThenLoadCustomConfiguration()
 			throws Exception {
 		this.prepareContext(DefaultConfiguration.class);
 
-		String customClientKey = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + "github-custom";
+		String customRegistrationId = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "." + "github-custom";
 
 		// Prepare environment
 		TestPropertyValues
-				.of(customClientKey + "." + CLIENT_ID_PROPERTY
+				.of(customRegistrationId + "." + CLIENT_ID_PROPERTY
 						+ "=github-client-id")
-				.and(customClientKey + "." + CLIENT_SECRET_PROPERTY
+				.and(customRegistrationId + "." + CLIENT_SECRET_PROPERTY
 						+ "=github-client-secret")
-				.and(customClientKey + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GITHUB_CLIENT_KEY)
-				.and(customClientKey + ".scope"
+				.and(customRegistrationId + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GITHUB_REGISTRATION_ID)
+				.and(customRegistrationId + ".scope"
 						+ "=scope1, scope2, scope3")
-				.and(customClientKey + ".client-authentication-method"
+				.and(customRegistrationId + ".client-authentication-method"
 						+ "=post")
-				.and(customClientKey + ".redirect-uri"
+				.and(customRegistrationId + ".redirect-uri"
 						+ "=https://localhost:8080/callback/github-custom")
-				.and(customClientKey + ".client-alias"
+				.and(customRegistrationId + ".client-alias"
 						+ "=github-custom-alias")
-				.and(customClientKey + ".client-name"
+				.and(customRegistrationId + ".client-name"
 						+ "=GitHub Custom")
 				.applyTo(this.context.getEnvironment());
 
@@ -294,6 +294,35 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 		assertThat(githubClientRegistration.getRedirectUri()).isEqualTo("https://localhost:8080/callback/github-custom");
 		assertThat(githubClientRegistration.getClientAlias()).isEqualTo("github-custom-alias");
 		assertThat(githubClientRegistration.getClientName()).isEqualTo("GitHub Custom");
+	}
+
+	@Test
+	public void refreshContextWhenGoogleClientConfiguredWithoutTemplateIdNoOverridesThenLoadDefaultConfiguration()
+			throws Exception {
+		this.prepareContext(DefaultConfiguration.class);
+
+		// Prepare environment
+		TestPropertyValues
+				.of(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_ID_PROPERTY
+						+ "=google-client-id")
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
+						+ "=google-client-secret")
+				.applyTo(this.context.getEnvironment());
+
+		this.context.refresh();
+
+		ClientRegistrationRepository clientRegistrationRepository = this
+				.getBean(ClientRegistrationRepository.class);
+		assertThat(clientRegistrationRepository).isNotNull();
+		assertThat(clientRegistrationRepository.getRegistrations().size()).isEqualTo(1);
+
+		ClientRegistration googleClientRegistration = clientRegistrationRepository
+				.getRegistrationByClientAlias(GOOGLE_CLIENT_ALIAS);
+		assertThat(googleClientRegistration).isNotNull();
+		assertThat(googleClientRegistration.getClientId()).isEqualTo("google-client-id");
+		assertThat(googleClientRegistration.getClientSecret())
+				.isEqualTo("google-client-secret");
+		this.assertGoogleClientPropertyDefaults(googleClientRegistration);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -378,8 +407,8 @@ public class ClientRegistrationRepositoryAutoConfigurationTests {
 						+ "=facebook-client-id")
 				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=facebook-client-secret")
-				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + FACEBOOK_CLIENT_KEY)
+				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + FACEBOOK_REGISTRATION_ID)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();

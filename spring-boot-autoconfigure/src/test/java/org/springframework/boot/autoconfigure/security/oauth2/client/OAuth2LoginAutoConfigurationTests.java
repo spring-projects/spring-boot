@@ -60,26 +60,26 @@ public class OAuth2LoginAutoConfigurationTests {
 
 	private static final String CLIENT_REGISTRATIONS_PROPERTY_PREFIX = "spring.security.oauth2.client.registrations";
 
-	private static final String CLIENT_TYPE_PROPERTY = "client-type";
+	private static final String TEMPLATE_ID_PROPERTY = "template-id";
 
 	private static final String CLIENT_ID_PROPERTY = "client-id";
 
 	private static final String CLIENT_SECRET_PROPERTY = "client-secret";
 
-	private static final String GOOGLE_CLIENT_KEY = "google";
+	private static final String GOOGLE_REGISTRATION_ID = "google";
 
 	private static final String GOOGLE_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "."
-			+ GOOGLE_CLIENT_KEY;
+			+ GOOGLE_REGISTRATION_ID;
 
-	private static final String GITHUB_CLIENT_KEY = "github";
+	private static final String GITHUB_REGISTRATION_ID = "github";
 
 	private static final String GITHUB_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX + "."
-			+ GITHUB_CLIENT_KEY;
+			+ GITHUB_REGISTRATION_ID;
 
-	private static final String FACEBOOK_CLIENT_KEY = "facebook";
+	private static final String FACEBOOK_REGISTRATION_ID = "facebook";
 
 	private static final String FACEBOOK_CLIENT_PROPERTY_BASE = CLIENT_REGISTRATIONS_PROPERTY_PREFIX
-			+ "." + FACEBOOK_CLIENT_KEY;
+			+ "." + FACEBOOK_REGISTRATION_ID;
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -101,20 +101,20 @@ public class OAuth2LoginAutoConfigurationTests {
 						+ "=google-client-id")
 				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=google-client-secret")
-				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GOOGLE_CLIENT_KEY)
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GOOGLE_REGISTRATION_ID)
 				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_ID_PROPERTY
 						+ "=github-client-id")
 				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=github-client-secret")
-				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GITHUB_CLIENT_KEY)
+				.and(GITHUB_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GITHUB_REGISTRATION_ID)
 				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_ID_PROPERTY
 						+ "=facebook-client-id")
 				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=facebook-client-secret")
-				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + FACEBOOK_CLIENT_KEY)
+				.and(FACEBOOK_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + FACEBOOK_REGISTRATION_ID)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
@@ -174,8 +174,8 @@ public class OAuth2LoginAutoConfigurationTests {
 						+ "=google-client-id")
 				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=google-client-secret")
-				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GOOGLE_CLIENT_KEY)
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GOOGLE_REGISTRATION_ID)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();
@@ -264,8 +264,8 @@ public class OAuth2LoginAutoConfigurationTests {
 						+ "=google-client-id")
 				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_SECRET_PROPERTY
 						+ "=google-client-secret")
-				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + CLIENT_TYPE_PROPERTY
-						+ "=" + GOOGLE_CLIENT_KEY)
+				.and(GOOGLE_CLIENT_PROPERTY_BASE + "." + TEMPLATE_ID_PROPERTY
+						+ "=" + GOOGLE_REGISTRATION_ID)
 				.applyTo(this.context.getEnvironment());
 
 		this.context.refresh();

@@ -40,10 +40,11 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.oauth2.client.OAuth2ClientPropertiesUtil;
+import org.springframework.security.config.oauth2.client.OAuth2ClientTemplatePropertiesLoader;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -107,80 +108,83 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 
 		private void applyDefaultProperties(OAuth2ClientProperties oauth2ClientProperties) {
 			MutablePropertySources propertySources = new MutablePropertySources();
-			propertySources.addLast(OAuth2ClientPropertiesUtil.loadClientTypesPropertySource());
+			propertySources.addLast(
+					new MapPropertySource("spring-security-oauth2-client-templates",
+							OAuth2ClientTemplatePropertiesLoader.loadClientTemplates()));
 
-			Map<String, OAuth2ClientProperties.ClientRegistration> clientTypesProperties =
+			Map<String, OAuth2ClientProperties.ClientRegistration> clientTemplatesProperties =
 					new Binder(ConfigurationPropertySources.from(propertySources))
-							.bind(OAuth2ClientPropertiesUtil.CLIENT_TYPES_PROPERTY_PREFIX,
+							.bind(OAuth2ClientTemplatePropertiesLoader.CLIENT_TEMPLATES_PROPERTY_PREFIX,
 									Bindable.mapOf(String.class, OAuth2ClientProperties.ClientRegistration.class))
 							.get();
 
-			oauth2ClientProperties.getRegistrations().values().stream()
-					.filter(clientProperties -> clientProperties.getClientType() != null &&
-							clientTypesProperties.keySet().stream()
-									.anyMatch(clientType -> clientType.equalsIgnoreCase(clientProperties.getClientType().toString())))
-					.forEach(clientProperties -> {
-						OAuth2ClientProperties.ClientRegistration clientTypeProperties =
-								clientTypesProperties.entrySet().stream()
-								.filter(e -> e.getKey().equalsIgnoreCase(clientProperties.getClientType().toString()))
-								.findFirst().get().getValue();
-						this.applyDefaultProperties(clientProperties, clientTypeProperties);
+			oauth2ClientProperties.getRegistrations()
+					.forEach((clientRegistrationId, clientProperties) -> {
+						// If templateId is not provided (configured) then default to clientRegistrationId
+						String templateId = (clientProperties.getTemplateId() != null
+								? clientProperties.getTemplateId().toString()
+								: clientRegistrationId);
+						clientTemplatesProperties.entrySet().stream().filter(clientTemplateProperties ->
+								clientTemplateProperties.getKey().equalsIgnoreCase(templateId))
+								.findFirst()
+								.ifPresent(clientTemplateProperties ->
+										this.applyDefaultProperties(clientProperties, clientTemplateProperties.getValue()));
 					});
 		}
 
 		private void applyDefaultProperties(
 				OAuth2ClientProperties.ClientRegistration clientProperties,
-				OAuth2ClientProperties.ClientRegistration clientTypeProperties) {
+				OAuth2ClientProperties.ClientRegistration clientTemplateProperties) {
 
 			// clientAuthenticationMethod
 			if (clientProperties.getClientAuthenticationMethod() == null &&
-					clientTypeProperties.getClientAuthenticationMethod() != null) {
-				clientProperties.setClientAuthenticationMethod(clientTypeProperties.getClientAuthenticationMethod());
+					clientTemplateProperties.getClientAuthenticationMethod() != null) {
+				clientProperties.setClientAuthenticationMethod(clientTemplateProperties.getClientAuthenticationMethod());
 			}
 			// authorizationGrantType
 			if (clientProperties.getAuthorizationGrantType() == null &&
-					clientTypeProperties.getAuthorizationGrantType() != null) {
-				clientProperties.setAuthorizationGrantType(clientTypeProperties.getAuthorizationGrantType());
+					clientTemplateProperties.getAuthorizationGrantType() != null) {
+				clientProperties.setAuthorizationGrantType(clientTemplateProperties.getAuthorizationGrantType());
 			}
 			// redirectUri
 			if (StringUtils.isEmpty(clientProperties.getRedirectUri()) &&
-					!StringUtils.isEmpty(clientTypeProperties.getRedirectUri())) {
-				clientProperties.setRedirectUri(clientTypeProperties.getRedirectUri());
+					!StringUtils.isEmpty(clientTemplateProperties.getRedirectUri())) {
+				clientProperties.setRedirectUri(clientTemplateProperties.getRedirectUri());
 			}
 			// scope
 			if (CollectionUtils.isEmpty(clientProperties.getScope()) &&
-					!CollectionUtils.isEmpty(clientTypeProperties.getScope())) {
-				clientProperties.setScope(clientTypeProperties.getScope());
+					!CollectionUtils.isEmpty(clientTemplateProperties.getScope())) {
+				clientProperties.setScope(clientTemplateProperties.getScope());
 			}
 			// authorizationUri
 			if (StringUtils.isEmpty(clientProperties.getAuthorizationUri()) &&
-					!StringUtils.isEmpty(clientTypeProperties.getAuthorizationUri())) {
-				clientProperties.setAuthorizationUri(clientTypeProperties.getAuthorizationUri());
+					!StringUtils.isEmpty(clientTemplateProperties.getAuthorizationUri())) {
+				clientProperties.setAuthorizationUri(clientTemplateProperties.getAuthorizationUri());
 			}
 			// tokenUri
 			if (StringUtils.isEmpty(clientProperties.getTokenUri()) &&
-					!StringUtils.isEmpty(clientTypeProperties.getTokenUri())) {
-				clientProperties.setTokenUri(clientTypeProperties.getTokenUri());
+					!StringUtils.isEmpty(clientTemplateProperties.getTokenUri())) {
+				clientProperties.setTokenUri(clientTemplateProperties.getTokenUri());
 			}
 			// userInfoUri
 			if (StringUtils.isEmpty(clientProperties.getUserInfoUri()) &&
-					!StringUtils.isEmpty(clientTypeProperties.getUserInfoUri())) {
-				clientProperties.setUserInfoUri(clientTypeProperties.getUserInfoUri());
+					!StringUtils.isEmpty(clientTemplateProperties.getUserInfoUri())) {
+				clientProperties.setUserInfoUri(clientTemplateProperties.getUserInfoUri());
 			}
 			// jwkSetUri
 			if (StringUtils.isEmpty(clientProperties.getJwkSetUri()) &&
-					!StringUtils.isEmpty(clientTypeProperties.getJwkSetUri())) {
-				clientProperties.setJwkSetUri(clientTypeProperties.getJwkSetUri());
+					!StringUtils.isEmpty(clientTemplateProperties.getJwkSetUri())) {
+				clientProperties.setJwkSetUri(clientTemplateProperties.getJwkSetUri());
 			}
 			// clientName
 			if (StringUtils.isEmpty(clientProperties.getClientName()) &&
-					!StringUtils.isEmpty(clientTypeProperties.getClientName())) {
-				clientProperties.setClientName(clientTypeProperties.getClientName());
+					!StringUtils.isEmpty(clientTemplateProperties.getClientName())) {
+				clientProperties.setClientName(clientTemplateProperties.getClientName());
 			}
 			// clientAlias
 			if (StringUtils.isEmpty(clientProperties.getClientAlias()) &&
-					!StringUtils.isEmpty(clientTypeProperties.getClientAlias())) {
-				clientProperties.setClientAlias(clientTypeProperties.getClientAlias());
+					!StringUtils.isEmpty(clientTemplateProperties.getClientAlias())) {
+				clientProperties.setClientAlias(clientTemplateProperties.getClientAlias());
 			}
 		}
 
@@ -225,15 +229,15 @@ public class ClientRegistrationRepositoryAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("OAuth2 Clients Configured Condition");
-			Set<String> clientKeys = this.getClientKeys(context.getEnvironment());
-			if (!clientKeys.isEmpty()) {
+			Set<String> clientRegistrationIds = this.getClientRegistrationIds(context.getEnvironment());
+			if (!clientRegistrationIds.isEmpty()) {
 				return ConditionOutcome.match(message.foundExactly("OAuth2 Client(s) -> "
-						+ clientKeys.stream().collect(Collectors.joining(", "))));
+						+ clientRegistrationIds.stream().collect(Collectors.joining(", "))));
 			}
 			return ConditionOutcome.noMatch(message.notAvailable("OAuth2 Client(s)"));
 		}
 
-		private Set<String> getClientKeys(Environment environment) {
+		private Set<String> getClientRegistrationIds(Environment environment) {
 			Map<String, OAuth2ClientProperties.ClientRegistration> clientsProperties = Binder.get(environment)
 					.bind(CLIENT_REGISTRATIONS_PROPERTY_PREFIX,
 							Bindable.mapOf(String.class, OAuth2ClientProperties.ClientRegistration.class))

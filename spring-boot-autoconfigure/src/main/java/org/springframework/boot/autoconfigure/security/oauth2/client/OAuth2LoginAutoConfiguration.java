@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -27,12 +28,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
-import org.springframework.security.config.oauth2.client.OAuth2ClientPropertiesUtil;
+import org.springframework.security.config.oauth2.client.OAuth2ClientTemplatePropertiesLoader;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
@@ -60,7 +62,7 @@ public class OAuth2LoginAutoConfiguration {
 
 		private final OAuth2ClientProperties oauth2ClientProperties;
 
-		private final PropertiesPropertySource clientTypesPropertySource;
+		private final PropertySource<Map<String, Object>> clientTemplatesPropertySource;
 
 		protected OAuth2LoginConfiguration(
 				ClientRegistrationRepository clientRegistrationRepository,
@@ -68,7 +70,9 @@ public class OAuth2LoginAutoConfiguration {
 
 			this.clientRegistrationRepository = clientRegistrationRepository;
 			this.oauth2ClientProperties = oauth2ClientProperties;
-			this.clientTypesPropertySource = OAuth2ClientPropertiesUtil.loadClientTypesPropertySource();
+			this.clientTemplatesPropertySource = new MapPropertySource(
+					"spring-security-oauth2-client-templates",
+					OAuth2ClientTemplatePropertiesLoader.loadClientTemplates());
 		}
 
 		// @formatter:off
@@ -86,18 +90,20 @@ public class OAuth2LoginAutoConfiguration {
 		// @formatter:on
 
 		private void registerUserNameAttributeNames(OAuth2LoginConfigurer<HttpSecurity> oauth2LoginConfigurer) throws Exception {
-			this.oauth2ClientProperties.getRegistrations().forEach((clientKey, clientProperties) -> {
+			this.oauth2ClientProperties.getRegistrations().forEach((clientRegistrationId, clientProperties) -> {
 				String userInfoUriValue = clientProperties.getUserInfoUri();
-				String userNameAttributeNameValue = (String) this.clientTypesPropertySource.getProperty(
-						OAuth2ClientPropertiesUtil.CLIENT_TYPES_PROPERTY_PREFIX + "." +
-								clientProperties.getClientType().toString().toLowerCase() + "." +
-								USER_NAME_ATTR_NAME_PROPERTY);
+
+				// If templateId is not provided (configured) then default to clientRegistrationId
+				String templateId = (clientProperties.getTemplateId() != null
+						? clientProperties.getTemplateId().toString().toLowerCase()
+						: clientRegistrationId);
+				String userNameAttributeNameValue = (String) this.clientTemplatesPropertySource
+						.getProperty(OAuth2ClientTemplatePropertiesLoader.CLIENT_TEMPLATES_PROPERTY_PREFIX
+								+ "." + templateId + "." + USER_NAME_ATTR_NAME_PROPERTY);
+
 				if (userInfoUriValue != null && userNameAttributeNameValue != null) {
-					// @formatter:off
-					oauth2LoginConfigurer
-						.userInfoEndpoint()
+					oauth2LoginConfigurer.userInfoEndpoint()
 							.userNameAttributeName(userNameAttributeNameValue, URI.create(userInfoUriValue));
-					// @formatter:on
 				}
 			});
 		}

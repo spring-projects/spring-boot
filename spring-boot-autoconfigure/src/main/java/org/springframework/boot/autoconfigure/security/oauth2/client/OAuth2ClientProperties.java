@@ -40,7 +40,7 @@ public class OAuth2ClientProperties {
 
 	public static class ClientRegistration {
 
-		private ClientType clientType;
+		private TemplateId templateId;
 
 		private String clientId;
 
@@ -66,12 +66,12 @@ public class OAuth2ClientProperties {
 
 		private String clientAlias;
 
-		public ClientType getClientType() {
-			return this.clientType;
+		public TemplateId getTemplateId() {
+			return this.templateId;
 		}
 
-		public void setClientType(ClientType clientType) {
-			this.clientType = clientType;
+		public void setTemplateId(TemplateId templateId) {
+			this.templateId = templateId;
 		}
 
 		public String getClientId() {
@@ -180,7 +180,7 @@ public class OAuth2ClientProperties {
 		AUTHORIZATION_CODE
 	}
 
-	public enum ClientType {
+	public enum TemplateId {
 		GOOGLE,
 		GITHUB,
 		OKTA,
