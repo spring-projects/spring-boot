@@ -94,5 +94,18 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>mongodb</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.session</groupId>
+					<artifactId>spring-session-data-mongodb</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-data-mongodb</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
 </project>
