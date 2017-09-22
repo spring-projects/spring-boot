@@ -142,7 +142,7 @@ public class JsonTestersAutoConfiguration {
 			}
 			Constructor<?>[] constructors = this.objectType.getDeclaredConstructors();
 			for (Constructor<?> constructor : constructors) {
-				if (constructor.getParameterTypes().length == 1
+				if (constructor.getParameterCount() == 1
 						&& constructor.getParameterTypes()[0]
 								.isInstance(this.marshaller)) {
 					ReflectionUtils.makeAccessible(constructor);
