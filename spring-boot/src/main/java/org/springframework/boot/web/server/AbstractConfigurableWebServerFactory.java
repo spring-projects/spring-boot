@@ -50,6 +50,8 @@ public class AbstractConfigurableWebServerFactory
 
 	private SslStoreProvider sslStoreProvider;
 
+	private Http2 http2;
+
 	private Compression compression;
 
 	private String serverHeader;
@@ -132,6 +134,15 @@ public class AbstractConfigurableWebServerFactory
 	@Override
 	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
 		this.sslStoreProvider = sslStoreProvider;
+	}
+
+	public Http2 getHttp2() {
+		return this.http2;
+	}
+
+	@Override
+	public void setHttp2(Http2 http2) {
+		this.http2 = http2;
 	}
 
 	public Compression getCompression() {

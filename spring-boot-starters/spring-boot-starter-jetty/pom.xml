@@ -39,6 +39,10 @@
 					<groupId>org.eclipse.jetty</groupId>
 					<artifactId>jetty-jndi</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>javax.websocket</groupId>
+					<artifactId>javax.websocket-client-api</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>

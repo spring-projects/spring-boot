@@ -111,7 +111,8 @@
 		<jedis.version>2.9.0</jedis.version>
 		<jersey.version>2.26</jersey.version>
 		<jest.version>5.3.2</jest.version>
-		<jetty.version>9.4.6.v20170531</jetty.version>
+		<jetty.version>9.4.7.v20170914</jetty.version>
+		<jetty-alpn-api.version>1.1.3.v20160715</jetty-alpn-api.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.9.1</jetty-el.version>
 		<jmustache.version>1.13</jmustache.version>
@@ -1643,6 +1644,21 @@
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-xml</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.alpn</groupId>
+				<artifactId>alpn-api</artifactId>
+				<version>${jetty-alpn-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-alpn-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-alpn-java-server</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>

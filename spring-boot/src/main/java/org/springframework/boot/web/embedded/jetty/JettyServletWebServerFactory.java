@@ -35,9 +35,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.http2.HTTP2Cipher;
+import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
@@ -166,8 +169,15 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		if (getSsl() != null && getSsl().isEnabled()) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
-			AbstractConnector connector = createSslConnector(server, sslContextFactory,
-					port);
+			AbstractConnector connector;
+			if (getHttp2() != null && getHttp2().isEnabled()) {
+				sslContextFactory.setCipherComparator(new HTTP2Cipher.CipherComparator());
+				sslContextFactory.setUseCipherSuitesOrder(true);
+				connector = createHttp2Connector(server, sslContextFactory, port);
+			}
+			else {
+				connector = createSslConnector(server, sslContextFactory, port);
+			}
 			server.setConnectors(new Connector[] { connector });
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
@@ -199,18 +209,41 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return connector;
 	}
 
+	private AbstractConnector createHttp2Connector(Server server,
+			SslContextFactory sslContextFactory, int port) {
+		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
+				sslContextFactory, "alpn");
+		ALPNServerConnectionFactory alpnServerConnectionFactory =
+				new ALPNServerConnectionFactory(
+						"h2", "h2-17", "h2-16", "h2-15", "h2-14", "http/1.1");
+		HttpConfiguration config = createSecureHttpConfiguration();
+		HTTP2ServerConnectionFactory http2ServerConnectionFactory =
+				new HTTP2ServerConnectionFactory(config);
+		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(config);
+		ServerConnector serverConnector = new ServerConnector(server, sslContextFactory,
+				sslConnectionFactory, alpnServerConnectionFactory,
+				http2ServerConnectionFactory, httpConnectionFactory);
+		serverConnector.setPort(port);
+		return serverConnector;
+	}
+
 	private AbstractConnector createSslConnector(Server server,
 			SslContextFactory sslContextFactory, int port) {
-		HttpConfiguration config = new HttpConfiguration();
-		config.setSendServerVersion(false);
-		config.addCustomizer(new SecureRequestCustomizer());
-		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
+		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(
+				createSecureHttpConfiguration());
 		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
 				sslContextFactory, HttpVersion.HTTP_1_1.asString());
 		ServerConnector serverConnector = new ServerConnector(server,
 				sslConnectionFactory, connectionFactory);
 		serverConnector.setPort(port);
 		return serverConnector;
+	}
+
+	private HttpConfiguration createSecureHttpConfiguration() {
+		HttpConfiguration config = new HttpConfiguration();
+		config.setSendServerVersion(false);
+		config.addCustomizer(new SecureRequestCustomizer());
+		return config;
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
