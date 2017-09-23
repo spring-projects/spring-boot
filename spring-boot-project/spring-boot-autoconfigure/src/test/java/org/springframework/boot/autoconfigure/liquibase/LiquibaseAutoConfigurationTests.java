@@ -239,6 +239,16 @@ public class LiquibaseAutoConfigurationTests {
 		};
 	}
 
+	@Test
+	public void testUseVendorChangelog() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.change-log:classpath:/db/vendors/{vendor}/db.changelog-master.yaml")
+				.run((context) -> {
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+					assertThat(liquibase.getChangeLog()).isEqualTo("classpath:/db/vendors/h2/db.changelog-master.yaml");
+				});
+	}
+
 	@Configuration
 	static class LiquibaseDataSourceConfiguration {
 
