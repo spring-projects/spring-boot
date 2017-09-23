@@ -33,6 +33,14 @@
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>http2-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>http2-server</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty.alpn</groupId>
 			<artifactId>alpn-api</artifactId>
 		</dependency>
