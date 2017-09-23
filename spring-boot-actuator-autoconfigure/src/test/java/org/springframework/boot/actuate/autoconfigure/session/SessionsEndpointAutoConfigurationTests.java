@@ -64,7 +64,7 @@ public class SessionsEndpointAutoConfigurationTests {
 	static class SessionConfiguration {
 
 		@Bean
-		public FindByIndexNameSessionRepository sessionRepository() {
+		public FindByIndexNameSessionRepository<?> sessionRepository() {
 			return mock(FindByIndexNameSessionRepository.class);
 		}
 

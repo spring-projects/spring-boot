@@ -40,10 +40,10 @@ public class SessionsEndpointTests {
 
 	private static final Session session = new MapSession();
 
-	private final FindByIndexNameSessionRepository repository = mock(
+	@SuppressWarnings("unchecked")
+	private final FindByIndexNameSessionRepository<Session> repository = mock(
 			FindByIndexNameSessionRepository.class);
 
-	@SuppressWarnings("unchecked")
 	private final SessionsEndpoint endpoint = new SessionsEndpoint(this.repository);
 
 	@Test

@@ -322,8 +322,7 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
-		ExampleCustomBean result = this.binder
-				.bind("foo", ExampleCustomBean.class).get();
+		ExampleCustomBean result = this.binder.bind("foo", ExampleCustomBean.class).get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
 	}

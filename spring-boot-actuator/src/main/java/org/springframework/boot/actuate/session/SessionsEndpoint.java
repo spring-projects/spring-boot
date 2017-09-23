@@ -78,7 +78,7 @@ public class SessionsEndpoint {
 
 		public SessionsReport(Map<String, ? extends Session> sessions) {
 			this.sessions = sessions.entrySet().stream()
-					.map(s -> new SessionDescriptor(s.getValue()))
+					.map((s) -> new SessionDescriptor(s.getValue()))
 					.collect(Collectors.toList());
 		}
 

@@ -44,7 +44,8 @@ public class SessionsEndpointWebIntegrationTests {
 
 	private static final Session session = new MapSession();
 
-	private static final FindByIndexNameSessionRepository repository = mock(
+	@SuppressWarnings("unchecked")
+	private static final FindByIndexNameSessionRepository<Session> repository = mock(
 			FindByIndexNameSessionRepository.class);
 
 	private static WebTestClient client;
@@ -59,7 +60,7 @@ public class SessionsEndpointWebIntegrationTests {
 	public void sessionsForUsernameNoResults() throws Exception {
 		given(repository.findByIndexNameAndIndexValue(
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
-				.willReturn(Collections.emptyMap());
+						.willReturn(Collections.emptyMap());
 		client.get()
 				.uri((builder) -> builder.path("/application/sessions")
 						.queryParam("username", "user").build())
@@ -83,7 +84,6 @@ public class SessionsEndpointWebIntegrationTests {
 	protected static class TestConfiguration {
 
 		@Bean
-		@SuppressWarnings("unchecked")
 		public SessionsEndpoint sessionsEndpoint() {
 			return new SessionsEndpoint(repository);
 		}

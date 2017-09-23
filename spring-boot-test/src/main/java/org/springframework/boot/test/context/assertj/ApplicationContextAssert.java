@@ -370,7 +370,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 
 	private ContextFailedToStart<C> contextFailedToStartWhenExpecting(
 			String expectationFormat, Object... arguments) {
-		return new ContextFailedToStart<C>(getApplicationContext(), this.startupFailure,
+		return new ContextFailedToStart<>(getApplicationContext(), this.startupFailure,
 				expectationFormat, arguments);
 	}
 

@@ -73,8 +73,8 @@ public class DataSourceBuilderTests {
 
 	@Test
 	public void specificTypeOfDataSource() {
-		HikariDataSource hikariDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
-				.build();
+		HikariDataSource hikariDataSource = DataSourceBuilder.create()
+				.type(HikariDataSource.class).build();
 		assertThat(hikariDataSource).isInstanceOf(HikariDataSource.class);
 	}
 

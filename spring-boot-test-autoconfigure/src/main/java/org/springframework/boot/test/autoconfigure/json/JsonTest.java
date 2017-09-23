@@ -47,8 +47,8 @@ import org.springframework.test.context.BootstrapWith;
  * <p>
  * By default, tests annotated with {@code JsonTest} will also initialize
  * {@link JacksonTester}, {@link JsonbTester} and {@link GsonTester} fields. More
- * fine-grained control can be provided via the {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters}
- * annotation.
+ * fine-grained control can be provided via the
+ * {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters} annotation.
  *
  * @author Phillip Webb
  * @see AutoConfigureJson
