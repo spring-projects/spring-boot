@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ public class WarPackagingTests {
 	private static final String WEB_INF_LIB_PREFIX = "WEB-INF/lib/";
 
 	private static final Set<String> TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
-			Arrays.asList("spring-boot-starter-tomcat-", "tomcat-embed-core-",
-					"tomcat-embed-el-", "tomcat-embed-websocket-"));
+			Arrays.asList("spring-boot-starter-tomcat-", "tomcat-annotations",
+					"tomcat-embed-core-", "tomcat-embed-el-", "tomcat-embed-websocket-"));
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-jetty-", "jetty-continuation",
