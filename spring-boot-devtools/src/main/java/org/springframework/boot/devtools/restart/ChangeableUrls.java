@@ -143,7 +143,10 @@ final class ChangeableUrls implements Iterable<URL> {
 		List<File> nonExistentEntries = new ArrayList<>();
 		for (String entry : entries) {
 			try {
-				File referenced = new File(parent, entry);
+				File referenced = new File(entry);
+				if (!referenced.isAbsolute()) {
+					referenced = new File(parent, entry);
+				}
 				if (referenced.exists()) {
 					urls.add(referenced.toURI().toURL());
 				}
