@@ -23,18 +23,20 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryConfiguration;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -56,14 +58,28 @@ import org.springframework.session.SessionRepository;
  */
 @Configuration
 @ConditionalOnClass(Session.class)
-@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnWebApplication
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class,
-		RedisAutoConfiguration.class })
-@Import({ SessionRepositoryConfiguration.class, SessionRepositoryValidator.class,
-		SessionRepositoryFilterConfiguration.class })
+		MongoReactiveAutoConfiguration.class, RedisAutoConfiguration.class,
+		RedisReactiveAutoConfiguration.class })
+@AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
+
+	@Configuration
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@Import({ SessionRepositoryConfiguration.class, SessionRepositoryValidator.class,
+			SessionRepositoryFilterConfiguration.class })
+	static class ServletSessionConfiguration {
+
+	}
+
+	@Configuration
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	static class ReactiveSessionConfiguration {
+
+	}
 
 	@Configuration
 	@ConditionalOnMissingBean(SessionRepository.class)

@@ -45,14 +45,14 @@ final class SessionStoreMappings {
 	private SessionStoreMappings() {
 	}
 
-	public static String getConfigurationClass(StoreType sessionStoreType) {
+	static String getConfigurationClass(StoreType sessionStoreType) {
 		Class<?> configurationClass = MAPPINGS.get(sessionStoreType);
 		Assert.state(configurationClass != null,
 				() -> "Unknown session store type " + sessionStoreType);
 		return configurationClass.getName();
 	}
 
-	public static StoreType getType(String configurationClassName) {
+	static StoreType getType(String configurationClassName) {
 		for (Map.Entry<StoreType, Class<?>> entry : MAPPINGS.entrySet()) {
 			if (entry.getValue().getName().equals(configurationClassName)) {
 				return entry.getKey();
