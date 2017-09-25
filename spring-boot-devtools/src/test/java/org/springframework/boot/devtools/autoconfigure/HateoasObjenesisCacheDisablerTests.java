@@ -55,7 +55,7 @@ public class HateoasObjenesisCacheDisablerTests {
 
 	@Test
 	public void cacheIsDisabled() {
-		new HateoasObjenesisCacheDisabler().doDisableCaching();
+		new HateoasObjenesisCacheDisabler().afterPropertiesSet();
 		assertThat(this.objenesis.getInstantiatorOf(TestObject.class))
 				.isNotSameAs(this.objenesis.getInstantiatorOf(TestObject.class));
 	}

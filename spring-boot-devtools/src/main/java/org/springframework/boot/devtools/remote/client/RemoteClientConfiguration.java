@@ -24,11 +24,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -70,7 +69,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @EnableConfigurationProperties(DevToolsProperties.class)
-public class RemoteClientConfiguration {
+public class RemoteClientConfiguration implements InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(RemoteClientConfiguration.class);
 
@@ -111,7 +110,10 @@ public class RemoteClientConfiguration {
 		return new HttpHeaderInterceptor(secretHeaderName, secret);
 	}
 
-	@PostConstruct
+	public void afterPropertiesSet() {
+		logWarnings();
+	}
+
 	private void logWarnings() {
 		RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
 		if (!remoteProperties.getRestart().isEnabled()) {
