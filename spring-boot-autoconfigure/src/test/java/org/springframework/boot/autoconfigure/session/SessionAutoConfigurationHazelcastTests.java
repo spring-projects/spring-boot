@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.hazelcast.HazelcastFlushMode;
 import org.springframework.session.hazelcast.HazelcastSessionRepository;
@@ -61,7 +62,8 @@ public class SessionAutoConfigurationHazelcastTests
 		this.contextRunner
 				.withClassLoader(
 						new HideClassesClassLoader(JdbcOperationsSessionRepository.class,
-								RedisOperationsSessionRepository.class))
+								RedisOperationsSessionRepository.class,
+								MongoOperationsSessionRepository.class))
 				.run(this::validateDefaultConfig);
 	}
 
