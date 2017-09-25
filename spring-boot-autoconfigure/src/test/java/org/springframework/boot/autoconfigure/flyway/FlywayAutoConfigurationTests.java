@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.sql.Connection;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,27 +28,21 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.internal.callback.SqlScriptFlywayCallback;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
@@ -67,236 +60,217 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class FlywayAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@Before
-	public void init() {
-		TestPropertyValues.of("spring.datasource.name:flywaytest").applyTo(this.context);
-	}
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	public void noDataSource() {
+		this.contextRunner.run((context) ->
+				assertThat(context).doesNotHaveBean(Flyway.class));
 	}
 
 	@Test
-	public void noDataSource() throws Exception {
-		registerAndRefresh(FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(Flyway.class).length).isEqualTo(0);
+	public void createDataSource() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.flyway.url:jdbc:hsqldb:mem:flywaytest",
+						"spring.flyway.user:sa").run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
+		});
 	}
 
 	@Test
-	public void createDataSource() throws Exception {
-		TestPropertyValues.of("spring.flyway.url:jdbc:hsqldb:mem:flywaytest",
-				"spring.flyway.user:sa").applyTo(this.context);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getDataSource()).isNotNull();
+	public void flywayDataSource() {
+		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			assertThat(context.getBean(Flyway.class).getDataSource())
+					.isEqualTo(context.getBean("flywayDataSource"));
+		});
 	}
 
 	@Test
-	public void flywayDataSource() throws Exception {
-		registerAndRefresh(FlywayDataSourceConfiguration.class,
-				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getDataSource())
-				.isEqualTo(this.context.getBean("flywayDataSource"));
+	public void schemaManagementProviderDetectsDataSource() {
+		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class).run((context) -> {
+			FlywaySchemaManagementProvider schemaManagementProvider = context
+					.getBean(FlywaySchemaManagementProvider.class);
+			assertThat(schemaManagementProvider.getSchemaManagement(context.getBean(
+					DataSource.class))).isEqualTo(SchemaManagement.UNMANAGED);
+			assertThat(schemaManagementProvider.getSchemaManagement(context.getBean(
+					"flywayDataSource", DataSource.class))).isEqualTo(
+					SchemaManagement.MANAGED);
+		});
 	}
 
 	@Test
-	public void schemaManagementProviderDetectsDataSource() throws Exception {
-		registerAndRefresh(FlywayDataSourceConfiguration.class,
-				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		FlywaySchemaManagementProvider schemaManagementProvider = this.context
-				.getBean(FlywaySchemaManagementProvider.class);
-		assertThat(schemaManagementProvider
-				.getSchemaManagement(this.context.getBean(DataSource.class)))
-						.isEqualTo(SchemaManagement.UNMANAGED);
-		assertThat(schemaManagementProvider.getSchemaManagement(
-				this.context.getBean("flywayDataSource", DataSource.class)))
-						.isEqualTo(SchemaManagement.MANAGED);
+	public void defaultFlyway() {
+		this.contextRunner.withUserConfiguration(
+				EmbeddedDataSourceConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			Flyway flyway = context.getBean(Flyway.class);
+			assertThat(flyway.getLocations()).containsExactly("classpath:db/migration");
+		});
 	}
 
 	@Test
-	public void defaultFlyway() throws Exception {
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getLocations()).containsExactly("classpath:db/migration");
+	public void overrideLocations() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getLocations()).containsExactly(
+							"classpath:db/changelog", "classpath:db/migration");
+				});
 	}
 
 	@Test
-	public void overrideLocations() throws Exception {
-		TestPropertyValues
-				.of("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
-				.applyTo(this.context);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getLocations()).containsExactly("classpath:db/changelog",
-				"classpath:db/migration");
-	}
-
-	@Test
-	public void overrideLocationsList() throws Exception {
-		TestPropertyValues
-				.of("spring.flyway.locations[0]:classpath:db/changelog",
+	public void overrideLocationsList() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.locations[0]:classpath:db/changelog",
 						"spring.flyway.locations[1]:classpath:db/migration")
-				.applyTo(this.context);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getLocations()).containsExactly("classpath:db/changelog",
-				"classpath:db/migration");
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getLocations()).containsExactly(
+							"classpath:db/changelog",
+							"classpath:db/migration");
+				});
 	}
 
 	@Test
-	public void overrideSchemas() throws Exception {
-		TestPropertyValues.of("spring.flyway.schemas:public").applyTo(this.context);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(Arrays.asList(flyway.getSchemas()).toString()).isEqualTo("[public]");
+	public void overrideSchemas() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.schemas:public").run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			Flyway flyway = context.getBean(Flyway.class);
+			assertThat(Arrays.asList(flyway.getSchemas()).toString())
+					.isEqualTo("[public]");
+		});
 	}
 
 	@Test
-	public void changeLogDoesNotExist() throws Exception {
-		TestPropertyValues.of("spring.flyway.locations:file:no-such-dir")
-				.applyTo(this.context);
-		this.thrown.expect(BeanCreationException.class);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+	public void changeLogDoesNotExist() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.locations:file:no-such-dir")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure()
+							.isInstanceOf(BeanCreationException.class);
+				});
 	}
 
 	@Test
-	public void checkLocationsAllMissing() throws Exception {
-		TestPropertyValues
-				.of("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2",
-						"spring.flyway.check-location:true")
-				.applyTo(this.context);
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Cannot find migrations location in");
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+	public void checkLocationsAllMissing() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.flyway.locations:classpath:db/missing1,classpath:db/migration2",
+						"spring.flyway.check-location:true").run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure()
+					.isInstanceOf(BeanCreationException.class);
+			assertThat(context).getFailure()
+					.hasMessageContaining("Cannot find migrations location in");
+		});
 	}
 
 	@Test
-	public void checkLocationsAllExist() throws Exception {
-		TestPropertyValues
-				.of("spring.flyway.locations:classpath:db/changelog,classpath:db/migration",
-						"spring.flyway.check-location:true")
-				.applyTo(this.context);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+	public void checkLocationsAllExist() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.flyway.locations:classpath:db/changelog,classpath:db/migration",
+						"spring.flyway.check-location:true").run((context) -> {
+			assertThat(context).hasNotFailed();
+		});
 	}
 
 	@Test
-	public void customFlywayMigrationStrategy() throws Exception {
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-				MockFlywayMigrationStrategy.class);
-		assertThat(this.context.getBean(Flyway.class)).isNotNull();
-		this.context.getBean(MockFlywayMigrationStrategy.class).assertCalled();
+	public void customFlywayMigrationStrategy() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+				MockFlywayMigrationStrategy.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			context.getBean(MockFlywayMigrationStrategy.class).assertCalled();
+		});
 	}
 
 	@Test
 	public void customFlywayMigrationInitializer() throws Exception {
-		registerAndRefresh(CustomFlywayMigrationInitializer.class,
-				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(Flyway.class)).isNotNull();
-		FlywayMigrationInitializer initializer = this.context
-				.getBean(FlywayMigrationInitializer.class);
-		assertThat(initializer.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE);
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+				CustomFlywayMigrationInitializer.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			FlywayMigrationInitializer initializer = context.getBean(
+					FlywayMigrationInitializer.class);
+			assertThat(initializer.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE);
+		});
 	}
 
 	@Test
-	public void customFlywayWithJpa() throws Exception {
-		registerAndRefresh(CustomFlywayWithJpaConfiguration.class,
-				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+	public void customFlywayWithJpa() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+				CustomFlywayWithJpaConfiguration.class).run((context) ->
+				assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void overrideBaselineVersionString() throws Exception {
-		TestPropertyValues.of("spring.flyway.baseline-version=0").applyTo(this.context);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getBaselineVersion())
-				.isEqualTo(MigrationVersion.fromVersion("0"));
+	public void overrideBaselineVersionString() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.baseline-version=0")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getBaselineVersion())
+							.isEqualTo(MigrationVersion.fromVersion("0"));
+				});
 	}
 
 	@Test
-	public void overrideBaselineVersionNumber() throws Exception {
-		Map<String, Object> source = Collections
-				.<String, Object>singletonMap("spring.flyway.baseline-version", 1);
-		this.context.getEnvironment().getPropertySources()
-				.addLast(new MapPropertySource("flyway", source));
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getBaselineVersion())
-				.isEqualTo(MigrationVersion.fromVersion("1"));
+	public void overrideBaselineVersionNumber() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.baseline-version=1")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getBaselineVersion())
+							.isEqualTo(MigrationVersion.fromVersion("1"));
+				});
 	}
 
 	@Test
-	public void useVendorDirectory() throws Exception {
-		TestPropertyValues
-				.of("spring.flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
-				.applyTo(this.context);
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getLocations()).containsExactlyInAnyOrder(
-				"classpath:db/vendors/h2", "classpath:db/changelog");
+	public void useVendorDirectory() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getLocations()).containsExactlyInAnyOrder(
+							"classpath:db/vendors/h2", "classpath:db/changelog");
+				});
 	}
 
 	@Test
-	public void callbacksAreConfiguredAndOrdered() throws Exception {
-		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-				CallbackConfiguration.class);
-		assertThat(this.context.getBeansOfType(Flyway.class)).hasSize(1);
-		Flyway flyway = this.context.getBean(Flyway.class);
-		FlywayCallback callbackOne = this.context.getBean("callbackOne",
-				FlywayCallback.class);
-		FlywayCallback callbackTwo = this.context.getBean("callbackTwo",
-				FlywayCallback.class);
-		assertThat(flyway.getCallbacks()).hasSize(3);
-		assertThat(flyway.getCallbacks()).startsWith(callbackTwo, callbackOne);
-		assertThat(flyway.getCallbacks()[2]).isInstanceOf(SqlScriptFlywayCallback.class);
-		InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
-		orderedCallbacks.verify(callbackTwo).beforeMigrate(any(Connection.class));
-		orderedCallbacks.verify(callbackOne).beforeMigrate(any(Connection.class));
-	}
-
-	private void registerAndRefresh(Class<?>... annotatedClasses) {
-		this.context.register(annotatedClasses);
-		this.context.refresh();
+	public void callbacksAreConfiguredAndOrdered() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+				CallbackConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			Flyway flyway = context.getBean(Flyway.class);
+			FlywayCallback callbackOne = context.getBean("callbackOne",
+					FlywayCallback.class);
+			FlywayCallback callbackTwo = context.getBean("callbackTwo",
+					FlywayCallback.class);
+			assertThat(flyway.getCallbacks()).hasSize(3);
+			assertThat(flyway.getCallbacks()).startsWith(callbackTwo, callbackOne);
+			assertThat(flyway.getCallbacks()[2]).isInstanceOf(SqlScriptFlywayCallback.class);
+			InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
+			orderedCallbacks.verify(callbackTwo).beforeMigrate(any(Connection.class));
+			orderedCallbacks.verify(callbackOne).beforeMigrate(any(Connection.class));
+		});
 	}
 
 	@Configuration
