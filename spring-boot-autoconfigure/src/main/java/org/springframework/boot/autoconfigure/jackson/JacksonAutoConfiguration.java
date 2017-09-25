@@ -166,9 +166,7 @@ public class JacksonAutoConfiguration {
 
 		private final ApplicationContext applicationContext;
 
-		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext,
-				JacksonProperties jacksonProperties,
-				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
+		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
