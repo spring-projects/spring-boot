@@ -22,7 +22,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
 /**
- * A customizer that configures Spring REST Docs with RestAssured.
+ * A customizer that configures Spring REST Docs with REST Assured.
  *
  * @author Eddú Meléndez
  */

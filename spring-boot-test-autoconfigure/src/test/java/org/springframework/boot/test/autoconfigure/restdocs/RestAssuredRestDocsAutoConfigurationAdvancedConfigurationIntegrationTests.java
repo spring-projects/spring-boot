@@ -42,14 +42,15 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 import static org.springframework.restdocs.restassured3.operation.preprocess.RestAssuredPreprocessors.modifyUris;
 
 /**
- * Tests for {@link AutoConfigureRestDocs}.
+ * Integration tests for advanced configuration of {@link AutoConfigureRestDocs} with REST
+ * Assured.
  *
  * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestDocs
-public class RestAssuredAutoConfigurationAdvancedConfigurationIntegrationTests {
+public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@LocalServerPort
 	private int port;
@@ -65,15 +66,16 @@ public class RestAssuredAutoConfigurationAdvancedConfigurationIntegrationTests {
 	@Test
 	public void snippetGeneration() throws Exception {
 		given(this.documentationSpec)
-				.filter(document("default-snippets", preprocessRequest(modifyUris()
-						.scheme("https").host("api.example.com").removePort()))).when()
-				.port(this.port).get("/").then().assertThat().statusCode(is(200));
+				.filter(document("default-snippets",
+						preprocessRequest(modifyUris().scheme("https")
+								.host("api.example.com").removePort())))
+				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.md")).has(
-				contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.md")).has(
-				contentContaining("api.example.com"));
+		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
+				.has(contentContaining("'https://api.example.com/'"));
+		assertThat(new File(defaultSnippetsDir, "http-request.md"))
+				.has(contentContaining("api.example.com"));
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
 	}
 
@@ -82,8 +84,8 @@ public class RestAssuredAutoConfigurationAdvancedConfigurationIntegrationTests {
 	}
 
 	@TestConfiguration
-	public static class CustomizationConfiguration implements
-			RestDocsRestAssuredConfigurationCustomizer {
+	public static class CustomizationConfiguration
+			implements RestDocsRestAssuredConfigurationCustomizer {
 
 		@Override
 		public void customize(RestAssuredRestDocumentationConfigurer configurer) {

@@ -45,11 +45,12 @@ import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationCon
  */
 @Configuration
 @EnableConfigurationProperties
+@ConditionalOnWebApplication
 public class RestDocsAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass(MockMvcRestDocumentation.class)
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class RestDocsMockMvcAutoConfiguration {
 
 		@Bean
@@ -79,7 +80,8 @@ public class RestDocsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ RequestSpecification.class, RestAssuredRestDocumentation.class })
+	@ConditionalOnClass({ RequestSpecification.class,
+			RestAssuredRestDocumentation.class })
 	static class RestDocsRestAssuredAutoConfiguration {
 
 		@Bean
@@ -89,7 +91,8 @@ public class RestDocsAutoConfiguration {
 				RestDocumentationContextProvider contextProvider) {
 			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
 					.documentationConfiguration(contextProvider);
-			RestDocsRestAssuredConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider.getIfAvailable();
+			RestDocsRestAssuredConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+					.getIfAvailable();
 			if (configurationCustomizer != null) {
 				configurationCustomizer.customize(configurer);
 			}
@@ -104,6 +107,5 @@ public class RestDocsAutoConfiguration {
 		}
 
 	}
-
 
 }

@@ -6279,8 +6279,20 @@ A list of the auto-configuration that is enabled by `@RestClientTest` can be
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs]]
 ==== Auto-configured Spring REST Docs tests
 The `@AutoConfigureRestDocs` annotation can be used if you want to use Spring REST Docs
-in your tests. It will automatically configure `MockMvc` to use Spring REST Docs and
-remove the need for Spring REST Docs' JUnit rule.
+in your tests with Mock MVC or REST Assured. It removes the need for Spring REST Docs'
+JUnit rule.
+
+`@AutoConfigureRestDocs` can be used to override the default output directory
+(`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
+are using Gradle). It can also be used to configure the host, scheme, and port that will
+appear in any documented URIs.
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-mock-mvc]]
+===== Auto-configured Spring REST Docs tests with Mock MVC
+
+`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs, Inject it
+using `@Autowired` and use it in your tests as you normally would when using Mock MVC and
+Spring REST Docs:
 
 [source,java,indent=0]
 ----
@@ -6315,11 +6327,9 @@ remove the need for Spring REST Docs' JUnit rule.
 	}
 ----
 
-`@AutoConfigureRestDocs` can be used to override the default output directory
-(`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
-are using Gradle). It can also be used to configure the host, scheme, and port that will
-appear in any documented URIs. If you require more control over Spring REST Docs'
-configuration a `RestDocsMockMvcConfigurationCustomizer` bean can be used:
+If you require more control over Spring REST Docs' configuration than offered by the
+attributes of `@AutoConfigureRestDocs`, a `RestDocsMockMvcConfigurationCustomizer` bean
+can be used:
 
 [source,java,indent=0]
 ----
@@ -6351,6 +6361,29 @@ automatically generate the default snippets:
 		}
 
 	}
+----
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-rest-assured]]
+===== Auto-configured Spring REST Docs tests with REST Assured
+
+`@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring REST
+Docs, available to your tests. Inject it using `@Autowired` and use it in your tests as you
+normally would when using REST Assured and Spring REST Docs:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/autoconfigure/restdocs/restassured/UserDocumentationTests.java[tag=source]
+----
+
+If you require more control over Spring REST Docs' configuration than offered by the
+attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer`
+bean can be used:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/autoconfigure/restdocs/restassured/AdvancedConfigurationExample.java[tag=configuration]
 ----
 
 

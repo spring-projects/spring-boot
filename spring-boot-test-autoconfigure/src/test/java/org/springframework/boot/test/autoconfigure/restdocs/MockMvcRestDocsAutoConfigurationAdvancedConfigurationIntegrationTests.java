@@ -41,14 +41,15 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
- * Tests for {@link AutoConfigureRestDocs}.
+ * Integration tests for advanced configuration of {@link AutoConfigureRestDocs} with Mock
+ * MVC.
  *
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestDocsTestController.class, secure = false)
 @AutoConfigureRestDocs
-public class RestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
+public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Before
 	public void deleteSnippets() {
