@@ -114,6 +114,8 @@ public class SessionAutoConfiguration {
 			addCandidate(candidates,
 					"org.springframework.session.jdbc.JdbcOperationsSessionRepository");
 			addCandidate(candidates,
+					"org.springframework.session.data.mongo.MongoOperationsSessionRepository");
+			addCandidate(candidates,
 					"org.springframework.session.data.redis.RedisOperationsSessionRepository");
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (candidates.size() > 1 && storeType == null) {
