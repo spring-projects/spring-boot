@@ -58,8 +58,9 @@ public class BackgroundPreinitializer
 				performPreinitialization();
 			}
 		}
-		if (event instanceof ApplicationReadyEvent
-				|| event instanceof ApplicationFailedEvent) {
+		if ((event instanceof ApplicationReadyEvent
+				|| event instanceof ApplicationFailedEvent)
+				&& preinitializationStarted.get()) {
 			try {
 				preinitializationComplete.await();
 			}
