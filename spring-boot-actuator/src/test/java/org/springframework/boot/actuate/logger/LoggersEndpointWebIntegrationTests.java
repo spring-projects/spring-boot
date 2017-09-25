@@ -116,7 +116,7 @@ public class LoggersEndpointWebIntegrationTests {
 	@Test
 	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() throws Exception {
 		client.post().uri("/application/loggers/ROOT")
-				.contentType(ActuatorMediaType.V2_JSON)
+				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange()
 				.expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
@@ -134,7 +134,7 @@ public class LoggersEndpointWebIntegrationTests {
 	@Test
 	public void setLoggerWithNullLogLevel() throws Exception {
 		client.post().uri("/application/loggers/ROOT")
-				.contentType(ActuatorMediaType.V2_JSON)
+				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.singletonMap("configuredLevel", null)).exchange()
 				.expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
@@ -143,8 +143,8 @@ public class LoggersEndpointWebIntegrationTests {
 	@Test
 	public void setLoggerWithNoLogLevel() throws Exception {
 		client.post().uri("/application/loggers/ROOT")
-				.contentType(ActuatorMediaType.V2_JSON).syncBody(Collections.emptyMap())
-				.exchange().expectStatus().isNoContent();
+				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
+				.syncBody(Collections.emptyMap()).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 

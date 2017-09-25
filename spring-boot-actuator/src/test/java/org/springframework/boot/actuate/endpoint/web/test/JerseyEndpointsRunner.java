@@ -91,7 +91,7 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 
 		private void customize(ResourceConfig config) {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
-					ActuatorMediaType.V2_JSON_VALUE);
+					ActuatorMediaType.V2_JSON);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
 					new ConversionServiceOperationParameterMapper(), (id) -> null,

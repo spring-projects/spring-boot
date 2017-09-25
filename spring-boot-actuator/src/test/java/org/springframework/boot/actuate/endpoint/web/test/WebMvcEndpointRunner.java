@@ -81,7 +81,7 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 		@Bean
 		public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
-					ActuatorMediaType.V2_JSON_VALUE);
+					ActuatorMediaType.V2_JSON);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
 					new ConversionServiceOperationParameterMapper(), (id) -> null,

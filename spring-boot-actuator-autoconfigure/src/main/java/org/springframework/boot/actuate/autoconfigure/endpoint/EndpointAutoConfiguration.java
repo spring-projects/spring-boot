@@ -63,7 +63,7 @@ public class EndpointAutoConfiguration {
 	static class EndpointWebConfiguration {
 
 		private static final List<String> MEDIA_TYPES = Arrays
-				.asList(ActuatorMediaType.V2_JSON_VALUE, "application/json");
+				.asList(ActuatorMediaType.V2_JSON, "application/json");
 
 		private final ApplicationContext applicationContext;
 

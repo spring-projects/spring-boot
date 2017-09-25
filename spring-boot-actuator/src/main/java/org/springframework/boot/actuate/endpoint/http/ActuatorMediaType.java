@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.http;
 
-import org.springframework.http.MediaType;
-
 /**
- * {@link MediaType MediaTypes} that can be consumed and produced by Actuator endpoints.
+ * Media types that can be consumed and produced by Actuator endpoints.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
@@ -28,24 +26,14 @@ import org.springframework.http.MediaType;
 public final class ActuatorMediaType {
 
 	/**
-	 * {@link String} equivalent of {@link #V1_JSON}.
+	 * Constant for the Actuator V1 media type.
 	 */
-	public static final String V1_JSON_VALUE = "application/vnd.spring-boot.actuator.v1+json";
+	public static final String V1_JSON = "application/vnd.spring-boot.actuator.v1+json";
 
 	/**
-	 * {@link String} equivalent of {@link #V2_JSON}.
+	 * Constant for the Actuator V2 media type.
 	 */
-	public static final String V2_JSON_VALUE = "application/vnd.spring-boot.actuator.v2+json";
-
-	/**
-	 * The {@code application/vnd.spring-boot.actuator.v1+json} media type.
-	 */
-	public static final MediaType V1_JSON = MediaType.valueOf(V1_JSON_VALUE);
-
-	/**
-	 * The {@code application/vnd.spring-boot.actuator.v2+json} media type.
-	 */
-	public static final MediaType V2_JSON = MediaType.valueOf(V2_JSON_VALUE);
+	public static final String V2_JSON = "application/vnd.spring-boot.actuator.v2+json";
 
 	private ActuatorMediaType() {
 	}

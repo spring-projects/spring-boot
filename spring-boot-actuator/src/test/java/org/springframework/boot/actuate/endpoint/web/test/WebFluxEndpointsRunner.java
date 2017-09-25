@@ -98,7 +98,7 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 		@Bean
 		public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
-					ActuatorMediaType.V2_JSON_VALUE);
+					ActuatorMediaType.V2_JSON);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
 					new ConversionServiceOperationParameterMapper(), (id) -> null,
