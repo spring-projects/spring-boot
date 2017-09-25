@@ -184,7 +184,7 @@ public class ManagementContextAutoConfiguration {
 			if (event instanceof ApplicationFailedEvent) {
 				onApplicationFailedEvent((ApplicationFailedEvent) event);
 			}
-		};
+		}
 
 		private void onContextClosedEvent(ContextClosedEvent event) {
 			propagateCloseIfNecessary(event.getApplicationContext());

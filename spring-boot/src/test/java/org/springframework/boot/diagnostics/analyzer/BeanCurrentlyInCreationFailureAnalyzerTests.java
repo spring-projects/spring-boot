@@ -144,7 +144,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	private Exception createFailure(Class<?> configuration) {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration);) {
+				configuration)) {
 			fail("Expected failure did not occur");
 			return null;
 		}

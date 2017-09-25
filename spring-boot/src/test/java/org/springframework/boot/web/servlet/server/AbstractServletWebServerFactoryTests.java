@@ -1227,7 +1227,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 			return this.initCount;
 		}
 
-	};
+	}
 
 	public interface BlockedPortAction {
 

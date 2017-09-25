@@ -123,7 +123,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 					Thread.currentThread().getUncaughtExceptionHandler());
 			Thread.currentThread().setUncaughtExceptionHandler(handler);
 			return handler;
-		};
+		}
 
 	}
 

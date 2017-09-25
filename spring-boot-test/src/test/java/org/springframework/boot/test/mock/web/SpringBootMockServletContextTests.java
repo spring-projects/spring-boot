@@ -80,7 +80,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 			protected String getResourceLocation(String path) {
 				// Don't include the Spring Boot defaults for this test
 				return getResourceBasePathLocation(path);
-			};
+			}
 		};
 		URL resource = context.getResource("/");
 		assertThat(resource).isNotEqualTo(nullValue());

@@ -132,7 +132,7 @@ public class SpringBootServletInitializerTests {
 		protected WebApplicationContext run(SpringApplication application) {
 			SpringBootServletInitializerTests.this.application = application;
 			return null;
-		};
+		}
 
 	}
 

@@ -185,7 +185,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 		@Pointcut("within(@org.springframework.stereotype.Controller *)")
 		private void controllerPointCut() {
-		};
+		}
 
 		@Around("controllerPointCut()")
 		public Object mvcAdvice(ProceedingJoinPoint pjp) throws Throwable {
