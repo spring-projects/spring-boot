@@ -673,15 +673,14 @@ public class KafkaProperties {
 		private String clientId;
 
 		/**
-		 * Additional producer-specific properties used to configure the client.
+		 * Additional admin-specific properties used to configure the client.
 		 */
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-		 * When true, the application context will not load if the broker connection
-		 * fails when attempting to provision topics.
+		 * Fail fast if the broker is not available on startup.
 		 */
-		private boolean failIfNoBrokers;
+		private boolean failFast;
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -695,12 +694,12 @@ public class KafkaProperties {
 			this.clientId = clientId;
 		}
 
-		public boolean isFailIfNoBrokers() {
-			return this.failIfNoBrokers;
+		public boolean isFailFast() {
+			return this.failFast;
 		}
 
-		public void setFailIfNoBrokers(boolean failIfNoBrokers) {
-			this.failIfNoBrokers = failIfNoBrokers;
+		public void setFailFast(boolean failFast) {
+			this.failFast = failFast;
 		}
 
 		public Map<String, String> getProperties() {

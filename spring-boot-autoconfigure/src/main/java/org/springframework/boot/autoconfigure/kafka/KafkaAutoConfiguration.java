@@ -108,7 +108,7 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean(KafkaAdmin.class)
 	public KafkaAdmin kafkaAdmin() {
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
-		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailIfNoBrokers());
+		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailFast());
 		return kafkaAdmin;
 	}
 

@@ -177,7 +177,7 @@ public class KafkaAutoConfigurationTests {
 	public void adminProperties() {
 		load("spring.kafka.clientId=cid",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-				"spring.kafka.admin.fail-if-no-brokers=true",
+				"spring.kafka.admin.fail-fast=true",
 				"spring.kafka.admin.properties.fiz.buz=fix.fox",
 				"spring.kafka.admin.ssl.key-password=p4",
 				"spring.kafka.admin.ssl.keystore-location=classpath:ksLocP",
