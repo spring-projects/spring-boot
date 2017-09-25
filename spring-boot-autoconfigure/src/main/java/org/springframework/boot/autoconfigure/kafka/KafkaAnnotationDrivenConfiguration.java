@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -24,11 +25,13 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.support.converter.MessageConverter;
 
 /**
  * Configuration for Kafka annotation-driven support.
  *
  * @author Gary Russell
+ * @author Eddú Meléndez
  * @since 1.5.0
  */
 @Configuration
@@ -37,8 +40,12 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final KafkaProperties properties;
 
-	KafkaAnnotationDrivenConfiguration(KafkaProperties properties) {
+	private final MessageConverter messageConverter;
+
+	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
+			ObjectProvider<MessageConverter> messageConverter) {
 		this.properties = properties;
+		this.messageConverter = messageConverter.getIfAvailable();
 	}
 
 	@Bean
@@ -46,6 +53,7 @@ class KafkaAnnotationDrivenConfiguration {
 	public ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
 		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
 		configurer.setKafkaProperties(this.properties);
+		configurer.setMessageConverter(this.messageConverter);
 		return configurer;
 	}
 

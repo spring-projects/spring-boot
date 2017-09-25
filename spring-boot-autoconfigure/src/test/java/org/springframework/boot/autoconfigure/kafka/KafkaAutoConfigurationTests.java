@@ -36,12 +36,14 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
+import org.springframework.kafka.support.converter.MessageConverter;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 
@@ -232,11 +234,24 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testKafkaTemplateMessageConverters() {
-		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
+	public void testKafkaTemplateRecordMessageConverters() {
+		this.contextRunner.withUserConfiguration(RecordMessageConvertersConfiguration.class)
 				.run((context) -> {
 					KafkaTemplate kafkaTemplate = context.getBean(KafkaTemplate.class);
 					assertThat(kafkaTemplate.getMessageConverter())
+							.isSameAs(context.getBean("myRecordMessageConverter"));
+				});
+	}
+
+	@Test
+	public void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverters() {
+		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory kafkaListenerContainerFactory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(
+							kafkaListenerContainerFactory);
+					assertThat(dfa.getPropertyValue("messageConverter"))
 							.isSameAs(context.getBean("myMessageConverter"));
 				});
 	}
@@ -247,11 +262,21 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration
+	protected static class RecordMessageConvertersConfiguration {
+
+		@Bean
+		public RecordMessageConverter myRecordMessageConverter() {
+			return mock(RecordMessageConverter.class);
+		}
+
+	}
+
+	@Configuration
 	protected static class MessageConvertersConfiguration {
 
 		@Bean
-		public RecordMessageConverter myMessageConverter() {
-			return mock(RecordMessageConverter.class);
+		public MessageConverter myMessageConverter() {
+			return mock(MessageConverter.class);
 		}
 
 	}
