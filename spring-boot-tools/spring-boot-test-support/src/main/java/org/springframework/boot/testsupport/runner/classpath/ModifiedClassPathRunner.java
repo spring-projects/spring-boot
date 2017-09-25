@@ -216,10 +216,13 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		private final AntPathMatcher matcher = new AntPathMatcher();
 
 		private ClassPathEntryFilter(Class<?> testClass) throws Exception {
+			this.exclusions = new ArrayList<>();
+			this.exclusions.add("log4j-*.jar");
 			ClassPathExclusions exclusions = AnnotationUtils.findAnnotation(testClass,
 					ClassPathExclusions.class);
-			this.exclusions = exclusions == null ? Collections.<String>emptyList()
-					: Arrays.asList(exclusions.value());
+			if (exclusions != null) {
+				this.exclusions.addAll(Arrays.asList(exclusions.value()));
+			}
 		}
 
 		private boolean isExcluded(URL url) throws Exception {
