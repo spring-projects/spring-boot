@@ -939,6 +939,14 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.template.time-to-live= # Time-to-live of a message when sending in milliseconds. Enable QoS when set.
 
 	# APACHE KAFKA ({sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[KafkaProperties])
+	spring.kafka.admin.client-id= # Id to pass to the server when making requests; used for server-side logging.
+	spring.kafka.admin.fail-fast=false # Fail fast if the broker is not available on startup.
+	spring.kafka.admin.properties.*= # Additional admin-specific properties used to configure the client.
+	spring.kafka.admin.ssl.key-password= # Password of the private key in the key store file.
+	spring.kafka.admin.ssl.keystore-location= # Location of the key store file.
+	spring.kafka.admin.ssl.keystore-password= # Store password for the key store file.
+	spring.kafka.admin.ssl.truststore-location= # Location of the trust store file.
+	spring.kafka.admin.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
 	spring.kafka.client-id= # Id to pass to the server when making requests; used for server-side logging.
 	spring.kafka.consumer.auto-commit-interval= # Frequency in milliseconds that the consumer offsets are auto-committed to Kafka if 'enable.auto.commit' true.

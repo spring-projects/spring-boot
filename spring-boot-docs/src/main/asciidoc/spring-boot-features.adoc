@@ -4816,6 +4816,9 @@ Kafka configuration is controlled by external configuration properties in
 	spring.kafka.consumer.group-id=myGroup
 ----
 
+TIP: To create a topic on startup, simply add a bean of type `NewTopic`. If the topic
+already exists, the related bean is ignored.
+
 See {sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[`KafkaProperties`]
 for more of the supported options.
 

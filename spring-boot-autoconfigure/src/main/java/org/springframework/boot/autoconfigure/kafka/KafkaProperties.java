@@ -72,6 +72,8 @@ public class KafkaProperties {
 
 	private final Producer producer = new Producer();
 
+	private final Admin admin = new Admin();
+
 	private final Listener listener = new Listener();
 
 	private final Ssl ssl = new Ssl();
@@ -110,6 +112,10 @@ public class KafkaProperties {
 
 	public Listener getListener() {
 		return this.listener;
+	}
+
+	public Admin getAdmin() {
+		return this.admin;
 	}
 
 	public Ssl getSsl() {
@@ -183,6 +189,20 @@ public class KafkaProperties {
 	public Map<String, Object> buildProducerProperties() {
 		Map<String, Object> properties = buildCommonProperties();
 		properties.putAll(this.producer.buildProperties());
+		return properties;
+	}
+
+	/**
+	 * Create an initial map of admin properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary, and override the
+	 * default kafkaAdmin bean.
+	 * @return the admin properties initialized with the customizations defined on this
+	 * instance
+	 */
+	public Map<String, Object> buildAdminProperties() {
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.admin.buildProperties());
 		return properties;
 	}
 
@@ -636,6 +656,80 @@ public class KafkaProperties {
 			if (this.valueSerializer != null) {
 				properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
 						this.valueSerializer);
+			}
+			properties.putAll(this.properties);
+			return properties;
+		}
+
+	}
+
+	public static class Admin {
+
+		private final Ssl ssl = new Ssl();
+
+		/**
+		 * Id to pass to the server when making requests; used for server-side logging.
+		 */
+		private String clientId;
+
+		/**
+		 * Additional admin-specific properties used to configure the client.
+		 */
+		private final Map<String, String> properties = new HashMap<>();
+
+		/**
+		 * Fail fast if the broker is not available on startup.
+		 */
+		private boolean failFast;
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
+
+		public String getClientId() {
+			return this.clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
+		}
+
+		public boolean isFailFast() {
+			return this.failFast;
+		}
+
+		public void setFailFast(boolean failFast) {
+			this.failFast = failFast;
+		}
+
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
+		public Map<String, Object> buildProperties() {
+			Map<String, Object> properties = new HashMap<>();
+			if (this.clientId != null) {
+				properties.put(ProducerConfig.CLIENT_ID_CONFIG, this.clientId);
+			}
+			if (this.ssl.getKeyPassword() != null) {
+				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG,
+						this.ssl.getKeyPassword());
+			}
+			if (this.ssl.getKeystoreLocation() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
+						resourceToPath(this.ssl.getKeystoreLocation()));
+			}
+			if (this.ssl.getKeystorePassword() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
+						this.ssl.getKeystorePassword());
+			}
+			if (this.ssl.getTruststoreLocation() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+						resourceToPath(this.ssl.getTruststoreLocation()));
+			}
+			if (this.ssl.getTruststorePassword() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
+						this.ssl.getTruststorePassword());
 			}
 			properties.putAll(this.properties);
 			return properties;
