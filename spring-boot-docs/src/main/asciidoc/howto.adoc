@@ -2721,6 +2721,11 @@ https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-gi
 	}
 ----
 
+TIP: The commit time in `git.properties` is expected to match the format
+`yyyy-MM-dd'T'HH:mm:ssZ`. This is the default format for both plugins listed above. Using this format
+allows the time to be parsed into a `Date` and its format when serialized to JSON to be controlled by
+Jackson's date serialization configuration settings.
+
 
 
 [[howto-customize-dependency-versions-with-maven]]
