@@ -77,7 +77,7 @@ public class CommandRunnerTests {
 			protected void showUsage() {
 				CommandRunnerTests.this.calls.add(Call.SHOW_USAGE);
 				super.showUsage();
-			};
+			}
 
 			@Override
 			protected boolean errorMessage(String message) {

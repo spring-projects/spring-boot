@@ -57,7 +57,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(HttpMessageConverter.class);
 		includes.add(ErrorAttributes.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
-	};
+	}
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_CONTROLLER;
 

@@ -36,7 +36,7 @@ public class PoolingConnectionFactoryBeanTests {
 		@Override
 		public synchronized void init() {
 			// Stub out for the tests
-		};
+		}
 	};
 
 	@Test

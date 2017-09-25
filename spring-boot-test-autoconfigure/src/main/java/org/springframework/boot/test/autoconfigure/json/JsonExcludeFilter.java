@@ -42,7 +42,7 @@ class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(Module.class);
 		includes.add(JsonComponent.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
-	};
+	}
 
 	private final JsonTest annotation;
 

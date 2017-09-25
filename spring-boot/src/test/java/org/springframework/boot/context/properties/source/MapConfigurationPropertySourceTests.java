@@ -113,6 +113,6 @@ public class MapConfigurationPropertySourceTests {
 		ConfigurationProperty property = source
 				.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property == null ? null : property.getValue());
-	};
+	}
 
 }
