@@ -4821,6 +4821,15 @@ for more of the supported options.
 
 
 
+[[boot-features-kafka-topics]]
+==== Creating Topics
+
+Spring Boot auto configuration will add a `KafkaAdmin` bean to the application context.
+This bean will automatically create a topic for each `NewTopic` bean in the application context.
+Topics can only be added with this technique, not modified; if a topic already exists, the `NewTopic` bean is ignored.
+
+
+
 [[boot-features-kafka-sending-a-message]]
 ==== Sending a Message
 Spring's `KafkaTemplate` is auto-configured and you can autowire them directly in your own
