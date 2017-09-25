@@ -26,6 +26,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
+import org.springframework.xml.xsd.SimpleXsdSchema;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -88,6 +90,18 @@ public class WebServicesAutoConfigurationTests {
 						getServletRegistrationBean(context).getInitParameters())
 								.containsEntry("key1", "value1")
 								.containsEntry("key2", "value2"));
+	}
+
+	@Test
+	public void withWsdlBeans() {
+		this.contextRunner
+				.withPropertyValues("spring.webservices.wsdl-locations=classpath:/wsdl")
+				.run(context -> {
+					assertThat(context.getBeansOfType(SimpleWsdl11Definition.class))
+							.hasSize(1).containsKey("service");
+					assertThat(context.getBeansOfType(SimpleXsdSchema.class)).hasSize(1)
+							.containsKey("types");
+				});
 	}
 
 	private Collection<String> getUrlMappings(ApplicationContext context) {

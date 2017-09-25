@@ -6560,6 +6560,15 @@ your `Endpoints`.
 The {spring-webservices-reference}[Spring Web Services features] can be easily accessed
 via the `spring-boot-starter-webservices` module.
 
+`SimpleWsdl11Definition` and `SimpleXsdSchema` beans can be automatically created for your
+WSDLs and XSDs respectively. To do so, configure their location:
+
+
+[source,properties,indent=0]
+----
+    spring.webservices.wsdl-locations=classpath:/wsdl
+----
+
 
 
 [[boot-features-developing-auto-configuration]]

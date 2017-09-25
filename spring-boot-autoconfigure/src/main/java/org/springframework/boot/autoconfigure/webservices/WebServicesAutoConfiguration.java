@@ -16,23 +16,40 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurationSupport;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
+import org.springframework.xml.xsd.SimpleXsdSchema;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Web Services.
@@ -72,9 +89,76 @@ public class WebServicesAutoConfiguration {
 		return registration;
 	}
 
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.webservices", name = "wsdl-locations")
+	public static WsdlDefinitionBeanFactoryPostProcessor wsdlDefinitionBeanFactoryPostProcessor() {
+		return new WsdlDefinitionBeanFactoryPostProcessor();
+	}
+
 	@Configuration
 	@EnableWs
 	protected static class WsConfiguration {
+
+	}
+
+	private static class WsdlDefinitionBeanFactoryPostProcessor
+			implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
+
+		private ApplicationContext applicationContext;
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+				throws BeansException {
+			Binder binder = Binder.get(this.applicationContext.getEnvironment());
+			List<String> wsdlLocations = binder
+					.bind("spring.webservices.wsdl-locations",
+							Bindable.listOf(String.class))
+					.orElse(Collections.emptyList());
+			for (String wsdlLocation : wsdlLocations) {
+				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class, registry);
+				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class, registry);
+			}
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+		}
+
+		private void registerBeans(String location, String pattern, Class<?> type,
+				BeanDefinitionRegistry registry) {
+			for (Resource resource : getResources(location, pattern)) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(type);
+				ConstructorArgumentValues constructorArguments = new ConstructorArgumentValues();
+				constructorArguments.addIndexedArgumentValue(0, resource);
+				beanDefinition.setConstructorArgumentValues(constructorArguments);
+				registry.registerBeanDefinition(
+						StringUtils.stripFilenameExtension(resource.getFilename()),
+						beanDefinition);
+			}
+		}
+
+		private Resource[] getResources(String location, String pattern) {
+			try {
+				return this.applicationContext
+						.getResources(ensureTrailingSlash(location) + pattern);
+			}
+			catch (IOException e) {
+				return new Resource[0];
+			}
+		}
+
+		private static String ensureTrailingSlash(String path) {
+			if (!path.endsWith("/")) {
+				return path + "/";
+			}
+			return path;
+		}
 
 	}
 
