@@ -6560,10 +6560,14 @@ your `Endpoints`.
 The {spring-webservices-reference}[Spring Web Services features] can be easily accessed
 via the `spring-boot-starter-webservices` module.
 
-Spring Boot can also automatically expose your WSDLs and XSDs using
-`spring.webservices.wsdl-locations` configuration property. For the detected WSDL and XSD
-files Boot will register beans of type `SimpleWsdl11Definition` and `SimpleXsdSchema`,
-respectively.
+`SimpleWsdl11Definition` and `SimpleXsdSchema` beans can be automatically created for your
+WSDLs and XSDs respectively. To do so, configure their location:
+
+
+[source,properties,indent=0]
+----
+    spring.webservices.wsdl-locations=classpath:/wsdl
+----
 
 
 

@@ -107,6 +107,11 @@ public class WebServicesAutoConfiguration {
 		private ApplicationContext applicationContext;
 
 		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
 				throws BeansException {
 			Binder binder = Binder.get(this.applicationContext.getEnvironment());
@@ -125,30 +130,26 @@ public class WebServicesAutoConfiguration {
 				throws BeansException {
 		}
 
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
-			this.applicationContext = applicationContext;
-		}
-
 		private void registerBeans(String location, String pattern, Class<?> type,
 				BeanDefinitionRegistry registry) {
-			Resource[] resources = new Resource[] {};
-			try {
-				resources = this.applicationContext
-						.getResources(ensureTrailingSlash(location) + pattern);
-			}
-			catch (IOException ignored) {
-			}
-			for (Resource resource : resources) {
+			for (Resource resource : getResources(location, pattern)) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(type);
 				ConstructorArgumentValues constructorArguments = new ConstructorArgumentValues();
 				constructorArguments.addIndexedArgumentValue(0, resource);
 				beanDefinition.setConstructorArgumentValues(constructorArguments);
-
 				registry.registerBeanDefinition(
 						StringUtils.stripFilenameExtension(resource.getFilename()),
 						beanDefinition);
+			}
+		}
+
+		private Resource[] getResources(String location, String pattern) {
+			try {
+				return this.applicationContext
+						.getResources(ensureTrailingSlash(location) + pattern);
+			}
+			catch (IOException e) {
+				return new Resource[0];
 			}
 		}
 
