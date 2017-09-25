@@ -18,30 +18,38 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
+import io.restassured.specification.RequestSpecification;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileSystemUtils;
 
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured3.operation.preprocess.RestAssuredPreprocessors.modifyUris;
 
 /**
- * Tests for {@link RestDocsAutoConfiguration}.
+ * Integration tests for {@link RestDocsAutoConfiguration} with REST Assured.
  *
- * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest
-@AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
-public class RestDocsAutoConfigurationIntegrationTests {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestDocs
+public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
+
+	@LocalServerPort
+	private int port;
 
 	@Before
 	public void deleteSnippets() {
@@ -49,11 +57,15 @@ public class RestDocsAutoConfigurationIntegrationTests {
 	}
 
 	@Autowired
-	private MockMvc mvc;
+	private RequestSpecification documentationSpec;
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
-		this.mvc.perform(get("/")).andDo(document("default-snippets"));
+		given(this.documentationSpec)
+				.filter(document("default-snippets",
+						preprocessRequest(modifyUris().scheme("https")
+								.host("api.example.com").removePort())))
+				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))

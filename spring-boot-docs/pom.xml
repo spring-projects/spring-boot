@@ -55,6 +55,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-autoconfigure</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-restassured</artifactId>
+		</dependency>
 		<!-- Optional deps required when generating Javadoc with Java 8 -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
