@@ -104,7 +104,8 @@ public class DataSourceProperties
 	private boolean initialize = true;
 
 	/**
-	 * Platform to use in the schema resource (schema-${platform}.sql).
+	 * Platform to use in the DDL or DML scripts (e.g. schema-${platform}.sql or
+	 * data-${platform}.sql).
 	 */
 	private String platform = "all";
 

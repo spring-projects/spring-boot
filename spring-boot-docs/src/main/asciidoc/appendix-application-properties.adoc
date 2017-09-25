@@ -657,7 +657,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.jndi-name= # JNDI location of the datasource. Class, url, username & password are ignored when set.
 	spring.datasource.name=testdb # Name of the datasource.
 	spring.datasource.password= # Login password of the database.
-	spring.datasource.platform=all # Platform to use in the schema resource (schema-${platform}.sql).
+	spring.datasource.platform=all # Platform to use in the DDL or DML scripts (e.g. schema-${platform}.sql or data-${platform}.sql).
 	spring.datasource.schema= # Schema (DDL) script resource references.
 	spring.datasource.schema-username= # User of the database to execute DDL scripts (if different).
 	spring.datasource.schema-password= # Password of the database to execute DDL scripts (if different).
