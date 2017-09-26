@@ -32,6 +32,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.session.web.http.CookieHttpSessionIdResolver;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -147,6 +150,47 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 				});
 	}
 
+	@Test
+	public void autoConfiguredCookieSerializerConfiguration() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.session.cookie.name=sid").run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context
+							.getBean(DefaultCookieSerializer.class);
+					assertThat(
+							ReflectionTestUtils.getField(cookieSerializer, "cookieName"))
+									.isEqualTo("sid");
+				});
+	}
+
+	@Test
+	public void userProvidedCookieSerializerConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(UserProvidedCookieSerializerConfiguration.class)
+				.withPropertyValues("server.session.cookie.name=sid").run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context
+							.getBean(DefaultCookieSerializer.class);
+					assertThat(
+							ReflectionTestUtils.getField(cookieSerializer, "cookieName"))
+									.isEqualTo("SESSION");
+				});
+	}
+
+	@Test
+	public void userProvidedCookieHttpSessionStrategyConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(UserProvidedCookieHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class)).isNotEmpty());
+	}
+
+	@Test
+	public void userProvidedHeaderHttpSessionStrategyConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(UserProvidedHeaderHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
+	}
+
 	@Configuration
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
@@ -154,6 +198,42 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		@Bean
 		public MapSessionRepository mySessionRepository() {
 			return new MapSessionRepository(Collections.emptyMap());
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCookieSerializerConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public DefaultCookieSerializer myCookieSerializer() {
+			return new DefaultCookieSerializer();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCookieHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public CookieHttpSessionIdResolver httpSessionStrategy() {
+			return new CookieHttpSessionIdResolver();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedHeaderHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public HeaderHttpSessionIdResolver httpSessionStrategy() {
+			return HeaderHttpSessionIdResolver.xAuthToken();
 		}
 
 	}
