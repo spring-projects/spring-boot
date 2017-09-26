@@ -25,14 +25,15 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
-import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -54,6 +55,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Madhura Bhave
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Endpoint(id = "env")
@@ -80,8 +82,8 @@ public class EnvironmentEndpoint {
 	}
 
 	@ReadOperation
-	public EnvironmentDescriptor environmentEntry(@Selector String toMatch) {
-		return getEnvironmentDescriptor(toMatch::equals);
+	public EnvironmentEntryDescriptor environmentEntry(@Selector String toMatch) {
+		return getEnvironmentEntryDescriptor(toMatch);
 	}
 
 	private EnvironmentDescriptor getEnvironmentDescriptor(
@@ -99,6 +101,46 @@ public class EnvironmentEndpoint {
 				Arrays.asList(this.environment.getActiveProfiles()), propertySources);
 	}
 
+	private EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(
+			String propertyName) {
+		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(
+				propertyName);
+		PropertySummaryDescriptor summary = getPropertySummaryDescriptor(descriptors);
+		return new EnvironmentEntryDescriptor(summary,
+				Arrays.asList(this.environment.getActiveProfiles()),
+				toPropertySourceDescriptors(descriptors));
+	}
+
+	private List<PropertySourceEntryDescriptor> toPropertySourceDescriptors(
+			Map<String, PropertyValueDescriptor> descriptors) {
+		List<PropertySourceEntryDescriptor> result = new ArrayList<>();
+		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
+			result.add(new PropertySourceEntryDescriptor(entry.getKey(), entry.getValue()));
+		}
+		return result;
+	}
+
+	private PropertySummaryDescriptor getPropertySummaryDescriptor(
+			Map<String, PropertyValueDescriptor> descriptors) {
+		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
+			if (entry.getValue() != null) {
+				return new PropertySummaryDescriptor(entry.getKey(),
+						entry.getValue().getValue());
+			}
+		}
+		return null;
+	}
+
+	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(
+			String propertyName) {
+		Map<String, PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
+		PlaceholdersResolver resolver = getResolver();
+		getPropertySourcesAsMap().forEach((sourceName, source) ->
+				propertySources.put(sourceName, source.containsProperty(propertyName) ?
+						describeValueOf(propertyName, source, resolver) : null));
+		return propertySources;
+	}
+
 	private PropertySourceDescriptor describeSource(String sourceName,
 			EnumerablePropertySource<?> source, PlaceholdersResolver resolver,
 			Predicate<String> namePredicate) {
@@ -109,7 +151,7 @@ public class EnvironmentEndpoint {
 	}
 
 	private PropertyValueDescriptor describeValueOf(String name,
-			EnumerablePropertySource<?> source, PlaceholdersResolver resolver) {
+			PropertySource<?> source, PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
 		@SuppressWarnings("unchecked")
 		String origin = (source instanceof OriginLookup)
@@ -125,7 +167,9 @@ public class EnvironmentEndpoint {
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
 		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		for (PropertySource<?> source : getPropertySources()) {
-			extract("", map, source);
+			if (!ConfigurationPropertySources.isMainConfigurationPropertySource(source)) {
+				extract("", map, source);
+			}
 		}
 		return map;
 	}
@@ -208,54 +252,141 @@ public class EnvironmentEndpoint {
 			return this.propertySources;
 		}
 
-		/**
-		 * A description of a {@link PropertySource}.
-		 */
-		public static final class PropertySourceDescriptor {
+	}
 
-			private final String name;
+	/**
+	 * A description of an entry of the {@link Environment}.
+	 */
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static final class EnvironmentEntryDescriptor {
 
-			private final Map<String, PropertyValueDescriptor> properties;
+		private final PropertySummaryDescriptor property;
 
-			private PropertySourceDescriptor(String name,
-					Map<String, PropertyValueDescriptor> properties) {
-				this.name = name;
-				this.properties = properties;
-			}
+		private final List<String> activeProfiles;
 
-			public String getName() {
-				return this.name;
-			}
+		private final List<PropertySourceEntryDescriptor> propertySources;
 
-			public Map<String, PropertyValueDescriptor> getProperties() {
-				return this.properties;
-			}
-
-			/**
-			 * A description of a property's value, including its origin if available.
-			 */
-			public static final class PropertyValueDescriptor {
-
-				private final Object value;
-
-				private final String origin;
-
-				private PropertyValueDescriptor(Object value, String origin) {
-					this.value = value;
-					this.origin = origin;
-				}
-
-				public Object getValue() {
-					return this.value;
-				}
-
-				public String getOrigin() {
-					return this.origin;
-				}
-
-			}
-
+		private EnvironmentEntryDescriptor(PropertySummaryDescriptor property,
+				List<String> activeProfiles,
+				List<PropertySourceEntryDescriptor> propertySources) {
+			this.property = property;
+			this.activeProfiles = activeProfiles;
+			this.propertySources = propertySources;
 		}
+
+		public PropertySummaryDescriptor getProperty() {
+			return this.property;
+		}
+
+		public List<String> getActiveProfiles() {
+			return this.activeProfiles;
+		}
+
+		public List<PropertySourceEntryDescriptor> getPropertySources() {
+			return this.propertySources;
+		}
+
+	}
+
+	/**
+	 * A summary of a particular entry of the {@link Environment}.
+	 */
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static final class PropertySummaryDescriptor {
+
+		private final String source;
+
+		private final Object value;
+
+		public PropertySummaryDescriptor(String source, Object value) {
+			this.source = source;
+			this.value = value;
+		}
+
+		public String getSource() {
+			return this.source;
+		}
+
+		public Object getValue() {
+			return this.value;
+		}
+
+	}
+
+	/**
+	 * A description of a particular entry of {@link PropertySource}.
+	 */
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static final class PropertySourceEntryDescriptor {
+
+		private final String name;
+
+		private final PropertyValueDescriptor property;
+
+		private PropertySourceEntryDescriptor(String name,
+				PropertyValueDescriptor property) {
+			this.name = name;
+			this.property = property;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public PropertyValueDescriptor getProperty() {
+			return this.property;
+		}
+
+	}
+
+	/**
+	 * A description of a {@link PropertySource}.
+	 */
+	public static final class PropertySourceDescriptor {
+
+		private final String name;
+
+		private final Map<String, PropertyValueDescriptor> properties;
+
+		private PropertySourceDescriptor(String name,
+				Map<String, PropertyValueDescriptor> properties) {
+			this.name = name;
+			this.properties = properties;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Map<String, PropertyValueDescriptor> getProperties() {
+			return this.properties;
+		}
+
+	}
+
+	/**
+	 * A description of a property's value, including its origin if available.
+	 */
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static final class PropertyValueDescriptor {
+
+		private final Object value;
+
+		private final String origin;
+
+		private PropertyValueDescriptor(Object value, String origin) {
+			this.value = value;
+			this.origin = origin;
+		}
+
+		public Object getValue() {
+			return this.value;
+		}
+
+		public String getOrigin() {
+			return this.origin;
+		}
+
 	}
 
 	/**

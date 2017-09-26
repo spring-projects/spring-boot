@@ -53,7 +53,9 @@ public class EnvironmentEndpointWebIntegrationTests {
 	@Test
 	public void sub() throws Exception {
 		client.get().uri("/application/env/foo").exchange().expectStatus().isOk()
-				.expectBody().jsonPath(forProperty("test", "foo")).isEqualTo("bar");
+				.expectBody()
+				.jsonPath("property.source").isEqualTo("test")
+				.jsonPath("property.value").isEqualTo("bar");
 	}
 
 	@Test
@@ -75,8 +77,10 @@ public class EnvironmentEndpointWebIntegrationTests {
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
 		client.get().uri("/application/env/my.foo").exchange().expectStatus().isOk()
-				.expectBody().jsonPath(forProperty("unresolved-placeholder", "my.foo"))
-				.isEqualTo("${my.bar}");
+				.expectBody()
+				.jsonPath("property.value").isEqualTo("${my.bar}")
+				.jsonPath(forPropertyEntry(
+						"unresolved-placeholder")).isEqualTo("${my.bar}");
 	}
 
 	@Test
@@ -87,8 +91,9 @@ public class EnvironmentEndpointWebIntegrationTests {
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("placeholder", map));
 		client.get().uri("/application/env/my.foo").exchange().expectStatus().isOk()
-				.expectBody().jsonPath(forProperty("placeholder", "my.foo"))
-				.isEqualTo("******");
+				.expectBody()
+				.jsonPath("property.value").isEqualTo("******")
+				.jsonPath(forPropertyEntry("placeholder")).isEqualTo("******");
 	}
 
 	@Test
@@ -121,6 +126,10 @@ public class EnvironmentEndpointWebIntegrationTests {
 	private String forProperty(String source, String name) {
 		return "propertySources[?(@.name=='" + source + "')].properties.['" + name
 				+ "'].value";
+	}
+
+	private String forPropertyEntry(String source) {
+		return "propertySources[?(@.name=='" + source + "')].property.value";
 	}
 
 	@Configuration

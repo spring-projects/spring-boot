@@ -46,6 +46,18 @@ public final class ConfigurationPropertySources {
 	}
 
 	/**
+	 * Determines if the specific {@link PropertySource} is the
+	 * {@link ConfigurationPropertySource} that was {@link #attach(Environment) attached}
+	 * to the {@link Environment}.
+	 * @param propertySource the property source to test
+	 * @return {@code true} if this is the attached {@link ConfigurationPropertySource}
+	 */
+	public static boolean isMainConfigurationPropertySource(
+			PropertySource<?> propertySource) {
+		return ATTACHED_PROPERTY_SOURCE_NAME.equals(propertySource.getName());
+	}
+
+	/**
 	 * Attach a {@link ConfigurationPropertySource} support to the specified
 	 * {@link Environment}. Adapts each {@link PropertySource} managed by the environment
 	 * to a {@link ConfigurationPropertySource} and allows classic
