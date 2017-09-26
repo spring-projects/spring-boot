@@ -26,6 +26,8 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.ConventionTask;
+import org.gradle.api.provider.PropertyState;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -44,7 +46,7 @@ public class BuildInfo extends ConventionTask {
 
 	private final BuildInfoProperties properties = new BuildInfoProperties(getProject());
 
-	private File destinationDir;
+	private PropertyState<File> destinationDir = getProject().property(File.class);
 
 	/**
 	 * Generates the {@code build-info.properties} file in the configured
@@ -76,23 +78,30 @@ public class BuildInfo extends ConventionTask {
 	 */
 	@OutputDirectory
 	public File getDestinationDir() {
-		return this.destinationDir != null ? this.destinationDir
+		return this.destinationDir.isPresent() ? this.destinationDir.get()
 				: getProject().getBuildDir();
 	}
 
 	/**
 	 * Sets the directory to which the {@code build-info.properties} file will be written.
-	 *
 	 * @param destinationDir the destination directory
 	 */
 	public void setDestinationDir(File destinationDir) {
-		this.destinationDir = destinationDir;
+		this.destinationDir.set(destinationDir);
+	}
+
+	/**
+	 * Sets the directory to which the {@code build-info.properties} file will be written
+	 * to the value from the given {@code destinationDirProvider}.
+	 * @param destinationDirProvider the provider of the destination directory
+	 */
+	public void setDestinationDir(Provider<File> destinationDirProvider) {
+		this.destinationDir.set(destinationDirProvider);
 	}
 
 	/**
 	 * Returns the {@link BuildInfoProperties properties} that will be included in the
 	 * {@code build-info.properties} file.
-	 *
 	 * @return the properties
 	 */
 	@Input
@@ -102,7 +111,6 @@ public class BuildInfo extends ConventionTask {
 
 	/**
 	 * Executes the given {@code action} on the {@link #getProperties()} properties.
-	 *
 	 * @param action the action
 	 */
 	public void properties(Action<BuildInfoProperties> action) {

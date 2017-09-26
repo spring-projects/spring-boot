@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.dsl;
 
 import java.io.File;
-import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -87,11 +86,9 @@ public class SpringBootExtension {
 					properties.setArtifact(determineArtifactBaseName());
 				}
 			});
-			bootBuildInfo.getConventionMapping()
-					.map("destinationDir",
-							(Callable<File>) () -> new File(
-									determineMainSourceSetResourcesOutputDir(),
-									"META-INF"));
+			bootBuildInfo.setDestinationDir(this.project
+					.provider(() -> new File(determineMainSourceSetResourcesOutputDir(),
+							"META-INF")));
 		});
 		if (configurer != null) {
 			configurer.execute(bootBuildInfo);

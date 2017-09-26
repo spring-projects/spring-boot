@@ -68,10 +68,10 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
-		bootStartScripts.getConventionMapping().map("outputDir",
-				() -> new File(project.getBuildDir(), "bootScripts"));
-		bootStartScripts.getConventionMapping().map("applicationName",
-				() -> applicationConvention.getApplicationName());
+		bootStartScripts.setOutputDir(
+				project.provider(() -> new File(project.getBuildDir(), "bootScripts")));
+		bootStartScripts.setApplicationName(
+				project.provider(() -> applicationConvention.getApplicationName()));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0x755);
 		distribution.getContents().with(binCopySpec);
