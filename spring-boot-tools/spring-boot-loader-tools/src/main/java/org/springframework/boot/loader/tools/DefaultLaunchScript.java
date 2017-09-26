@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +37,7 @@ import java.util.regex.Pattern;
  * expansion of the form <code>{{name:default}}</code>.
  *
  * @author Phillip Webb
+ * @author Justin Rosenberg
  * @since 1.3.0
  */
 public class DefaultLaunchScript implements LaunchScript {
@@ -43,6 +48,9 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern
 			.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
+
+	private static final Set<String> FILE_PATH_KEYS = Collections
+			.unmodifiableSet(new HashSet<>(Arrays.asList("inlinedConfScript")));
 
 	private final String content;
 
@@ -85,22 +93,40 @@ public class DefaultLaunchScript implements LaunchScript {
 		outputStream.flush();
 	}
 
-	private String expandPlaceholders(String content, Map<?, ?> properties) {
+	private String expandPlaceholders(String content, Map<?, ?> properties)
+			throws IOException {
 		StringBuffer expanded = new StringBuffer();
 		Matcher matcher = PLACEHOLDER_PATTERN.matcher(content);
 		while (matcher.find()) {
 			String name = matcher.group(1);
-			String value = matcher.group(2);
+			final String value;
+			String defaultValue = matcher.group(2);
 			if (properties != null && properties.containsKey(name)) {
-				value = (String) properties.get(name);
+				Object propertyValue = properties.get(name);
+				if (FILE_PATH_KEYS.contains(name)) {
+					value = parseFilePropertyValue(properties.get(name));
+				}
+				else {
+					value = propertyValue.toString();
+				}
 			}
 			else {
-				value = (value == null ? matcher.group(0) : value.substring(1));
+				value = (defaultValue == null ? matcher.group(0)
+						: defaultValue.substring(1));
 			}
 			matcher.appendReplacement(expanded, value.replace("$", "\\$"));
 		}
 		matcher.appendTail(expanded);
 		return expanded.toString();
+	}
+
+	private String parseFilePropertyValue(Object propertyValue) throws IOException {
+		if (propertyValue instanceof File) {
+			return loadContent((File) propertyValue);
+		}
+		else {
+			return loadContent(new File(propertyValue.toString()));
+		}
 	}
 
 	@Override

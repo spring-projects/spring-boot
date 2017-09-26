@@ -760,6 +760,11 @@ for Gradle and to `${project.name}` for Maven.
 |`confFolder`
 |The default value for `CONF_FOLDER`. Defaults to the folder containing the jar.
 
+|`inlinedConfScript`
+|Reference to a file script that should be inlined in the default launch script.
+ This can be used to set environmental variables such as `JAVA_OPTS` before
+ any external config files are loaded.
+
 |`logFolder`
 |The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
 
