@@ -76,6 +76,8 @@ public class EnvironmentEndpointTests {
 				.environment(null);
 		assertThat(getSource("composite:one", env).getProperties().get("foo").getValue())
 				.isEqualTo("bar");
+		assertThat(getSource("composite:two", env).getProperties().get("foo").getValue())
+				.isEqualTo("spam");
 	}
 
 	@Test

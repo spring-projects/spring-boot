@@ -31,19 +31,20 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.PropertySourceDescriptor.PropertyValueDescriptor;
+import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
+import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.PropertySources;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -85,7 +86,7 @@ public class EnvironmentEndpoint {
 
 	private EnvironmentDescriptor getEnvironmentDescriptor(
 			Predicate<String> propertyNamePredicate) {
-		PropertyResolver resolver = getResolver();
+		PlaceholdersResolver resolver = getResolver();
 		List<PropertySourceDescriptor> propertySources = new ArrayList<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> {
 			if (source instanceof EnumerablePropertySource) {
@@ -99,7 +100,7 @@ public class EnvironmentEndpoint {
 	}
 
 	private PropertySourceDescriptor describeSource(String sourceName,
-			EnumerablePropertySource<?> source, PropertyResolver resolver,
+			EnumerablePropertySource<?> source, PlaceholdersResolver resolver,
 			Predicate<String> namePredicate) {
 		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
 		Stream.of(source.getPropertyNames()).filter(namePredicate).forEach(
@@ -108,19 +109,17 @@ public class EnvironmentEndpoint {
 	}
 
 	private PropertyValueDescriptor describeValueOf(String name,
-			EnumerablePropertySource<?> source, PropertyResolver resolver) {
-		Object resolved = resolver.getProperty(name, Object.class);
+			EnumerablePropertySource<?> source, PlaceholdersResolver resolver) {
+		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
 		@SuppressWarnings("unchecked")
 		String origin = (source instanceof OriginLookup)
 				? ((OriginLookup<Object>) source).getOrigin(name).toString() : null;
 		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
 	}
 
-	private PropertyResolver getResolver() {
-		PlaceholderSanitizingPropertyResolver resolver = new PlaceholderSanitizingPropertyResolver(
+	private PlaceholdersResolver getResolver() {
+		return new PropertySourcesPlaceholdersSanitizingResolver(
 				getPropertySources(), this.sanitizer);
-		resolver.setIgnoreUnresolvableNestedPlaceholders(true);
-		return resolver;
 	}
 
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
@@ -160,29 +159,28 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * {@link PropertySourcesPropertyResolver} that sanitizes sensitive placeholders if
-	 * present.
+	 * {@link PropertySourcesPlaceholdersResolver} that sanitizes sensitive placeholders
+	 * if present.
 	 */
-	private class PlaceholderSanitizingPropertyResolver
-			extends PropertySourcesPropertyResolver {
+	private static class PropertySourcesPlaceholdersSanitizingResolver
+			extends PropertySourcesPlaceholdersResolver {
 
 		private final Sanitizer sanitizer;
 
-		/**
-		 * Create a new resolver against the given property sources.
-		 * @param propertySources the set of {@link PropertySource} objects to use
-		 * @param sanitizer the sanitizer used to sanitize sensitive values
-		 */
-		PlaceholderSanitizingPropertyResolver(PropertySources propertySources,
-				Sanitizer sanitizer) {
-			super(propertySources);
+		public PropertySourcesPlaceholdersSanitizingResolver(
+				Iterable<PropertySource<?>> sources, Sanitizer sanitizer) {
+			super(sources, new PropertyPlaceholderHelper(
+					SystemPropertyUtils.PLACEHOLDER_PREFIX,
+					SystemPropertyUtils.PLACEHOLDER_SUFFIX,
+					SystemPropertyUtils.VALUE_SEPARATOR, true));
 			this.sanitizer = sanitizer;
 		}
 
 		@Override
-		protected String getPropertyAsRawString(String key) {
-			String value = super.getPropertyAsRawString(key);
-			return (String) this.sanitizer.sanitize(key, value);
+		protected String resolvePlaceholder(String placeholder) {
+			String value = super.resolvePlaceholder(placeholder);
+			return (value != null ?
+					(String) this.sanitizer.sanitize(placeholder, value) : null);
 		}
 
 	}
