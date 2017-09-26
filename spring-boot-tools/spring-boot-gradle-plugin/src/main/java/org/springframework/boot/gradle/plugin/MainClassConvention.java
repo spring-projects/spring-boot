@@ -32,7 +32,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  *
  * @author Andy Wilkinson
  */
-final class MainClassConvention implements Callable<Object> {
+final class MainClassConvention implements Callable<String> {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
@@ -46,11 +46,11 @@ final class MainClassConvention implements Callable<Object> {
 	}
 
 	@Override
-	public Object call() throws Exception {
+	public String call() throws Exception {
 		if (this.project.hasProperty("mainClassName")) {
 			Object mainClassName = this.project.property("mainClassName");
 			if (mainClassName != null) {
-				return mainClassName;
+				return mainClassName.toString();
 			}
 		}
 		return resolveMainClass();

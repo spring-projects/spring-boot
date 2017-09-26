@@ -16,10 +16,21 @@
 
 package org.springframework.boot.gradle.tasks.run;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.gradle.api.Action;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.provider.PropertyState;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetOutput;
+import org.gradle.api.tasks.TaskAction;
+import org.gradle.process.JavaExecSpec;
 
 /**
  * Custom {@link JavaExec} task for running a Spring Boot application.
@@ -27,7 +38,34 @@ import org.gradle.api.tasks.SourceSetOutput;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class BootRun extends JavaExec {
+public class BootRun extends DefaultTask {
+
+	private final PropertyState<String> main = getProject().property(String.class);
+
+	@SuppressWarnings("unchecked")
+	private final PropertyState<List<String>> jvmArgs = (PropertyState<List<String>>) (Object) getProject()
+			.property(List.class);
+
+	@SuppressWarnings("unchecked")
+	private final PropertyState<List<String>> args = (PropertyState<List<String>>) (Object) getProject()
+			.property(List.class);
+
+	private FileCollection classpath = getProject().files();
+
+	private List<Action<JavaExecSpec>> execSpecConfigurers = new ArrayList<>();
+
+	/**
+	 * Adds the given {@code entries} to the classpath used to run the application.
+	 * @param entries the classpath entries
+	 */
+	public void classpath(Object... entries) {
+		this.classpath = this.classpath.plus(getProject().files(entries));
+	}
+
+	@InputFiles
+	public FileCollection getClasspath() {
+		return this.classpath;
+	}
 
 	/**
 	 * Adds the {@link SourceDirectorySet#getSrcDirs() source directories} of the given
@@ -38,18 +76,115 @@ public class BootRun extends JavaExec {
 	 * @param sourceSet the source set
 	 */
 	public void sourceResources(SourceSet sourceSet) {
-		setClasspath(getProject()
-				.files(sourceSet.getResources().getSrcDirs(), getClasspath())
-				.filter((file) -> !file.equals(sourceSet.getOutput().getResourcesDir())));
+		this.classpath = getProject()
+				.files(sourceSet.getResources().getSrcDirs(), this.classpath)
+				.filter((file) -> !file.equals(sourceSet.getOutput().getResourcesDir()));
 	}
 
-	@Override
-	public void exec() {
-		if (System.console() != null) {
-			// Record that the console is available here for AnsiOutput to detect later
-			this.getEnvironment().put("spring.output.ansi.console-available", true);
-		}
-		super.exec();
+	/**
+	 * Returns the name of the main class to be run.
+	 * @return the main class name or {@code null}
+	 */
+	public String getMain() {
+		return this.main.getOrNull();
+	}
+
+	/**
+	 * Sets the main class to be executed using the given {@code mainProvider}.
+	 *
+	 * @param mainProvider provider of the main class name
+	 */
+	public void setMain(Provider<String> mainProvider) {
+		this.main.set(mainProvider);
+	}
+
+	/**
+	 * Sets the main class to be run.
+	 *
+	 * @param main the main class name
+	 */
+	public void setMain(String main) {
+		this.main.set(main);
+	}
+
+	/**
+	 * Returns the JVM arguments to be used to run the application.
+	 * @return the JVM arguments or {@code null}
+	 */
+	public List<String> getJvmArgs() {
+		return this.jvmArgs.getOrNull();
+	}
+
+	/**
+	 * Configures the application to be run using the JVM args provided by the given
+	 * {@code jvmArgsProvider}.
+	 *
+	 * @param jvmArgsProvider the provider of the JVM args
+	 */
+	public void setJvmArgs(Provider<List<String>> jvmArgsProvider) {
+		this.jvmArgs.set(jvmArgsProvider);
+	}
+
+	/**
+	 * Configures the application to be run using the given {@code jvmArgs}.
+	 * @param jvmArgs the JVM args
+	 */
+	public void setJvmArgs(List<String> jvmArgs) {
+		this.jvmArgs.set(jvmArgs);
+	}
+
+	/**
+	 * Returns the arguments to be used to run the application.
+	 * @return the arguments or {@code null}
+	 */
+	public List<String> getArgs() {
+		return this.args.getOrNull();
+	}
+
+	/**
+	 * Configures the application to be run using the given {@code args}.
+	 * @param args the args
+	 */
+	public void setArgs(List<String> args) {
+		this.args.set(args);
+	}
+
+	/**
+	 * Configures the application to be run using the args provided by the given
+	 * {@code argsProvider}.
+	 * @param argsProvider the provider of the args
+	 */
+	public void setArgs(Provider<List<String>> argsProvider) {
+		this.args.set(argsProvider);
+	}
+
+	/**
+	 * Registers the given {@code execSpecConfigurer} to be called to customize the
+	 * {@link JavaExecSpec} prior to running the application.
+	 * @param execSpecConfigurer the configurer
+	 */
+	public void execSpec(Action<JavaExecSpec> execSpecConfigurer) {
+		this.execSpecConfigurers.add(execSpecConfigurer);
+	}
+
+	@TaskAction
+	public void run() {
+		getProject().javaexec((spec) -> {
+			spec.classpath(this.classpath);
+			spec.setMain(this.main.getOrNull());
+			if (this.jvmArgs.isPresent()) {
+				spec.setJvmArgs(this.jvmArgs.get());
+			}
+			if (this.args.isPresent()) {
+				spec.setArgs(this.args.get());
+			}
+			if (System.console() != null) {
+				// Record that the console is available here for AnsiOutput to detect
+				// later
+				spec.environment("spring.output.ansi.console-available", true);
+			}
+			this.execSpecConfigurers.forEach((configurer) -> configurer.execute(spec));
+		});
 	}
 
 }
