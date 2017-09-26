@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
@@ -44,26 +44,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConditionalOnJavaTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	private final OnJavaCondition condition = new OnJavaCondition();
 
 	@Test
 	public void doesNotMatchIfBetterVersionIsRequired() {
-		registerAndRefresh(Java9Required.class);
-		assertPresent(false);
+		this.contextRunner.withUserConfiguration(Java9Required.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	public void doesNotMatchIfLowerIsRequired() {
-		registerAndRefresh(Java7Required.class);
-		assertPresent(false);
+		this.contextRunner.withUserConfiguration(Java7Required.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	public void matchesIfVersionIsInRange() {
-		registerAndRefresh(Java8Required.class);
-		assertPresent(true);
+		this.contextRunner.withUserConfiguration(Java8Required.class)
+				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
@@ -106,10 +106,8 @@ public class ConditionalOnJavaTests {
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
 		URL[] urls = ((URLClassLoader) getClass().getClassLoader()).getURLs();
 		URLClassLoader classLoader = new ClassHidingClassLoader(urls, hiddenClasses);
-
 		Class<?> javaVersionClass = classLoader
 				.loadClass(ConditionalOnJava.JavaVersion.class.getName());
-
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
 				"getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
@@ -122,15 +120,6 @@ public class ConditionalOnJavaTests {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
 				version);
 		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
-	}
-
-	private void registerAndRefresh(Class<?> annotatedClasses) {
-		this.context.register(annotatedClasses);
-		this.context.refresh();
-	}
-
-	private void assertPresent(boolean expected) {
-		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
 	}
 
 	private final class ClassHidingClassLoader extends URLClassLoader {

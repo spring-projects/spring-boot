@@ -40,7 +40,7 @@ public class BootRun extends JavaExec {
 	public void sourceResources(SourceSet sourceSet) {
 		setClasspath(getProject()
 				.files(sourceSet.getResources().getSrcDirs(), getClasspath())
-				.filter(file -> !file.equals(sourceSet.getOutput().getResourcesDir())));
+				.filter((file) -> !file.equals(sourceSet.getOutput().getResourcesDir())));
 	}
 
 	@Override

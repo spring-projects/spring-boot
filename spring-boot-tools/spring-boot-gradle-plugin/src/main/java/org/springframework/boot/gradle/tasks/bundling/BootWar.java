@@ -50,7 +50,7 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public BootWar() {
 		getWebInf().into("lib-provided",
-				copySpec -> copySpec
+				(copySpec) -> copySpec
 						.from((Callable<Iterable<File>>) () -> this.providedClasspath == null
 								? Collections.emptyList() : this.providedClasspath));
 	}
@@ -92,8 +92,13 @@ public class BootWar extends War implements BootArchive {
 	}
 
 	@Override
+	public void launchScript() {
+		enableLaunchScriptIfNecessary();
+	}
+
+	@Override
 	public void launchScript(Action<LaunchScriptConfiguration> action) {
-		action.execute(getLaunchScript());
+		action.execute(enableLaunchScriptIfNecessary());
 	}
 
 	/**
@@ -148,6 +153,15 @@ public class BootWar extends War implements BootArchive {
 			return ZipCompression.STORED;
 		}
 		return ZipCompression.DEFLATED;
+	}
+
+	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
+		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
+		if (launchScript == null) {
+			launchScript = new LaunchScriptConfiguration();
+			this.support.setLaunchScript(launchScript);
+		}
+		return launchScript;
 	}
 
 }

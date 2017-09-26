@@ -122,10 +122,10 @@ public @interface SpringBootTest {
 		MOCK(false),
 
 		/**
-		 * Creates a (reactive) web application context and sets a {@code server.port=0}
-		 * {@link Environment} property (which usually triggers listening on a random
-		 * port). Often used in conjunction with a {@link LocalServerPort} injected field
-		 * on the test.
+		 * Creates a web application context (reactive or servlet based) and sets a
+		 * {@code server.port=0} {@link Environment} property (which usually triggers
+		 * listening on a random port). Often used in conjunction with a
+		 * {@link LocalServerPort} injected field on the test.
 		 */
 		RANDOM_PORT(true),
 

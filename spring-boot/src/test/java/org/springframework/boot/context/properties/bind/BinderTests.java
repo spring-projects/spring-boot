@@ -199,15 +199,17 @@ public class BinderTests {
 	@Test
 	public void bindWhenHasMalformedDateShouldThrowException() throws Exception {
 		this.thrown.expectCause(instanceOf(ConversionFailedException.class));
-		this.sources.add(new MockConfigurationPropertySource("foo", "2014-04-01"));
+		this.sources.add(new MockConfigurationPropertySource("foo",
+				"2014-04-01T01:30:00.000-05:00"));
 		this.binder.bind("foo", Bindable.of(LocalDate.class));
 	}
 
 	@Test
 	public void bindWhenHasAnnotationsShouldChangeConvertedValue() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource("foo", "2014-04-01"));
+		this.sources.add(new MockConfigurationPropertySource("foo",
+				"2014-04-01T01:30:00.000-05:00"));
 		DateTimeFormat annotation = AnnotationUtils.synthesizeAnnotation(
-				Collections.singletonMap("iso", DateTimeFormat.ISO.DATE),
+				Collections.singletonMap("iso", DateTimeFormat.ISO.DATE_TIME),
 				DateTimeFormat.class, null);
 		LocalDate result = this.binder
 				.bind("foo", Bindable.of(LocalDate.class).withAnnotations(annotation))
@@ -225,12 +227,14 @@ public class BinderTests {
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		this.thrown.expect(BindException.class);
 		this.thrown.expect(new AssertionMatcher<BindException>() {
+
 			@Override
 			public void assertion(BindException ex) throws AssertionError {
 				assertThat(ex.getCause().getMessage())
 						.isEqualTo("No setter found for property: items");
 				assertThat(ex.getProperty()).isNull();
 			}
+
 		});
 		this.binder.bind("foo", target);
 	}
@@ -252,6 +256,7 @@ public class BinderTests {
 		public List<String> getItems() {
 			return this.items;
 		}
+
 	}
 
 	public enum ExampleEnum {

@@ -13,8 +13,6 @@ bootJar {
 
 // tag::include-launch-script[]
 bootJar {
-	launchScript {
-		included = true
-	}
+	launchScript()
 }
 // end::include-launch-script[]

@@ -16,9 +16,17 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -31,12 +39,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -50,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @author Stephane Nicoll
  */
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
@@ -64,55 +75,58 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testDataScriptWithMissingDdl() throws Exception {
-		TestPropertyValues
-				.of("spring.datasource.data:classpath:/city.sql",
-						// Missing:
-						"spring.datasource.schema:classpath:/ddl.sql")
-				.applyTo(this.context);
-		setupTestConfiguration();
 		this.thrown.expectMessage("ddl.sql");
 		this.thrown.expectMessage("spring.datasource.schema");
-		this.context.refresh();
-
+		load("spring.datasource.data:classpath:/city.sql",
+				// Missing:
+				"spring.datasource.schema:classpath:/ddl.sql");
 	}
 
-	// This can't succeed because the data SQL is executed immediately after the schema
-	// and Hibernate hasn't initialized yet at that point
-	@Test(expected = BeanCreationException.class)
+	@Test
 	public void testDataScript() throws Exception {
-		TestPropertyValues.of("spring.datasource.data:classpath:/city.sql")
-				.applyTo(this.context);
-		setupTestConfiguration();
-		this.context.refresh();
-		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
-				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+		// This can't succeed because the data SQL is executed immediately after the
+		// schema
+		// and Hibernate hasn't initialized yet at that point
+		this.thrown.expect(BeanCreationException.class);
+		load("spring.datasource.data:classpath:/city.sql");
+	}
+
+	@Test
+	public void testDataScriptRunsEarly() {
+		load(new Class<?>[] { TestInitializedJpaConfiguration.class }, null,
+				new HideDataScriptClassLoader(), "spring.jpa.show-sql=true",
+				"spring.jpa.hibernate.ddl-auto:create-drop",
+				"spring.datasource.data:classpath:/city.sql");
+		assertThat(this.context.getBean(TestInitializedJpaConfiguration.class).called)
+				.isTrue();
+	}
+
+	@Test
+	public void testFlywaySwitchOffDdlAuto() throws Exception {
+		load(new Class<?>[0], new Class<?>[] { FlywayAutoConfiguration.class },
+				"spring.datasource.initialize:false",
+				"spring.flyway.locations:classpath:db/city");
 	}
 
 	@Test
 	public void testFlywayPlusValidation() throws Exception {
-		TestPropertyValues.of("spring.datasource.initialize:false",
-				"flyway.locations:classpath:db/city",
-				"spring.jpa.hibernate.ddl-auto:validate").applyTo(this.context);
-		setupTestConfiguration();
-		this.context.register(FlywayAutoConfiguration.class);
-		this.context.refresh();
+		load(new Class<?>[0], new Class<?>[] { FlywayAutoConfiguration.class },
+				"spring.datasource.initialize:false",
+				"spring.flyway.locations:classpath:db/city",
+				"spring.jpa.hibernate.ddl-auto:validate");
 	}
 
 	@Test
 	public void testLiquibasePlusValidation() throws Exception {
-		TestPropertyValues.of("spring.datasource.initialize:false",
-				"liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
-				"spring.jpa.hibernate.ddl-auto:validate").applyTo(this.context);
-		setupTestConfiguration();
-		this.context.register(LiquibaseAutoConfiguration.class);
-		this.context.refresh();
+		load(new Class<?>[0], new Class<?>[] { LiquibaseAutoConfiguration.class },
+				"spring.datasource.initialize:false",
+				"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+				"spring.jpa.hibernate.ddl-auto:validate");
 	}
 
 	@Test
 	public void defaultJtaPlatform() throws Exception {
-		this.context.register(JtaAutoConfiguration.class);
-		setupTestConfiguration();
-		this.context.refresh();
+		load(JtaAutoConfiguration.class);
 		Map<String, Object> jpaPropertyMap = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class)
 				.getJpaPropertyMap();
@@ -122,11 +136,9 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomJtaPlatform() throws Exception {
-		TestPropertyValues.of("spring.jpa.properties.hibernate.transaction.jta.platform:"
-				+ TestJtaPlatform.class.getName()).applyTo(this.context);
-		this.context.register(JtaAutoConfiguration.class);
-		setupTestConfiguration();
-		this.context.refresh();
+		load(JtaAutoConfiguration.class,
+				"spring.jpa.properties.hibernate.transaction.jta.platform:"
+						+ TestJtaPlatform.class.getName());
 		Map<String, Object> jpaPropertyMap = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class)
 				.getJpaPropertyMap();
@@ -136,16 +148,32 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
-		TestPropertyValues
-				.of("spring.transaction.default-timeout:30",
-						"spring.transaction.rollback-on-commit-failure:true")
-				.applyTo(this.context);
-		setupTestConfiguration();
-		this.context.refresh();
+		load("spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
 		JpaTransactionManager transactionManager = this.context
 				.getBean(JpaTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
+	@Configuration
+	@TestAutoConfigurationPackage(City.class)
+	static class TestInitializedJpaConfiguration {
+
+		private boolean called;
+
+		@Autowired
+		public void validateDataSourceIsInitialized(
+				EntityManagerFactory entityManagerFactory) {
+			// Inject the entity manager to validate it is initialized at the injection
+			// point
+			EntityManager entityManager = entityManagerFactory.createEntityManager();
+			City city = entityManager.find(City.class, 2000L);
+			assertThat(city).isNotNull();
+			assertThat(city.getName()).isEqualTo("Washington");
+			this.called = true;
+		}
+
 	}
 
 	public static class TestJtaPlatform implements JtaPlatform {
@@ -178,6 +206,25 @@ public class HibernateJpaAutoConfigurationTests
 		@Override
 		public int getCurrentStatus() throws SystemException {
 			throw new UnsupportedOperationException();
+		}
+
+	}
+
+	private static class HideDataScriptClassLoader extends URLClassLoader {
+
+		private static final List<String> HIDDEN_RESOURCES = Arrays
+				.asList("schema-all.sql", "schema.sql");
+
+		HideDataScriptClassLoader() {
+			super(new URL[0], HideDataScriptClassLoader.class.getClassLoader());
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			if (HIDDEN_RESOURCES.contains(name)) {
+				return new Vector<URL>().elements();
+			}
+			return super.getResources(name);
 		}
 
 	}

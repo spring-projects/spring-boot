@@ -130,17 +130,10 @@ public class OptionHandler {
 
 		@Override
 		public String format(Map<String, ? extends OptionDescriptor> options) {
-			Comparator<OptionDescriptor> comparator = new Comparator<OptionDescriptor>() {
-				@Override
-				public int compare(OptionDescriptor first, OptionDescriptor second) {
-					return first.options().iterator().next()
-							.compareTo(second.options().iterator().next());
-				}
-			};
-
+			Comparator<OptionDescriptor> comparator = Comparator.comparing(
+					(optionDescriptor) -> optionDescriptor.options().iterator().next());
 			Set<OptionDescriptor> sorted = new TreeSet<>(comparator);
 			sorted.addAll(options.values());
-
 			for (OptionDescriptor descriptor : sorted) {
 				if (!descriptor.representsNonOptions()) {
 					this.help.add(new OptionHelpAdapter(descriptor));

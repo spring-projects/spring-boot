@@ -122,21 +122,21 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	@Override
 	public ClassCollector createCollector(CompilationUnit unit, SourceUnit su) {
-		InnerLoader loader = AccessController
-				.doPrivileged(new PrivilegedAction<InnerLoader>() {
-					@Override
-					public InnerLoader run() {
-						return new InnerLoader(ExtendedGroovyClassLoader.this) {
-							// Don't return URLs from the inner loader so that Tomcat only
-							// searches the parent. Fixes 'TLD skipped' issues
-							@Override
-							public URL[] getURLs() {
-								return NO_URLS;
-							}
-						};
-					}
-				});
+		InnerLoader loader = AccessController.doPrivileged(getInnerLoader());
 		return new ExtendedClassCollector(loader, unit, su);
+	}
+
+	private PrivilegedAction<InnerLoader> getInnerLoader() {
+		return () -> new InnerLoader(ExtendedGroovyClassLoader.this) {
+
+			// Don't return URLs from the inner loader so that Tomcat only
+			// searches the parent. Fixes 'TLD skipped' issues
+			@Override
+			public URL[] getURLs() {
+				return NO_URLS;
+			}
+
+		};
 	}
 
 	public CompilerConfiguration getConfiguration() {

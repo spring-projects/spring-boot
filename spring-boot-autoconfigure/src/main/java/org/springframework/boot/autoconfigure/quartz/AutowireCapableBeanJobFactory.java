@@ -26,8 +26,7 @@ import org.springframework.util.Assert;
  * Subclass of {@link SpringBeanJobFactory} that supports auto-wiring job beans.
  *
  * @author Vedran Pavic
- * @since 2.0.0
- * @see <a href="http://blog.btmatthews.com/?p=40#comment-33797"> Inject application
+ * @see <a href="http://blog.btmatthews.com/?p=40#comment-33797">Inject application
  * context dependencies in Quartz job beans</a>
  */
 class AutowireCapableBeanJobFactory extends SpringBeanJobFactory {

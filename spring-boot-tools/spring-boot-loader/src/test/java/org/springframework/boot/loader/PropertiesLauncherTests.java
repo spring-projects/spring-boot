@@ -39,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -53,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PropertiesLauncherTests {
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
@@ -61,8 +62,11 @@ public class PropertiesLauncherTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+	private ClassLoader contextClassLoader;
+
 	@Before
 	public void setup() throws IOException {
+		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		MockitoAnnotations.initMocks(this);
 		System.setProperty("loader.home",
 				new File("src/test/resources").getAbsolutePath());
@@ -70,6 +74,7 @@ public class PropertiesLauncherTests {
 
 	@After
 	public void close() {
+		Thread.currentThread().setContextClassLoader(this.contextClassLoader);
 		System.clearProperty("loader.home");
 		System.clearProperty("loader.path");
 		System.clearProperty("loader.main");
@@ -261,7 +266,7 @@ public class PropertiesLauncherTests {
 	}
 
 	private List<Archive> archives() throws Exception {
-		List<Archive> archives = new ArrayList<Archive>();
+		List<Archive> archives = new ArrayList<>();
 		String path = System.getProperty("java.class.path");
 		for (String url : path.split(File.pathSeparator)) {
 			archives.add(archive(url));

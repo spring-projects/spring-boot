@@ -75,8 +75,8 @@ public class DatabaseDriverClassNameTests {
 
 	@Test
 	public void databaseClassIsOfRequiredType() throws Exception {
-		assertThat(getInterfaceNames(this.className.replace('.', '/'))
-				.contains(this.requiredType.getName().replace('.', '/')));
+		assertThat(getInterfaceNames(this.className.replace('.', '/')))
+				.contains(this.requiredType.getName().replace('.', '/'));
 	}
 
 	private List<String> getInterfaceNames(String className) throws IOException {

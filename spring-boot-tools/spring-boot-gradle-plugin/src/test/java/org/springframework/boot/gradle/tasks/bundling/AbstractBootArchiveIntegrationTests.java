@@ -115,4 +115,10 @@ public abstract class AbstractBootArchiveIntegrationTests {
 
 	}
 
+	@Test
+	public void duplicatesAreHandledGracefully() throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName)
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
 }

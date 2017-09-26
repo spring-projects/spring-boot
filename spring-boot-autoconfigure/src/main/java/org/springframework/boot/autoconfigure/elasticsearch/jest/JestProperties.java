@@ -34,7 +34,7 @@ public class JestProperties {
 	/**
 	 * Comma-separated list of the Elasticsearch instances to use.
 	 */
-	private List<String> uris = new ArrayList<String>(
+	private List<String> uris = new ArrayList<>(
 			Collections.singletonList("http://localhost:9200"));
 
 	/**

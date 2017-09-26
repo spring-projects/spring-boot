@@ -46,12 +46,12 @@ class DataLdapTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter 
 	@Override
 	protected Filter[] getFilters(FilterType type) {
 		switch (type) {
-			case INCLUDE:
-				return this.annotation.includeFilters();
-			case EXCLUDE:
-				return this.annotation.excludeFilters();
-			default:
-				throw new IllegalStateException("Unsupported type " + type);
+		case INCLUDE:
+			return this.annotation.includeFilters();
+		case EXCLUDE:
+			return this.annotation.excludeFilters();
+		default:
+			throw new IllegalStateException("Unsupported type " + type);
 		}
 	}
 

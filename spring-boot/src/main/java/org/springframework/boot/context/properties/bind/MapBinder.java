@@ -48,7 +48,11 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	@Override
 	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder, Class<?> type) {
-		Map<Object, Object> map = CollectionFactory.createMap(type, 0);
+		Class<?> mapType = (type != null ? type
+				: ResolvableType
+						.forClassWithGenerics(Map.class, Object.class, Object.class)
+						.resolve());
+		Map<Object, Object> map = CollectionFactory.createMap(mapType, 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
@@ -103,8 +107,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 					ConfigurationPropertyName entryName = getEntryName(source, name);
 					Object key = getContext().getConversionService()
 							.convert(getKeyName(entryName), this.keyType);
-					Object value = this.elementBinder.bind(entryName, valueBindable);
-					map.putIfAbsent(key, value);
+					map.computeIfAbsent(key,
+							(k) -> this.elementBinder.bind(entryName, valueBindable));
 				}
 			}
 		}
@@ -134,7 +138,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			int start = this.root.getNumberOfElements() + 1;
 			int size = name.getNumberOfElements();
 			for (int i = start; i < size; i++) {
-				if (name.IsNumericIndex(i)) {
+				if (name.isNumericIndex(i)) {
 					return name.chop(i);
 				}
 			}

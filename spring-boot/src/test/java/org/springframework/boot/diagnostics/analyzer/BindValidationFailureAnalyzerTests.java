@@ -66,11 +66,11 @@ public class BindValidationFailureAnalyzerTests {
 		FailureAnalysis analysis = performAnalysis(
 				FieldValidationFailureConfiguration.class);
 		assertThat(analysis.getDescription())
-				.contains(failure("test.foo.foo", "null", "may not be null"));
+				.contains(failure("test.foo.foo", "null", "must not be null"));
 		assertThat(analysis.getDescription())
 				.contains(failure("test.foo.value", "0", "at least five"));
 		assertThat(analysis.getDescription())
-				.contains(failure("test.foo.nested.bar", "null", "may not be null"));
+				.contains(failure("test.foo.nested.bar", "null", "must not be null"));
 	}
 
 	@Test
@@ -93,13 +93,13 @@ public class BindValidationFailureAnalyzerTests {
 	public void otherBindExceptionShouldReturnAnalysis() throws Exception {
 		BindException cause = new BindException(new FieldValidationFailureProperties(),
 				"fieldValidationFailureProperties");
-		cause.addError(new FieldError("test", "value", "may not be null"));
+		cause.addError(new FieldError("test", "value", "must not be null"));
 		BeanCreationException rootFailure = new BeanCreationException(
 				"bean creation failure", cause);
 		FailureAnalysis analysis = new BindValidationFailureAnalyzer()
 				.analyze(rootFailure, rootFailure);
 		assertThat(analysis.getDescription())
-				.contains(failure("test.value", "null", "may not be null"));
+				.contains(failure("test.value", "null", "must not be null"));
 	}
 
 	private static String failure(String property, String value, String reason) {
@@ -135,8 +135,8 @@ public class BindValidationFailureAnalyzerTests {
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {
 			int index = pair.indexOf("=");
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
+			String key = (index > 0 ? pair.substring(0, index) : pair);
+			String value = (index > 0 ? pair.substring(index + 1) : "");
 			map.put(key.trim(), value.trim());
 		}
 		sources.addFirst(new MapPropertySource("test", map));

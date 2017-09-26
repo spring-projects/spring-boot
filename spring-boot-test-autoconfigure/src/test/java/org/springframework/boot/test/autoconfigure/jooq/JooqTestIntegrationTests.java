@@ -59,8 +59,8 @@ public class JooqTestIntegrationTests {
 
 	@Test
 	public void testDSLContext() {
-		assertThat(this.dsl.selectCount().from("INFORMATION_SCHEMA.TABLES")
-				.fetchOne(0, Integer.class)).isGreaterThan(0);
+		assertThat(this.dsl.selectCount().from("INFORMATION_SCHEMA.TABLES").fetchOne(0,
+				Integer.class)).isGreaterThan(0);
 	}
 
 	@Test

@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.SocketUtils;
 
 /**
  * Sample Application to show Tomcat running two connectors
@@ -35,11 +34,6 @@ import org.springframework.util.SocketUtils;
 public class SampleTomcatTwoConnectorsApplication {
 
 	@Bean
-	public Integer port() {
-		return SocketUtils.findAvailableTcpPort();
-	}
-
-	@Bean
 	public ServletWebServerFactory servletContainer() {
 		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
 		tomcat.addAdditionalTomcatConnectors(createStandardConnector());
@@ -48,7 +42,7 @@ public class SampleTomcatTwoConnectorsApplication {
 
 	private Connector createStandardConnector() {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-		connector.setPort(port());
+		connector.setPort(0);
 		return connector;
 	}
 

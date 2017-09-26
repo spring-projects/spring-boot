@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  * Configuration for HTTP Message converters that use Gson.
  *
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @since 1.2.2
  */
 @Configuration
@@ -41,7 +43,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(Gson.class)
-	@Conditional(PreferGsonOrMissingJacksonCondition.class)
+	@Conditional(PreferGsonOrJacksonAndJsonbUnavailableCondition.class)
 	protected static class GsonHttpMessageConverterConfiguration {
 
 		@Bean
@@ -54,19 +56,38 @@ class GsonHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class PreferGsonOrMissingJacksonCondition extends AnyNestedCondition {
+	private static class PreferGsonOrJacksonAndJsonbUnavailableCondition
+			extends AnyNestedCondition {
 
-		PreferGsonOrMissingJacksonCondition() {
+		PreferGsonOrJacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "gson", matchIfMissing = false)
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "gson")
 		static class GsonPreferred {
 
 		}
 
-		@ConditionalOnMissingBean(MappingJackson2HttpMessageConverter.class)
+		@Conditional(JacksonAndJsonbUnavailable.class)
+		static class JacksonJsonbUnavailable {
+
+		}
+
+	}
+
+	private static class JacksonAndJsonbUnavailable extends NoneNestedConditions {
+
+		JacksonAndJsonbUnavailable() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnBean(MappingJackson2HttpMessageConverter.class)
 		static class JacksonMissing {
+
+		}
+
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jsonb")
+		static class JsonbPreferred {
 
 		}
 

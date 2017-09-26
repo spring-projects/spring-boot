@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -95,7 +96,7 @@ public final class ConfigurationPropertyName
 	}
 
 	/**
-	 * Return if the an element in the name is indexed.
+	 * Return if the element in the name is indexed.
 	 * @param elementIndex the index of the element
 	 * @return {@code true} if the element is indexed
 	 */
@@ -104,11 +105,11 @@ public final class ConfigurationPropertyName
 	}
 
 	/**
-	 * Return if the an element in the name is indexed and numeric.
+	 * Return if the element in the name is indexed and numeric.
 	 * @param elementIndex the index of the element
 	 * @return {@code true} if the element is indexed and numeric
 	 */
-	public boolean IsNumericIndex(int elementIndex) {
+	public boolean isNumericIndex(int elementIndex) {
 		return isIndexed(elementIndex)
 				&& isNumeric(getElement(elementIndex, Form.ORIGINAL));
 	}
@@ -174,6 +175,7 @@ public final class ConfigurationPropertyName
 	 * value.
 	 * @param elementValue the single element value to append
 	 * @return a new {@link ConfigurationPropertyName}
+	 * @throws InvalidConfigurationPropertyNameException if elementValue is not valid
 	 */
 	public ConfigurationPropertyName append(String elementValue) {
 		if (elementValue == null) {
@@ -182,9 +184,10 @@ public final class ConfigurationPropertyName
 		process(elementValue, '.', (value, start, end, indexed) -> Assert.isTrue(
 				start == 0,
 				() -> "Element value '" + elementValue + "' must be a single item"));
-		Assert.isTrue(
-				isIndexed(elementValue) || ElementValidator.isValidElement(elementValue),
-				() -> "Element value '" + elementValue + "' is not valid");
+		if (!isIndexed(elementValue)) {
+			InvalidConfigurationPropertyNameException.throwIfHasInvalidChars(elementValue,
+					ElementValidator.getInvalidChars(elementValue));
+		}
 		int length = this.elements.length;
 		CharSequence[] elements = new CharSequence[length + 1];
 		System.arraycopy(this.elements, 0, elements, 0, length);
@@ -436,23 +439,25 @@ public final class ConfigurationPropertyName
 	 * Return a {@link ConfigurationPropertyName} for the specified string.
 	 * @param name the source name
 	 * @return a {@link ConfigurationPropertyName} instance
-	 * @throws IllegalArgumentException if the name is not valid
+	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
 	 */
 	public static ConfigurationPropertyName of(CharSequence name) {
 		Assert.notNull(name, "Name must not be null");
 		if (name.length() >= 1
 				&& (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
-			throw new IllegalArgumentException(
-					"Configuration property name '" + name + "' is not valid");
+			throw new InvalidConfigurationPropertyNameException(name,
+					Collections.singletonList('.'));
 		}
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		List<CharSequence> elements = new ArrayList<>(10);
 		process(name, '.', (elementValue, start, end, indexed) -> {
 			if (elementValue.length() > 0) {
-				Assert.isTrue(indexed || ElementValidator.isValidElement(elementValue),
-						() -> "Configuration property name '" + name + "' is not valid");
+				if (!indexed) {
+					InvalidConfigurationPropertyNameException.throwIfHasInvalidChars(name,
+							ElementValidator.getInvalidChars(elementValue));
+				}
 				elements.add(elementValue);
 			}
 		});
@@ -491,7 +496,7 @@ public final class ConfigurationPropertyName
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		List<CharSequence> elements = new ArrayList<>(10);
 		process(name, separator, (elementValue, start, end, indexed) -> {
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {
@@ -651,12 +656,18 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidElement(CharSequence elementValue) {
+			return getInvalidChars(elementValue).isEmpty();
+		}
+
+		private static List<Character> getInvalidChars(CharSequence elementValue) {
+			List<Character> chars = new ArrayList<>();
 			for (int i = 0; i < elementValue.length(); i++) {
-				if (!isValidChar(elementValue.charAt(i), i)) {
-					return false;
+				char ch = elementValue.charAt(i);
+				if (!isValidChar(ch, i)) {
+					chars.add(ch);
 				}
 			}
-			return true;
+			return chars;
 		}
 
 		public static boolean isValidChar(char ch, int index) {

@@ -29,10 +29,7 @@ public interface Libraries {
 	/**
 	 * Represents no libraries.
 	 */
-	Libraries NONE = new Libraries() {
-		@Override
-		public void doWithLibraries(LibraryCallback callback) throws IOException {
-		}
+	Libraries NONE = (callback) -> {
 	};
 
 	/**

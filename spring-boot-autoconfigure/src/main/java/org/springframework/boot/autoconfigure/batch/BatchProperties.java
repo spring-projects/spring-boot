@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -42,7 +43,10 @@ public class BatchProperties {
 	 */
 	private String tablePrefix;
 
-	private final Initializer initializer = new Initializer();
+	/**
+	 * Database schema initialization mode.
+	 */
+	private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
 	private final Job job = new Job();
 
@@ -62,36 +66,16 @@ public class BatchProperties {
 		this.tablePrefix = tablePrefix;
 	}
 
-	public Initializer getInitializer() {
-		return this.initializer;
+	public DatabaseInitializationMode getInitializeSchema() {
+		return this.initializeSchema;
+	}
+
+	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
+		this.initializeSchema = initializeSchema;
 	}
 
 	public Job getJob() {
 		return this.job;
-	}
-
-	public class Initializer {
-
-		/**
-		 * Create the required batch tables on startup if necessary. Enabled automatically
-		 * if no custom table prefix is set or if a custom schema is configured.
-		 */
-		private Boolean enabled;
-
-		public boolean isEnabled() {
-			if (this.enabled != null) {
-				return this.enabled;
-			}
-			boolean defaultTablePrefix = BatchProperties.this.getTablePrefix() == null;
-			boolean customSchema = !DEFAULT_SCHEMA_LOCATION
-					.equals(BatchProperties.this.getSchema());
-			return (defaultTablePrefix || customSchema);
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
 	}
 
 	public static class Job {

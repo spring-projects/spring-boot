@@ -38,10 +38,9 @@ import org.springframework.core.io.ClassPathResource;
 
 /**
  * Application that can be used to establish a link to remotely running Spring Boot code.
- * Allows remote debugging and remote updates (if enabled). This class should be launched
- * from within your IDE and should have the same classpath configuration as the locally
- * developed application. The remote URL of the application should be provided as a
- * non-option argument.
+ * Allows remote updates (if enabled). This class should be launched from within your IDE
+ * and should have the same classpath configuration as the locally developed application.
+ * The remote URL of the application should be provided as a non-option argument.
  *
  * @author Phillip Webb
  * @since 1.3.0

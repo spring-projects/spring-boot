@@ -40,7 +40,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	/**
 	 * The name of the {@link Configuration} that contains Spring Boot archives.
-	 *
 	 * @since 2.0.0
 	 */
 	public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
@@ -69,8 +68,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	private void verifyGradleVersion() {
-		if (GradleVersion.current().compareTo(GradleVersion.version("3.4")) < 0) {
-			throw new GradleException("Spring Boot plugin requires Gradle 3.4 or later."
+		if (GradleVersion.current().compareTo(GradleVersion.version("4.0")) < 0) {
+			throw new GradleException("Spring Boot plugin requires Gradle 4.0 or later."
 					+ " The current version is " + GradleVersion.current());
 		}
 	}
@@ -96,19 +95,19 @@ public class SpringBootPlugin implements Plugin<Project> {
 				new DependencyManagementPluginAction(), new ApplicationPluginAction());
 		for (PluginApplicationAction action : actions) {
 			project.getPlugins().withType(action.getPluginClass(),
-					plugin -> action.execute(project));
+					(plugin) -> action.execute(project));
 		}
 	}
 
 	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
 		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
-		project.getConfigurations().all(configuration -> configuration.getIncoming()
-				.afterResolve(resolvableDependencies -> unresolvedDependenciesAnalyzer
+		project.getConfigurations().all((configuration) -> configuration.getIncoming()
+				.afterResolve((resolvableDependencies) -> unresolvedDependenciesAnalyzer
 						.analyze(configuration.getResolvedConfiguration()
 								.getLenientConfiguration()
 								.getUnresolvedModuleDependencies())));
 		project.getGradle().buildFinished(
-				buildResult -> unresolvedDependenciesAnalyzer.buildFinished(project));
+				(buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
 
 }

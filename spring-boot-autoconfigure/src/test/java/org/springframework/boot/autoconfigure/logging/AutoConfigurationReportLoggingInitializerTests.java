@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +52,7 @@ import static org.junit.Assert.fail;
 public class AutoConfigurationReportLoggingInitializerTests {
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	private AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
 
@@ -62,9 +62,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		this.initializer.initialize(context);
 		context.register(Config.class);
 		context.refresh();
-		withDebugLogging(() -> {
-			this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		});
+		withDebugLogging(() -> this.initializer
+				.onApplicationEvent(new ContextRefreshedEvent(context)));
 		assertThat(this.outputCapture.toString()).contains("AUTO-CONFIGURATION REPORT");
 	}
 
@@ -78,10 +77,9 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			fail("Did not error");
 		}
 		catch (Exception ex) {
-			withDebugLogging(() -> {
-				this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-						new SpringApplication(), new String[0], context, ex));
-			});
+			withDebugLogging(
+					() -> this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+							new SpringApplication(), new String[0], context, ex)));
 		}
 		assertThat(this.outputCapture.toString()).contains("AUTO-CONFIGURATION REPORT");
 	}
@@ -112,9 +110,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		ConditionEvaluationReport.get(context.getBeanFactory())
 				.recordExclusions(Arrays.asList("com.foo.Bar"));
 		context.refresh();
-		withDebugLogging(() -> {
-			this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		});
+		withDebugLogging(() -> this.initializer
+				.onApplicationEvent(new ContextRefreshedEvent(context)));
 		assertThat(this.outputCapture.toString())
 				.contains("not a servlet web application (OnWebApplicationCondition)");
 	}

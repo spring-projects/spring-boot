@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -66,7 +67,18 @@ public abstract class AbstractDatabaseInitializer {
 		DatabasePopulatorUtils.execute(populator, this.dataSource);
 	}
 
-	protected abstract boolean isEnabled();
+	private boolean isEnabled() {
+		if (getMode() == DatabaseInitializationMode.NEVER) {
+			return false;
+		}
+		if (getMode() == DatabaseInitializationMode.EMBEDDED
+				&& !EmbeddedDatabaseConnection.isEmbedded(this.dataSource)) {
+			return false;
+		}
+		return true;
+	}
+
+	protected abstract DatabaseInitializationMode getMode();
 
 	protected abstract String getSchemaLocation();
 

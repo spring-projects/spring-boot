@@ -18,11 +18,10 @@ package org.springframework.boot.devtools.autoconfigure;
 
 import java.lang.reflect.Field;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -35,22 +34,26 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-class HateoasObjenesisCacheDisabler {
+class HateoasObjenesisCacheDisabler implements InitializingBean {
 
 	private static final Log logger = LogFactory
 			.getLog(HateoasObjenesisCacheDisabler.class);
 
 	private static boolean cacheDisabled;
 
-	@PostConstruct
-	void disableCaching() {
+	@Override
+	public void afterPropertiesSet() {
+		disableCaching();
+	}
+
+	private void disableCaching() {
 		if (!cacheDisabled) {
 			cacheDisabled = true;
 			doDisableCaching();
 		}
 	}
 
-	void doDisableCaching() {
+	private void doDisableCaching() {
 		try {
 			Class<?> type = ClassUtils.forName(
 					"org.springframework.hateoas.core.DummyInvocationUtils",

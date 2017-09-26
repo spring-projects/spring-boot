@@ -80,10 +80,7 @@ public class ClassPathChangeUploader
 		try {
 			this.uri = new URL(url).toURI();
 		}
-		catch (URISyntaxException ex) {
-			throw new IllegalArgumentException("Malformed URL '" + url + "'");
-		}
-		catch (MalformedURLException ex) {
+		catch (URISyntaxException | MalformedURLException ex) {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		this.requestFactory = requestFactory;

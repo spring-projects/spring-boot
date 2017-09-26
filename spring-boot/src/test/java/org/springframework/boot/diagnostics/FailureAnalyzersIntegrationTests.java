@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 public class FailureAnalyzersIntegrationTests {
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void analysisIsPerformed() {

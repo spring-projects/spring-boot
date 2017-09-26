@@ -32,7 +32,7 @@ import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
 /**
- * Internal {@link ConversionService} used by the {@link Binder}.
+ * {@link ConversionService} used by the {@link Binder}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

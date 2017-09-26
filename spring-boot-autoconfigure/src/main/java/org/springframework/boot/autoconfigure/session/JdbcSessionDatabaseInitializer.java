@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
@@ -30,18 +31,18 @@ import org.springframework.util.Assert;
  */
 public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer {
 
-	private final SessionProperties.Jdbc properties;
+	private final JdbcSessionProperties properties;
 
 	public JdbcSessionDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, SessionProperties properties) {
+			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
 		super(dataSource, resourceLoader);
-		Assert.notNull(properties, "SessionProperties must not be null");
-		this.properties = properties.getJdbc();
+		Assert.notNull(properties, "JdbcSessionProperties must not be null");
+		this.properties = properties;
 	}
 
 	@Override
-	protected boolean isEnabled() {
-		return this.properties.getInitializer().isEnabled();
+	protected DatabaseInitializationMode getMode() {
+		return this.properties.getInitializeSchema();
 	}
 
 	@Override

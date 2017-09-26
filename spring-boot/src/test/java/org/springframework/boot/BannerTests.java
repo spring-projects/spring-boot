@@ -27,7 +27,7 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -59,7 +59,7 @@ public class BannerTests {
 	}
 
 	@Rule
-	public InternalOutputCapture out = new InternalOutputCapture();
+	public OutputCapture out = new OutputCapture();
 
 	@Captor
 	private ArgumentCaptor<Class<?>> sourceClassCaptor;

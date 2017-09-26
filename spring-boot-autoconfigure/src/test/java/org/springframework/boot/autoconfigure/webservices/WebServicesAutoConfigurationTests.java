@@ -16,17 +16,18 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
-import org.junit.After;
-import org.junit.Rule;
+import java.util.Collection;
+
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.mock.web.MockServletContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
+import org.springframework.xml.xsd.SimpleXsdSchema;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,79 +36,81 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class WebServicesAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	private AnnotationConfigWebApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
 
 	@Test
 	public void defaultConfiguration() {
-		load(WebServicesAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(ServletRegistrationBean.class));
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Failed to bind properties under 'spring.webservices'");
-		load(WebServicesAutoConfiguration.class, "spring.webservices.path=invalid");
-	}
-
-	@Test
-	public void customPathWithTrailingSlash() {
-		load(WebServicesAutoConfiguration.class, "spring.webservices.path=/valid/");
-		ServletRegistrationBean<?> servletRegistrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
+		this.contextRunner.withPropertyValues("spring.webservices.path=invalid")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class).hasMessageContaining(
+								"Failed to bind properties under 'spring.webservices'"));
 	}
 
 	@Test
 	public void customPath() {
-		load(WebServicesAutoConfiguration.class, "spring.webservices.path=/valid");
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		ServletRegistrationBean<?> servletRegistrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
+		this.contextRunner.withPropertyValues("spring.webservices.path=/valid").run(
+				(context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
+	}
+
+	@Test
+	public void customPathWithTrailingSlash() {
+		this.contextRunner.withPropertyValues("spring.webservices.path=/valid/").run(
+				(context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
 	}
 
 	@Test
 	public void customLoadOnStartup() {
-		load(WebServicesAutoConfiguration.class,
-				"spring.webservices.servlet.load-on-startup=1");
-		ServletRegistrationBean<?> registrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(ReflectionTestUtils.getField(registrationBean, "loadOnStartup"))
-				.isEqualTo(1);
+		this.contextRunner
+				.withPropertyValues("spring.webservices.servlet.load-on-startup=1")
+				.run((context) -> {
+					ServletRegistrationBean<?> registrationBean = context
+							.getBean(ServletRegistrationBean.class);
+					assertThat(ReflectionTestUtils.getField(registrationBean,
+							"loadOnStartup")).isEqualTo(1);
+				});
 	}
 
 	@Test
 	public void customInitParameters() {
-		load(WebServicesAutoConfiguration.class,
-				"spring.webservices.servlet.init.key1=value1",
-				"spring.webservices.servlet.init.key2=value2");
-		ServletRegistrationBean<?> registrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(registrationBean.getInitParameters()).containsEntry("key1", "value1");
-		assertThat(registrationBean.getInitParameters()).containsEntry("key2", "value2");
+		this.contextRunner
+				.withPropertyValues("spring.webservices.servlet.init.key1=value1",
+						"spring.webservices.servlet.init.key2=value2")
+				.run((context) -> assertThat(
+						getServletRegistrationBean(context).getInitParameters())
+								.containsEntry("key1", "value1")
+								.containsEntry("key2", "value2"));
 	}
 
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.setServletContext(new MockServletContext());
-		TestPropertyValues.of(environment).applyTo(context);
-		context.register(config);
-		context.refresh();
-		this.context = context;
+	@Test
+	public void withWsdlBeans() {
+		this.contextRunner
+				.withPropertyValues("spring.webservices.wsdl-locations=classpath:/wsdl")
+				.run(context -> {
+					assertThat(context.getBeansOfType(SimpleWsdl11Definition.class))
+							.hasSize(1).containsKey("service");
+					assertThat(context.getBeansOfType(SimpleXsdSchema.class)).hasSize(1)
+							.containsKey("types");
+				});
+	}
+
+	private Collection<String> getUrlMappings(ApplicationContext context) {
+		return getServletRegistrationBean(context).getUrlMappings();
+	}
+
+	private ServletRegistrationBean<?> getServletRegistrationBean(
+			ApplicationContext loaded) {
+		return loaded.getBean(ServletRegistrationBean.class);
 	}
 
 }

@@ -44,29 +44,29 @@ public class BootRunIntegrationTests {
 
 	@Test
 	public void basicExecution() throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
-		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
+		copyApplication();
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("1. " + urlOf(mainJavaOutput()));
-		assertThat(result.getOutput()).contains("2. " + urlOf("build/resources/main"));
-		assertThat(result.getOutput()).doesNotContain(urlOf("src/main/resources"));
+		assertThat(result.getOutput())
+				.contains("1. " + canonicalPathOf("build/classes/java/main"));
+		assertThat(result.getOutput())
+				.contains("2. " + canonicalPathOf("build/resources/main"));
+		assertThat(result.getOutput())
+				.doesNotContain(canonicalPathOf("src/main/resources"));
 	}
 
 	@Test
 	public void sourceResourcesCanBeUsed() throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
-		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
+		copyApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("1. " + urlOf("src/main/resources"));
-		assertThat(result.getOutput()).contains("2. " + urlOf(mainJavaOutput()));
-		assertThat(result.getOutput()).doesNotContain(urlOf("build/resources/main"));
+		assertThat(result.getOutput())
+				.contains("1. " + canonicalPathOf("src/main/resources"));
+		assertThat(result.getOutput())
+				.contains("2. " + canonicalPathOf("build/classes/java/main"));
+		assertThat(result.getOutput())
+				.doesNotContain(canonicalPathOf("build/resources/main"));
 	}
 
 	@Test
@@ -79,6 +79,16 @@ public class BootRunIntegrationTests {
 	}
 
 	@Test
+	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
+		copyApplication();
+		BuildResult result = this.gradleBuild.build("echoMainClassName");
+		assertThat(result.task(":echoMainClassName").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput())
+				.contains("Main class name = com.example.BootRunApplication");
+	}
+
+	@Test
 	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoJvmArguments");
 		assertThat(result.task(":echoJvmArguments").getOutcome())
@@ -87,16 +97,15 @@ public class BootRunIntegrationTests {
 				.contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
 	}
 
-	private String mainJavaOutput() {
-		String gradleVersion = this.gradleBuild.getGradleVersion();
-		return "build/classes/"
-				+ (gradleVersion != null && gradleVersion.startsWith("4.") ? "java/" : "")
-				+ "main";
+	private void copyApplication() throws IOException {
+		File output = new File(this.gradleBuild.getProjectDir(),
+				"src/main/java/com/example");
+		output.mkdirs();
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
 	}
 
-	private String urlOf(String path) throws IOException {
-		return new File(this.gradleBuild.getProjectDir().getCanonicalFile(), path).toURI()
-				.toURL().toString();
+	private String canonicalPathOf(String path) throws IOException {
+		return new File(this.gradleBuild.getProjectDir(), path).getCanonicalPath();
 	}
 
 }

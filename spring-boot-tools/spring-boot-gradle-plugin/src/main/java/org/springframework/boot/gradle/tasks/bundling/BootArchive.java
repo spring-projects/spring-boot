@@ -67,17 +67,24 @@ public interface BootArchive extends Task {
 	void requiresUnpack(Spec<FileTreeElement> spec);
 
 	/**
-	 * Returns the {@link LaunchScriptConfiguration} that will control the script, if any,
-	 * that is prepended to the archive.
+	 * Returns the {@link LaunchScriptConfiguration} that will control the script that is
+	 * prepended to the archive.
 	 *
-	 * @return the launch script configuration
+	 * @return the launch script configuration, or {@code null} if the launch script has
+	 * not been configured.
 	 */
 	@Input
+	@Optional
 	LaunchScriptConfiguration getLaunchScript();
 
 	/**
-	 * Applies the given {@code action} to the {@link LaunchScriptConfiguration} of this
-	 * archive.
+	 * Configures the archive to have a prepended launch script.
+	 */
+	void launchScript();
+
+	/**
+	 * Configures the archive to have a prepended launch script, customizing its
+	 * configuration using the given {@code action}.
 	 *
 	 * @param action the action to apply
 	 */

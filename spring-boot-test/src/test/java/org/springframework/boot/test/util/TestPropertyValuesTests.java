@@ -30,15 +30,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestPropertyValues}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 public class TestPropertyValuesTests {
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void applyToEnvironmentShouldAttachConfigurationPropertySource() throws Exception {
+	public void applyToEnvironmentShouldAttachConfigurationPropertySource()
+			throws Exception {
 		TestPropertyValues.of("foo.bar=baz").applyTo(this.environment);
-		PropertySource<?> source = this.environment.getPropertySources().get("configurationProperties");
+		PropertySource<?> source = this.environment.getPropertySources()
+				.get("configurationProperties");
 		assertThat(source).isNotNull();
 	}
 
@@ -63,17 +66,22 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne() throws Exception {
-		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment, Type.MAP, "other");
-		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM, "other");
-		assertThat(this.environment.getPropertySources().get("other")).isInstanceOf(SystemEnvironmentPropertySource.class);
+	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne()
+			throws Exception {
+		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
+				Type.MAP, "other");
+		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM,
+				"other");
+		assertThat(this.environment.getPropertySources().get("other"))
+				.isInstanceOf(SystemEnvironmentPropertySource.class);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
 		assertThat(this.environment.getProperty("hello.world")).isNull();
 	}
 
 	@Test
 	public void applyToExistingNameAndSameTypeShouldMerge() throws Exception {
-		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment, Type.MAP);
+		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
+				Type.MAP);
 		TestPropertyValues.of("foo.bar=new").applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("new");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
@@ -81,10 +89,53 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void andShouldChainAndAddSingleKeyValue() throws Exception {
-		TestPropertyValues.of("foo.bar=baz").and("hello.world", "hi").and("bling.blah", "bing")
+		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing")
 				.applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");
 	}
+
+	@Test
+	public void applyToSystemPropertiesShouldSetSystemProperties() throws Exception {
+		TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
+			assertThat(System.getProperty("foo")).isEqualTo("bar");
+			return null;
+		});
+	}
+
+	@Test
+	public void applyToSystemPropertiesShouldRestoreSystemProperties() throws Exception {
+		System.setProperty("foo", "bar1");
+		System.clearProperty("baz");
+		try {
+			TestPropertyValues.of("foo=bar2", "baz=bing").applyToSystemProperties(() -> {
+				assertThat(System.getProperty("foo")).isEqualTo("bar2");
+				assertThat(System.getProperty("baz")).isEqualTo("bing");
+				return null;
+			});
+			assertThat(System.getProperty("foo")).isEqualTo("bar1");
+			assertThat(System.getProperties()).doesNotContainKey("baz");
+		}
+		finally {
+			System.clearProperty("foo");
+		}
+	}
+
+	@Test
+	public void applyToSystemPropertiesWhenValueIsNullShouldRemoveProperty()
+			throws Exception {
+		System.setProperty("foo", "bar1");
+		try {
+			TestPropertyValues.of("foo").applyToSystemProperties(() -> {
+				assertThat(System.getProperties()).doesNotContainKey("foo");
+				return null;
+			});
+			assertThat(System.getProperty("foo")).isEqualTo("bar1");
+		}
+		finally {
+			System.clearProperty("foo");
+		}
+	}
+
 }

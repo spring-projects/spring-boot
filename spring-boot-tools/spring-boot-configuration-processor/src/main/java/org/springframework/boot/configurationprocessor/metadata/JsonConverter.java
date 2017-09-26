@@ -67,6 +67,9 @@ class JsonConverter {
 		if (deprecation != null) {
 			jsonObject.put("deprecated", true); // backward compatibility
 			JSONObject deprecationJsonObject = new JSONObject();
+			if (deprecation.getLevel() != null) {
+				deprecationJsonObject.put("level", deprecation.getLevel());
+			}
 			if (deprecation.getReason() != null) {
 				deprecationJsonObject.put("reason", deprecation.getReason());
 			}

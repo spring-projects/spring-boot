@@ -15,8 +15,7 @@
  */
 
 /**
- * Metrics integration with Dropwizard Metrics.
+ * Actuator support for security.
  *
- * @see org.springframework.boot.actuate.metrics.rich.RichGauge
  */
 package org.springframework.boot.actuate.security;

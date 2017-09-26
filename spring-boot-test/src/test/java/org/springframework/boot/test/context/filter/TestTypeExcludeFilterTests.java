@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestTypeExcludeFilter}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class TestTypeExcludeFilterTests {
 
@@ -39,8 +40,26 @@ public class TestTypeExcludeFilterTests {
 	private MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 
 	@Test
-	public void matchesTestClass() throws Exception {
+	public void matchesJUnit4TestClass() throws Exception {
 		assertThat(this.filter.match(getMetadataReader(TestTypeExcludeFilterTests.class),
+				this.metadataReaderFactory)).isTrue();
+	}
+
+	@Test
+	public void matchesJUnitJupiterTestClass() throws Exception {
+		assertThat(this.filter.match(getMetadataReader(JupiterTestExample.class),
+				this.metadataReaderFactory)).isTrue();
+	}
+
+	@Test
+	public void matchesJUnitJupiterRepeatedTestClass() throws Exception {
+		assertThat(this.filter.match(getMetadataReader(JupiterRepeatedTestExample.class),
+				this.metadataReaderFactory)).isTrue();
+	}
+
+	@Test
+	public void matchesJUnitJupiterTestFactoryClass() throws Exception {
+		assertThat(this.filter.match(getMetadataReader(JupiterTestFactoryExample.class),
 				this.metadataReaderFactory)).isTrue();
 	}
 
@@ -55,6 +74,15 @@ public class TestTypeExcludeFilterTests {
 			throws Exception {
 		assertThat(this.filter.match(
 				getMetadataReader(AbstractTestWithConfigAndRunWith.Config.class),
+				this.metadataReaderFactory)).isTrue();
+	}
+
+	@Test
+	public void matchesNestedConfigurationClassWithoutTestMethodsIfItHasExtendWith()
+			throws Exception {
+		assertThat(this.filter.match(
+				getMetadataReader(
+						AbstractJupiterTestWithConfigAndExtendWith.Config.class),
 				this.metadataReaderFactory)).isTrue();
 	}
 

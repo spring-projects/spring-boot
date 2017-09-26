@@ -74,6 +74,27 @@ public class JavaPluginActionIntegrationTests {
 	}
 
 	@Test
+	public void javaCompileTasksUseParametersCompilerFlagByDefault() {
+		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
+				.contains("compileJava compiler args: [-parameters]")
+				.contains("compileTestJava compiler args: [-parameters]");
+	}
+
+	@Test
+	public void javaCompileTasksUseParametersAndAdditionalCompilerFlags() {
+		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
+				.contains("compileJava compiler args: [-parameters, -Xlint:all]")
+				.contains("compileTestJava compiler args: [-parameters, -Xlint:all]");
+	}
+
+	@Test
+	public void javaCompileTasksCanOverrideDefaultParametersCompilerFlag() {
+		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
+				.contains("compileJava compiler args: [-Xlint:all]")
+				.contains("compileTestJava compiler args: [-Xlint:all]");
+	}
+
+	@Test
 	public void assembleRunsBootJarAndJarIsSkipped() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

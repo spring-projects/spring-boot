@@ -316,7 +316,7 @@ public class RedisProperties {
 		/**
 		 * Shutdown timeout in milliseconds.
 		 */
-		private int shutdownTimeout = 2000;
+		private int shutdownTimeout = 100;
 
 		/**
 		 * Lettuce pool configuration.

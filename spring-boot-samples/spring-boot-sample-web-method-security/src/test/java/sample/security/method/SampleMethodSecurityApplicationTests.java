@@ -105,8 +105,10 @@ public class SampleMethodSecurityApplicationTests {
 
 	@Test
 	public void testManagementProtected() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/beans",
-				String.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		ResponseEntity<String> entity = this.restTemplate.exchange("/application/beans",
+				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
@@ -116,25 +118,9 @@ public class SampleMethodSecurityApplicationTests {
 				"admin", "admin");
 		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);
 		try {
-			ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/beans",
-					String.class);
+			ResponseEntity<String> entity = this.restTemplate
+					.getForEntity("/application/beans", String.class);
 			assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		}
-		finally {
-			this.restTemplate.getRestTemplate().getInterceptors()
-					.remove(basicAuthInterceptor);
-		}
-	}
-
-	@Test
-	public void testManagementUnauthorizedAccess() throws Exception {
-		BasicAuthorizationInterceptor basicAuthInterceptor = new BasicAuthorizationInterceptor(
-				"user", "user");
-		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);
-		try {
-			ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/beans",
-					String.class);
-			assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		}
 		finally {
 			this.restTemplate.getRestTemplate().getInterceptors()

@@ -100,19 +100,11 @@ public class AetherGrapeEngine implements GrapeEngine {
 				|| Boolean.getBoolean("groovy.grape.report.downloads")) {
 			return new DetailedProgressReporter(session, System.out);
 		}
-		else if ("none".equals(progressReporter)) {
-			return new ProgressReporter() {
-
-				@Override
-				public void finished() {
-
-				}
-
+		if ("none".equals(progressReporter)) {
+			return () -> {
 			};
 		}
-		else {
-			return new SummaryProgressReporter(session, System.out);
-		}
+		return new SummaryProgressReporter(session, System.out);
 	}
 
 	@Override
@@ -131,10 +123,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 				classLoader.addURL(file.toURI().toURL());
 			}
 		}
-		catch (ArtifactResolutionException ex) {
-			throw new DependencyResolutionFailedException(ex);
-		}
-		catch (MalformedURLException ex) {
+		catch (ArtifactResolutionException | MalformedURLException ex) {
 			throw new DependencyResolutionFailedException(ex);
 		}
 		return null;

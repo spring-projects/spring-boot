@@ -18,7 +18,6 @@ package org.springframework.boot.cli.infrastructure;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -71,14 +70,8 @@ public final class CommandLineInvoker {
 	private File findLaunchScript() throws IOException {
 		File unpacked = new File("target/unpacked-cli");
 		if (!unpacked.isDirectory()) {
-			File zip = new File("target").listFiles(new FileFilter() {
-
-				@Override
-				public boolean accept(File pathname) {
-					return pathname.getName().endsWith("-bin.zip");
-				}
-
-			})[0];
+			File zip = new File("target")
+					.listFiles((pathname) -> pathname.getName().endsWith("-bin.zip"))[0];
 			try (ZipInputStream input = new ZipInputStream(new FileInputStream(zip))) {
 				ZipEntry entry;
 				while ((entry = input.getNextEntry()) != null) {

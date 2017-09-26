@@ -26,7 +26,8 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -119,7 +120,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void redirectContextRootIsNotConfiguredByDefault() throws Exception {
-		bind(new HashMap<String, String>());
+		bind(new HashMap<>());
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getRedirectContextRoot()).isNull();
 	}
@@ -163,7 +164,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeJettyAccessLog() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.accesslog.enabled", "true");
 		map.put("server.jetty.accesslog.filename", "foo.txt");
 		map.put("server.jetty.accesslog.file-date-format", "yyyymmdd");
@@ -183,8 +184,7 @@ public class ServerPropertiesTests {
 	}
 
 	private void bind(Map<String, String> map) {
-		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
-		map.forEach(source::put);
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(map);
 		new Binder(source).bind("server", Bindable.ofInstance(this.properties));
 	}
 

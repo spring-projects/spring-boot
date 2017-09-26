@@ -18,7 +18,7 @@ include::../../../target/generated-resources/auto-configuration-classes-spring-b
 
 
 [[auto-configuration-classes-from-actuator]]
-=== From the "`spring-boot-actuator`" module
-The following auto-configuration classes are from the `spring-boot-actuator` module:
+=== From the "`spring-boot-actuator-autoconfigure`" module
+The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
 
-include::../../../target/generated-resources/auto-configuration-classes-spring-boot-actuator.adoc[]
+include::../../../target/generated-resources/auto-configuration-classes-spring-boot-actuator-autoconfigure.adoc[]

@@ -80,22 +80,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-hateoas[spring-boot-sample-hateoas]
 | RESTful API built using Spring Hateoas
 
-| link:spring-boot-sample-hypermedia[spring-boot-sample-hypermedia]
-| Demonstrates Actuator's hypermedia support, including HAL Browser
-
-| link:spring-boot-sample-hypermedia-gson[spring-boot-sample-hypermedia-gson]
-| Demonstrates Actuator's hypermedia support using GSON in place of Jackson
-
-| link:spring-boot-sample-hypermedia-jpa[spring-boot-sample-hypermedia-jpa]
-| Demonstrates Actuator's hypermedia support alongside Spring Data JPA and Spring Data
-  REST
-
-| link:spring-boot-sample-hypermedia-ui-secure[spring-boot-sample-hypermedia-ui-secure]
-| Demonstrates Actuator's hypermedia support alongside a static secure web UI
-
-| link:spring-boot-sample-hypermedia-ui[spring-boot-sample-hypermedia-ui]
-| Demonstrates Actuator's hypermedia support alongside a static web UI
-
 | link:spring-boot-sample-integration[spring-boot-sample-integration]
 | Integration application built using Spring Integration and its Java DSL
 
@@ -132,6 +116,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-jta-narayana[spring-boot-sample-jta-narayana]
 | JTA transactions with Narayana
 
+| link:spring-boot-sample-junit-jupiter[spring-boot-sample-junit-jupiter]
+| Demonstrates JUnit Jupiter-based testing
+
 | link:spring-boot-sample-liquibase[spring-boot-sample-liquibase]
 | Database migrations with Liquibase
 
@@ -159,20 +146,11 @@ The following sample applications are provided:
 | link:spring-boot-sample-secure[spring-boot-sample-secure]
 | Non-web application that uses Spring Security
 
-| link:spring-boot-sample-secure-oauth2-actuator[spring-boot-sample-secure-oauth2-actuator]
-| RESTful service secured using OAuth2 and Actuator
-
-| link:spring-boot-sample-secure-oauth2[spring-boot-sample-secure-oauth2]
-| RESTful service secured using OAuth2
-
-| link:spring-boot-sample-secure-oauth2-resource[spring-boot-sample-secure-oauth2-resource]
-| OAuth2 resource server
-
 | link:spring-boot-sample-servlet[spring-boot-sample-servlet]
 | Web application with a "raw" `Servlet` returning plain text content
 
-| link:spring-boot-sample-session-redis[spring-boot-sample-session-redis]
-| Web Application that uses Spring Session to store session data in Redis
+| link:spring-boot-sample-session[spring-boot-sample-session]
+| Web Application that uses Spring Session to manage session data
 
 | link:spring-boot-sample-simple[spring-boot-sample-simple]
 | Simple command line application
@@ -227,9 +205,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-web-secure-custom[spring-boot-sample-web-secure-custom]
 | Web application with custom Spring Security configuration
-
-| link:spring-boot-sample-web-secure-github[spring-boot-sample-web-secure-github]
-| Web application with Spring Security configured to authenticate with GitHub using OAuth2
 
 | link:spring-boot-sample-web-secure-jdbc[spring-boot-sample-web-secure-jdbc]
 | Web application with Spring Security configured to use JDBC authentication

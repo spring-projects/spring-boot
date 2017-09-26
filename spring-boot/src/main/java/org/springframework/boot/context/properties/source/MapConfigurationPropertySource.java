@@ -79,6 +79,11 @@ public class MapConfigurationPropertySource
 	}
 
 	@Override
+	public Object getUnderlyingSource() {
+		return this.source;
+	}
+
+	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
 		return this.delegate.getConfigurationProperty(name);

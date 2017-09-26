@@ -42,7 +42,7 @@ The curated list contains all the spring modules that you can use with Spring Bo
 well as a refined list of third party libraries. The list is available as a standard
 <<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>>
 that can be used with both <<using-boot-maven-parent-pom,Maven>> and
-{spring-boot-gradle-plugin}[Gradle].
+<<using-boot-gradle,Gradle>>.
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring
 Framework so we **highly** recommend you to not specify its version on your own.
@@ -61,7 +61,6 @@ defaults. The parent project provides the following features:
   `spring-boot-dependencies` POM.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
-  http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
   https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID],
   http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including
@@ -194,10 +193,12 @@ the parent.
 
 [[using-boot-gradle]]
 === Gradle
-To learn about using Spring Boot with Gradle, please refer to the
-{spring-boot-gradle-plugin}[documentation for Spring Boot's Gradle plugin].
+To learn about using Spring Boot with Gradle, please refer to the documentation for
+Spring Boot's Gradle plugin:
 
-
+* Reference ({spring-boot-gradle-plugin}/reference/html[HTML] and
+  {spring-boot-gradle-plugin}/reference/pdf/spring-boot-gradle-plugin-reference.pdf[PDF])
+* {spring-boot-gradle-plugin}/api[API]
 
 [[using-boot-ant]]
 ===  Ant
@@ -266,7 +267,6 @@ you don't want to use the `spring-boot-antlib` module.
 
 
 
-[[using-boot-starter-poms]]
 [[using-boot-starter]]
 === Starters
 Starters are a set of convenient dependency descriptors that you can include in your
@@ -356,18 +356,20 @@ Here is a typical layout:
 ----
 	com
 	 +- example
-	     +- myproject
+	     +- myapplication
 	         +- Application.java
 	         |
-	         +- domain
+	         +- customer
 	         |   +- Customer.java
+	         |   +- CustomerController.java
+	         |   +- CustomerService.java
 	         |   +- CustomerRepository.java
 	         |
-	         +- service
-	         |   +- CustomerService.java
-	         |
-	         +- web
-	             +- CustomerController.java
+	         +- order
+	             +- Order.java
+	             +- OrderController.java
+	             +- OrderService.java
+	             +- OrderRepository.java
 ----
 
 The `Application.java` file would declare the `main` method, along with the basic
@@ -375,7 +377,7 @@ The `Application.java` file would declare the `main` method, along with the basi
 
 [source,java,indent=0]
 ----
-	package com.example.myproject;
+	package com.example.myapplication;
 
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -429,7 +431,7 @@ annotation to load XML configuration files.
 [[using-boot-auto-configuration]]
 == Auto-configuration
 Spring Boot auto-configuration attempts to automatically configure your Spring
-application based on the jar dependencies that you have added. For example, If
+application based on the jar dependencies that you have added. For example, if
 `HSQLDB` is on your classpath, and you have not manually configured any database
 connection beans, then we will auto-configure an in-memory database.
 
@@ -549,7 +551,7 @@ The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 
 [source,java,indent=0]
 ----
-	package com.example.myproject;
+	package com.example.myapplication;
 
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -575,7 +577,7 @@ One of the biggest advantages of packaging your application as jar and using an 
 HTTP server is that you can run your application as you would any other. Debugging Spring
 Boot applications is also easy; you don't need any special IDE plugins or extensions.
 
-NOTE: This section only covers jar based packaging, If you choose to package your
+NOTE: This section only covers jar based packaging, if you choose to package your
 application as a war file you should refer to your server and IDE documentation.
 
 
@@ -606,7 +608,7 @@ run your application using `java -jar`. For example:
 
 [indent=0,subs="attributes"]
 ----
-	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+	$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 
 It is also possible to run a packaged application with remote debugging support enabled.
@@ -615,7 +617,7 @@ This allows you to attach a debugger to your packaged application:
 [indent=0,subs="attributes"]
 ----
 	$ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
-	       -jar target/myproject-0.0.1-SNAPSHOT.jar
+	       -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 
 
@@ -775,6 +777,10 @@ NOTE: When deciding if an entry on the classpath should trigger a restart when i
 DevTools automatically ignores projects named `spring-boot`, `spring-boot-devtools`,
 `spring-boot-autoconfigure`, `spring-boot-actuator`, and `spring-boot-starter`.
 
+NOTE: DevTools needs to customize the `ResourceLoader` used by the `ApplicationContext`:
+if your application provides one already, it is going to be wrapped. Direct override of
+the `getResource` method on the `ApplicationContext` is not supported.
+
 [[using-spring-boot-restart-vs-reload]]
 .Restart vs Reload
 ****
@@ -798,7 +804,7 @@ rewriting classes as they are loaded to make them more amenable to reloading.
 ==== Excluding resources
 Certain resources don't necessarily need to trigger a restart when they are changed. For
 example, Thymeleaf templates can just be edited in-place. By default changing resources
-in `/META-INF/maven`, `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or
+in `/META-INF/maven`, `/META-INF/resources`, `/resources`, `/static`, `/public` or
 `/templates` will not trigger a restart but will trigger a
 <<using-boot-devtools-livereload, live reload>>. If you want to customize these exclusions
 you can use the `spring.devtools.restart.exclude` property. For example, to exclude only
@@ -1038,49 +1044,6 @@ cycle.
 
 NOTE: Files are only monitored when the remote client is running. If you change a file
 before starting the remote client, it won't be pushed to the remote server.
-
-
-
-[[using-boot-devtools-remote-debugtunnel]]
-==== Remote debug tunnel
-Java remote debugging is useful when diagnosing issues on a remote application.
-Unfortunately, it's not always possible to enable remote debugging when your application
-is deployed outside of your data center. Remote debugging can also be tricky to setup if
-you are using a container based technology such as Docker.
-
-To help work around these limitations, devtools supports tunneling of remote debug traffic
-over HTTP. The remote client provides a local server on port `8000` that you can attach
-a remote debugger to. Once a connection is established, debug traffic is sent over HTTP
-to the remote application. You can use the `spring.devtools.remote.debug.local-port`
-property if you want to use a different port.
-
-You'll need to ensure that your remote application is started with remote debugging
-enabled. Often this can be achieved by configuring `JAVA_OPTS`. For example, with
-Cloud Foundry you can add the following to your `manifest.yml`:
-
-[source,yaml,indent=0]
-----
-	---
-		env:
-			JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
-----
-
-TIP: Notice that you don't need to pass an `address=NNNN` option to `-Xrunjdwp`. If
-omitted Java will simply pick a random free port.
-
-NOTE: Debugging a remote service over the Internet can be slow and you might need to
-increase timeouts in your IDE. For example, in Eclipse you can select `Java` -> `Debug`
-from `Preferences...` and change the `Debugger timeout (ms)` to a more suitable value
-(`60000` works well in most situations).
-
-WARNING: When using the remote debug tunnel with IntelliJ IDEA, all breakpoints must be
-configured to suspend the thread rather than the VM. By default, breakpoints in IntelliJ
-IDEA suspend the entire VM rather than only suspending the thread that hit the
-breakpoint. This has the unwanted side-effect of suspending the thread that manages the
-remote debug tunnel, causing your debugging session to freeze. When using the remote
-debug tunnel with IntelliJ IDEA, all breakpoints should be configured to suspend the
-thread rather than the VM. Please see
-https://youtrack.jetbrains.com/issue/IDEA-165769[IDEA-165769] for further details.
 
 
 

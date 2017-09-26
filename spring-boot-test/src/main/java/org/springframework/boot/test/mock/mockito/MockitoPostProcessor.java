@@ -61,7 +61,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -371,15 +370,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	public PropertyValues postProcessPropertyValues(PropertyValues pvs,
 			PropertyDescriptor[] pds, final Object bean, String beanName)
 					throws BeansException {
-		ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
-
-			@Override
-			public void doWith(Field field)
-					throws IllegalArgumentException, IllegalAccessException {
-				postProcessField(bean, field);
-			}
-
-		});
+		ReflectionUtils.doWithFields(bean.getClass(),
+				(field) -> postProcessField(bean, field));
 		return pvs;
 	}
 

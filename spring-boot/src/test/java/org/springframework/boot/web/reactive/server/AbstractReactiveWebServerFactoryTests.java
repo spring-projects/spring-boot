@@ -22,9 +22,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +32,6 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +50,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	protected WebServer webServer;
 
@@ -71,23 +69,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected abstract AbstractReactiveWebServerFactory getFactory();
 
 	@Test
-	public void startStopServer() {
-		this.webServer = getFactory().getWebServer(new EchoHandler());
-		this.webServer.start();
-		assertThat(this.output.toString()).contains("started on port");
-		Mono<String> result = getWebClient().post().uri("/test")
-				.contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
-				.flatMap(response -> response.bodyToMono(String.class));
-		assertThat(result.block()).isEqualTo("Hello World");
-		this.webServer.stop();
-		Mono<ClientResponse> response = getWebClient().post().uri("/test")
-				.contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange();
-		StepVerifier.create(response).expectError().verify();
-	}
-
-	@Test
 	public void specificPort() throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
@@ -97,7 +78,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Mono<String> result = WebClient.create("http://localhost:" + specificPort).post()
 				.uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
-				.flatMap(response -> response.bodyToMono(String.class));
+				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block()).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
 	}
@@ -107,11 +88,17 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected static class EchoHandler implements HttpHandler {
+
+		public EchoHandler() {
+
+		}
+
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			response.setStatusCode(HttpStatus.OK);
 			return response.writeWith(request.getBody());
 		}
+
 	}
 
 }

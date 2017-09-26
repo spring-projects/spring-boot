@@ -120,10 +120,11 @@ public class CompositeHealthIndicatorTests {
 		composite.addHealthIndicator("db", innerComposite);
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
-		assertThat(mapper.writeValueAsString(result))
-				.isEqualTo("{\"status\":\"UNKNOWN\",\"db\":{\"status\":\"UNKNOWN\""
-						+ ",\"db1\":{\"status\":\"UNKNOWN\",\"1\":\"1\"},"
-						+ "\"db2\":{\"status\":\"UNKNOWN\",\"2\":\"2\"}}}");
+		assertThat(mapper.writeValueAsString(result)).isEqualTo(
+				"{\"status\":\"UNKNOWN\",\"details\":{\"db\":{\"status\":\"UNKNOWN\""
+						+ ",\"details\":{\"db1\":{\"status\":\"UNKNOWN\",\"details\""
+						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\""
+						+ ":{\"2\":\"2\"}}}}}}");
 	}
 
 }

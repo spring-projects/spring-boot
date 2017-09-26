@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,10 +84,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 		try {
 			this.uri = new URL(url).toURI();
 		}
-		catch (URISyntaxException ex) {
-			throw new IllegalArgumentException("Malformed URL '" + url + "'");
-		}
-		catch (MalformedURLException ex) {
+		catch (URISyntaxException | MalformedURLException ex) {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		this.requestFactory = requestFactory;
@@ -193,12 +190,6 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 		private void handleResponse(ClientHttpResponse response) throws IOException {
 			if (response.getStatusCode() == HttpStatus.GONE) {
-				close();
-				return;
-			}
-			if (response.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
-				logger.warn("Remote application responded with service unavailable. Did "
-						+ "you forget to start it with remote debugging enabled?");
 				close();
 				return;
 			}

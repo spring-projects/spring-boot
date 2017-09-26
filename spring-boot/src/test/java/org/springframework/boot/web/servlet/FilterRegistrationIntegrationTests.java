@@ -21,9 +21,9 @@ import javax.servlet.Filter;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.testutil.MockFilter;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.mock.MockFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

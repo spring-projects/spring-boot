@@ -59,7 +59,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		((TemplateBasedScriptGenerator) bootStartScripts.getWindowsStartScriptGenerator())
 				.setTemplate(project.getResources().getText()
 						.fromString(loadResource("/windowsStartScript.txt")));
-		project.getConfigurations().all(configuration -> {
+		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
 				distribution.getContents()
 						.with(project.copySpec().into("lib")

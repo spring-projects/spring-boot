@@ -42,8 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to jOOQ tests.
  * <p>
- * By default, tests annotated with {@code @JooqTest} use the configured database. If
- * you want to replace any explicit or usually auto-configured DataSource by an embedded
+ * By default, tests annotated with {@code @JooqTest} use the configured database. If you
+ * want to replace any explicit or usually auto-configured DataSource by an embedded
  * in-memory database, the {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase}
  * annotation can be used to override these settings.
  *

@@ -31,15 +31,15 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} in a reactive environment configured with
- * a user-defined {@link RestTemplate} that is named {@code testRestTemplate}.
+ * Tests for {@link SpringBootTest} in a reactive environment configured with a
+ * user-defined {@link RestTemplate} that is named {@code testRestTemplate}.
  *
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.main.web-application-type=reactive", "value=123" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+		"spring.main.web-application-type=reactive", "value=123" })
 public class SpringBootTestReactiveWebEnvironmentUserDefinedTestRestTemplateTests
 		extends AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 

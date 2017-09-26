@@ -113,8 +113,10 @@ public class RabbitAutoConfiguration {
 				if (ssl.getAlgorithm() != null) {
 					factory.setSslAlgorithm(ssl.getAlgorithm());
 				}
+				factory.setKeyStoreType(ssl.getKeyStoreType());
 				factory.setKeyStore(ssl.getKeyStore());
 				factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
+				factory.setTrustStoreType(ssl.getTrustStoreType());
 				factory.setTrustStore(ssl.getTrustStore());
 				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
 			}

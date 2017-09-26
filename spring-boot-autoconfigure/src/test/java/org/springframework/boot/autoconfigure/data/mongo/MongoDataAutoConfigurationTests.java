@@ -18,17 +18,13 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.Set;
 
 import com.mongodb.Mongo;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
@@ -62,9 +58,6 @@ import static org.junit.Assert.fail;
  */
 public class MongoDataAutoConfigurationTests {
 
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
-
 	private AnnotationConfigApplicationContext context;
 
 	@After
@@ -86,7 +79,8 @@ public class MongoDataAutoConfigurationTests {
 	@Test
 	public void gridFsTemplateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.gridFsDatabase:grid");
+		TestPropertyValues.of("spring.data.mongodb.gridFsDatabase:grid")
+				.applyTo(this.context);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
@@ -136,9 +130,6 @@ public class MongoDataAutoConfigurationTests {
 			fail("Create FieldNamingStrategy interface should fail");
 		}
 		// We seem to have an inconsistent exception, accept either
-		catch (UnsatisfiedDependencyException ex) {
-			// Expected
-		}
 		catch (BeanCreationException ex) {
 			// Expected
 		}
@@ -166,13 +157,9 @@ public class MongoDataAutoConfigurationTests {
 				MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoMappingContext context = this.context.getBean(MongoMappingContext.class);
-		Optional<BasicMongoPersistentEntity<?>> entity = context
-				.getPersistentEntity(Sample.class);
-		assertThat(entity).isPresent();
-		Optional<MongoPersistentProperty> dateProperty = entity.get()
-				.getPersistentProperty("date");
-		assertThat(dateProperty).isPresent();
-		assertThat(dateProperty.get().isEntity()).isFalse();
+		BasicMongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
+		MongoPersistentProperty dateProperty = entity.getPersistentProperty("date");
+		assertThat(dateProperty.isEntity()).isFalse();
 	}
 
 	public void testFieldNamingStrategy(String strategy,

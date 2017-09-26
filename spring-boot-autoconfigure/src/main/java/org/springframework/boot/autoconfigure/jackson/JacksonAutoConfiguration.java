@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public class JacksonAutoConfiguration {
 			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
 			if (jacksonJodaFormat != null) {
 				module.addSerializer(DateTime.class,
-						new DateTimeSerializer(jacksonJodaFormat));
+						new DateTimeSerializer(jacksonJodaFormat, 0));
 			}
 			return module;
 		}
@@ -163,9 +163,7 @@ public class JacksonAutoConfiguration {
 
 		private final ApplicationContext applicationContext;
 
-		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext,
-				JacksonProperties jacksonProperties,
-				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
+		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 

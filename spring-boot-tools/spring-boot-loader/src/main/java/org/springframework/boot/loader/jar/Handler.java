@@ -71,8 +71,6 @@ public class Handler extends URLStreamHandler {
 		rootFileCache = new SoftReference<>(null);
 	}
 
-	private final Logger logger = Logger.getLogger(getClass().getName());
-
 	private final JarFile jarFile;
 
 	private URLStreamHandler fallbackHandler;
@@ -105,14 +103,26 @@ public class Handler extends URLStreamHandler {
 		}
 		catch (Exception ex) {
 			if (reason instanceof IOException) {
-				this.logger.log(Level.FINEST, "Unable to open fallback handler", ex);
+				log(false, "Unable to open fallback handler", ex);
 				throw (IOException) reason;
 			}
-			this.logger.log(Level.WARNING, "Unable to open fallback handler", ex);
+			log(true, "Unable to open fallback handler", ex);
 			if (reason instanceof RuntimeException) {
 				throw (RuntimeException) reason;
 			}
 			throw new IllegalStateException(reason);
+		}
+	}
+
+	private void log(boolean warning, String message, Exception cause) {
+		try {
+			Logger.getLogger(getClass().getName())
+					.log((warning ? Level.WARNING : Level.FINEST), message, cause);
+		}
+		catch (Exception ex) {
+			if (warning) {
+				System.err.println("WARNING: " + message);
+			}
 		}
 	}
 
@@ -193,7 +203,34 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private void setFile(URL context, String file) {
-		setURL(context, JAR_PROTOCOL, null, -1, null, null, file, null, null);
+		setURL(context, JAR_PROTOCOL, null, -1, null, null, normalize(file), null, null);
+	}
+
+	private String normalize(String file) {
+		int afterLastSeparatorIndex = file.lastIndexOf(SEPARATOR) + SEPARATOR.length();
+		String afterSeparator = file.substring(afterLastSeparatorIndex);
+		afterSeparator = replaceParentDir(afterSeparator);
+		afterSeparator = replaceCurrentDir(afterSeparator);
+		return file.substring(0, afterLastSeparatorIndex) + afterSeparator;
+	}
+
+	private String replaceParentDir(String file) {
+		int parentDirIndex;
+		while ((parentDirIndex = file.indexOf("/../")) >= 0) {
+			int precedingSlashIndex = file.lastIndexOf('/', parentDirIndex - 1);
+			if (precedingSlashIndex >= 0) {
+				file = file.substring(0, precedingSlashIndex)
+						+ file.substring(parentDirIndex + 3);
+			}
+			else {
+				file = file.substring(parentDirIndex + 4);
+			}
+		}
+		return file;
+	}
+
+	private String replaceCurrentDir(String file) {
+		return file.replace("/./", "/");
 	}
 
 	@Override

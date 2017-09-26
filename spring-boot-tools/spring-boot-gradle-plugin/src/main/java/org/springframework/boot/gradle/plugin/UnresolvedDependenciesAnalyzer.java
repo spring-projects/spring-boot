@@ -42,7 +42,7 @@ class UnresolvedDependenciesAnalyzer {
 
 	void analyze(Set<UnresolvedDependency> unresolvedDependencies) {
 		this.dependenciesWithNoVersion = unresolvedDependencies.stream()
-				.map(unresolvedDependency -> unresolvedDependency.getSelector())
+				.map((unresolvedDependency) -> unresolvedDependency.getSelector())
 				.filter(this::hasNoVersion).collect(Collectors.toSet());
 	}
 
@@ -53,7 +53,7 @@ class UnresolvedDependenciesAnalyzer {
 			message.append("\nDuring the build, one or more dependencies that were "
 					+ "declared without a version failed to resolve:\n");
 			this.dependenciesWithNoVersion.stream()
-					.forEach(dependency -> message.append("    " + dependency + "\n"));
+					.forEach((dependency) -> message.append("    " + dependency + "\n"));
 			message.append("\nDid you forget to apply the "
 					+ "io.spring.dependency-management plugin to the " + project.getName()
 					+ " project?\n");

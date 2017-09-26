@@ -24,6 +24,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -94,8 +95,8 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 
 	}
 
-	@ContextConfiguration(classes = EmptyConfig.class)
 	@DataJpaTest
+	@ContextConfiguration(classes = EmptyConfig.class)
 	@Unrelated2
 	public static class DataJpaTest2 {
 
@@ -109,8 +110,8 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 
 	}
 
-	@ContextConfiguration(classes = EmptyConfig.class)
 	@DataJpaTest
+	@ContextConfiguration(classes = EmptyConfig.class)
 	@Unrelated1
 	public static class DataJpaTest3 {
 
@@ -124,8 +125,8 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 
 	}
 
-	@ContextConfiguration(classes = EmptyConfig.class)
 	@DataJpaTest(showSql = false)
+	@ContextConfiguration(classes = EmptyConfig.class)
 	@Unrelated1
 	public static class DataJpaTest4 {
 
@@ -151,6 +152,7 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 
 	@Configuration
 	@EntityScan(basePackageClasses = ExampleEntity.class)
+	@AutoConfigurationPackage
 	static class EmptyConfig {
 
 	}

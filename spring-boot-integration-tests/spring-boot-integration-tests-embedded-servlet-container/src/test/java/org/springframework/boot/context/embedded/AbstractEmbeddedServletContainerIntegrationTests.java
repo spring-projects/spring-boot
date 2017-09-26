@@ -58,7 +58,7 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 	private static List<Object> createParameters(String packaging, String container,
 			List<Class<? extends AbstractApplicationLauncher>> applicationLaunchers) {
-		List<Object> parameters = new ArrayList<Object>();
+		List<Object> parameters = new ArrayList<>();
 		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder,
 				packaging, container);
 		for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {

@@ -47,9 +47,7 @@ public class SystemEnvironmentOrigin implements Origin {
 
 	@Override
 	public int hashCode() {
-		int result = ObjectUtils.nullSafeHashCode(this.property);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.property);
-		return result;
+		return ObjectUtils.nullSafeHashCode(this.property);
 	}
 
 	@Override

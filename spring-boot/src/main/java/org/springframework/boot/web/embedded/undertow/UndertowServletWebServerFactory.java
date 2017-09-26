@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -51,7 +50,6 @@ import javax.servlet.ServletException;
 
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
-import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;
@@ -317,8 +315,11 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
 			keyManagerFactory.init(keyStore, keyPassword);
-			return getConfigurableAliasKeyManagers(ssl,
-					keyManagerFactory.getKeyManagers());
+			if (ssl.getKeyAlias() != null) {
+				return getConfigurableAliasKeyManagers(ssl,
+						keyManagerFactory.getKeyManagers());
+			}
+			return keyManagerFactory.getKeyManagers();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -416,14 +417,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
-		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
-
-			@Override
-			public HttpHandler wrap(HttpHandler handler) {
-				return createAccessLogHandler(handler);
-			}
-
-		});
+		deploymentInfo.addInitialHandlerChainWrapper(this::createAccessLogHandler);
 	}
 
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
@@ -484,13 +478,15 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private ResourceManager getDocumentRootResourceManager() {
-		File root = getCanonicalDocumentRoot();
+		File root = getValidDocumentRoot();
+		File docBase = getCanonicalDocumentRoot(root);
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
-		List<URL> resourceJarUrls = new ArrayList<URL>();
-		List<ResourceManager> resourceManagers = new ArrayList<ResourceManager>();
-		ResourceManager rootResourceManager = root.isDirectory()
-				? new FileResourceManager(root, 0) : new JarResourceManager(root);
-		resourceManagers.add(rootResourceManager);
+		List<URL> resourceJarUrls = new ArrayList<>();
+		List<ResourceManager> resourceManagers = new ArrayList<>();
+		ResourceManager rootResourceManager = docBase.isDirectory()
+				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase);
+		resourceManagers.add(root == null ? rootResourceManager
+				: new LoaderHidingResourceManager(rootResourceManager));
 		for (URL url : metaInfResourceUrls) {
 			if ("file".equals(url.getProtocol())) {
 				File file = new File(url.getFile());
@@ -516,16 +512,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				resourceManagers.toArray(new ResourceManager[resourceManagers.size()]));
 	}
 
-	/**
-	 * Return the document root in canonical form. Undertow uses File#getCanonicalFile()
-	 * to determine whether a resource has been requested using the proper case but on
-	 * Windows {@code java.io.tmpdir} may be set as a tilde-compressed pathname.
-	 * @return the canonical document root
-	 */
-	private File getCanonicalDocumentRoot() {
+	private File getCanonicalDocumentRoot(File docBase) {
 		try {
-			File root = getValidDocumentRoot();
-			root = (root != null ? root : createTempDir("undertow-docbase"));
+			File root = docBase != null ? docBase : createTempDir("undertow-docbase");
 			return root.getCanonicalFile();
 		}
 		catch (IOException e) {
@@ -679,15 +668,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		@Override
 		public Resource getResource(String path) {
 			for (URL url : this.metaInfResourceJarUrls) {
-				try {
-					URL resourceUrl = new URL(url + "META-INF/resources" + path);
-					URLConnection connection = resourceUrl.openConnection();
-					if (connection.getContentLength() >= 0) {
-						return new URLResource(resourceUrl, connection, path);
-					}
-				}
-				catch (IOException ex) {
-					// Continue
+				URLResource resource = getMetaInfResource(url, path);
+				if (resource != null) {
+					return resource;
 				}
 			}
 			return null;
@@ -704,6 +687,21 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 		@Override
 		public void removeResourceChangeListener(ResourceChangeListener listener) {
+
+		}
+
+		private URLResource getMetaInfResource(URL resourceJar, String path) {
+			try {
+				URL resourceUrl = new URL(resourceJar + "META-INF/resources" + path);
+				URLResource resource = new URLResource(resourceUrl, path);
+				if (resource.getContentLength() < 0) {
+					return null;
+				}
+				return resource;
+			}
+			catch (MalformedURLException ex) {
+				return null;
+			}
 		}
 	}
 
@@ -788,6 +786,44 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		@Override
 		public String[] getServerAliases(String keyType, Principal[] issuers) {
 			return this.keyManager.getServerAliases(keyType, issuers);
+		}
+
+	}
+
+	private static final class LoaderHidingResourceManager implements ResourceManager {
+
+		private final ResourceManager delegate;
+
+		private LoaderHidingResourceManager(ResourceManager delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Resource getResource(String path) throws IOException {
+			if (path.startsWith("/org/springframework/boot")) {
+				return null;
+			}
+			return this.delegate.getResource(path);
+		}
+
+		@Override
+		public boolean isResourceChangeListenerSupported() {
+			return this.delegate.isResourceChangeListenerSupported();
+		}
+
+		@Override
+		public void registerResourceChangeListener(ResourceChangeListener listener) {
+			this.delegate.registerResourceChangeListener(listener);
+		}
+
+		@Override
+		public void removeResourceChangeListener(ResourceChangeListener listener) {
+			this.delegate.removeResourceChangeListener(listener);
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.delegate.close();
 		}
 
 	}

@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -40,6 +39,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.calendar.MonthlyCalendar;
 import org.quartz.impl.calendar.WeeklyCalendar;
 import org.quartz.simpl.RAMJobStore;
+import org.quartz.simpl.SimpleThreadPool;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -50,11 +50,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.scheduling.quartz.LocalTaskExecutorThreadPool;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,9 +70,6 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @author Stephane Nicoll
  */
 public class QuartzAutoConfigurationTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
@@ -107,8 +107,7 @@ public class QuartzAutoConfigurationTests {
 		load(new Class<?>[] { QuartzJobsConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class },
-				"spring.quartz.job-store-type=jdbc",
-				"spring.quartz.jdbc.initialize-schema=true");
+				"spring.quartz.job-store-type=jdbc");
 		testWithDataSource();
 	}
 
@@ -116,8 +115,7 @@ public class QuartzAutoConfigurationTests {
 	public void withDataSourceNoTransactionManager() throws Exception {
 		load(new Class<?>[] { QuartzJobsConfiguration.class,
 				EmbeddedDataSourceConfiguration.class },
-				"spring.quartz.job-store-type=jdbc",
-				"spring.quartz.jdbc.initialize-schema=true");
+				"spring.quartz.job-store-type=jdbc");
 		testWithDataSource();
 	}
 
@@ -137,6 +135,36 @@ public class QuartzAutoConfigurationTests {
 	@Test
 	public void withTaskExecutor() throws Exception {
 		load(QuartzExecutorConfiguration.class);
+		assertThat(this.context.getBeansOfType(Scheduler.class)).hasSize(1);
+		Scheduler scheduler = this.context.getBean(Scheduler.class);
+		assertThat(scheduler.getMetaData().getThreadPoolClass())
+				.isEqualTo(LocalTaskExecutorThreadPool.class);
+	}
+
+	@Test
+	public void withMultipleTaskExecutors() throws Exception {
+		load(QuartzMultipleExecutorsConfiguration.class);
+		assertThat(this.context.getBeansOfType(Executor.class)).hasSize(2);
+		assertThat(this.context.getBeansOfType(Scheduler.class)).hasSize(1);
+		Scheduler scheduler = this.context.getBean(Scheduler.class);
+		assertThat(scheduler.getMetaData().getThreadPoolClass())
+				.isEqualTo(SimpleThreadPool.class);
+	}
+
+	@Test
+	public void withMultipleTaskExecutorsWithPrimary() throws Exception {
+		load(QuartzMultipleExecutorsWithPrimaryConfiguration.class);
+		assertThat(this.context.getBeansOfType(Executor.class)).hasSize(2);
+		assertThat(this.context.getBeansOfType(Scheduler.class)).hasSize(1);
+		Scheduler scheduler = this.context.getBean(Scheduler.class);
+		assertThat(scheduler.getMetaData().getThreadPoolClass())
+				.isEqualTo(LocalTaskExecutorThreadPool.class);
+	}
+
+	@Test
+	public void withMultipleTaskExecutorsWithCustomizer() throws Exception {
+		load(QuartzMultipleExecutorsWithCustomizerConfiguration.class);
+		assertThat(this.context.getBeansOfType(Executor.class)).hasSize(3);
 		assertThat(this.context.getBeansOfType(Scheduler.class)).hasSize(1);
 		Scheduler scheduler = this.context.getBean(Scheduler.class);
 		assertThat(scheduler.getMetaData().getThreadPoolClass())
@@ -174,7 +202,7 @@ public class QuartzAutoConfigurationTests {
 
 	@Test
 	public void withCustomizer() throws Exception {
-		load(QuartzCustomConfig.class);
+		load(QuartzCustomConfiguration.class);
 		assertThat(this.context.getBeansOfType(Scheduler.class)).hasSize(1);
 		Scheduler scheduler = this.context.getBean(Scheduler.class);
 		assertThat(scheduler.getSchedulerName()).isEqualTo("fooScheduler");
@@ -199,8 +227,14 @@ public class QuartzAutoConfigurationTests {
 		this.context = ctx;
 	}
 
+	@Import(ComponentThatUsesScheduler.class)
 	@Configuration
-	protected static class QuartzJobsConfiguration {
+	protected static class BaseQuartzConfiguration {
+
+	}
+
+	@Configuration
+	protected static class QuartzJobsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public JobDetail fooJob() {
@@ -217,7 +251,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzFullConfiguration {
+	protected static class QuartzFullConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public JobDetail fooJob() {
@@ -237,7 +271,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzCalendarsConfiguration {
+	protected static class QuartzCalendarsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public Calendar weekly() {
@@ -252,7 +286,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzExecutorConfiguration {
+	protected static class QuartzExecutorConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public Executor executor() {
@@ -262,12 +296,60 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzCustomConfig {
+	protected static class QuartzMultipleExecutorsConfiguration
+			extends QuartzExecutorConfiguration {
+
+		@Bean
+		public Executor anotherExecutor() {
+			return Executors.newSingleThreadExecutor();
+		}
+
+	}
+
+	@Configuration
+	protected static class QuartzMultipleExecutorsWithPrimaryConfiguration
+			extends QuartzExecutorConfiguration {
+
+		@Bean
+		@Primary
+		public Executor primaryExecutor() {
+			return Executors.newSingleThreadExecutor();
+		}
+
+	}
+
+	@Configuration
+	protected static class QuartzMultipleExecutorsWithCustomizerConfiguration
+			extends QuartzMultipleExecutorsConfiguration {
+
+		@Bean
+		public Executor yetAnotherExecutor() {
+			return Executors.newSingleThreadExecutor();
+		}
 
 		@Bean
 		public SchedulerFactoryBeanCustomizer customizer() {
-			return schedulerFactoryBean -> schedulerFactoryBean
+			return (schedulerFactoryBean) -> schedulerFactoryBean
+					.setTaskExecutor(yetAnotherExecutor());
+		}
+
+	}
+
+	@Configuration
+	protected static class QuartzCustomConfiguration extends BaseQuartzConfiguration {
+
+		@Bean
+		public SchedulerFactoryBeanCustomizer customizer() {
+			return (schedulerFactoryBean) -> schedulerFactoryBean
 					.setSchedulerName("fooScheduler");
+		}
+
+	}
+
+	public static class ComponentThatUsesScheduler {
+
+		public ComponentThatUsesScheduler(Scheduler scheduler) {
+			Assert.notNull(scheduler, "Scheduler must not be null");
 		}
 
 	}

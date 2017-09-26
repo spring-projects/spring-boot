@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 public class EnvironmentTestUtilsTests {
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();

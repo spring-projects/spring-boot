@@ -25,9 +25,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -77,8 +78,12 @@ public class Repackager {
 	}
 
 	public Repackager(File source, LayoutFactory layoutFactory) {
-		if (source == null || !source.exists() || !source.isFile()) {
-			throw new IllegalArgumentException("Source must refer to an existing file");
+		if (source == null) {
+			throw new IllegalArgumentException("Source file must be provided");
+		}
+		if (!source.exists() || !source.isFile()) {
+			throw new IllegalArgumentException("Source must refer to an existing file, "
+					+ "got " + source.getAbsolutePath());
 		}
 		this.source = source.getAbsoluteFile();
 		this.layoutFactory = layoutFactory;
@@ -229,21 +234,16 @@ public class Repackager {
 		try (JarWriter writer = new JarWriter(destination, launchScript)) {
 			final List<Library> unpackLibraries = new ArrayList<>();
 			final List<Library> standardLibraries = new ArrayList<>();
-			libraries.doWithLibraries(new LibraryCallback() {
-
-				@Override
-				public void library(Library library) throws IOException {
-					File file = library.getFile();
-					if (isZip(file)) {
-						if (library.isUnpackRequired()) {
-							unpackLibraries.add(library);
-						}
-						else {
-							standardLibraries.add(library);
-						}
+			libraries.doWithLibraries((library) -> {
+				File file = library.getFile();
+				if (isZip(file)) {
+					if (library.isUnpackRequired()) {
+						unpackLibraries.add(library);
+					}
+					else {
+						standardLibraries.add(library);
 					}
 				}
-
 			});
 			repackage(sourceJar, writer, unpackLibraries, standardLibraries);
 		}
@@ -407,7 +407,7 @@ public class Repackager {
 		}
 
 		@Override
-		public JarEntry transform(JarEntry entry) {
+		public JarArchiveEntry transform(JarArchiveEntry entry) {
 			if (entry.getName().equals("META-INF/INDEX.LIST")) {
 				return null;
 			}
@@ -416,7 +416,8 @@ public class Repackager {
 					|| entry.getName().startsWith("BOOT-INF/")) {
 				return entry;
 			}
-			JarEntry renamedEntry = new JarEntry(this.namePrefix + entry.getName());
+			JarArchiveEntry renamedEntry = new JarArchiveEntry(
+					this.namePrefix + entry.getName());
 			renamedEntry.setTime(entry.getTime());
 			renamedEntry.setSize(entry.getSize());
 			renamedEntry.setMethod(entry.getMethod());

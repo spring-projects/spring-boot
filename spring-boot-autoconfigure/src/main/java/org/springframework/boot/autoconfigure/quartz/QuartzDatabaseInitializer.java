@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.quartz;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
@@ -40,8 +41,8 @@ public class QuartzDatabaseInitializer extends AbstractDatabaseInitializer {
 	}
 
 	@Override
-	protected boolean isEnabled() {
-		return this.properties.getJdbc().isInitializeSchema();
+	protected DatabaseInitializationMode getMode() {
+		return this.properties.getJdbc().getInitializeSchema();
 	}
 
 	@Override

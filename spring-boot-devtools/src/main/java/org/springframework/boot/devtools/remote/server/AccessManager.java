@@ -30,14 +30,7 @@ public interface AccessManager {
 	/**
 	 * {@link AccessManager} that permits all requests.
 	 */
-	AccessManager PERMIT_ALL = new AccessManager() {
-
-		@Override
-		public boolean isAllowed(ServerHttpRequest request) {
-			return true;
-		}
-
-	};
+	AccessManager PERMIT_ALL = (request) -> true;
 
 	/**
 	 * Determine if the specific request is allowed to be handled by the

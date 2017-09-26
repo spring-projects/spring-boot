@@ -29,6 +29,7 @@ import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -80,19 +81,11 @@ public class QuartzAutoConfiguration {
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers.getIfAvailable();
-		this.taskExecutor = taskExecutor.getIfAvailable();
+		this.taskExecutor = taskExecutor.getIfUnique();
 		this.jobDetails = jobDetails.getIfAvailable();
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();
 		this.applicationContext = applicationContext;
-	}
-
-	@Bean
-	@ConditionalOnSingleCandidate(DataSource.class)
-	@ConditionalOnMissingBean
-	public QuartzDatabaseInitializer quartzDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
-		return new QuartzDatabaseInitializer(dataSource, resourceLoader, this.properties);
 	}
 
 	@Bean
@@ -143,7 +136,7 @@ public class QuartzAutoConfiguration {
 		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(
 				QuartzProperties properties, DataSource dataSource,
 				ObjectProvider<PlatformTransactionManager> transactionManager) {
-			return schedulerFactoryBean -> {
+			return (schedulerFactoryBean) -> {
 				if (properties.getJobStoreType() == JobStoreType.JDBC) {
 					schedulerFactoryBean.setDataSource(dataSource);
 					PlatformTransactionManager txManager = transactionManager
@@ -153,6 +146,28 @@ public class QuartzAutoConfiguration {
 					}
 				}
 			};
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public QuartzDatabaseInitializer quartzDatabaseInitializer(DataSource dataSource,
+				ResourceLoader resourceLoader, QuartzProperties properties) {
+			return new QuartzDatabaseInitializer(dataSource, resourceLoader, properties);
+		}
+
+		@Bean
+		public static DatabaseInitializerSchedulerDependencyPostProcessor databaseInitializerSchedulerDependencyPostProcessor() {
+			return new DatabaseInitializerSchedulerDependencyPostProcessor();
+		}
+
+		private static class DatabaseInitializerSchedulerDependencyPostProcessor
+				extends AbstractDependsOnBeanFactoryPostProcessor {
+
+			DatabaseInitializerSchedulerDependencyPostProcessor() {
+				super(Scheduler.class, SchedulerFactoryBean.class,
+						"quartzDatabaseInitializer");
+			}
+
 		}
 
 	}

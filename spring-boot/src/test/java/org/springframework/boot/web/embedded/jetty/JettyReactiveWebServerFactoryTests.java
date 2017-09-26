@@ -16,20 +16,64 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
-import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
+import java.util.Arrays;
+
+import org.eclipse.jetty.server.Server;
+import org.junit.Test;
+import org.mockito.InOrder;
+
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.http.server.reactive.HttpHandler;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JettyReactiveWebServerFactory} and {@link JettyWebServer}.
  *
  * @author Brian Clozel
+ * @author Madhura Bhave
  */
 public class JettyReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
-	protected AbstractReactiveWebServerFactory getFactory() {
+	protected JettyReactiveWebServerFactory getFactory() {
 		return new JettyReactiveWebServerFactory(0);
+	}
+
+	@Test
+	public void setNullServerCustomizersShouldThrowException() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.setServerCustomizers(null);
+	}
+
+	@Test
+	public void addNullServerCustomizersShouldThrowException() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.addServerCustomizers((JettyServerCustomizer[]) null);
+	}
+
+	@Test
+	public void jettyCustomizersShouldBeInvoked() throws Exception {
+		HttpHandler handler = mock(HttpHandler.class);
+		JettyReactiveWebServerFactory factory = getFactory();
+		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
+		for (int i = 0; i < configurations.length; i++) {
+			configurations[i] = mock(JettyServerCustomizer.class);
+		}
+		factory.setServerCustomizers(Arrays.asList(configurations[0], configurations[1]));
+		factory.addServerCustomizers(configurations[2], configurations[3]);
+		this.webServer = factory.getWebServer(handler);
+		InOrder ordered = inOrder((Object[]) configurations);
+		for (JettyServerCustomizer configuration : configurations) {
+			ordered.verify(configuration).customize(any(Server.class));
+		}
 	}
 
 }

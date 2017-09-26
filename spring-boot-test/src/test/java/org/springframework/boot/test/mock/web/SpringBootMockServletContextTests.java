@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.test.mock.web;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -87,12 +86,8 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		assertThat(resource).isNotEqualTo(nullValue());
 		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
 		assertThat(file).exists().isDirectory();
-		String[] contents = file.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return !(".".equals(name) || "..".equals(name));
-			}
-		});
+		String[] contents = file
+				.list((dir, name) -> !(".".equals(name) || "..".equals(name)));
 		assertThat(contents).isNotEqualTo(nullValue());
 		assertThat(contents.length).isEqualTo(0);
 	}

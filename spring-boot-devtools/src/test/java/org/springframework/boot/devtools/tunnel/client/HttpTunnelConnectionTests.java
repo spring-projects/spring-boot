@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -59,8 +58,6 @@ public class HttpTunnelConnectionTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	private int port = SocketUtils.findAvailableTcpPort();
-
 	private String url;
 
 	private ByteArrayOutputStream incomingData;
@@ -75,7 +72,7 @@ public class HttpTunnelConnectionTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.url = "http://localhost:" + this.port;
+		this.url = "http://localhost:12345";
 		this.incomingData = new ByteArrayOutputStream();
 		this.incomingChannel = Channels.newChannel(this.incomingData);
 	}
@@ -150,22 +147,12 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void serviceUnavailableResponseLogsWarningAndClosesTunnel() throws Exception {
-		this.requestFactory.willRespond(HttpStatus.SERVICE_UNAVAILABLE);
-		TunnelChannel tunnel = openTunnel(true);
-		assertThat(tunnel.isOpen()).isFalse();
-		this.outputCapture.expect(containsString(
-				"Did you forget to start it with remote debugging enabled?"));
-	}
-
-	@Test
 	public void connectFailureLogsWarning() throws Exception {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
 		this.outputCapture.expect(containsString(
-				"Failed to connect to remote application at http://localhost:"
-						+ this.port));
+				"Failed to connect to remote application at http://localhost:12345"));
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {

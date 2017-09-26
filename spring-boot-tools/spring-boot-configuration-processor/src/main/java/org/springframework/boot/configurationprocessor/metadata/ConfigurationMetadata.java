@@ -124,6 +124,9 @@ public class ConfigurationMetadata {
 					if (deprecation.getReplacement() != null) {
 						matchingDeprecation.setReplacement(deprecation.getReplacement());
 					}
+					if (deprecation.getLevel() != null) {
+						matchingDeprecation.setLevel(deprecation.getLevel());
+					}
 				}
 			}
 		}
@@ -204,6 +207,15 @@ public class ConfigurationMetadata {
 		}
 		Collections.sort(content);
 		return content;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append(String.format("items: %n"));
+		this.items.values().forEach((itemMetadata) -> result.append("\t")
+				.append(String.format("%s%n", itemMetadata)));
+		return result.toString();
 	}
 
 }

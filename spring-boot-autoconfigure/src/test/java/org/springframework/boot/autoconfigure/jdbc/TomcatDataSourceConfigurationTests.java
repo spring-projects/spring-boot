@@ -23,12 +23,12 @@ import javax.sql.DataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -53,12 +53,7 @@ public class TomcatDataSourceConfigurationTests {
 
 	@Before
 	public void init() {
-		TestPropertyValues.of(PREFIX + "initialize:false");
-	}
-
-	@After
-	public void restore() {
-		EmbeddedDatabaseConnection.override = null;
+		TestPropertyValues.of(PREFIX + "initialize:false").applyTo(this.context);
 	}
 
 	@Test

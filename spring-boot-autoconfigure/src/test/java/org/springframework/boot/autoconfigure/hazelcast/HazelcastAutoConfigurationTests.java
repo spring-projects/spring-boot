@@ -18,12 +18,12 @@ package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
 
+import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,30 +35,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HazelcastAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void closeContext() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void defaultConfigFile() throws IOException {
-		load(); // no hazelcast-client.xml and hazelcast.xml is present in root classpath
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		assertThat(hazelcastInstance.getConfig().getConfigurationUrl())
-				.isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
-	}
-
-	private void load(String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(ctx);
-		ctx.register(HazelcastAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		// no hazelcast-client.xml and hazelcast.xml is present in root classpath
+		this.contextRunner.run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getConfigurationUrl())
+					.isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
+		});
 	}
 
 }

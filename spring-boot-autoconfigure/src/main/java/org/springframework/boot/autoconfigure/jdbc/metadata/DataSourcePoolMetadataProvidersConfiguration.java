@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
-import javax.sql.DataSource;
-
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.jdbc.metadata.CommonsDbcp2DataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,16 +43,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
-			return new DataSourcePoolMetadataProvider() {
-				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
-					if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
-						return new TomcatDataSourcePoolMetadata(
-								(org.apache.tomcat.jdbc.pool.DataSource) dataSource);
-					}
-					return null;
+			return (dataSource) -> {
+				if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
+					return new TomcatDataSourcePoolMetadata(
+							(org.apache.tomcat.jdbc.pool.DataSource) dataSource);
 				}
+				return null;
 			};
 		}
 
@@ -62,16 +60,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
-			return new DataSourcePoolMetadataProvider() {
-				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
-					if (dataSource instanceof HikariDataSource) {
-						return new HikariDataSourcePoolMetadata(
-								(HikariDataSource) dataSource);
-					}
-					return null;
+			return (dataSource) -> {
+				if (dataSource instanceof HikariDataSource) {
+					return new HikariDataSourcePoolMetadata(
+							(HikariDataSource) dataSource);
 				}
+				return null;
 			};
 		}
 
@@ -83,16 +77,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
-			return new DataSourcePoolMetadataProvider() {
-				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
-					if (dataSource instanceof BasicDataSource) {
-						return new CommonsDbcp2DataSourcePoolMetadata(
-								(BasicDataSource) dataSource);
-					}
-					return null;
+			return (dataSource) -> {
+				if (dataSource instanceof BasicDataSource) {
+					return new CommonsDbcp2DataSourcePoolMetadata(
+							(BasicDataSource) dataSource);
 				}
+				return null;
 			};
 		}
 

@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SendGridProperties {
 
 	/**
-	 * SendGrid api key. Alternative to username/password.
+	 * SendGrid API key.
 	 */
 	private String apiKey;
 

@@ -16,8 +16,8 @@
 
 package com.example;
 
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.io.File;
+import java.lang.management.ManagementFactory;
 
 /**
  * Very basic application used for testing {@code BootRun}.
@@ -32,11 +32,10 @@ public class BootRunApplication {
 
 	public static void main(String[] args) {
 		int i = 1;
-		for (URL url : ((URLClassLoader) BootRunApplication.class.getClassLoader())
-				.getURLs()) {
-			System.out.println(i++ + ". " + url);
+		for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath()
+				.split(File.pathSeparator)) {
+			System.out.println(i++ + ". " + entry);
 		}
-
 	}
 
 }

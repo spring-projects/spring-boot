@@ -16,16 +16,22 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.util.Collections;
-
 import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.redis.RedisTestServer;
+import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.rule.RedisTestServer;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisFlushMode;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.hazelcast.HazelcastSessionRepository;
+import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,33 +46,50 @@ public class SessionAutoConfigurationRedisTests
 	@Rule
 	public final RedisTestServer redis = new RedisTestServer();
 
+	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
+
 	@Test
-	public void redisSessionStore() {
-		load(Collections.<Class<?>>singletonList(RedisAutoConfiguration.class),
-				"spring.session.store-type=redis");
-		validateSpringSessionUsesRedis();
+	public void defaultConfig() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
+						RedisFlushMode.ON_SAVE));
 	}
 
-	private void validateSpringSessionUsesRedis() {
-		RedisOperationsSessionRepository repository = validateSessionRepository(
-				RedisOperationsSessionRepository.class);
-		assertThat(repository.getSessionCreatedChannelPrefix())
-				.isEqualTo("spring:session:event:created:");
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("redisFlushMode"))
-				.isEqualTo(RedisFlushMode.ON_SAVE);
+	@Test
+	public void defaultConfigWithUniqueStoreImplementation() {
+		this.contextRunner
+				.withClassLoader(
+						new HideClassesClassLoader(HazelcastSessionRepository.class,
+								JdbcOperationsSessionRepository.class,
+								MongoOperationsSessionRepository.class))
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
+						RedisFlushMode.ON_SAVE));
 	}
 
 	@Test
 	public void redisSessionStoreWithCustomizations() {
-		load(Collections.<Class<?>>singletonList(RedisAutoConfiguration.class),
-				"spring.session.store-type=redis", "spring.session.redis.namespace=foo",
-				"spring.session.redis.flush-mode=immediate");
-		RedisOperationsSessionRepository repository = validateSessionRepository(
-				RedisOperationsSessionRepository.class);
-		assertThat(repository.getSessionCreatedChannelPrefix())
-				.isEqualTo("spring:session:foo:event:created:");
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("redisFlushMode"))
-				.isEqualTo(RedisFlushMode.IMMEDIATE);
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=redis",
+						"spring.session.redis.namespace=foo",
+						"spring.session.redis.flush-mode=immediate")
+				.run(validateSpringSessionUsesRedis("spring:session:foo:event:created:",
+						RedisFlushMode.IMMEDIATE));
+	}
+
+	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
+			String sessionCreatedChannelPrefix, RedisFlushMode flushMode) {
+		return (context) -> {
+			RedisOperationsSessionRepository repository = validateSessionRepository(
+					context, RedisOperationsSessionRepository.class);
+			assertThat(repository.getSessionCreatedChannelPrefix())
+					.isEqualTo(sessionCreatedChannelPrefix);
+			assertThat(new DirectFieldAccessor(repository)
+					.getPropertyValue("redisFlushMode")).isEqualTo(flushMode);
+		};
 	}
 
 }

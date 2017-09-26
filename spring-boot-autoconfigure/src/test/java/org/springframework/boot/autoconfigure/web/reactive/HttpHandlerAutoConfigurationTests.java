@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -37,36 +35,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class HttpHandlerAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	private GenericReactiveWebApplicationContext context;
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class));
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {
-		load(CustomHttpHandler.class);
-		assertThat(this.context.getBeansOfType(HttpHandler.class)).hasSize(1);
-		assertThat(this.context.getBean(HttpHandler.class))
-				.isSameAs(this.context.getBean("customHttpHandler"));
+		this.contextRunner.withUserConfiguration(CustomHttpHandler.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HttpHandler.class);
+					assertThat(context).getBean(HttpHandler.class)
+							.isSameAs(context.getBean("customHttpHandler"));
+				});
 	}
 
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
-		load(WebFluxAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		this.context = new GenericReactiveWebApplicationContext();
-		TestPropertyValues.of(environment).applyTo(this.context);
-		if (this.context != null) {
-			this.context.register(config);
-		}
-		this.context.register(HttpHandlerAutoConfiguration.class);
-		this.context.refresh();
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(HttpHandler.class));
 	}
 
 	@Configuration

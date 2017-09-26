@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileSystemUtils;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -157,9 +156,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	private void assertVersionConfiguration(String configuredVersion,
 			String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
-		int mongoPort = SocketUtils.findAvailableTcpPort();
-		TestPropertyValues.of("spring.data.mongodb.port=" + mongoPort)
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.data.mongodb.port=0").applyTo(this.context);
 		if (configuredVersion != null) {
 			TestPropertyValues.of("spring.mongodb.embedded.version=" + configuredVersion)
 					.applyTo(this.context);

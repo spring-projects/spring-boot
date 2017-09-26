@@ -167,15 +167,10 @@ public class Restarter {
 
 	private void immediateRestart() {
 		try {
-			getLeakSafeThread().callAndWait(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {
-					start(FailureHandler.NONE);
-					cleanupCaches();
-					return null;
-				}
-
+			getLeakSafeThread().callAndWait(() -> {
+				start(FailureHandler.NONE);
+				cleanupCaches();
+				return null;
 			});
 		}
 		catch (Exception ex) {
@@ -251,15 +246,10 @@ public class Restarter {
 			return;
 		}
 		this.logger.debug("Restarting application");
-		getLeakSafeThread().call(new Callable<Void>() {
-
-			@Override
-			public Void call() throws Exception {
-				Restarter.this.stop();
-				Restarter.this.start(failureHandler);
-				return null;
-			}
-
+		getLeakSafeThread().call(() -> {
+			Restarter.this.stop();
+			Restarter.this.start(failureHandler);
+			return null;
 		});
 	}
 
@@ -641,15 +631,10 @@ public class Restarter {
 
 		@Override
 		public Thread newThread(final Runnable runnable) {
-			return getLeakSafeThread().callAndWait(new Callable<Thread>() {
-
-				@Override
-				public Thread call() throws Exception {
-					Thread thread = new Thread(runnable);
-					thread.setContextClassLoader(Restarter.this.applicationClassLoader);
-					return thread;
-				}
-
+			return getLeakSafeThread().callAndWait(() -> {
+				Thread thread = new Thread(runnable);
+				thread.setContextClassLoader(Restarter.this.applicationClassLoader);
+				return thread;
 			});
 		}
 

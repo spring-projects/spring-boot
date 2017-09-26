@@ -62,6 +62,10 @@ public final class Metadata {
 		return new MetadataItemCondition(ItemType.PROPERTY, name).ofType(type);
 	}
 
+	public static Metadata.MetadataItemCondition withEnabledFlag(String key) {
+		return withProperty(key).ofType(Boolean.class);
+	}
+
 	public static MetadataHintCondition withHint(String name) {
 		return new MetadataHintCondition(name);
 	}
@@ -147,6 +151,9 @@ public final class Metadata {
 					.nullSafeEquals(this.defaultValue, itemMetadata.getDefaultValue())) {
 				return false;
 			}
+			if (this.defaultValue == null && itemMetadata.getDefaultValue() != null) {
+				return false;
+			}
 			if (this.description != null
 					&& !this.description.equals(itemMetadata.getDescription())) {
 				return false;
@@ -198,9 +205,14 @@ public final class Metadata {
 		}
 
 		public MetadataItemCondition withDeprecation(String reason, String replacement) {
+			return withDeprecation(reason, replacement, null);
+		}
+
+		public MetadataItemCondition withDeprecation(String reason, String replacement,
+				String level) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type,
 					this.sourceType, this.sourceMethod, this.description,
-					this.defaultValue, new ItemDeprecation(reason, replacement));
+					this.defaultValue, new ItemDeprecation(reason, replacement, level));
 		}
 
 		public MetadataItemCondition withNoDeprecation() {

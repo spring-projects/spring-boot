@@ -24,6 +24,7 @@ package org.springframework.boot.origin;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface OriginLookup<K> {
 
 	/**

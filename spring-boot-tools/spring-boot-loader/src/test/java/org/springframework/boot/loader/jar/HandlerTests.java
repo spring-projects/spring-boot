@@ -136,6 +136,36 @@ public class HandlerTests {
 								new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")));
 	}
 
+	@Test
+	public void urlWithSpecReferencingParentDirectory() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual(
+				"file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
+				"../folderB/b.xsd");
+	}
+
+	@Test
+	public void urlWithSpecReferencingAncestorDirectoryOutsideJarStopsAtJarRoot()
+			throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual(
+				"file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
+				"../../../../../../folderB/b.xsd");
+	}
+
+	@Test
+	public void urlWithSpecReferencingCurrentDirectory() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual(
+				"file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
+				"./folderB/./b.xsd");
+	}
+
+	private void assertStandardAndCustomHandlerUrlsAreEqual(String context, String spec)
+			throws MalformedURLException {
+		URL standardUrl = new URL(new URL("jar:" + context), spec);
+		URL customHandlerUrl = new URL(new URL("jar", null, -1, context, this.handler),
+				spec);
+		assertThat(customHandlerUrl.toString()).isEqualTo(standardUrl.toString());
+	}
+
 	private URL createUrl(String file) throws MalformedURLException {
 		return new URL("jar", null, -1, file, this.handler);
 	}

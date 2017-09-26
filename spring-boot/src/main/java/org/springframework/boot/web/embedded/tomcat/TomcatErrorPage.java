@@ -58,10 +58,7 @@ class TomcatErrorPage {
 						.instantiateClass(ClassUtils.forName(ERROR_PAGE_CLASS, null));
 			}
 		}
-		catch (ClassNotFoundException ex) {
-			// Swallow and continue
-		}
-		catch (LinkageError ex) {
+		catch (ClassNotFoundException | LinkageError ex) {
 			// Swallow and continue
 		}
 		return null;

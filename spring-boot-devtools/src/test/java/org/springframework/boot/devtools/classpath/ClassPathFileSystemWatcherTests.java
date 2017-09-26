@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.context.ApplicationListener;
@@ -113,14 +112,7 @@ public class ClassPathFileSystemWatcherTests {
 
 		@Bean
 		public ClassPathRestartStrategy restartStrategy() {
-			return new ClassPathRestartStrategy() {
-
-				@Override
-				public boolean isRestartRequired(ChangedFile file) {
-					return false;
-				}
-
-			};
+			return (file) -> false;
 		}
 
 		@Bean

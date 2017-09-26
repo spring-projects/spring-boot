@@ -16,81 +16,120 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.util.Assert;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.ReflectionException;
+
+import reactor.core.publisher.Mono;
+
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
- * Base for adapters that convert {@link Endpoint} implementations to {@link JmxEndpoint}.
+ * A {@link DynamicMBean} that invokes operations on an {@link EndpointInfo endpoint}.
  *
- * @author Christian Dupuis
+ * @author Stephane Nicoll
  * @author Andy Wilkinson
- * @author Vedran Pavic
- * @author Phillip Webb
- * @see JmxEndpoint
- * @see DataEndpointMBean
+ * @since 2.0.0
+ * @see EndpointMBeanInfoAssembler
  */
-public abstract class EndpointMBean implements JmxEndpoint {
+public class EndpointMBean implements DynamicMBean {
 
-	private final DataConverter dataConverter;
+	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent(
+			"reactor.core.publisher.Mono", EndpointMBean.class.getClassLoader());
 
-	private final Endpoint<?> endpoint;
+	private final Function<Object, Object> operationResponseConverter;
 
-	/**
-	 * Create a new {@link EndpointMBean} instance.
-	 * @param beanName the bean name
-	 * @param endpoint the endpoint to wrap
-	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
-	 */
-	public EndpointMBean(String beanName, Endpoint<?> endpoint,
-			ObjectMapper objectMapper) {
-		this.dataConverter = new DataConverter(objectMapper);
-		Assert.notNull(beanName, "BeanName must not be null");
-		Assert.notNull(endpoint, "Endpoint must not be null");
-		this.endpoint = endpoint;
-	}
+	private final EndpointMBeanInfo endpointInfo;
 
-	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
-	public String getEndpointClass() {
-		return ClassUtils.getQualifiedName(getEndpointType());
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return this.endpoint.isEnabled();
-	}
-
-	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
-	public boolean isSensitive() {
-		return this.endpoint.isSensitive();
-	}
-
-	@Override
-	public String getIdentity() {
-		return ObjectUtils.getIdentityHexString(getEndpoint());
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return getEndpoint().getClass();
-	}
-
-	public Endpoint<?> getEndpoint() {
-		return this.endpoint;
+	EndpointMBean(Function<Object, Object> operationResponseConverter,
+			EndpointMBeanInfo endpointInfo) {
+		this.operationResponseConverter = operationResponseConverter;
+		this.endpointInfo = endpointInfo;
 	}
 
 	/**
-	 * Convert the given data into JSON.
-	 * @param data the source data
-	 * @return the JSON representation
+	 * Return the id of the related endpoint.
+	 * @return the endpoint id
 	 */
-	protected Object convert(Object data) {
-		return this.dataConverter.convert(data);
+	public String getEndpointId() {
+		return this.endpointInfo.getEndpointId();
+	}
+
+	@Override
+	public MBeanInfo getMBeanInfo() {
+		return this.endpointInfo.getMbeanInfo();
+	}
+
+	@Override
+	public Object invoke(String actionName, Object[] params, String[] signature)
+			throws MBeanException, ReflectionException {
+		JmxEndpointOperation operation = this.endpointInfo.getOperations()
+				.get(actionName);
+		if (operation != null) {
+			Map<String, Object> arguments = getArguments(params,
+					operation.getParameters());
+			Object result = operation.getInvoker().invoke(arguments);
+			if (REACTOR_PRESENT) {
+				result = ReactiveHandler.handle(result);
+			}
+			return this.operationResponseConverter.apply(result);
+		}
+		throw new ReflectionException(new IllegalArgumentException(
+				String.format("Endpoint with id '%s' has no operation named %s",
+						this.endpointInfo.getEndpointId(), actionName)));
+	}
+
+	private Map<String, Object> getArguments(Object[] params,
+			List<JmxEndpointOperationParameterInfo> parameters) {
+		Map<String, Object> arguments = new HashMap<>();
+		for (int i = 0; i < params.length; i++) {
+			arguments.put(parameters.get(i).getName(), params[i]);
+		}
+		return arguments;
+	}
+
+	@Override
+	public Object getAttribute(String attribute)
+			throws AttributeNotFoundException, MBeanException, ReflectionException {
+		throw new AttributeNotFoundException();
+	}
+
+	@Override
+	public void setAttribute(Attribute attribute) throws AttributeNotFoundException,
+			InvalidAttributeValueException, MBeanException, ReflectionException {
+		throw new AttributeNotFoundException();
+	}
+
+	@Override
+	public AttributeList getAttributes(String[] attributes) {
+		return new AttributeList();
+	}
+
+	@Override
+	public AttributeList setAttributes(AttributeList attributes) {
+		return new AttributeList();
+	}
+
+	private static class ReactiveHandler {
+
+		public static Object handle(Object result) {
+			if (result instanceof Mono) {
+				return ((Mono<?>) result).block();
+			}
+			return result;
+		}
+
 	}
 
 }

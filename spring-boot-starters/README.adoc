@@ -8,14 +8,14 @@ JPA for database access just include the `spring-boot-starter-data-jpa` dependen
 your project, and you are good to go.
 
 For complete details see the
-http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter-poms[reference documentation]
+http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
 
 == Community Contributions
 If you create a starter for a technology that is not already in the standard list we can
 list it here. Just send a pull request for this page.
 
 WARNING: While the
-http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter-poms[reference documentation]
+http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
 mentions that 3rd party starters should not start with `spring-boot`, some starters
 do as they were designed before this was clarified.
 
@@ -28,8 +28,17 @@ do as they were designed before this was clarified.
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
 | https://github.com/apache/cxf
 
+| https://qpid.apache.org/components/jms/[Apache Qpid]
+| https://github.com/amqphub/amqp-10-jms-spring-boot
+
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
+
+| https://azure.microsoft.com/[Azure]
+| https://github.com/Microsoft/azure-spring-boot-starters
+
+| https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
+| https://github.com/MarcGiffing/bucket4j-spring-boot-starter
 
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
@@ -40,17 +49,32 @@ do as they were designed before this was clarified.
 | Charon reverse proxy
 | https://github.com/mkopylec/charon-spring-boot-starter
 
+| https://citrusframework.org/[Citrus] simulator
+| https://github.com/christophd/citrus-simulator
+
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
 
 | http://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
+| DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
+| https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
+
+| ErroREST exception handler
+| https://github.com/mkopylec/errorest-spring-boot-starter
+
 | http://ff4j.org/[Feature Flipping For Java (FF4J)]
 | https://github.com/clun/ff4j/
 
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
+
+| http://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
+| https://github.com/graphql-java/graphql-spring-boot
+
+| http://graphql.org/[GraphQL]
+| https://github.com/merapar/graphql-spring-boot-starter
 
 | http://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
@@ -64,6 +88,9 @@ do as they were designed before this was clarified.
 | http://hdiv.org/[HDIV]
 | https://github.com/hdiv/spring-boot-starter-hdiv
 
+| Hiatus for Spring Boot
+| https://github.com/jihor/hiatus-spring-boot
+
 | http://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
@@ -75,6 +102,9 @@ do as they were designed before this was clarified.
 
 | http://log4jdbc.brunorozendo.com/[Log4jdbc]
 | https://github.com/candrews/log4jdbc-spring-boot-starter
+
+| https://logback.qos.ch/access.html[Logback-access]
+| https://github.com/akihyro/logback-access-spring-boot-starter
 
 | https://github.com/membrane/service-proxy[Membrane Service Proxy]
 | https://github.com/membrane/membrane-spring-boot-starter
@@ -97,6 +127,9 @@ do as they were designed before this was clarified.
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
+| http://orika-mapper.github.io/orika-docs/[Orika]
+| https://github.com/akihyro/orika-spring-boot-starter
+
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
@@ -106,11 +139,11 @@ do as they were designed before this was clarified.
 | http://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
-| https://github.com/oembedler/spring-graphql-common[Spring GraphQL] (GraphQL and GraphiQL)
-| https://github.com/oembedler/graphql-spring-boot
-
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
+
+| https://github.com/StripesFramework/stripes[Stripes]
+| https://github.com/juanpablo-santos/stripes-spring-boot
 
 | http://teiid.org/[Teiid]
 | https://github.com/teiid/teiid-spring-boot

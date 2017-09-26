@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,15 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  * well as inner-classes of tests.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class TestTypeExcludeFilter extends TypeExcludeFilter {
 
-	private static final String[] CLASS_ANNOTATIONS = { "org.junit.runner.RunWith" };
+	private static final String[] CLASS_ANNOTATIONS = { "org.junit.runner.RunWith",
+			"org.junit.jupiter.api.extension.ExtendWith" };
 
-	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test" };
+	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test",
+			"org.junit.platform.commons.annotation.Testable", };
 
 	@Override
 	public boolean match(MetadataReader metadataReader,

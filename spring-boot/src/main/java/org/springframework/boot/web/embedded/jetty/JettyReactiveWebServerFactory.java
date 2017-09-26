@@ -17,6 +17,10 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +38,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
+import org.springframework.util.Assert;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link JettyWebServer}s.
@@ -55,6 +60,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * The number of selector threads to use.
 	 */
 	private int selectors = -1;
+
+	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
 
 	private ThreadPool threadPool;
 
@@ -90,6 +97,9 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
 				false, false);
 		contextHandler.addServlet(servletHolder, "/");
+		for (JettyServerCustomizer customizer : getServerCustomizers()) {
+			customizer.customize(server);
+		}
 		JettyReactiveWebServerFactory.logger
 				.info("Server initialized with port: " + port);
 		return server;
@@ -132,6 +142,36 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void setAcceptors(int acceptors) {
 		this.acceptors = acceptors;
+	}
+
+	/**
+	 * Sets {@link JettyServerCustomizer}s that will be applied to the {@link Server}
+	 * before it is started. Calling this method will replace any existing customizers.
+	 * @param customizers the Jetty customizers to apply
+	 */
+	public void setServerCustomizers(
+			Collection<? extends JettyServerCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.jettyServerCustomizers = new ArrayList<>(customizers);
+	}
+
+	/**
+	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
+	 * applied to the {@link Server} before it is created.
+	 * @return the Jetty customizers
+	 */
+	public Collection<JettyServerCustomizer> getServerCustomizers() {
+		return this.jettyServerCustomizers;
+	}
+
+	/**
+	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}
+	 * before it is started.
+	 * @param customizers the customizers to add
+	 */
+	public void addServerCustomizers(JettyServerCustomizer... customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	/**

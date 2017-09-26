@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.security.SecurityAuthorizeMode;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -79,7 +78,6 @@ public class H2ConsoleAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 	@ConditionalOnBean(ObjectPostProcessor.class)
-	@EnableConfigurationProperties(SecurityProperties.class)
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	static class H2ConsoleSecurityConfiguration {
 
@@ -95,9 +93,6 @@ public class H2ConsoleAutoConfiguration {
 			@Autowired
 			private H2ConsoleProperties console;
 
-			@Autowired
-			private SecurityProperties security;
-
 			@Override
 			public void configure(HttpSecurity http) throws Exception {
 				String path = this.console.getPath();
@@ -106,14 +101,7 @@ public class H2ConsoleAutoConfiguration {
 				h2Console.csrf().disable();
 				h2Console.httpBasic();
 				h2Console.headers().frameOptions().sameOrigin();
-				String[] roles = this.security.getUser().getRole().toArray(new String[0]);
-				SecurityAuthorizeMode mode = this.security.getBasic().getAuthorizeMode();
-				if (mode == null || mode == SecurityAuthorizeMode.ROLE) {
-					http.authorizeRequests().anyRequest().hasAnyRole(roles);
-				}
-				else if (mode == SecurityAuthorizeMode.AUTHENTICATED) {
-					http.authorizeRequests().anyRequest().authenticated();
-				}
+				http.authorizeRequests().anyRequest().authenticated();
 			}
 
 		}

@@ -84,7 +84,7 @@ public class WebMvcProperties {
 	private boolean logResolvedException = false;
 
 	/**
-	 * Maps file extensions to media types for content negotiation, e.g. yml->text/yaml.
+	 * Maps file extensions to media types for content negotiation, e.g. yml to text/yaml.
 	 */
 	private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
 

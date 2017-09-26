@@ -18,6 +18,7 @@ package org.springframework.boot.context.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -42,8 +43,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -51,13 +50,17 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -87,7 +90,7 @@ public class LoggingApplicationListenerTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
@@ -110,7 +113,9 @@ public class LoggingApplicationListenerTests {
 
 	@After
 	public void clear() {
-		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
+		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
+		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
+		loggingSystem.cleanUp();
 		System.clearProperty(LoggingSystem.class.getName());
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
@@ -520,6 +525,21 @@ public class LoggingApplicationListenerTests {
 		assertThat(loggingSystem.cleanedUp).isTrue();
 	}
 
+	@Test
+	public void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig()
+			throws Exception {
+		MutablePropertySources propertySources = this.context.getEnvironment()
+				.getPropertySources();
+		propertySources.addFirst(new MapPropertySource("test1",
+				Collections.singletonMap("logging.level.ROOT", "DEBUG")));
+		propertySources.addLast(new MapPropertySource("test2",
+				Collections.singletonMap("logging.level.root", "WARN")));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
+	}
+
 	private void multicastEvent(ApplicationEvent event) {
 		multicastEvent(this.initializer, event);
 	}
@@ -582,14 +602,7 @@ public class LoggingApplicationListenerTests {
 
 		@Override
 		public Runnable getShutdownHandler() {
-			return new Runnable() {
-
-				@Override
-				public void run() {
-					TestShutdownHandlerLoggingSystem.shutdownLatch.countDown();
-				}
-
-			};
+			return () -> TestShutdownHandlerLoggingSystem.shutdownLatch.countDown();
 		}
 
 	}

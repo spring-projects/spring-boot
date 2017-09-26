@@ -48,13 +48,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -75,7 +74,7 @@ public class TomcatServletWebServerFactoryTests
 		extends AbstractServletWebServerFactoryTests {
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Override
 	protected TomcatServletWebServerFactory getFactory() {
@@ -92,7 +91,7 @@ public class TomcatServletWebServerFactoryTests
 	public void tomcatEngineNames() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
-		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+		factory.setPort(0);
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
 		// Make sure that the names are different
 		String firstName = ((TomcatWebServer) this.webServer).getTomcat().getEngine()
@@ -317,24 +316,17 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
-		doWithBlockedPort(new BlockedPortAction() {
-
-			@Override
-			public void run(int port) {
-				TomcatServletWebServerFactory factory = getFactory();
-				factory.setPort(port);
-
-				try {
-					TomcatServletWebServerFactoryTests.this.webServer = factory
-							.getWebServer();
-					TomcatServletWebServerFactoryTests.this.webServer.start();
-					fail();
-				}
-				catch (WebServerException ex) {
-					// Ignore
-				}
+		doWithBlockedPort((port) -> {
+			TomcatServletWebServerFactory factory = getFactory();
+			factory.setPort(port);
+			try {
+				this.webServer = factory.getWebServer();
+				this.webServer.start();
+				fail();
 			}
-
+			catch (WebServerException ex) {
+				// Ignore
+			}
 		});
 	}
 

@@ -17,9 +17,13 @@
 package org.springframework.boot;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -30,6 +34,10 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  */
 public class ApplicationPid {
+
+	private static final PosixFilePermission[] WRITE_PERMISSIONS = {
+			PosixFilePermission.OWNER_WRITE, PosixFilePermission.GROUP_WRITE,
+			PosixFilePermission.OTHERS_WRITE };
 
 	private final String pid;
 
@@ -81,6 +89,7 @@ public class ApplicationPid {
 	public void write(File file) throws IOException {
 		Assert.state(this.pid != null, "No PID available");
 		createParentFolder(file);
+		assertCanWrite(file);
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.append(this.pid);
 		}
@@ -90,6 +99,29 @@ public class ApplicationPid {
 		File parent = file.getParentFile();
 		if (parent != null) {
 			parent.mkdirs();
+		}
+	}
+
+	private void assertCanWrite(File file) throws IOException {
+		if (!file.canWrite() || !canWritePosixFile(file)) {
+			throw new FileNotFoundException(file.toString() + " (permission denied)");
+		}
+	}
+
+	private boolean canWritePosixFile(File file) throws IOException {
+		try {
+			Set<PosixFilePermission> permissions = Files
+					.getPosixFilePermissions(file.toPath());
+			for (PosixFilePermission permission : WRITE_PERMISSIONS) {
+				if (permissions.contains(permission)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		catch (UnsupportedOperationException ex) {
+			// Assume that we can
+			return true;
 		}
 	}
 

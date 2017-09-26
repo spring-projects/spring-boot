@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  * <p>
  * List shortcuts (names that end with double underscore) are also supported by this
  * mapper. For example, "{@code MY_LIST__=a,b,c}" is mapped to "{@code my.list[0]=a}",
- * "{@code my.list[1]=b}" ,"{@code my.list[2]=c}".
+ * "{@code my.list[1]=b}", "{@code my.list[2]=c}".
  *
  * @author Phillip Webb
  * @author Madhura Bhave

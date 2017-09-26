@@ -35,8 +35,8 @@ import org.springframework.test.context.BootstrapWith;
 
 /**
  * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical LDAP test. Can be used when a test focuses <strong>only</strong> on
- * LDAP components.
+ * for a typical LDAP test. Can be used when a test focuses <strong>only</strong> on LDAP
+ * components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to LDAP tests.

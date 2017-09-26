@@ -49,6 +49,7 @@
 		<module>spring-boot-starter-jersey</module>
 		<module>spring-boot-starter-jetty</module>
 		<module>spring-boot-starter-jooq</module>
+		<module>spring-boot-starter-json</module>
 		<module>spring-boot-starter-jta-atomikos</module>
 		<module>spring-boot-starter-jta-bitronix</module>
 		<module>spring-boot-starter-jta-narayana</module>
@@ -92,6 +93,7 @@
 								<bannedDependencies>
 									<excludes>
 										<exclude>commons-logging:*:*</exclude>
+										<exclude>org.hibernate:hibernate-validator:*</exclude>
 									</excludes>
 									<searchTransitive>true</searchTransitive>
 								</bannedDependencies>
@@ -135,13 +137,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.basepom.maven</groupId>

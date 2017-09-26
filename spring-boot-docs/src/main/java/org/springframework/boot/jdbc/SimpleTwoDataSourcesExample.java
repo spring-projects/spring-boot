@@ -20,7 +20,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -59,8 +58,7 @@ public class SimpleTwoDataSourcesExample {
 		@Bean
 		@ConfigurationProperties("app.datasource.bar")
 		public BasicDataSource barDataSource() {
-			return (BasicDataSource) DataSourceBuilder.create()
-					.type(BasicDataSource.class).build();
+			return DataSourceBuilder.create().type(BasicDataSource.class).build();
 		}
 		// end::configuration[]
 

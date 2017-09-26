@@ -45,7 +45,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * {@code classifier} property.
 	 * @since 1.2
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.includes")
 	private List<Include> includes;
 
 	/**
@@ -54,21 +54,21 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * {@code classifier} property.
 	 * @since 1.1
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.excludes")
 	private List<Exclude> excludes;
 
 	/**
 	 * Comma separated list of groupId names to exclude (exact match).
 	 * @since 1.1
 	 */
-	@Parameter(property = "excludeGroupIds", defaultValue = "")
+	@Parameter(property = "spring-boot.excludeGroupIds", defaultValue = "")
 	private String excludeGroupIds;
 
 	/**
 	 * Comma separated list of artifact names to exclude (exact match).
 	 * @since 1.1
 	 */
-	@Parameter(property = "excludeArtifactIds", defaultValue = "")
+	@Parameter(property = "spring-boot.excludeArtifactIds", defaultValue = "")
 	private String excludeArtifactIds;
 
 	protected void setExcludes(List<Exclude> excludes) {

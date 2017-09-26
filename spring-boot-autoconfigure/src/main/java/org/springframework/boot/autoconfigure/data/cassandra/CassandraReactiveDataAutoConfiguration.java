@@ -28,12 +28,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.cassandra.ReactiveSession;
+import org.springframework.data.cassandra.ReactiveSessionFactory;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraConverter;
-import org.springframework.data.cql.core.session.DefaultBridgedReactiveSession;
-import org.springframework.data.cql.core.session.DefaultReactiveSessionFactory;
-import org.springframework.data.cql.core.session.ReactiveSession;
-import org.springframework.data.cql.core.session.ReactiveSessionFactory;
+import org.springframework.data.cassandra.core.cql.session.DefaultBridgedReactiveSession;
+import org.springframework.data.cassandra.core.cql.session.DefaultReactiveSessionFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive Cassandra

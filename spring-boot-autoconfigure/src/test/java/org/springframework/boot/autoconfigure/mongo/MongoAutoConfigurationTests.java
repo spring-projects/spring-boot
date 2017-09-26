@@ -60,7 +60,7 @@ public class MongoAutoConfigurationTests {
 	@Test
 	public void optionsAdded() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.host:localhost");
+		TestPropertyValues.of("spring.data.mongodb.host:localhost").applyTo(this.context);
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
@@ -71,7 +71,8 @@ public class MongoAutoConfigurationTests {
 	@Test
 	public void optionsAddedButNoHost() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test");
+		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test")
+				.applyTo(this.context);
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();

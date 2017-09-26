@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 
 /**
@@ -30,7 +29,7 @@ import org.springframework.boot.devtools.livereload.LiveReloadServer;
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class OptionalLiveReloadServer {
+public class OptionalLiveReloadServer implements InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(OptionalLiveReloadServer.class);
 
@@ -44,12 +43,12 @@ public class OptionalLiveReloadServer {
 		this.server = server;
 	}
 
-	/**
-	 * {@link PostConstruct} method to start the server if possible.
-	 * @throws Exception in case of errors
-	 */
-	@PostConstruct
-	public void startServer() throws Exception {
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		startServer();
+	}
+
+	void startServer() throws Exception {
 		if (this.server != null) {
 			try {
 				if (!this.server.isStarted()) {
