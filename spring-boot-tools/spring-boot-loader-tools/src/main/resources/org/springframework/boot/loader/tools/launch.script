@@ -32,7 +32,13 @@ WORKING_DIR="$(pwd)"
 cd "$(dirname "$0")" || exit 1
 [[ -z "$jarfile" ]] && jarfile=$(pwd)/$(basename "$0")
 while [[ -L "$jarfile" ]]; do
-  [[ "$jarfile" =~ init\.d ]] && init_script=$(basename "$jarfile")
+  if [[ "$jarfile" =~ init\.d ]]; then
+    init_script=$(basename "$jarfile")
+  else
+    # while looping check if their is any configuration file
+    configfile="${jarfile%.*}.conf"
+    [[ -r ${configfile} ]] && source "${configfile}"
+  fi
   jarfile=$(readlink "$jarfile")
   cd "$(dirname "$jarfile")" || exit 1
   jarfile=$(pwd)/$(basename "$jarfile")
@@ -45,7 +51,6 @@ configfile="$(basename "${jarfile%.*}.conf")"
 
 # Initialize CONF_FOLDER location defaulting to jarfolder
 [[ -z "$CONF_FOLDER" ]] && CONF_FOLDER="{{confFolder:${jarfolder}}}"
-
 # shellcheck source=/dev/null
 [[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
 
