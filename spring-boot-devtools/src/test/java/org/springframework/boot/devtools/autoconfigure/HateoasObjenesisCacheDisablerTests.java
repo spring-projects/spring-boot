@@ -41,6 +41,8 @@ public class HateoasObjenesisCacheDisablerTests {
 	@Before
 	@After
 	public void resetCacheField() {
+		ReflectionTestUtils.setField(HateoasObjenesisCacheDisabler.class, "cacheDisabled",
+				false);
 		this.objenesis = (ObjenesisStd) ReflectionTestUtils
 				.getField(DummyInvocationUtils.class, "OBJENESIS");
 		ReflectionTestUtils.setField(this.objenesis, "cache",
