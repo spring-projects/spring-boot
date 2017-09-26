@@ -167,7 +167,7 @@ public class EnvironmentEndpoint {
 
 		private final Sanitizer sanitizer;
 
-		public PropertySourcesPlaceholdersSanitizingResolver(
+		PropertySourcesPlaceholdersSanitizingResolver(
 				Iterable<PropertySource<?>> sources, Sanitizer sanitizer) {
 			super(sources, new PropertyPlaceholderHelper(
 					SystemPropertyUtils.PLACEHOLDER_PREFIX,
