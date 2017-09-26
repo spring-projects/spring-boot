@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,6 +128,14 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void inlinedConfScriptFileLoad() throws IOException {
+		DefaultLaunchScript script = new DefaultLaunchScript(null,
+				createProperties("inlinedConfScript:src/test/resources/example.script"));
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("FOO=BAR");
+	}
+
+	@Test
 	public void defaultForUseStartStopDaemonIsTrue() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
@@ -183,6 +192,15 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
 		assertThat(content).isEqualTo("hello");
+	}
+
+	@Test
+	public void expandVariablesCanDefaultToBlank() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		FileCopyUtils.copy("s{{p:}}{{r:}}ing".getBytes(), file);
+		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).isEqualTo("sing");
 	}
 
 	@Test
