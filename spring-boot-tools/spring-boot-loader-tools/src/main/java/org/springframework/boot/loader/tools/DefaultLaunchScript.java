@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,20 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.util.FileCopyUtils;
 
 /**
  * Default implementation of {@link LaunchScript}. Provides the default Spring Boot launch
@@ -40,10 +44,13 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
+	private static final int BUFFER_SIZE = 4096;
+
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern
 			.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
-	private static final List<String> FILE_PATH_KEYS = Arrays.asList("inlinedConfScript");
+	private static final Set<String> FILE_PATH_KEYS = Collections
+			.unmodifiableSet(new HashSet<>(Arrays.asList("inlinedConfScript")));
 
 	private final String content;
 
@@ -58,32 +65,34 @@ public class DefaultLaunchScript implements LaunchScript {
 		this.content = expandPlaceholders(content, properties);
 	}
 
-	/**
-	 * Loads file contents.
-	 * @param file File to load. If null, will load default launch.script
-	 * @return String representation of file contents.
-	 * @throws IOException if file is not found our can't be loaded.
-	 */
 	private String loadContent(File file) throws IOException {
-		final byte[] fileBytes;
 		if (file == null) {
-			fileBytes = FileCopyUtils
-					.copyToByteArray(getClass().getResourceAsStream("launch.script"));
+			return loadContent(getClass().getResourceAsStream("launch.script"));
 		}
-		else {
-			fileBytes = FileCopyUtils.copyToByteArray(file);
-		}
-		return new String(fileBytes, UTF_8);
+		return loadContent(new FileInputStream(file));
 	}
 
-	/**
-	 * Replaces variable placeholders in file with specified property values.
-	 * @param content String with variables defined in {{variable:default}} format.
-	 * @param properties Key value pairs for variables to replace
-	 * @return Updated String
-	 * @throws IOException if a file property value or path is specified and the file
-	 * cannot be loaded.
-	 */
+	private String loadContent(InputStream inputStream) throws IOException {
+		try {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			copy(inputStream, outputStream);
+			return new String(outputStream.toByteArray(), UTF_8);
+		}
+		finally {
+			inputStream.close();
+		}
+	}
+
+	private void copy(InputStream inputStream, OutputStream outputStream)
+			throws IOException {
+		byte[] buffer = new byte[BUFFER_SIZE];
+		int bytesRead = -1;
+		while ((bytesRead = inputStream.read(buffer)) != -1) {
+			outputStream.write(buffer, 0, bytesRead);
+		}
+		outputStream.flush();
+	}
+
 	private String expandPlaceholders(String content, Map<?, ?> properties)
 			throws IOException {
 		StringBuffer expanded = new StringBuffer();
@@ -111,13 +120,6 @@ public class DefaultLaunchScript implements LaunchScript {
 		return expanded.toString();
 	}
 
-	/**
-	 * Loads file based on File object or String path.
-	 * @param propertyValue File Object or String path to file.
-	 * @return File contents.
-	 * @throws IOException if a file property value or path is specified and the file
-	 * cannot be loaded.
-	 */
 	private String parseFilePropertyValue(Object propertyValue) throws IOException {
 		if (propertyValue instanceof File) {
 			return loadContent((File) propertyValue);
@@ -127,10 +129,6 @@ public class DefaultLaunchScript implements LaunchScript {
 		}
 	}
 
-	/**
-	 * The content of the launch script as a byte array.
-	 * @return Byte representation of script.
-	 */
 	@Override
 	public byte[] toByteArray() {
 		return this.content.getBytes(UTF_8);
