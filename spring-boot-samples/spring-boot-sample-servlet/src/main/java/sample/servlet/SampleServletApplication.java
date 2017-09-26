@@ -31,7 +31,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootConfiguration
@@ -39,11 +38,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class SampleServletApplication extends SpringBootServletInitializer {
 
 	@Bean
-	public UserDetailsService userDetailsService() throws Exception {
-		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(
-				User.withUsername("user").password("password").roles("USER").build());
-		return manager;
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+		return new InMemoryUserDetailsManager(User.withUsername("user").password("password").roles("USER").build());
 	}
 
 	@SuppressWarnings("serial")

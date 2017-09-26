@@ -27,7 +27,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @EnableAutoConfiguration
@@ -39,11 +38,8 @@ public class SampleSecureApplication implements CommandLineRunner {
 	private SampleService service;
 
 	@Bean
-	public UserDetailsService userDetailsService() throws Exception {
-		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(
-				User.withUsername("user").password("password").roles("USER").build());
-		return manager;
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+		return new InMemoryUserDetailsManager(User.withUsername("user").password("password").roles("USER").build());
 	}
 
 	@Override

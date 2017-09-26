@@ -21,7 +21,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAu
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,11 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityTestApplication {
 
 	@Bean
-	public UserDetailsService userDetailsService() throws Exception {
-		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(
-				User.withUsername("user").password("secret").roles("USER").build());
-		return manager;
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+		return new InMemoryUserDetailsManager(User.withUsername("user").password("password").roles("USER").build());
 	}
 
 	@RestController
