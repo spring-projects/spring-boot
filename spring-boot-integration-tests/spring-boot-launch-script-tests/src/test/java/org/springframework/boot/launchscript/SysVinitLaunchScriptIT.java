@@ -59,6 +59,7 @@ import static org.junit.Assume.assumeThat;
  * Integration tests for Spring Boot's launch script on OSs that use SysVinit.
  *
  * @author Andy Wilkinson
+ * @author Ali Shahbour
  */
 @RunWith(Parameterized.class)
 public class SysVinitLaunchScriptIT {
@@ -192,6 +193,11 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void launchWithSingleJavaOpt() throws Exception {
 		doLaunch("launch-with-single-java-opt.sh");
+	}
+
+	@Test
+	public void launchWithDoubleLinkSingleJavaOpt() throws Exception {
+		doLaunch("launch-with-double-link-single-java-opt.sh");
 	}
 
 	@Test
