@@ -299,7 +299,7 @@ public final class TestPropertyValues {
 		@Override
 		public void close() {
 			this.previous.forEach(this::setOrClear);
-		};
+		}
 
 		private String setOrClear(String name, String value) {
 			Assert.notNull(name, "Name must not be null");

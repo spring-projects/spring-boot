@@ -84,7 +84,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 
 	private String loadResource(String name) {
 		try (InputStreamReader reader = new InputStreamReader(
-				getClass().getResourceAsStream(name));) {
+				getClass().getResourceAsStream(name))) {
 			char[] buffer = new char[4096];
 			int read = 0;
 			StringWriter writer = new StringWriter();

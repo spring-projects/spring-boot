@@ -74,6 +74,6 @@ public enum CacheType {
 	/**
 	 * No caching.
 	 */
-	NONE;
+	NONE
 
 }

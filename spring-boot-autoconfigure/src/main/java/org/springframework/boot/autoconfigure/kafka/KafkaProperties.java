@@ -766,7 +766,7 @@ public class KafkaProperties {
 			/**
 			 * Invokes the endpoint with a batch of ConsumerRecords.
 			 */
-			BATCH;
+			BATCH
 
 		}
 

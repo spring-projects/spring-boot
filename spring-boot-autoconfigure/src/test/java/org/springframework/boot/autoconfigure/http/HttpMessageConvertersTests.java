@@ -122,7 +122,7 @@ public class HttpMessageConvertersTests {
 					}
 				}
 				return converters;
-			};
+			}
 		};
 		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : converters) {
@@ -152,7 +152,7 @@ public class HttpMessageConvertersTests {
 					}
 				}
 				return converters;
-			};
+			}
 		};
 		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : extractFormPartConverters(

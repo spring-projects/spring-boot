@@ -957,7 +957,7 @@ public class SpringApplicationTests {
 						FailingConfig.class);
 				application.setWebApplicationType(WebApplicationType.NONE);
 				application.run();
-			};
+			}
 		};
 		thread.start();
 		thread.join(6000);

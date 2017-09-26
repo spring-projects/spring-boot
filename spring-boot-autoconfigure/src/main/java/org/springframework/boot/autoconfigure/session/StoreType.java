@@ -49,6 +49,6 @@ public enum StoreType {
 	/**
 	 * No session data-store.
 	 */
-	NONE;
+	NONE
 
 }
