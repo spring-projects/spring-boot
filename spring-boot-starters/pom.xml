@@ -63,6 +63,7 @@
 		<module>spring-boot-starter-quartz</module>
 		<module>spring-boot-starter-reactor-netty</module>
 		<module>spring-boot-starter-security</module>
+		<module>spring-boot-starter-security-reactive</module>
 		<module>spring-boot-starter-social-facebook</module>
 		<module>spring-boot-starter-social-twitter</module>
 		<module>spring-boot-starter-social-linkedin</module>

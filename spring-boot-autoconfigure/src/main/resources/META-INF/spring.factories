@@ -99,6 +99,7 @@ org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration,\
