@@ -35,8 +35,8 @@ while [[ -L "$jarfile" ]]; do
   if [[ "$jarfile" =~ init\.d ]]; then
     init_script=$(basename "$jarfile")
   else
-    # while looping check if their is any configuration file
     configfile="${jarfile%.*}.conf"
+    # shellcheck source=/dev/null
     [[ -r ${configfile} ]] && source "${configfile}"
   fi
   jarfile=$(readlink "$jarfile")

@@ -200,7 +200,6 @@ public class SysVinitLaunchScriptIT {
 		doLaunch("launch-with-double-link-single-java-opt.sh");
 	}
 
-
 	@Test
 	public void launchWithMultipleJavaOpts() throws Exception {
 		doLaunch("launch-with-multiple-java-opts.sh");
