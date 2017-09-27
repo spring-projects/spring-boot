@@ -928,6 +928,9 @@
 			<activation>
 				<jdk>9</jdk>
 			</activation>
+			<properties>
+				<aspectj.version>1.9.0.BETA-7</aspectj.version>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
