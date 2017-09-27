@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -38,29 +39,27 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.TestingAuthenticationProvider;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
-import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -68,6 +67,7 @@ import static org.junit.Assert.fail;
  * @author Dave Syer
  * @author Rob Winch
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class SecurityAutoConfigurationTests {
 
@@ -147,120 +147,78 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisableIgnoredStaticApplicationPaths() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		TestPropertyValues.of("security.ignored:none").applyTo(this.context);
-		this.context.refresh();
-		// Just the application endpoints now
-		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
-				.hasSize(1);
-	}
-
-	@Test
-	public void testAuthenticationManagerCreated() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationManager.class)).isNotNull();
-	}
-
-	@Test
 	public void testEventPublisherInjected() throws Exception {
-		testAuthenticationManagerCreated();
-		pingAuthenticationListener();
-	}
-
-	private void pingAuthenticationListener() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(TestAuthenticationManagerConfiguration.class, SecurityAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
 		AuthenticationListener listener = new AuthenticationListener();
 		this.context.addApplicationListener(listener);
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		try {
-			manager.authenticate(new UsernamePasswordAuthenticationToken("foo", "wrong"));
-			fail("Expected BadCredentialsException");
-		}
-		catch (BadCredentialsException e) {
-			// expected
-		}
+		manager.authenticate(new TestingAuthenticationToken("foo", "wrong"));
 		assertThat(listener.event)
-				.isInstanceOf(AuthenticationFailureBadCredentialsEvent.class);
+				.isInstanceOf(AuthenticationSuccessEvent.class);
 	}
 
 	@Test
-	public void testOverrideAuthenticationManager() throws Exception {
+	public void testDefaultUsernamePassword() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestAuthenticationConfiguration.class,
+		this.context.register(SecurityAutoConfiguration.class);
+		this.context.refresh();
+		UserDetailsService manager = this.context.getBean(UserDetailsService.class);
+		assertThat(this.outputCapture.toString()).contains("Using default security password:");
+		assertThat(manager.loadUserByUsername("user")).isNotNull();
+	}
+
+	@Test
+	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(TestAuthenticationManagerConfiguration.class,
 				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationManager.class))
+		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
+		assertThat(manager)
 				.isEqualTo(this.context.getBean(
-						TestAuthenticationConfiguration.class).authenticationManager);
+						TestAuthenticationManagerConfiguration.class).authenticationManager);
+		assertThat(this.outputCapture.toString())
+				.doesNotContain("Using default security password: ");
+		TestingAuthenticationToken token = new TestingAuthenticationToken(
+				"foo", "bar");
+		assertThat(manager.authenticate(token)).isNotNull();
 	}
 
 	@Test
-	public void testDefaultAuthenticationManagerMakesUserDetailsAvailable()
-			throws Exception {
+	public void defaultUserNotCreatedIfUserDetailsServiceBeanPresent() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(UserDetailsSecurityCustomizer.class,
+		this.context.register(TestUserDetailsServiceConfiguration.class,
 				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(UserDetailsSecurityCustomizer.class)
-				.getUserDetails().loadUserByUsername("user")).isNotNull();
+		UserDetailsService userDetailsService = this.context.getBean(UserDetailsService.class);
+		assertThat(this.outputCapture.toString())
+				.doesNotContain("Using default security password: ");
+		assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
 	}
 
 	@Test
-	public void testOverrideAuthenticationManagerAndInjectIntoSecurityFilter()
-			throws Exception {
+	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestAuthenticationConfiguration.class,
-				SecurityCustomizer.class, SecurityAutoConfiguration.class,
+		this.context.register(TestAuthenticationProviderConfiguration.class,
+				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationManager.class))
-				.isEqualTo(this.context.getBean(
-						TestAuthenticationConfiguration.class).authenticationManager);
-	}
-
-	@Test
-	public void testOverrideAuthenticationManagerWithBuilderAndInjectIntoSecurityFilter()
-			throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationManagerCustomizer.class,
-				SecurityCustomizer.class, SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
-				"foo", "bar",
-				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		assertThat(this.context.getBean(AuthenticationManager.class).authenticate(user))
-				.isNotNull();
-		pingAuthenticationListener();
-	}
-
-	@Test
-	public void testOverrideAuthenticationManagerWithBuilderAndInjectBuilderIntoSecurityFilter()
-			throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationManagerCustomizer.class,
-				WorkaroundSecurityCustomizer.class, SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
-				"foo", "bar",
-				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		assertThat(this.context.getBean(AuthenticationManager.class).authenticate(user))
-				.isNotNull();
+		AuthenticationProvider provider = this.context.getBean(AuthenticationProvider.class);
+		assertThat(this.outputCapture.toString())
+				.doesNotContain("Using default security password: ");
+		TestingAuthenticationToken token = new TestingAuthenticationToken(
+				"foo", "bar");
+		assertThat(provider.authenticate(token)).isNotNull();
 	}
 
 	@Test
@@ -280,40 +238,10 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultUsernamePassword() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class);
-		this.context.refresh();
-		String password = this.outputCapture.toString()
-				.split("Using default security password: ")[1].split("\n")[0].trim();
-		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				"user", password);
-		assertThat(manager.authenticate(token)).isNotNull();
-	}
-
-	@Test
-	public void testCustomAuthenticationDoesNotCreateDefaultUser() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationManagerCustomizer.class,
-				SecurityAutoConfiguration.class);
-		this.context.refresh();
-		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		assertThat(this.outputCapture.toString())
-				.doesNotContain("Using default security password: ");
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				"foo", "bar");
-		assertThat(manager.authenticate(token)).isNotNull();
-	}
-
-	@Test
 	public void testSecurityEvaluationContextExtensionSupport() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationManagerCustomizer.class,
-				SecurityAutoConfiguration.class);
+		this.context.register(SecurityAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(SecurityEvaluationContextExtension.class))
 				.isNotNull();
@@ -376,76 +304,35 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestAuthenticationConfiguration {
+	protected static class TestAuthenticationManagerConfiguration {
 
 		private AuthenticationManager authenticationManager;
 
 		@Bean
 		public AuthenticationManager myAuthenticationManager() {
-			this.authenticationManager = (
-					authentication) -> new TestingAuthenticationToken("foo", "bar");
+			AuthenticationProvider authenticationProvider = new TestingAuthenticationProvider();
+			this.authenticationManager = new ProviderManager(Collections.singletonList(authenticationProvider));
 			return this.authenticationManager;
 		}
 
 	}
 
 	@Configuration
-	protected static class SecurityCustomizer extends WebSecurityConfigurerAdapter {
+	protected static class TestUserDetailsServiceConfiguration {
 
-		final AuthenticationManager authenticationManager;
-
-		protected SecurityCustomizer(AuthenticationManager authenticationManager) {
-			this.authenticationManager = authenticationManager;
+		@Bean
+		public InMemoryUserDetailsManager myUserDetailsService() {
+			return new InMemoryUserDetailsManager(User.withUsername("foo").password("bar").roles("USER").build());
 		}
 
 	}
 
 	@Configuration
-	protected static class WorkaroundSecurityCustomizer
-			extends WebSecurityConfigurerAdapter {
+	protected static class TestAuthenticationProviderConfiguration {
 
-		private final AuthenticationManagerBuilder builder;
-
-		@SuppressWarnings("unused")
-		private AuthenticationManager authenticationManager;
-
-		protected WorkaroundSecurityCustomizer(AuthenticationManagerBuilder builder) {
-			this.builder = builder;
-		}
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			this.authenticationManager = (authentication) -> this.builder.getOrBuild()
-					.authenticate(authentication);
-		}
-
-	}
-
-	@Configuration
-	@Order(-1)
-	protected static class AuthenticationManagerCustomizer
-			extends GlobalAuthenticationConfigurerAdapter {
-
-		@Override
-		public void init(AuthenticationManagerBuilder auth) throws Exception {
-			auth.inMemoryAuthentication().withUser("foo").password("bar").roles("USER");
-		}
-
-	}
-
-	@Configuration
-	protected static class UserDetailsSecurityCustomizer
-			extends WebSecurityConfigurerAdapter {
-
-		private UserDetailsService userDetails;
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			this.userDetails = http.getSharedObject(UserDetailsService.class);
-		}
-
-		public UserDetailsService getUserDetails() {
-			return this.userDetails;
+		@Bean
+		public AuthenticationProvider myauthenticationProvider() {
+			return new TestingAuthenticationProvider();
 		}
 
 	}
