@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import java.security.NoSuchAlgorithmException;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
@@ -522,9 +521,8 @@ public class RabbitAutoConfigurationTests {
 				.run((context) -> {
 					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
 							context);
-					assertThat(rabbitConnectionFactory.getSocketFactory())
-							.as("Must use default SocketFactory")
-							.isEqualTo(SocketFactory.getDefault());
+					assertThat(rabbitConnectionFactory.getSocketFactory()).isNull();
+					assertThat(rabbitConnectionFactory.isSSL()).isFalse();
 				});
 	}
 
@@ -534,6 +532,7 @@ public class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true").run((context) -> {
 					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
 							context);
+					assertThat(rabbitConnectionFactory.isSSL()).isTrue();
 					assertThat(rabbitConnectionFactory.getSocketFactory())
 							.as("SocketFactory must use SSL")
 							.isInstanceOf(SSLSocketFactory.class);
