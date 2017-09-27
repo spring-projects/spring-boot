@@ -184,8 +184,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.admin.ssl.keystore-password=p5",
 				"spring.kafka.admin.ssl.truststore-location=classpath:tsLocP",
 				"spring.kafka.admin.ssl.truststore-password=p6");
-		KafkaAdmin admin = this.context
-				.getBean(KafkaAdmin.class);
+		KafkaAdmin admin = this.context.getBean(KafkaAdmin.class);
 		Map<String, Object> configs = admin.getConfig();
 		// common
 		assertThat(configs.get(AdminClientConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
@@ -202,7 +201,8 @@ public class KafkaAutoConfigurationTests {
 				.isEmpty();
 		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 		assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
-		assertThat(KafkaTestUtils.getPropertyValue(admin, "fatalIfBrokerNotAvailable", Boolean.class)).isTrue();
+		assertThat(KafkaTestUtils.getPropertyValue(admin, "fatalIfBrokerNotAvailable",
+				Boolean.class)).isTrue();
 	}
 
 	@SuppressWarnings("unchecked")

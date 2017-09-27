@@ -110,6 +110,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		return new HttpHeaderInterceptor(secretHeaderName, secret);
 	}
 
+	@Override
 	public void afterPropertiesSet() {
 		logWarnings();
 	}

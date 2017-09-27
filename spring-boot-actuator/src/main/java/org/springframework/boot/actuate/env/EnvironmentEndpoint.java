@@ -115,7 +115,8 @@ public class EnvironmentEndpoint {
 			Map<String, PropertyValueDescriptor> descriptors) {
 		List<PropertySourceEntryDescriptor> result = new ArrayList<>();
 		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
-			result.add(new PropertySourceEntryDescriptor(entry.getKey(), entry.getValue()));
+			result.add(
+					new PropertySourceEntryDescriptor(entry.getKey(), entry.getValue()));
 		}
 		return result;
 	}
@@ -135,9 +136,11 @@ public class EnvironmentEndpoint {
 			String propertyName) {
 		Map<String, PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
 		PlaceholdersResolver resolver = getResolver();
-		getPropertySourcesAsMap().forEach((sourceName, source) ->
-				propertySources.put(sourceName, source.containsProperty(propertyName) ?
-						describeValueOf(propertyName, source, resolver) : null));
+		getPropertySourcesAsMap()
+				.forEach((sourceName, source) -> propertySources.put(sourceName,
+						source.containsProperty(propertyName)
+								? describeValueOf(propertyName, source, resolver)
+								: null));
 		return propertySources;
 	}
 
@@ -150,8 +153,8 @@ public class EnvironmentEndpoint {
 		return new PropertySourceDescriptor(sourceName, properties);
 	}
 
-	private PropertyValueDescriptor describeValueOf(String name,
-			PropertySource<?> source, PlaceholdersResolver resolver) {
+	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source,
+			PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
 		@SuppressWarnings("unchecked")
 		String origin = (source instanceof OriginLookup)
@@ -160,8 +163,8 @@ public class EnvironmentEndpoint {
 	}
 
 	private PlaceholdersResolver getResolver() {
-		return new PropertySourcesPlaceholdersSanitizingResolver(
-				getPropertySources(), this.sanitizer);
+		return new PropertySourcesPlaceholdersSanitizingResolver(getPropertySources(),
+				this.sanitizer);
 	}
 
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
@@ -211,20 +214,20 @@ public class EnvironmentEndpoint {
 
 		private final Sanitizer sanitizer;
 
-		PropertySourcesPlaceholdersSanitizingResolver(
-				Iterable<PropertySource<?>> sources, Sanitizer sanitizer) {
-			super(sources, new PropertyPlaceholderHelper(
-					SystemPropertyUtils.PLACEHOLDER_PREFIX,
-					SystemPropertyUtils.PLACEHOLDER_SUFFIX,
-					SystemPropertyUtils.VALUE_SEPARATOR, true));
+		PropertySourcesPlaceholdersSanitizingResolver(Iterable<PropertySource<?>> sources,
+				Sanitizer sanitizer) {
+			super(sources,
+					new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
+							SystemPropertyUtils.PLACEHOLDER_SUFFIX,
+							SystemPropertyUtils.VALUE_SEPARATOR, true));
 			this.sanitizer = sanitizer;
 		}
 
 		@Override
 		protected String resolvePlaceholder(String placeholder) {
 			String value = super.resolvePlaceholder(placeholder);
-			return (value != null ?
-					(String) this.sanitizer.sanitize(placeholder, value) : null);
+			return (value != null ? (String) this.sanitizer.sanitize(placeholder, value)
+					: null);
 		}
 
 	}

@@ -120,7 +120,8 @@ public class WebServicesAutoConfiguration {
 							Bindable.listOf(String.class))
 					.orElse(Collections.emptyList());
 			for (String wsdlLocation : wsdlLocations) {
-				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class, registry);
+				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class,
+						registry);
 				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class, registry);
 			}
 		}

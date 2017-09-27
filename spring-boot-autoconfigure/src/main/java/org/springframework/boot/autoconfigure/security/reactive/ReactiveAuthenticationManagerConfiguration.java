@@ -33,17 +33,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsRepository;
 
 /**
- * Default user {@link Configuration} for a reactive web application.
- * Configures a {@link UserDetailsRepository} with a default user and generated password.
- * This backs-off completely if there is a bean of type {@link UserDetailsRepository}
- * or {@link ReactiveAuthenticationManager}.
+ * Default user {@link Configuration} for a reactive web application. Configures a
+ * {@link UserDetailsRepository} with a default user and generated password. This
+ * backs-off completely if there is a bean of type {@link UserDetailsRepository} or
+ * {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass({ReactiveAuthenticationManager.class})
-@ConditionalOnMissingBean({ReactiveAuthenticationManager.class, UserDetailsRepository.class })
+@ConditionalOnClass({ ReactiveAuthenticationManager.class })
+@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class,
+		UserDetailsRepository.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveAuthenticationManagerConfiguration {
 
@@ -53,12 +54,8 @@ public class ReactiveAuthenticationManagerConfiguration {
 	@Bean
 	public MapUserDetailsRepository userDetailsRepository() {
 		String password = UUID.randomUUID().toString();
-		logger.info(
-				String.format("%n%nUsing default security password: %s%n", password));
-		UserDetails user = User.withUsername("user")
-				.password(password)
-				.roles()
-				.build();
+		logger.info(String.format("%n%nUsing default security password: %s%n", password));
+		UserDetails user = User.withUsername("user").password(password).roles().build();
 		return new MapUserDetailsRepository(user);
 	}
 }

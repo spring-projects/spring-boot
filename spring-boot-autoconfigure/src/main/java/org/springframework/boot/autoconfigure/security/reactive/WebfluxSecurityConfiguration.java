@@ -23,8 +23,8 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.annotation.web.reactive.WebFluxSecurityConfiguration;
 
 /**
- * Switches on {@link EnableWebFluxSecurity} for a reactive web application
- * if this annotation has not been added by the user.
+ * Switches on {@link EnableWebFluxSecurity} for a reactive web application if this
+ * annotation has not been added by the user.
  *
  * @author Madhura Bhave
  * @since 2.0.0

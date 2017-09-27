@@ -24,16 +24,17 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.web.reactive.result.method.annotation.AuthenticationPrincipalArgumentResolver;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Security in a
- * reactive application. This auto-configuration adds {@link EnableWebFluxSecurity}
- * and delegates to Spring Security's content-negotiation mechanism for authentication.
- * In a webapp this configuration also secures all web endpoints.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Security in a reactive
+ * application. This auto-configuration adds {@link EnableWebFluxSecurity} and delegates
+ * to Spring Security's content-negotiation mechanism for authentication. In a webapp this
+ * configuration also secures all web endpoints.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass({EnableWebFluxSecurity.class, AuthenticationPrincipalArgumentResolver.class})
+@ConditionalOnClass({ EnableWebFluxSecurity.class,
+		AuthenticationPrincipalArgumentResolver.class })
 @Import({ WebfluxSecurityConfiguration.class,
 		ReactiveAuthenticationManagerConfiguration.class })
 public class ReactiveSecurityAutoConfiguration {

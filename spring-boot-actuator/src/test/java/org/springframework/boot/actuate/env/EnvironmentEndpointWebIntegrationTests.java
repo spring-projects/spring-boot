@@ -53,8 +53,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	@Test
 	public void sub() throws Exception {
 		client.get().uri("/application/env/foo").exchange().expectStatus().isOk()
-				.expectBody()
-				.jsonPath("property.source").isEqualTo("test")
+				.expectBody().jsonPath("property.source").isEqualTo("test")
 				.jsonPath("property.value").isEqualTo("bar");
 	}
 
@@ -77,10 +76,9 @@ public class EnvironmentEndpointWebIntegrationTests {
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
 		client.get().uri("/application/env/my.foo").exchange().expectStatus().isOk()
-				.expectBody()
-				.jsonPath("property.value").isEqualTo("${my.bar}")
-				.jsonPath(forPropertyEntry(
-						"unresolved-placeholder")).isEqualTo("${my.bar}");
+				.expectBody().jsonPath("property.value").isEqualTo("${my.bar}")
+				.jsonPath(forPropertyEntry("unresolved-placeholder"))
+				.isEqualTo("${my.bar}");
 	}
 
 	@Test
@@ -91,17 +89,14 @@ public class EnvironmentEndpointWebIntegrationTests {
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("placeholder", map));
 		client.get().uri("/application/env/my.foo").exchange().expectStatus().isOk()
-				.expectBody()
-				.jsonPath("property.value").isEqualTo("******")
+				.expectBody().jsonPath("property.value").isEqualTo("******")
 				.jsonPath(forPropertyEntry("placeholder")).isEqualTo("******");
 	}
 
 	@Test
 	public void nestedPathForUnknownKeyShouldReturn404AndBody() throws Exception {
 		client.get().uri("/application/env/this.does.not.exist").exchange().expectStatus()
-				.isNotFound()
-				.expectBody()
-				.jsonPath("property").doesNotExist()
+				.isNotFound().expectBody().jsonPath("property").doesNotExist()
 				.jsonPath("propertySources[?(@.name=='test')]").exists()
 				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists()
 				.jsonPath("propertySources[?(@.name=='systemEnvironment')]").exists();

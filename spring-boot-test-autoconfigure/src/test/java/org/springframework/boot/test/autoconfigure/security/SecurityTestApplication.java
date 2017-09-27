@@ -35,7 +35,8 @@ public class SecurityTestApplication {
 
 	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
-		return new InMemoryUserDetailsManager(User.withUsername("user").password("secret").roles("USER").build());
+		return new InMemoryUserDetailsManager(
+				User.withUsername("user").password("secret").roles("USER").build());
 	}
 
 	@RestController

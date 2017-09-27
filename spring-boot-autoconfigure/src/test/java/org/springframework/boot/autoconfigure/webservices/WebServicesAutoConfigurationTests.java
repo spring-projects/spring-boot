@@ -96,7 +96,7 @@ public class WebServicesAutoConfigurationTests {
 	public void withWsdlBeans() {
 		this.contextRunner
 				.withPropertyValues("spring.webservices.wsdl-locations=classpath:/wsdl")
-				.run(context -> {
+				.run((context) -> {
 					assertThat(context.getBeansOfType(SimpleWsdl11Definition.class))
 							.hasSize(1).containsKey("service");
 					assertThat(context.getBeansOfType(SimpleXsdSchema.class)).hasSize(1)

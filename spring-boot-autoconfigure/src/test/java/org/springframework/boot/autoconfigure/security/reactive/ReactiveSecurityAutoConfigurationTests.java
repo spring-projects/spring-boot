@@ -49,15 +49,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ReactiveSecurityAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner(ReactiveWebServerApplicationContext::new);
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner(
+			ReactiveWebServerApplicationContext::new);
 
 	@Test
 	public void enablesWebFluxSecurity() {
 		this.contextRunner.withUserConfiguration(TestConfig.class)
-				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.run(context -> {
-					assertThat(context).getBean(HttpSecurityConfiguration.class).isNotNull();
-					assertThat(context).getBean(WebFluxSecurityConfiguration.class).isNotNull();
+				.withConfiguration(
+						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).getBean(HttpSecurityConfiguration.class)
+							.isNotNull();
+					assertThat(context).getBean(WebFluxSecurityConfiguration.class)
+							.isNotNull();
 					assertThat(context).getBean(WebFilterChainFilter.class).isNotNull();
 				});
 	}
@@ -65,32 +69,42 @@ public class ReactiveSecurityAutoConfigurationTests {
 	@Test
 	public void configuresADefaultUser() {
 		this.contextRunner.withUserConfiguration(TestConfig.class)
-				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.run(context -> {
-					UserDetailsRepository userDetailsRepository = context.getBean(UserDetailsRepository.class);
-					assertThat(userDetailsRepository.findByUsername("user").block()).isNotNull();
+				.withConfiguration(
+						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+				.run((context) -> {
+					UserDetailsRepository userDetailsRepository = context
+							.getBean(UserDetailsRepository.class);
+					assertThat(userDetailsRepository.findByUsername("user").block())
+							.isNotNull();
 				});
 	}
 
 	@Test
 	public void doesNotConfigureDefaultUserIfUserDetailsRepositoryAvailable() {
 		this.contextRunner.withUserConfiguration(UserConfig.class, TestConfig.class)
-				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.run(context -> {
-					UserDetailsRepository userDetailsRepository = context.getBean(UserDetailsRepository.class);
-					assertThat(userDetailsRepository.findByUsername("user").block()).isNull();
-					assertThat(userDetailsRepository.findByUsername("foo").block()).isNotNull();
-					assertThat(userDetailsRepository.findByUsername("admin").block()).isNotNull();
+				.withConfiguration(
+						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+				.run((context) -> {
+					UserDetailsRepository userDetailsRepository = context
+							.getBean(UserDetailsRepository.class);
+					assertThat(userDetailsRepository.findByUsername("user").block())
+							.isNull();
+					assertThat(userDetailsRepository.findByUsername("foo").block())
+							.isNotNull();
+					assertThat(userDetailsRepository.findByUsername("admin").block())
+							.isNotNull();
 				});
 	}
 
 	@Test
 	public void doesNotConfigureDefaultUserIfAuthenticationManagerAvailable() {
-		this.contextRunner.withUserConfiguration(AuthenticationManagerConfig.class, TestConfig.class)
-				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.run(context -> {
-					assertThat(context).getBean(UserDetailsRepository.class).isNull();
-				});
+		this.contextRunner
+				.withUserConfiguration(AuthenticationManagerConfig.class,
+						TestConfig.class)
+				.withConfiguration(
+						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+				.run((context) -> assertThat(context).getBean(UserDetailsRepository.class)
+						.isNull());
 	}
 
 	@Configuration
@@ -114,8 +128,10 @@ public class ReactiveSecurityAutoConfigurationTests {
 
 		@Bean
 		public MapUserDetailsRepository userDetailsRepository() {
-			UserDetails foo = User.withUsername("foo").password("foo").roles("USER").build();
-			UserDetails admin = User.withUsername("admin").password("admin").roles("USER", "ADMIN").build();
+			UserDetails foo = User.withUsername("foo").password("foo").roles("USER")
+					.build();
+			UserDetails admin = User.withUsername("admin").password("admin")
+					.roles("USER", "ADMIN").build();
 			return new MapUserDetailsRepository(foo, admin);
 		}
 
