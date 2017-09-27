@@ -97,6 +97,17 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
+	public void nestedPathForUnknownKeyShouldReturn404AndBody() throws Exception {
+		client.get().uri("/application/env/this.does.not.exist").exchange().expectStatus()
+				.isNotFound()
+				.expectBody()
+				.jsonPath("property").doesNotExist()
+				.jsonPath("propertySources[?(@.name=='test')]").exists()
+				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists()
+				.jsonPath("propertySources[?(@.name=='systemEnvironment')]").exists();
+	}
+
+	@Test
 	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
 			throws Exception {
 		Map<String, Object> map = new HashMap<>();
@@ -138,6 +149,12 @@ public class EnvironmentEndpointWebIntegrationTests {
 		@Bean
 		public EnvironmentEndpoint endpoint(Environment environment) {
 			return new EnvironmentEndpoint(environment);
+		}
+
+		@Bean
+		public EnvironmentWebEndpointExtension webEndpointExtension(
+				EnvironmentEndpoint endpoint) {
+			return new EnvironmentWebEndpointExtension(endpoint);
 		}
 
 	}
