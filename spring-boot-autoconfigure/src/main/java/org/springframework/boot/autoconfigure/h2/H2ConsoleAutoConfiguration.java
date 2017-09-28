@@ -18,24 +18,15 @@ package org.springframework.boot.autoconfigure.h2;
 
 import org.h2.server.web.WebServlet;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for H2's web console.
@@ -50,7 +41,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @ConditionalOnClass(WebServlet.class)
 @ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(H2ConsoleProperties.class)
-@AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class H2ConsoleAutoConfiguration {
 
 	private final H2ConsoleProperties properties;
@@ -73,39 +63,6 @@ public class H2ConsoleAutoConfiguration {
 			registration.addInitParameter("webAllowOthers", "");
 		}
 		return registration;
-	}
-
-	@Configuration
-	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-	@ConditionalOnBean(ObjectPostProcessor.class)
-	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
-	static class H2ConsoleSecurityConfiguration {
-
-		@Bean
-		public WebSecurityConfigurerAdapter h2ConsoleSecurityConfigurer() {
-			return new H2ConsoleSecurityConfigurer();
-		}
-
-		@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-		private static class H2ConsoleSecurityConfigurer
-				extends WebSecurityConfigurerAdapter {
-
-			@Autowired
-			private H2ConsoleProperties console;
-
-			@Override
-			public void configure(HttpSecurity http) throws Exception {
-				String path = this.console.getPath();
-				String antPattern = (path.endsWith("/") ? path + "**" : path + "/**");
-				HttpSecurity h2Console = http.antMatcher(antPattern);
-				h2Console.csrf().disable();
-				h2Console.httpBasic();
-				h2Console.headers().frameOptions().sameOrigin();
-				http.authorizeRequests().anyRequest().authenticated();
-			}
-
-		}
-
 	}
 
 }
