@@ -1,0 +1,49 @@
+== Concourse pipeline
+
+To set the pipeline first create a file in this directory called `secrets.yml`:
+
+[source,yaml]
+.secrets.yml
+----
+docker-hub-username: <user>
+docker-hub-password: <secret>
+github-username: <user>
+github-password: <secret>
+artifactory-username: <user>
+artifactory-password: <secret>
+----
+
+NOTE: The file should be ignored by git, make sure that you don't commit it!
+
+Once the file has been created, the pipeline can be deployed:
+
+[source]
+----
+$ fly -t spring set-pipeline -p spring-boot -c ci/pipeline.yml -l ci/parameters.yml -l ci/secrets.yml
+----
+
+=== Release
+
+To release a milestone:
+
+[source]
+----
+$ fly -t spring trigger-job -j spring-boot/stage-milestone
+$ fly -t spring trigger-job -j spring-boot/promote-milestone
+----
+
+To release an RC:
+
+[source]
+----
+$ fly -t spring trigger-job -j spring-boot/stage-rc
+$ fly -t spring trigger-job -j spring-boot/promote-rc
+----
+
+To release a GA:
+
+[source]
+----
+$ fly -t spring trigger-job -j spring-boot/stage-release
+$ fly -t spring trigger-job -j spring-boot/promote-release
+----
