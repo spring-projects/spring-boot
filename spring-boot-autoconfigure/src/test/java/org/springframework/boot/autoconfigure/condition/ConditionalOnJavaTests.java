@@ -27,8 +27,8 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -107,7 +107,7 @@ public class ConditionalOnJavaTests {
 		URL[] urls = ((URLClassLoader) getClass().getClassLoader()).getURLs();
 		URLClassLoader classLoader = new ClassHidingClassLoader(urls, hiddenClasses);
 		Class<?> javaVersionClass = classLoader
-				.loadClass(ConditionalOnJava.JavaVersion.class.getName());
+				.loadClass(JavaVersion.class.getName());
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
 				"getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);

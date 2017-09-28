@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -51,7 +51,7 @@ class OnJavaCondition extends SpringBootCondition {
 
 	protected ConditionOutcome getMatchOutcome(Range range, JavaVersion runningVersion,
 			JavaVersion version) {
-		boolean match = runningVersion.isWithin(range, version);
+		boolean match = isWithin(runningVersion, range, version);
 		String expected = String.format(
 				range == Range.EQUAL_OR_NEWER ? "(%s or newer)" : "(older than %s)",
 				version);
@@ -59,6 +59,24 @@ class OnJavaCondition extends SpringBootCondition {
 				.forCondition(ConditionalOnJava.class, expected)
 				.foundExactly(runningVersion);
 		return new ConditionOutcome(match, message);
+	}
+
+	/**
+	 * Determines if the {@code runningVersion} is within the specified range of versions.
+	 * @param runningVersion the current version.
+	 * @param range the range
+	 * @param version the bounds of the range
+	 * @return if this version is within the specified range
+	 */
+	private boolean isWithin(JavaVersion runningVersion, Range range, JavaVersion version) {
+		int i = runningVersion.compareTo(version);
+		if (range == Range.EQUAL_OR_NEWER) {
+			return i >= 0;
+		}
+		else if (range == Range.OLDER_THAN) {
+			return i < 0;
+		}
+		throw new IllegalStateException("Unknown range " + range);
 	}
 
 }
