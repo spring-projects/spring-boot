@@ -29,6 +29,8 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
+import org.springframework.boot.test.Assume;
+import org.springframework.boot.test.context.HideClassesClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +52,7 @@ public class ConditionalOnJavaTests {
 
 	@Test
 	public void doesNotMatchIfBetterVersionIsRequired() {
+		Assume.javaVersion(JavaVersion.EIGHT);
 		this.contextRunner.withUserConfiguration(Java9Required.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
@@ -94,18 +97,19 @@ public class ConditionalOnJavaTests {
 
 	@Test
 	public void java8IsDetected() throws Exception {
+		Assume.javaVersion(JavaVersion.EIGHT);
 		assertThat(getJavaVersion()).isEqualTo("1.8");
 	}
 
 	@Test
 	public void java8IsTheFallback() throws Exception {
+		Assume.javaVersion(JavaVersion.EIGHT);
 		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
 				.isEqualTo("1.8");
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
-		URL[] urls = ((URLClassLoader) getClass().getClassLoader()).getURLs();
-		URLClassLoader classLoader = new ClassHidingClassLoader(urls, hiddenClasses);
+		HideClassesClassLoader classLoader = new HideClassesClassLoader(hiddenClasses);
 		Class<?> javaVersionClass = classLoader
 				.loadClass(JavaVersion.class.getName());
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
