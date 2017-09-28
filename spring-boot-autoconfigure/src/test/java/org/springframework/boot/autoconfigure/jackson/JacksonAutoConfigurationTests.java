@@ -412,17 +412,19 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void customLocale() throws JsonProcessingException {
-		this.context.register(JacksonAutoConfiguration.class);
-		TestPropertyValues.of("spring.jackson.locale:de").applyTo(this.context);
-		TestPropertyValues.of("spring.jackson.date-format:zzzz").applyTo(this.context);
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context
-				.getBean(Jackson2ObjectMapperBuilder.class).build();
-
-		DateTime dateTime = new DateTime(1436966242231L, DateTimeZone.UTC);
-		assertThat(objectMapper.writeValueAsString(dateTime))
-				.isEqualTo("\"Koordinierte Universalzeit\"");
+	public void customLocaleWithJodaTime() throws JsonProcessingException {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(JacksonAutoConfiguration.class);
+		TestPropertyValues
+				.of("spring.jackson.locale:de_DE", "spring.jackson.date-format:zzzz",
+						"spring.jackson.serialization.write-dates-with-zone-id:true")
+				.applyTo(context);
+		context.refresh();
+		ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
+		DateTime jodaTime = new DateTime(1478424650000L,
+				DateTimeZone.forID("Europe/Rome"));
+		assertThat(objectMapper.writeValueAsString(jodaTime))
+				.startsWith("\"Mitteleuropäische ");
 	}
 
 	@Test
