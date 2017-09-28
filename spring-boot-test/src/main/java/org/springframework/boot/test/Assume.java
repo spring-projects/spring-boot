@@ -39,7 +39,7 @@ public abstract class Assume {
 		JavaVersion current = JavaVersion.getJavaVersion();
 		org.junit.Assume.assumeTrue(
 				String.format("This test should run on %s (got %s)", version, current),
-				current.isOlderThan(version));
+				current == version);
 	}
 
 }
