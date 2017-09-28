@@ -40,6 +40,22 @@ import static org.junit.Assert.assertTrue;
  */
 public class JarCommandIT {
 
+	private static final boolean java9OrLater;
+
+	static {
+		boolean loaded = false;
+		try {
+			Class.forName("java.security.cert.URICertStoreParameters");
+			loaded = true;
+		}
+		catch (Exception ex) {
+			// Continue
+		}
+		finally {
+			java9OrLater = loaded;
+		}
+	}
+
 	private final CommandLineInvoker cli = new CommandLineInvoker(
 			new File("src/it/resources/jar-command"));
 
@@ -67,11 +83,15 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("run", jar.getAbsolutePath(),
 				"bad.groovy");
 		invocation.await();
-		assertThat(invocation.getErrorOutput(), equalTo(""));
+		if (!java9OrLater) {
+			assertThat(invocation.getErrorOutput(), equalTo(""));
+		}
 		invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "bad.groovy");
 		invocation.await();
-		assertEquals(invocation.getErrorOutput(), 0,
-				invocation.getErrorOutput().length());
+		if (!java9OrLater) {
+			assertEquals(invocation.getErrorOutput(), 0,
+					invocation.getErrorOutput().length());
+		}
 		assertTrue(jar.exists());
 
 		Process process = new JavaExecutable()
@@ -79,7 +99,9 @@ public class JarCommandIT {
 		invocation = new Invocation(process);
 		invocation.await();
 
-		assertThat(invocation.getErrorOutput(), equalTo(""));
+		if (!java9OrLater) {
+			assertThat(invocation.getErrorOutput(), equalTo(""));
+		}
 	}
 
 	@Test
@@ -88,8 +110,10 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
 				"jar.groovy");
 		invocation.await();
-		assertEquals(invocation.getErrorOutput(), 0,
-				invocation.getErrorOutput().length());
+		if (!java9OrLater) {
+			assertEquals(invocation.getErrorOutput(), 0,
+					invocation.getErrorOutput().length());
+		}
 		assertTrue(jar.exists());
 
 		Process process = new JavaExecutable()
@@ -97,7 +121,9 @@ public class JarCommandIT {
 		invocation = new Invocation(process);
 		invocation.await();
 
-		assertThat(invocation.getErrorOutput(), equalTo(""));
+		if (!java9OrLater) {
+			assertThat(invocation.getErrorOutput(), equalTo(""));
+		}
 		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
 		assertThat(invocation.getStandardOutput(),
 				containsString("/BOOT-INF/classes!/public/public.txt"));
@@ -118,8 +144,10 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "--include",
 				"-public/**,-resources/**", "jar.groovy");
 		invocation.await();
-		assertEquals(invocation.getErrorOutput(), 0,
-				invocation.getErrorOutput().length());
+		if (!java9OrLater) {
+			assertEquals(invocation.getErrorOutput(), 0,
+					invocation.getErrorOutput().length());
+		}
 		assertTrue(jar.exists());
 
 		Process process = new JavaExecutable()
@@ -127,7 +155,9 @@ public class JarCommandIT {
 		invocation = new Invocation(process);
 		invocation.await();
 
-		assertThat(invocation.getErrorOutput(), equalTo(""));
+		if (!java9OrLater) {
+			assertThat(invocation.getErrorOutput(), equalTo(""));
+		}
 		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
 		assertThat(invocation.getStandardOutput(),
 				not(containsString("/public/public.txt")));
