@@ -36,6 +36,8 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
+import org.springframework.boot.system.JavaVersion;
+import org.springframework.boot.test.Assume;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -112,6 +114,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void changelogSql() {
+		Assume.javaVersion(JavaVersion.EIGHT);
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
 						"spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")
