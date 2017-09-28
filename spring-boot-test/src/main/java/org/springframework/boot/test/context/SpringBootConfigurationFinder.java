@@ -63,7 +63,7 @@ final class SpringBootConfigurationFinder {
 	}
 
 	private Class<?> scanPackage(String source) {
-		while (source.length() > 0) {
+		while (!source.isEmpty()) {
 			Set<BeanDefinition> components = this.scanner.findCandidateComponents(source);
 			if (!components.isEmpty()) {
 				Assert.state(components.size() == 1,

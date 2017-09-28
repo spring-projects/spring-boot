@@ -225,7 +225,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private File getTargetFile() {
 		String classifier = (this.classifier == null ? "" : this.classifier.trim());
-		if (classifier.length() > 0 && !classifier.startsWith("-")) {
+		if (!classifier.isEmpty() && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
 		if (!this.outputDirectory.exists()) {
@@ -292,7 +292,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
-				if (candidate != null && candidate.length() > 0) {
+				if (candidate != null && !candidate.isEmpty()) {
 					properties.put(key, candidate);
 					return;
 				}

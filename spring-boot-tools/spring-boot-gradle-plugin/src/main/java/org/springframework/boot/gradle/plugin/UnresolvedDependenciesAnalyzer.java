@@ -63,7 +63,7 @@ class UnresolvedDependenciesAnalyzer {
 
 	private boolean hasNoVersion(ModuleVersionSelector selector) {
 		String version = selector.getVersion();
-		return version == null || version.trim().length() == 0;
+		return version == null || version.trim().isEmpty();
 	}
 
 }

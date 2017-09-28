@@ -66,7 +66,7 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	private boolean hasMBean(String baseObjectName) throws MalformedObjectNameException {
 		ObjectName query = new ObjectName(baseObjectName + ",*");
-		return this.mBeanServer.queryNames(query, null).size() > 0;
+		return !this.mBeanServer.queryNames(query, null).isEmpty();
 	}
 
 	private String getStaticNames() {
