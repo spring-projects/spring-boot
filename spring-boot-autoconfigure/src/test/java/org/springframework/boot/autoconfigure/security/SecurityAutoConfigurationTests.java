@@ -150,15 +150,15 @@ public class SecurityAutoConfigurationTests {
 	public void testEventPublisherInjected() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestAuthenticationManagerConfiguration.class, SecurityAutoConfiguration.class,
+		this.context.register(TestAuthenticationManagerConfiguration.class,
+				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		AuthenticationListener listener = new AuthenticationListener();
 		this.context.addApplicationListener(listener);
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
 		manager.authenticate(new TestingAuthenticationToken("foo", "wrong"));
-		assertThat(listener.event)
-				.isInstanceOf(AuthenticationSuccessEvent.class);
+		assertThat(listener.event).isInstanceOf(AuthenticationSuccessEvent.class);
 	}
 
 	@Test
@@ -168,12 +168,14 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class);
 		this.context.refresh();
 		UserDetailsService manager = this.context.getBean(UserDetailsService.class);
-		assertThat(this.outputCapture.toString()).contains("Using default security password:");
+		assertThat(this.outputCapture.toString())
+				.contains("Using default security password:");
 		assertThat(manager.loadUserByUsername("user")).isNotNull();
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent() throws Exception {
+	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent()
+			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestAuthenticationManagerConfiguration.class,
@@ -181,13 +183,11 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		assertThat(manager)
-				.isEqualTo(this.context.getBean(
-						TestAuthenticationManagerConfiguration.class).authenticationManager);
+		assertThat(manager).isEqualTo(this.context.getBean(
+				TestAuthenticationManagerConfiguration.class).authenticationManager);
 		assertThat(this.outputCapture.toString())
 				.doesNotContain("Using default security password: ");
-		TestingAuthenticationToken token = new TestingAuthenticationToken(
-				"foo", "bar");
+		TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 		assertThat(manager.authenticate(token)).isNotNull();
 	}
 
@@ -199,25 +199,27 @@ public class SecurityAutoConfigurationTests {
 				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		UserDetailsService userDetailsService = this.context.getBean(UserDetailsService.class);
+		UserDetailsService userDetailsService = this.context
+				.getBean(UserDetailsService.class);
 		assertThat(this.outputCapture.toString())
 				.doesNotContain("Using default security password: ");
 		assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent() throws Exception {
+	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent()
+			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestAuthenticationProviderConfiguration.class,
 				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		AuthenticationProvider provider = this.context.getBean(AuthenticationProvider.class);
+		AuthenticationProvider provider = this.context
+				.getBean(AuthenticationProvider.class);
 		assertThat(this.outputCapture.toString())
 				.doesNotContain("Using default security password: ");
-		TestingAuthenticationToken token = new TestingAuthenticationToken(
-				"foo", "bar");
+		TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 		assertThat(provider.authenticate(token)).isNotNull();
 	}
 
@@ -311,7 +313,8 @@ public class SecurityAutoConfigurationTests {
 		@Bean
 		public AuthenticationManager myAuthenticationManager() {
 			AuthenticationProvider authenticationProvider = new TestingAuthenticationProvider();
-			this.authenticationManager = new ProviderManager(Collections.singletonList(authenticationProvider));
+			this.authenticationManager = new ProviderManager(
+					Collections.singletonList(authenticationProvider));
 			return this.authenticationManager;
 		}
 
@@ -322,7 +325,8 @@ public class SecurityAutoConfigurationTests {
 
 		@Bean
 		public InMemoryUserDetailsManager myUserDetailsService() {
-			return new InMemoryUserDetailsManager(User.withUsername("foo").password("bar").roles("USER").build());
+			return new InMemoryUserDetailsManager(
+					User.withUsername("foo").password("bar").roles("USER").build());
 		}
 
 	}

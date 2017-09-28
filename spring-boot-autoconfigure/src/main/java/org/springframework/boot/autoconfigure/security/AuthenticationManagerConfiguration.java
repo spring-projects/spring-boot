@@ -42,8 +42,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}. Adds an
- * {@link InMemoryUserDetailsManager} with a default user and generated password.
- * This can be disabled by providing a bean of type {@link AuthenticationManager},
+ * {@link InMemoryUserDetailsManager} with a default user and generated password. This can
+ * be disabled by providing a bean of type {@link AuthenticationManager},
  * {@link AuthenticationProvider} or {@link UserDetailsService}.
  *
  * @author Dave Syer
@@ -63,9 +63,9 @@ public class AuthenticationManagerConfiguration {
 			UserDetailsService.class })
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
 		String password = UUID.randomUUID().toString();
-		logger.info(
-				String.format("%n%nUsing default security password: %s%n", password));
-		return new InMemoryUserDetailsManager(User.withUsername("user").password(password).roles().build());
+		logger.info(String.format("%n%nUsing default security password: %s%n", password));
+		return new InMemoryUserDetailsManager(
+				User.withUsername("user").password(password).roles().build());
 	}
 
 	@Bean
