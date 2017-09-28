@@ -24,7 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.actuate.logger.LogFileWebEndpoint;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;

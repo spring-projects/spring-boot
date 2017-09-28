@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for AMQP and RabbitMQ.
+ * Actuator support for logging.
  */
 package org.springframework.boot.actuate.logging;

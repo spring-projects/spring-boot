@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.logging;
 
 import java.io.File;
 
-import org.springframework.boot.actuate.logger.LogFileWebEndpoint;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

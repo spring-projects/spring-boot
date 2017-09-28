@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.logger;
+package org.springframework.boot.actuate.logging;
 
 import java.io.File;
 import java.io.IOException;

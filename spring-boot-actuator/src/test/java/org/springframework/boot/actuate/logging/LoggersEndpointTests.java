@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.logger;
+package org.springframework.boot.actuate.logging;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.logging.LoggersEndpoint;
 import org.springframework.boot.actuate.logging.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;

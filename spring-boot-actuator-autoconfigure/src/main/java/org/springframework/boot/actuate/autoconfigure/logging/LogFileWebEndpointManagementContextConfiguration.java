@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.logging;
 
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.logger.LogFileWebEndpoint;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

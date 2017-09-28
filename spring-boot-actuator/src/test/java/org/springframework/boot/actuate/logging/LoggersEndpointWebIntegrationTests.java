@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.logger;
+package org.springframework.boot.actuate.logging;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +30,6 @@ import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
-import org.springframework.boot.actuate.logging.LoggersEndpoint;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
