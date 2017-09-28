@@ -175,7 +175,8 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 		DefaultScopeParentClassLoader(ClassLoader parent) {
 			super(parent);
-			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent), null);
+			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent),
+					parent.getParent());
 		}
 
 		private URL[] getGroovyJars(final ClassLoader parent) {
@@ -232,7 +233,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		@Override
 		protected Class<?> loadClass(String name, boolean resolve)
 				throws ClassNotFoundException {
-			this.groovyOnlyClassLoader.loadClass(name);
+			if (!name.startsWith("java.")) {
+				this.groovyOnlyClassLoader.loadClass(name);
+			}
 			return super.loadClass(name, resolve);
 		}
 
