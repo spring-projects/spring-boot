@@ -39,7 +39,7 @@ public class ParameterMappingException extends RuntimeException {
 	 * @param cause the cause of the mapping failure
 	 */
 	public ParameterMappingException(Object input, Class<?> type, Throwable cause) {
-		super("Failed to map " + input + " of type " + input.getClass() + " to  type "
+		super("Failed to map " + input + " of type " + input.getClass() + " to type "
 				+ type, cause);
 		this.input = input;
 		this.type = type;

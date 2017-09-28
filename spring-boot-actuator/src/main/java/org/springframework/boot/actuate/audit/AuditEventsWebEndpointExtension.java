@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDes
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.lang.Nullable;
 
 /**
  * {@link WebEndpointExtension} for the {@link AuditEventsEndpoint}.
@@ -40,10 +41,7 @@ public class AuditEventsWebEndpointExtension {
 
 	@ReadOperation
 	public WebEndpointResponse<AuditEventsDescriptor> eventsWithPrincipalDateAfterAndType(
-			String principal, Date after, String type) {
-		if (after == null) {
-			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
-		}
+			@Nullable String principal, Date after, @Nullable String type) {
 		AuditEventsDescriptor auditEvents = this.delegate
 				.eventsWithPrincipalDateAfterAndType(principal, after, type);
 		return new WebEndpointResponse<>(auditEvents);

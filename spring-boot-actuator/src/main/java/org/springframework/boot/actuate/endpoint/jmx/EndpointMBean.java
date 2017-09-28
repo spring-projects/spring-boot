@@ -33,6 +33,8 @@ import javax.management.ReflectionException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -79,11 +81,17 @@ public class EndpointMBean implements DynamicMBean {
 		if (operation != null) {
 			Map<String, Object> arguments = getArguments(params,
 					operation.getParameters());
-			Object result = operation.getInvoker().invoke(arguments);
-			if (REACTOR_PRESENT) {
-				result = ReactiveHandler.handle(result);
+			try {
+				Object result = operation.getInvoker().invoke(arguments);
+				if (REACTOR_PRESENT) {
+					result = ReactiveHandler.handle(result);
+				}
+				return this.operationResponseConverter.apply(result);
 			}
-			return this.operationResponseConverter.apply(result);
+			catch (ParametersMissingException | ParameterMappingException ex) {
+				throw new IllegalArgumentException(ex.getMessage());
+			}
+
 		}
 		throw new ReflectionException(new IllegalArgumentException(
 				String.format("Endpoint with id '%s' has no operation named %s",

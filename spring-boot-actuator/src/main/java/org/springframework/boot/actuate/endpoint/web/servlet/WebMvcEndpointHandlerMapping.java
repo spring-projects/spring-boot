@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
@@ -127,7 +128,7 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 			try {
 				return handleResult(this.operationInvoker.invoke(arguments), httpMethod);
 			}
-			catch (ParameterMappingException ex) {
+			catch (ParametersMissingException | ParameterMappingException ex) {
 				return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
 			}
 		}

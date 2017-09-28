@@ -19,9 +19,11 @@ package org.springframework.boot.actuate.endpoint;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -56,8 +58,28 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	@Override
 	public Object invoke(Map<String, Object> arguments) {
+		validateRequiredParameters(arguments);
 		return ReflectionUtils.invokeMethod(this.method, this.target,
 				resolveArguments(arguments));
+	}
+
+	private void validateRequiredParameters(Map<String, Object> arguments) {
+		Set<String> missingParameters = Stream.of(this.method.getParameters())
+				.filter(p -> isMissing(p, arguments))
+				.map(Parameter::getName)
+				.collect(Collectors.toSet());
+		if (!missingParameters.isEmpty()) {
+			throw new ParametersMissingException(missingParameters);
+		}
+	}
+
+	private boolean isMissing(Parameter parameter, Map<String, Object> arguments) {
+		Object resolved = arguments.get(parameter.getName());
+		return (resolved == null && !isExplicitNullable(parameter));
+	}
+
+	private boolean isExplicitNullable(Parameter parameter) {
+		return (parameter.getAnnotationsByType(Nullable.class).length != 0);
 	}
 
 	private Object[] resolveArguments(Map<String, Object> arguments) {

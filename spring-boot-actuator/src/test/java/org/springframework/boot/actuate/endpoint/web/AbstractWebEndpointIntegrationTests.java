@@ -47,6 +47,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -281,6 +282,20 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 						.valueMatches("Content-Type", "text/plain(;charset=.*)?"));
 	}
 
+	@Test
+	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() throws Exception {
+		load(RequiredParameterEndpointConfiguration.class,
+				(client) -> client.get().uri("/requiredparameters").exchange()
+						.expectStatus().isBadRequest());
+	}
+
+	@Test
+	public void readOperationWithMissingNullableParametersIsOk() throws Exception {
+		load(RequiredParameterEndpointConfiguration.class,
+				(client) -> client.get().uri("/requiredparameters?foo=hello").exchange()
+						.expectStatus().isOk());
+	}
+
 	protected abstract T createApplicationContext(Class<?>... config);
 
 	protected abstract int getPort(T context);
@@ -489,6 +504,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class RequiredParameterEndpointConfiguration {
+
+		@Bean
+		public RequiredParametersEndpoint requiredParametersEndpoint() {
+			return new RequiredParametersEndpoint();
+		}
+
+	}
+
 	@Endpoint(id = "test")
 	static class TestEndpoint {
 
@@ -509,7 +535,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@WriteOperation
-		public void write(String foo, String bar) {
+		public void write(@Nullable String foo, @Nullable String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
 
@@ -653,6 +679,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation(produces = "text/plain")
 		public String read() {
 			return "read";
+		}
+
+	}
+
+	@Endpoint(id = "requiredparameters")
+	static class RequiredParametersEndpoint {
+
+		@ReadOperation
+		public String read(String foo, @Nullable String bar) {
+			return foo;
 		}
 
 	}

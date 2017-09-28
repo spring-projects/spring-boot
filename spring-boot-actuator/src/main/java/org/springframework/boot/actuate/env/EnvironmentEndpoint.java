@@ -42,6 +42,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.lang.Nullable;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
@@ -72,7 +73,7 @@ public class EnvironmentEndpoint {
 	}
 
 	@ReadOperation
-	public EnvironmentDescriptor environment(String pattern) {
+	public EnvironmentDescriptor environment(@Nullable String pattern) {
 		if (StringUtils.hasText(pattern)) {
 			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate());
 		}

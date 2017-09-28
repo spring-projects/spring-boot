@@ -50,6 +50,7 @@ import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperat
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxAnnotationEndpointDiscoverer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.lang.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -265,6 +266,52 @@ public class EndpointMBeanTests {
 		});
 	}
 
+	@Test
+	public void invokeWithParameterMappingExceptionMapsToIllegalArgumentException() throws Exception {
+		load(FooEndpoint.class, (discoverer) -> {
+			ObjectName objectName = registerEndpoint(discoverer, "foo");
+			try {
+				this.server.invoke(objectName, "getOne",
+						new Object[] { "wrong" }, new String[] { String.class.getName() });
+			}
+			catch (Exception ex) {
+				assertThat(ex.getCause()).isExactlyInstanceOf(IllegalArgumentException.class);
+				assertThat(ex.getCause().getMessage()).isEqualTo(String.format("Failed to map wrong of type " +
+						"%s to type %s", String.class, FooName.class));
+			}
+		});
+	}
+
+	@Test
+	public void invokeWithMissingRequiredParameterExceptionMapsToIllegalArgumentException() throws Exception {
+		load(RequiredParametersEndpoint.class, (discoverer) -> {
+			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
+			try {
+				this.server.invoke(objectName, "read",
+						new Object[] {}, new String[] { String.class.getName() });
+			}
+			catch (Exception ex) {
+				assertThat(ex.getCause()).isExactlyInstanceOf(IllegalArgumentException.class);
+				assertThat(ex.getCause().getMessage()).isEqualTo("Failed to invoke operation because the following " +
+						"required parameters were missing: foo,baz");
+			}
+		});
+	}
+
+	@Test
+	public void invokeWithMissingNullableParameter() throws Exception {
+		load(RequiredParametersEndpoint.class, (discoverer) -> {
+			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
+			try {
+				this.server.invoke(objectName, "read",
+						new Object[] {null, "hello", "world"}, new String[] { String.class.getName() });
+			}
+			catch (Exception ex) {
+				throw new AssertionError("Nullable parameter should not be required.");
+			}
+		});
+	}
+
 	private ObjectName registerEndpoint(JmxAnnotationEndpointDiscoverer discoverer,
 			String endpointId) {
 		Collection<EndpointMBean> mBeans = this.jmxEndpointMBeanFactory
@@ -322,6 +369,16 @@ public class EndpointMBeanTests {
 		@DeleteOperation
 		public void deleteOne(FooName name) {
 			this.all.remove(name);
+		}
+
+	}
+
+	@Endpoint(id = "requiredparameters")
+	static class RequiredParametersEndpoint {
+
+		@ReadOperation
+		public String read(@Nullable String bar, String foo, String baz) {
+			return foo;
 		}
 
 	}

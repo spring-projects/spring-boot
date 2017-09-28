@@ -38,9 +38,6 @@ public class SessionsWebEndpointExtension {
 
 	@ReadOperation
 	public WebEndpointResponse<SessionsReport> sessionsForUsername(String username) {
-		if (username == null) {
-			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
-		}
 		SessionsReport sessions = this.delegate.sessionsForUsername(username);
 		return new WebEndpointResponse<>(sessions);
 	}

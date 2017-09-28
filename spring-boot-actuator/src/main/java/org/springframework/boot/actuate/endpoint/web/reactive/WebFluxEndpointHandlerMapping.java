@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
@@ -219,6 +220,8 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 		private Publisher<ResponseEntity<Object>> handleResult(Publisher<?> result,
 				HttpMethod httpMethod) {
 			return Mono.from(result).map(this::toResponseEntity)
+					.onErrorReturn(ParametersMissingException.class,
+							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
 					.onErrorReturn(ParameterMappingException.class,
 							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
 					.defaultIfEmpty(new ResponseEntity<>(httpMethod == HttpMethod.GET

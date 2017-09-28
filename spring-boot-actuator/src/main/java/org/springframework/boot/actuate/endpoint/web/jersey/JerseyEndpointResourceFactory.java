@@ -41,6 +41,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
@@ -145,7 +146,7 @@ public class JerseyEndpointResourceFactory {
 				Object response = this.operationInvoker.invoke(arguments);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}
-			catch (ParameterMappingException ex) {
+			catch (ParametersMissingException | ParameterMappingException ex) {
 				return Response.status(Status.BAD_REQUEST).build();
 			}
 		}
