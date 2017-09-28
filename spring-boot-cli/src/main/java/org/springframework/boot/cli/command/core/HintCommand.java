@@ -57,7 +57,7 @@ public class HintCommand extends AbstractCommand {
 			if (index == 0) {
 				showCommandHints(starting);
 			}
-			else if (!arguments.isEmpty() && (starting.length() > 0)) {
+			else if (!arguments.isEmpty() && !starting.isEmpty()) {
 				String command = arguments.remove(0);
 				showCommandOptionHints(command, Collections.unmodifiableList(arguments),
 						starting);

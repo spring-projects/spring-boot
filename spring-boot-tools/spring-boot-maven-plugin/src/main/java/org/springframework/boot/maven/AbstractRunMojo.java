@@ -201,7 +201,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private boolean hasJvmArgs() {
-		return (this.jvmArguments != null && this.jvmArguments.length() > 0);
+		return (this.jvmArguments != null && !this.jvmArguments.isEmpty());
 	}
 
 	private boolean hasWorkingDirectorySet() {

@@ -113,7 +113,7 @@ public class MockRestServiceServerAutoConfiguration {
 		private RequestExpectationManager getDelegate() {
 			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer
 					.getExpectationManagers();
-			Assert.state(expectationManagers.size() > 0,
+			Assert.state(!expectationManagers.isEmpty(),
 					"Unable to use auto-configured MockRestServiceServer since "
 							+ "MockServerRestTemplateCustomizer has not been bound to "
 							+ "a RestTemplate");

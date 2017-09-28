@@ -117,7 +117,7 @@ class ResourceMatcher {
 				value = value.substring(1);
 				minus.add(value);
 			}
-			else if (value.trim().length() > 0) {
+			else if (!value.trim().isEmpty()) {
 				result.add(value);
 			}
 		}
