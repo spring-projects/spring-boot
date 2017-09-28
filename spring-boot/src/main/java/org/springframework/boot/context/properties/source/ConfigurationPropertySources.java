@@ -52,7 +52,7 @@ public final class ConfigurationPropertySources {
 	 * @param propertySource the property source to test
 	 * @return {@code true} if this is the attached {@link ConfigurationPropertySource}
 	 */
-	public static boolean isMainConfigurationPropertySource(
+	public static boolean isAttachedConfigurationPropertySource(
 			PropertySource<?> propertySource) {
 		return ATTACHED_PROPERTY_SOURCE_NAME.equals(propertySource.getName());
 	}

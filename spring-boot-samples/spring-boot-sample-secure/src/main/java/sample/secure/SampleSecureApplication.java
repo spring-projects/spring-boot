@@ -39,7 +39,8 @@ public class SampleSecureApplication implements CommandLineRunner {
 
 	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
-		return new InMemoryUserDetailsManager(User.withUsername("user").password("password").roles("USER").build());
+		return new InMemoryUserDetailsManager(
+				User.withUsername("user").password("password").roles("USER").build());
 	}
 
 	@Override

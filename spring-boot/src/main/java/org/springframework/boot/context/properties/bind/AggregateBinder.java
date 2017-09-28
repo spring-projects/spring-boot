@@ -39,15 +39,14 @@ abstract class AggregateBinder<T> {
 	 * Perform binding for the aggregate.
 	 * @param name the configuration property name to bind
 	 * @param target the target to bind
-	 * @param itemBinder an item binder
+	 * @param elementBinder an element binder
 	 * @return the bound aggregate or null
 	 */
 	@SuppressWarnings("unchecked")
 	public final Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder itemBinder) {
+			AggregateElementBinder elementBinder) {
+		Object result = bindAggregate(name, target, elementBinder);
 		Supplier<?> value = target.getValue();
-		Class<?> type = (value == null ? target.getType().resolve() : null);
-		Object result = bind(name, target, itemBinder, type);
 		if (result == null || value == null || value.get() == null) {
 			return result;
 		}
@@ -59,11 +58,10 @@ abstract class AggregateBinder<T> {
 	 * @param name the configuration property name to bind
 	 * @param target the target to bind
 	 * @param elementBinder an element binder
-	 * @param type the aggregate actual type to use
 	 * @return the bound result
 	 */
-	protected abstract Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder elementBinder, Class<?> type);
+	protected abstract Object bindAggregate(ConfigurationPropertyName name,
+			Bindable<?> target, AggregateElementBinder elementBinder);
 
 	/**
 	 * Merge any additional elements into the existing aggregate.

@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.MapUserDetailsRepository;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsRepository;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -43,8 +42,8 @@ public class SampleSecureWebFluxApplication {
 
 	@Bean
 	public UserDetailsRepository userDetailsRepository() {
-		UserDetails user = User.withUsername("foo").password("password").roles("USER").build();
-		return new MapUserDetailsRepository(user);
+		return new MapUserDetailsRepository(
+				User.withUsername("foo").password("password").roles("USER").build());
 	}
 
 }

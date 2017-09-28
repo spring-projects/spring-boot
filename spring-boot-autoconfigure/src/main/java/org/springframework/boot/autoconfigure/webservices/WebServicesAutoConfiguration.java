@@ -154,11 +154,8 @@ public class WebServicesAutoConfiguration {
 			}
 		}
 
-		private static String ensureTrailingSlash(String path) {
-			if (!path.endsWith("/")) {
-				return path + "/";
-			}
-			return path;
+		private String ensureTrailingSlash(String path) {
+			return (path.endsWith("/") ? path : path + "/");
 		}
 
 	}

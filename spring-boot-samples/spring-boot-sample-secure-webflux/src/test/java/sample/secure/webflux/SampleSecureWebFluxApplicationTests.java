@@ -57,16 +57,14 @@ public class SampleSecureWebFluxApplicationTests {
 	@Test
 	public void userDefinedMappingsAccessibleOnLogin() {
 		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth())
-				.exchange()
+				.header("Authorization", "basic " + getBasicAuth()).exchange()
 				.expectBody(String.class).isEqualTo("Hello foo");
 	}
 
 	@Test
 	public void actuatorsAccessibleOnLogin() {
 		this.webClient.get().uri("/application/status").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth())
-				.exchange()
+				.header("Authorization", "basic " + getBasicAuth()).exchange()
 				.expectBody(String.class).isEqualTo("{\"status\":\"UP\"}");
 	}
 

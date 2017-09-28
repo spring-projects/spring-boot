@@ -42,11 +42,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * {@link Endpoint} to expose {@link ConfigurableEnvironment environment} information.
@@ -114,10 +112,8 @@ public class EnvironmentEndpoint {
 	private List<PropertySourceEntryDescriptor> toPropertySourceDescriptors(
 			Map<String, PropertyValueDescriptor> descriptors) {
 		List<PropertySourceEntryDescriptor> result = new ArrayList<>();
-		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
-			result.add(
-					new PropertySourceEntryDescriptor(entry.getKey(), entry.getValue()));
-		}
+		descriptors.forEach((name, property) -> result
+				.add(new PropertySourceEntryDescriptor(name, property)));
 		return result;
 	}
 
@@ -153,10 +149,10 @@ public class EnvironmentEndpoint {
 		return new PropertySourceDescriptor(sourceName, properties);
 	}
 
+	@SuppressWarnings("unchecked")
 	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source,
 			PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
-		@SuppressWarnings("unchecked")
 		String origin = (source instanceof OriginLookup)
 				? ((OriginLookup<Object>) source).getOrigin(name).toString() : null;
 		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
@@ -170,7 +166,7 @@ public class EnvironmentEndpoint {
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
 		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		for (PropertySource<?> source : getPropertySources()) {
-			if (!ConfigurationPropertySources.isMainConfigurationPropertySource(source)) {
+			if (!ConfigurationPropertySources.isAttachedConfigurationPropertySource(source)) {
 				extract("", map, source);
 			}
 		}
@@ -178,14 +174,10 @@ public class EnvironmentEndpoint {
 	}
 
 	private MutablePropertySources getPropertySources() {
-		MutablePropertySources sources;
 		if (this.environment instanceof ConfigurableEnvironment) {
-			sources = ((ConfigurableEnvironment) this.environment).getPropertySources();
+			return ((ConfigurableEnvironment) this.environment).getPropertySources();
 		}
-		else {
-			sources = new StandardEnvironment().getPropertySources();
-		}
-		return sources;
+		return new StandardEnvironment().getPropertySources();
 	}
 
 	private void extract(String root, Map<String, PropertySource<?>> map,
@@ -226,8 +218,10 @@ public class EnvironmentEndpoint {
 		@Override
 		protected String resolvePlaceholder(String placeholder) {
 			String value = super.resolvePlaceholder(placeholder);
-			return (value != null ? (String) this.sanitizer.sanitize(placeholder, value)
-					: null);
+			if (value == null) {
+				return null;
+			}
+			return (String) this.sanitizer.sanitize(placeholder, value);
 		}
 
 	}
@@ -317,6 +311,31 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
+	 * A description of a {@link PropertySource}.
+	 */
+	public static final class PropertySourceDescriptor {
+
+		private final String name;
+
+		private final Map<String, PropertyValueDescriptor> properties;
+
+		private PropertySourceDescriptor(String name,
+				Map<String, PropertyValueDescriptor> properties) {
+			this.name = name;
+			this.properties = properties;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Map<String, PropertyValueDescriptor> getProperties() {
+			return this.properties;
+		}
+
+	}
+
+	/**
 	 * A description of a particular entry of {@link PropertySource}.
 	 */
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -343,31 +362,6 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * A description of a {@link PropertySource}.
-	 */
-	public static final class PropertySourceDescriptor {
-
-		private final String name;
-
-		private final Map<String, PropertyValueDescriptor> properties;
-
-		private PropertySourceDescriptor(String name,
-				Map<String, PropertyValueDescriptor> properties) {
-			this.name = name;
-			this.properties = properties;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public Map<String, PropertyValueDescriptor> getProperties() {
-			return this.properties;
-		}
-
-	}
-
-	/**
 	 * A description of a property's value, including its origin if available.
 	 */
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -388,19 +382,6 @@ public class EnvironmentEndpoint {
 
 		public String getOrigin() {
 			return this.origin;
-		}
-
-	}
-
-	/**
-	 * Exception thrown when the specified property cannot be found.
-	 */
-	@SuppressWarnings("serial")
-	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such property")
-	public static class NoSuchPropertyException extends RuntimeException {
-
-		public NoSuchPropertyException(String string) {
-			super(string);
 		}
 
 	}

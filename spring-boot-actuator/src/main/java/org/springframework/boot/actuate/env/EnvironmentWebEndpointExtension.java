@@ -41,9 +41,14 @@ public class EnvironmentWebEndpointExtension {
 	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(
 			@Selector String toMatch) {
 		EnvironmentEntryDescriptor descriptor = this.delegate.environmentEntry(toMatch);
-		int status = descriptor.getProperty() != null ? WebEndpointResponse.STATUS_OK
-				: WebEndpointResponse.STATUS_NOT_FOUND;
-		return new WebEndpointResponse<>(descriptor, status);
+		return new WebEndpointResponse<>(descriptor, getStatus(descriptor));
+	}
+
+	private int getStatus(EnvironmentEntryDescriptor descriptor) {
+		if (descriptor.getProperty() == null) {
+			return WebEndpointResponse.STATUS_NOT_FOUND;
+		}
+		return WebEndpointResponse.STATUS_OK;
 	}
 
 }

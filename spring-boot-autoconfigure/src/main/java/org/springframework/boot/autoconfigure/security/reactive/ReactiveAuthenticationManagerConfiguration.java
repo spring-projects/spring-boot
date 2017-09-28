@@ -58,4 +58,5 @@ public class ReactiveAuthenticationManagerConfiguration {
 		UserDetails user = User.withUsername("user").password(password).roles().build();
 		return new MapUserDetailsRepository(user);
 	}
+
 }

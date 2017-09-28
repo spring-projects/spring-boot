@@ -35,7 +35,7 @@ import org.springframework.security.web.reactive.result.method.annotation.Authen
 @Configuration
 @ConditionalOnClass({ EnableWebFluxSecurity.class,
 		AuthenticationPrincipalArgumentResolver.class })
-@Import({ WebfluxSecurityConfiguration.class,
+@Import({ WebFluxSecurityConfiguration.class,
 		ReactiveAuthenticationManagerConfiguration.class })
 public class ReactiveSecurityAutoConfiguration {
 

@@ -27,7 +27,8 @@ public class HelloWebSecurityApplication {
 
 	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
-		return new InMemoryUserDetailsManager(User.withUsername("user").password("password").roles("USER").build());
+		return new InMemoryUserDetailsManager(
+				User.withUsername("user").password("password").roles("USER").build());
 	}
 
 	public static void main(String[] args) {

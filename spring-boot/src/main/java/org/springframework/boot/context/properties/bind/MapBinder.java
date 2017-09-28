@@ -46,13 +46,10 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	@Override
-	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder elementBinder, Class<?> type) {
-		Class<?> mapType = (type != null ? type
-				: ResolvableType
-						.forClassWithGenerics(Map.class, Object.class, Object.class)
-						.resolve());
-		Map<Object, Object> map = CollectionFactory.createMap(mapType, 0);
+	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
+			AggregateElementBinder elementBinder) {
+		Map<Object, Object> map = CollectionFactory.createMap(
+				(target.getValue() == null ? target.getType().resolve() : Map.class), 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {

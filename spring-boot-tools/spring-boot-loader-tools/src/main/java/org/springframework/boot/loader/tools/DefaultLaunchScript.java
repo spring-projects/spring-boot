@@ -124,9 +124,7 @@ public class DefaultLaunchScript implements LaunchScript {
 		if (propertyValue instanceof File) {
 			return loadContent((File) propertyValue);
 		}
-		else {
-			return loadContent(new File(propertyValue.toString()));
-		}
+		return loadContent(new File(propertyValue.toString()));
 	}
 
 	@Override

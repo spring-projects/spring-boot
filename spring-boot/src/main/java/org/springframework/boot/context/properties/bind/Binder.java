@@ -204,7 +204,6 @@ public class Binder {
 
 	private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, Object result) throws Exception {
-		result = convert(result, target);
 		if (result != null) {
 			result = handler.onSuccess(name, target, context, result);
 			result = convert(result, target);
