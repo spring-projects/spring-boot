@@ -129,7 +129,7 @@
 		<junit.version>4.12</junit.version>
 		<junit-jupiter.version>5.0.0</junit-jupiter.version>
 		<junit-platform.version>1.0.0</junit-platform.version>
-		<lettuce.version>5.0.0.RC2</lettuce.version>
+		<lettuce.version>5.0.0.BUILD-SNAPSHOT</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.9.1</log4j2.version>
 		<logback.version>1.2.3</logback.version>
