@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #    .   ____          _            __ _ _
 #   /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -28,11 +28,21 @@ WORKING_DIR="$(pwd)"
 [[ -n "$JARFILE" ]] && jarfile="$JARFILE"
 [[ -n "$APP_NAME" ]] && identity="$APP_NAME"
 
+if [[ -d /etc/rc\.d ]]; then
+  # System V init scripts folder on FreeBSD
+  sysv_dir="rc\.d"
+else
+  sysv_dir="init\.d"
+fi
+
 # Follow symlinks to find the real jar and detect init.d script
 cd "$(dirname "$0")" || exit 1
 [[ -z "$jarfile" ]] && jarfile=$(pwd)/$(basename "$0")
 while [[ -L "$jarfile" ]]; do
-  if [[ "$jarfile" =~ init\.d ]]; then
+  # Quoting the string argument to the [[ command's =~ operator forces
+  # string matching (as with the other pattern-matching operators).
+  # Since Bash v3.2.
+  if [[ "$jarfile" =~ $sysv_dir ]]; then
     init_script=$(basename "$jarfile")
   else
     configfile="${jarfile%.*}.conf"
