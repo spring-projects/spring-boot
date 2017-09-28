@@ -70,4 +70,22 @@ public enum JavaVersion {
 		return EIGHT;
 	}
 
+	/**
+	 * Return if this version is equal to or newer than a given version.
+	 * @param version the version to compare
+	 * @return {@code true} if this version is equal to or newer than {@code version}
+	 */
+	public boolean isEqualOrNewerThan(JavaVersion version) {
+		return compareTo(version) >= 0;
+	}
+
+	/**
+	 * Return if this version is older than a given version.
+	 * @param version the version to compare
+	 * @return {@code true} if this version is older than {@code version}
+	 */
+	public boolean isOlderThan(JavaVersion version) {
+		return compareTo(version) < 0;
+	}
+
 }

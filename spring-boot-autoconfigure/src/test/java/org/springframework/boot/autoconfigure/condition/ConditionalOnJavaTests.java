@@ -17,11 +17,7 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Function;
 
@@ -110,8 +106,7 @@ public class ConditionalOnJavaTests {
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
 		HideClassesClassLoader classLoader = new HideClassesClassLoader(hiddenClasses);
-		Class<?> javaVersionClass = classLoader
-				.loadClass(JavaVersion.class.getName());
+		Class<?> javaVersionClass = classLoader.loadClass(JavaVersion.class.getName());
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
 				"getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
@@ -124,34 +119,6 @@ public class ConditionalOnJavaTests {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
 				version);
 		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
-	}
-
-	private final class ClassHidingClassLoader extends URLClassLoader {
-
-		private final List<Class<?>> hiddenClasses;
-
-		private ClassHidingClassLoader(URL[] urls, Class<?>... hiddenClasses) {
-			super(urls, null);
-			this.hiddenClasses = Arrays.asList(hiddenClasses);
-		}
-
-		@Override
-		public Class<?> loadClass(String name) throws ClassNotFoundException {
-			if (isHidden(name)) {
-				throw new ClassNotFoundException();
-			}
-			return super.loadClass(name);
-		}
-
-		private boolean isHidden(String name) {
-			for (Class<?> hiddenClass : this.hiddenClasses) {
-				if (hiddenClass.getName().equals(name)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
 	}
 
 	@Configuration

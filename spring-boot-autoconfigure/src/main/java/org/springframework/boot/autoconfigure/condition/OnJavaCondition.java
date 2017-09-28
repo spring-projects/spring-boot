@@ -68,13 +68,13 @@ class OnJavaCondition extends SpringBootCondition {
 	 * @param version the bounds of the range
 	 * @return if this version is within the specified range
 	 */
-	private boolean isWithin(JavaVersion runningVersion, Range range, JavaVersion version) {
-		int i = runningVersion.compareTo(version);
+	private boolean isWithin(JavaVersion runningVersion, Range range,
+			JavaVersion version) {
 		if (range == Range.EQUAL_OR_NEWER) {
-			return i >= 0;
+			return runningVersion.isEqualOrNewerThan(version);
 		}
-		else if (range == Range.OLDER_THAN) {
-			return i < 0;
+		if (range == Range.OLDER_THAN) {
+			return runningVersion.isOlderThan(version);
 		}
 		throw new IllegalStateException("Unknown range " + range);
 	}

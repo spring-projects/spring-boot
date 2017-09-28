@@ -36,10 +36,10 @@ public abstract class Assume {
 	 * @throws AssumptionViolatedException if the assumption fails
 	 */
 	public static void javaVersion(JavaVersion version) {
-		JavaVersion currentVersion = JavaVersion.getJavaVersion();
-		boolean outcome = currentVersion.compareTo(JavaVersion.NINE) < 0;
-		org.junit.Assume.assumeTrue(String.format(
-				"This test should run on %s (got %s)", version, currentVersion), outcome);
+		JavaVersion current = JavaVersion.getJavaVersion();
+		org.junit.Assume.assumeTrue(
+				String.format("This test should run on %s (got %s)", version, current),
+				current.isOlderThan(version));
 	}
 
 }

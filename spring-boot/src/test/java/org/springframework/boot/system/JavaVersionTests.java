@@ -28,23 +28,53 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JavaVersionTests {
 
 	@Test
-	public void currentVersionIsAvailable() {
+	public void getJavaVersionShouldBeAvailable() {
 		assertThat(JavaVersion.getJavaVersion()).isNotNull();
 	}
 
 	@Test
-	public void java8IsOlderThanJava9() {
+	public void compareToWhenComparingSmallerToGreaterShouldBeLessThanZero() {
 		assertThat(JavaVersion.EIGHT.compareTo(JavaVersion.NINE)).isLessThan(0);
 	}
 
 	@Test
-	public void java9IsNewerThanJava8() {
+	public void compareToWhenComparingGreaterToSmallerShouldBeGreaterThanZero() {
 		assertThat(JavaVersion.NINE.compareTo(JavaVersion.EIGHT)).isGreaterThan(0);
 	}
 
 	@Test
-	public void comparisonOfSameVersion() {
+	public void compareToWhenComparingSameShouldBeZero() {
 		assertThat(JavaVersion.EIGHT.compareTo(JavaVersion.EIGHT)).isEqualTo(0);
+	}
+
+	@Test
+	public void isEqualOrNewerThanWhenComparingSameShouldBeTrue() throws Exception {
+		assertThat(JavaVersion.EIGHT.isEqualOrNewerThan(JavaVersion.EIGHT)).isTrue();
+	}
+
+	@Test
+	public void isEqualOrNewerThanWhenSmallerToGreaterShouldBeFalse() throws Exception {
+		assertThat(JavaVersion.EIGHT.isEqualOrNewerThan(JavaVersion.NINE)).isFalse();
+	}
+
+	@Test
+	public void isEqualOrNewerThanWhenGreaterToSmallerShouldBeTrue() throws Exception {
+		assertThat(JavaVersion.NINE.isEqualOrNewerThan(JavaVersion.EIGHT)).isTrue();
+	}
+
+	@Test
+	public void isOlderThanThanWhenComparingSameShouldBeFalse() throws Exception {
+		assertThat(JavaVersion.EIGHT.isOlderThan(JavaVersion.EIGHT)).isFalse();
+	}
+
+	@Test
+	public void isOlderThanWhenSmallerToGreaterShouldBeTrue() throws Exception {
+		assertThat(JavaVersion.EIGHT.isOlderThan(JavaVersion.NINE)).isTrue();
+	}
+
+	@Test
+	public void isOlderThanWhenGreaterToSmallerShouldBeFalse() throws Exception {
+		assertThat(JavaVersion.NINE.isOlderThan(JavaVersion.EIGHT)).isFalse();
 	}
 
 }
