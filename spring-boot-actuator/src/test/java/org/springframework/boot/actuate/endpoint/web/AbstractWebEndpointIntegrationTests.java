@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,8 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 public abstract class AbstractWebEndpointIntegrationTests<T extends ConfigurableApplicationContext> {
+
+	private static final Duration TIMEOUT = Duration.ofSeconds(30);
 
 	private final Class<?> exporterConfiguration;
 
@@ -311,11 +314,9 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 				"test", Collections.singletonMap("endpointPath", endpointPath)));
 		context.refresh();
 		try {
-			consumer.accept(context,
-					WebTestClient.bindToServer()
-							.baseUrl(
-									"http://localhost:" + getPort(context) + endpointPath)
-							.build());
+			String url = "http://localhost:" + getPort(context) + endpointPath;
+			consumer.accept(context, WebTestClient.bindToServer().baseUrl(url)
+					.responseTimeout(TIMEOUT).build());
 		}
 		finally {
 			context.close();
