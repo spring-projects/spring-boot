@@ -1,0 +1,4 @@
+#
+# Test flexy-pool data source wrapping for testing purposes only.
+#
+org.springframework.boot.autoconfigure.jdbc.decorator.DataSourceDecoratorConfigurationTests$TestMetricsFactoryService

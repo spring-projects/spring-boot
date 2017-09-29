@@ -62,7 +62,8 @@ public class DataSourceAutoConfigurationTests {
 		EmbeddedDatabaseConnection.override = null;
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt(),
+				"spring.datasource.decorator.enabled:false");
 	}
 
 	@After
@@ -239,6 +240,19 @@ public class DataSourceAutoConfigurationTests {
 		assertThat(pool.getDriverClassName()).isEqualTo(
 				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseTestDriver");
 		assertThat(pool.getUsername()).isNull();
+	}
+
+	@Test
+	public void testHikariSpecificPropertiesIsSet() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+			"spring.datasource.type:" + HikariDataSource.class.getName(),
+			"spring.datasource.hikari.catalog:test_catalog");
+		this.context.register(DataSourceAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		HikariDataSource dataSource = this.context.getBean(HikariDataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource.getCatalog()).isEqualTo("test_catalog");
 	}
 
 	@Test

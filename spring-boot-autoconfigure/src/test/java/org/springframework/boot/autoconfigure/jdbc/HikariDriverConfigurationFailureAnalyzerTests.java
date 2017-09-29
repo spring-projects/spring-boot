@@ -63,7 +63,8 @@ public class HikariDriverConfigurationFailureAnalyzerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context,
 				"spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.data-source-class-name=com.example.Foo");
+				"spring.datasource.hikari.data-source-class-name=com.example.Foo",
+				"spring.datasource.decorator.enabled:false");
 		context.register(configuration);
 		try {
 			context.refresh();

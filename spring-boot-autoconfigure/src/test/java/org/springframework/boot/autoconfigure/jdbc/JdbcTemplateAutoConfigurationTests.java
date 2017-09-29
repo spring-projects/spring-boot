@@ -54,6 +54,7 @@ public class JdbcTemplateAutoConfigurationTests {
 		EmbeddedDatabaseConnection.override = null;
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false",
+				"spring.datasource.decorator.enabled:false",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
 	}
 

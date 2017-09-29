@@ -49,6 +49,7 @@ public class CommonsDbcpDataSourceConfigurationTests {
 		this.context.register(CommonsDbcpDataSourceConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+		assertThat(this.context.getBean(BasicDataSource.class)).isNotNull();
 		this.context.close();
 	}
 

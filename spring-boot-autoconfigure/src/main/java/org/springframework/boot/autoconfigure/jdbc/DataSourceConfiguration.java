@@ -37,8 +37,8 @@ import org.springframework.context.annotation.Bean;
 abstract class DataSourceConfiguration {
 
 	@SuppressWarnings("unchecked")
-	protected <T> T createDataSource(DataSourceProperties properties,
-			Class<? extends DataSource> type) {
+	protected <T extends DataSource> T createDataSource(DataSourceProperties properties,
+			Class<T> type) {
 		return (T) properties.initializeDataSourceBuilder().type(type).build();
 	}
 
@@ -111,7 +111,7 @@ abstract class DataSourceConfiguration {
 	}
 
 	/**
-	 * DBCP DataSource configuration.
+	 * DBCP2 DataSource configuration.
 	 */
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)

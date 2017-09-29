@@ -70,7 +70,8 @@ public class DataSourceInitializerTests {
 		EmbeddedDatabaseConnection.override = null;
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt(),
+				"spring.datasource.decorator.enabled:false");
 	}
 
 	@After
