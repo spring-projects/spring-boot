@@ -255,7 +255,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		}
 		if (parent.lastIndexOf("/") != -1) {
 			parent = parent.substring(0, parent.lastIndexOf("/") + 1);
-			if (parent.length() > 0) {
+			if (!parent.isEmpty()) {
 				writeEntry(new JarArchiveEntry(parent), null);
 			}
 		}

@@ -98,7 +98,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	public MockRestServiceServer getServer() {
-		Assert.state(this.servers.size() > 0,
+		Assert.state(!this.servers.isEmpty(),
 				"Unable to return a single MockRestServiceServer since "
 						+ "MockServerRestTemplateCustomizer has not been bound to "
 						+ "a RestTemplate");
