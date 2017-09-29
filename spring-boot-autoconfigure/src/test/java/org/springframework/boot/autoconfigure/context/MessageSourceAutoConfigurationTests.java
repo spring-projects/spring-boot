@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
@@ -104,31 +105,41 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testFallbackDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale()).isTrue();
+		assertThat(isFallbackToSystemLocale(this.context.getBean(MessageSource.class)))
+				.isTrue();
 	}
 
 	@Test
 	public void testFallbackTurnOff() throws Exception {
 		load("spring.messages.basename:test/messages",
 				"spring.messages.fallback-to-system-locale:false");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale()).isFalse();
+		assertThat(isFallbackToSystemLocale(this.context.getBean(MessageSource.class)))
+				.isFalse();
 	}
 
 	@Test
 	public void testFormatMessageDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isAlwaysUseMessageFormat()).isFalse();
+		assertThat(isAlwaysUseMessageFormat(this.context.getBean(MessageSource.class)))
+				.isFalse();
 	}
 
 	@Test
 	public void testFormatMessageOn() throws Exception {
 		load("spring.messages.basename:test/messages",
 				"spring.messages.always-use-message-format:true");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isAlwaysUseMessageFormat()).isTrue();
+		assertThat(isAlwaysUseMessageFormat(this.context.getBean(MessageSource.class)))
+				.isTrue();
+	}
+
+	private boolean isFallbackToSystemLocale(MessageSource messageSource) {
+		return (boolean) new DirectFieldAccessor(messageSource)
+				.getPropertyValue("fallbackToSystemLocale");
+	}
+
+	private boolean isAlwaysUseMessageFormat(MessageSource messageSource) {
+		return (boolean) new DirectFieldAccessor(messageSource)
+				.getPropertyValue("alwaysUseMessageFormat");
 	}
 
 	@Test
