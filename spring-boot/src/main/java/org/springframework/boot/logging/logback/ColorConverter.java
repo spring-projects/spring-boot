@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,35 +38,35 @@ import org.springframework.boot.ansi.AnsiStyle;
  */
 public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 
-	private static final Map<String, AnsiElement> ELEMENTS;
+	private static final Map<String, AnsiElement> elements;
 
 	static {
-		Map<String, AnsiElement> elements = new HashMap<String, AnsiElement>();
-		elements.put("faint", AnsiStyle.FAINT);
-		elements.put("red", AnsiColor.RED);
-		elements.put("green", AnsiColor.GREEN);
-		elements.put("yellow", AnsiColor.YELLOW);
-		elements.put("blue", AnsiColor.BLUE);
-		elements.put("magenta", AnsiColor.MAGENTA);
-		elements.put("cyan", AnsiColor.CYAN);
-		ELEMENTS = Collections.unmodifiableMap(elements);
+		Map<String, AnsiElement> ansiElements = new HashMap<String, AnsiElement>();
+		ansiElements.put("faint", AnsiStyle.FAINT);
+		ansiElements.put("red", AnsiColor.RED);
+		ansiElements.put("green", AnsiColor.GREEN);
+		ansiElements.put("yellow", AnsiColor.YELLOW);
+		ansiElements.put("blue", AnsiColor.BLUE);
+		ansiElements.put("magenta", AnsiColor.MAGENTA);
+		ansiElements.put("cyan", AnsiColor.CYAN);
+		elements = Collections.unmodifiableMap(ansiElements);
 	}
 
-	private static final Map<Integer, AnsiElement> LEVELS;
+	private static final Map<Integer, AnsiElement> levels;
 
 	static {
-		Map<Integer, AnsiElement> levels = new HashMap<Integer, AnsiElement>();
-		levels.put(Level.ERROR_INTEGER, AnsiColor.RED);
-		levels.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
-		LEVELS = Collections.unmodifiableMap(levels);
+		Map<Integer, AnsiElement> ansiLevels = new HashMap<Integer, AnsiElement>();
+		ansiLevels.put(Level.ERROR_INTEGER, AnsiColor.RED);
+		ansiLevels.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
+		levels = Collections.unmodifiableMap(ansiLevels);
 	}
 
 	@Override
 	protected String transform(ILoggingEvent event, String in) {
-		AnsiElement element = ELEMENTS.get(getFirstOption());
+		AnsiElement element = elements.get(getFirstOption());
 		if (element == null) {
 			// Assume highlighting
-			element = LEVELS.get(event.getLevel().toInteger());
+			element = levels.get(event.getLevel().toInteger());
 			element = (element == null ? AnsiColor.GREEN : element);
 		}
 		return toAnsiString(in, element);

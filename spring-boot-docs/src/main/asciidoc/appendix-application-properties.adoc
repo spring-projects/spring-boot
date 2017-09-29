@@ -1022,7 +1022,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.flyway.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.health.enabled= # Enable the endpoint.
 	endpoints.health.id= # Endpoint identifier.
-	endpoints.health.mapping.*= # Mapping of health statuses to HttpStatus codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
+	endpoints.health.mapping.*= # Mapping of health statuses to HTTP status codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
 	endpoints.health.path= # Endpoint path.
 	endpoints.health.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.health.time-to-live=1000 # Time to live for cached result, in milliseconds.
