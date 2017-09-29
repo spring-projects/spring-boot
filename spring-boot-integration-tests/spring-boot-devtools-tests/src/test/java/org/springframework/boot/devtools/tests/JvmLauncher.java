@@ -49,10 +49,10 @@ class JvmLauncher implements TestRule {
 				.asList(System.getProperty("java.home") + "/bin/java", "-cp", classpath));
 		command.addAll(Arrays.asList(args));
 		File standardOut = new File(this.outputDirectory, name + ".out");
+		File standardError = new File(this.outputDirectory, name + ".err");
 		Process process = new ProcessBuilder(command.toArray(new String[command.size()]))
-				.redirectError(new File(this.outputDirectory, name + ".err"))
-				.redirectOutput(standardOut).start();
-		return new LaunchedJvm(process, standardOut);
+				.redirectError(standardError).redirectOutput(standardOut).start();
+		return new LaunchedJvm(process, standardOut, standardError);
 	}
 
 	static class LaunchedJvm {
@@ -61,9 +61,12 @@ class JvmLauncher implements TestRule {
 
 		private final File standardOut;
 
-		LaunchedJvm(Process process, File standardOut) {
+		private final File standardError;
+
+		LaunchedJvm(Process process, File standardOut, File standardError) {
 			this.process = process;
 			this.standardOut = standardOut;
+			this.standardError = standardError;
 		}
 
 		Process getProcess() {
@@ -72,6 +75,10 @@ class JvmLauncher implements TestRule {
 
 		File getStandardOut() {
 			return this.standardOut;
+		}
+
+		File getStandardError() {
+			return this.standardError;
 		}
 
 	}

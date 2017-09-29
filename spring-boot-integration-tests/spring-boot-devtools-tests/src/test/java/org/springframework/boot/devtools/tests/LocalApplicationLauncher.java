@@ -37,7 +37,7 @@ public class LocalApplicationLauncher implements ApplicationLauncher {
 		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(),
 				"com.example.DevToolsTestApplication", "--server.port=0");
 		return new LaunchedApplication(new File("target/app"), jvm.getStandardOut(),
-				jvm.getProcess());
+				jvm.getStandardError(), jvm.getProcess());
 	}
 
 	protected String createApplicationClassPath() throws Exception {

@@ -48,8 +48,8 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 				"--spring.devtools.remote.secret=secret", "http://localhost:12345");
 		awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
 		return new LaunchedApplication(new File("target/remote"),
-				applicationJvm.getStandardOut(), applicationJvm.getProcess(),
-				remoteSpringApplicationJvm.getProcess());
+				applicationJvm.getStandardOut(), applicationJvm.getStandardError(),
+				applicationJvm.getProcess(), remoteSpringApplicationJvm.getProcess());
 	}
 
 	protected abstract String createApplicationClassPath() throws Exception;

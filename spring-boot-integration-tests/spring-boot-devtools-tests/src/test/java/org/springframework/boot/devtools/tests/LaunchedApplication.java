@@ -29,11 +29,15 @@ class LaunchedApplication {
 
 	private final File standardOut;
 
+	private final File standardError;
+
 	private final Process[] processes;
 
-	LaunchedApplication(File classesDirectory, File standardOut, Process... processes) {
+	LaunchedApplication(File classesDirectory, File standardOut, File standardError,
+			Process... processes) {
 		this.classesDirectory = classesDirectory;
 		this.standardOut = standardOut;
+		this.standardError = standardError;
 		this.processes = processes;
 	}
 
@@ -46,6 +50,10 @@ class LaunchedApplication {
 
 	File getStandardOut() {
 		return this.standardOut;
+	}
+
+	File getStandardError() {
+		return this.standardError;
 	}
 
 	File getClassesDirectory() {

@@ -142,9 +142,11 @@ public class DevToolsIntegrationTests {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(
 						"server.port file was not written within 30 seconds. "
-								+ "Application output:%n%s",
+								+ "Application output:%n%s%s",
 						FileCopyUtils.copyToString(new FileReader(
-								this.launchedApplication.getStandardOut()))));
+								this.launchedApplication.getStandardOut())),
+						FileCopyUtils.copyToString(new FileReader(
+								this.launchedApplication.getStandardError()))));
 			}
 			Thread.sleep(100);
 		}
