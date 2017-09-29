@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,13 +91,33 @@ final class ChangeableUrls implements Iterable<URL> {
 		return this.urls.toString();
 	}
 
-	public static ChangeableUrls fromUrlClassLoader(URLClassLoader classLoader) {
+	public static ChangeableUrls fromClassLoader(ClassLoader classLoader) {
 		List<URL> urls = new ArrayList<>();
-		for (URL url : classLoader.getURLs()) {
+		for (URL url : urlsFromClassLoader(classLoader)) {
 			urls.add(url);
 			urls.addAll(getUrlsFromClassPathOfJarManifestIfPossible(url));
 		}
 		return fromUrls(urls);
+	}
+
+	private static URL[] urlsFromClassLoader(ClassLoader classLoader) {
+		if (classLoader instanceof URLClassLoader) {
+			return ((URLClassLoader) classLoader).getURLs();
+		}
+		return Stream
+				.of(ManagementFactory.getRuntimeMXBean().getClassPath()
+						.split(File.pathSeparator))
+				.map(ChangeableUrls::toURL).toArray(URL[]::new);
+	}
+
+	private static URL toURL(String classPathEntry) {
+		try {
+			return new File(classPathEntry).toURI().toURL();
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalArgumentException(
+					"URL could not be created from '" + classPathEntry + "'", ex);
+		}
 	}
 
 	private static List<URL> getUrlsFromClassPathOfJarManifestIfPossible(URL url) {
