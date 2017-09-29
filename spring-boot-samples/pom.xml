@@ -259,4 +259,26 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+	<profiles>
+		<profile>
+			<id>java9</id>
+			<activation>
+				<jdk>9</jdk>
+			</activation>
+			<properties>
+				<aspectj.version>1.9.0.BETA-7</aspectj.version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<argLine>--add-modules java.base,java.xml.bind</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
