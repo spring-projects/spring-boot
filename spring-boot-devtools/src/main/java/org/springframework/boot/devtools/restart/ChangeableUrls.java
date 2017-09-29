@@ -138,8 +138,8 @@ final class ChangeableUrls implements Iterable<URL> {
 			return Collections.emptyList();
 		}
 		String[] entries = StringUtils.delimitedListToStringArray(classPath, " ");
-		List<URL> urls = new ArrayList<>(entries.length);
-		List<URL> nonExistentEntries = new ArrayList<>();
+		List<URL> urls = new ArrayList<URL>(entries.length);
+		List<URL> nonExistentEntries = new ArrayList<URL>();
 		for (String entry : entries) {
 			try {
 				URL referenced = new URL(jarUrl, entry);
