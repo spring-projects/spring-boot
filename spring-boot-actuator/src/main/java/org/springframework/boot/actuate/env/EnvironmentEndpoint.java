@@ -167,7 +167,8 @@ public class EnvironmentEndpoint {
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
 		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		for (PropertySource<?> source : getPropertySources()) {
-			if (!ConfigurationPropertySources.isAttachedConfigurationPropertySource(source)) {
+			if (!ConfigurationPropertySources
+					.isAttachedConfigurationPropertySource(source)) {
 				extract("", map, source);
 			}
 		}

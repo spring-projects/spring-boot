@@ -65,8 +65,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	private void validateRequiredParameters(Map<String, Object> arguments) {
 		Set<String> missingParameters = Stream.of(this.method.getParameters())
-				.filter(p -> isMissing(p, arguments))
-				.map(Parameter::getName)
+				.filter((p) -> isMissing(p, arguments)).map(Parameter::getName)
 				.collect(Collectors.toSet());
 		if (!missingParameters.isEmpty()) {
 			throw new ParametersMissingException(missingParameters);

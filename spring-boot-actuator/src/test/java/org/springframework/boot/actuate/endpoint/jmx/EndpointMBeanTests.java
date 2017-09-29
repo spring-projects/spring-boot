@@ -267,33 +267,39 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeWithParameterMappingExceptionMapsToIllegalArgumentException() throws Exception {
+	public void invokeWithParameterMappingExceptionMapsToIllegalArgumentException()
+			throws Exception {
 		load(FooEndpoint.class, (discoverer) -> {
 			ObjectName objectName = registerEndpoint(discoverer, "foo");
 			try {
-				this.server.invoke(objectName, "getOne",
-						new Object[] { "wrong" }, new String[] { String.class.getName() });
+				this.server.invoke(objectName, "getOne", new Object[] { "wrong" },
+						new String[] { String.class.getName() });
 			}
 			catch (Exception ex) {
-				assertThat(ex.getCause()).isExactlyInstanceOf(IllegalArgumentException.class);
-				assertThat(ex.getCause().getMessage()).isEqualTo(String.format("Failed to map wrong of type " +
-						"%s to type %s", String.class, FooName.class));
+				assertThat(ex.getCause())
+						.isExactlyInstanceOf(IllegalArgumentException.class);
+				assertThat(ex.getCause().getMessage()).isEqualTo(
+						String.format("Failed to map wrong of type " + "%s to type %s",
+								String.class, FooName.class));
 			}
 		});
 	}
 
 	@Test
-	public void invokeWithMissingRequiredParameterExceptionMapsToIllegalArgumentException() throws Exception {
+	public void invokeWithMissingRequiredParameterExceptionMapsToIllegalArgumentException()
+			throws Exception {
 		load(RequiredParametersEndpoint.class, (discoverer) -> {
 			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
 			try {
-				this.server.invoke(objectName, "read",
-						new Object[] {}, new String[] { String.class.getName() });
+				this.server.invoke(objectName, "read", new Object[] {},
+						new String[] { String.class.getName() });
 			}
 			catch (Exception ex) {
-				assertThat(ex.getCause()).isExactlyInstanceOf(IllegalArgumentException.class);
-				assertThat(ex.getCause().getMessage()).isEqualTo("Failed to invoke operation because the following " +
-						"required parameters were missing: foo,baz");
+				assertThat(ex.getCause())
+						.isExactlyInstanceOf(IllegalArgumentException.class);
+				assertThat(ex.getCause().getMessage())
+						.isEqualTo("Failed to invoke operation because the following "
+								+ "required parameters were missing: foo,baz");
 			}
 		});
 	}
@@ -304,7 +310,8 @@ public class EndpointMBeanTests {
 			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
 			try {
 				this.server.invoke(objectName, "read",
-						new Object[] {null, "hello", "world"}, new String[] { String.class.getName() });
+						new Object[] { null, "hello", "world" },
+						new String[] { String.class.getName() });
 			}
 			catch (Exception ex) {
 				throw new AssertionError("Nullable parameter should not be required.");

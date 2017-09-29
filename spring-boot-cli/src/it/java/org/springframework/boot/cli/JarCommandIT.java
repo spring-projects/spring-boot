@@ -40,21 +40,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class JarCommandIT {
 
-	private static final boolean java9OrLater;
-
-	static {
-		boolean loaded = false;
-		try {
-			Class.forName("java.security.cert.URICertStoreParameters");
-			loaded = true;
-		}
-		catch (Exception ex) {
-			// Continue
-		}
-		finally {
-			java9OrLater = loaded;
-		}
-	}
+	private static final boolean JAVA_9_OR_LATER = isClassPresent(
+			"java.security.cert.URICertStoreParameters");
 
 	private final CommandLineInvoker cli = new CommandLineInvoker(
 			new File("src/it/resources/jar-command"));
@@ -83,12 +70,12 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("run", jar.getAbsolutePath(),
 				"bad.groovy");
 		invocation.await();
-		if (!java9OrLater) {
+		if (!JAVA_9_OR_LATER) {
 			assertThat(invocation.getErrorOutput(), equalTo(""));
 		}
 		invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "bad.groovy");
 		invocation.await();
-		if (!java9OrLater) {
+		if (!JAVA_9_OR_LATER) {
 			assertEquals(invocation.getErrorOutput(), 0,
 					invocation.getErrorOutput().length());
 		}
@@ -99,7 +86,7 @@ public class JarCommandIT {
 		invocation = new Invocation(process);
 		invocation.await();
 
-		if (!java9OrLater) {
+		if (!JAVA_9_OR_LATER) {
 			assertThat(invocation.getErrorOutput(), equalTo(""));
 		}
 	}
@@ -110,7 +97,7 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
 				"jar.groovy");
 		invocation.await();
-		if (!java9OrLater) {
+		if (!JAVA_9_OR_LATER) {
 			assertEquals(invocation.getErrorOutput(), 0,
 					invocation.getErrorOutput().length());
 		}
@@ -121,7 +108,7 @@ public class JarCommandIT {
 		invocation = new Invocation(process);
 		invocation.await();
 
-		if (!java9OrLater) {
+		if (!JAVA_9_OR_LATER) {
 			assertThat(invocation.getErrorOutput(), equalTo(""));
 		}
 		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
@@ -144,7 +131,7 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "--include",
 				"-public/**,-resources/**", "jar.groovy");
 		invocation.await();
-		if (!java9OrLater) {
+		if (!JAVA_9_OR_LATER) {
 			assertEquals(invocation.getErrorOutput(), 0,
 					invocation.getErrorOutput().length());
 		}
@@ -155,7 +142,7 @@ public class JarCommandIT {
 		invocation = new Invocation(process);
 		invocation.await();
 
-		if (!java9OrLater) {
+		if (!JAVA_9_OR_LATER) {
 			assertThat(invocation.getErrorOutput(), equalTo(""));
 		}
 		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
@@ -168,4 +155,15 @@ public class JarCommandIT {
 				containsString("/templates/template.txt"));
 		assertThat(invocation.getStandardOutput(), containsString("Goodbye Mama"));
 	}
+
+	private static boolean isClassPresent(String name) {
+		try {
+			Class.forName(name);
+			return true;
+		}
+		catch (Exception ex) {
+			return false;
+		}
+	}
+
 }

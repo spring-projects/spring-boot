@@ -283,17 +283,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() throws Exception {
-		load(RequiredParameterEndpointConfiguration.class,
-				(client) -> client.get().uri("/requiredparameters").exchange()
-						.expectStatus().isBadRequest());
+	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse()
+			throws Exception {
+		load(RequiredParameterEndpointConfiguration.class, (client) -> client.get()
+				.uri("/requiredparameters").exchange().expectStatus().isBadRequest());
 	}
 
 	@Test
 	public void readOperationWithMissingNullableParametersIsOk() throws Exception {
-		load(RequiredParameterEndpointConfiguration.class,
-				(client) -> client.get().uri("/requiredparameters?foo=hello").exchange()
-						.expectStatus().isOk());
+		load(RequiredParameterEndpointConfiguration.class, (client) -> client.get()
+				.uri("/requiredparameters?foo=hello").exchange().expectStatus().isOk());
 	}
 
 	protected abstract T createApplicationContext(Class<?>... config);
