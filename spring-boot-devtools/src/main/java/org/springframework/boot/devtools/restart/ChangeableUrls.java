@@ -104,7 +104,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			return Collections.<URL>emptyList();
 		}
 		try {
-			return getUrlsFromManifestClassPathAttribute(jarFile);
+			return getUrlsFromManifestClassPathAttribute(url, jarFile);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(
@@ -126,8 +126,8 @@ final class ChangeableUrls implements Iterable<URL> {
 		return null;
 	}
 
-	private static List<URL> getUrlsFromManifestClassPathAttribute(JarFile jarFile)
-			throws IOException {
+	private static List<URL> getUrlsFromManifestClassPathAttribute(URL jarUrl,
+			JarFile jarFile) throws IOException {
 		Manifest manifest = jarFile.getManifest();
 		if (manifest == null) {
 			return Collections.<URL>emptyList();
@@ -138,17 +138,13 @@ final class ChangeableUrls implements Iterable<URL> {
 			return Collections.emptyList();
 		}
 		String[] entries = StringUtils.delimitedListToStringArray(classPath, " ");
-		List<URL> urls = new ArrayList<URL>(entries.length);
-		File parent = new File(jarFile.getName()).getParentFile();
-		List<File> nonExistentEntries = new ArrayList<File>();
+		List<URL> urls = new ArrayList<>(entries.length);
+		List<URL> nonExistentEntries = new ArrayList<>();
 		for (String entry : entries) {
 			try {
-				File referenced = new File(entry);
-				if (!referenced.isAbsolute()) {
-					referenced = new File(parent, entry);
-				}
-				if (referenced.exists()) {
-					urls.add(referenced.toURI().toURL());
+				URL referenced = new URL(jarUrl, entry);
+				if (new File(referenced.getFile()).exists()) {
+					urls.add(referenced);
 				}
 				else {
 					nonExistentEntries.add(referenced);
