@@ -74,7 +74,7 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	}
 
 	/**
-	 * Specify an alternative timeout {@link Health} if an {@link HealthIndicator} failed
+	 * Specify an alternative timeout {@link Health} if a {@link HealthIndicator} failed
 	 * to reply after specified {@code timeout}.
 	 * @param timeout number of milliseconds to wait before using the
 	 * {@code timeoutHealth}

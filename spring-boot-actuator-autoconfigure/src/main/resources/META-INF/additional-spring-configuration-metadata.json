@@ -513,7 +513,7 @@
   {
     "name": "endpoints.health.mapping",
     "type": "java.util.Map<java.lang.String,org.springframework.http.HttpStatus>",
-    "description": "Mapping of health statuses to HttpStatus codes. By default, registered health\n statuses map to sensible defaults (i.e. UP maps to 200).",
+    "description": "Mapping of health statuses to HTTP status codes. By default, registered health\n statuses map to sensible defaults (i.e. UP maps to 200).",
     "deprecation": {
       "replacement": "management.health.status.http-mapping",
       "level": "error"

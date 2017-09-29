@@ -335,7 +335,7 @@ public class SecurityAutoConfigurationTests {
 	protected static class TestAuthenticationProviderConfiguration {
 
 		@Bean
-		public AuthenticationProvider myauthenticationProvider() {
+		public AuthenticationProvider myAuthenticationProvider() {
 			return new TestingAuthenticationProvider();
 		}
 

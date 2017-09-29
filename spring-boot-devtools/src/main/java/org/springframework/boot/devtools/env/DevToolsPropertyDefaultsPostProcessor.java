@@ -42,23 +42,23 @@ import org.springframework.core.env.PropertySource;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostProcessor {
 
-	private static final Map<String, Object> PROPERTIES;
+	private static final Map<String, Object> properties;
 
 	static {
-		Map<String, Object> properties = new HashMap<>();
-		properties.put("spring.thymeleaf.cache", "false");
-		properties.put("spring.freemarker.cache", "false");
-		properties.put("spring.groovy.template.cache", "false");
-		properties.put("spring.mustache.cache", "false");
-		properties.put("server.session.persistent", "true");
-		properties.put("spring.h2.console.enabled", "true");
-		properties.put("spring.resources.cache-period", "0");
-		properties.put("spring.resources.chain.cache", "false");
-		properties.put("spring.template.provider.cache", "false");
-		properties.put("spring.mvc.log-resolved-exception", "true");
-		properties.put("server.servlet.jsp.init-parameters.development", "true");
-		properties.put("spring.reactor.stacktrace-mode.enabled", "true");
-		PROPERTIES = Collections.unmodifiableMap(properties);
+		Map<String, Object> propertiesMap = new HashMap<>();
+		propertiesMap.put("spring.thymeleaf.cache", "false");
+		propertiesMap.put("spring.freemarker.cache", "false");
+		propertiesMap.put("spring.groovy.template.cache", "false");
+		propertiesMap.put("spring.mustache.cache", "false");
+		propertiesMap.put("server.session.persistent", "true");
+		propertiesMap.put("spring.h2.console.enabled", "true");
+		propertiesMap.put("spring.resources.cache-period", "0");
+		propertiesMap.put("spring.resources.chain.cache", "false");
+		propertiesMap.put("spring.template.provider.cache", "false");
+		propertiesMap.put("spring.mvc.log-resolved-exception", "true");
+		propertiesMap.put("server.servlet.jsp.init-parameters.development", "true");
+		propertiesMap.put("spring.reactor.stacktrace-mode.enabled", "true");
+		properties = Collections.unmodifiableMap(propertiesMap);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 			SpringApplication application) {
 		if (isLocalApplication(environment) && canAddProperties(environment)) {
 			PropertySource<?> propertySource = new MapPropertySource("refresh",
-					PROPERTIES);
+					properties);
 			environment.getPropertySources().addLast(propertySource);
 		}
 	}
