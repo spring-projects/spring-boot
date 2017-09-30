@@ -125,7 +125,7 @@ public abstract class AbstractServletWebServerFactory
 
 	private void checkContextPath(String contextPath) {
 		Assert.notNull(contextPath, "ContextPath must not be null");
-		if (contextPath.length() > 0) {
+		if (!contextPath.isEmpty()) {
 			if ("/".equals(contextPath)) {
 				throw new IllegalArgumentException(
 						"Root ContextPath must be specified using an empty string");
