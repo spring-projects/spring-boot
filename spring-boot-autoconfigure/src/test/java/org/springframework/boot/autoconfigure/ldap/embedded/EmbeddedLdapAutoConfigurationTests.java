@@ -132,6 +132,21 @@ public class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
+	public void testQueryEmbeddedLdapWithBase() throws LDAPException {
+		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org",
+				"spring.ldap.base:dc=spring,dc=org")
+				.applyTo(this.context);
+		this.context.register(EmbeddedLdapAutoConfiguration.class,
+				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(LdapTemplate.class).length)
+				.isEqualTo(1);
+		LdapTemplate ldapTemplate = this.context.getBean(LdapTemplate.class);
+		assertThat(ldapTemplate.list("ou=company1,c=Sweden")).hasSize(4);
+	}
+
+	@Test
 	public void testDisableSchemaValidation() throws LDAPException {
 		load("spring.ldap.embedded.validation.enabled:false",
 				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
