@@ -20,7 +20,6 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -280,11 +279,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 				beans.add(beanName);
 			}
 		}
-		for (Iterator<String> iterator = beans.iterator(); iterator.hasNext();) {
-			if (isScopedTarget(iterator.next())) {
-				iterator.remove();
-			}
-		}
+		beans.removeIf(this::isScopedTarget);
 		return beans.toArray(new String[beans.size()]);
 	}
 

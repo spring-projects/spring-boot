@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -530,12 +529,7 @@ public class ConfigFileApplicationListener
 		}
 
 		private void removeUnprocessedDefaultProfiles() {
-			for (Iterator<Profile> iterator = this.profiles.iterator(); iterator
-					.hasNext();) {
-				if (iterator.next().isDefaultProfile()) {
-					iterator.remove();
-				}
-			}
+			this.profiles.removeIf(Profile::isDefaultProfile);
 		}
 
 		private void addProfiles(Set<Profile> profiles) {

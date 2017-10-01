@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,12 +148,8 @@ public class TestRestTemplate {
 			interceptors = Collections.emptyList();
 		}
 		interceptors = new ArrayList<>(interceptors);
-		Iterator<ClientHttpRequestInterceptor> iterator = interceptors.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
-				iterator.remove();
-			}
-		}
+		interceptors.removeIf(
+				interceptor -> interceptor instanceof BasicAuthorizationInterceptor);
 		interceptors.add(new BasicAuthorizationInterceptor(username, password));
 		restTemplate.setInterceptors(interceptors);
 	}
