@@ -96,7 +96,7 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	private boolean isForError(ConfigurationPropertyName name,
 			ConfigurationPropertyName boundPropertyName, FieldError error) {
 		return name.isParentOf(boundPropertyName)
-				&& boundPropertyName.getLastElement(Form.UNIFORM).toString()
+				&& boundPropertyName.getLastElement(Form.UNIFORM)
 						.equalsIgnoreCase(error.getField());
 	}
 
