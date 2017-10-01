@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -149,12 +148,7 @@ public class ConfigurationMetadata {
 		if (candidates == null || candidates.isEmpty()) {
 			return null;
 		}
-		ListIterator<ItemMetadata> it = candidates.listIterator();
-		while (it.hasNext()) {
-			if (!it.next().hasSameType(metadata)) {
-				it.remove();
-			}
-		}
+		candidates.removeIf(itemMetadata -> !itemMetadata.hasSameType(metadata));
 		if (candidates.size() == 1) {
 			return candidates.get(0);
 		}
