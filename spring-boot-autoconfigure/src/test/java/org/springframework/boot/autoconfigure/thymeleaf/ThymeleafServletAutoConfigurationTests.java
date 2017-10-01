@@ -35,7 +35,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -173,19 +173,16 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	@Test
 	public void renderNonWebAppTemplate() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext(
 				ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(context.getBeanNamesForType(ViewResolver.class).length).isEqualTo(0);
-		try {
-			TemplateEngine engine = context.getBean(TemplateEngine.class);
+				PropertyPlaceholderAutoConfiguration.class)) {
+			assertThat(customContext.getBeanNamesForType(ViewResolver.class).length)
+					.isEqualTo(0);
+			TemplateEngine engine = customContext.getBean(TemplateEngine.class);
 			Context attrs = new Context(Locale.UK,
 					Collections.singletonMap("greeting", "Hello World"));
 			String result = engine.process("message", attrs);
 			assertThat(result).contains("Hello World");
-		}
-		finally {
-			context.close();
 		}
 	}
 
@@ -222,7 +219,7 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	private void load(Class<?> config, String... envVariables) {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, envVariables);
+		TestPropertyValues.of(envVariables).applyTo(this.context);
 		if (config != null) {
 			this.context.register(config);
 		}

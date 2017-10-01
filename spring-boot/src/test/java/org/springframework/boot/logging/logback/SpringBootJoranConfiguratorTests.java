@@ -30,7 +30,7 @@ import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -48,7 +48,7 @@ import static org.hamcrest.Matchers.not;
 public class SpringBootJoranConfiguratorTests {
 
 	@Rule
-	public InternalOutputCapture out = new InternalOutputCapture();
+	public OutputCapture out = new OutputCapture();
 
 	private MockEnvironment environment;
 

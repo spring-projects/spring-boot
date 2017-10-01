@@ -25,7 +25,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -40,18 +40,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LoggingApplicationListenerIntegrationTests {
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				SampleService.class).web(WebApplicationType.NONE).run();
-		try {
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(
+				SampleService.class).web(WebApplicationType.NONE).run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.loggingSystem).isNotNull();
-		}
-		finally {
-			context.close();
 		}
 	}
 

@@ -1,1 +1,1 @@
-provides: spring-boot-actuator
+provides: spring-boot-actuator,micrometer-core

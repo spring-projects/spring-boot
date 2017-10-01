@@ -19,13 +19,13 @@ package org.springframework.boot.test.mock.mockito;
 import java.util.List;
 
 import org.mockito.MockSettings;
+import org.mockito.MockingDetails;
 import org.mockito.Mockito;
 import org.mockito.listeners.InvocationListener;
 import org.mockito.listeners.MethodInvocationReport;
 import org.mockito.mock.MockCreationSettings;
 
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * Reset strategy used on a mock bean. Usually applied to a mock via the
@@ -100,17 +100,15 @@ public enum MockReset {
 	 * @param mock the source mock
 	 * @return the reset type (never {@code null})
 	 */
-	@SuppressWarnings("rawtypes")
 	static MockReset get(Object mock) {
 		MockReset reset = MockReset.NONE;
-		if (ClassUtils.isPresent("org.mockito.internal.util.MockUtil", null)) {
-			if (Mockito.mockingDetails(mock).isMock()) {
-				MockCreationSettings settings = MockitoApi.get().getMockSettings(mock);
-				List listeners = settings.getInvocationListeners();
-				for (Object listener : listeners) {
-					if (listener instanceof ResetInvocationListener) {
-						reset = ((ResetInvocationListener) listener).getReset();
-					}
+		MockingDetails mockingDetails = Mockito.mockingDetails(mock);
+		if (mockingDetails.isMock()) {
+			MockCreationSettings<?> settings = mockingDetails.getMockCreationSettings();
+			List<InvocationListener> listeners = settings.getInvocationListeners();
+			for (Object listener : listeners) {
+				if (listener instanceof ResetInvocationListener) {
+					reset = ((ResetInvocationListener) listener).getReset();
 				}
 			}
 		}

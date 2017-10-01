@@ -40,7 +40,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param healthAggregator the health aggregator
 	 */
 	public CompositeHealthIndicator(HealthAggregator healthAggregator) {
-		this(healthAggregator, new LinkedHashMap<String, HealthIndicator>());
+		this(healthAggregator, new LinkedHashMap<>());
 	}
 
 	/**

@@ -57,6 +57,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
+ * @author Raja Kolli
  * @since 1.5.0
  */
 @Configuration
@@ -97,6 +98,7 @@ public class EmbeddedLdapAutoConfiguration {
 			source.setPassword(this.embeddedProperties.getCredential().getPassword());
 		}
 		source.setUrls(this.properties.determineUrls(this.environment));
+		source.setBase(this.properties.getBase());
 		return source;
 	}
 
@@ -154,12 +156,8 @@ public class EmbeddedLdapAutoConfiguration {
 			try {
 				Resource resource = this.applicationContext.getResource(location);
 				if (resource.exists()) {
-					InputStream inputStream = resource.getInputStream();
-					try {
+					try (InputStream inputStream = resource.getInputStream()) {
 						this.server.importFromLDIF(true, new LDIFReader(inputStream));
-					}
-					finally {
-						inputStream.close();
 					}
 				}
 			}
@@ -184,8 +182,7 @@ public class EmbeddedLdapAutoConfiguration {
 	private Map<String, Object> getLdapPorts(MutablePropertySources sources) {
 		PropertySource<?> propertySource = sources.get(PROPERTY_SOURCE_NAME);
 		if (propertySource == null) {
-			propertySource = new MapPropertySource(PROPERTY_SOURCE_NAME,
-					new HashMap<String, Object>());
+			propertySource = new MapPropertySource(PROPERTY_SOURCE_NAME, new HashMap<>());
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();

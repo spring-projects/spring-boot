@@ -19,8 +19,8 @@ package sample.security.method;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.boot.actuate.autoconfigure.security.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -80,16 +80,37 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	}
 
 	@Configuration
-	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/login").permitAll().anyRequest()
-					.fullyAuthenticated().and().formLogin().loginPage("/login")
-					.failureUrl("/login?error").and().logout()
-					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
-					.exceptionHandling().accessDeniedPage("/access?error");
+			// @formatter:off
+			http.authorizeRequests()
+					.antMatchers("/login").permitAll()
+					.anyRequest().fullyAuthenticated()
+					.and()
+				.formLogin().loginPage("/login").failureUrl("/login?error")
+					.and()
+				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+					.and()
+				.exceptionHandling().accessDeniedPage("/access?error");
+			// @formatter:on
+		}
+
+	}
+
+	@Configuration
+	@Order(1)
+	protected static class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			// @formatter:off
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+					.anyRequest().authenticated()
+					.and()
+				.httpBasic();
+			// @formatter:on
 		}
 
 	}

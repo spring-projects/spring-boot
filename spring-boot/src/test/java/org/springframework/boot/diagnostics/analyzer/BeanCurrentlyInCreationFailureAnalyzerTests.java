@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
@@ -116,20 +117,22 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(11)).isEqualTo("└─────┘");
 	}
 
+	@Test
+	public void cycleWithAnUnknownStartIsNotAnalyzed() throws IOException {
+		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test")))
+				.isNull();
+	}
+
 	private List<String> readDescriptionLines(FailureAnalysis analysis)
 			throws IOException {
-		BufferedReader lineReader = new BufferedReader(
-				new StringReader(analysis.getDescription()));
-		try {
+		try (BufferedReader lineReader = new BufferedReader(
+				new StringReader(analysis.getDescription()))) {
 			List<String> lines = new ArrayList<>();
 			String line;
 			while ((line = lineReader.readLine()) != null) {
 				lines.add(line);
 			}
 			return lines;
-		}
-		finally {
-			lineReader.close();
 		}
 	}
 
@@ -140,21 +143,15 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	private Exception createFailure(Class<?> configuration) {
-		ConfigurableApplicationContext context = null;
-		try {
-			context = new AnnotationConfigApplicationContext(configuration);
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				configuration)) {
+			fail("Expected failure did not occur");
+			return null;
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 			return ex;
 		}
-		finally {
-			if (context != null) {
-				context.close();
-			}
-		}
-		fail("Expected failure did not occur");
-		return null;
 	}
 
 	@org.springframework.context.annotation.Configuration

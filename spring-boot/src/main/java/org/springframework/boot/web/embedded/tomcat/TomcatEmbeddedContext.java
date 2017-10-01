@@ -25,8 +25,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Tomcat {@link StandardContext} used by {@link TomcatWebServer} to
- * support deferred initialization.
+ * Tomcat {@link StandardContext} used by {@link TomcatWebServer} to support deferred
+ * initialization.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

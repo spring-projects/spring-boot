@@ -34,6 +34,7 @@ import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * A factory for a reactive {@link MongoClient} that applies {@link MongoProperties}.
@@ -48,10 +49,14 @@ public class ReactiveMongoClientFactory {
 
 	private final Environment environment;
 
-	public ReactiveMongoClientFactory(MongoProperties properties,
-			Environment environment) {
+	private final List<MongoClientSettingsBuilderCustomizer> builderCustomizers;
+
+	public ReactiveMongoClientFactory(MongoProperties properties, Environment environment,
+			List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
 		this.environment = environment;
+		this.builderCustomizers = (builderCustomizers != null ? builderCustomizers
+				: Collections.emptyList());
 	}
 
 	/**
@@ -92,64 +97,92 @@ public class ReactiveMongoClientFactory {
 
 	private MongoClient createNetworkMongoClient(MongoClientSettings settings) {
 		if (hasCustomAddress() || hasCustomCredentials()) {
-			if (this.properties.getUri() != null) {
-				throw new IllegalStateException("Invalid mongo configuration, "
-						+ "either uri or host/port/credentials must be specified");
-			}
-
-			Builder builder = builder(settings);
-			if (hasCustomCredentials()) {
-				List<MongoCredential> credentials = new ArrayList<>();
-				String database = this.properties.getAuthenticationDatabase() == null
-						? this.properties.getMongoClientDatabase()
-						: this.properties.getAuthenticationDatabase();
-				credentials.add(
-						MongoCredential.createCredential(this.properties.getUsername(),
-								database, this.properties.getPassword()));
-				builder.credentialList(credentials);
-			}
-			String host = this.properties.getHost() == null ? "localhost"
-					: this.properties.getHost();
-			int port = this.properties.getPort() != null ? this.properties.getPort()
-					: MongoProperties.DEFAULT_PORT;
-			ClusterSettings clusterSettings = ClusterSettings.builder()
-					.hosts(Collections.singletonList(new ServerAddress(host, port)))
-					.build();
-			builder.clusterSettings(clusterSettings);
-			return MongoClients.create(builder.build());
+			return createCredentialNetworkMongoClient(settings);
 		}
 		ConnectionString connectionString = new ConnectionString(
 				this.properties.determineUri());
 		return MongoClients.create(createBuilder(settings, connectionString).build());
 	}
 
+	private MongoClient createCredentialNetworkMongoClient(MongoClientSettings settings) {
+		Assert.state(this.properties.getUri() == null, "Invalid mongo configuration, "
+				+ "either uri or host/port/credentials must be specified");
+		Builder builder = builder(settings);
+		if (hasCustomCredentials()) {
+			applyCredentials(builder);
+		}
+		String host = getOrDefault(this.properties.getHost(), "localhost");
+		int port = getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
+		ServerAddress serverAddress = new ServerAddress(host, port);
+		builder.clusterSettings(ClusterSettings.builder()
+				.hosts(Collections.singletonList(serverAddress)).build());
+		return MongoClients.create(builder.build());
+	}
+
+	private void applyCredentials(Builder builder) {
+		List<MongoCredential> credentials = new ArrayList<>();
+		String database = this.properties.getAuthenticationDatabase() == null
+				? this.properties.getMongoClientDatabase()
+				: this.properties.getAuthenticationDatabase();
+		credentials.add(MongoCredential.createCredential(this.properties.getUsername(),
+				database, this.properties.getPassword()));
+		builder.credentialList(credentials);
+	}
+
+	private <T> T getOrDefault(T value, T defaultValue) {
+		return (value == null ? defaultValue : value);
+	}
+
 	private Builder createBuilder(MongoClientSettings settings,
-			ConnectionString connectionString) {
-		Builder builder = builder(settings)
-				.clusterSettings(ClusterSettings.builder()
-						.applyConnectionString(connectionString).build())
-				.connectionPoolSettings(ConnectionPoolSettings.builder()
-						.applyConnectionString(connectionString).build())
-				.serverSettings(ServerSettings.builder()
-						.applyConnectionString(connectionString).build())
-				.credentialList(connectionString.getCredentialList())
-				.sslSettings(SslSettings.builder().applyConnectionString(connectionString)
-						.build())
-				.socketSettings(SocketSettings.builder()
-						.applyConnectionString(connectionString).build());
-		if (connectionString.getReadPreference() != null) {
-			builder.readPreference(connectionString.getReadPreference());
+			ConnectionString connection) {
+		Builder builder = builder(settings);
+		builder.clusterSettings(getClusterSettings(connection));
+		builder.connectionPoolSettings(getConnectionPoolSettings(connection));
+		builder.serverSettings(getServerSettings(connection));
+		builder.credentialList(connection.getCredentialList());
+		builder.sslSettings(getSslSettings(connection));
+		builder.socketSettings(getSocketSettings(connection));
+		if (connection.getReadPreference() != null) {
+			builder.readPreference(connection.getReadPreference());
 		}
-		if (connectionString.getReadConcern() != null) {
-			builder.readConcern(connectionString.getReadConcern());
+		if (connection.getReadConcern() != null) {
+			builder.readConcern(connection.getReadConcern());
 		}
-		if (connectionString.getWriteConcern() != null) {
-			builder.writeConcern(connectionString.getWriteConcern());
+		if (connection.getWriteConcern() != null) {
+			builder.writeConcern(connection.getWriteConcern());
 		}
-		if (connectionString.getApplicationName() != null) {
-			builder.applicationName(connectionString.getApplicationName());
+		if (connection.getApplicationName() != null) {
+			builder.applicationName(connection.getApplicationName());
 		}
+		customize(builder);
 		return builder;
+	}
+
+	private ClusterSettings getClusterSettings(ConnectionString connection) {
+		return ClusterSettings.builder().applyConnectionString(connection).build();
+	}
+
+	private ConnectionPoolSettings getConnectionPoolSettings(
+			ConnectionString connection) {
+		return ConnectionPoolSettings.builder().applyConnectionString(connection).build();
+	}
+
+	private ServerSettings getServerSettings(ConnectionString connection) {
+		return ServerSettings.builder().applyConnectionString(connection).build();
+	}
+
+	private SslSettings getSslSettings(ConnectionString connection) {
+		return SslSettings.builder().applyConnectionString(connection).build();
+	}
+
+	private SocketSettings getSocketSettings(ConnectionString connection) {
+		return SocketSettings.builder().applyConnectionString(connection).build();
+	}
+
+	private void customize(MongoClientSettings.Builder builder) {
+		for (MongoClientSettingsBuilderCustomizer customizer : this.builderCustomizers) {
+			customizer.customize(builder);
+		}
 	}
 
 	private boolean hasCustomAddress() {
@@ -165,7 +198,6 @@ public class ReactiveMongoClientFactory {
 		if (settings == null) {
 			return MongoClientSettings.builder();
 		}
-
 		return MongoClientSettings.builder(settings);
 	}
 

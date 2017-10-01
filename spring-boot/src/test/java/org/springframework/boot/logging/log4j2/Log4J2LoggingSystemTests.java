@@ -41,8 +41,8 @@ import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.testutil.InternalOutputCapture;
-import org.springframework.boot.testutil.Matched;
+import org.springframework.boot.testsupport.assertj.Matched;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -65,7 +65,7 @@ import static org.mockito.Mockito.verify;
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
-	public InternalOutputCapture output = new InternalOutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
 
@@ -136,6 +136,19 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
+		this.logger.debug("Hello");
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
+				.isEqualTo(1);
+	}
+
+	@Test
+	public void setLevelToNull() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.logger.debug("Hello");
+		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
+		this.logger.debug("Hello");
+		this.loggingSystem.setLogLevel("org.springframework.boot", null);
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
 				.isEqualTo(1);

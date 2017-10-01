@@ -94,11 +94,7 @@ public class StartMojo extends AbstractRunMojo {
 		try {
 			waitForSpringApplication();
 		}
-		catch (MojoExecutionException ex) {
-			runProcess.kill();
-			throw ex;
-		}
-		catch (MojoFailureException ex) {
+		catch (MojoExecutionException | MojoFailureException ex) {
 			runProcess.kill();
 			throw ex;
 		}
@@ -205,20 +201,17 @@ public class StartMojo extends AbstractRunMojo {
 			throws IOException, MojoFailureException, MojoExecutionException {
 		try {
 			getLog().debug("Connecting to local MBeanServer at port " + this.jmxPort);
-			JMXConnector connector = execute(this.wait, this.maxAttempts,
-					new CreateJmxConnector(this.jmxPort));
-			if (connector == null) {
-				throw new MojoExecutionException(
-						"JMX MBean server was not reachable before the configured "
-								+ "timeout (" + (this.wait * this.maxAttempts) + "ms");
-			}
-			getLog().debug("Connected to local MBeanServer at port " + this.jmxPort);
-			try {
+			try (JMXConnector connector = execute(this.wait, this.maxAttempts,
+					new CreateJmxConnector(this.jmxPort))) {
+				if (connector == null) {
+					throw new MojoExecutionException(
+							"JMX MBean server was not reachable before the configured "
+									+ "timeout (" + (this.wait * this.maxAttempts)
+									+ "ms");
+				}
+				getLog().debug("Connected to local MBeanServer at port " + this.jmxPort);
 				MBeanServerConnection connection = connector.getMBeanServerConnection();
 				doWaitForSpringApplication(connection);
-			}
-			finally {
-				connector.close();
 			}
 		}
 		catch (IOException ex) {
@@ -235,14 +228,7 @@ public class StartMojo extends AbstractRunMojo {
 		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(
 				connection, this.jmxName);
 		try {
-			execute(this.wait, this.maxAttempts, new Callable<Boolean>() {
-
-				@Override
-				public Boolean call() throws Exception {
-					return (client.isReady() ? true : null);
-				}
-
-			});
+			execute(this.wait, this.maxAttempts, () -> (client.isReady() ? true : null));
 		}
 		catch (ReflectionException ex) {
 			throw new MojoExecutionException("Unable to retrieve 'ready' attribute",

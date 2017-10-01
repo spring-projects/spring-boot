@@ -15,7 +15,7 @@ def getStarters(File dir) {
 			]
 		}
 	}
-	return starters
+	return starters.sort { it.name }
 }
 
 boolean isApplicationStarter(def starter) {

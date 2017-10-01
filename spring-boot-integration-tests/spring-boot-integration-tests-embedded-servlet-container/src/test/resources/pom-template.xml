@@ -6,18 +6,15 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>{{bootVersion}}</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
-
 	<groupId>com.example</groupId>
 	<artifactId>app</artifactId>
 	<version>0.0.1</version>
 	<packaging>{{packaging}}</packaging>
-
 	<properties>
 		<resourcesJarPath>{{resourcesJarPath}}</resourcesJarPath>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -44,7 +41,6 @@
 			<systemPath>${resourcesJarPath}</systemPath>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -56,7 +52,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
@@ -66,5 +61,4 @@
 			</snapshots>
 		</repository>
 	</repositories>
-
 </project>

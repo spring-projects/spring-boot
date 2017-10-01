@@ -26,13 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -54,14 +48,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -82,7 +74,7 @@ public class TomcatServletWebServerFactoryTests
 		extends AbstractServletWebServerFactoryTests {
 
 	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Override
 	protected TomcatServletWebServerFactory getFactory() {
@@ -99,7 +91,7 @@ public class TomcatServletWebServerFactoryTests
 	public void tomcatEngineNames() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
-		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+		factory.setPort(0);
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
 		// Make sure that the names are different
 		String firstName = ((TomcatWebServer) this.webServer).getTomcat().getEngine()
@@ -324,24 +316,17 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
-		doWithBlockedPort(new BlockedPortAction() {
-
-			@Override
-			public void run(int port) {
-				TomcatServletWebServerFactory factory = getFactory();
-				factory.setPort(port);
-
-				try {
-					TomcatServletWebServerFactoryTests.this.webServer = factory
-							.getWebServer();
-					TomcatServletWebServerFactoryTests.this.webServer.start();
-					fail();
-				}
-				catch (WebServerException ex) {
-					// Ignore
-				}
+		doWithBlockedPort((port) -> {
+			TomcatServletWebServerFactory factory = getFactory();
+			factory.setPort(port);
+			try {
+				this.webServer = factory.getWebServer();
+				this.webServer.start();
+				fail();
 			}
-
+			catch (WebServerException ex) {
+				// Ignore
+			}
 		});
 	}
 
@@ -449,38 +434,6 @@ public class TomcatServletWebServerFactoryTests
 				.getSessionIdGenerator();
 		assertThat(sessionIdGenerator).isInstanceOf(LazySessionIdGenerator.class);
 		assertThat(sessionIdGenerator.getJvmRoute()).isEqualTo("test");
-	}
-
-	@Test
-	public void faultyFilterCausesStartFailure() throws Exception {
-		TomcatServletWebServerFactory factory = getFactory();
-		factory.addInitializers(new ServletContextInitializer() {
-
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.addFilter("faulty", new Filter() {
-
-					@Override
-					public void init(FilterConfig filterConfig) throws ServletException {
-						throw new ServletException("Faulty filter");
-					}
-
-					@Override
-					public void doFilter(ServletRequest request, ServletResponse response,
-							FilterChain chain) throws IOException, ServletException {
-						chain.doFilter(request, response);
-					}
-
-					@Override
-					public void destroy() {
-					}
-
-				});
-			}
-
-		});
-		this.thrown.expect(WebServerException.class);
-		factory.getWebServer().start();
 	}
 
 	@Override

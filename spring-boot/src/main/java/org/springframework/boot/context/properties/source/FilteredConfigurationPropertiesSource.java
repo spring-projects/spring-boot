@@ -58,12 +58,22 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 		return result;
 	}
 
+	@Override
+	public Object getUnderlyingSource() {
+		return this.source.getUnderlyingSource();
+	}
+
 	protected ConfigurationPropertySource getSource() {
 		return this.source;
 	}
 
 	protected Predicate<ConfigurationPropertyName> getFilter() {
 		return this.filter;
+	}
+
+	@Override
+	public String toString() {
+		return this.source.toString() + " (filtered)";
 	}
 
 }

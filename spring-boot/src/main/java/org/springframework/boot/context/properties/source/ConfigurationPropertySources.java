@@ -46,6 +46,18 @@ public final class ConfigurationPropertySources {
 	}
 
 	/**
+	 * Determines if the specific {@link PropertySource} is the
+	 * {@link ConfigurationPropertySource} that was {@link #attach(Environment) attached}
+	 * to the {@link Environment}.
+	 * @param propertySource the property source to test
+	 * @return {@code true} if this is the attached {@link ConfigurationPropertySource}
+	 */
+	public static boolean isAttachedConfigurationPropertySource(
+			PropertySource<?> propertySource) {
+		return ATTACHED_PROPERTY_SOURCE_NAME.equals(propertySource.getName());
+	}
+
+	/**
 	 * Attach a {@link ConfigurationPropertySource} support to the specified
 	 * {@link Environment}. Adapts each {@link PropertySource} managed by the environment
 	 * to a {@link ConfigurationPropertySource} and allows classic
@@ -109,7 +121,7 @@ public final class ConfigurationPropertySources {
 	 * {@link StubPropertySource stub property sources}. Updates to the underlying source
 	 * will be automatically tracked.
 	 * @param sources the Spring property sources to adapt
-	 * @return an {@link Iterable} containing a single newly adapted
+	 * @return an {@link Iterable} containing newly adapted
 	 * {@link SpringConfigurationPropertySource} instances
 	 */
 	public static Iterable<ConfigurationPropertySource> from(
@@ -124,7 +136,7 @@ public final class ConfigurationPropertySources {
 	 * This method will flatten any nested property sources and will filter all
 	 * {@link StubPropertySource stub property sources}.
 	 * @param sources the Spring property sources to adapt
-	 * @return an {@link Iterable} containing a single newly adapted
+	 * @return an {@link Iterable} containing newly adapted
 	 * {@link SpringConfigurationPropertySource} instances
 	 */
 	public static Iterable<ConfigurationPropertySource> from(

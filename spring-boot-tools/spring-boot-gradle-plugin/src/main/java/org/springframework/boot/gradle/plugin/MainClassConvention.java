@@ -28,11 +28,11 @@ import org.gradle.api.file.FileCollection;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
- * A {@link Callable} that provide a convention for the project's main class name.
+ * A {@link Callable} that provides a convention for the project's main class name.
  *
  * @author Andy Wilkinson
  */
-final class MainClassConvention implements Callable<Object> {
+final class MainClassConvention implements Callable<String> {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
@@ -46,9 +46,12 @@ final class MainClassConvention implements Callable<Object> {
 	}
 
 	@Override
-	public Object call() throws Exception {
+	public String call() throws Exception {
 		if (this.project.hasProperty("mainClassName")) {
-			return this.project.property("mainClassName");
+			Object mainClassName = this.project.property("mainClassName");
+			if (mainClassName != null) {
+				return mainClassName.toString();
+			}
 		}
 		return resolveMainClass();
 	}

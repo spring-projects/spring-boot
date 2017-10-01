@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.cassandra;
 import java.util.List;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
@@ -89,6 +90,7 @@ public class CassandraAutoConfiguration {
 		if (properties.isSsl()) {
 			builder.withSSL();
 		}
+		builder.withPoolingOptions(getPoolingOptions());
 		String points = properties.getContactPoints();
 		builder.addContactPoints(StringUtils.commaDelimitedListToStringArray(points));
 
@@ -125,6 +127,16 @@ public class CassandraAutoConfiguration {
 		SocketOptions options = new SocketOptions();
 		options.setConnectTimeoutMillis(this.properties.getConnectTimeoutMillis());
 		options.setReadTimeoutMillis(this.properties.getReadTimeoutMillis());
+		return options;
+	}
+
+	private PoolingOptions getPoolingOptions() {
+		CassandraProperties.Pool pool = this.properties.getPool();
+		PoolingOptions options = new PoolingOptions();
+		options.setIdleTimeoutSeconds(pool.getIdleTimeout());
+		options.setPoolTimeoutMillis(pool.getPoolTimeout());
+		options.setHeartbeatIntervalSeconds(pool.getHeartbeatInterval());
+		options.setMaxQueueSize(pool.getMaxQueueSize());
 		return options;
 	}
 

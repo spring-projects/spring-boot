@@ -16,12 +16,6 @@ task('taskExists') {
 	}
 }
 
-task('componentExists') {
-	doFirst {
-		println "$componentName exists = ${components.findByName(componentName) != null}"
-	}
-}
-
 task('javaCompileEncoding') {
 	doFirst {
 		tasks.withType(JavaCompile) {

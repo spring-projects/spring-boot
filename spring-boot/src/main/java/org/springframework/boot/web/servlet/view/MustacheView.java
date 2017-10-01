@@ -83,12 +83,8 @@ public class MustacheView extends AbstractTemplateView {
 	}
 
 	private Template createTemplate(Resource resource) throws IOException {
-		Reader reader = getReader(resource);
-		try {
+		try (Reader reader = getReader(resource)) {
 			return this.compiler.compile(reader);
-		}
-		finally {
-			reader.close();
 		}
 	}
 

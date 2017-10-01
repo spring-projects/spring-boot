@@ -67,7 +67,7 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 			if (archive.getName().endsWith(".war")) {
 				populateSrcMainWebapp();
 			}
-			List<String> classpath = new ArrayList<String>();
+			List<String> classpath = new ArrayList<>();
 			classpath.add(targetClasses.getAbsolutePath());
 			for (File dependency : dependencies.listFiles()) {
 				classpath.add(dependency.getAbsolutePath());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
+import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
@@ -40,7 +41,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -52,7 +52,10 @@ import org.springframework.boot.jta.atomikos.AtomikosProperties;
 import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
 import org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean;
 import org.springframework.boot.jta.bitronix.PoolingDataSourceBean;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.jta.narayana.NarayanaBeanFactoryPostProcessor;
+import org.springframework.boot.jta.narayana.NarayanaConfigurationBean;
+import org.springframework.boot.jta.narayana.NarayanaRecoveryManagerBean;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -102,7 +105,7 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void disableJtaSupport() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.jta.enabled:false");
+		TestPropertyValues.of("spring.jta.enabled:false").applyTo(this.context);
 		this.context.register(JtaAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(JtaTransactionManager.class)).isEmpty();
@@ -138,6 +141,20 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	public void narayanaSanityCheck() throws Exception {
+		this.context = new AnnotationConfigApplicationContext(JtaProperties.class,
+				NarayanaJtaConfiguration.class);
+		this.context.getBean(NarayanaConfigurationBean.class);
+		this.context.getBean(UserTransaction.class);
+		this.context.getBean(TransactionManager.class);
+		this.context.getBean(XADataSourceWrapper.class);
+		this.context.getBean(XAConnectionFactoryWrapper.class);
+		this.context.getBean(NarayanaBeanFactoryPostProcessor.class);
+		this.context.getBean(JtaTransactionManager.class);
+		this.context.getBean(RecoveryManagerService.class);
+	}
+
+	@Test
 	public void defaultBitronixServerId() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext(
 				JtaPropertiesConfiguration.class, BitronixJtaConfiguration.class);
@@ -149,8 +166,8 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void customBitronixServerId() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.transactionManagerId:custom");
+		TestPropertyValues.of("spring.jta.transactionManagerId:custom")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				BitronixJtaConfiguration.class);
 		this.context.refresh();
@@ -162,37 +179,23 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void defaultAtomikosTransactionManagerName() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.logDir:target/transaction-logs");
+		TestPropertyValues.of("spring.jta.logDir:target/transaction-logs")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				AtomikosJtaConfiguration.class);
 		this.context.refresh();
 
-		File epochFile = new File("target/transaction-logs/"
-				+ InetAddress.getLocalHost().getHostAddress() + ".tm0.epoch");
-		assertThat(epochFile.isFile()).isTrue();
-	}
-
-	@Test
-	public void customAtomikosTransactionManagerName() throws BeansException, Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.transactionManagerId:custom",
-				"spring.jta.logDir:target/transaction-logs");
-		this.context.register(JtaPropertiesConfiguration.class,
-				AtomikosJtaConfiguration.class);
-		this.context.refresh();
-
-		File epochFile = new File("target/transaction-logs/custom0.epoch");
+		File epochFile = new File("target/transaction-logs/tmlog0.log");
 		assertThat(epochFile.isFile()).isTrue();
 	}
 
 	@Test
 	public void atomikosConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.atomikos.connectionfactory.minPoolSize:5",
-				"spring.jta.atomikos.connectionfactory.maxPoolSize:10");
+		TestPropertyValues
+				.of("spring.jta.atomikos.connectionfactory.minPoolSize:5",
+						"spring.jta.atomikos.connectionfactory.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -205,9 +208,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void bitronixConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.bitronix.connectionfactory.minPoolSize:5",
-				"spring.jta.bitronix.connectionfactory.maxPoolSize:10");
+		TestPropertyValues
+				.of("spring.jta.bitronix.connectionfactory.minPoolSize:5",
+						"spring.jta.bitronix.connectionfactory.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -220,9 +224,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void atomikosDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.atomikos.datasource.minPoolSize:5",
-				"spring.jta.atomikos.datasource.maxPoolSize:10");
+		TestPropertyValues
+				.of("spring.jta.atomikos.datasource.minPoolSize:5",
+						"spring.jta.atomikos.datasource.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -235,9 +240,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void bitronixDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.bitronix.datasource.minPoolSize:5",
-				"spring.jta.bitronix.datasource.maxPoolSize:10");
+		TestPropertyValues
+				.of("spring.jta.bitronix.datasource.minPoolSize:5",
+						"spring.jta.bitronix.datasource.maxPoolSize:10")
+				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -250,9 +256,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void atomikosCustomizeJtaTransactionManagerUsingProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+		TestPropertyValues
+				.of("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class,
 				TransactionAutoConfiguration.class);
 		this.context.refresh();
@@ -265,9 +272,10 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void bitronixCustomizeJtaTransactionManagerUsingProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+		TestPropertyValues
+				.of("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class,
 				TransactionAutoConfiguration.class);
 		this.context.refresh();
@@ -275,6 +283,16 @@ public class JtaAutoConfigurationTests {
 				.getBean(JtaTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
+	@Test
+	public void narayanaRecoveryManagerBeanCanBeCustomized() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomNarayanaRecoveryManagerConfiguration.class,
+				JtaProperties.class, NarayanaJtaConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(NarayanaRecoveryManagerBean.class))
+				.isInstanceOf(CustomNarayanaRecoveryManagerBean.class);
 	}
 
 	@Configuration
@@ -315,6 +333,27 @@ public class JtaAutoConfigurationTests {
 		public DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
+		}
+
+	}
+
+	@Configuration
+	public static class CustomNarayanaRecoveryManagerConfiguration {
+
+		@Bean
+		public NarayanaRecoveryManagerBean customRecoveryManagerBean(
+				RecoveryManagerService recoveryManagerService) {
+			return new CustomNarayanaRecoveryManagerBean(recoveryManagerService);
+		}
+
+	}
+
+	static final class CustomNarayanaRecoveryManagerBean
+			extends NarayanaRecoveryManagerBean {
+
+		private CustomNarayanaRecoveryManagerBean(
+				RecoveryManagerService recoveryManagerService) {
+			super(recoveryManagerService);
 		}
 
 	}

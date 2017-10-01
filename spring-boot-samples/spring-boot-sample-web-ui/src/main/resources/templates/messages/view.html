@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-	<head th:replace="fragments :: head(title='Messages : View')">
+	<head th:replace="fragments :: head(title=~{::title/text()})">
 		<title>Messages : View</title>
 	</head>
 	<body>

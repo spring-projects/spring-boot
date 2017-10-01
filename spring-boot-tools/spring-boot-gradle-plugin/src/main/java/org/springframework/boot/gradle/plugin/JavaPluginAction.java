@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -41,6 +42,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun;
  */
 final class JavaPluginAction implements PluginApplicationAction {
 
+	private static final String PARAMETERS_COMPILER_ARG = "-parameters";
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
 	JavaPluginAction(SinglePublishedArtifact singlePublishedArtifact) {
@@ -60,6 +62,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		configureArtifactPublication(project, bootJar);
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
+		configureParametersCompilerArg(project);
 	}
 
 	private void disableJarTask(Project project) {
@@ -92,10 +95,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private void configureArtifactPublication(Project project, BootJar bootJar) {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);
-		project.getComponents().add(new SpringBootSoftwareComponent(artifact,
-				SpringBootPlugin.BOOT_JAVA_SOFTWARE_COMPONENT_NAME));
 	}
 
+	@SuppressWarnings("unchecked")
 	private void configureBootRunTask(Project project) {
 		JavaPluginConvention javaConvention = project.getConvention()
 				.getPlugin(JavaPluginConvention.class);
@@ -104,23 +106,32 @@ final class JavaPluginAction implements PluginApplicationAction {
 		run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 		run.classpath(javaConvention.getSourceSets()
 				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath());
-		run.getConventionMapping().map("jvmArgs", () -> {
+		run.setJvmArgs(project.provider(() -> {
 			if (project.hasProperty("applicationDefaultJvmArgs")) {
-				return project.property("applicationDefaultJvmArgs");
+				return (List<String>) project.property("applicationDefaultJvmArgs");
 			}
 			return Collections.emptyList();
-		});
-		run.conventionMapping("main",
-				new MainClassConvention(project, run::getClasspath));
+		}));
+		run.setMain(
+				project.provider(new MainClassConvention(project, run::getClasspath)));
 	}
 
 	private void configureUtf8Encoding(Project project) {
-		project.afterEvaluate(
-				evaluated -> evaluated.getTasks().withType(JavaCompile.class, compile -> {
+		project.afterEvaluate((evaluated) -> evaluated.getTasks()
+				.withType(JavaCompile.class, (compile) -> {
 					if (compile.getOptions().getEncoding() == null) {
 						compile.getOptions().setEncoding("UTF-8");
 					}
 				}));
+	}
+
+	private void configureParametersCompilerArg(Project project) {
+		project.getTasks().withType(JavaCompile.class, (compile) -> {
+			List<String> compilerArgs = compile.getOptions().getCompilerArgs();
+			if (!compilerArgs.contains(PARAMETERS_COMPILER_ARG)) {
+				compilerArgs.add(PARAMETERS_COMPILER_ARG);
+			}
+		});
 	}
 
 }

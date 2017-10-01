@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletRequest;
 
 import io.undertow.Undertow;
 import org.apache.catalina.startup.Tomcat;
@@ -66,6 +67,7 @@ import org.springframework.util.ObjectUtils;
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
+@ConditionalOnClass(ServletRequest.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(ServerProperties.class)
 @Import(BeanPostProcessorsRegistrar.class)

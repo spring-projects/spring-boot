@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
@@ -29,7 +28,7 @@ import javax.persistence.SequenceGenerator;
 public class Tag {
 
 	@Id
-	@SequenceGenerator(name="tag_generator", sequenceName="tag_sequence", initialValue = 4)
+	@SequenceGenerator(name = "tag_generator", sequenceName = "tag_sequence", initialValue = 4)
 	@GeneratedValue(generator = "tag_generator")
 	private long id;
 

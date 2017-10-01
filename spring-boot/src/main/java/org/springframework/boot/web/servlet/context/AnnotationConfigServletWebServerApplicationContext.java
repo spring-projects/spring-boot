@@ -58,9 +58,9 @@ public class AnnotationConfigServletWebServerApplicationContext
 	private String[] basePackages;
 
 	/**
-	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext} that needs to be
-	 * populated through {@link #register} calls and then manually {@linkplain #refresh
-	 * refreshed}.
+	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext} that needs
+	 * to be populated through {@link #register} calls and then manually
+	 * {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigServletWebServerApplicationContext() {
 		this.reader = new AnnotatedBeanDefinitionReader(this);
@@ -68,21 +68,23 @@ public class AnnotationConfigServletWebServerApplicationContext
 	}
 
 	/**
-	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext}, deriving bean
-	 * definitions from the given annotated classes and automatically refreshing the
+	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext}, deriving
+	 * bean definitions from the given annotated classes and automatically refreshing the
 	 * context.
 	 * @param annotatedClasses one or more annotated classes, e.g. {@code @Configuration}
 	 * classes
 	 */
-	public AnnotationConfigServletWebServerApplicationContext(Class<?>... annotatedClasses) {
+	public AnnotationConfigServletWebServerApplicationContext(
+			Class<?>... annotatedClasses) {
 		this();
 		register(annotatedClasses);
 		refresh();
 	}
 
 	/**
-	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext}, scanning for
-	 * bean definitions in the given packages and automatically refreshing the context.
+	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext}, scanning
+	 * for bean definitions in the given packages and automatically refreshing the
+	 * context.
 	 * @param basePackages the packages to check for annotated classes
 	 */
 	public AnnotationConfigServletWebServerApplicationContext(String... basePackages) {

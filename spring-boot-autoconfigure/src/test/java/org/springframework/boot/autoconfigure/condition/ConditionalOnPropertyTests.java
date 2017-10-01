@@ -28,7 +28,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -258,7 +258,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		EnvironmentTestUtils.addEnvironment(this.environment, environment);
+		TestPropertyValues.of(environment).applyTo(this.environment);
 		this.context = new SpringApplicationBuilder(config).environment(this.environment)
 				.web(WebApplicationType.NONE).run();
 	}

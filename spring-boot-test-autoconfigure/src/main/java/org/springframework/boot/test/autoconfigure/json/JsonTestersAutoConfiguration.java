@@ -19,6 +19,8 @@ package org.springframework.boot.test.autoconfigure.json;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import javax.json.bind.Jsonb;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
@@ -27,31 +29,38 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.boot.test.json.AbstractJsonMarshalTester;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * Auto-configuration for Json testers.
  *
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @see AutoConfigureJsonTesters
  * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
 @ConditionalOnProperty("spring.test.jsontesters.enabled")
+@AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class,
+		JsonbAutoConfiguration.class })
 public class JsonTestersAutoConfiguration {
 
 	@Bean
@@ -91,6 +100,18 @@ public class JsonTestersAutoConfiguration {
 
 	}
 
+	@ConditionalOnClass(Jsonb.class)
+	private static class JsonbJsonTesterConfiguration {
+
+		@Bean
+		@Scope("prototype")
+		@ConditionalOnBean(Jsonb.class)
+		public FactoryBean<JsonbTester<?>> jsonbTesterFactoryBean(Jsonb jsonb) {
+			return new JsonTesterFactoryBean<>(JsonbTester.class, jsonb);
+		}
+
+	}
+
 	/**
 	 * {@link FactoryBean} used to create JSON Tester instances.
 	 */
@@ -121,7 +142,7 @@ public class JsonTestersAutoConfiguration {
 			}
 			Constructor<?>[] constructors = this.objectType.getDeclaredConstructors();
 			for (Constructor<?> constructor : constructors) {
-				if (constructor.getParameterTypes().length == 1
+				if (constructor.getParameterCount() == 1
 						&& constructor.getParameterTypes()[0]
 								.isInstance(this.marshaller)) {
 					ReflectionUtils.makeAccessible(constructor);
@@ -146,18 +167,10 @@ public class JsonTestersAutoConfiguration {
 			extends InstantiationAwareBeanPostProcessorAdapter {
 
 		@Override
-		public Object postProcessAfterInitialization(final Object bean, String beanName)
+		public Object postProcessAfterInitialization(Object bean, String beanName)
 				throws BeansException {
-
-			ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
-
-				@Override
-				public void doWith(Field field)
-						throws IllegalArgumentException, IllegalAccessException {
-					processField(bean, field);
-				}
-
-			});
+			ReflectionUtils.doWithFields(bean.getClass(),
+					(field) -> processField(bean, field));
 			return bean;
 		}
 

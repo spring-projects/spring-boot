@@ -315,6 +315,11 @@ public class RabbitProperties {
 		private String keyStore;
 
 		/**
+		 * Key store type.
+		 */
+		private String keyStoreType = "PKCS12";
+
+		/**
 		 * Password used to access the key store.
 		 */
 		private String keyStorePassword;
@@ -323,6 +328,11 @@ public class RabbitProperties {
 		 * Trust store that holds SSL certificates.
 		 */
 		private String trustStore;
+
+		/**
+		 * Trust store type.
+		 */
+		private String trustStoreType = "JKS";
 
 		/**
 		 * Password used to access the trust store.
@@ -351,6 +361,14 @@ public class RabbitProperties {
 			this.keyStore = keyStore;
 		}
 
+		public String getKeyStoreType() {
+			return this.keyStoreType;
+		}
+
+		public void setKeyStoreType(String keyStoreType) {
+			this.keyStoreType = keyStoreType;
+		}
+
 		public String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
@@ -365,6 +383,14 @@ public class RabbitProperties {
 
 		public void setTrustStore(String trustStore) {
 			this.trustStore = trustStore;
+		}
+
+		public String getTrustStoreType() {
+			return this.trustStoreType;
+		}
+
+		public void setTrustStoreType(String trustStoreType) {
+			this.trustStoreType = trustStoreType;
 		}
 
 		public String getTrustStorePassword() {

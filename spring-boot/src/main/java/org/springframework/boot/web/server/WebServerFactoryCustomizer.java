@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @since 2.0.0
  * @see WebServerFactoryCustomizerBeanPostProcessor
  */
+@FunctionalInterface
 public interface WebServerFactoryCustomizer<T extends WebServerFactory> {
 
 	/**

@@ -59,7 +59,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		((TemplateBasedScriptGenerator) bootStartScripts.getWindowsStartScriptGenerator())
 				.setTemplate(project.getResources().getText()
 						.fromString(loadResource("/windowsStartScript.txt")));
-		project.getConfigurations().all(configuration -> {
+		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
 				distribution.getContents()
 						.with(project.copySpec().into("lib")
@@ -68,10 +68,10 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
-		bootStartScripts.getConventionMapping().map("outputDir",
-				() -> new File(project.getBuildDir(), "bootScripts"));
-		bootStartScripts.getConventionMapping().map("applicationName",
-				() -> applicationConvention.getApplicationName());
+		bootStartScripts.setOutputDir(
+				project.provider(() -> new File(project.getBuildDir(), "bootScripts")));
+		bootStartScripts.setApplicationName(
+				project.provider(() -> applicationConvention.getApplicationName()));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0x755);
 		distribution.getContents().with(binCopySpec);
@@ -83,12 +83,11 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	}
 
 	private String loadResource(String name) {
-		InputStreamReader reader = new InputStreamReader(
-				getClass().getResourceAsStream(name));
-		char[] buffer = new char[4096];
-		int read = 0;
-		StringWriter writer = new StringWriter();
-		try {
+		try (InputStreamReader reader = new InputStreamReader(
+				getClass().getResourceAsStream(name))) {
+			char[] buffer = new char[4096];
+			int read = 0;
+			StringWriter writer = new StringWriter();
 			while ((read = reader.read(buffer)) > 0) {
 				writer.write(buffer, 0, read);
 			}
@@ -96,14 +95,6 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to read '" + name + "'", ex);
-		}
-		finally {
-			try {
-				reader.close();
-			}
-			catch (IOException ex) {
-				// Continue
-			}
 		}
 	}
 

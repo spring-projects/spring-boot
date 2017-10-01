@@ -89,14 +89,7 @@ public class LiveReloadServer {
 	 * @param port the listen port
 	 */
 	public LiveReloadServer(int port) {
-		this(port, new ThreadFactory() {
-
-			@Override
-			public Thread newThread(Runnable runnable) {
-				return new Thread(runnable);
-			}
-
-		});
+		this(port, Thread::new);
 	}
 
 	/**
@@ -112,24 +105,20 @@ public class LiveReloadServer {
 
 	/**
 	 * Start the livereload server and accept incoming connections.
+	 * @return the port on which the server is listening
 	 * @throws IOException in case of I/O errors
 	 */
-	public void start() throws IOException {
+	public int start() throws IOException {
 		synchronized (this.monitor) {
 			Assert.state(!isStarted(), "Server already started");
 			logger.debug("Starting live reload server on port " + this.port);
 			this.serverSocket = new ServerSocket(this.port);
-			this.listenThread = this.threadFactory.newThread(new Runnable() {
-
-				@Override
-				public void run() {
-					acceptConnections();
-				}
-
-			});
+			int localPort = this.serverSocket.getLocalPort();
+			this.listenThread = this.threadFactory.newThread(this::acceptConnections);
 			this.listenThread.setDaemon(true);
 			this.listenThread.setName("Live Reload Server");
 			this.listenThread.start();
+			return localPort;
 		}
 	}
 
@@ -282,16 +271,10 @@ public class LiveReloadServer {
 
 		private void handle() throws Exception {
 			try {
-				try {
-					OutputStream outputStream = this.socket.getOutputStream();
-					try {
-						Connection connection = createConnection(this.socket,
-								this.inputStream, outputStream);
-						runConnection(connection);
-					}
-					finally {
-						outputStream.close();
-					}
+				try (OutputStream outputStream = this.socket.getOutputStream()) {
+					Connection connection = createConnection(this.socket,
+							this.inputStream, outputStream);
+					runConnection(connection);
 				}
 				finally {
 					this.inputStream.close();

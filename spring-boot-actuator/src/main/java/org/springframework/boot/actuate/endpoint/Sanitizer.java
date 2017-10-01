@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,31 +21,33 @@ import java.util.regex.Pattern;
 import org.springframework.util.Assert;
 
 /**
- * Internal strategy used to sanitize potentially sensitive keys.
+ * Strategy that be be used by endpoint implementations to sanitize potentially sensitive
+ * keys.
  *
  * @author Christian Dupuis
  * @author Toshiaki Maki
  * @author Phillip Webb
  * @author Nicolas Lejeune
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
-class Sanitizer {
+public class Sanitizer {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
 	private Pattern[] keysToSanitize;
 
-	Sanitizer() {
+	public Sanitizer() {
 		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services");
 	}
 
-	Sanitizer(String... keysToSanitize) {
+	public Sanitizer(String... keysToSanitize) {
 		setKeysToSanitize(keysToSanitize);
 	}
 
 	/**
 	 * Keys that should be sanitized. Keys can be simple strings that the property ends
-	 * with or regex expressions.
+	 * with or regular expressions.
 	 * @param keysToSanitize the keys to sanitize
 	 */
 	public void setKeysToSanitize(String... keysToSanitize) {

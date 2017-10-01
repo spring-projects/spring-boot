@@ -22,12 +22,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,10 +56,7 @@ import static org.mockito.Mockito.mock;
  */
 public class RepackagerTests {
 
-	private static final Libraries NO_LIBRARIES = new Libraries() {
-		@Override
-		public void doWithLibraries(LibraryCallback callback) throws IOException {
-		}
+	private static final Libraries NO_LIBRARIES = (callback) -> {
 	};
 
 	private static final long JAN_1_1980;
@@ -298,14 +298,10 @@ public class RepackagerTests {
 		File file = this.testJarFile.getFile();
 		libJarFile.setLastModified(JAN_1_1980);
 		Repackager repackager = new Repackager(file);
-		repackager.repackage(new Libraries() {
-			@Override
-			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(new Library(libJarFile, LibraryScope.COMPILE));
-				callback.library(
-						new Library(libJarFileToUnpack, LibraryScope.COMPILE, true));
-				callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
-			}
+		repackager.repackage((callback) -> {
+			callback.library(new Library(libJarFile, LibraryScope.COMPILE));
+			callback.library(new Library(libJarFileToUnpack, LibraryScope.COMPILE, true));
+			callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
 		});
 		assertThat(hasEntry(file, "BOOT-INF/lib/" + libJarFile.getName())).isTrue();
 		assertThat(hasEntry(file, "BOOT-INF/lib/" + libJarFileToUnpack.getName()))
@@ -328,12 +324,9 @@ public class RepackagerTests {
 		Repackager repackager = new Repackager(file);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Duplicate library");
-		repackager.repackage(new Libraries() {
-			@Override
-			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
-				callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
-			}
+		repackager.repackage((callback) -> {
+			callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
+			callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
 		});
 	}
 
@@ -352,14 +345,8 @@ public class RepackagerTests {
 		given(layout.getLibraryDestination(anyString(), eq(LibraryScope.COMPILE)))
 				.willReturn("test-lib/");
 		repackager.setLayout(layout);
-		repackager.repackage(new Libraries() {
-
-			@Override
-			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(new Library(libJarFile, scope));
-			}
-
-		});
+		repackager.repackage(
+				(callback) -> callback.library(new Library(libJarFile, scope)));
 		assertThat(hasEntry(file, "test/" + libJarFile.getName())).isTrue();
 		assertThat(getManifest(file).getMainAttributes().getValue("Spring-Boot-Lib"))
 				.isEqualTo("test-lib/");
@@ -379,14 +366,8 @@ public class RepackagerTests {
 		final LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
 		repackager.setLayout(layout);
-		repackager.repackage(new Libraries() {
-
-			@Override
-			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(new Library(libJarFile, scope));
-			}
-
-		});
+		repackager.repackage(
+				(callback) -> callback.library(new Library(libJarFile, scope)));
 		assertThat(getManifest(file).getMainAttributes().getValue("Spring-Boot-Lib"))
 				.isNull();
 		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"))
@@ -444,27 +425,20 @@ public class RepackagerTests {
 	public void dontRecompressZips() throws Exception {
 		TestJarFile nested = new TestJarFile(this.temporaryFolder);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
-		final File nestedFile = nested.getFile();
+		File nestedFile = nested.getFile();
 		this.testJarFile.addFile("test/nested.jar", nestedFile);
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
-		repackager.repackage(new Libraries() {
-			@Override
-			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(new Library(nestedFile, LibraryScope.COMPILE));
-			}
-		});
-		JarFile jarFile = new JarFile(file);
-		try {
+		repackager.repackage((callback) -> callback
+				.library(new Library(nestedFile, LibraryScope.COMPILE)));
+
+		try (JarFile jarFile = new JarFile(file)) {
 			assertThat(
 					jarFile.getEntry("BOOT-INF/lib/" + nestedFile.getName()).getMethod())
 							.isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/classes/test/nested.jar").getMethod())
 					.isEqualTo(ZipEntry.STORED);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -494,28 +468,16 @@ public class RepackagerTests {
 			throws Exception {
 		TestJarFile nested = new TestJarFile(this.temporaryFolder);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
-		final File nestedFile = nested.getFile();
-		this.testJarFile.addFile("BOOT-INF/lib/" + nestedFile.getName(),
-				nested.getFile());
+		File nestedFile = nested.getFile();
+		String name = "BOOT-INF/lib/" + nestedFile.getName();
+		this.testJarFile.addFile(name, nested.getFile());
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
-		repackager.repackage(new Libraries() {
-
-			@Override
-			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(new Library(nestedFile, LibraryScope.COMPILE, true));
-			}
-
-		});
-		JarFile jarFile = new JarFile(file);
-		try {
-			assertThat(
-					jarFile.getEntry("BOOT-INF/lib/" + nestedFile.getName()).getComment())
-							.startsWith("UNPACK:");
-		}
-		finally {
-			jarFile.close();
+		repackager.repackage((callback) -> callback
+				.library(new Library(nestedFile, LibraryScope.COMPILE, true)));
+		try (JarFile jarFile = new JarFile(file)) {
+			assertThat(jarFile.getEntry(name).getComment()).startsWith("UNPACK:");
 		}
 	}
 
@@ -524,31 +486,22 @@ public class RepackagerTests {
 			throws Exception {
 		TestJarFile nested = new TestJarFile(this.temporaryFolder);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
-		final File nestedFile = nested.getFile();
+		File nestedFile = nested.getFile();
 		this.testJarFile.addFile("BOOT-INF/lib/" + nestedFile.getName(),
 				nested.getFile());
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		long sourceLength = nestedFile.length();
-		repackager.repackage(new Libraries() {
-
-			@Override
-			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				nestedFile.delete();
-				File toZip = RepackagerTests.this.temporaryFolder.newFile();
-				ZipUtil.packEntry(toZip, nestedFile);
-				callback.library(new Library(nestedFile, LibraryScope.COMPILE));
-			}
-
+		repackager.repackage((callback) -> {
+			nestedFile.delete();
+			File toZip = RepackagerTests.this.temporaryFolder.newFile();
+			ZipUtil.packEntry(toZip, nestedFile);
+			callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 		});
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/" + nestedFile.getName()).getSize())
 					.isEqualTo(sourceLength);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -561,12 +514,8 @@ public class RepackagerTests {
 		File dest = this.temporaryFolder.newFile("dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
-		JarFile jarFile = new JarFile(dest);
-		try {
+		try (JarFile jarFile = new JarFile(dest)) {
 			assertThat(jarFile.getEntry("META-INF/INDEX.LIST")).isNull();
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -603,13 +552,26 @@ public class RepackagerTests {
 		File dest = this.temporaryFolder.newFile("dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
-		JarFile jarFile = new JarFile(dest);
-		try {
+		try (JarFile jarFile = new JarFile(dest)) {
 			assertThat(jarFile.getEntry("META-INF/aop.xml")).isNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/aop.xml")).isNotNull();
 		}
-		finally {
-			jarFile.close();
+	}
+
+	@Test
+	public void allEntriesUseUnixPlatformAndUtf8NameEncoding() throws IOException {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		repackager.repackage(dest, NO_LIBRARIES);
+		try (ZipFile zip = new ZipFile(dest)) {
+			Enumeration<ZipArchiveEntry> entries = zip.getEntries();
+			while (entries.hasMoreElements()) {
+				ZipArchiveEntry entry = entries.nextElement();
+				assertThat(entry.getPlatform()).isEqualTo(ZipArchiveEntry.PLATFORM_UNIX);
+				assertThat(entry.getGeneralPurposeBit().usesUTF8ForNames()).isTrue();
+			}
 		}
 	}
 
@@ -623,22 +585,14 @@ public class RepackagerTests {
 	}
 
 	private JarEntry getEntry(File file, String name) throws IOException {
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			return jarFile.getJarEntry(name);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
 	private Manifest getManifest(File file) throws IOException {
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			return jarFile.getManifest();
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 

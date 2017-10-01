@@ -80,7 +80,7 @@
 								</path>
 								<pathconvert refid="taskpath" />
 								<typedef resource="org/springframework/boot/ant/antlib.xml" classpathref="taskpath" uri="antlib:org.springframework.boot.ant" />
-								<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+								<property name="build.compiler" value="${antBuildCompiler}" />
 								<antunit xmlns="antlib:org.apache.ant.antunit">
 									<propertyset>
 										<propertyref name="build.compiler" />
@@ -120,10 +120,30 @@
 					<dependency>
 						<groupId>org.eclipse.jdt.core.compiler</groupId>
 						<artifactId>ecj</artifactId>
-						<version>4.4.2</version>
+						<version>4.6.1</version>
 					</dependency>
 				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>java-8</id>
+			<activation>
+				<jdk>[1.8,1.9)</jdk>
+			</activation>
+			<properties>
+				<antBuildCompiler>org.eclipse.jdt.core.JDTCompilerAdapter</antBuildCompiler>
+			</properties>
+		</profile>
+		<profile>
+			<id>java-9</id>
+			<activation>
+				<jdk>[1.9,)</jdk>
+			</activation>
+			<properties>
+				<antBuildCompiler>modern</antBuildCompiler>
+			</properties>
+		</profile>
+	</profiles>
 </project>

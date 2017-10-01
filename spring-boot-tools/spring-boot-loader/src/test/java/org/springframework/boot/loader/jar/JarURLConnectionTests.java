@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
@@ -35,14 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Rostyslav Dudka
  */
 public class JarURLConnectionTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder(new File("target"));
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private File rootJarFile;
 
@@ -134,6 +131,28 @@ public class JarURLConnectionTests {
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		assertThat(JarURLConnection.get(url, nested).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
+	public void getContentLengthReturnsLengthOfUnderlyingEntry() throws Exception {
+		URL url = new URL(new URL("jar", null, -1,
+				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");
+		assertThat(url.openConnection().getContentLength()).isEqualTo(1);
+	}
+
+	@Test
+	public void getContentLengthLongReturnsLengthOfUnderlyingEntry() throws Exception {
+		URL url = new URL(new URL("jar", null, -1,
+				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");
+		assertThat(url.openConnection().getContentLengthLong()).isEqualTo(1);
+	}
+
+	@Test
+	public void getLastModifiedReturnsLastModifiedTimeOfJarEntry() throws Exception {
+		URL url = new URL("jar:file:" + getAbsolutePath() + "!/1.dat");
+		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
+		assertThat(connection.getLastModified())
+				.isEqualTo(connection.getJarEntry().getTime());
 	}
 
 	private String getAbsolutePath() {

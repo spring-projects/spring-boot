@@ -18,8 +18,11 @@ package org.springframework.boot.web.embedded.jetty;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -86,8 +90,8 @@ import org.springframework.util.StringUtils;
  * Can be initialized using Spring's {@link ServletContextInitializer}s or Jetty
  * {@link Configuration}s.
  * <p>
- * Unless explicitly configured otherwise this factory will created servers that listens
- * for HTTP requests on port 8080.
+ * Unless explicitly configured otherwise this factory will create servers that listen for
+ * HTTP requests on port 8080.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -229,6 +233,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		Compression compression = getCompression();
 		handler.setMinGzipSize(compression.getMinResponseSize());
 		handler.setIncludedMimeTypes(compression.getMimeTypes());
+		for (HttpMethod httpMethod : HttpMethod.values()) {
+			handler.addIncludedMethods(httpMethod.name());
+		}
 		if (compression.getExcludedUserAgents() != null) {
 			handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
 		}
@@ -385,12 +392,14 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private void configureDocumentRoot(WebAppContext handler) {
 		File root = getValidDocumentRoot();
-		root = (root != null ? root : createTempDir("jetty-docbase"));
+		File docBase = (root != null ? root : createTempDir("jetty-docbase"));
 		try {
 			List<Resource> resources = new ArrayList<>();
+			Resource rootResource = docBase.isDirectory()
+					? Resource.newResource(docBase.getCanonicalFile())
+					: JarResource.newJarResource(Resource.newResource(docBase));
 			resources.add(
-					root.isDirectory() ? Resource.newResource(root.getCanonicalFile())
-							: JarResource.newJarResource(Resource.newResource(root)));
+					root == null ? rootResource : new LoaderHidingResource(rootResource));
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				// Jetty 9.2 and earlier do not support nested jars. See
@@ -518,8 +527,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Post process the Jetty {@link WebAppContext} before it used with the Jetty Server.
-	 * Subclasses can override this method to apply additional processing to the
+	 * Post process the Jetty {@link WebAppContext} before it's used with the Jetty
+	 * Server. Subclasses can override this method to apply additional processing to the
 	 * {@link WebAppContext}.
 	 * @param webAppContext the Jetty {@link WebAppContext}
 	 */
@@ -571,7 +580,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	/**
 	 * Sets {@link JettyServerCustomizer}s that will be applied to the {@link Server}
-	 * before it is started. Calling this method will replace any existing configurations.
+	 * before it is started. Calling this method will replace any existing customizers.
 	 * @param customizers the Jetty customizers to apply
 	 */
 	public void setServerCustomizers(
@@ -581,9 +590,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Returns a mutable collection of Jetty {@link Configuration}s that will be applied
-	 * to the {@link WebAppContext} before the server is created.
-	 * @return the Jetty {@link Configuration}s
+	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
+	 * applied to the {@link Server} before the it is created.
+	 * @return the {@link JettyServerCustomizer}s
 	 */
 	public Collection<JettyServerCustomizer> getServerCustomizers() {
 		return this.jettyServerCustomizers;
@@ -711,6 +720,95 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				response.setHeader(SERVER_HEADER, this.value);
 			}
 			super.handle(target, baseRequest, request, response);
+		}
+
+	}
+
+	private static final class LoaderHidingResource extends Resource {
+
+		private final Resource delegate;
+
+		private LoaderHidingResource(Resource delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Resource addPath(String path) throws IOException, MalformedURLException {
+			if (path.startsWith("/org/springframework/boot")) {
+				return null;
+			}
+			return this.delegate.addPath(path);
+		}
+
+		@Override
+		public boolean isContainedIn(Resource resource) throws MalformedURLException {
+			return this.delegate.isContainedIn(resource);
+		}
+
+		@Override
+		public void close() {
+			this.delegate.close();
+		}
+
+		@Override
+		public boolean exists() {
+			return this.delegate.exists();
+		}
+
+		@Override
+		public boolean isDirectory() {
+			return this.delegate.isDirectory();
+		}
+
+		@Override
+		public long lastModified() {
+			return this.delegate.lastModified();
+		}
+
+		@Override
+		public long length() {
+			return this.delegate.length();
+		}
+
+		@Override
+		@Deprecated
+		public URL getURL() {
+			return this.delegate.getURL();
+		}
+
+		@Override
+		public File getFile() throws IOException {
+			return this.delegate.getFile();
+		}
+
+		@Override
+		public String getName() {
+			return this.delegate.getName();
+		}
+
+		@Override
+		public InputStream getInputStream() throws IOException {
+			return this.delegate.getInputStream();
+		}
+
+		@Override
+		public ReadableByteChannel getReadableByteChannel() throws IOException {
+			return this.delegate.getReadableByteChannel();
+		}
+
+		@Override
+		public boolean delete() throws SecurityException {
+			return this.delegate.delete();
+		}
+
+		@Override
+		public boolean renameTo(Resource dest) throws SecurityException {
+			return this.delegate.renameTo(dest);
+		}
+
+		@Override
+		public String[] list() {
+			return this.delegate.list();
 		}
 
 	}

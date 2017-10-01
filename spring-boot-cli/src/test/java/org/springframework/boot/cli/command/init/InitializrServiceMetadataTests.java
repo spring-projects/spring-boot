@@ -92,13 +92,9 @@ public class InitializrServiceMetadataTests {
 	private static JSONObject readJson(String version) throws IOException, JSONException {
 		Resource resource = new ClassPathResource(
 				"metadata/service-metadata-" + version + ".json");
-		InputStream stream = resource.getInputStream();
-		try {
+		try (InputStream stream = resource.getInputStream()) {
 			return new JSONObject(
 					StreamUtils.copyToString(stream, Charset.forName("UTF-8")));
-		}
-		finally {
-			stream.close();
 		}
 	}
 

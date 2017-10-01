@@ -32,7 +32,9 @@ import org.springframework.core.env.MutablePropertySources;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @since 1.4.0
+ * @deprecated since 2.0.0 in favor of {@link TestPropertyValues}
  */
+@Deprecated
 public abstract class EnvironmentTestUtils {
 
 	/**
@@ -71,8 +73,8 @@ public abstract class EnvironmentTestUtils {
 		Map<String, Object> map = getOrAdd(sources, name);
 		for (String pair : pairs) {
 			int index = getSeparatorIndex(pair);
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
+			String key = (index > 0 ? pair.substring(0, index) : pair);
+			String value = (index > 0 ? pair.substring(index + 1) : "");
 			map.put(key.trim(), value.trim());
 		}
 	}

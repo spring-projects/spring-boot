@@ -90,7 +90,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * Skip the execution.
 	 * @since 1.2
 	 */
-	@Parameter(property = "skip", defaultValue = "false")
+	@Parameter(property = "spring-boot.repackage.skip", defaultValue = "false")
 	private boolean skip;
 
 	/**
@@ -152,6 +152,12 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Make a fully executable jar for *nix machines by prepending a launch script to the
 	 * jar.
+	 * <p>
+	 * Currently, some tools do not accept this format so you may not always be able to
+	 * use this technique. For example, <code>jar -xf</code> may silently fail to extract
+	 * a jar or war that has been made fully-executable. It is recommended that you only
+	 * enable this option if you intend to execute it directly, rather than running it
+	 * with <code>java -jar</code> or deploying it to a servlet container.
 	 * @since 1.3
 	 */
 	@Parameter(defaultValue = "false")
@@ -219,7 +225,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private File getTargetFile() {
 		String classifier = (this.classifier == null ? "" : this.classifier.trim());
-		if (classifier.length() > 0 && !classifier.startsWith("-")) {
+		if (!classifier.isEmpty() && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
 		if (!this.outputDirectory.exists()) {
@@ -286,7 +292,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
-				if (candidate != null && candidate.length() > 0) {
+				if (candidate != null && !candidate.isEmpty()) {
 					properties.put(key, candidate);
 					return;
 				}

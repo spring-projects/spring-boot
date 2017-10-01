@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ public final class RepositoryConfiguration {
 
 	/**
 	 * Creates a new {@code RepositoryConfiguration} instance.
-	 * @param name The name of the repository
-	 * @param uri The uri of the repository
+	 * @param name the name of the repository
+	 * @param uri the uri of the repository
 	 * @param snapshotsEnabled {@code true} if the repository should enable access to
 	 * snapshots, {@code false} otherwise
 	 */

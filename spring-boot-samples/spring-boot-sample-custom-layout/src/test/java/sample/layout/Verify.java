@@ -27,8 +27,7 @@ public final class Verify {
 	}
 
 	public static void verify(File file, String entry) throws Exception {
-		ZipFile zipFile = new ZipFile(file);
-		try {
+		try (ZipFile zipFile = new ZipFile(file)) {
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
 				if (entries.nextElement().getName().equals(entry)) {
@@ -36,9 +35,6 @@ public final class Verify {
 				}
 			}
 			throw new AssertionError("No entry " + entry);
-		}
-		finally {
-			zipFile.close();
 		}
 	}
 

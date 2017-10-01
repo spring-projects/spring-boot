@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.jackson;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -28,35 +29,56 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JsonComponentModule}.
  *
  * @author Phillip Webb
+ * @author Vladimir Tsanev
  */
 public class JsonComponentModuleTests {
 
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void moduleShouldRegisterSerializers() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, OnlySerializer.class);
-		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		load(OnlySerializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertSerialize(module);
-		context.close();
 	}
 
 	@Test
 	public void moduleShouldRegisterDeserializers() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, OnlyDeserializer.class);
-		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		load(OnlyDeserializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertDeserialize(module);
-		context.close();
 	}
 
 	@Test
 	public void moduleShouldRegisterInnerClasses() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, NameAndAgeJsonComponent.class);
-		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		load(NameAndAgeJsonComponent.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertSerialize(module);
 		assertDeserialize(module);
+	}
+
+	@Test
+	public void moduleShouldAllowInnerAbstractClasses() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				JsonComponentModule.class, ComponentWithInnerAbstractClass.class);
+		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		assertSerialize(module);
 		context.close();
+	}
+
+	private void load(Class<?>... configs) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(configs);
+		context.register(JsonComponentModule.class);
+		context.refresh();
+		this.context = context;
 	}
 
 	private void assertSerialize(Module module) throws Exception {
@@ -82,6 +104,20 @@ public class JsonComponentModuleTests {
 
 	@JsonComponent
 	static class OnlyDeserializer extends NameAndAgeJsonComponent.Deserializer {
+
+	}
+
+	@JsonComponent
+	static class ComponentWithInnerAbstractClass {
+
+		private static abstract class AbstractSerializer
+				extends NameAndAgeJsonComponent.Serializer {
+
+		}
+
+		static class ConcreteSerializer extends AbstractSerializer {
+
+		}
 
 	}
 

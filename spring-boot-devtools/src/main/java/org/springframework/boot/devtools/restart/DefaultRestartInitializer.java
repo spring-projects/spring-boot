@@ -17,10 +17,10 @@
 package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Default {@link RestartInitializer} that only enable initial restart when running a
@@ -53,7 +53,9 @@ public class DefaultRestartInitializer implements RestartInitializer {
 				return null;
 			}
 		}
-		return getUrls(thread);
+		URL[] urls = getUrls(thread);
+		Stream.of(urls).forEach(System.out::println);
+		return urls;
 	}
 
 	/**
@@ -89,9 +91,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return the URLs
 	 */
 	protected URL[] getUrls(Thread thread) {
-		return ChangeableUrls
-				.fromUrlClassLoader((URLClassLoader) thread.getContextClassLoader())
-				.toArray();
+		return ChangeableUrls.fromClassLoader(thread.getContextClassLoader()).toArray();
 	}
 
 }

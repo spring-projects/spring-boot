@@ -16,23 +16,11 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Handler;
@@ -42,23 +30,20 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.WebServerException;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
-import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -161,17 +146,11 @@ public class JettyServletWebServerFactoryTests
 
 	@Override
 	protected void addConnector(int port, AbstractServletWebServerFactory factory) {
-		((JettyServletWebServerFactory) factory)
-				.addServerCustomizers(new JettyServerCustomizer() {
-
-					@Override
-					public void customize(Server server) {
-						ServerConnector connector = new ServerConnector(server);
-						connector.setPort(port);
-						server.addConnector(connector);
-					}
-
-				});
+		((JettyServletWebServerFactory) factory).addServerCustomizers((server) -> {
+			ServerConnector connector = new ServerConnector(server);
+			connector.setPort(port);
+			server.addConnector(connector);
+		});
 	}
 
 	@Test
@@ -237,16 +216,13 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void wrappedHandlers() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setServerCustomizers(Arrays.asList(new JettyServerCustomizer() {
-			@Override
-			public void customize(Server server) {
-				Handler handler = server.getHandler();
-				HandlerWrapper wrapper = new HandlerWrapper();
-				wrapper.setHandler(handler);
-				HandlerCollection collection = new HandlerCollection();
-				collection.addHandler(wrapper);
-				server.setHandler(collection);
-			}
+		factory.setServerCustomizers(Arrays.asList((server) -> {
+			Handler handler = server.getHandler();
+			HandlerWrapper wrapper = new HandlerWrapper();
+			wrapper.setHandler(handler);
+			HandlerCollection collection = new HandlerCollection();
+			collection.addHandler(wrapper);
+			server.setHandler(collection);
 		}));
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
@@ -286,67 +262,15 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void faultyFilterCausesStartFailure() throws Exception {
+	public void startFailsWhenThreadPoolIsTooSmall() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.addInitializers(new ServletContextInitializer() {
-
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.addFilter("faulty", new Filter() {
-
-					@Override
-					public void init(FilterConfig filterConfig) throws ServletException {
-						throw new ServletException("Faulty filter");
-					}
-
-					@Override
-					public void doFilter(ServletRequest request, ServletResponse response,
-							FilterChain chain) throws IOException, ServletException {
-						chain.doFilter(request, response);
-					}
-
-					@Override
-					public void destroy() {
-					}
-
-				});
-			}
-
+		factory.addServerCustomizers((server) -> {
+			QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+			threadPool.setMaxThreads(2);
+			threadPool.setMinThreads(2);
 		});
-		this.thrown.expect(WebServerException.class);
+		this.thrown.expectCause(isA(IllegalStateException.class));
 		factory.getWebServer().start();
-	}
-
-	@Override
-	@SuppressWarnings("serial")
-	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
-	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes,
-			String[] excludedUserAgents) throws Exception {
-		char[] chars = new char[contentSize];
-		Arrays.fill(chars, 'F');
-		final String testContent = new String(chars);
-		AbstractServletWebServerFactory factory = getFactory();
-		Compression compression = new Compression();
-		compression.setEnabled(true);
-		if (mimeTypes != null) {
-			compression.setMimeTypes(mimeTypes);
-		}
-		if (excludedUserAgents != null) {
-			compression.setExcludedUserAgents(excludedUserAgents);
-		}
-		factory.setCompression(compression);
-		this.webServer = factory
-				.getWebServer(new ServletRegistrationBean<HttpServlet>(new HttpServlet() {
-					@Override
-					protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-							throws ServletException, IOException {
-						resp.setContentLength(contentSize);
-						resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/plain");
-						resp.getWriter().print(testContent);
-					}
-				}, "/test.txt"));
-		this.webServer.start();
-		return testContent;
 	}
 
 	@Override

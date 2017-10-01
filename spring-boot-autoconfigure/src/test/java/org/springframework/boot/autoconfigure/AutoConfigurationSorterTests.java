@@ -40,8 +40,11 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link AutoConfigurationSorter}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class AutoConfigurationSorterTests {
+
+	private static final String DEFAULT = OrderUnspecified.class.getName();
 
 	private static final String LOWEST = OrderLowest.class.getName();
 
@@ -86,8 +89,8 @@ public class AutoConfigurationSorterTests {
 	@Test
 	public void byOrderAnnotation() throws Exception {
 		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST));
-		assertThat(actual).containsExactly(HIGHEST, LOWEST);
+				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST, DEFAULT));
+		assertThat(actual).containsExactly(HIGHEST, DEFAULT, LOWEST);
 	}
 
 	@Test
@@ -191,6 +194,11 @@ public class AutoConfigurationSorterTests {
 			items.add(type);
 		}
 		return StringUtils.collectionToCommaDelimitedString(items);
+	}
+
+	@AutoConfigureOrder
+	public static class OrderUnspecified {
+
 	}
 
 	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)

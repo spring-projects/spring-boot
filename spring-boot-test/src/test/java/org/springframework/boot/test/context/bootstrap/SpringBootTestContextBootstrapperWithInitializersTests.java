@@ -32,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link SpringBootTestContextBootstrapper} with and
+ * Integration tests for {@link SpringBootTestContextBootstrapper} with
  * {@link ApplicationContextInitializer}.
  *
  * @author Phillip Webb

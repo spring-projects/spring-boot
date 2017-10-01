@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.web.reactive;
 
+import java.util.Collection;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,6 +34,8 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 
 /**
  * {@link ContextCustomizer} for {@link WebTestClient}.
@@ -54,7 +59,6 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			registerWebTestClient(context, (BeanDefinitionRegistry) context);
 		}
-
 	}
 
 	private void registerWebTestClient(ConfigurableApplicationContext context,
@@ -70,10 +74,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
-			return false;
-		}
-		return true;
+		return (obj != null && obj.getClass().equals(getClass()));
 	}
 
 	/**
@@ -115,7 +116,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			String port = this.applicationContext.getEnvironment()
 					.getProperty("local.server.port", "8080");
 			String baseUrl = (sslEnabled ? "https" : "http") + "://localhost:" + port;
-			return WebTestClient.bindToServer().baseUrl(baseUrl).build();
+			WebTestClient.Builder builder = WebTestClient.bindToServer();
+			customizeWebTestClientCodecs(builder, this.applicationContext);
+			return builder.baseUrl(baseUrl).build();
 		}
 
 		private boolean isSslEnabled(ApplicationContext context) {
@@ -127,6 +130,18 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return false;
+			}
+		}
+
+		private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder,
+				ApplicationContext context) {
+			Collection<CodecCustomizer> codecCustomizers = context
+					.getBeansOfType(CodecCustomizer.class).values();
+			if (!CollectionUtils.isEmpty(codecCustomizers)) {
+				clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs((codecs) -> codecCustomizers.forEach(
+								(codecCustomizer) -> codecCustomizer.customize(codecs)))
+						.build());
 			}
 		}
 

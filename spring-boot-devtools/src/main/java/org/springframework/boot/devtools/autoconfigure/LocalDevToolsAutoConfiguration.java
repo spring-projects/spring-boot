@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ public class LocalDevToolsAutoConfiguration {
 	/**
 	 * Local LiveReload configuration.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
@@ -135,14 +136,7 @@ public class LocalDevToolsAutoConfiguration {
 
 		@Bean
 		public FileSystemWatcherFactory fileSystemWatcherFactory() {
-			return new FileSystemWatcherFactory() {
-
-				@Override
-				public FileSystemWatcher getFileSystemWatcher() {
-					return newFileSystemWatcher();
-				}
-
-			};
+			return this::newFileSystemWatcher;
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {

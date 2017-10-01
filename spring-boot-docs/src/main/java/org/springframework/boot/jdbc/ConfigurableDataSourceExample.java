@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Primary;
 public class ConfigurableDataSourceExample {
 
 	/**
-	 * A configuration that define dedicated settings and reuse
+	 * A configuration that defines dedicated settings and reuses
 	 * {@link DataSourceProperties}.
 	 */
 	@Configuration
@@ -51,8 +51,8 @@ public class ConfigurableDataSourceExample {
 		@Bean
 		@ConfigurationProperties("app.datasource")
 		public HikariDataSource dataSource(DataSourceProperties properties) {
-			return (HikariDataSource) properties.initializeDataSourceBuilder()
-					.type(HikariDataSource.class).build();
+			return properties.initializeDataSourceBuilder().type(HikariDataSource.class)
+					.build();
 		}
 		// end::configuration[]
 

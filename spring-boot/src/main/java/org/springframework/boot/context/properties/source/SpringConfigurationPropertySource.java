@@ -94,6 +94,11 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		return this.containsDescendantOfMethod.apply(name);
 	}
 
+	@Override
+	public Object getUnderlyingSource() {
+		return this.propertySource;
+	}
+
 	protected final ConfigurationProperty find(List<PropertyMapping> mappings,
 			ConfigurationPropertyName name) {
 		return mappings.stream().filter((m) -> m.isApplicable(name)).map(this::find)

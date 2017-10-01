@@ -91,12 +91,8 @@ public class ExplodedArchive implements Archive {
 	@Override
 	public Manifest getManifest() throws IOException {
 		if (this.manifest == null && this.manifestFile.exists()) {
-			FileInputStream inputStream = new FileInputStream(this.manifestFile);
-			try {
+			try (FileInputStream inputStream = new FileInputStream(this.manifestFile)) {
 				this.manifest = new Manifest(inputStream);
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 		return this.manifest;

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 
 import com.mongodb.MongoCredential;
@@ -32,6 +33,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ReactiveMongoClientFactory}.
@@ -148,14 +152,24 @@ public class ReactiveMongoClientFactoryTests {
 		assertServerAddress(allAddresses.get(0), "localhost", 4000);
 	}
 
+	@Test
+	public void customizerIsInvoked() {
+		MongoProperties properties = new MongoProperties();
+		MongoClientSettingsBuilderCustomizer customizer = mock(
+				MongoClientSettingsBuilderCustomizer.class);
+		createMongoClient(properties, this.environment, customizer);
+		verify(customizer).customize(any(MongoClientSettings.Builder.class));
+	}
+
 	private MongoClient createMongoClient(MongoProperties properties) {
 		return createMongoClient(properties, this.environment);
 	}
 
 	private MongoClient createMongoClient(MongoProperties properties,
-			Environment environment) {
-		return new ReactiveMongoClientFactory(properties, environment)
-				.createMongoClient(null);
+			Environment environment,
+			MongoClientSettingsBuilderCustomizer... customizers) {
+		return new ReactiveMongoClientFactory(properties, environment,
+				Arrays.asList(customizers)).createMongoClient(null);
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {

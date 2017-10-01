@@ -69,7 +69,7 @@ import org.springframework.util.ObjectUtils;
 @Configuration
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "flyway", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
@@ -78,6 +78,13 @@ public class FlywayAutoConfiguration {
 	@ConfigurationPropertiesBinding
 	public StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
 		return new StringOrNumberToMigrationVersionConverter();
+	}
+
+	@Bean
+	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(
+			ObjectProvider<List<Flyway>> flyways) {
+		return new FlywaySchemaManagementProvider(
+				flyways.getIfAvailable(Collections::emptyList));
 	}
 
 	@Configuration
@@ -133,7 +140,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "flyway")
+		@ConfigurationProperties(prefix = "spring.flyway")
 		public Flyway flyway() {
 			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {

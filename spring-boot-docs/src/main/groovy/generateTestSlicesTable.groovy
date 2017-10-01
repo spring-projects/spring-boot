@@ -3,7 +3,6 @@ import groovy.io.FileType
 import java.util.Properties
 
 import org.springframework.core.io.InputStreamResource
-import org.springframework.core.io.Resource
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.ClassMetadata
 import org.springframework.core.type.classreading.MetadataReader
@@ -72,10 +71,10 @@ MetadataReader createMetadataReader(MetadataReaderFactory factory, File classFil
 }
 
 TestSlice createTestSlice(Properties springFactories, ClassMetadata classMetadata, AnnotationMetadata annotationMetadata) {
-	new TestSlice(classMetadata.className, getImportedAutoConfiguration(springFactories, classMetadata, annotationMetadata))
+	new TestSlice(classMetadata.className, getImportedAutoConfiguration(springFactories, annotationMetadata))
 }
 
-Set<String> getImportedAutoConfiguration(Properties springFactories, ClassMetadata classMetadata, AnnotationMetadata annotationMetadata) {
+Set<String> getImportedAutoConfiguration(Properties springFactories, AnnotationMetadata annotationMetadata) {
 	Set<String> importers = findMetaImporters(annotationMetadata)
 	if (annotationMetadata.isAnnotated('org.springframework.boot.autoconfigure.ImportAutoConfiguration')) {
 		importers.add(annotationMetadata.className)

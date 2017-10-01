@@ -22,12 +22,14 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import redis.clients.jedis.Jedis;
 
-import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.util.StringUtils;
 
@@ -60,6 +62,13 @@ public class RedisAutoConfigurationJedisTests {
 		assertThat(cf.getDatabase()).isEqualTo(1);
 		assertThat(cf.getPassword()).isNull();
 		assertThat(cf.isUseSsl()).isFalse();
+	}
+
+	@Test
+	public void testCustomizeRedisConfiguration() throws Exception {
+		load(CustomConfiguration.class);
+		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
+		assertThat(cf.isUseSsl()).isTrue();
 	}
 
 	@Test
@@ -110,66 +119,56 @@ public class RedisAutoConfigurationJedisTests {
 	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		if (isAtLeastOneNodeAvailable(sentinels)) {
-			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
-					+ StringUtils.collectionToCommaDelimitedString(sentinels));
-			assertThat(this.context.getBean(JedisConnectionFactory.class)
-					.isRedisSentinelAware()).isTrue();
-		}
+		load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
+				+ StringUtils.collectionToCommaDelimitedString(sentinels));
+		assertThat(
+				this.context.getBean(JedisConnectionFactory.class).isRedisSentinelAware())
+						.isTrue();
+	}
+
+	@Test
+	public void testRedisConfigurationWithSentinelAndPassword() {
+		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
+				"spring.redis.sentinel.nodes:"
+						+ StringUtils.collectionToCommaDelimitedString(sentinels));
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPassword())
+				.isEqualTo("password");
 	}
 
 	@Test
 	public void testRedisConfigurationWithCluster() throws Exception {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
-		if (isAtLeastOneNodeAvailable(clusterNodes)) {
-			load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-					"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
-			assertThat(this.context.getBean(JedisConnectionFactory.class)
-					.getClusterConnection()).isNotNull();
-		}
+		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
+		assertThat(
+				this.context.getBean(JedisConnectionFactory.class).getClusterConnection())
+						.isNotNull();
 	}
 
 	private void load(String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
-		ctx.register(RedisAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		load(null, environment);
 	}
 
-	private boolean isAtLeastOneNodeAvailable(List<String> nodes) {
-		for (String node : nodes) {
-			if (isAvailable(node)) {
-				return true;
-			}
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(environment).applyTo(context);
+		if (config != null) {
+			context.register(config);
 		}
-
-		return false;
+		context.register(RedisAutoConfiguration.class);
+		context.refresh();
+		this.context = context;
 	}
 
-	private boolean isAvailable(String node) {
-		Jedis jedis = null;
-		try {
-			String[] hostAndPort = node.split(":");
-			jedis = new Jedis(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
-			jedis.connect();
-			jedis.ping();
-			return true;
+	@Configuration
+	static class CustomConfiguration {
+
+		@Bean
+		JedisClientConfigurationBuilderCustomizer customizer() {
+			return JedisClientConfigurationBuilder::useSsl;
 		}
-		catch (Exception ex) {
-			return false;
-		}
-		finally {
-			if (jedis != null) {
-				try {
-					jedis.disconnect();
-					jedis.close();
-				}
-				catch (Exception ex) {
-					// Continue
-				}
-			}
-		}
+
 	}
 
 }

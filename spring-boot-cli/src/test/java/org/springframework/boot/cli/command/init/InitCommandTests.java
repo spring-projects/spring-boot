@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -365,18 +365,14 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 
 	private byte[] createFakeZipArchive(String fileName, String content)
 			throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ZipOutputStream zos = new ZipOutputStream(bos);
-		try {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ZipOutputStream zos = new ZipOutputStream(bos)) {
 			ZipEntry entry = new ZipEntry(fileName);
 			zos.putNextEntry(entry);
 			zos.write(content.getBytes());
 			zos.closeEntry();
+			return bos.toByteArray();
 		}
-		finally {
-			bos.close();
-		}
-		return bos.toByteArray();
 	}
 
 	private static class TestableInitCommandOptionHandler

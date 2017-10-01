@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,12 +45,15 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Andy Wilkinson
  * @author Sebastien Deleuze
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
-@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class })
+@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
+		JsonbAutoConfiguration.class })
 @Import({ JacksonHttpMessageConvertersConfiguration.class,
-		GsonHttpMessageConvertersConfiguration.class })
+		GsonHttpMessageConvertersConfiguration.class,
+		JsonbHttpMessageConvertersConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";

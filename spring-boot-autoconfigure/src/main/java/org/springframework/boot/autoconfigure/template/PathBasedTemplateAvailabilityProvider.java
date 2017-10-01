@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.template;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider.TemplateAvailabilityProperties;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -33,19 +32,21 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @since 1.4.6
  */
-public abstract class PathBasedTemplateAvailabilityProvider<T extends TemplateAvailabilityProperties>
+public abstract class PathBasedTemplateAvailabilityProvider
 		implements TemplateAvailabilityProvider {
 
 	private final String className;
 
-	private final Class<T> propertiesClass;
+	private final Class<TemplateAvailabilityProperties> propertiesClass;
 
 	private final String propertyPrefix;
 
+	@SuppressWarnings("unchecked")
 	public PathBasedTemplateAvailabilityProvider(String className,
-			Class<T> propertiesClass, String propertyPrefix) {
+			Class<? extends TemplateAvailabilityProperties> propertiesClass,
+			String propertyPrefix) {
 		this.className = className;
-		this.propertiesClass = propertiesClass;
+		this.propertiesClass = (Class<TemplateAvailabilityProperties>) propertiesClass;
 		this.propertyPrefix = propertyPrefix;
 	}
 
@@ -54,9 +55,10 @@ public abstract class PathBasedTemplateAvailabilityProvider<T extends TemplateAv
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent(this.className, classLoader)) {
 			Binder binder = Binder.get(environment);
-			TemplateAvailabilityProperties properties = binder
+			TemplateAvailabilityProperties properties1 = binder
 					.bind(this.propertyPrefix, this.propertiesClass)
 					.orElseCreate(this.propertiesClass);
+			TemplateAvailabilityProperties properties = properties1;
 			return isTemplateAvailable(view, resourceLoader, properties);
 		}
 		return false;

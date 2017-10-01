@@ -17,6 +17,9 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.cluster.RedisClusterClient;
@@ -28,19 +31,23 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
-import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.util.StringUtils;
 
 /**
  * Redis connection configuration using Lettuce.
  *
  * @author Mark Paluch
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass({ GenericObjectPool.class, RedisClient.class,
@@ -49,11 +56,16 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
+	private final List<LettuceClientConfigurationBuilderCustomizer> builderCustomizers;
+
 	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
+			ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> builderCustomizers) {
 		super(properties, sentinelConfigurationProvider, clusterConfigurationProvider);
 		this.properties = properties;
+		this.builderCustomizers = builderCustomizers
+				.getIfAvailable(Collections::emptyList);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -66,132 +78,83 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	public LettuceConnectionFactory redisConnectionFactory(
 			ClientResources clientResources) throws UnknownHostException {
-		return applyProperties(createLettuceConnectionFactory(clientResources));
+		LettuceClientConfiguration clientConfig;
+		clientConfig = getLettuceClientConfiguration(clientResources,
+				this.properties.getLettuce().getPool());
+		return createLettuceConnectionFactory(clientConfig);
 	}
 
-	private LettuceConnectionFactory applyProperties(LettuceConnectionFactory factory) {
-		configureConnection(factory);
-		if (this.properties.isSsl()) {
-			factory.setUseSsl(true);
-		}
-		if (this.properties.getLettuce() != null) {
-			RedisProperties.Lettuce lettuce = this.properties.getLettuce();
-			if (lettuce.getShutdownTimeout() >= 0) {
-				factory.setShutdownTimeout(
-						this.properties.getLettuce().getShutdownTimeout());
-			}
-		}
-		return factory;
-	}
-
-	private void configureConnection(LettuceConnectionFactory factory) {
-		if (StringUtils.hasText(this.properties.getUrl())) {
-			configureConnectionFromUrl(factory);
-		}
-		else {
-			factory.setHostName(this.properties.getHost());
-			factory.setPort(this.properties.getPort());
-			if (this.properties.getPassword() != null) {
-				factory.setPassword(this.properties.getPassword());
-			}
-			factory.setDatabase(this.properties.getDatabase());
-			if (this.properties.getTimeout() > 0) {
-				factory.setTimeout(this.properties.getTimeout());
-			}
-		}
-	}
-
-	private void configureConnectionFromUrl(LettuceConnectionFactory factory) {
-		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
-		factory.setUseSsl(connectionInfo.isUseSsl());
-		factory.setHostName(connectionInfo.getHostName());
-		factory.setPort(connectionInfo.getPort());
-		if (connectionInfo.getPassword() != null) {
-			factory.setPassword(connectionInfo.getPassword());
-		}
-	}
-
-	private DefaultLettucePool applyProperties(DefaultLettucePool pool) {
-		if (StringUtils.hasText(this.properties.getUrl())) {
-			configureConnectionFromUrl(pool);
-		}
-		else {
-			pool.setHostName(this.properties.getHost());
-			pool.setPort(this.properties.getPort());
-			if (this.properties.getPassword() != null) {
-				pool.setPassword(this.properties.getPassword());
-			}
-			pool.setDatabase(this.properties.getDatabase());
-		}
-		if (this.properties.getTimeout() > 0) {
-			pool.setTimeout(this.properties.getTimeout());
-		}
-		pool.afterPropertiesSet();
-		return pool;
-	}
-
-	private void configureConnectionFromUrl(DefaultLettucePool lettucePool) {
-		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
-		lettucePool.setHostName(connectionInfo.getHostName());
-		lettucePool.setPort(connectionInfo.getPort());
-		if (connectionInfo.getPassword() != null) {
-			lettucePool.setPassword(connectionInfo.getPassword());
-		}
-	}
-
-	private LettuceConnectionFactory createLettuceConnectionFactory(
-			ClientResources clientResources) {
-
-		if (getSentinelConfig() != null) {
-			if (this.properties.getLettuce() != null
-					&& this.properties.getLettuce().getPool() != null) {
-				DefaultLettucePool lettucePool = new DefaultLettucePool(
-						getSentinelConfig());
-				return new LettuceConnectionFactory(applyProperties(
-						applyClientResources(lettucePool, clientResources)));
-			}
-			return applyClientResources(new LettuceConnectionFactory(getSentinelConfig()),
-					clientResources);
-		}
-
-		if (getClusterConfiguration() != null) {
-			return applyClientResources(
-					new LettuceConnectionFactory(getClusterConfiguration()),
-					clientResources);
-		}
-
-		if (this.properties.getLettuce() != null
-				&& this.properties.getLettuce().getPool() != null) {
-			GenericObjectPoolConfig config = lettucePoolConfig(
-					this.properties.getLettuce().getPool());
-			DefaultLettucePool lettucePool = new DefaultLettucePool(
-					this.properties.getHost(), this.properties.getPort(), config);
-			return new LettuceConnectionFactory(
-					applyProperties(applyClientResources(lettucePool, clientResources)));
-		}
-
-		return applyClientResources(new LettuceConnectionFactory(), clientResources);
-	}
-
-	private DefaultLettucePool applyClientResources(DefaultLettucePool lettucePool,
-			ClientResources clientResources) {
-		lettucePool.setClientResources(clientResources);
-		return lettucePool;
-	}
-
-	private LettuceConnectionFactory applyClientResources(
-			LettuceConnectionFactory factory, ClientResources clientResources) {
-		factory.setClientResources(clientResources);
-		return factory;
-	}
-
-	private GenericObjectPoolConfig lettucePoolConfig(RedisProperties.Pool props) {
+	private static GenericObjectPoolConfig lettucePoolConfig(RedisProperties.Pool props) {
 		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
 		config.setMaxTotal(props.getMaxActive());
 		config.setMaxIdle(props.getMaxIdle());
 		config.setMinIdle(props.getMinIdle());
 		config.setMaxWaitMillis(props.getMaxWait());
 		return config;
+	}
+
+	private LettuceConnectionFactory createLettuceConnectionFactory(
+			LettuceClientConfiguration clientConfiguration) {
+		if (getSentinelConfig() != null) {
+			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
+		}
+		if (getClusterConfiguration() != null) {
+			return new LettuceConnectionFactory(getClusterConfiguration(),
+					clientConfiguration);
+		}
+		return new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+	}
+
+	private LettuceClientConfiguration getLettuceClientConfiguration(
+			ClientResources clientResources, Pool pool) {
+		LettuceClientConfigurationBuilder builder;
+		if (pool != null) {
+			builder = LettucePoolingClientConfiguration.builder()
+					.poolConfig(lettucePoolConfig(pool));
+		}
+		else {
+			builder = LettuceClientConfiguration.builder();
+		}
+		applyProperties(builder);
+		if (StringUtils.hasText(this.properties.getUrl())) {
+			customizeConfigurationFromUrl(builder);
+		}
+		builder.clientResources(clientResources);
+		customize(builder);
+		return builder.build();
+	}
+
+	private LettuceClientConfigurationBuilder applyProperties(
+			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
+		if (this.properties.isSsl()) {
+			builder.useSsl();
+		}
+		if (this.properties.getTimeout() != 0) {
+			builder.commandTimeout(Duration.ofMillis(this.properties.getTimeout()));
+		}
+		if (this.properties.getLettuce() != null) {
+			RedisProperties.Lettuce lettuce = this.properties.getLettuce();
+			if (lettuce.getShutdownTimeout() >= 0) {
+				builder.shutdownTimeout(Duration
+						.ofMillis(this.properties.getLettuce().getShutdownTimeout()));
+			}
+		}
+		return builder;
+	}
+
+	private void customizeConfigurationFromUrl(
+			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
+		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
+		if (connectionInfo.isUseSsl()) {
+			builder.useSsl();
+		}
+	}
+
+	private void customize(
+			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
+		for (LettuceClientConfigurationBuilderCustomizer customizer : this.builderCustomizers) {
+			customizer.customize(builder);
+		}
 	}
 
 }

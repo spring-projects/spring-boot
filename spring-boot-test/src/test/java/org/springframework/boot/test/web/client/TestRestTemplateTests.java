@@ -154,13 +154,7 @@ public class TestRestTemplateTests {
 				return mock(type);
 			}
 
-		}, new ReflectionUtils.MethodFilter() {
-			@Override
-			public boolean matches(Method method) {
-				return Modifier.isPublic(method.getModifiers());
-			}
-
-		});
+		}, (method) -> Modifier.isPublic(method.getModifiers()));
 
 	}
 
@@ -217,209 +211,99 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void deleteHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.delete(relativeUri);
-			}
-
-		});
+		verifyRelativeUriHandling(TestRestTemplate::delete);
 	}
 
 	@Test
 	public void exchangeWithRequestEntityAndClassHandlesRelativeUris()
 			throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.exchange(
-						new RequestEntity<String>(HttpMethod.GET, relativeUri),
-						String.class);
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri),
+						String.class));
 	}
 
 	@Test
 	public void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris()
 			throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.exchange(
-						new RequestEntity<String>(HttpMethod.GET, relativeUri),
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri),
 						new ParameterizedTypeReference<String>() {
-				});
-			}
-
-		});
+						}));
 	}
 
 	@Test
 	public void exchangeHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.exchange(relativeUri, HttpMethod.GET,
-						new HttpEntity<>(new byte[0]), String.class);
-			}
-
-		});
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
+						HttpMethod.GET, new HttpEntity<>(new byte[0]), String.class));
 	}
 
 	@Test
 	public void exchangeWithParameterizedTypeReferenceHandlesRelativeUris()
 			throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.exchange(relativeUri, HttpMethod.GET,
-						new HttpEntity<>(new byte[0]),
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
+						HttpMethod.GET, new HttpEntity<>(new byte[0]),
 						new ParameterizedTypeReference<String>() {
-				});
-			}
-
-		});
+						}));
 	}
 
 	@Test
 	public void executeHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.execute(relativeUri, HttpMethod.GET, null, null);
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.execute(relativeUri, HttpMethod.GET, null, null));
 	}
 
 	@Test
 	public void getForEntityHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.getForEntity(relativeUri, String.class);
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.getForEntity(relativeUri, String.class));
 	}
 
 	@Test
 	public void getForObjectHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.getForObject(relativeUri, String.class);
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.getForObject(relativeUri, String.class));
 	}
 
 	@Test
 	public void headForHeadersHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.headForHeaders(relativeUri);
-			}
-
-		});
+		verifyRelativeUriHandling(TestRestTemplate::headForHeaders);
 	}
 
 	@Test
 	public void optionsForAllowHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.optionsForAllow(relativeUri);
-			}
-
-		});
+		verifyRelativeUriHandling(TestRestTemplate::optionsForAllow);
 	}
 
 	@Test
 	public void patchForObjectHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.patchForObject(relativeUri, "hello", String.class);
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.patchForObject(relativeUri, "hello", String.class));
 	}
 
 	@Test
 	public void postForEntityHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.postForEntity(relativeUri, "hello", String.class);
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.postForEntity(relativeUri, "hello", String.class));
 	}
 
 	@Test
 	public void postForLocationHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.postForLocation(relativeUri, "hello");
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.postForLocation(relativeUri, "hello"));
 	}
 
 	@Test
 	public void postForObjectHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.postForObject(relativeUri, "hello", String.class);
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.postForObject(relativeUri, "hello", String.class));
 	}
 
 	@Test
 	public void putHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(new TestRestTemplateCallback() {
-
-			@Override
-			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
-					URI relativeUri) {
-				testRestTemplate.put(relativeUri, "hello");
-			}
-
-		});
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+				.put(relativeUri, "hello"));
 	}
 
 	private void verifyRelativeUriHandling(TestRestTemplateCallback callback)

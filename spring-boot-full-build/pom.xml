@@ -53,7 +53,7 @@
 		<module>../spring-boot-autoconfigure</module>
 		<module>../spring-boot-test-autoconfigure</module>
 		<module>../spring-boot-actuator</module>
-		<module>../spring-boot-actuator-docs</module>
+		<module>../spring-boot-actuator-autoconfigure</module>
 		<module>../spring-boot-devtools</module>
 		<module>../spring-boot-starters</module>
 		<module>../spring-boot-cli</module>

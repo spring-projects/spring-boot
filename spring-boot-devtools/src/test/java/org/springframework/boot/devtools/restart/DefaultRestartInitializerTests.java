@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,12 @@ public class DefaultRestartInitializerTests {
 	@Test
 	public void skipsDueToCucumber() throws Exception {
 		testSkipStack("cucumber.runtime.Runtime.run", true);
+	}
+
+	@Test
+	public void urlsCanBeRetrieved() {
+		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread()))
+				.isNotEmpty();
 	}
 
 	private void testSkipStack(String className, boolean expected) {

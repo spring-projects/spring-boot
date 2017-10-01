@@ -242,7 +242,7 @@ public class FileSystemWatcher {
 				}
 				remainingScans = this.remainingScans.get();
 			}
-		};
+		}
 
 		private void scan() throws InterruptedException {
 			Thread.sleep(this.pollInterval - this.quietPeriod);

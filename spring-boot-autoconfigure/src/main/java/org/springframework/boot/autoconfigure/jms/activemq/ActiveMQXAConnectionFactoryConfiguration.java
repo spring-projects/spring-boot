@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.util.List;
+
 import javax.jms.ConnectionFactory;
 import javax.transaction.TransactionManager;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQXAConnectionFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,18 +50,22 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
+			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-				properties).createConnectionFactory(ActiveMQXAConnectionFactory.class);
+				properties, factoryCustomizers.getIfAvailable())
+						.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(
-			ActiveMQProperties properties) {
-		return new ActiveMQConnectionFactoryFactory(properties)
-				.createConnectionFactory(ActiveMQConnectionFactory.class);
+			ActiveMQProperties properties,
+			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
+		return new ActiveMQConnectionFactoryFactory(properties,
+				factoryCustomizers.getIfAvailable())
+						.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 }

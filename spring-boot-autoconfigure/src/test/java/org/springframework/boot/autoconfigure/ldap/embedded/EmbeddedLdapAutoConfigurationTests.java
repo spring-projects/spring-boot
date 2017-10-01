@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -78,8 +78,8 @@ public class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	public void testRandomPortWithValueAnnotation() throws LDAPException {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.applyTo(this.context);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
 				LdapClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -119,8 +119,8 @@ public class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	public void testQueryEmbeddedLdap() throws LDAPException {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.applyTo(this.context);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
 				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -129,6 +129,21 @@ public class EmbeddedLdapAutoConfigurationTests {
 				.isEqualTo(1);
 		LdapTemplate ldapTemplate = this.context.getBean(LdapTemplate.class);
 		assertThat(ldapTemplate.list("ou=company1,c=Sweden,dc=spring,dc=org")).hasSize(4);
+	}
+
+	@Test
+	public void testQueryEmbeddedLdapWithBase() throws LDAPException {
+		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org",
+				"spring.ldap.base:dc=spring,dc=org")
+				.applyTo(this.context);
+		this.context.register(EmbeddedLdapAutoConfiguration.class,
+				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(LdapTemplate.class).length)
+				.isEqualTo(1);
+		LdapTemplate ldapTemplate = this.context.getBean(LdapTemplate.class);
+		assertThat(ldapTemplate.list("ou=company1,c=Sweden")).hasSize(4);
 	}
 
 	@Test
@@ -155,7 +170,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	private void load(String... properties) {
-		EnvironmentTestUtils.addEnvironment(this.context, properties);
+		TestPropertyValues.of(properties).applyTo(this.context);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

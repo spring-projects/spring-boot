@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.hazelcast.core.HazelcastInstance;
-import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,73 +44,66 @@ import static org.mockito.Mockito.mock;
  */
 public class HazelcastJpaDependencyAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void closeContext() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					HibernateJpaAutoConfiguration.class,
+					HazelcastJpaDependencyAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true",
+					"spring.datasource.initialize=false");
 
 	@Test
 	public void registrationIfHazelcastInstanceHasRegularBeanName() {
-		load(HazelcastConfiguration.class);
-		assertThat(getPostProcessor())
-				.containsKey("hazelcastInstanceJpaDependencyPostProcessor");
-		assertThat(getEntityManagerFactoryDependencies()).contains("hazelcastInstance");
+		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
+				.run((context) -> {
+					assertThat(postProcessors(context))
+							.containsKey("hazelcastInstanceJpaDependencyPostProcessor");
+					assertThat(entityManagerFactoryDependencies(context))
+							.contains("hazelcastInstance");
+				});
 	}
 
 	@Test
 	public void noRegistrationIfHazelcastInstanceHasCustomBeanName() {
-		load(HazelcastCustomNameConfiguration.class);
-		assertThat(getEntityManagerFactoryDependencies())
-				.doesNotContain("hazelcastInstance");
-		assertThat(getPostProcessor())
-				.doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
+		this.contextRunner.withUserConfiguration(HazelcastCustomNameConfiguration.class)
+				.run((context) -> {
+					assertThat(entityManagerFactoryDependencies(context))
+							.doesNotContain("hazelcastInstance");
+					assertThat(postProcessors(context)).doesNotContainKey(
+							"hazelcastInstanceJpaDependencyPostProcessor");
+				});
 	}
 
 	@Test
 	public void noRegistrationWithNoHazelcastInstance() {
-		load(null);
-		assertThat(getEntityManagerFactoryDependencies())
-				.doesNotContain("hazelcastInstance");
-		assertThat(getPostProcessor())
-				.doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
+		this.contextRunner.run((context) -> {
+			assertThat(entityManagerFactoryDependencies(context))
+					.doesNotContain("hazelcastInstance");
+			assertThat(postProcessors(context))
+					.doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
+		});
 	}
 
 	@Test
 	public void noRegistrationWithNoEntityManagerFactory() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(HazelcastConfiguration.class,
-				HazelcastJpaDependencyAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(getPostProcessor())
-				.doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
+		new ApplicationContextRunner().withUserConfiguration(HazelcastConfiguration.class)
+				.withConfiguration(AutoConfigurations
+						.of(HazelcastJpaDependencyAutoConfiguration.class))
+				.run((context) -> assertThat(postProcessors(context)).doesNotContainKey(
+						"hazelcastInstanceJpaDependencyPostProcessor"));
 	}
 
-	private Map<String, EntityManagerFactoryDependsOnPostProcessor> getPostProcessor() {
-		return this.context
-				.getBeansOfType(EntityManagerFactoryDependsOnPostProcessor.class);
+	private Map<String, EntityManagerFactoryDependsOnPostProcessor> postProcessors(
+			AssertableApplicationContext context) {
+		return context.getBeansOfType(EntityManagerFactoryDependsOnPostProcessor.class);
 	}
 
-	private List<String> getEntityManagerFactoryDependencies() {
-		String[] dependsOn = this.context.getBeanDefinition("entityManagerFactory")
-				.getDependsOn();
+	private List<String> entityManagerFactoryDependencies(
+			AssertableApplicationContext context) {
+		String[] dependsOn = ((BeanDefinitionRegistry) context
+				.getSourceApplicationContext()).getBeanDefinition("entityManagerFactory")
+						.getDependsOn();
 		return dependsOn != null ? Arrays.asList(dependsOn)
 				: Collections.<String>emptyList();
-	}
-
-	public void load(Class<?> config) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		if (config != null) {
-			ctx.register(config);
-		}
-		ctx.register(EmbeddedDataSourceConfiguration.class,
-				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class);
-		ctx.register(HazelcastJpaDependencyAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
 	}
 
 	@Configuration

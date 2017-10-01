@@ -17,7 +17,6 @@
 package org.springframework.boot.web.servlet.support;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -97,20 +95,11 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void errorPageFilterRegistrationCanBeDisabled() throws Exception {
 		WebServer webServer = new UndertowServletWebServerFactory(0)
-				.getWebServer(new ServletContextInitializer() {
-
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
-								.createRootApplicationContext(servletContext);
-						try {
-							assertThat(context.getBeansOfType(ErrorPageFilter.class))
-									.hasSize(0);
-						}
-						finally {
-							context.close();
-						}
+				.getWebServer((servletContext) -> {
+					try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
+							.createRootApplicationContext(servletContext)) {
+						assertThat(context.getBeansOfType(ErrorPageFilter.class))
+								.hasSize(0);
 					}
 				});
 		try {
@@ -124,13 +113,9 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured()
 			throws Exception {
-		ConfigurableApplicationContext context = new SpringApplication(
-				ExecutableWar.class).run();
-		try {
+		try (ConfigurableApplicationContext context = new SpringApplication(
+				ExecutableWar.class).run()) {
 			assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
-		}
-		finally {
-			context.close();
 		}
 	}
 
@@ -147,7 +132,7 @@ public class SpringBootServletInitializerTests {
 		protected WebApplicationContext run(SpringApplication application) {
 			SpringBootServletInitializerTests.this.application = application;
 			return null;
-		};
+		}
 
 	}
 

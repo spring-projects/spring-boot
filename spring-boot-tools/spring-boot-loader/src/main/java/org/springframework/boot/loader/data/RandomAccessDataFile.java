@@ -67,7 +67,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			throw new IllegalArgumentException("File must exist");
 		}
 		this.file = file;
-		this.filePool = new FilePool(concurrentReads);
+		this.filePool = new FilePool(file, concurrentReads);
 		this.offset = 0L;
 		this.length = file.length();
 	}
@@ -170,11 +170,11 @@ public class RandomAccessDataFile implements RandomAccessData {
 				return -1;
 			}
 			RandomAccessFile file = this.file;
-			if (file == null) {
-				file = RandomAccessDataFile.this.filePool.acquire();
-				file.seek(RandomAccessDataFile.this.offset + this.position);
-			}
 			try {
+				if (file == null) {
+					file = RandomAccessDataFile.this.filePool.acquire();
+					file.seek(RandomAccessDataFile.this.offset + this.position);
+				}
 				if (b == null) {
 					int rtn = file.read();
 					moveOn(rtn == -1 ? 0 : 1);
@@ -185,7 +185,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 				}
 			}
 			finally {
-				if (this.file == null) {
+				if (this.file == null && file != null) {
 					RandomAccessDataFile.this.filePool.release(file);
 				}
 			}
@@ -229,7 +229,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 * Manage a pool that can be used to perform concurrent reads on the underlying
 	 * {@link RandomAccessFile}.
 	 */
-	private class FilePool {
+	static class FilePool {
+
+		private final File file;
 
 		private final int size;
 
@@ -237,7 +239,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		private final Queue<RandomAccessFile> files;
 
-		FilePool(int size) {
+		FilePool(File file, int size) {
+			this.file = file;
 			this.size = size;
 			this.available = new Semaphore(size);
 			this.files = new ConcurrentLinkedQueue<>();
@@ -249,7 +252,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (file != null) {
 				return file;
 			}
-			return new RandomAccessFile(RandomAccessDataFile.this.file, "r");
+			return new RandomAccessFile(this.file, "r");
 		}
 
 		public void release(RandomAccessFile file) {

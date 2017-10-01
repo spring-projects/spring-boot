@@ -33,6 +33,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.So
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
@@ -52,6 +53,7 @@ import org.springframework.web.context.support.ServletContextResourcePatternReso
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternResolver {
 
@@ -205,8 +207,27 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 		public ResourcePatternResolver getResourcePatternResolver(
 				ApplicationContext applicationContext, ResourceLoader resourceLoader) {
-			return new PathMatchingResourcePatternResolver(resourceLoader == null
-					? new DefaultResourceLoader() : resourceLoader);
+			if (resourceLoader == null) {
+				resourceLoader = new DefaultResourceLoader();
+				copyProtocolResolvers(applicationContext, resourceLoader);
+			}
+			return new PathMatchingResourcePatternResolver(resourceLoader);
+		}
+
+		protected final void copyProtocolResolvers(ApplicationContext applicationContext,
+				ResourceLoader resourceLoader) {
+			if (applicationContext instanceof DefaultResourceLoader
+					&& resourceLoader instanceof DefaultResourceLoader) {
+				copyProtocolResolvers((DefaultResourceLoader) applicationContext,
+						(DefaultResourceLoader) resourceLoader);
+			}
+		}
+
+		protected final void copyProtocolResolvers(DefaultResourceLoader source,
+				DefaultResourceLoader destination) {
+			for (ProtocolResolver resolver : source.getProtocolResolvers()) {
+				destination.addProtocolResolver(resolver);
+			}
 		}
 
 	}
@@ -222,12 +243,21 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		public ResourcePatternResolver getResourcePatternResolver(
 				ApplicationContext applicationContext, ResourceLoader resourceLoader) {
 			if (applicationContext instanceof WebApplicationContext) {
-				return new ServletContextResourcePatternResolver(resourceLoader == null
-						? new WebApplicationContextResourceLoader(
-								(WebApplicationContext) applicationContext)
-						: resourceLoader);
+				return getResourcePatternResolver(
+						(WebApplicationContext) applicationContext, resourceLoader);
 			}
 			return super.getResourcePatternResolver(applicationContext, resourceLoader);
+		}
+
+		private ResourcePatternResolver getResourcePatternResolver(
+				WebApplicationContext applicationContext, ResourceLoader resourceLoader) {
+			if (resourceLoader == null) {
+				resourceLoader = new WebApplicationContextResourceLoader(
+						applicationContext);
+				copyProtocolResolvers(applicationContext, resourceLoader);
+			}
+			return new ServletContextResourcePatternResolver(resourceLoader);
+
 		}
 
 	}

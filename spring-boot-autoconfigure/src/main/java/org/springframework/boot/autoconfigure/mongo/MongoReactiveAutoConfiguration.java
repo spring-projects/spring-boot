@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.List;
+
 import javax.annotation.PreDestroy;
 
 import com.mongodb.async.client.MongoClientSettings;
@@ -49,9 +51,11 @@ public class MongoReactiveAutoConfiguration {
 	private MongoClient mongo;
 
 	public MongoReactiveAutoConfiguration(MongoProperties properties,
-			ObjectProvider<MongoClientSettings> settings, Environment environment) {
+			ObjectProvider<MongoClientSettings> settings, Environment environment,
+			ObjectProvider<List<MongoClientSettingsBuilderCustomizer>> builderCustomizers) {
 		this.settings = settings.getIfAvailable();
-		this.factory = new ReactiveMongoClientFactory(properties, environment);
+		this.factory = new ReactiveMongoClientFactory(properties, environment,
+				builderCustomizers.getIfAvailable());
 	}
 
 	@PreDestroy

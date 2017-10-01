@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PingMessage;
@@ -56,14 +55,14 @@ public class LiveReloadServerTests {
 	private static final String HANDSHAKE = "{command: 'hello', "
 			+ "protocols: ['http://livereload.com/protocols/official-7']}";
 
-	private int port = SocketUtils.findAvailableTcpPort();
+	private int port;
 
 	private MonitoredLiveReloadServer server;
 
 	@Before
 	public void setUp() throws Exception {
-		this.server = new MonitoredLiveReloadServer(this.port);
-		this.server.start();
+		this.server = new MonitoredLiveReloadServer(0);
+		this.port = this.server.start();
 	}
 
 	@After

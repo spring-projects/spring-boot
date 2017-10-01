@@ -31,14 +31,7 @@ public interface ClassLoaderFileRepository {
 	/**
 	 * Empty {@link ClassLoaderFileRepository} implementation.
 	 */
-	ClassLoaderFileRepository NONE = new ClassLoaderFileRepository() {
-
-		@Override
-		public ClassLoaderFile getFile(String name) {
-			return null;
-		}
-
-	};
+	ClassLoaderFileRepository NONE = (name) -> null;
 
 	/**
 	 * Return a {@link ClassLoaderFile} for the given name or {@code null} if no file is

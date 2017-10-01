@@ -23,16 +23,14 @@ import com.hazelcast.client.impl.HazelcastClientProxy;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import org.junit.After;
+import org.assertj.core.api.Condition;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,11 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class HazelcastAutoConfigurationClientTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
-
-	private AnnotationConfigApplicationContext context;
 
 	/**
 	 * Servers the test clients will connect to.
@@ -68,78 +61,61 @@ public class HazelcastAutoConfigurationClientTests {
 		}
 	}
 
-	@After
-	public void closeContext() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void systemProperty() throws IOException {
-		System.setProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY,
-				"classpath:org/springframework/boot/autoconfigure/hazelcast/"
-						+ "hazelcast-client-specific.xml");
-		try {
-			load();
-			HazelcastInstance hazelcastInstance = this.context
-					.getBean(HazelcastInstance.class);
-			assertThat(hazelcastInstance).isInstanceOf(HazelcastClientProxy.class);
-			assertThat(hazelcastInstance.getName()).startsWith("hz.client_");
-		}
-		finally {
-			System.clearProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY);
-		}
+		this.contextRunner
+				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-client-specific.xml")
+				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
+						.isInstanceOf(HazelcastInstance.class)
+						.has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
 	public void explicitConfigFile() throws IOException {
-		load("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-				+ "hazelcast/hazelcast-client-specific.xml");
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		assertThat(hazelcastInstance).isInstanceOf(HazelcastClientProxy.class);
-		assertThat(hazelcastInstance.getName()).startsWith("hz.client_");
+		this.contextRunner
+				.withPropertyValues(
+						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+								+ "hazelcast/hazelcast-client-specific.xml")
+				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
+						.isInstanceOf(HazelcastClientProxy.class)
+						.has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
 	public void explicitConfigUrl() throws IOException {
-		load("spring.hazelcast.config=hazelcast-client-default.xml");
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		assertThat(hazelcastInstance).isInstanceOf(HazelcastClientProxy.class);
-		assertThat(hazelcastInstance.getName()).startsWith("hz.client_");
+		this.contextRunner
+				.withPropertyValues(
+						"spring.hazelcast.config=hazelcast-client-default.xml")
+				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
+						.isInstanceOf(HazelcastClientProxy.class)
+						.has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
 	public void unknownConfigFile() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("foo/bar/unknown.xml");
-		load("spring.hazelcast.config=foo/bar/unknown.xml");
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining("foo/bar/unknown.xml"));
 	}
 
 	@Test
 	public void clientConfigTakesPrecedence() {
-		load(HazelcastServerAndClientConfig.class,
-				"spring.hazelcast.config=this-is-ignored.xml");
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		assertThat(hazelcastInstance).isInstanceOf(HazelcastClientProxy.class);
+		this.contextRunner.withUserConfiguration(HazelcastServerAndClientConfig.class)
+				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
+						.isInstanceOf(HazelcastClientProxy.class));
 	}
 
-	private void load(String... environment) {
-		load(null, environment);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-		if (config != null) {
-			applicationContext.register(config);
-		}
-		applicationContext.register(HazelcastAutoConfiguration.class);
-		applicationContext.refresh();
-		this.context = applicationContext;
+	private Condition<HazelcastInstance> nameStartingWith(String prefix) {
+		return new Condition<>((o) -> o.getName().startsWith(prefix),
+				"Name starts with " + prefix);
 	}
 
 	@Configuration

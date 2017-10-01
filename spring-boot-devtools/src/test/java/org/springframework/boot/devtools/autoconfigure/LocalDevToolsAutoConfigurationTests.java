@@ -53,7 +53,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,8 +75,6 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Rule
 	public MockRestarter mockRestarter = new MockRestarter();
-
-	private int liveReloadPort = SocketUtils.findAvailableTcpPort();
 
 	private ConfigurableApplicationContext context;
 
@@ -270,7 +267,7 @@ public class LocalDevToolsAutoConfigurationTests {
 			Map<String, Object> specifiedProperties) {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.thymeleaf.check-template-location", false);
-		properties.put("spring.devtools.livereload.port", this.liveReloadPort);
+		properties.put("spring.devtools.livereload.port", 0);
 		properties.put("server.port", 0);
 		properties.putAll(specifiedProperties);
 		return properties;

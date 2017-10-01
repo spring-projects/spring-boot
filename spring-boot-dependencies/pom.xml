@@ -46,173 +46,185 @@
 	</developers>
 	<properties>
 		<!-- Dependency versions -->
-		<activemq.version>5.14.5</activemq.version>
+		<activemq.version>5.15.0</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.53</appengine-sdk.version>
-		<artemis.version>1.5.4</artemis.version>
+		<appengine-sdk.version>1.9.56</appengine-sdk.version>
+		<artemis.version>2.3.0</artemis.version>
 		<aspectj.version>1.8.10</aspectj.version>
-		<assertj.version>3.7.0</assertj.version>
-		<atomikos.version>3.9.3</atomikos.version>
+		<assertj.version>3.8.0</assertj.version>
+		<atomikos.version>4.0.4</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
-		<byte-buddy.version>1.6.14</byte-buddy.version>
-		<caffeine.version>2.5.0</caffeine.version>
-		<cassandra-driver.version>3.2.0</cassandra-driver.version>
-		<classmate.version>1.3.3</classmate.version>
+		<byte-buddy.version>1.7.5</byte-buddy.version>
+		<caffeine.version>2.5.6</caffeine.version>
+		<cassandra-driver.version>3.3.0</cassandra-driver.version>
+		<classmate.version>1.3.4</classmate.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
 		<commons-codec.version>1.10</commons-codec.version>
 		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
 		<commons-digester.version>2.1</commons-digester.version>
-		<commons-lang3.version>3.5</commons-lang3.version>
+		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.4.2</commons-pool2.version>
-		<couchbase-client.version>2.4.5</couchbase-client.version>
+		<couchbase-client.version>2.5.0</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<derby.version>10.13.1.1</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
-		<dropwizard-metrics.version>3.2.2</dropwizard-metrics.version>
+		<dropwizard-metrics.version>3.2.5</dropwizard-metrics.version>
 		<ehcache.version>2.10.4</ehcache.version>
-		<ehcache3.version>3.3.1</ehcache3.version>
+		<ehcache3.version>3.4.0</ehcache3.version>
 		<embedded-mongo.version>2.0.0</embedded-mongo.version>
 		<flyway.version>4.2.0</flyway.version>
 		<freemarker.version>2.3.26-incubating</freemarker.version>
-		<elasticsearch.version>2.4.5</elasticsearch.version>
+		<elasticsearch.version>5.5.3</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
-		<groovy.version>2.4.11</groovy.version>
-		<gson.version>2.8.0</gson.version>
-		<h2.version>1.4.195</h2.version>
+		<groovy.version>2.5.0-beta-1</groovy.version>
+		<gson.version>2.8.2</gson.version>
+		<h2.version>1.4.196</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<hazelcast.version>3.8.1</hazelcast.version>
-		<hazelcast-hibernate5.version>1.2.1</hazelcast-hibernate5.version>
-		<hibernate.version>5.2.10.Final</hibernate.version>
-		<hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
-		<hikaricp.version>2.6.1</hikaricp.version>
+		<hazelcast.version>3.8.6</hazelcast.version>
+		<hazelcast-hibernate5.version>1.2.2</hazelcast-hibernate5.version>
+		<hibernate.version>5.2.11.Final</hibernate.version>
+		<hibernate-validator.version>6.0.2.Final</hibernate-validator.version>
+		<hikaricp.version>2.7.1</hikaricp.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
-		<htmlunit.version>2.26</htmlunit.version>
+		<htmlunit.version>2.27</htmlunit.version>
 		<httpasyncclient.version>4.1.3</httpasyncclient.version>
 		<httpclient.version>4.5.3</httpclient.version>
-		<httpcore.version>4.4.6</httpcore.version>
-		<infinispan.version>8.2.6.Final</infinispan.version>
-		<jackson.version>2.9.0.pr3</jackson.version>
+		<httpcore.version>4.4.7</httpcore.version>
+		<infinispan.version>9.1.1.Final</infinispan.version>
+		<influxdb-java.version>2.7</influxdb-java.version>
+		<jackson.version>2.9.1</jackson.version>
 		<janino.version>3.0.7</janino.version>
 		<javassist.version>3.21.0-GA</javassist.version> <!-- Same as Hibernate -->
+		<javax-annotation.version>1.3.1</javax-annotation.version>
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-jms.version>2.0.1</javax-jms.version>
-		<javax-mail.version>1.6.0-rc1</javax-mail.version>
+		<javax-mail.version>1.6.0</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
-		<javax-validation.version>1.1.0.Final</javax-validation.version>
+		<javax-validation.version>2.0.0.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
-		<jaybird.version>3.0.0</jaybird.version>
+		<jaybird.version>3.0.2</jaybird.version>
 		<jboss-logging.version>3.3.1.Final</jboss-logging.version>
 		<jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.9.0</jedis.version>
-		<jersey.version>2.25.1</jersey.version>
-		<jest.version>2.4.0</jest.version>
-		<jetty.version>9.4.5.v20170502</jetty.version>
+		<jersey.version>2.26</jersey.version>
+		<jest.version>5.3.2</jest.version>
+		<jetty.version>9.4.7.v20170914</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-		<jetty-el.version>8.5.9.1</jetty-el.version>
+		<jetty-el.version>8.5.20</jetty-el.version>
 		<jmustache.version>1.13</jmustache.version>
-		<jna.version>4.4.0</jna.version>
+		<jna.version>4.5.0</jna.version>
 		<joda-time.version>2.9.9</joda-time.version>
-		<jolokia.version>1.3.6</jolokia.version>
-		<jooq.version>3.9.2</jooq.version>
+		<jolokia.version>1.3.7</jolokia.version>
+		<johnzon-jsonb.version>1.1.3</johnzon-jsonb.version>
+		<jooq.version>3.9.5</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
-		<json-path.version>2.2.0</json-path.version>
+		<javax-json.version>1.1</javax-json.version>
+		<javax-jsonb.version>1.0</javax-jsonb.version>
+		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<jtds.version>1.3.1</jtds.version>
 		<junit.version>4.12</junit.version>
-		<lettuce.version>5.0.0.M2</lettuce.version>
+		<junit-jupiter.version>5.0.0</junit-jupiter.version>
+		<junit-platform.version>1.0.0</junit-platform.version>
+		<lettuce.version>5.0.0.RELEASE</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
-		<log4j2.version>2.8.2</log4j2.version>
+		<log4j2.version>2.9.1</log4j2.version>
 		<logback.version>1.2.3</logback.version>
-		<lombok.version>1.16.16</lombok.version>
-		<mariadb.version>2.0.1</mariadb.version>
-		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
-		<mockito.version>2.7.22</mockito.version>
-		<mongo-driver-reactivestreams.version>1.3.0</mongo-driver-reactivestreams.version>
-		<mongodb.version>3.4.2</mongodb.version>
-		<mysql.version>5.1.42</mysql.version>
-		<narayana.version>5.5.24.Final</narayana.version>
+		<lombok.version>1.16.18</lombok.version>
+		<mariadb.version>2.1.1</mariadb.version>
+		<micrometer.version>1.0.0-rc.1</micrometer.version>
+		<mssql-jdbc.version>6.2.1.jre8</mssql-jdbc.version>
+		<mockito.version>2.10.0</mockito.version>
+		<mongo-driver-reactivestreams.version>1.6.0</mongo-driver-reactivestreams.version>
+		<mongodb.version>3.5.0</mongodb.version>
+		<mysql.version>5.1.44</mysql.version>
+		<narayana.version>5.6.4.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>3.0.0-M01</neo4j-ogm.version>
-		<netty.version>4.1.11.Final</netty.version>
-		<postgresql.version>42.1.1</postgresql.version>
+		<neo4j-ogm.version>3.0.0-RC1</neo4j-ogm.version>
+		<netty.version>4.1.15.Final</netty.version>
+		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
+		<postgresql.version>42.1.4</postgresql.version>
+		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.1.4</querydsl.version>
-		<reactor-bom.version>Bismuth-M1</reactor-bom.version>
-		<rxjava.version>1.3.0</rxjava.version>
+		<reactor-bom.version>Bismuth-RELEASE</reactor-bom.version>
+		<rest-assured.version>3.0.2</rest-assured.version>
+		<reactive-streams.version>1.0.1</reactive-streams.version>
+		<rxjava.version>1.3.2</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.1.0</rxjava2.version>
-		<selenium.version>3.4.0</selenium.version>
-		<selenium-htmlunit.version>2.26</selenium-htmlunit.version>
-		<sendgrid.version>3.2.0</sendgrid.version>
+		<rxjava2.version>2.1.4</rxjava2.version>
+		<selenium.version>3.5.3</selenium.version>
+		<selenium-htmlunit.version>2.27</selenium-htmlunit.version>
+		<sendgrid.version>4.1.0</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.18</snakeyaml.version>
-		<solr.version>6.5.1</solr.version>
-		<spring.version>5.0.0.RC1</spring.version>
-		<spring-amqp.version>2.0.0.M4</spring-amqp.version>
+		<solr.version>6.6.1</solr.version>
+		<spring.version>5.0.0.RELEASE</spring.version>
+		<spring-amqp.version>2.0.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-cloud-connectors.version>2.0.0.M1</spring-cloud-connectors.version>
-		<spring-batch.version>4.0.0.M2</spring-batch.version>
-		<spring-data-releasetrain.version>Kay-M3</spring-data-releasetrain.version>
+		<spring-batch.version>4.0.0.M3</spring-batch.version>
+		<spring-data-releasetrain.version>Kay-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.23.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.0.0.M4</spring-integration.version>
-		<spring-kafka.version>2.0.0.M2</spring-kafka.version>
+		<spring-integration.version>5.0.0.M7</spring-integration.version>
+		<spring-kafka.version>2.0.0.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.1.RELEASE</spring-ldap.version>
 		<spring-mobile.version>2.0.0.M1</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>1.2.1.RELEASE</spring-restdocs.version>
-		<spring-retry.version>1.2.0.RELEASE</spring-retry.version>
-		<spring-security.version>5.0.0.M1</spring-security.version>
-		<spring-security-jwt.version>1.0.7.RELEASE</spring-security-jwt.version>
-		<spring-security-oauth.version>2.1.0.RELEASE</spring-security-oauth.version>
-		<spring-session.version>2.0.0.M1</spring-session.version>
-		<spring-social.version>2.0.0.M3</spring-social.version>
-		<spring-social-facebook.version>3.0.0.M2</spring-social-facebook.version>
-		<spring-social-linkedin.version>2.0.0.M2</spring-social-linkedin.version>
-		<spring-social-twitter.version>2.0.0.M2</spring-social-twitter.version>
+		<spring-retry.version>1.2.1.RELEASE</spring-retry.version>
+		<spring-security.version>5.0.0.BUILD-SNAPSHOT</spring-security.version>
+		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
+		<spring-session-data-mongodb.version>2.0.0.M3</spring-session-data-mongodb.version>
+		<spring-social.version>2.0.0.M4</spring-social.version>
+		<spring-social-facebook.version>3.0.0.M3</spring-social-facebook.version>
+		<spring-social-linkedin.version>2.0.0.M3</spring-social-linkedin.version>
+		<spring-social-twitter.version>2.0.0.M4</spring-social-twitter.version>
 		<spring-ws.version>2.4.0.RELEASE</spring-ws.version>
-		<sqlite-jdbc.version>3.16.1</sqlite-jdbc.version>
+		<sqlite-jdbc.version>3.20.0</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
-		<thymeleaf.version>3.0.6.RELEASE</thymeleaf.version>
-		<thymeleaf-spring5.version>3.0.6.M4</thymeleaf-spring5.version>
+		<thymeleaf.version>3.0.7.RELEASE</thymeleaf.version>
+		<thymeleaf-spring5.version>3.0.7.RC1</thymeleaf-spring5.version>
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
-		<thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
-		<thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.15</tomcat.version>
-		<undertow.version>1.4.14.Final</undertow.version>
+		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
+		<tomcat.version>8.5.21</tomcat.version>
+		<undertow.version>1.4.20.Final</undertow.version>
 		<unboundid-ldapsdk.version>3.2.1</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator.version>0.32-1</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<xmlunit2.version>2.5.0</xmlunit2.version>
 		<!-- Plugin versions -->
-		<build-helper-maven-plugin.version>1.10</build-helper-maven-plugin.version>
+		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
-		<git-commit-id-plugin.version>2.2.2</git-commit-id-plugin.version>
+		<git-commit-id-plugin.version>2.2.3</git-commit-id-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-		<maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
+		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.6.2</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
-		<maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
-		<maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
+		<maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
+		<maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-		<maven-invoker-plugin.version>1.10</maven-invoker-plugin.version>
+		<maven-invoker-plugin.version>3.0.0</maven-invoker-plugin.version>
 		<maven-help-plugin.version>2.2</maven-help-plugin.version>
 		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.0.0-M1</maven-javadoc-plugin.version>
 		<maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
 		<maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
 		<maven-site-plugin.version>3.5.1</maven-site-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-		<maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-		<maven-war-plugin.version>2.6</maven-war-plugin.version>
+		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
+		<maven-war-plugin.version>3.1.0</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.3</versions-maven-plugin.version>
 	</properties>
 	<dependencyManagement>
@@ -225,19 +237,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot</artifactId>
-				<type>test-jar</type>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-test</artifactId>
-				<type>test-jar</type>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -252,7 +252,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-actuator-docs</artifactId>
+				<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -448,6 +448,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-json</artifactId>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-atomikos</artifactId>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
@@ -493,7 +498,17 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-quartz</artifactId>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-security</artifactId>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-security-reactive</artifactId>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -562,7 +577,6 @@
 				<artifactId>spring-boot-starter-web-services</artifactId>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
-
 			<!-- Third Party -->
 			<dependency>
 				<groupId>antlr</groupId>
@@ -830,26 +844,51 @@
 				<version>${lettuce.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-core</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-atlas</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-datadog</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-influx</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-ganglia</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-graphite</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-jmx</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-prometheus</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-bom</artifactId>
 				<version>${netty.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-native-epoll</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-native-kqueue</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-native-unix-common</artifactId>
-				<version>${netty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.projectreactor</groupId>
@@ -874,6 +913,11 @@
 				<version>${rxjava2.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>io.searchbox</groupId>
 				<artifactId>jest</artifactId>
 				<version>${jest.version}</version>
@@ -894,6 +938,11 @@
 				<version>${undertow.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax-annotation.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.cache</groupId>
 				<artifactId>cache-api</artifactId>
 				<version>${javax-cache.version}</version>
@@ -902,6 +951,16 @@
 				<groupId>javax.jms</groupId>
 				<artifactId>javax.jms-api</artifactId>
 				<version>${javax-jms.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.json</groupId>
+				<artifactId>javax.json-api</artifactId>
+				<version>${javax-json.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.json.bind</groupId>
+				<artifactId>javax.json.bind-api</artifactId>
+				<version>${javax-jsonb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
@@ -944,6 +1003,16 @@
 				<version>${junit.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${junit-jupiter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${junit-jupiter.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.version}</version>
@@ -951,6 +1020,11 @@
 			<dependency>
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
+				<version>${byte-buddy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy-agent</artifactId>
 				<version>${byte-buddy.version}</version>
 			</dependency>
 			<dependency>
@@ -1196,6 +1270,12 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-dbcp2</artifactId>
 				<version>${commons-dbcp2.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -1241,8 +1321,18 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore-nio</artifactId>
+				<version>${httpcore.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpmime</artifactId>
 				<version>${httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.johnzon</groupId>
+				<artifactId>johnzon-jsonb</artifactId>
+				<version>${johnzon-jsonb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -1255,6 +1345,11 @@
 				<groupId>org.apache.solr</groupId>
 				<artifactId>solr-solrj</artifactId>
 				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-catalina-jmx-remote</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
@@ -1274,6 +1369,11 @@
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-websocket</artifactId>
+				<version>${tomcat.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-annotations-api</artifactId>
 				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
@@ -1588,6 +1688,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-client-impl</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>javax-websocket-server-impl</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
@@ -1599,6 +1704,11 @@
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>websocket-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-servlet</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -1619,6 +1729,16 @@
 			<dependency>
 				<groupId>org.elasticsearch</groupId>
 				<artifactId>elasticsearch</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>transport</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.plugin</groupId>
+				<artifactId>transport-netty4-client</artifactId>
 				<version>${elasticsearch.version}</version>
 			</dependency>
 			<dependency>
@@ -1645,11 +1765,6 @@
 				<groupId>org.glassfish</groupId>
 				<artifactId>javax.el</artifactId>
 				<version>${glassfish-el.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
-				<artifactId>jersey-guava</artifactId>
-				<version>${jersey.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
@@ -1688,7 +1803,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.ext</groupId>
-				<artifactId>jersey-spring3</artifactId>
+				<artifactId>jersey-spring4</artifactId>
 				<version>${jersey.version}</version>
 				<exclusions>
 					<exclusion>
@@ -1724,6 +1839,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-c3p0</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate.version}</version>
 				<exclusions>
@@ -1756,7 +1876,22 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-hikaricp</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-infinispan</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-java8</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-jcache</artifactId>
 				<version>${hibernate.version}</version>
 			</dependency>
 			<dependency>
@@ -1766,6 +1901,21 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-proxool</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-spatial</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-testing</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate-validator.version}</version>
 			</dependency>
@@ -1829,6 +1979,11 @@
 						<artifactId>log4j-jcl</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.influxdb</groupId>
+				<artifactId>influxdb-java</artifactId>
+				<version>${influxdb-java.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>
@@ -1906,6 +2061,11 @@
 				<version>${mockito.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>${mockito.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.mongodb</groupId>
 				<artifactId>bson</artifactId>
 				<version>${mongodb.version}</version>
@@ -1926,7 +2086,7 @@
 				<version>${mongodb.version}</version>
 			</dependency>
 			<dependency>
-		 		<groupId>org.mongodb</groupId>
+				<groupId>org.mongodb</groupId>
 				<artifactId>mongodb-driver-reactivestreams</artifactId>
 				<version>${mongo-driver-reactivestreams.version}</version>
 			</dependency>
@@ -1969,6 +2129,16 @@
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
 				<version>${lombok.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz</artifactId>
+				<version>${quartz.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.reactivestreams</groupId>
+				<artifactId>reactive-streams</artifactId>
+				<version>${reactive-streams.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.seleniumhq.selenium</groupId>
@@ -2262,23 +2432,8 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-jwt</artifactId>
-				<version>${spring-security-jwt.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security.oauth</groupId>
-				<artifactId>spring-security-oauth</artifactId>
-				<version>${spring-security-oauth.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security.oauth</groupId>
-				<artifactId>spring-security-oauth2</artifactId>
-				<version>${spring-security-oauth.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.springframework.session</groupId>
-				<artifactId>spring-session</artifactId>
+				<artifactId>spring-session-core</artifactId>
 				<version>${spring-session.version}</version>
 				<exclusions>
 					<exclusion>
@@ -2289,17 +2444,22 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-redis</artifactId>
+				<version>${spring-session.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-mongodb</artifactId>
+				<version>${spring-session-data-mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
 				<artifactId>spring-session-hazelcast</artifactId>
 				<version>${spring-session.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.session</groupId>
 				<artifactId>spring-session-jdbc</artifactId>
-				<version>${spring-session.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.session</groupId>
-				<artifactId>spring-session-data-redis</artifactId>
 				<version>${spring-session.version}</version>
 			</dependency>
 			<dependency>
@@ -2387,6 +2547,11 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>org.synchronoss.cloud</groupId>
+				<artifactId>nio-multipart-parser</artifactId>
+				<version>${nio-multipart-parser.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.xerial</groupId>
 				<artifactId>sqlite-jdbc</artifactId>
 				<version>${sqlite-jdbc.version}</version>
@@ -2420,6 +2585,21 @@
 				<groupId>org.webjars</groupId>
 				<artifactId>webjars-locator</artifactId>
 				<version>${webjars-locator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-core</artifactId>
+				<version>${xmlunit2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-legacy</artifactId>
+				<version>${xmlunit2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-matchers</artifactId>
+				<version>${xmlunit2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>

@@ -22,7 +22,8 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -104,31 +105,41 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testFallbackDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale()).isTrue();
+		assertThat(isFallbackToSystemLocale(this.context.getBean(MessageSource.class)))
+				.isTrue();
 	}
 
 	@Test
 	public void testFallbackTurnOff() throws Exception {
 		load("spring.messages.basename:test/messages",
 				"spring.messages.fallback-to-system-locale:false");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale()).isFalse();
+		assertThat(isFallbackToSystemLocale(this.context.getBean(MessageSource.class)))
+				.isFalse();
 	}
 
 	@Test
 	public void testFormatMessageDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isAlwaysUseMessageFormat()).isFalse();
+		assertThat(isAlwaysUseMessageFormat(this.context.getBean(MessageSource.class)))
+				.isFalse();
 	}
 
 	@Test
 	public void testFormatMessageOn() throws Exception {
 		load("spring.messages.basename:test/messages",
 				"spring.messages.always-use-message-format:true");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isAlwaysUseMessageFormat()).isTrue();
+		assertThat(isAlwaysUseMessageFormat(this.context.getBean(MessageSource.class)))
+				.isTrue();
+	}
+
+	private boolean isFallbackToSystemLocale(MessageSource messageSource) {
+		return (boolean) new DirectFieldAccessor(messageSource)
+				.getPropertyValue("fallbackToSystemLocale");
+	}
+
+	private boolean isAlwaysUseMessageFormat(MessageSource messageSource) {
+		return (boolean) new DirectFieldAccessor(messageSource)
+				.getPropertyValue("alwaysUseMessageFormat");
 	}
 
 	@Test
@@ -143,27 +154,23 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void existingMessageSourceInParentIsIgnored() {
-		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.refresh();
-		try {
+		try (ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext()) {
+			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.messages.basename:test/messages");
+			TestPropertyValues.of("spring.messages.basename:test/messages")
+					.applyTo(this.context);
 			this.context.register(MessageSourceAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
 			this.context.refresh();
 			assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
 					.isEqualTo("bar");
 		}
-		finally {
-			parent.close();
-		}
 	}
 
 	private void load(String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		TestPropertyValues.of(environment).applyTo(this.context);
 		this.context.register(MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

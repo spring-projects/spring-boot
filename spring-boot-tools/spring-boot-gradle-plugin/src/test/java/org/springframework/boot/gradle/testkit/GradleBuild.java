@@ -30,6 +30,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.rules.TemporaryFolder;
@@ -88,9 +89,13 @@ public class GradleBuild implements TestRule {
 	}
 
 	private URL getScriptForTestMethod(Description description) {
-		return description.getTestClass()
-				.getResource(description.getTestClass().getSimpleName() + "-"
-						+ description.getMethodName() + ".gradle");
+		String name = description.getTestClass().getSimpleName() + "-"
+				+ removeGradleVersion(description.getMethodName()) + ".gradle";
+		return description.getTestClass().getResource(name);
+	}
+
+	private String removeGradleVersion(String methodName) {
+		return methodName.replaceAll("\\[Gradle .+\\]", "").trim();
 	}
 
 	private URL getScriptForTestClass(Class<?> testClass) {
@@ -106,11 +111,12 @@ public class GradleBuild implements TestRule {
 	}
 
 	private String pluginClasspath() {
-		return absolutePath("bin") + "," + absolutePath("build/classes/main") + ","
+		return absolutePath("bin") + "," + absolutePath("build/classes/java/main") + ","
 				+ absolutePath("build/resources/main") + ","
 				+ pathOfJarContaining(LaunchScript.class) + ","
 				+ pathOfJarContaining(ClassVisitor.class) + ","
-				+ pathOfJarContaining(DependencyManagementPlugin.class);
+				+ pathOfJarContaining(DependencyManagementPlugin.class) + ","
+				+ pathOfJarContaining(ArchiveEntry.class);
 	}
 
 	private String absolutePath(String path) {
@@ -150,13 +156,14 @@ public class GradleBuild implements TestRule {
 		FileCopyUtils.copy(scriptContent,
 				new FileWriter(new File(this.projectDir, "build.gradle")));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.forwardOutput();
+				.withDebug(true);
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
-		List<String> allArguments = new ArrayList<String>();
+		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PpluginClasspath=" + pluginClasspath());
 		allArguments.add("-PbootVersion=" + getBootVersion());
+		allArguments.add("--stacktrace");
 		allArguments.addAll(Arrays.asList(arguments));
 		return gradleRunner.withArguments(allArguments);
 	}
@@ -172,6 +179,10 @@ public class GradleBuild implements TestRule {
 	public GradleBuild gradleVersion(String version) {
 		this.gradleVersion = version;
 		return this;
+	}
+
+	public String getGradleVersion() {
+		return this.gradleVersion;
 	}
 
 	private static String getBootVersion() {

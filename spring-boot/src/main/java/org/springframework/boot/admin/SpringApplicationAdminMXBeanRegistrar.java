@@ -47,9 +47,8 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class SpringApplicationAdminMXBeanRegistrar
-		implements ApplicationContextAware, EnvironmentAware, InitializingBean,
-		DisposableBean {
+public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
+		EnvironmentAware, InitializingBean, DisposableBean {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 

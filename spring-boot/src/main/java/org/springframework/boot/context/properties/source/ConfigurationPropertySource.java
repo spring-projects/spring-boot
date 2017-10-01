@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.function.Predicate;
 
 import org.springframework.boot.origin.OriginTrackedValue;
+import org.springframework.core.env.PropertySource;
 
 /**
  * A source of {@link ConfigurationProperty ConfigurationProperties}.
@@ -71,5 +72,11 @@ public interface ConfigurationPropertySource {
 			ConfigurationPropertyNameAliases aliases) {
 		return new AliasedConfigurationPropertySource(this, aliases);
 	}
+
+	/**
+	 * Return the underlying {@link PropertySource}.
+	 * @return the underlying property source.
+	 */
+	Object getUnderlyingSource();
 
 }

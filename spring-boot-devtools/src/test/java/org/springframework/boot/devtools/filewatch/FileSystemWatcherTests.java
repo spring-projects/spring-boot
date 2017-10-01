@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -221,12 +220,7 @@ public class FileSystemWatcherTests {
 		File folder = this.temp.newFolder();
 		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
 		this.watcher.addSourceFolder(folder);
-		this.watcher.addListener(new FileChangeListener() {
-			@Override
-			public void onChange(Set<ChangedFiles> changeSet) {
-				listener2Changes.addAll(changeSet);
-			}
-		});
+		this.watcher.addListener(listener2Changes::addAll);
 		this.watcher.start();
 		File file = touch(new File(folder, "test.txt"));
 		this.watcher.stopAfter(1);
@@ -262,14 +256,8 @@ public class FileSystemWatcherTests {
 		File file = touch(new File(folder, "file.txt"));
 		File trigger = touch(new File(folder, "trigger.txt"));
 		this.watcher.addSourceFolder(folder);
-		this.watcher.setTriggerFilter(new FileFilter() {
-
-			@Override
-			public boolean accept(File file) {
-				return file.getName().equals("trigger.txt");
-			}
-
-		});
+		this.watcher.setTriggerFilter(
+				(candidate) -> candidate.getName().equals("trigger.txt"));
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
 		Thread.sleep(100);
@@ -285,12 +273,8 @@ public class FileSystemWatcherTests {
 
 	private void setupWatcher(long pollingInterval, long quietPeriod) {
 		this.watcher = new FileSystemWatcher(false, pollingInterval, quietPeriod);
-		this.watcher.addListener(new FileChangeListener() {
-			@Override
-			public void onChange(Set<ChangedFiles> changeSet) {
-				FileSystemWatcherTests.this.changes.add(changeSet);
-			}
-		});
+		this.watcher.addListener(
+				(changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}
 
 	private File startWithNewFolder() throws IOException {

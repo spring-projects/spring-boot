@@ -117,7 +117,6 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
-		Assert.notNull(level, "Level must not be null");
 		if (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) {
 			loggerName = "";
 		}
@@ -134,7 +133,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		while (names.hasMoreElements()) {
 			result.add(getLoggerConfiguration(names.nextElement()));
 		}
-		Collections.sort(result, CONFIGURATION_COMPARATOR);
+		result.sort(CONFIGURATION_COMPARATOR);
 		return Collections.unmodifiableList(result);
 	}
 

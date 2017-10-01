@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -27,17 +28,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.cache.RedisCacheManager.RedisCacheManagerBuilder;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
  * Redis cache configuration.
  *
  * @author Stephane Nicoll
+ * @author Mark Paluch
  * @since 1.3.0
  */
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration.class)
-@ConditionalOnBean(RedisTemplate.class)
+@ConditionalOnBean(RedisConnectionFactory.class)
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
 class RedisCacheConfiguration {
@@ -53,14 +56,14 @@ class RedisCacheConfiguration {
 	}
 
 	@Bean
-	public RedisCacheManager cacheManager(RedisTemplate<Object, Object> redisTemplate) {
-		RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
-		cacheManager.setUsePrefix(true);
+	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+		RedisCacheManagerBuilder builder = RedisCacheManager
+				.builder(redisConnectionFactory);
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
-			cacheManager.setCacheNames(cacheNames);
+			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
-		return this.customizerInvoker.customize(cacheManager);
+		return this.customizerInvoker.customize(builder.build());
 	}
 
 }

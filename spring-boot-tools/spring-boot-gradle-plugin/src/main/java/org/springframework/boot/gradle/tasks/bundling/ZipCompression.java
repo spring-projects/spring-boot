@@ -34,6 +34,6 @@ public enum ZipCompression {
 	/**
 	 * The entry should be {@link ZipEntry#DEFLATED} in the archive.
 	 */
-	DEFLATED;
+	DEFLATED
 
 }

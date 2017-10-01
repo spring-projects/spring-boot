@@ -30,14 +30,14 @@ import org.springframework.boot.autoconfigure.data.alt.cassandra.ReactiveCityCas
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.data.cassandra.city.ReactiveCityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.cassandra.core.session.ReactiveSession;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
+import org.springframework.data.cassandra.ReactiveSession;
+import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableReactiveCassandraRepositories;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Mark Paluch
  */
 public class CassandraReactiveRepositoriesAutoConfigurationTests {
 
@@ -86,8 +87,8 @@ public class CassandraReactiveRepositoriesAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private Set<Class<?>> getInitialEntitySet() {
-		BasicCassandraMappingContext mappingContext = this.context
-				.getBean(BasicCassandraMappingContext.class);
+		CassandraMappingContext mappingContext = this.context
+				.getBean(CassandraMappingContext.class);
 		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
 				"initialEntitySet");
 	}

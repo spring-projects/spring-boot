@@ -116,7 +116,8 @@ public abstract class LoggingSystem {
 	 * Sets the logging level for a given logger.
 	 * @param loggerName the name of the logger to set ({@code null} can be used for the
 	 * root logger).
-	 * @param level the log level
+	 * @param level the log level ({@code null} can be used to remove any custom level for
+	 * the logger and use the default configuration instead)
 	 */
 	public void setLogLevel(String loggerName, LogLevel level) {
 		throw new UnsupportedOperationException("Unable to set log level");

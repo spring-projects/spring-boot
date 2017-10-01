@@ -28,7 +28,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,8 +66,7 @@ public class MongoReactiveAutoConfigurationTests {
 	@Test
 	public void optionsAdded() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.host:localhost");
+		TestPropertyValues.of("spring.data.mongodb.host:localhost").applyTo(this.context);
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				MongoReactiveAutoConfiguration.class);
@@ -79,8 +78,8 @@ public class MongoReactiveAutoConfigurationTests {
 	@Test
 	public void optionsAddedButNoHost() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.uri:mongodb://localhost/test");
+		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test")
+				.applyTo(this.context);
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				MongoReactiveAutoConfiguration.class);
@@ -93,8 +92,8 @@ public class MongoReactiveAutoConfigurationTests {
 	@Test
 	public void optionsSslConfig() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.uri:mongodb://localhost/test");
+		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test")
+				.applyTo(this.context);
 		this.context.register(SslOptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				MongoReactiveAutoConfiguration.class);
@@ -104,6 +103,22 @@ public class MongoReactiveAutoConfigurationTests {
 		assertThat(settings.getApplicationName()).isEqualTo("test-config");
 		assertThat(settings.getStreamFactoryFactory())
 				.isSameAs(this.context.getBean("myStreamFactoryFactory"));
+	}
+
+	@Test
+	public void customizerOverridesAutoConfig() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues
+				.of("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
+				.applyTo(this.context);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MongoReactiveAutoConfiguration.class, SimpleCustomizerConfig.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
+				.isEqualTo(1);
+		MongoClient client = this.context.getBean(MongoClient.class);
+		assertThat(client.getSettings().getApplicationName())
+				.isEqualTo("overridden-name");
 	}
 
 	@Configuration
@@ -134,6 +149,17 @@ public class MongoReactiveAutoConfigurationTests {
 			given(streamFactoryFactory.create(any(), any()))
 					.willReturn(mock(StreamFactory.class));
 			return streamFactoryFactory;
+		}
+
+	}
+
+	@Configuration
+	static class SimpleCustomizerConfig {
+
+		@Bean
+		public MongoClientSettingsBuilderCustomizer customizer() {
+			return (clientSettingsBuilder) -> clientSettingsBuilder
+					.applicationName("overridden-name");
 		}
 
 	}

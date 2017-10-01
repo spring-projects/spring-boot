@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,13 @@ import org.springframework.core.annotation.Order;
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
 public @interface AutoConfigureOrder {
 
+	int DEFAULT_ORDER = 0;
+
 	/**
-	 * The order value. Default is {@link Ordered#LOWEST_PRECEDENCE}.
+	 * The order value. Default is {@code 0}.
 	 * @see Ordered#getOrder()
 	 * @return the order value
 	 */
-	int value() default Ordered.LOWEST_PRECEDENCE;
+	int value() default DEFAULT_ORDER;
 
 }

@@ -241,7 +241,10 @@ public class SpringApplicationBuilder {
 
 	/**
 	 * Create a sibling application (one with the same parent). A side effect of calling
-	 * this method is that the current application (and its parent) are started.
+	 * this method is that the current application (and its parent) are started without
+	 * any arguments if they are not already running. To supply arguments when starting
+	 * the current application and its parent use {@link #sibling(Class[], String...)}
+	 * instead.
 	 * @param sources the sources for the application (Spring configuration)
 	 * @return the new sibling builder
 	 */
@@ -299,12 +302,12 @@ public class SpringApplicationBuilder {
 	/**
 	 * Flag to explicitly request a specific type of web application. Auto-detected based
 	 * on the classpath if not set.
-	 * @param webApplication the type of web application
+	 * @param webApplicationType the type of web application
 	 * @return the current builder
 	 * @since 2.0.0
 	 */
-	public SpringApplicationBuilder web(WebApplicationType webApplication) {
-		this.application.setWebApplicationType(webApplication);
+	public SpringApplicationBuilder web(WebApplicationType webApplicationType) {
+		this.application.setWebApplicationType(webApplicationType);
 		return this;
 	}
 
@@ -392,8 +395,8 @@ public class SpringApplicationBuilder {
 		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
-			String key = property.substring(0, index > 0 ? index : property.length());
-			String value = index > 0 ? property.substring(index + 1) : "";
+			String key = (index > 0 ? property.substring(0, index) : property);
+			String value = (index > 0 ? property.substring(index + 1) : "");
 			map.put(key, value);
 		}
 		return map;

@@ -28,16 +28,26 @@ import org.springframework.context.annotation.Condition;
  * <pre class="code">
  * static class OnNeitherJndiNorProperty extends NoneOfNestedConditions {
  *
+ *    OnNeitherJndiNorProperty() {
+ *        super(ConfigurationPhase.PARSE_CONFIGURATION);
+ *    }
+ *
  *    &#064;ConditionalOnJndi()
  *    static class OnJndi {
  *    }
-
+ *
  *    &#064;ConditionalOnProperty("something")
  *    static class OnProperty {
  *    }
  *
  * }
  * </pre>
+ * <p>
+ * The
+ * {@link org.springframework.context.annotation.ConfigurationCondition.ConfigurationPhase
+ * ConfigurationPhase} should be specified according to the conditions that are defined.
+ * In the example above, all conditions are static and can be evaluated early so
+ * {@code PARSE_CONFIGURATION} is a right fit.
  *
  * @author Phillip Webb
  * @since 1.3.0

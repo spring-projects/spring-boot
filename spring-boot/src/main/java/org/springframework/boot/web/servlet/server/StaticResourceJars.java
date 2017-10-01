@@ -18,7 +18,9 @@ package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
@@ -43,7 +45,23 @@ class StaticResourceJars {
 				addUrl(urls, url);
 			}
 		}
+		else {
+			for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath()
+					.split(File.pathSeparator)) {
+				addUrl(urls, toUrl(entry));
+			}
+		}
 		return urls;
+	}
+
+	private URL toUrl(String classPathEntry) {
+		try {
+			return new File(classPathEntry).toURI().toURL();
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalArgumentException(
+					"URL could not be created from '" + classPathEntry + "'", ex);
+		}
 	}
 
 	private void addUrl(List<URL> urls, URL url) {

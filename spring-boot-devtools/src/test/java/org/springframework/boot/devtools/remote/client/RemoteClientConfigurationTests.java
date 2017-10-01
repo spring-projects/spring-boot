@@ -38,16 +38,15 @@ import org.springframework.boot.devtools.remote.server.Dispatcher;
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
-import org.springframework.boot.devtools.tunnel.client.TunnelClient;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,21 +72,22 @@ public class RemoteClientConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	private static int remotePort = SocketUtils.findAvailableTcpPort();
+	private AnnotationConfigApplicationContext clientContext;
 
 	@After
 	public void cleanup() {
 		if (this.context != null) {
 			this.context.close();
 		}
+		if (this.clientContext != null) {
+			this.clientContext.close();
+		}
 	}
 
 	@Test
-	public void warnIfDebugAndRestartDisabled() throws Exception {
-		configure("spring.devtools.remote.debug.enabled:false",
-				"spring.devtools.remote.restart.enabled:false");
-		assertThat(this.output.toString())
-				.contains("Remote restart and debug are both disabled");
+	public void warnIfRestartDisabled() throws Exception {
+		configure("spring.devtools.remote.restart.enabled:false");
+		assertThat(this.output.toString()).contains("Remote restart is disabled");
 	}
 
 	@Test
@@ -114,12 +114,12 @@ public class RemoteClientConfigurationTests {
 		configure();
 		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
-		this.context.publishEvent(event);
-		LiveReloadConfiguration configuration = this.context
+		this.clientContext.publishEvent(event);
+		LiveReloadConfiguration configuration = this.clientContext
 				.getBean(LiveReloadConfiguration.class);
 		configuration.getExecutor().shutdown();
 		configuration.getExecutor().awaitTermination(2, TimeUnit.SECONDS);
-		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		LiveReloadServer server = this.clientContext.getBean(LiveReloadServer.class);
 		verify(server).triggerReload();
 	}
 
@@ -137,30 +137,30 @@ public class RemoteClientConfigurationTests {
 		this.context.getBean(ClassPathFileSystemWatcher.class);
 	}
 
-	@Test
-	public void remoteDebugDisabled() throws Exception {
-		configure("spring.devtools.remote.debug.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(TunnelClient.class);
-	}
-
 	private void configure(String... pairs) {
 		configure("http://localhost", true, pairs);
 	}
 
 	private void configure(String remoteUrl, boolean setSecret, String... pairs) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		new RestartScopeInitializer().initialize(this.context);
-		this.context.register(Config.class, RemoteClientConfiguration.class);
-		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":"
-				+ RemoteClientConfigurationTests.remotePort;
-		EnvironmentTestUtils.addEnvironment(this.context, remoteUrlProperty);
-		EnvironmentTestUtils.addEnvironment(this.context, pairs);
+		this.context.register(Config.class);
 		if (setSecret) {
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.devtools.remote.secret:secret");
+			TestPropertyValues.of("spring.devtools.remote.secret:secret")
+					.applyTo(this.context);
 		}
 		this.context.refresh();
+		this.clientContext = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(pairs).applyTo(this.clientContext);
+		new RestartScopeInitializer().initialize(this.clientContext);
+		this.clientContext.register(ClientConfig.class, RemoteClientConfiguration.class);
+		if (setSecret) {
+			TestPropertyValues.of("spring.devtools.remote.secret:secret")
+					.applyTo(this.clientContext);
+		}
+		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":"
+				+ this.context.getWebServer().getPort();
+		TestPropertyValues.of(remoteUrlProperty).applyTo(this.clientContext);
+		this.clientContext.refresh();
 	}
 
 	@Configuration
@@ -168,12 +168,7 @@ public class RemoteClientConfigurationTests {
 
 		@Bean
 		public TomcatServletWebServerFactory tomcat() {
-			return new TomcatServletWebServerFactory(remotePort);
-		}
-
-		@Bean
-		public LiveReloadServer liveReloadServer() {
-			return mock(LiveReloadServer.class);
+			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
@@ -187,6 +182,16 @@ public class RemoteClientConfigurationTests {
 			ServerHttpResponse anyResponse = (ServerHttpResponse) any();
 			given(dispatcher.handle(anyRequest, anyResponse)).willReturn(true);
 			return dispatcher;
+		}
+
+	}
+
+	@Configuration
+	static class ClientConfig {
+
+		@Bean
+		public LiveReloadServer liveReloadServer() {
+			return mock(LiveReloadServer.class);
 		}
 
 	}

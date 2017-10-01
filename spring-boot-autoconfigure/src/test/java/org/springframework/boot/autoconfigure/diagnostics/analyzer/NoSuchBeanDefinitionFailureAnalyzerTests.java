@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -166,8 +166,6 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).startsWith(String.format(
 				"Constructor in %s required a bean named '%s' that could not be found",
 				StringNameHandler.class.getName(), "test-string"));
-		assertThat(analysis.getDescription().contains(
-				"No matching auto-configuration has been found for this bean name."));
 		assertThat(analysis.getAction()).startsWith(String.format(
 				"Consider defining a bean named '%s' in your configuration.",
 				"test-string"));
@@ -235,19 +233,15 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private FatalBeanException createFailure(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		this.analyzer.setBeanFactory(context.getBeanFactory());
-		EnvironmentTestUtils.addEnvironment(context, environment);
-		context.register(config);
-		try {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			this.analyzer.setBeanFactory(context.getBeanFactory());
+			TestPropertyValues.of(environment).applyTo(context);
+			context.register(config);
 			context.refresh();
 			return null;
 		}
 		catch (FatalBeanException ex) {
 			return ex;
-		}
-		finally {
-			context.close();
 		}
 	}
 

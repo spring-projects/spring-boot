@@ -31,7 +31,7 @@ import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,8 +54,7 @@ public class ValidatorAdapterTests {
 
 	@Test
 	public void wrapLocalValidatorFactoryBean() {
-		ValidatorAdapter wrapper = load(
-				LocalValidatorFactoryBeanConfig.class);
+		ValidatorAdapter wrapper = load(LocalValidatorFactoryBeanConfig.class);
 		assertThat(wrapper.supports(SampleData.class)).isTrue();
 		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(),
 				"test");

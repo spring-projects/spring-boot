@@ -21,9 +21,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cassandra.core.session.ReactiveSession;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.cassandra.ReactiveSession;
 import org.springframework.data.cassandra.repository.ReactiveCassandraRepository;
 import org.springframework.data.cassandra.repository.config.EnableReactiveCassandraRepositories;
 import org.springframework.data.cassandra.repository.support.ReactiveCassandraRepositoryFactoryBean;
@@ -33,6 +33,7 @@ import org.springframework.data.cassandra.repository.support.ReactiveCassandraRe
  * Repositories.
  *
  * @author Eddú Meléndez
+ * @author Mark Paluch
  * @since 2.0.0
  * @see EnableReactiveCassandraRepositories
  */

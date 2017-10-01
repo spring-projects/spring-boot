@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.tomcat;
 import java.util.Arrays;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link TomcatReactiveWebServerFactory}.
  *
  * @author Brian Clozel
+ * @author Madhura Bhave
  */
 public class TomcatReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
@@ -55,6 +57,39 @@ public class TomcatReactiveWebServerFactoryTests
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatContextCustomizer listener : listeners) {
 			ordered.verify(listener).customize(any(Context.class));
+		}
+	}
+
+	@Test
+	public void setNullConnectorCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.setTomcatConnectorCustomizers(null);
+	}
+
+	@Test
+	public void addNullAddConnectorCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
+	}
+
+	@Test
+	public void tomcatConnectorCustomizersShouldBeInvoked() throws Exception {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		HttpHandler handler = mock(HttpHandler.class);
+		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
+		for (int i = 0; i < listeners.length; i++) {
+			listeners[i] = mock(TomcatConnectorCustomizer.class);
+		}
+		factory.setTomcatConnectorCustomizers(Arrays.asList(listeners[0], listeners[1]));
+		factory.addConnectorCustomizers(listeners[2], listeners[3]);
+		this.webServer = factory.getWebServer(handler);
+		InOrder ordered = inOrder((Object[]) listeners);
+		for (TomcatConnectorCustomizer listener : listeners) {
+			ordered.verify(listener).customize(any(Connector.class));
 		}
 	}
 

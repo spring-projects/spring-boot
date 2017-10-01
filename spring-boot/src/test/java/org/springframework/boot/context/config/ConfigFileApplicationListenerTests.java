@@ -44,7 +44,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -83,7 +83,7 @@ public class ConfigFileApplicationListenerTests {
 	public ExpectedException expected = ExpectedException.none();
 
 	@Rule
-	public InternalOutputCapture out = new InternalOutputCapture();
+	public OutputCapture out = new OutputCapture();
 
 	private ConfigurableApplicationContext context;
 
@@ -196,12 +196,8 @@ public class ConfigFileApplicationListenerTests {
 		try {
 			Properties properties = new Properties();
 			properties.put("the.property", "fromlocalfile");
-			OutputStream out = new FileOutputStream(localFile);
-			try {
-				properties.store(out, "");
-			}
-			finally {
-				out.close();
+			try (OutputStream outputStream = new FileOutputStream(localFile)) {
+				properties.store(outputStream, "");
 			}
 			this.initializer.postProcessEnvironment(this.environment, this.application);
 			String property = this.environment.getProperty("the.property");
@@ -431,9 +427,7 @@ public class ConfigFileApplicationListenerTests {
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(
 				new SpringApplication(), new String[0],
 				new AnnotationConfigApplicationContext());
-		withDebugLogging(() -> {
-			this.initializer.onApplicationEvent(event);
-		});
+		withDebugLogging(() -> this.initializer.onApplicationEvent(event));
 		String log = this.out.toString();
 
 		// First make sure that each profile got processed only once

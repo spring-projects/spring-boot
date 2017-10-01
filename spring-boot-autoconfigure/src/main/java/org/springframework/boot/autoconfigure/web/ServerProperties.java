@@ -1129,6 +1129,11 @@ public class ServerProperties {
 		 */
 		private Boolean directBuffers;
 
+		/**
+		 * Whether servlet filters should be initialized on startup.
+		 */
+		private boolean eagerFilterInit = true;
+
 		private final Accesslog accesslog = new Accesslog();
 
 		public long getMaxHttpPostSize() {
@@ -1169,6 +1174,14 @@ public class ServerProperties {
 
 		public void setDirectBuffers(Boolean directBuffers) {
 			this.directBuffers = directBuffers;
+		}
+
+		public boolean isEagerFilterInit() {
+			return this.eagerFilterInit;
+		}
+
+		public void setEagerFilterInit(boolean eagerFilterInit) {
+			this.eagerFilterInit = eagerFilterInit;
 		}
 
 		public Accesslog getAccesslog() {

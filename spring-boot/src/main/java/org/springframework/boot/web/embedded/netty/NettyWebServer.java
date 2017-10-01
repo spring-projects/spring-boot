@@ -17,14 +17,16 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.net.BindException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.ipc.netty.NettyContext;
+import reactor.ipc.netty.http.HttpResources;
 import reactor.ipc.netty.http.server.HttpServer;
+import reactor.ipc.netty.tcp.BlockingNettyContext;
 
+import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
@@ -36,19 +38,18 @@ import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
  *
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  * @since 2.0.0
  */
 public class NettyWebServer implements WebServer {
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
-	private CountDownLatch latch;
-
 	private final ReactorHttpHandlerAdapter handlerAdapter;
 
 	private final HttpServer reactorServer;
 
-	private AtomicReference<NettyContext> nettyContext = new AtomicReference<>();
+	private BlockingNettyContext nettyContext;
 
 	public NettyWebServer(HttpServer reactorServer,
 			ReactorHttpHandlerAdapter handlerAdapter) {
@@ -58,20 +59,22 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public void start() throws WebServerException {
-		if (this.nettyContext.get() == null) {
-			this.latch = new CountDownLatch(1);
+		if (this.nettyContext == null) {
 			try {
-				this.nettyContext
-						.set(this.reactorServer.newHandler(this.handlerAdapter).block());
+				this.nettyContext = this.reactorServer.start(this.handlerAdapter);
 			}
 			catch (Exception ex) {
 				if (findBindException(ex) != null) {
-//					throw new PortInUseException();
+					SocketAddress address = this.reactorServer.options().getAddress();
+					if (address instanceof InetSocketAddress) {
+						throw new PortInUseException(
+								((InetSocketAddress) address).getPort());
+					}
 				}
 				throw new WebServerException("Unable to start Netty", ex);
 			}
 			NettyWebServer.logger.info("Netty started on port(s): " + getPort());
-			startDaemonAwaitThread();
+			startDaemonAwaitThread(this.nettyContext);
 		}
 	}
 
@@ -86,16 +89,12 @@ public class NettyWebServer implements WebServer {
 		return null;
 	}
 
-	private void startDaemonAwaitThread() {
+	private void startDaemonAwaitThread(BlockingNettyContext nettyContext) {
 		Thread awaitThread = new Thread("server") {
 
 			@Override
 			public void run() {
-				try {
-					NettyWebServer.this.latch.await();
-				}
-				catch (InterruptedException e) {
-				}
+				nettyContext.getContext().onClose().block();
 			}
 
 		};
@@ -106,17 +105,19 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public void stop() throws WebServerException {
-		NettyContext context = this.nettyContext.getAndSet(null);
-		if (context != null) {
-			context.dispose();
+		if (this.nettyContext != null) {
+			this.nettyContext.shutdown();
+			// temporary fix for gh-9146
+			this.nettyContext.getContext().onClose()
+					.doOnSuccess((o) -> HttpResources.reset()).block();
+			this.nettyContext = null;
 		}
-		this.latch.countDown();
 	}
 
 	@Override
 	public int getPort() {
-		if (this.nettyContext.get() != null) {
-			return this.nettyContext.get().address().getPort();
+		if (this.nettyContext != null) {
+			return this.nettyContext.getPort();
 		}
 		return 0;
 	}

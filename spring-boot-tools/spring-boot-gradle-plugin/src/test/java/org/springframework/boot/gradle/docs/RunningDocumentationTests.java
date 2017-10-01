@@ -59,4 +59,11 @@ public class RunningDocumentationTests {
 						.contains(new File("src/main/resources").getPath());
 	}
 
+	@Test
+	public void bootRunExecSpecCustomization() throws IOException {
+		this.gradleBuild
+				.script("src/main/gradle/running/boot-run-custom-exec-spec.gradle")
+				.build();
+	}
+
 }

@@ -32,10 +32,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -46,6 +48,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
@@ -56,7 +59,6 @@ import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.ViewResolverRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.resource.AppCacheManifestTransformer;
 import org.springframework.web.reactive.resource.GzipResourceResolver;
 import org.springframework.web.reactive.resource.ResourceResolver;
@@ -79,8 +81,9 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
-@ConditionalOnMissingBean({ WebFluxConfigurationSupport.class, RouterFunction.class })
-@AutoConfigureAfter(ReactiveWebServerAutoConfiguration.class)
+@ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
+@AutoConfigureAfter({ ReactiveWebServerAutoConfiguration.class,
+		CodecsAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
@@ -99,6 +102,8 @@ public class WebFluxAutoConfiguration {
 
 		private final List<HandlerMethodArgumentResolver> argumentResolvers;
 
+		private final List<CodecCustomizer> codecCustomizers;
+
 		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
 		private final List<ViewResolver> viewResolvers;
@@ -106,12 +111,14 @@ public class WebFluxAutoConfiguration {
 		public WebFluxConfig(ResourceProperties resourceProperties,
 				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
 				ObjectProvider<List<HandlerMethodArgumentResolver>> resolvers,
+				ObjectProvider<List<CodecCustomizer>> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
 				ObjectProvider<List<ViewResolver>> viewResolvers) {
 			this.resourceProperties = resourceProperties;
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers.getIfAvailable();
+			this.codecCustomizers = codecCustomizers.getIfAvailable();
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
 					.getIfAvailable();
 			this.viewResolvers = viewResolvers.getIfAvailable();
@@ -121,6 +128,14 @@ public class WebFluxAutoConfiguration {
 		public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
 			if (this.argumentResolvers != null) {
 				this.argumentResolvers.stream().forEach(configurer::addCustomResolver);
+			}
+		}
+
+		@Override
+		public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
+			if (this.codecCustomizers != null) {
+				this.codecCustomizers
+						.forEach((customizer) -> customizer.customize(configurer));
 			}
 		}
 

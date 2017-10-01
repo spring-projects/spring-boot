@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,25 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.util.Arrays;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.hazelcast.HazelcastSessionRepository;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,71 +51,88 @@ public class SessionAutoConfigurationJdbcTests
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceTransactionManagerAutoConfiguration.class,
+					SessionAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true");
+
 	@Test
 	public void defaultConfig() {
-		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
-				JdbcTemplateAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class),
-				"spring.session.store-type=jdbc");
-		JdbcOperationsSessionRepository repository = validateSessionRepository(
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc")
+				.withConfiguration(
+						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
+				.run(this::validateDefaultConfig);
+	}
+
+	@Test
+	public void defaultConfigWithUniqueStoreImplementation() {
+		this.contextRunner
+				.withClassLoader(
+						new HideClassesClassLoader(HazelcastSessionRepository.class,
+								MongoOperationsSessionRepository.class,
+								RedisOperationsSessionRepository.class))
+				.withConfiguration(
+						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
+				.run(this::validateDefaultConfig);
+	}
+
+	private void validateDefaultConfig(AssertableWebApplicationContext context) {
+		JdbcOperationsSessionRepository repository = validateSessionRepository(context,
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("SPRING_SESSION");
-		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
-				.getInitializer().isEnabled()).isTrue();
-		assertThat(this.context.getBean(JdbcOperations.class)
+		assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
+				.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+		assertThat(context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
+
+	}
+
+	@Test
+	public void filterOrderCanBeCustomized() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc",
+				"spring.session.servlet.filter-order=123").run((context) -> {
+					FilterRegistrationBean<?> registration = context
+							.getBean(FilterRegistrationBean.class);
+					assertThat(registration.getOrder()).isEqualTo(123);
+				});
 	}
 
 	@Test
 	public void disableDatabaseInitializer() {
-		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class),
-				"spring.session.store-type=jdbc",
-				"spring.session.jdbc.initializer.enabled=false");
-		JdbcOperationsSessionRepository repository = validateSessionRepository(
-				JdbcOperationsSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-				.isEqualTo("SPRING_SESSION");
-		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
-				.getInitializer().isEnabled()).isFalse();
-		this.thrown.expect(BadSqlGrammarException.class);
-		assertThat(this.context.getBean(JdbcOperations.class)
-				.queryForList("select * from SPRING_SESSION")).isEmpty();
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc",
+				"spring.session.jdbc.initialize-schema=never").run((context) -> {
+					JdbcOperationsSessionRepository repository = validateSessionRepository(
+							context, JdbcOperationsSessionRepository.class);
+					assertThat(new DirectFieldAccessor(repository)
+							.getPropertyValue("tableName")).isEqualTo("SPRING_SESSION");
+					assertThat(context.getBean(JdbcSessionProperties.class)
+							.getInitializeSchema())
+									.isEqualTo(DatabaseInitializationMode.NEVER);
+					this.thrown.expect(BadSqlGrammarException.class);
+					context.getBean(JdbcOperations.class)
+							.queryForList("select * from SPRING_SESSION");
+				});
 	}
 
 	@Test
 	public void customTableName() {
-		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class),
-				"spring.session.store-type=jdbc",
-				"spring.session.jdbc.table-name=FOO_BAR",
-				"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql");
-		JdbcOperationsSessionRepository repository = validateSessionRepository(
-				JdbcOperationsSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-				.isEqualTo("FOO_BAR");
-		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
-				.getInitializer().isEnabled()).isTrue();
-		assertThat(this.context.getBean(JdbcOperations.class)
-				.queryForList("select * from FOO_BAR")).isEmpty();
-	}
-
-	@Test
-	public void customTableNameWithDefaultSchemaDisablesInitializer() {
-		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class),
-				"spring.session.store-type=jdbc",
-				"spring.session.jdbc.table-name=FOO_BAR");
-		JdbcOperationsSessionRepository repository = validateSessionRepository(
-				JdbcOperationsSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-				.isEqualTo("FOO_BAR");
-		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
-				.getInitializer().isEnabled()).isFalse();
-		this.thrown.expect(BadSqlGrammarException.class);
-		assertThat(this.context.getBean(JdbcOperations.class)
-				.queryForList("select * from SPRING_SESSION")).isEmpty();
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc",
+						"spring.session.jdbc.table-name=FOO_BAR",
+						"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
+				.run((context) -> {
+					JdbcOperationsSessionRepository repository = validateSessionRepository(
+							context, JdbcOperationsSessionRepository.class);
+					assertThat(new DirectFieldAccessor(repository)
+							.getPropertyValue("tableName")).isEqualTo("FOO_BAR");
+					assertThat(context.getBean(JdbcSessionProperties.class)
+							.getInitializeSchema())
+									.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+					assertThat(context.getBean(JdbcOperations.class)
+							.queryForList("select * from FOO_BAR")).isEmpty();
+				});
 	}
 
 }

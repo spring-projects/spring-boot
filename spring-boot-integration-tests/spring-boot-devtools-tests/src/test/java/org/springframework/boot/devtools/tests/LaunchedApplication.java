@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,22 +29,31 @@ class LaunchedApplication {
 
 	private final File standardOut;
 
+	private final File standardError;
+
 	private final Process[] processes;
 
-	LaunchedApplication(File classesDirectory, File standardOut, Process... processes) {
+	LaunchedApplication(File classesDirectory, File standardOut, File standardError,
+			Process... processes) {
 		this.classesDirectory = classesDirectory;
 		this.standardOut = standardOut;
+		this.standardError = standardError;
 		this.processes = processes;
 	}
 
-	void stop() {
+	void stop() throws InterruptedException {
 		for (Process process : this.processes) {
 			process.destroy();
+			process.waitFor();
 		}
 	}
 
 	File getStandardOut() {
 		return this.standardOut;
+	}
+
+	File getStandardError() {
+		return this.standardError;
 	}
 
 	File getClassesDirectory() {

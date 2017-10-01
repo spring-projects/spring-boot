@@ -149,7 +149,7 @@ class MockDefinition extends Definition {
 		if (!this.extraInterfaces.isEmpty()) {
 			settings.extraInterfaces(this.extraInterfaces.toArray(new Class<?>[] {}));
 		}
-		settings.defaultAnswer(MockitoApi.get().getAnswer(this.answer));
+		settings.defaultAnswer(this.answer);
 		if (this.serializable) {
 			settings.serializable();
 		}

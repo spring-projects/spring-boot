@@ -41,6 +41,8 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
  */
 public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
+	private static final byte[] NO_DATA = {};
+
 	private AtomicLong seq = new AtomicLong();
 
 	private Deque<Object> responses = new ArrayDeque<>();
@@ -116,8 +118,8 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 		}
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
-			MockClientHttpResponse httpResponse = new MockClientHttpResponse(this.payload,
-					this.status);
+			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
+					this.payload == null ? NO_DATA : this.payload, this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);

@@ -55,8 +55,6 @@ class WarPluginAction implements PluginApplicationAction {
 		bootWar.providedClasspath(providedRuntimeConfiguration(project));
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootWar);
 		this.singlePublishedArtifact.addCandidate(artifact);
-		project.getComponents().add(new SpringBootSoftwareComponent(artifact,
-				SpringBootPlugin.BOOT_WEB_SOFTWARE_COMPONENT_NAME));
 		bootWar.conventionMapping("mainClass",
 				new MainClassConvention(project, bootWar::getClasspath));
 	}

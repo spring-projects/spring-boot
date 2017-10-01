@@ -21,16 +21,17 @@ import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -46,77 +47,108 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void contextFailsIfStoreTypeNotSet() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("No session repository could be auto-configured");
-		this.thrown.expectMessage("session store type is 'null'");
-		load();
+	public void contextFailsIfMultipleStoresAreAvailable() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure()
+					.hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
+			assertThat(context).getFailure().hasMessageContaining(
+					"Multiple session repository candidates are available");
+		});
+	}
+
+	@Test
+	public void contextFailsIfStoreTypeNotAvailable() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasCauseInstanceOf(
+							SessionRepositoryUnavailableException.class);
+					assertThat(context).getFailure().hasMessageContaining(
+							"No session repository could be auto-configured");
+					assertThat(context).getFailure()
+							.hasMessageContaining("session store type is 'jdbc'");
+				});
 	}
 
 	@Test
 	public void autoConfigurationDisabledIfStoreTypeSetToNone() {
-		load("spring.session.store-type=none");
-		assertThat(this.context.getBeansOfType(SessionRepository.class)).hasSize(0);
+		this.contextRunner.withPropertyValues("spring.session.store-type=none")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(SessionRepository.class));
 	}
 
 	@Test
 	public void backOffIfSessionRepositoryIsPresent() {
-		load(Collections.singletonList(SessionRepositoryConfiguration.class),
-				"spring.session.store-type=redis");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
-		assertThat(this.context.getBean("mySessionRepository")).isSameAs(repository);
-	}
-
-	@Test
-	public void hashMapSessionStore() {
-		load("spring.session.store-type=hash-map");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
-		assertThat(getSessionTimeout(repository)).isNull();
-	}
-
-	@Test
-	public void hashMapSessionStoreCustomTimeout() {
-		load("spring.session.store-type=hash-map", "server.session.timeout=3000");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
-		assertThat(getSessionTimeout(repository)).isEqualTo(3000);
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("spring.session.store-type=redis").run((context) -> {
+					MapSessionRepository repository = validateSessionRepository(context,
+							MapSessionRepository.class);
+					assertThat(context).getBean("mySessionRepository")
+							.isSameAs(repository);
+				});
 	}
 
 	@Test
 	public void springSessionTimeoutIsNotAValidProperty() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Could not bind");
-		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
-	}
-
-	@Test
-	public void validationFailsIfSessionRepositoryIsNotConfigured() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("No session repository could be auto-configured");
-		this.thrown.expectMessage("session store type is 'JDBC'");
-		load("spring.session.store-type=jdbc");
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("spring.session.timeout=3000").run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure()
+							.isInstanceOf(BeanCreationException.class);
+					assertThat(context).getFailure()
+							.hasMessageContaining("Could not bind");
+				});
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void filterIsRegisteredWithAsyncErrorAndRequestDispatcherTypes() {
-		load("spring.session.store-type=hash-map");
-		FilterRegistrationBean<?> registration = this.context
-				.getBean(FilterRegistrationBean.class);
-		assertThat(registration.getFilter())
-				.isSameAs(this.context.getBean(SessionRepositoryFilter.class));
-		assertThat((EnumSet<DispatcherType>) ReflectionTestUtils.getField(registration,
-				"dispatcherTypes")).containsOnly(DispatcherType.ASYNC,
-						DispatcherType.ERROR, DispatcherType.REQUEST);
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.run((context) -> {
+					FilterRegistrationBean<?> registration = context
+							.getBean(FilterRegistrationBean.class);
+					assertThat(registration.getFilter())
+							.isSameAs(context.getBean(SessionRepositoryFilter.class));
+					assertThat((EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(registration, "dispatcherTypes")).containsOnly(
+									DispatcherType.ASYNC, DispatcherType.ERROR,
+									DispatcherType.REQUEST);
+				});
+	}
+
+	@Test
+	public void filterOrderCanBeCustomizedWithCustomStore() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("spring.session.servlet.filter-order=123")
+				.run((context) -> {
+					FilterRegistrationBean<?> registration = context
+							.getBean(FilterRegistrationBean.class);
+					assertThat(registration.getOrder()).isEqualTo(123);
+				});
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void filterDispatcherTypesCanBeCustomized() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues(
+						"spring.session.servlet.filter-dispatcher-types=error, request")
+				.run((context) -> {
+					FilterRegistrationBean<?> registration = context
+							.getBean(FilterRegistrationBean.class);
+					assertThat((EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(registration, "dispatcherTypes")).containsOnly(
+									DispatcherType.ERROR, DispatcherType.REQUEST);
+				});
 	}
 
 	@Configuration
+	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
 
 		@Bean

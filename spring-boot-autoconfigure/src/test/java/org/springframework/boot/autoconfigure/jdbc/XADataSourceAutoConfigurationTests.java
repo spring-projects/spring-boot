@@ -23,7 +23,7 @@ import org.hsqldb.jdbc.pool.JDBCXADataSource;
 import org.junit.Test;
 
 import org.springframework.boot.jta.XADataSourceWrapper;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -75,7 +75,7 @@ public class XADataSourceAutoConfigurationTests {
 
 	private ApplicationContext createContext(Class<?> configuration, String... env) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, env);
+		TestPropertyValues.of(env).applyTo(context);
 		context.register(configuration, XADataSourceAutoConfiguration.class);
 		context.refresh();
 		return context;

@@ -1,1 +1,1 @@
-provides: spring-webmvc,spring-web,jackson-databind
+provides: spring-webmvc,spring-web

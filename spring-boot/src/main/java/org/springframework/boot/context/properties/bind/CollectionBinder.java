@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.CollectionFactory;
@@ -35,13 +36,17 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	@Override
-	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder elementBinder, Class<?> type) {
-		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(
-				() -> CollectionFactory.createCollection(type, 0));
+	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
+			AggregateElementBinder elementBinder) {
+		Class<?> collectionType = (target.getValue() == null ? target.getType().resolve()
+				: List.class);
+		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(() -> {
+			return CollectionFactory.createCollection(collectionType, 0);
+		});
 		ResolvableType elementType = target.getType().asCollection().getGeneric();
-		bindIndexed(name, target, elementBinder, collection, target.getType(),
-				elementType);
+		ResolvableType aggregateType = ResolvableType.forClassWithGenerics(List.class,
+				target.getType().asCollection().getGenerics());
+		bindIndexed(name, target, elementBinder, collection, aggregateType, elementType);
 		if (collection.wasSupplied()) {
 			return collection.get();
 		}
@@ -51,9 +56,21 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	@Override
 	protected Collection<Object> merge(Collection<Object> existing,
 			Collection<Object> additional) {
-		existing.clear();
-		existing.addAll(additional);
-		return existing;
+		try {
+			existing.clear();
+			existing.addAll(additional);
+			return existing;
+		}
+		catch (UnsupportedOperationException ex) {
+			return createNewCollection(additional);
+		}
+	}
+
+	private Collection<Object> createNewCollection(Collection<Object> additional) {
+		Collection<Object> merged = CollectionFactory
+				.createCollection(additional.getClass(), additional.size());
+		merged.addAll(additional);
+		return merged;
 	}
 
 }

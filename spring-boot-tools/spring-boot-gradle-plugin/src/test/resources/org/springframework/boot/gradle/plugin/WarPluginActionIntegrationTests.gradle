@@ -15,9 +15,3 @@ task('taskExists') {
 		println "$taskName exists = ${tasks.findByName(taskName) != null}"
 	}
 }
-
-task('componentExists') {
-	doFirst {
-		println "$componentName exists = ${components.findByName(componentName) != null}"
-	}
-}

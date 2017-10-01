@@ -28,7 +28,6 @@ import java.lang.reflect.Field;
 
 import org.assertj.core.api.Assertions;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
@@ -38,7 +37,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * Base class for AssertJ based JSON marshal testers. Exposes specific Asserts following a
@@ -370,29 +368,15 @@ public abstract class AbstractJsonMarshalTester<T> {
 		public void initFields(final Object testInstance, final M marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
-			initFields(testInstance, new ObjectFactory<M>() {
-
-				@Override
-				public M getObject() throws BeansException {
-					return marshaller;
-				}
-
-			});
+			initFields(testInstance, () -> marshaller);
 		}
 
 		public void initFields(final Object testInstance,
 				final ObjectFactory<M> marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
-			ReflectionUtils.doWithFields(testInstance.getClass(), new FieldCallback() {
-
-				@Override
-				public void doWith(Field field)
-						throws IllegalArgumentException, IllegalAccessException {
-					doWithField(field, testInstance, marshaller);
-				}
-
-			});
+			ReflectionUtils.doWithFields(testInstance.getClass(),
+					(field) -> doWithField(field, testInstance, marshaller));
 		}
 
 		protected void doWithField(Field field, Object test,

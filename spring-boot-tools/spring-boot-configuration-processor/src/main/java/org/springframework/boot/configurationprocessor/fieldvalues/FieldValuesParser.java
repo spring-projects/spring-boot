@@ -36,14 +36,7 @@ public interface FieldValuesParser {
 	/**
 	 * Implementation of {@link FieldValuesParser} that always returns an empty result.
 	 */
-	FieldValuesParser NONE = new FieldValuesParser() {
-
-		@Override
-		public Map<String, Object> getFieldValues(TypeElement element) {
-			return Collections.emptyMap();
-		}
-
-	};
+	FieldValuesParser NONE = (element) -> Collections.emptyMap();
 
 	/**
 	 * Return the field values for the given element.

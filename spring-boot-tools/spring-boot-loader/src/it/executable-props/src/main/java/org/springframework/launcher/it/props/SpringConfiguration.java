@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.load.it.props;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -32,12 +31,12 @@ import org.springframework.core.io.ClassPathResource;
  */
 @Configuration
 @ComponentScan
-public class SpringConfiguration {
+public class SpringConfiguration implements InitializingBean {
 
 	private String message = "Jar";
 
-	@PostConstruct
-	public void init() throws IOException {
+	@Override
+	public void afterPropertiesSet() throws IOException {
 		Properties props = new Properties();
 		props.load(new ClassPathResource("application.properties").getInputStream());
 		String value = props.getProperty("message");

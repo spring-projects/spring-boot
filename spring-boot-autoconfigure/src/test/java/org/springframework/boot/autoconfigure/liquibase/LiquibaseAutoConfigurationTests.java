@@ -17,28 +17,31 @@
 package org.springframework.boot.autoconfigure.liquibase;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
+import org.springframework.boot.system.JavaVersion;
+import org.springframework.boot.test.Assume;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -53,11 +56,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Marcel Overdijk
  * @author Eddú Meléndez
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class LiquibaseAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -65,208 +66,177 @@ public class LiquibaseAutoConfigurationTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
 	@Before
 	public void init() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.name:liquibasetest");
 		new LiquibaseServiceLocatorApplicationListener().onApplicationEvent(null);
 	}
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true");
+
+	@Test
+	public void noDataSource() {
+		this.contextRunner.run(
+				(context) -> assertThat(context).doesNotHaveBean(SpringLiquibase.class));
 	}
 
 	@Test
-	public void testNoDataSource() throws Exception {
-		this.context.register(LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(SpringLiquibase.class).length)
-				.isEqualTo(0);
+	public void defaultSpringLiquibase() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.run(assertLiquibase((liquibase) -> {
+					assertThat(liquibase.getChangeLog()).isEqualTo(
+							"classpath:/db/changelog/db.changelog-master.yaml");
+					assertThat(liquibase.getContexts()).isNull();
+					assertThat(liquibase.getDefaultSchema()).isNull();
+					assertThat(liquibase.isDropFirst()).isFalse();
+				}));
 	}
 
 	@Test
-	public void testDefaultSpringLiquibase() throws Exception {
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getChangeLog())
-				.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
-		assertThat(liquibase.getContexts()).isNull();
-		assertThat(liquibase.getDefaultSchema()).isNull();
-		assertThat(liquibase.isDropFirst()).isFalse();
+	public void changelogXml() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml")
+				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
+						.isEqualTo("classpath:/db/changelog/db.changelog-override.xml")));
 	}
 
 	@Test
-	public void testXmlChangeLog() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getChangeLog())
-				.isEqualTo("classpath:/db/changelog/db.changelog-override.xml");
+	public void changelogJson() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.json")
+				.run(assertLiquibase(
+						(liquibase) -> assertThat(liquibase.getChangeLog()).isEqualTo(
+								"classpath:/db/changelog/db.changelog-override.json")));
 	}
 
 	@Test
-	public void testJsonChangeLog() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.change-log:classpath:/db/changelog/db.changelog-override.json");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getChangeLog())
-				.isEqualTo("classpath:/db/changelog/db.changelog-override.json");
+	public void changelogSql() {
+		Assume.javaVersion(JavaVersion.EIGHT);
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")
+				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
+						.isEqualTo("classpath:/db/changelog/db.changelog-override.sql")));
 	}
 
 	@Test
-	public void testSqlChangeLog() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getChangeLog())
-				.isEqualTo("classpath:/db/changelog/db.changelog-override.sql");
+	public void overrideContexts() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.contexts:test, production")
+				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getContexts())
+						.isEqualTo("test, production")));
 	}
 
 	@Test
-	public void testOverrideContexts() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.contexts:test, production");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getContexts()).isEqualTo("test, production");
+	public void overrideDefaultSchema() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.default-schema:public")
+				.run(assertLiquibase(
+						(liquibase) -> assertThat(liquibase.getDefaultSchema())
+								.isEqualTo("public")));
 	}
 
 	@Test
-	public void testOverrideDefaultSchema() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.default-schema:public");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getDefaultSchema()).isEqualTo("public");
+	public void overrideDropFirst() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.drop-first:true")
+				.run(assertLiquibase(
+						(liquibase) -> assertThat(liquibase.isDropFirst()).isTrue()));
 	}
 
 	@Test
-	public void testOverrideDropFirst() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.drop-first:true");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.isDropFirst()).isTrue();
+	public void overrideDataSource() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase",
+						"spring.liquibase.user:sa")
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
+							.isEqualTo("jdbc:hsqldb:mem:liquibase");
+				}));
 	}
 
 	@Test
-	public void testOverrideDataSource() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.url:jdbc:hsqldb:mem:liquibase", "liquibase.user:sa");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		DataSource dataSource = liquibase.getDataSource();
-		assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
-		assertThat(((HikariDataSource) dataSource).getJdbcUrl())
-				.isEqualTo("jdbc:hsqldb:mem:liquibase");
-	}
-
-	@Test(expected = BeanCreationException.class)
-	public void testChangeLogDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.change-log:classpath:/no-such-changelog.yaml");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	public void changeLogDoesNotExist() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.liquibase.change-log:classpath:/no-such-changelog.yaml")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure()
+							.isInstanceOf(BeanCreationException.class);
+				});
 	}
 
 	@Test
-	public void testLogger() throws Exception {
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		Object log = ReflectionTestUtils.getField(liquibase, "log");
-		assertThat(log).isInstanceOf(CommonsLoggingLiquibaseLogger.class);
-		assertThat(this.outputCapture.toString()).doesNotContain(": liquibase:");
+	public void logging() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.run(assertLiquibase((liquibase) -> {
+					Object log = ReflectionTestUtils.getField(liquibase, "log");
+					assertThat(log).isInstanceOf(CommonsLoggingLiquibaseLogger.class);
+					assertThat(this.outputCapture.toString())
+							.doesNotContain(": liquibase:");
+				}));
 	}
 
 	@Test
-	public void testOverrideLabels() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.labels:test, production");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getLabels()).isEqualTo("test, production");
+	public void overrideLabels() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.labels:test, production")
+				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getLabels())
+						.isEqualTo("test, production")));
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testOverrideParameters() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.parameters.foo:bar");
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils
-				.getField(liquibase, "parameters");
-		assertThat(parameters.containsKey("foo")).isTrue();
-		assertThat(parameters.get("foo")).isEqualTo("bar");
+	public void testOverrideParameters() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.parameters.foo:bar")
+				.run(assertLiquibase((liquibase) -> {
+					Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils
+							.getField(liquibase, "parameters");
+					assertThat(parameters.containsKey("foo")).isTrue();
+					assertThat(parameters.get("foo")).isEqualTo("bar");
+				}));
 	}
 
 	@Test
-	public void testRollbackFile() throws Exception {
+	public void rollbackFile() throws IOException {
 		File file = this.temp.newFile("rollback-file.sql");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.rollbackFile:" + file.getAbsolutePath());
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		File actualFile = (File) ReflectionTestUtils.getField(liquibase, "rollbackFile");
-		assertThat(actualFile).isEqualTo(file).exists();
-		String content = new String(FileCopyUtils.copyToByteArray(file));
-		assertThat(content).contains("DROP TABLE PUBLIC.customer;");
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.liquibase.rollbackFile:" + file.getAbsolutePath())
+				.run((context) -> {
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+					File actualFile = (File) ReflectionTestUtils.getField(liquibase,
+							"rollbackFile");
+					assertThat(actualFile).isEqualTo(file).exists();
+					String content = new String(FileCopyUtils.copyToByteArray(file));
+					assertThat(content).contains("DROP TABLE PUBLIC.customer;");
+				});
 	}
 
 	@Test
-	public void testLiquibaseDataSource() {
-		this.context.register(LiquibaseDataSourceConfiguration.class,
-				EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getDataSource())
-				.isEqualTo(this.context.getBean("liquibaseDataSource"));
+	public void liquibaseDataSource() {
+		this.contextRunner.withUserConfiguration(LiquibaseDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class).run((context) -> {
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+					assertThat(liquibase.getDataSource())
+							.isEqualTo(context.getBean("liquibaseDataSource"));
+				});
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertLiquibase(
+			Consumer<SpringLiquibase> consumer) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(SpringLiquibase.class);
+			SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+			consumer.accept(liquibase);
+		};
 	}
 
 	@Configuration

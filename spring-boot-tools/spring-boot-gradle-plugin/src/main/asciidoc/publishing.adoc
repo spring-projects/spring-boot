@@ -20,12 +20,10 @@ include::../gradle/publishing/maven.gradle[tags=upload]
 [[publishing-your-application-maven-publish]]
 === Publishing with the `maven-publish` plugin
 
-When the {java-plugin}[`java` plugin] is applied Spring Boot automatically creates a
-{software-component}[software component] named `bootJava`. Similarly, when the `war`
-plugin is applied, a software component named `bootWeb` is created. `bootJava` contains
-the archive produced by the `bootJar` task and `bootWeb` contains the archive provided by
-the `bootWar` task. The components can be used with the
-{maven-publish-plugin}[`maven-publish` plugin] to publish the archive, for example:
+To publish your Spring Boot jar or war, add it to the publication using the `artifact`
+method on `MavenPublication`. Pass the task that produces that artifact that you wish
+to publish to the `artifact` method. For example, to publish the artifact produced by the
+default `bootJar` task:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----

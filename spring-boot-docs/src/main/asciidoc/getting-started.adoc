@@ -38,7 +38,7 @@ diverge from the defaults.
 == System Requirements
 Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and Spring
 Framework {spring-version} or above. Explicit build support is provided for Maven
-(3.2+), and Gradle 3 (3.4 or later).
+(3.2+), and Gradle 4.
 
 
 [[getting-started-system-requirements-servlet-containers]]
@@ -99,7 +99,8 @@ installed you can follow the instructions at http://maven.apache.org.
 
 TIP: On many operating systems Maven can be installed via a package manager. If you're an
 OSX Homebrew user try `brew install maven`. Ubuntu users can run
-`sudo apt-get install maven`.
+`sudo apt-get install maven`. Windows users with Chocolatey can run `choco install maven`
+from an elevated prompt.
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically your
 Maven POM file will inherit from the `spring-boot-starter-parent` project and declare
@@ -184,8 +185,8 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle installation
-Spring Boot is compatible with Gradle 3 (3.4 or later). If you don't already have Gradle
-installed you can follow the instructions at http://www.gradle.org/.
+Spring Boot is compatible with Gradle 4. If you don't already have Gradle installed you
+can follow the instructions at http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
@@ -224,6 +225,7 @@ ifeval::["{spring-boot-repo}" != "release"]
 
 	apply plugin: 'java'
 	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
 
 endif::[]
 	jar {
@@ -619,7 +621,7 @@ that any HTTP request with the path "`/`" should be mapped to the `home` method.
 back to the caller.
 
 TIP: The `@RestController` and `@RequestMapping` annotations are Spring MVC annotations
-(they are not specific to Spring Boot). See the {spring-reference}#mvc[MVC section] in
+(they are not specific to Spring Boot). See the {spring-reference}web.html#mvc[MVC section] in
 the Spring Reference Documentation for more details.
 
 

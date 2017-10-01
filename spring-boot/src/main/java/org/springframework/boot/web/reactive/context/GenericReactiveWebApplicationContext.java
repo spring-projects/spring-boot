@@ -33,8 +33,9 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class GenericReactiveWebApplicationContext extends
-		AnnotationConfigApplicationContext implements ReactiveWebApplicationContext {
+public class GenericReactiveWebApplicationContext
+		extends AnnotationConfigApplicationContext
+		implements ConfigurableReactiveWebApplicationContext {
 
 	private String namespace;
 
@@ -67,7 +68,7 @@ public class GenericReactiveWebApplicationContext extends
 	 * {@link org.springframework.web.context.support.ServletContextResource} in a
 	 * reactive web application.
 	 * <p>
-	 * {@link #exists()} always returns null in order to avoid exposing the whole
+	 * {@link #exists()} always returns {@code false} in order to avoid exposing the whole
 	 * classpath in a non-servlet environment.
 	 */
 	class FilteredReactiveWebContextResource extends AbstractResource {

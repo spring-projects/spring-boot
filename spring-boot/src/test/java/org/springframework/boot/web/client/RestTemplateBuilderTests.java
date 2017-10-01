@@ -361,14 +361,8 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void customizersShouldBeAppliedLast() throws Exception {
 		RestTemplate template = spy(new RestTemplate());
-		this.builder.additionalCustomizers(new RestTemplateCustomizer() {
-
-			@Override
-			public void customize(RestTemplate restTemplate) {
-				verify(restTemplate).setRequestFactory((ClientHttpRequestFactory) any());
-			}
-
-		});
+		this.builder.additionalCustomizers((restTemplate) -> verify(restTemplate)
+				.setRequestFactory((ClientHttpRequestFactory) any()));
 		this.builder.configure(template);
 	}
 

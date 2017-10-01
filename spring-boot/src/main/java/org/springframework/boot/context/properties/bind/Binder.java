@@ -189,6 +189,7 @@ public class Binder {
 
 	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context) {
+		context.clearConfigurationProperty();
 		try {
 			if (!handler.onStart(name, target, context)) {
 				return null;
@@ -203,7 +204,6 @@ public class Binder {
 
 	private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, Object result) throws Exception {
-		result = convert(result, target);
 		if (result != null) {
 			result = handler.onSuccess(name, target, context, result);
 			result = convert(result, target);
@@ -266,8 +266,8 @@ public class Binder {
 	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
-			return context.withSource(source,
-					() -> Binder.this.bind(itemName, itemTarget, handler, context));
+			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context);
+			return context.withSource(source, supplier);
 		};
 		return context.withIncreasedDepth(
 				() -> aggregateBinder.bind(name, target, elementBinder));
@@ -431,6 +431,10 @@ public class Binder {
 
 		void setConfigurationProperty(ConfigurationProperty configurationProperty) {
 			this.configurationProperty = configurationProperty;
+		}
+
+		void clearConfigurationProperty() {
+			this.configurationProperty = null;
 		}
 
 		@Override

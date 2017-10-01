@@ -122,8 +122,7 @@ public class OriginTrackedYamlLoaderTests {
 	}
 
 	private String getLocation(OriginTrackedValue value) {
-		return ((TextResourceOrigin) value.getOrigin()).getLocation()
-				.toString();
+		return ((TextResourceOrigin) value.getOrigin()).getLocation().toString();
 	}
 
 }

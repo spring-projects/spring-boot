@@ -68,8 +68,8 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	@Override
-	protected AbstractUrlBasedView createUrlBasedView(String viewName) {
-		MustacheView view = (MustacheView) super.createUrlBasedView(viewName);
+	protected AbstractUrlBasedView createView(String viewName) {
+		MustacheView view = (MustacheView) super.createView(viewName);
 		view.setCompiler(this.compiler);
 		view.setCharset(this.charset);
 		return view;

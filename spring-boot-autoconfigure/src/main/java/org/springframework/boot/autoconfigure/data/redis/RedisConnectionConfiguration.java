@@ -24,7 +24,9 @@ import java.util.List;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -50,6 +52,23 @@ abstract class RedisConnectionConfiguration {
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
 	}
 
+	protected final RedisStandaloneConfiguration getStandaloneConfig() {
+		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+		if (StringUtils.hasText(this.properties.getUrl())) {
+			ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
+			config.setHostName(connectionInfo.getHostName());
+			config.setPort(connectionInfo.getPort());
+			config.setPassword(RedisPassword.of(connectionInfo.getPassword()));
+		}
+		else {
+			config.setHostName(this.properties.getHost());
+			config.setPort(this.properties.getPort());
+			config.setPassword(RedisPassword.of(this.properties.getPassword()));
+		}
+		config.setDatabase(this.properties.getDatabase());
+		return config;
+	}
+
 	protected final RedisSentinelConfiguration getSentinelConfig() {
 		if (this.sentinelConfiguration != null) {
 			return this.sentinelConfiguration;
@@ -59,6 +78,9 @@ abstract class RedisConnectionConfiguration {
 			RedisSentinelConfiguration config = new RedisSentinelConfiguration();
 			config.master(sentinelProperties.getMaster());
 			config.setSentinels(createSentinels(sentinelProperties));
+			if (this.properties.getPassword() != null) {
+				config.setPassword(RedisPassword.of(this.properties.getPassword()));
+			}
 			return config;
 		}
 		return null;
@@ -80,6 +102,9 @@ abstract class RedisConnectionConfiguration {
 				clusterProperties.getNodes());
 		if (clusterProperties.getMaxRedirects() != null) {
 			config.setMaxRedirects(clusterProperties.getMaxRedirects());
+		}
+		if (this.properties.getPassword() != null) {
+			config.setPassword(RedisPassword.of(this.properties.getPassword()));
 		}
 		return config;
 	}
@@ -123,7 +148,9 @@ abstract class RedisConnectionConfiguration {
 	protected static class ConnectionInfo {
 
 		private final URI uri;
+
 		private final boolean useSsl;
+
 		private final String password;
 
 		public ConnectionInfo(URI uri, boolean useSsl, String password) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import javax.sql.DataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,19 +53,13 @@ public class TomcatDataSourceConfigurationTests {
 
 	@Before
 	public void init() {
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "initialize:false");
-	}
-
-	@After
-	public void restore() {
-		EmbeddedDatabaseConnection.override = null;
+		TestPropertyValues.of(PREFIX + "initialize:false").applyTo(this.context);
 	}
 
 	@Test
 	public void testDataSourceExists() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "url:jdbc:h2:mem:testdb");
+		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		assertThat(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class))
@@ -75,20 +69,13 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "url:jdbc:h2:mem:testdb");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "timeBetweenEvictionRunsMillis:10000");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "minEvictableIdleTimeMillis:12345");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "jdbcInterceptors:SlowQueryReport");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "validationInterval:9999");
+		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb",
+				PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
+				PREFIX + "testOnReturn:true",
+				PREFIX + "timeBetweenEvictionRunsMillis:10000",
+				PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
+				PREFIX + "jdbcInterceptors:SlowQueryReport",
+				PREFIX + "validationInterval:9999").applyTo(this.context);
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
@@ -118,8 +105,7 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceDefaultsPreserved() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "url:jdbc:h2:mem:testdb");
+		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
