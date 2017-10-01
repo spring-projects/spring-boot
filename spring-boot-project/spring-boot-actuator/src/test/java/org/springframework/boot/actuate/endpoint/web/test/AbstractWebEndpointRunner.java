@@ -47,6 +47,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
  */
 abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 
+	private static final Duration TIMEOUT = Duration.ofMinutes(6);
+
 	private final String name;
 
 	private final TestContext testContext;
@@ -187,7 +189,7 @@ abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 					"http://localhost:" + determinePort());
 			uriBuilderFactory.setEncodingMode(EncodingMode.NONE);
 			return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory)
-					.responseTimeout(Duration.ofSeconds(30)).build();
+					.responseTimeout(TIMEOUT).build();
 		}
 
 		private int determinePort() {
