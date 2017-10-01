@@ -110,7 +110,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < numberOfElements; i++) {
 			result.append(result.length() == 0 ? "" : "_");
-			result.append(name.getElement(i, Form.UNIFORM).toString().toUpperCase());
+			result.append(name.getElement(i, Form.UNIFORM).toUpperCase());
 		}
 		return result.toString();
 	}
