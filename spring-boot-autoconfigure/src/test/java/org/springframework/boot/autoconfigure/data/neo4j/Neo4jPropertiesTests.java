@@ -157,7 +157,7 @@ public class Neo4jPropertiesTests {
 	private static void assertCredentials(Configuration actual, String username,
 			String password) {
 		Credentials<?> credentials = actual.getCredentials();
-		if (username == null & password == null) {
+		if (username == null && password == null) {
 			assertThat(credentials).isNull();
 		}
 		else {
