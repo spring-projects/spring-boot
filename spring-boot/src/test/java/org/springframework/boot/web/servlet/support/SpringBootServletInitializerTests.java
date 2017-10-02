@@ -16,7 +16,11 @@
 
 package org.springframework.boot.web.servlet.support;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,17 +29,23 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.env.PropertySource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SpringBootServletInitializer}.
@@ -120,10 +130,36 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	public void servletContextApplicationListenerIsAdded() {
-		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getListeners())
-				.hasAtLeastOneElementOfType(ServletContextApplicationListener.class);
+	public void servletContextPropertySourceIsAvailablePriorToRefresh()
+			throws ServletException {
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.getInitParameterNames()).willReturn(
+				Collections.enumeration(Arrays.asList("spring.profiles.active")));
+		given(servletContext.getInitParameter("spring.profiles.active"))
+				.willReturn("from-servlet-context");
+		given(servletContext.getAttributeNames())
+				.willReturn(Collections.enumeration(Collections.<String>emptyList()));
+		try (ConfigurableApplicationContext context = (ConfigurableApplicationContext) new PropertySourceVerifyingSpringBootServletInitializer()
+				.createRootApplicationContext(servletContext)) {
+			assertThat(context.getEnvironment().getActiveProfiles())
+					.containsExactly("from-servlet-context");
+		}
+	}
+
+	private static class PropertySourceVerifyingSpringBootServletInitializer
+			extends SpringBootServletInitializer {
+
+		@Override
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+			return builder.sources(TestApp.class)
+					.listeners(new PropertySourceVerifyingApplicationListener());
+		}
+
+	}
+
+	@Configuration
+	static class TestApp {
+
 	}
 
 	private class MockSpringBootServletInitializer extends SpringBootServletInitializer {
@@ -202,6 +238,19 @@ public class SpringBootServletInitializerTests {
 		public SpringApplication build() {
 			this.built = true;
 			return super.build();
+		}
+
+	}
+
+	private static final class PropertySourceVerifyingApplicationListener
+			implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+
+		@Override
+		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+			PropertySource<?> propertySource = event.getEnvironment().getPropertySources()
+					.get(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
+			assertThat(propertySource.getProperty("spring.profiles.active"))
+					.isEqualTo("from-servlet-context");
 		}
 
 	}
