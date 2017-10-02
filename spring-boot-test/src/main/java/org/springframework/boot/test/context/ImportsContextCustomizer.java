@@ -228,14 +228,14 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		private static final Class<?>[] NO_IMPORTS = {};
 
-		private static final Set<AnnotationFilter> ANNOTATION_FILTERS;
+		private static final Set<AnnotationFilter> annotationFilters;
 
 		static {
 			Set<AnnotationFilter> filters = new HashSet<>();
 			filters.add(new JavaLangAnnotationFilter());
 			filters.add(new KotlinAnnotationFilter());
 			filters.add(new SpockAnnotationFilter());
-			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
+			annotationFilters = Collections.unmodifiableSet(filters);
 		}
 
 		private final Set<Object> key;
@@ -274,7 +274,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		}
 
 		private boolean isIgnoredAnnotation(Annotation annotation) {
-			for (AnnotationFilter annotationFilter : ANNOTATION_FILTERS) {
+			for (AnnotationFilter annotationFilter : annotationFilters) {
 				if (annotationFilter.isIgnored(annotation)) {
 					return true;
 				}

@@ -43,14 +43,14 @@ import org.springframework.web.context.WebApplicationContext;
 class ServletComponentRegisteringPostProcessor
 		implements BeanFactoryPostProcessor, ApplicationContextAware {
 
-	private static final List<ServletComponentHandler> HANDLERS;
+	private static final List<ServletComponentHandler> handlers;
 
 	static {
-		List<ServletComponentHandler> handlers = new ArrayList<>();
-		handlers.add(new WebServletHandler());
-		handlers.add(new WebFilterHandler());
-		handlers.add(new WebListenerHandler());
-		HANDLERS = Collections.unmodifiableList(handlers);
+		List<ServletComponentHandler> servletComponentHandlers = new ArrayList<>();
+		servletComponentHandlers.add(new WebServletHandler());
+		servletComponentHandlers.add(new WebFilterHandler());
+		servletComponentHandlers.add(new WebListenerHandler());
+		handlers = Collections.unmodifiableList(servletComponentHandlers);
 	}
 
 	private final Set<String> packagesToScan;
@@ -78,7 +78,7 @@ class ServletComponentRegisteringPostProcessor
 		for (BeanDefinition candidate : componentProvider
 				.findCandidateComponents(packageToScan)) {
 			if (candidate instanceof ScannedGenericBeanDefinition) {
-				for (ServletComponentHandler handler : HANDLERS) {
+				for (ServletComponentHandler handler : handlers) {
 					handler.handle(((ScannedGenericBeanDefinition) candidate),
 							(BeanDefinitionRegistry) this.applicationContext);
 				}
@@ -97,7 +97,7 @@ class ServletComponentRegisteringPostProcessor
 				false);
 		componentProvider.setEnvironment(this.applicationContext.getEnvironment());
 		componentProvider.setResourceLoader(this.applicationContext);
-		for (ServletComponentHandler handler : HANDLERS) {
+		for (ServletComponentHandler handler : handlers) {
 			componentProvider.addIncludeFilter(handler.getTypeFilter());
 		}
 		return componentProvider;

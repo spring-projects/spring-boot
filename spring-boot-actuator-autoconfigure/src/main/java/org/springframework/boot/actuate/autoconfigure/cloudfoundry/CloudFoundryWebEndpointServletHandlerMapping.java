@@ -53,7 +53,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
 
 /**
  * A custom {@link RequestMappingInfoHandlerMapping} that makes web endpoints available on
- * Cloudfoundry specific URLS over HTTP using Spring MVC.
+ * Cloud Foundry specific URLs over HTTP using Spring MVC.
  *
  * @author Madhura Bhave
  */

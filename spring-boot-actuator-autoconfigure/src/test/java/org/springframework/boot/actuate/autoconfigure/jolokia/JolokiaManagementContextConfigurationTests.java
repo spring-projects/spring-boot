@@ -45,7 +45,7 @@ public class JolokiaManagementContextConfigurationTests {
 							JolokiaManagementContextConfiguration.class));
 
 	@Test
-	public void jolokiaIsEnabledByDefault() {
+	public void jolokiaCanBeEnabled() {
 		this.contextRunner.withPropertyValues("management.jolokia.enabled=true")
 				.run((context) -> {
 					context.getBean(ServletRegistrationBean.class);

@@ -115,7 +115,7 @@ Running a full build is a two phase process.
 Preparing the build will compile and install the `spring-boot-maven-plugin` so that it
 can be referenced during the full build. It also generates a `settings.xml` file that
 enables a `snapshot`, `milestone` or `release` profiles based on the version being
-build. To prepare the build, from the root directory use:
+built. To prepare the build, from the root directory use:
 
 [indent=0]
 ----

@@ -120,7 +120,7 @@ public final class Layouts {
 	 */
 	public static class War implements Layout {
 
-		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
+		private static final Map<LibraryScope, String> scopeDestinations;
 
 		static {
 			Map<LibraryScope, String> map = new HashMap<>();
@@ -128,7 +128,7 @@ public final class Layouts {
 			map.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
 			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
 			map.put(LibraryScope.PROVIDED, "WEB-INF/lib-provided/");
-			SCOPE_DESTINATIONS = Collections.unmodifiableMap(map);
+			scopeDestinations = Collections.unmodifiableMap(map);
 		}
 
 		@Override
@@ -138,7 +138,7 @@ public final class Layouts {
 
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return SCOPE_DESTINATIONS.get(scope);
+			return scopeDestinations.get(scope);
 		}
 
 		@Override

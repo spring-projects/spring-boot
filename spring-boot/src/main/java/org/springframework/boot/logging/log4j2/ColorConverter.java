@@ -49,28 +49,28 @@ import org.springframework.boot.ansi.AnsiStyle;
 @ConverterKeys({ "clr", "color" })
 public final class ColorConverter extends LogEventPatternConverter {
 
-	private static final Map<String, AnsiElement> ELEMENTS;
+	private static final Map<String, AnsiElement> elements;
 
 	static {
-		Map<String, AnsiElement> elements = new HashMap<>();
-		elements.put("faint", AnsiStyle.FAINT);
-		elements.put("red", AnsiColor.RED);
-		elements.put("green", AnsiColor.GREEN);
-		elements.put("yellow", AnsiColor.YELLOW);
-		elements.put("blue", AnsiColor.BLUE);
-		elements.put("magenta", AnsiColor.MAGENTA);
-		elements.put("cyan", AnsiColor.CYAN);
-		ELEMENTS = Collections.unmodifiableMap(elements);
+		Map<String, AnsiElement> ansiElements = new HashMap<>();
+		ansiElements.put("faint", AnsiStyle.FAINT);
+		ansiElements.put("red", AnsiColor.RED);
+		ansiElements.put("green", AnsiColor.GREEN);
+		ansiElements.put("yellow", AnsiColor.YELLOW);
+		ansiElements.put("blue", AnsiColor.BLUE);
+		ansiElements.put("magenta", AnsiColor.MAGENTA);
+		ansiElements.put("cyan", AnsiColor.CYAN);
+		elements = Collections.unmodifiableMap(ansiElements);
 	}
 
-	private static final Map<Integer, AnsiElement> LEVELS;
+	private static final Map<Integer, AnsiElement> levels;
 
 	static {
-		Map<Integer, AnsiElement> levels = new HashMap<>();
-		levels.put(Level.FATAL.intLevel(), AnsiColor.RED);
-		levels.put(Level.ERROR.intLevel(), AnsiColor.RED);
-		levels.put(Level.WARN.intLevel(), AnsiColor.YELLOW);
-		LEVELS = Collections.unmodifiableMap(levels);
+		Map<Integer, AnsiElement> ansiLevels = new HashMap<>();
+		ansiLevels.put(Level.FATAL.intLevel(), AnsiColor.RED);
+		ansiLevels.put(Level.ERROR.intLevel(), AnsiColor.RED);
+		ansiLevels.put(Level.WARN.intLevel(), AnsiColor.YELLOW);
+		levels = Collections.unmodifiableMap(ansiLevels);
 	}
 
 	private final List<PatternFormatter> formatters;
@@ -101,7 +101,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		}
 		PatternParser parser = PatternLayout.createPatternParser(config);
 		List<PatternFormatter> formatters = parser.parse(options[0]);
-		AnsiElement element = (options.length == 1 ? null : ELEMENTS.get(options[1]));
+		AnsiElement element = (options.length == 1 ? null : elements.get(options[1]));
 		return new ColorConverter(formatters, element);
 	}
 
@@ -125,7 +125,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 			AnsiElement element = this.styling;
 			if (element == null) {
 				// Assume highlighting
-				element = LEVELS.get(event.getLevel().intLevel());
+				element = levels.get(event.getLevel().intLevel());
 				element = (element == null ? AnsiColor.GREEN : element);
 			}
 			appendAnsiString(toAppendTo, buf.toString(), element);

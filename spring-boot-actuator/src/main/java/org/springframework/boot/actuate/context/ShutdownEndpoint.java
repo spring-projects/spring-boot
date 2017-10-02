@@ -38,18 +38,18 @@ import org.springframework.context.ConfigurableApplicationContext;
 @Endpoint(id = "shutdown", defaultEnablement = DefaultEnablement.DISABLED)
 public class ShutdownEndpoint implements ApplicationContextAware {
 
-	private static final Map<String, Object> NO_CONTEXT_MESSAGE = Collections
-			.unmodifiableMap(Collections.<String, Object>singletonMap("message",
+	private static final Map<String, String> NO_CONTEXT_MESSAGE = Collections
+			.unmodifiableMap(Collections.<String, String>singletonMap("message",
 					"No context to shutdown."));
 
-	private static final Map<String, Object> SHUTDOWN_MESSAGE = Collections
-			.unmodifiableMap(Collections.<String, Object>singletonMap("message",
+	private static final Map<String, String> SHUTDOWN_MESSAGE = Collections
+			.unmodifiableMap(Collections.<String, String>singletonMap("message",
 					"Shutting down, bye..."));
 
 	private ConfigurableApplicationContext context;
 
 	@WriteOperation
-	public Map<String, Object> shutdown() {
+	public Map<String, String> shutdown() {
 		if (this.context == null) {
 			return NO_CONTEXT_MESSAGE;
 		}
