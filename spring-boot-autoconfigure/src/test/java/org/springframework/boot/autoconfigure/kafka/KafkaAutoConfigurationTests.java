@@ -45,7 +45,6 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
-import org.springframework.kafka.support.converter.MessageConverter;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
@@ -68,7 +67,8 @@ public class KafkaAutoConfigurationTests {
 
 	@Test
 	public void consumerProperties() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(
 						"spring.kafka.bootstrap-servers=foo:1234",
 						"spring.kafka.properties.foo=bar",
@@ -90,57 +90,58 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.consumer.group-id=bar",
 						"spring.kafka.consumer.heartbeat-interval=234",
 						"spring.kafka.consumer.key-deserializer = org.apache.kafka.common.serialization.LongDeserializer",
-						"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer")
-				.run((context) -> {
-					DefaultKafkaConsumerFactory<?, ?> consumerFactory = context
-							.getBean(DefaultKafkaConsumerFactory.class);
-					Map<String, Object> configs = consumerFactory.getConfigurationProperties();
-					// common
-					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
-							.isEqualTo(Collections.singletonList("foo:1234"));
-					assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p1");
-					assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
-							.endsWith(File.separator + "ksLoc");
-					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG)).isEqualTo("p2");
-					assertThat((String) configs.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
-							.endsWith(File.separator + "tsLoc");
-					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
-							.isEqualTo("p3");
-					// consumer
-					assertThat(configs.get(ConsumerConfig.CLIENT_ID_CONFIG)).isEqualTo("ccid"); // override
-					assertThat(configs.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG))
-							.isEqualTo(Boolean.FALSE);
-					assertThat(configs.get(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG))
-							.isEqualTo(123);
-					assertThat(configs.get(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG))
-							.isEqualTo("earliest");
-					assertThat(configs.get(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG)).isEqualTo(456);
-					assertThat(configs.get(ConsumerConfig.FETCH_MIN_BYTES_CONFIG)).isEqualTo(789);
-					assertThat(configs.get(ConsumerConfig.GROUP_ID_CONFIG)).isEqualTo("bar");
-					assertThat(configs.get(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG))
-							.isEqualTo(234);
-					assertThat(configs.get(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG))
-							.isEqualTo(LongDeserializer.class);
-					assertThat(configs.get(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG))
-							.isEqualTo(IntegerDeserializer.class);
-					assertThat(configs.get(ConsumerConfig.MAX_POLL_RECORDS_CONFIG)).isEqualTo(42);
-					assertThat(configs.get("foo")).isEqualTo("bar");
-					assertThat(configs.get("baz")).isEqualTo("qux");
-					assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
-					assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
-				});
+						"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer"
+				).run((context) -> {
+			DefaultKafkaConsumerFactory<?, ?> consumerFactory = context
+					.getBean(DefaultKafkaConsumerFactory.class);
+			Map<String, Object> configs = consumerFactory.getConfigurationProperties();
+			// common
+			assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
+					.isEqualTo(Collections.singletonList("foo:1234"));
+			assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p1");
+			assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
+					.endsWith(File.separator + "ksLoc");
+			assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG)).isEqualTo("p2");
+			assertThat((String) configs.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
+					.endsWith(File.separator + "tsLoc");
+			assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
+					.isEqualTo("p3");
+			// consumer
+			assertThat(configs.get(ConsumerConfig.CLIENT_ID_CONFIG)).isEqualTo("ccid"); // override
+			assertThat(configs.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG))
+					.isEqualTo(Boolean.FALSE);
+			assertThat(configs.get(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG))
+					.isEqualTo(123);
+			assertThat(configs.get(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG))
+					.isEqualTo("earliest");
+			assertThat(configs.get(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG)).isEqualTo(456);
+			assertThat(configs.get(ConsumerConfig.FETCH_MIN_BYTES_CONFIG)).isEqualTo(789);
+			assertThat(configs.get(ConsumerConfig.GROUP_ID_CONFIG)).isEqualTo("bar");
+			assertThat(configs.get(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG))
+					.isEqualTo(234);
+			assertThat(configs.get(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG))
+					.isEqualTo(LongDeserializer.class);
+			assertThat(configs.get(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG))
+					.isEqualTo(IntegerDeserializer.class);
+			assertThat(configs.get(ConsumerConfig.MAX_POLL_RECORDS_CONFIG)).isEqualTo(42);
+			assertThat(configs.get("foo")).isEqualTo("bar");
+			assertThat(configs.get("baz")).isEqualTo("qux");
+			assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
+			assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
+		});
 	}
 
 	@Test
 	public void producerProperties() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(
 						"spring.kafka.clientId=cid",
 						"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
 						"spring.kafka.producer.acks=all",
 						"spring.kafka.producer.batch-size=20",
 						"spring.kafka.producer.bootstrap-servers=bar:1234", // test
-																			// override
+						// override
 						"spring.kafka.producer.buffer-memory=12345",
 						"spring.kafka.producer.compression-type=gzip",
 						"spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.LongSerializer",
@@ -151,38 +152,38 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.producer.ssl.keystore-password=p5",
 						"spring.kafka.producer.ssl.truststore-location=classpath:tsLocP",
 						"spring.kafka.producer.ssl.truststore-password=p6",
-						"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer")
-				.run((context) -> {
-					DefaultKafkaProducerFactory<?, ?> producerFactory = context
-							.getBean(DefaultKafkaProducerFactory.class);
-					Map<String, Object> configs = producerFactory.getConfigurationProperties();
-					// common
-					assertThat(configs.get(ProducerConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
-					// producer
-					assertThat(configs.get(ProducerConfig.ACKS_CONFIG)).isEqualTo("all");
-					assertThat(configs.get(ProducerConfig.BATCH_SIZE_CONFIG)).isEqualTo(20);
-					assertThat(configs.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG))
-							.isEqualTo(Collections.singletonList("bar:1234")); // override
-					assertThat(configs.get(ProducerConfig.BUFFER_MEMORY_CONFIG)).isEqualTo(12345L);
-					assertThat(configs.get(ProducerConfig.COMPRESSION_TYPE_CONFIG)).isEqualTo("gzip");
-					assertThat(configs.get(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG))
-							.isEqualTo(LongSerializer.class);
-					assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p4");
-					assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
-							.endsWith(File.separator + "ksLocP");
-					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG)).isEqualTo("p5");
-					assertThat((String) configs.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
-							.endsWith(File.separator + "tsLocP");
-					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
-							.isEqualTo("p6");
-					assertThat(configs.get(ProducerConfig.RETRIES_CONFIG)).isEqualTo(2);
-					assertThat(configs.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG))
-							.isEqualTo(IntegerSerializer.class);
-					assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
-							.isEmpty();
-					assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
-					assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
-				});
+						"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer"
+				).run((context) -> {
+			DefaultKafkaProducerFactory<?, ?> producerFactory = context
+					.getBean(DefaultKafkaProducerFactory.class);
+			Map<String, Object> configs = producerFactory.getConfigurationProperties();
+			// common
+			assertThat(configs.get(ProducerConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
+			// producer
+			assertThat(configs.get(ProducerConfig.ACKS_CONFIG)).isEqualTo("all");
+			assertThat(configs.get(ProducerConfig.BATCH_SIZE_CONFIG)).isEqualTo(20);
+			assertThat(configs.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG))
+					.isEqualTo(Collections.singletonList("bar:1234")); // override
+			assertThat(configs.get(ProducerConfig.BUFFER_MEMORY_CONFIG)).isEqualTo(12345L);
+			assertThat(configs.get(ProducerConfig.COMPRESSION_TYPE_CONFIG)).isEqualTo("gzip");
+			assertThat(configs.get(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG))
+					.isEqualTo(LongSerializer.class);
+			assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p4");
+			assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
+					.endsWith(File.separator + "ksLocP");
+			assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG)).isEqualTo("p5");
+			assertThat((String) configs.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
+					.endsWith(File.separator + "tsLocP");
+			assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
+					.isEqualTo("p6");
+			assertThat(configs.get(ProducerConfig.RETRIES_CONFIG)).isEqualTo(2);
+			assertThat(configs.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG))
+					.isEqualTo(IntegerSerializer.class);
+			assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
+					.isEmpty();
+			assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
+			assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
+		});
 	}
 
 	@Test
@@ -210,7 +211,7 @@ public class KafkaAutoConfigurationTests {
 			assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
 					.isEqualTo("p6");
 			assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
-				.isEmpty();
+					.isEmpty();
 			assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 			assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 			assertThat(KafkaTestUtils.getPropertyValue(admin, "fatalIfBrokerNotAvailable",
@@ -232,56 +233,56 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.jaas.enabled=true",
 						"spring.kafka.jaas.login-module=foo",
 						"spring.kafka.jaas.control-flag=REQUISITE",
-						"spring.kafka.jaas.options.useKeyTab=true")
-				.run((context) -> {
-					DefaultKafkaProducerFactory<?, ?> producerFactory = context
-							.getBean(DefaultKafkaProducerFactory.class);
-					DefaultKafkaConsumerFactory<?, ?> consumerFactory = context
-							.getBean(DefaultKafkaConsumerFactory.class);
-					KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
-					KafkaListenerContainerFactory<?> kafkaListenerContainerFactory = context
-							.getBean(KafkaListenerContainerFactory.class);
-					assertThat(kafkaTemplate.getMessageConverter()).isInstanceOf(
-							MessagingMessageConverter.class);
-					assertThat(new DirectFieldAccessor(kafkaTemplate)
-							.getPropertyValue("producerFactory")).isEqualTo(producerFactory);
-					assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
-					DirectFieldAccessor dfa = new DirectFieldAccessor(kafkaListenerContainerFactory);
-					assertThat(dfa.getPropertyValue("consumerFactory")).isEqualTo(consumerFactory);
-					assertThat(dfa.getPropertyValue("containerProperties.ackMode"))
-							.isEqualTo(AckMode.MANUAL);
-					assertThat(dfa.getPropertyValue("containerProperties.ackCount")).isEqualTo(123);
-					assertThat(dfa.getPropertyValue("containerProperties.ackTime")).isEqualTo(456L);
-					assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
-					assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
-							.isEqualTo(2000L);
-					assertThat(dfa.getPropertyValue("batchListener")).isEqualTo(true);
-					assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
-							.hasSize(1);
-					KafkaJaasLoginModuleInitializer jaas = context
-							.getBean(KafkaJaasLoginModuleInitializer.class);
-					dfa = new DirectFieldAccessor(jaas);
-					assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
-					assertThat(dfa.getPropertyValue("controlFlag"))
-							.isEqualTo(AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
-					assertThat(((Map<String, String>) dfa.getPropertyValue("options")))
-							.containsExactly(entry("useKeyTab", "true"));
-				});
+						"spring.kafka.jaas.options.useKeyTab=true"
+				).run((context) -> {
+			DefaultKafkaProducerFactory<?, ?> producerFactory = context
+					.getBean(DefaultKafkaProducerFactory.class);
+			DefaultKafkaConsumerFactory<?, ?> consumerFactory = context
+					.getBean(DefaultKafkaConsumerFactory.class);
+			KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
+			KafkaListenerContainerFactory<?> kafkaListenerContainerFactory = context
+					.getBean(KafkaListenerContainerFactory.class);
+			assertThat(kafkaTemplate.getMessageConverter()).isInstanceOf(
+					MessagingMessageConverter.class);
+			assertThat(new DirectFieldAccessor(kafkaTemplate)
+					.getPropertyValue("producerFactory")).isEqualTo(producerFactory);
+			assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
+			DirectFieldAccessor dfa = new DirectFieldAccessor(kafkaListenerContainerFactory);
+			assertThat(dfa.getPropertyValue("consumerFactory")).isEqualTo(consumerFactory);
+			assertThat(dfa.getPropertyValue("containerProperties.ackMode"))
+					.isEqualTo(AckMode.MANUAL);
+			assertThat(dfa.getPropertyValue("containerProperties.ackCount")).isEqualTo(123);
+			assertThat(dfa.getPropertyValue("containerProperties.ackTime")).isEqualTo(456L);
+			assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
+			assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
+					.isEqualTo(2000L);
+			assertThat(dfa.getPropertyValue("batchListener")).isEqualTo(true);
+			assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
+					.hasSize(1);
+			KafkaJaasLoginModuleInitializer jaas = context
+					.getBean(KafkaJaasLoginModuleInitializer.class);
+			dfa = new DirectFieldAccessor(jaas);
+			assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
+			assertThat(dfa.getPropertyValue("controlFlag"))
+					.isEqualTo(AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
+			assertThat(((Map<String, String>) dfa.getPropertyValue("options")))
+					.containsExactly(entry("useKeyTab", "true"));
+		});
 	}
 
 	@Test
 	public void testKafkaTemplateRecordMessageConverters() {
-		this.contextRunner.withUserConfiguration(RecordMessageConvertersConfiguration.class)
+		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.run((context) -> {
 					KafkaTemplate kafkaTemplate = context.getBean(KafkaTemplate.class);
 					assertThat(kafkaTemplate.getMessageConverter())
-							.isSameAs(context.getBean("myRecordMessageConverter"));
+							.isSameAs(context.getBean("myMessageConverter"));
 				});
 	}
 
 	@Test
 	public void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverters() {
-		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
+		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory kafkaListenerContainerFactory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -298,21 +299,11 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class RecordMessageConvertersConfiguration {
+	protected static class MessageConverterConfiguration {
 
 		@Bean
-		public RecordMessageConverter myRecordMessageConverter() {
+		public RecordMessageConverter myMessageConverter() {
 			return mock(RecordMessageConverter.class);
-		}
-
-	}
-
-	@Configuration
-	protected static class MessageConvertersConfiguration {
-
-		@Bean
-		public MessageConverter myMessageConverter() {
-			return mock(MessageConverter.class);
 		}
 
 	}

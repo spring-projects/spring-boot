@@ -4846,6 +4846,8 @@ public class MyBean {
 }
 ----
 
+NOTE: If a `RecordMessageConverter` bean is defined, it is associated automatically to the
+auto-configured `KafkaTemplate`.
 
 
 [[boot-features-kafka-receiving-a-message]]
@@ -4853,7 +4855,8 @@ public class MyBean {
 When the Apache Kafka infrastructure is present, any bean can be annotated with
 `@KafkaListener` to create a listener endpoint. If no `KafkaListenerContainerFactory`
 has been defined, a default one is configured automatically with keys defined in
-`spring.kafka.listener.*`.
+`spring.kafka.listener.*`. Also, if a `RecordMessageConverter` bean is defined, it is
+associated automatically to the default factory.
 
 The following component creates a listener endpoint on the `someTopic` topic:
 

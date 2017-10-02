@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.config.ContainerProperties;
-import org.springframework.kafka.support.converter.MessageConverter;
+import org.springframework.kafka.support.converter.RecordMessageConverter;
 
 /**
  * Configure {@link ConcurrentKafkaListenerContainerFactory} with sensible defaults.
@@ -33,7 +33,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	private KafkaProperties properties;
 
-	private MessageConverter messageConverter;
+	private RecordMessageConverter messageConverter;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -44,10 +44,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Set the {@link MessageConverter} to use.
+	 * Set the {@link RecordMessageConverter} to use.
 	 * @param messageConverter the message converter
 	 */
-	public void setMessageConverter(MessageConverter messageConverter) {
+	void setMessageConverter(RecordMessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -61,10 +61,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	public void configure(
 			ConcurrentKafkaListenerContainerFactory<Object, Object> listenerContainerFactory,
 			ConsumerFactory<Object, Object> consumerFactory) {
+		listenerContainerFactory.setConsumerFactory(consumerFactory);
 		if (this.messageConverter != null) {
 			listenerContainerFactory.setMessageConverter(this.messageConverter);
 		}
-		listenerContainerFactory.setConsumerFactory(consumerFactory);
 		Listener container = this.properties.getListener();
 		ContainerProperties containerProperties = listenerContainerFactory
 				.getContainerProperties();

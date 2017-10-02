@@ -25,7 +25,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.support.converter.MessageConverter;
+import org.springframework.kafka.support.converter.RecordMessageConverter;
 
 /**
  * Configuration for Kafka annotation-driven support.
@@ -40,12 +40,12 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final KafkaProperties properties;
 
-	private final MessageConverter messageConverter;
+	private final RecordMessageConverter messageConverter;
 
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
-			ObjectProvider<MessageConverter> messageConverter) {
+			ObjectProvider<RecordMessageConverter> messageConverter) {
 		this.properties = properties;
-		this.messageConverter = messageConverter.getIfAvailable();
+		this.messageConverter = messageConverter.getIfUnique();
 	}
 
 	@Bean

@@ -60,7 +60,7 @@ public class KafkaAutoConfiguration {
 	public KafkaAutoConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> messageConverter) {
 		this.properties = properties;
-		this.messageConverter = messageConverter.getIfAvailable();
+		this.messageConverter = messageConverter.getIfUnique();
 	}
 
 	@Bean
