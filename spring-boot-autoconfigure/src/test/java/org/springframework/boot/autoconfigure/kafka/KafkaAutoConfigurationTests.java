@@ -274,7 +274,7 @@ public class KafkaAutoConfigurationTests {
 	public void testKafkaTemplateRecordMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.run((context) -> {
-					KafkaTemplate kafkaTemplate = context.getBean(KafkaTemplate.class);
+					KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
 					assertThat(kafkaTemplate.getMessageConverter())
 							.isSameAs(context.getBean("myMessageConverter"));
 				});
@@ -284,7 +284,7 @@ public class KafkaAutoConfigurationTests {
 	public void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.run((context) -> {
-					ConcurrentKafkaListenerContainerFactory kafkaListenerContainerFactory = context
+					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
 					DirectFieldAccessor dfa = new DirectFieldAccessor(
 							kafkaListenerContainerFactory);

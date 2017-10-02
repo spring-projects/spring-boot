@@ -82,12 +82,10 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void testBadEncoding() {
+		// Bad encoding just means the messages are ignored
 		this.contextRunner.withPropertyValues("spring.messages.encoding:rubbish")
-				.run((context) -> {
-					// Bad encoding just means the messages are ignored
-					assertThat(context.getMessage("foo", null, "blah", Locale.UK))
-							.isEqualTo("blah");
-				});
+				.run((context) -> assertThat(context.getMessage(
+						"foo", null, "blah", Locale.UK)).isEqualTo("blah"));
 	}
 
 	@Test
@@ -167,12 +165,10 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void existingMessageSourceInParentIsIgnored() {
-		this.contextRunner.run((parent) -> {
-			this.contextRunner.withParent(parent)
-					.withPropertyValues("spring.messages.basename:test/messages")
-					.run((context) -> assertThat(context.getMessage(
-							"foo", null, "Foo message", Locale.UK)).isEqualTo("bar"));
-		});
+		this.contextRunner.run((parent) -> this.contextRunner.withParent(parent)
+				.withPropertyValues("spring.messages.basename:test/messages")
+				.run((context) -> assertThat(context.getMessage(
+						"foo", null, "Foo message", Locale.UK)).isEqualTo("bar")));
 	}
 
 	@Configuration
