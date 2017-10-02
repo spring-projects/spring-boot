@@ -34,12 +34,11 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -65,95 +64,113 @@ import static org.mockito.Mockito.mock;
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Override
-	protected Class<?> getAutoConfigureClass() {
-		return HibernateJpaAutoConfiguration.class;
+	public HibernateJpaAutoConfigurationTests() {
+		super(HibernateJpaAutoConfiguration.class);
 	}
 
 	@Test
-	public void testDataScriptWithMissingDdl() throws Exception {
-		this.thrown.expectMessage("ddl.sql");
-		this.thrown.expectMessage("spring.datasource.schema");
-		load("spring.datasource.data:classpath:/city.sql",
+	public void testDataScriptWithMissingDdl() {
+		contextRunner().withPropertyValues(
+				"spring.datasource.data:classpath:/city.sql",
 				// Missing:
-				"spring.datasource.schema:classpath:/ddl.sql");
+				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure()).hasMessageContaining("ddl.sql");
+			assertThat(context.getStartupFailure())
+					.hasMessageContaining("spring.datasource.schema");
+		});
 	}
 
 	@Test
-	public void testDataScript() throws Exception {
+	public void testDataScript() {
 		// This can't succeed because the data SQL is executed immediately after the
 		// schema
 		// and Hibernate hasn't initialized yet at that point
-		this.thrown.expect(BeanCreationException.class);
-		load("spring.datasource.data:classpath:/city.sql");
+		contextRunner().withPropertyValues(
+				"spring.datasource.data:classpath:/city.sql").run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure())
+					.isInstanceOf(BeanCreationException.class);
+		});
 	}
 
 	@Test
 	public void testDataScriptRunsEarly() {
-		load(new Class<?>[] { TestInitializedJpaConfiguration.class }, null,
-				new HideDataScriptClassLoader(), "spring.jpa.show-sql=true",
-				"spring.jpa.hibernate.ddl-auto:create-drop",
-				"spring.datasource.data:classpath:/city.sql");
-		assertThat(this.context.getBean(TestInitializedJpaConfiguration.class).called)
-				.isTrue();
+		contextRunner().withUserConfiguration(TestInitializedJpaConfiguration.class)
+				.withClassLoader(new HideDataScriptClassLoader())
+				.withPropertyValues("spring.jpa.show-sql=true",
+						"spring.jpa.hibernate.ddl-auto:create-drop",
+						"spring.datasource.data:classpath:/city.sql").run((context) ->
+				assertThat(context.getBean(TestInitializedJpaConfiguration.class).called)
+						.isTrue());
 	}
 
 	@Test
-	public void testFlywaySwitchOffDdlAuto() throws Exception {
-		load(new Class<?>[0], new Class<?>[] { FlywayAutoConfiguration.class },
-				"spring.datasource.initialize:false",
-				"spring.flyway.locations:classpath:db/city");
+	public void testFlywaySwitchOffDdlAuto() {
+		contextRunner()
+				.withPropertyValues("spring.datasource.initialize:false",
+						"spring.flyway.locations:classpath:db/city")
+				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.run(context -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void testFlywayPlusValidation() throws Exception {
-		load(new Class<?>[0], new Class<?>[] { FlywayAutoConfiguration.class },
-				"spring.datasource.initialize:false",
-				"spring.flyway.locations:classpath:db/city",
-				"spring.jpa.hibernate.ddl-auto:validate");
+	public void testFlywayPlusValidation() {
+		contextRunner()
+				.withPropertyValues("spring.datasource.initialize:false",
+						"spring.flyway.locations:classpath:db/city",
+						"spring.jpa.hibernate.ddl-auto:validate")
+				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.run(context -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void testLiquibasePlusValidation() throws Exception {
-		load(new Class<?>[0], new Class<?>[] { LiquibaseAutoConfiguration.class },
-				"spring.datasource.initialize:false",
-				"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
-				"spring.jpa.hibernate.ddl-auto:validate");
+	public void testLiquibasePlusValidation() {
+		contextRunner()
+				.withPropertyValues("spring.datasource.initialize:false",
+						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+						"spring.jpa.hibernate.ddl-auto:validate")
+				.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+				.run(context -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void defaultJtaPlatform() throws Exception {
-		load(JtaAutoConfiguration.class);
-		Map<String, Object> jpaPropertyMap = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class)
-				.getJpaPropertyMap();
-		assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"))
-				.isInstanceOf(SpringJtaPlatform.class);
+	public void jtaDefaultPlatform() {
+		contextRunner().withConfiguration(AutoConfigurations.of(
+				JtaAutoConfiguration.class)).run((context) -> {
+			Map<String, Object> jpaPropertyMap = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+			assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"))
+					.isInstanceOf(SpringJtaPlatform.class);
+		});
 	}
 
 	@Test
-	public void testCustomJtaPlatform() throws Exception {
-		load(JtaAutoConfiguration.class,
-				"spring.jpa.properties.hibernate.transaction.jta.platform:"
-						+ TestJtaPlatform.class.getName());
-		Map<String, Object> jpaPropertyMap = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class)
-				.getJpaPropertyMap();
-		assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"))
-				.isEqualTo(TestJtaPlatform.class.getName());
+	public void jtaCustomPlatform() {
+		contextRunner()
+				.withPropertyValues(
+						"spring.jpa.properties.hibernate.transaction.jta.platform:"
+								+ TestJtaPlatform.class.getName())
+				.withConfiguration(AutoConfigurations.of(
+						JtaAutoConfiguration.class)).run((context) -> {
+			Map<String, Object> jpaPropertyMap = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+			assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"))
+					.isEqualTo(TestJtaPlatform.class.getName());
+		});
 	}
 
 	@Test
-	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
-		load("spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
-		JpaTransactionManager transactionManager = this.context
-				.getBean(JpaTransactionManager.class);
-		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
-		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	public void jtaCustomTransactionManagerUsingProperties() {
+		contextRunner().withPropertyValues("spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true").run((context) -> {
+			JpaTransactionManager transactionManager = context
+					.getBean(JpaTransactionManager.class);
+			assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+			assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+		});
 	}
 
 	@Configuration
