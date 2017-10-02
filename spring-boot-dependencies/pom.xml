@@ -174,7 +174,7 @@
 		<spring-ldap.version>2.3.1.RELEASE</spring-ldap.version>
 		<spring-mobile.version>2.0.0.M1</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
-		<spring-restdocs.version>1.2.1.RELEASE</spring-restdocs.version>
+		<spring-restdocs.version>1.2.2.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.1.RELEASE</spring-retry.version>
 		<spring-security.version>5.0.0.BUILD-SNAPSHOT</spring-security.version>
 		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
