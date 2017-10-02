@@ -1547,7 +1547,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-annotations</artifactId>
+				<artifactId>apache-jsp</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -1557,7 +1557,32 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>apache-jsp</artifactId>
+				<artifactId>jetty-alpn-client</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-alpn-java-client</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-alpn-java-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-alpn-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-annotations</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-ant</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -1573,6 +1598,16 @@
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-deploy</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-home</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-hazelcast</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -1677,6 +1712,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-unixsocket</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-util</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
@@ -1696,6 +1736,36 @@
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.eclipse.jetty.cdi</groupId>
+				<artifactId>cdi-core</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.cdi</groupId>
+				<artifactId>cdi-full-servlet</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.cdi</groupId>
+				<artifactId>cdi-servlet</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.fcgi</groupId>
+				<artifactId>fcgi-client</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.fcgi</groupId>
+				<artifactId>fcgi-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.gcloud</groupId>
+				<artifactId>jetty-gcloud-session-manager</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.eclipse.jetty.http2</groupId>
 				<artifactId>http2-client</artifactId>
 				<version>${jetty.version}</version>
@@ -1712,13 +1782,43 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.http2</groupId>
+				<artifactId>http2-http-client-transport</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.http2</groupId>
 				<artifactId>http2-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.memcached</groupId>
+				<artifactId>jetty-memcached-sessions</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.orbit</groupId>
 				<artifactId>javax.servlet.jsp</artifactId>
 				<version>${jetty-jsp.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.osgi</groupId>
+				<artifactId>jetty-osgi-boot</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.osgi</groupId>
+				<artifactId>jetty-osgi-boot-jsp</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.osgi</groupId>
+				<artifactId>jetty-osgi-boot-warurl</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.osgi</groupId>
+				<artifactId>jetty-httpservice</artifactId>
+				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
@@ -1732,7 +1832,17 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-api</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>websocket-client</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-common</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
