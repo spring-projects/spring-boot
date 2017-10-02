@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * An opinionated {@link WebApplicationInitializer} to run a {@link SpringApplication}
@@ -103,6 +104,9 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	protected WebApplicationContext createRootApplicationContext(
 			ServletContext servletContext) {
 		SpringApplicationBuilder builder = createSpringApplicationBuilder();
+		StandardServletEnvironment environment = new StandardServletEnvironment();
+		environment.initPropertySources(servletContext, null);
+		builder.environment(environment);
 		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
@@ -113,7 +117,6 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		}
 		builder.initializers(
 				new ServletContextApplicationContextInitializer(servletContext));
-		builder.listeners(new ServletContextApplicationListener(servletContext));
 		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		builder = configure(builder);
 		SpringApplication application = builder.build();
