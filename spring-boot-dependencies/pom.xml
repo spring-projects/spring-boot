@@ -1113,6 +1113,11 @@
 				<version>${jna.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>net.java.dev.jna</groupId>
+				<artifactId>jna-platform</artifactId>
+				<version>${jna.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
 				<version>${ehcache.version}</version>
