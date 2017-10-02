@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,12 +37,14 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
+import org.springframework.kafka.support.converter.RecordMessageConverter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
  *
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.5.0
  */
 @Configuration
@@ -52,8 +55,12 @@ public class KafkaAutoConfiguration {
 
 	private final KafkaProperties properties;
 
-	public KafkaAutoConfiguration(KafkaProperties properties) {
+	private final RecordMessageConverter messageConverter;
+
+	public KafkaAutoConfiguration(KafkaProperties properties,
+			ObjectProvider<RecordMessageConverter> messageConverter) {
 		this.properties = properties;
+		this.messageConverter = messageConverter.getIfUnique();
 	}
 
 	@Bean
@@ -63,6 +70,9 @@ public class KafkaAutoConfiguration {
 			ProducerListener<Object, Object> kafkaProducerListener) {
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(
 				kafkaProducerFactory);
+		if (this.messageConverter != null) {
+			kafkaTemplate.setMessageConverter(this.messageConverter);
+		}
 		kafkaTemplate.setProducerListener(kafkaProducerListener);
 		kafkaTemplate.setDefaultTopic(this.properties.getTemplate().getDefaultTopic());
 		return kafkaTemplate;
