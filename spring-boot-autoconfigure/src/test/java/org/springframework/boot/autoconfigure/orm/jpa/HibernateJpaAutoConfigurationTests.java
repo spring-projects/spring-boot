@@ -70,15 +70,15 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testDataScriptWithMissingDdl() {
-		contextRunner().withPropertyValues(
-				"spring.datasource.data:classpath:/city.sql",
+		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql",
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context.getStartupFailure()).hasMessageContaining("ddl.sql");
-			assertThat(context.getStartupFailure())
-					.hasMessageContaining("spring.datasource.schema");
-		});
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("ddl.sql");
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("spring.datasource.schema");
+				});
 	}
 
 	@Test
@@ -86,12 +86,12 @@ public class HibernateJpaAutoConfigurationTests
 		// This can't succeed because the data SQL is executed immediately after the
 		// schema
 		// and Hibernate hasn't initialized yet at that point
-		contextRunner().withPropertyValues(
-				"spring.datasource.data:classpath:/city.sql").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context.getStartupFailure())
-					.isInstanceOf(BeanCreationException.class);
-		});
+		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure())
+							.isInstanceOf(BeanCreationException.class);
+				});
 	}
 
 	@Test
@@ -100,9 +100,10 @@ public class HibernateJpaAutoConfigurationTests
 				.withClassLoader(new HideDataScriptClassLoader())
 				.withPropertyValues("spring.jpa.show-sql=true",
 						"spring.jpa.hibernate.ddl-auto:create-drop",
-						"spring.datasource.data:classpath:/city.sql").run((context) ->
-				assertThat(context.getBean(TestInitializedJpaConfiguration.class).called)
-						.isTrue());
+						"spring.datasource.data:classpath:/city.sql")
+				.run((context) -> assertThat(
+						context.getBean(TestInitializedJpaConfiguration.class).called)
+								.isTrue());
 	}
 
 	@Test
@@ -111,7 +112,7 @@ public class HibernateJpaAutoConfigurationTests
 				.withPropertyValues("spring.datasource.initialize:false",
 						"spring.flyway.locations:classpath:db/city")
 				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-				.run(context -> assertThat(context).hasNotFailed());
+				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
@@ -121,7 +122,7 @@ public class HibernateJpaAutoConfigurationTests
 						"spring.flyway.locations:classpath:db/city",
 						"spring.jpa.hibernate.ddl-auto:validate")
 				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-				.run(context -> assertThat(context).hasNotFailed());
+				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
@@ -130,20 +131,22 @@ public class HibernateJpaAutoConfigurationTests
 				.withPropertyValues("spring.datasource.initialize:false",
 						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
 						"spring.jpa.hibernate.ddl-auto:validate")
-				.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
-				.run(context -> assertThat(context).hasNotFailed());
+				.withConfiguration(
+						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
 	public void jtaDefaultPlatform() {
-		contextRunner().withConfiguration(AutoConfigurations.of(
-				JtaAutoConfiguration.class)).run((context) -> {
-			Map<String, Object> jpaPropertyMap = context
-					.getBean(LocalContainerEntityManagerFactoryBean.class)
-					.getJpaPropertyMap();
-			assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"))
-					.isInstanceOf(SpringJtaPlatform.class);
-		});
+		contextRunner()
+				.withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
+				.run((context) -> {
+					Map<String, Object> jpaPropertyMap = context
+							.getBean(LocalContainerEntityManagerFactoryBean.class)
+							.getJpaPropertyMap();
+					assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"))
+							.isInstanceOf(SpringJtaPlatform.class);
+				});
 	}
 
 	@Test
@@ -152,25 +155,28 @@ public class HibernateJpaAutoConfigurationTests
 				.withPropertyValues(
 						"spring.jpa.properties.hibernate.transaction.jta.platform:"
 								+ TestJtaPlatform.class.getName())
-				.withConfiguration(AutoConfigurations.of(
-						JtaAutoConfiguration.class)).run((context) -> {
-			Map<String, Object> jpaPropertyMap = context
-					.getBean(LocalContainerEntityManagerFactoryBean.class)
-					.getJpaPropertyMap();
-			assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"))
-					.isEqualTo(TestJtaPlatform.class.getName());
-		});
+				.withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
+				.run((context) -> {
+					Map<String, Object> jpaPropertyMap = context
+							.getBean(LocalContainerEntityManagerFactoryBean.class)
+							.getJpaPropertyMap();
+					assertThat((String) jpaPropertyMap
+							.get("hibernate.transaction.jta.platform"))
+									.isEqualTo(TestJtaPlatform.class.getName());
+				});
 	}
 
 	@Test
 	public void jtaCustomTransactionManagerUsingProperties() {
-		contextRunner().withPropertyValues("spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true").run((context) -> {
-			JpaTransactionManager transactionManager = context
-					.getBean(JpaTransactionManager.class);
-			assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
-			assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
-		});
+		contextRunner()
+				.withPropertyValues("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.run((context) -> {
+					JpaTransactionManager transactionManager = context
+							.getBean(JpaTransactionManager.class);
+					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+				});
 	}
 
 	@Configuration

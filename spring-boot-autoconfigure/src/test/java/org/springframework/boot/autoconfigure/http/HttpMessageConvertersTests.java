@@ -110,13 +110,15 @@ public class HttpMessageConvertersTests {
 	@Test
 	public void postProcessConverters() throws Exception {
 		HttpMessageConverters converters = new HttpMessageConverters() {
+
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessConverters(
 					List<HttpMessageConverter<?>> converters) {
-				converters.removeIf(
-						converter -> converter instanceof MappingJackson2XmlHttpMessageConverter);
+				converters.removeIf((
+						converter) -> converter instanceof MappingJackson2XmlHttpMessageConverter);
 				return converters;
 			}
+
 		};
 		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : converters) {
@@ -135,13 +137,15 @@ public class HttpMessageConvertersTests {
 	@Test
 	public void postProcessPartConverters() throws Exception {
 		HttpMessageConverters converters = new HttpMessageConverters() {
+
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessPartConverters(
 					List<HttpMessageConverter<?>> converters) {
-				converters.removeIf(
-						converter -> converter instanceof MappingJackson2XmlHttpMessageConverter);
+				converters.removeIf((
+						converter) -> converter instanceof MappingJackson2XmlHttpMessageConverter);
 				return converters;
 			}
+
 		};
 		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : extractFormPartConverters(

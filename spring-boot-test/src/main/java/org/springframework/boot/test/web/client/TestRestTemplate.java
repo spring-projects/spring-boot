@@ -149,7 +149,7 @@ public class TestRestTemplate {
 		}
 		interceptors = new ArrayList<>(interceptors);
 		interceptors.removeIf(
-				interceptor -> interceptor instanceof BasicAuthorizationInterceptor);
+				(interceptor) -> interceptor instanceof BasicAuthorizationInterceptor);
 		interceptors.add(new BasicAuthorizationInterceptor(username, password));
 		restTemplate.setInterceptors(interceptors);
 	}

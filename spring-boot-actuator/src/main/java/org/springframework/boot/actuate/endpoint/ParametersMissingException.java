@@ -21,8 +21,8 @@ import java.util.Set;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link RuntimeException} thrown when an endpoint invocation does
- * not contain required parameters.
+ * {@link RuntimeException} thrown when an endpoint invocation does not contain required
+ * parameters.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -32,8 +32,9 @@ public class ParametersMissingException extends RuntimeException {
 	private final Set<String> parameters;
 
 	public ParametersMissingException(Set<String> parameters) {
-		super("Failed to invoke operation because the following required " +
-				"parameters were missing: " + StringUtils.collectionToCommaDelimitedString(parameters));
+		super("Failed to invoke operation because the following required "
+				+ "parameters were missing: "
+				+ StringUtils.collectionToCommaDelimitedString(parameters));
 		this.parameters = parameters;
 	}
 
@@ -45,4 +46,3 @@ public class ParametersMissingException extends RuntimeException {
 		return this.parameters;
 	}
 }
-
