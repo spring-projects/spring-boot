@@ -397,7 +397,7 @@ to your application properties:
 The HTTP status code in the response reflects the overall health status (e.g. `UP`
 maps to 200, `OUT_OF_SERVICE` or `DOWN` to 503). You might also want to register custom
 status mappings with the `HealthMvcEndpoint` if you access the health endpoint over HTTP.
-For example, the following maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
+For example, the following maps `FATAL` to 503 (service unavailable):
 
 [source,properties,indent=0]
 ----

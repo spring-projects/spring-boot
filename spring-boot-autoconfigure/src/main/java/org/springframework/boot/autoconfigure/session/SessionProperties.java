@@ -38,7 +38,7 @@ public class SessionProperties {
 	 */
 	private StoreType storeType;
 
-	private Integer timeout;
+	private final Integer timeout;
 
 	private final Hazelcast hazelcast = new Hazelcast();
 

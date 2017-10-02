@@ -66,23 +66,23 @@ public class ApplicationPidFileWriter
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
 
-	private static final List<Property> FILE_PROPERTIES;
+	private static final List<Property> fileProperties;
 
 	static {
 		List<Property> properties = new ArrayList<Property>();
 		properties.add(new SpringProperty("spring.pid.", "file"));
 		properties.add(new SpringProperty("spring.", "pidfile"));
 		properties.add(new SystemProperty("PIDFILE"));
-		FILE_PROPERTIES = Collections.unmodifiableList(properties);
+		fileProperties = Collections.unmodifiableList(properties);
 	}
 
-	private static final List<Property> FAIL_ON_WRITE_ERROR_PROPERTIES;
+	private static final List<Property> failOnWriteErrorProperties;
 
 	static {
 		List<Property> properties = new ArrayList<Property>();
 		properties.add(new SpringProperty("spring.pid.", "fail-on-write-error"));
 		properties.add(new SystemProperty("PID_FAIL_ON_WRITE_ERROR"));
-		FAIL_ON_WRITE_ERROR_PROPERTIES = Collections.unmodifiableList(properties);
+		failOnWriteErrorProperties = Collections.unmodifiableList(properties);
 	}
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
@@ -153,7 +153,7 @@ public class ApplicationPidFileWriter
 
 	private void writePidFile(SpringApplicationEvent event) throws IOException {
 		File pidFile = this.file;
-		String override = getProperty(event, FILE_PROPERTIES);
+		String override = getProperty(event, fileProperties);
 		if (override != null) {
 			pidFile = new File(override);
 		}
@@ -162,7 +162,7 @@ public class ApplicationPidFileWriter
 	}
 
 	private boolean failOnWriteError(SpringApplicationEvent event) {
-		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
+		String value = getProperty(event, failOnWriteErrorProperties);
 		return (value == null ? false : Boolean.parseBoolean(value));
 	}
 
