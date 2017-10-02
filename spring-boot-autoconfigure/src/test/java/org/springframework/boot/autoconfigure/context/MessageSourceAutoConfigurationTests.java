@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Kedar Joshi
  */
 public class MessageSourceAutoConfigurationTests {
 
@@ -140,6 +141,26 @@ public class MessageSourceAutoConfigurationTests {
 	private boolean isAlwaysUseMessageFormat(MessageSource messageSource) {
 		return (boolean) new DirectFieldAccessor(messageSource)
 				.getPropertyValue("alwaysUseMessageFormat");
+	}
+
+	@Test
+	public void testUseCodeAsDefaultMessageDefault() throws Exception {
+		load("spring.messages.basename:test/messages");
+		assertThat(isUseCodeAsDefaultMessage(this.context.getBean(MessageSource.class)))
+				.isFalse();
+	}
+
+	@Test
+	public void testUseCodeAsDefaultMessageOn() throws Exception {
+		load("spring.messages.basename:test/messages",
+				"spring.messages.use-code-as-default-message:true");
+		assertThat(isUseCodeAsDefaultMessage(this.context.getBean(MessageSource.class)))
+				.isTrue();
+	}
+
+	private boolean isUseCodeAsDefaultMessage(MessageSource messageSource) {
+		return (boolean) new DirectFieldAccessor(messageSource)
+				.getPropertyValue("useCodeAsDefaultMessage");
 	}
 
 	@Test

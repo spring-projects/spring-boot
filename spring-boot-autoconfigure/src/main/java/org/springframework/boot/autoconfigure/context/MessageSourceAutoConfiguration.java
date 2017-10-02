@@ -75,6 +75,7 @@ public class MessageSourceAutoConfiguration {
 		messageSource.setFallbackToSystemLocale(properties.isFallbackToSystemLocale());
 		messageSource.setCacheSeconds(properties.getCacheSeconds());
 		messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
+		messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
 		return messageSource;
 	}
 
