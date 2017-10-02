@@ -48,9 +48,9 @@
 		<!-- Dependency versions -->
 		<activemq.version>5.15.0</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.56</appengine-sdk.version>
+		<appengine-sdk.version>1.9.57</appengine-sdk.version>
 		<artemis.version>2.3.0</artemis.version>
-		<aspectj.version>1.8.10</aspectj.version>
+		<aspectj.version>1.8.11</aspectj.version>
 		<assertj.version>3.8.0</assertj.version>
 		<atomikos.version>4.0.4</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
@@ -119,7 +119,7 @@
 		<joda-time.version>2.9.9</joda-time.version>
 		<jolokia.version>1.3.7</jolokia.version>
 		<johnzon-jsonb.version>1.1.3</johnzon-jsonb.version>
-		<jooq.version>3.9.5</jooq.version>
+		<jooq.version>3.9.6</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
 		<javax-json.version>1.1</javax-json.version>
 		<javax-jsonb.version>1.0</javax-jsonb.version>
@@ -193,7 +193,7 @@
 		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.21</tomcat.version>
+		<tomcat.version>8.5.23</tomcat.version>
 		<undertow.version>1.4.20.Final</undertow.version>
 		<unboundid-ldapsdk.version>3.2.1</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
@@ -1708,11 +1708,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-home</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-hazelcast</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
@@ -1844,11 +1839,6 @@
 			<dependency>
 				<groupId>org.eclipse.jetty.cdi</groupId>
 				<artifactId>cdi-core</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.cdi</groupId>
-				<artifactId>cdi-full-servlet</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -2490,11 +2480,6 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j13</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
