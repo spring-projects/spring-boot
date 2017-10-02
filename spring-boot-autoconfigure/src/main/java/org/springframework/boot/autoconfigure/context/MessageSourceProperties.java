@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
  * Configuration properties for Message Source.
  *
  * @author Stephane Nicoll
+ * @author Kedar Joshi
  * @since 2.0.0
  */
 public class MessageSourceProperties {
@@ -56,6 +57,11 @@ public class MessageSourceProperties {
 	 * arguments.
 	 */
 	private boolean alwaysUseMessageFormat = false;
+
+	/**
+	 * Set whether to use the message code as default message instead of throwing a NoSuchMessageException.
+	 */
+	private boolean useCodeAsDefaultMessage = false;
 
 	public String getBasename() {
 		return this.basename;
@@ -97,4 +103,11 @@ public class MessageSourceProperties {
 		this.alwaysUseMessageFormat = alwaysUseMessageFormat;
 	}
 
+	public boolean isUseCodeAsDefaultMessage() {
+		return this.useCodeAsDefaultMessage;
+	}
+
+	public void setUseCodeAsDefaultMessage(final boolean useCodeAsDefaultMessage) {
+		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
+	}
 }
