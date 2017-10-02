@@ -245,7 +245,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			Set<Class<?>> seen = new HashSet<>();
 			collectClassAnnotations(testClass, annotations, seen);
 			Set<Object> determinedImports = determineImports(annotations, testClass);
-			this.key = Collections.<Object>unmodifiableSet(
+			this.key = Collections.unmodifiableSet(
 					determinedImports != null ? determinedImports : annotations);
 		}
 
@@ -321,7 +321,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 				return null;
 			}
 			// The source itself is the import
-			return Collections.<Object>singleton(source.getName());
+			return Collections.singleton(source.getName());
 		}
 
 		@SuppressWarnings("unchecked")

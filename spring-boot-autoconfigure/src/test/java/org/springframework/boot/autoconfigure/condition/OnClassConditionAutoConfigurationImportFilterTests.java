@@ -76,10 +76,10 @@ public class OnClassConditionAutoConfigurationImportFilterTests {
 		AutoConfigurationMetadata metadata = mock(AutoConfigurationMetadata.class);
 		given(metadata.wasProcessed("test.match")).willReturn(true);
 		given(metadata.getSet("test.match", "ConditionalOnClass"))
-				.willReturn(Collections.<String>singleton("java.io.InputStream"));
+				.willReturn(Collections.singleton("java.io.InputStream"));
 		given(metadata.wasProcessed("test.nomatch")).willReturn(true);
 		given(metadata.getSet("test.nomatch", "ConditionalOnClass"))
-				.willReturn(Collections.<String>singleton("java.io.DoesNotExist"));
+				.willReturn(Collections.singleton("java.io.DoesNotExist"));
 		return metadata;
 	}
 

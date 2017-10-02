@@ -119,7 +119,7 @@ public class Author extends TableImpl<Record> {
 	 */
 	@Override
 	public List<UniqueKey<Record>> getKeys() {
-		return Arrays.<UniqueKey<Record>>asList(Keys.CONSTRAINT_7);
+		return Arrays.asList(Keys.CONSTRAINT_7);
 	}
 
 	/**

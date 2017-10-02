@@ -49,7 +49,7 @@ class ActiveMQConnectionFactoryFactory {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
 		this.factoryCustomizers = (factoryCustomizers != null ? factoryCustomizers
-				: Collections.<ActiveMQConnectionFactoryCustomizer>emptyList());
+				: Collections.emptyList());
 	}
 
 	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(

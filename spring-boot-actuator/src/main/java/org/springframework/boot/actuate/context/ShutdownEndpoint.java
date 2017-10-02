@@ -39,11 +39,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class ShutdownEndpoint implements ApplicationContextAware {
 
 	private static final Map<String, String> NO_CONTEXT_MESSAGE = Collections
-			.unmodifiableMap(Collections.<String, String>singletonMap("message",
+			.unmodifiableMap(Collections.singletonMap("message",
 					"No context to shutdown."));
 
 	private static final Map<String, String> SHUTDOWN_MESSAGE = Collections
-			.unmodifiableMap(Collections.<String, String>singletonMap("message",
+			.unmodifiableMap(Collections.singletonMap("message",
 					"Shutting down, bye..."));
 
 	private ConfigurableApplicationContext context;

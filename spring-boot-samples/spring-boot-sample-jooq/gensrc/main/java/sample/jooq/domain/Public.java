@@ -76,7 +76,7 @@ public class Public extends SchemaImpl {
 	}
 
 	private final List<Table<?>> getTables0() {
-		return Arrays.<Table<?>>asList(Language.LANGUAGE, Author.AUTHOR, Book.BOOK,
+		return Arrays.asList(Language.LANGUAGE, Author.AUTHOR, Book.BOOK,
 				BookStore.BOOK_STORE, BookToBookStore.BOOK_TO_BOOK_STORE);
 	}
 }

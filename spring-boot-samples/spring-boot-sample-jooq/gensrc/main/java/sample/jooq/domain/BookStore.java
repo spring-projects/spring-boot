@@ -80,7 +80,7 @@ public class BookStore extends TableImpl<Record> {
 	 */
 	@Override
 	public List<UniqueKey<Record>> getKeys() {
-		return Arrays.<UniqueKey<Record>>asList(Keys.CONSTRAINT_F);
+		return Arrays.asList(Keys.CONSTRAINT_F);
 	}
 
 	/**

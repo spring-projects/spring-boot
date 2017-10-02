@@ -67,7 +67,7 @@ public abstract class ManagementServerFactoryCustomizer<T extends ConfigurableWe
 		// the same place)
 		webServerFactoryCustomizer.customize(factory);
 		// Then reset the error pages
-		factory.setErrorPages(Collections.<ErrorPage>emptySet());
+		factory.setErrorPages(Collections.emptySet());
 		// and add the management-specific bits
 		customize(factory, managementServerProperties, serverProperties);
 	}

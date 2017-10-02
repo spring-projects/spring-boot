@@ -100,7 +100,7 @@ public class Language extends TableImpl<Record> {
 	 */
 	@Override
 	public List<UniqueKey<Record>> getKeys() {
-		return Arrays.<UniqueKey<Record>>asList(Keys.CONSTRAINT_C);
+		return Arrays.asList(Keys.CONSTRAINT_C);
 	}
 
 	/**

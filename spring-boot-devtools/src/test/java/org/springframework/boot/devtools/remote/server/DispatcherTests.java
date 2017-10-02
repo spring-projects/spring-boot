@@ -79,7 +79,7 @@ public class DispatcherTests {
 	public void accessManagerMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("AccessManager must not be null");
-		new Dispatcher(null, Collections.<HandlerMapper>emptyList());
+		new Dispatcher(null, Collections.emptyList());
 	}
 
 	@Test
