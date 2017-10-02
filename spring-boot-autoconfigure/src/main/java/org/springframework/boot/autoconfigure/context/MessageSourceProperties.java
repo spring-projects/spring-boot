@@ -59,7 +59,8 @@ public class MessageSourceProperties {
 	private boolean alwaysUseMessageFormat = false;
 
 	/**
-	 * Set whether to use the message code as default message instead of throwing a NoSuchMessageException.
+	 * Set whether to use the message code as default message instead of throwing a
+	 * "NoSuchMessageException". Recommended during development only.
 	 */
 	private boolean useCodeAsDefaultMessage = false;
 
@@ -110,4 +111,5 @@ public class MessageSourceProperties {
 	public void setUseCodeAsDefaultMessage(final boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
 	}
+
 }

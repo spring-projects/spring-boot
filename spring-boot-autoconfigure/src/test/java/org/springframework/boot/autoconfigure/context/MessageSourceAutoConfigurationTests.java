@@ -144,14 +144,14 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testUseCodeAsDefaultMessageDefault() throws Exception {
+	public void testUseCodeAsDefaultMessageDefault() {
 		load("spring.messages.basename:test/messages");
 		assertThat(isUseCodeAsDefaultMessage(this.context.getBean(MessageSource.class)))
 				.isFalse();
 	}
 
 	@Test
-	public void testUseCodeAsDefaultMessageOn() throws Exception {
+	public void testUseCodeAsDefaultMessageOn() {
 		load("spring.messages.basename:test/messages",
 				"spring.messages.use-code-as-default-message:true");
 		assertThat(isUseCodeAsDefaultMessage(this.context.getBean(MessageSource.class)))
