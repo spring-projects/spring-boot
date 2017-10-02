@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,22 +183,23 @@ public class FileSystemWatcher {
 	 * @param remainingScans the number of remaining scans
 	 */
 	void stopAfter(int remainingScans) {
+		Thread thread = null;
 		synchronized (this.monitor) {
-			Thread thread = this.watchThread;
+			thread = this.watchThread;
 			if (thread != null) {
 				this.remainingScans.set(remainingScans);
 				if (remainingScans <= 0) {
 					thread.interrupt();
 				}
-				if (Thread.currentThread() != thread) {
-					try {
-						thread.join();
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-				this.watchThread = null;
+			}
+			this.watchThread = null;
+		}
+		if (Thread.currentThread() != thread) {
+			try {
+				thread.join();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
