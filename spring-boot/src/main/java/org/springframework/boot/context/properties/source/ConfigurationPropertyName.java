@@ -283,8 +283,8 @@ public final class ConfigurationPropertyName
 		}
 		if (indexed1 && indexed2) {
 			try {
-				long v1 = Long.parseLong(e1.toString());
-				long v2 = Long.parseLong(e2.toString());
+				long v1 = Long.parseLong(e1);
+				long v2 = Long.parseLong(e2);
 				return Long.compare(v1, v2);
 			}
 			catch (NumberFormatException ex) {
