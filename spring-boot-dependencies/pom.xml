@@ -119,7 +119,7 @@
 		<jna.version>4.2.2</jna.version>
 		<joda-time.version>2.9.9</joda-time.version>
 		<jolokia.version>1.3.7</jolokia.version>
-		<jooq.version>3.9.5</jooq.version>
+		<jooq.version>3.9.6</jooq.version>
 		<json.version>20140107</json.version>
 		<jsonassert.version>1.4.0</jsonassert.version>
 		<json-path.version>2.2.0</json-path.version>
