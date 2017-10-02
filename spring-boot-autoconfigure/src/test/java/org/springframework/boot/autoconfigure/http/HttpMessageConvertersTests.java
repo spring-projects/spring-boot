@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.http;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -114,13 +113,8 @@ public class HttpMessageConvertersTests {
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessConverters(
 					List<HttpMessageConverter<?>> converters) {
-				for (Iterator<HttpMessageConverter<?>> iterator = converters
-						.iterator(); iterator.hasNext();) {
-					if (iterator
-							.next() instanceof MappingJackson2XmlHttpMessageConverter) {
-						iterator.remove();
-					}
-				}
+				converters.removeIf(
+						converter -> converter instanceof MappingJackson2XmlHttpMessageConverter);
 				return converters;
 			}
 		};
@@ -144,13 +138,8 @@ public class HttpMessageConvertersTests {
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessPartConverters(
 					List<HttpMessageConverter<?>> converters) {
-				for (Iterator<HttpMessageConverter<?>> iterator = converters
-						.iterator(); iterator.hasNext();) {
-					if (iterator
-							.next() instanceof MappingJackson2XmlHttpMessageConverter) {
-						iterator.remove();
-					}
-				}
+				converters.removeIf(
+						converter -> converter instanceof MappingJackson2XmlHttpMessageConverter);
 				return converters;
 			}
 		};
