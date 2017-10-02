@@ -88,7 +88,7 @@ public class ActiveMQPropertiesTests {
 	private ActiveMQConnectionFactoryFactory createFactory(
 			ActiveMQProperties properties) {
 		return new ActiveMQConnectionFactoryFactory(properties,
-				Collections.<ActiveMQConnectionFactoryCustomizer>emptyList());
+				Collections.emptyList());
 	}
 
 }

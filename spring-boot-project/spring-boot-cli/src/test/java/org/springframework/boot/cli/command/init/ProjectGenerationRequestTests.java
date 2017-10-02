@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProjectGenerationRequestTests {
 
 	public static final Map<String, String> EMPTY_TAGS = Collections
-			.<String, String>emptyMap();
+			.emptyMap();
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();

@@ -123,7 +123,7 @@ final class ChangeableUrls implements Iterable<URL> {
 	private static List<URL> getUrlsFromClassPathOfJarManifestIfPossible(URL url) {
 		JarFile jarFile = getJarFileIfPossible(url);
 		if (jarFile == null) {
-			return Collections.<URL>emptyList();
+			return Collections.emptyList();
 		}
 		try {
 			return getUrlsFromManifestClassPathAttribute(url, jarFile);
@@ -152,7 +152,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			JarFile jarFile) throws IOException {
 		Manifest manifest = jarFile.getManifest();
 		if (manifest == null) {
-			return Collections.<URL>emptyList();
+			return Collections.emptyList();
 		}
 		String classPath = manifest.getMainAttributes()
 				.getValue(Attributes.Name.CLASS_PATH);

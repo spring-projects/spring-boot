@@ -819,10 +819,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void mergingOfHintWithProvider() throws Exception {
 		writeAdditionalHints(new ItemHint("simple.theName",
-				Collections.<ItemHint.ValueHint>emptyList(),
+				Collections.emptyList(),
 				Arrays.asList(
 						new ItemHint.ValueProvider("first",
-								Collections.<String, Object>singletonMap("target",
+								Collections.singletonMap("target",
 										"org.foo")),
 						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);

@@ -43,7 +43,7 @@ public class CompositeDataSourcePoolMetadataProvider
 	public CompositeDataSourcePoolMetadataProvider(
 			Collection<? extends DataSourcePoolMetadataProvider> providers) {
 		this.providers = (providers == null
-				? Collections.<DataSourcePoolMetadataProvider>emptyList()
+				? Collections.emptyList()
 				: Collections.unmodifiableList(new ArrayList<>(providers)));
 	}
 

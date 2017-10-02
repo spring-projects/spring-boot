@@ -61,7 +61,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 		Set<String> result = new LinkedHashSet<>();
 		result.addAll(getCandidateConfigurations(metadata, null));
 		result.removeAll(getExclusions(metadata, null));
-		return Collections.<Object>unmodifiableSet(result);
+		return Collections.unmodifiableSet(result);
 	}
 
 	@Override

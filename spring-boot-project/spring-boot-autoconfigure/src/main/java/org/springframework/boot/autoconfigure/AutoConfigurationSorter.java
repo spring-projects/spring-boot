@@ -174,7 +174,7 @@ class AutoConfigurationSorter {
 		private Set<String> readBefore() {
 			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getSet(this.className,
-						"AutoConfigureBefore", Collections.<String>emptySet());
+						"AutoConfigureBefore", Collections.emptySet());
 			}
 			return getAnnotationValue(AutoConfigureBefore.class);
 		}
@@ -182,7 +182,7 @@ class AutoConfigurationSorter {
 		private Set<String> readAfter() {
 			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getSet(this.className,
-						"AutoConfigureAfter", Collections.<String>emptySet());
+						"AutoConfigureAfter", Collections.emptySet());
 			}
 			return getAnnotationValue(AutoConfigureAfter.class);
 		}

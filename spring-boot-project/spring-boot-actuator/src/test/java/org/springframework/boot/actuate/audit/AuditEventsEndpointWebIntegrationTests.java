@@ -106,7 +106,7 @@ public class AuditEventsEndpointWebIntegrationTests {
 
 		private AuditEvent createEvent(String instant, String principal, String type) {
 			return new AuditEvent(Date.from(Instant.parse(instant)), principal, type,
-					Collections.<String, Object>emptyMap());
+					Collections.emptyMap());
 		}
 
 	}
