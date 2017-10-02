@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.beans;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -56,24 +55,6 @@ public class BeansEndpoint {
 	@ReadOperation
 	public ApplicationContextDescriptor beans() {
 		return ApplicationContextDescriptor.describing(this.context);
-	}
-
-	/**
-	 * Response produced by the {@link BeansEndpoint}, primarily intended for
-	 * serialization to JSON.
-	 */
-	public static class BeansEndpointResponse {
-
-		private List<ApplicationContextDescriptor> contexts;
-
-		public BeansEndpointResponse(List<ApplicationContextDescriptor> contexts) {
-			this.contexts = contexts;
-		}
-
-		public List<ApplicationContextDescriptor> getContexts() {
-			return this.contexts;
-		}
-
 	}
 
 	/**
