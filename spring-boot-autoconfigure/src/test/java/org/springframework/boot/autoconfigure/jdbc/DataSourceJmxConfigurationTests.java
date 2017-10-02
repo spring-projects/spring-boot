@@ -28,7 +28,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPool;
-import org.hsqldb.jdbc.JDBCDriver;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,9 +37,6 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.jmx.export.UnableToRegisterMBeanException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,13 +57,6 @@ public class DataSourceJmxConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Test
-	public void hikariCustomCannotUseRegisterMBeansByDefault() {
-		this.thrown.expect(UnableToRegisterMBeanException.class);
-		this.thrown.expectMessage("myDataSource");
-		load(CustomHikariConfiguration.class);
 	}
 
 	@Test
@@ -138,20 +127,6 @@ public class DataSourceJmxConfigurationTests {
 		context.register(JmxAutoConfiguration.class, DataSourceAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
-	}
-
-	@Configuration
-	static class CustomHikariConfiguration {
-
-		@Bean
-		public HikariDataSource myDataSource() {
-			HikariDataSource dataSource = new HikariDataSource();
-			dataSource.setJdbcUrl("jdbc:hsqldb:mem:custom");
-			dataSource.setDriverClassName(JDBCDriver.class.getName());
-			dataSource.setRegisterMbeans(true);
-			return dataSource;
-		}
-
 	}
 
 }

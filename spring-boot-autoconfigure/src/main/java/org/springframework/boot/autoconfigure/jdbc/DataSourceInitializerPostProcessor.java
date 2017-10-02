@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,12 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
-import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * {@link BeanPostProcessor} used to fire {@link DataSourceInitializedEvent}s. Should only
- * be registered via the inner {@link Registrar} class.
+ * {@link BeanPostProcessor} used to ensure that {@link DataSourceInitializer} is
+ * initialized as soon as a {@link DataSource} is.
  *
  * @author Dave Syer
  * @since 1.1.2
@@ -59,34 +54,9 @@ class DataSourceInitializerPostProcessor implements BeanPostProcessor, Ordered {
 			throws BeansException {
 		if (bean instanceof DataSource) {
 			// force initialization of this bean as soon as we see a DataSource
-			this.beanFactory.getBean(DataSourceInitializer.class);
+			this.beanFactory.getBean(DataSourceInitializerInvoker.class);
 		}
 		return bean;
-	}
-
-	/**
-	 * {@link ImportBeanDefinitionRegistrar} to register the
-	 * {@link DataSourceInitializerPostProcessor} without causing early bean instantiation
-	 * issues.
-	 */
-	static class Registrar implements ImportBeanDefinitionRegistrar {
-
-		private static final String BEAN_NAME = "dataSourceInitializerPostProcessor";
-
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
-			if (!registry.containsBeanDefinition(BEAN_NAME)) {
-				GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-				beanDefinition.setBeanClass(DataSourceInitializerPostProcessor.class);
-				beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-				// We don't need this one to be post processed otherwise it can cause a
-				// cascade of bean instantiation that we would rather avoid.
-				beanDefinition.setSynthetic(true);
-				registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
-			}
-		}
-
 	}
 
 }

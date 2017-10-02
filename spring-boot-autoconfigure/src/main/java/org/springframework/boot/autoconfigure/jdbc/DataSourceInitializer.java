@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -28,104 +27,100 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.config.ResourceNotFoundException;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.config.SortedResourcesFactoryBean;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
- * Bean to handle {@link DataSource} initialization by running {@literal schema-*.sql} on
- * {@link PostConstruct} and {@literal data-*.sql} SQL scripts on a
- * {@link DataSourceInitializedEvent}.
+ * Initialize a {@link DataSource} based on a matching {@link DataSourceProperties}
+ * config.
  *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @see DataSourceAutoConfiguration
  */
-class DataSourceInitializer implements ApplicationListener<DataSourceInitializedEvent> {
+class DataSourceInitializer {
 
 	private static final Log logger = LogFactory.getLog(DataSourceInitializer.class);
 
+	private final DataSource dataSource;
+
 	private final DataSourceProperties properties;
 
-	private final ApplicationContext applicationContext;
+	private final ResourceLoader resourceLoader;
 
-	private DataSource dataSource;
-
-	private boolean initialized = false;
-
-	DataSourceInitializer(DataSourceProperties properties,
-			ApplicationContext applicationContext) {
+	/**
+	 * Create a new instance with the {@link DataSource} to initialize and its matching
+	 * {@link DataSourceProperties configuration}.
+	 * @param dataSource the datasource to initialize
+	 * @param properties the matching configuration
+	 * @param resourceLoader the resource loader to use (can be null)
+	 */
+	DataSourceInitializer(DataSource dataSource, DataSourceProperties properties,
+			ResourceLoader resourceLoader) {
+		this.dataSource = dataSource;
 		this.properties = properties;
-		this.applicationContext = applicationContext;
+		this.resourceLoader = (resourceLoader != null ? resourceLoader
+				: new DefaultResourceLoader());
 	}
 
-	@PostConstruct
-	public void init() {
+	/**
+	 * Create a new instance with the {@link DataSource} to initialize and its matching
+	 * {@link DataSourceProperties configuration}.
+	 * @param dataSource the datasource to initialize
+	 * @param properties the matching configuration
+	 */
+	DataSourceInitializer(DataSource dataSource, DataSourceProperties properties) {
+		this(dataSource, properties, null);
+	}
+
+	public DataSource getDataSource() {
+		return this.dataSource;
+	}
+
+	/**
+	 * Create the schema if necessary.
+	 * @return {@code true} if the schema was created
+	 * @see DataSourceProperties#getSchema()
+	 */
+	public boolean createSchema() {
 		if (!this.properties.isInitialize()) {
 			logger.debug("Initialization disabled (not running DDL scripts)");
-			return;
+			return false;
 		}
-		if (this.applicationContext.getBeanNamesForType(DataSource.class, false,
-				false).length > 0) {
-			this.dataSource = this.applicationContext.getBean(DataSource.class);
-		}
-		if (this.dataSource == null) {
-			logger.debug("No DataSource found so not initializing");
-			return;
-		}
-		runSchemaScripts();
-	}
-
-	private void runSchemaScripts() {
 		List<Resource> scripts = getScripts("spring.datasource.schema",
 				this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
 			String username = this.properties.getSchemaUsername();
 			String password = this.properties.getSchemaPassword();
 			runScripts(scripts, username, password);
-			try {
-				this.applicationContext
-						.publishEvent(new DataSourceInitializedEvent(this.dataSource));
-				// The listener might not be registered yet, so don't rely on it.
-				if (!this.initialized) {
-					runDataScripts();
-					this.initialized = true;
-				}
-			}
-			catch (IllegalStateException ex) {
-				logger.warn("Could not send event to complete DataSource initialization ("
-						+ ex.getMessage() + ")");
-			}
 		}
+		return !scripts.isEmpty();
 	}
 
-	@Override
-	public void onApplicationEvent(DataSourceInitializedEvent event) {
+	/**
+	 * Initialize the schema if necessary.
+	 * @see DataSourceProperties#getData()
+	 */
+	public void initSchema() {
 		if (!this.properties.isInitialize()) {
 			logger.debug("Initialization disabled (not running data scripts)");
 			return;
 		}
-		// NOTE the event can happen more than once and
-		// the event datasource is not used here
-		if (!this.initialized) {
-			runDataScripts();
-			this.initialized = true;
-		}
-	}
-
-	private void runDataScripts() {
 		List<Resource> scripts = getScripts("spring.datasource.data",
 				this.properties.getData(), "data");
-		String username = this.properties.getDataUsername();
-		String password = this.properties.getDataPassword();
-		runScripts(scripts, username, password);
+		if (!scripts.isEmpty()) {
+			String username = this.properties.getDataUsername();
+			String password = this.properties.getDataPassword();
+			runScripts(scripts, username, password);
+
+		}
 	}
 
 	private List<Resource> getScripts(String propertyName, List<String> resources,
@@ -159,7 +154,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	private Resource[] doGetResources(String location) {
 		try {
 			SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(
-					this.applicationContext, Collections.singletonList(location));
+					this.resourceLoader, Collections.singletonList(location));
 			factory.afterPropertiesSet();
 			return factory.getObject();
 		}
