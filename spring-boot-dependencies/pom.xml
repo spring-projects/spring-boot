@@ -1677,11 +1677,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-home</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-hazelcast</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
@@ -1813,11 +1808,6 @@
 			<dependency>
 				<groupId>org.eclipse.jetty.cdi</groupId>
 				<artifactId>cdi-core</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.cdi</groupId>
-				<artifactId>cdi-full-servlet</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -2381,11 +2371,6 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j13</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
