@@ -56,7 +56,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		devToolsProperties.put("spring.resources.chain.cache", "false");
 		devToolsProperties.put("spring.template.provider.cache", "false");
 		devToolsProperties.put("spring.mvc.log-resolved-exception", "true");
-		devToolsProperties.put("server.servlet.jsp.init-parameters.development", "true");
+		devToolsProperties.put("server.jsp-servlet.init-parameters.development", "true");
 		devToolsProperties.put("spring.reactor.stacktrace-mode.enabled", "true");
 		properties = Collections.unmodifiableMap(devToolsProperties);
 	}
