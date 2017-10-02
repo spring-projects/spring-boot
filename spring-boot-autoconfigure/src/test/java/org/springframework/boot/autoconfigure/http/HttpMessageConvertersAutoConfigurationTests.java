@@ -190,7 +190,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void sringCustomConverter() {
+	public void stringCustomConverter() {
 		this.contextRunner.withUserConfiguration(StringConverterConfig.class)
 				.run(assertConverter(StringHttpMessageConverter.class,
 						"customStringMessageConverter"));

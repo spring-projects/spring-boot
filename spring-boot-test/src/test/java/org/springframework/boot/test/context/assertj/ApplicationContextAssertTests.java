@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ApplicationContextAssert}.
  *
  * @author Phillip Webb
- * @uathor Andy Wilkinson
+ * @author Andy Wilkinson
  */
 public class ApplicationContextAssertTests {
 

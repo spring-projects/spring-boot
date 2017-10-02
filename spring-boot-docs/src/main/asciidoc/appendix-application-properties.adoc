@@ -1249,7 +1249,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.rabbit.enabled=true # Enable RabbitMQ health check.
 	management.health.redis.enabled=true # Enable Redis health check.
 	management.health.solr.enabled=true # Enable Solr health check.
-	management.health.status.http-mapping= # Mapping of health statuses to HttpStatus codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
+	management.health.status.http-mapping= # Mapping of health statuses to HTTP status codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UP, UNKNOWN # Comma-separated list of health statuses in order of severity.
 
 	# INFO CONTRIBUTORS ({sc-spring-boot-actuator}/autoconfigure/info/InfoContributorProperties.{sc-ext}[InfoContributorProperties])

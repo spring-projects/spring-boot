@@ -42,15 +42,15 @@ import org.springframework.boot.loader.tools.LibraryScope;
  */
 public class ArtifactsLibraries implements Libraries {
 
-	private static final Map<String, LibraryScope> SCOPES;
+	private static final Map<String, LibraryScope> scopes;
 
 	static {
-		Map<String, LibraryScope> scopes = new HashMap<>();
-		scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
-		scopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
-		scopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
-		scopes.put(Artifact.SCOPE_SYSTEM, LibraryScope.PROVIDED);
-		SCOPES = Collections.unmodifiableMap(scopes);
+		Map<String, LibraryScope> libraryScopes = new HashMap<>();
+		libraryScopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
+		libraryScopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
+		libraryScopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
+		libraryScopes.put(Artifact.SCOPE_SYSTEM, LibraryScope.PROVIDED);
+		scopes = Collections.unmodifiableMap(libraryScopes);
 	}
 
 	private final Set<Artifact> artifacts;
@@ -70,7 +70,7 @@ public class ArtifactsLibraries implements Libraries {
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
 		Set<String> duplicates = getDuplicates(this.artifacts);
 		for (Artifact artifact : this.artifacts) {
-			LibraryScope scope = SCOPES.get(artifact.getScope());
+			LibraryScope scope = scopes.get(artifact.getScope());
 			if (scope != null && artifact.getFile() != null) {
 				String name = getFileName(artifact);
 				if (duplicates.contains(name)) {

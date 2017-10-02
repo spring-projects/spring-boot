@@ -42,7 +42,7 @@ public class SessionProperties {
 	 */
 	private StoreType storeType;
 
-	private Integer timeout;
+	private final Integer timeout;
 
 	private Servlet servlet = new Servlet();
 
