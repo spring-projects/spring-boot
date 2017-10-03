@@ -2136,30 +2136,24 @@ is a Hibernate feature (nothing to do with Spring).
 
 
 [[howto-initialize-a-database-using-spring-jdbc]]
-=== Initialize a database using Spring JDBC
-Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
-loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
-classpath). In addition Spring Boot will load the `schema-${platform}.sql`
-and `data-${platform}.sql` files (if present), where
-`platform` is the value of `spring.datasource.platform`, e.g. you might choose to set
-it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
-`postgresql` etc.). Spring Boot enables the fail-fast feature of the Spring JDBC
-initializer by default, so if the scripts cause exceptions the application will fail
-to start. The script locations can be changed by setting `spring.datasource.schema` and
-`spring.datasource.data`, and neither location will be processed if
-`spring.datasource.initialize=false`.
+=== Initialize a database
+Spring Boot can automatically create the schema (DDL scripts) of your `DataSource` and
+initialize it (DML scripts): it loads SQL from the standard root classpath locations
+`schema.sql` and `data.sql`, respectively. In addition Spring Boot will process the
+`schema-${platform}.sql` and `data-${platform}.sql` files (if present), where `platform`
+is the value of `spring.datasource.platform`. This allows you to switch to database
+specific scripts if necessary, e.g. you might choose to set it to the vendor name of the
+database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql` etc.).
 
-To disable the fail-fast you can set `spring.datasource.continue-on-error=true`. This can be
-useful once an application has matured and been deployed a few times, since the scripts
-can act as '`poor man's migrations`' -- inserts that fail mean that the data is already
-there, so there would be no need to prevent the application from running, for instance.
+Spring Boot enables the fail-fast feature of the Spring JDBC initializer by default, so if
+the scripts cause exceptions the application will fail to start. You can tune that using
+`spring.datasource.continue-on-error`.
 
-If you want to use the `schema.sql` initialization in a JPA app (with
-Hibernate) then `ddl-auto=create-drop` will lead to errors if
-Hibernate tries to create the same tables.  To avoid those errors set
-`ddl-auto` explicitly to "" (preferable) or "none". Whether or not you use
-`ddl-auto=create-drop` you can always use `data.sql` to initialize new
-data.
+NOTE: In a JPA-based app, you can choose to let Hibernate create the schema or use
+`schema.sql` but not both. Make sure to disable `spring.jpa.hibernate.ddl-auto` if you
+chose the later.
+
+You can also disable initialization by setting `spring.datasource.initialize` to `false`.
 
 
 
