@@ -29,13 +29,13 @@ import org.springframework.context.ApplicationListener;
 /**
  * Bean to handle {@link DataSource} initialization by running {@literal schema-*.sql} on
  * {@link InitializingBean#afterPropertiesSet()} and {@literal data-*.sql} SQL scripts on
- * a {@link DataSourceInitializedEvent}.
+ * a {@link DataSourceSchemaCreatedEvent}.
  *
  * @author Stephane Nicoll
  * @see DataSourceAutoConfiguration
  */
 class DataSourceInitializerInvoker
-		implements ApplicationListener<DataSourceInitializedEvent>, InitializingBean {
+		implements ApplicationListener<DataSourceSchemaCreatedEvent>, InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(DataSourceInitializerInvoker.class);
 
@@ -65,7 +65,7 @@ class DataSourceInitializerInvoker
 			if (schemaCreated) {
 				try {
 					this.applicationContext
-							.publishEvent(new DataSourceInitializedEvent(
+							.publishEvent(new DataSourceSchemaCreatedEvent(
 									initializer.getDataSource()));
 					// The listener might not be registered yet, so don't rely on it.
 					if (!this.initialized) {
@@ -82,7 +82,7 @@ class DataSourceInitializerInvoker
 	}
 
 	@Override
-	public void onApplicationEvent(DataSourceInitializedEvent event) {
+	public void onApplicationEvent(DataSourceSchemaCreatedEvent event) {
 		// NOTE the event can happen more than once and
 		// the event datasource is not used here
 		DataSourceInitializer initializer = getDataSourceInitializer();

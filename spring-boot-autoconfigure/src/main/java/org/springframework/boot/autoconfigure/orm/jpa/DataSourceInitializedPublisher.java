@@ -27,15 +27,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializedEvent;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceSchemaCreatedEvent;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * {@link BeanPostProcessor} used to fire {@link DataSourceInitializedEvent}s. Should only
- * be registered via the inner {@link Registrar} class.
+ * {@link BeanPostProcessor} used to fire {@link DataSourceSchemaCreatedEvent}s. Should
+ * only be registered via the inner {@link Registrar} class.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -75,7 +75,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		DataSource dataSource = findDataSource(entityManagerFactory);
 		if (dataSource != null && isInitializingDatabase(dataSource)) {
 			this.applicationContext
-					.publishEvent(new DataSourceInitializedEvent(dataSource));
+					.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
 		}
 	}
 

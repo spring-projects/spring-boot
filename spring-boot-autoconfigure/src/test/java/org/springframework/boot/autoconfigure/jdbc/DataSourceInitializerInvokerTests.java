@@ -177,7 +177,7 @@ public class DataSourceInitializerInvokerTests {
 		return context -> {
 			assertThat(context).hasSingleBean(DataSource.class);
 			DataSource dataSource = context.getBean(DataSource.class);
-			context.publishEvent(new DataSourceInitializedEvent(dataSource));
+			context.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
 			assertDataSourceNotInitialized(dataSource);
 		};
 	}
