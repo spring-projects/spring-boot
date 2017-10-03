@@ -484,6 +484,10 @@ content into your application; rather pick only the properties that you need.
 	spring.security.filter.order=0 # Security filter chain order.
 	spring.security.filter.dispatcher-types=ASYNC,ERROR,REQUEST # Security filter chain dispatcher types.
 
+	# SECURITY OAUTH2 CLIENT ({sc-spring-boot-autoconfigure}/security/oauth2/client/OAuth2ClientProperties.{sc-ext}[OAuth2ClientProperties])
+	spring.security.oauth2.client.provider.*= # OAuth provider details.
+	spring.security.oauth2.client.registration.*= # OAuth client registrations.
+
 	# ----------------------------------------
 	# DATA PROPERTIES
 	# ----------------------------------------

@@ -40,7 +40,7 @@ public class OAuth2ClientProperties {
 	private Map<String, Provider> provider = new HashMap<>();
 
 	/**
-	 * Client registrations.
+	 * OAuth client registrations.
 	 */
 	private Map<String, Registration> registration = new HashMap<>();
 
@@ -92,29 +92,29 @@ public class OAuth2ClientProperties {
 		private String clientSecret;
 
 		/**
-		 * The client authentication method. May be left bank then using a pre-defined
+		 * Client authentication method. May be left bank then using a pre-defined
 		 * provider.
 		 */
 		private ClientAuthenticationMethod clientAuthenticationMethod;
 
 		/**
-		 * The authorization grant type. May be left bank then using a pre-defined
+		 * Authorization grant type. May be left bank then using a pre-defined
 		 * provider.
 		 */
 		private AuthorizationGrantType authorizationGrantType;
 
 		/**
-		 * The redirect URI. May be left bank then using a pre-defined provider.
+		 * Redirect URI. May be left bank then using a pre-defined provider.
 		 */
 		private String redirectUri;
 
 		/**
-		 * The authorization scopes. May be left bank then using a pre-defined provider.
+		 * Authorization scopes. May be left bank then using a pre-defined provider.
 		 */
 		private Set<String> scope;
 
 		/**
-		 * The client name. May be left bank then using a pre-defined provider.
+		 * Client name. May be left bank then using a pre-defined provider.
 		 */
 		private String clientName;
 
@@ -189,28 +189,28 @@ public class OAuth2ClientProperties {
 	public static class Provider {
 
 		/**
-		 * The authorization URI for the provider.
+		 * Authorization URI for the provider.
 		 */
 		private String authorizationUri;
 
 		/**
-		 * The token URI for the provider.
+		 * Token URI for the provider.
 		 */
 		private String tokenUri;
 
 		/**
-		 * The user info URI for the provider.
+		 * User info URI for the provider.
 		 */
 		private String userInfoUri;
 
 		/**
-		 * The name of the attribute that will be used to extract the username from the
+		 * Name of the attribute that will be used to extract the username from the
 		 * call to 'userInfoUri'.
 		 */
 		private String userNameAttribute;
 
 		/**
-		 * The JWK set URI for the provider.
+		 * JWK set URI for the provider.
 		 */
 		private String jwkSetUri;
 

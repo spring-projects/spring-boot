@@ -36,7 +36,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 class OAuth2WebSecurityConfiguration {
 
 	@Configuration
-	private static class OAuth2WebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+	static class OAuth2WebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
 		private final ClientRegistrationRepository clientRegistrationRepository;
 

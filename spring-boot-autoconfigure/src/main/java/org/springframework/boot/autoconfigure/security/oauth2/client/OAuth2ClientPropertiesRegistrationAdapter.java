@@ -57,10 +57,10 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 				providers);
 		copyIfNotNull(properties::getClientId, builder::clientId);
 		copyIfNotNull(properties::getClientSecret, builder::clientSecret);
-		copyIfNotNull(() -> properties.getClientAuthenticationMethod(),
+		copyIfNotNull(properties::getClientAuthenticationMethod,
 				builder::clientAuthenticationMethod,
 				ClientAuthenticationMethod::getMethod);
-		copyIfNotNull(() -> properties.getAuthorizationGrantType(),
+		copyIfNotNull(properties::getAuthorizationGrantType,
 				builder::authorizationGrantType, AuthorizationGrantType::getType);
 		copyIfNotNull(properties::getRedirectUri, builder::redirectUri);
 		copyIfNotNull(properties::getScope, builder::scope,
