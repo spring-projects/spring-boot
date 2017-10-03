@@ -227,6 +227,19 @@ public class ThymeleafProperties {
 		 */
 		private List<MediaType> mediaTypes;
 
+		/**
+		 * Comma-separated list of view names (patterns allowed) that should be executed in FULL mode
+		 * even if a max chunk size is set.
+		 */
+		private String[] fullModeViewNames;
+
+		/**
+		 * Comma-separated list of view names (patterns allowed) that should be the only ones executed
+		 * in CHUNKED mode when a max chunk size is set.
+		 */
+		private String[] chunkedModeViewNames;
+
+
 		public List<MediaType> getMediaTypes() {
 			return this.mediaTypes;
 		}
@@ -241,6 +254,22 @@ public class ThymeleafProperties {
 
 		public void setMaxChunkSize(int maxChunkSize) {
 			this.maxChunkSize = maxChunkSize;
+		}
+
+		public String[] getFullModeViewNames() {
+			return this.fullModeViewNames;
+		}
+
+		public void setFullModeViewNames(String[] fullModeViewNames) {
+			this.fullModeViewNames = fullModeViewNames;
+		}
+
+		public String[] getChunkedModeViewNames() {
+			return this.chunkedModeViewNames;
+		}
+
+		public void setChunkedModeViewNames(String[] chunkedModeViewNames) {
+			this.chunkedModeViewNames = chunkedModeViewNames;
 		}
 
 	}

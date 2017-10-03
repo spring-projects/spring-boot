@@ -113,6 +113,22 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideFullModeViewNames() throws Exception {
+		load(BaseConfiguration.class, "spring.thymeleaf.reactive.fullModeViewNames:foo,bar");
+		ThymeleafReactiveViewResolver views = this.context
+				.getBean(ThymeleafReactiveViewResolver.class);
+		assertThat(views.getFullModeViewNames()).isEqualTo(new String[] { "foo", "bar" });
+	}
+
+	@Test
+	public void overrideChunkedModeViewNames() throws Exception {
+		load(BaseConfiguration.class, "spring.thymeleaf.reactive.chunkedModeViewNames:foo,bar");
+		ThymeleafReactiveViewResolver views = this.context
+				.getBean(ThymeleafReactiveViewResolver.class);
+		assertThat(views.getChunkedModeViewNames()).isEqualTo(new String[] { "foo", "bar" });
+	}
+
+	@Test
 	public void templateLocationDoesNotExist() throws Exception {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
