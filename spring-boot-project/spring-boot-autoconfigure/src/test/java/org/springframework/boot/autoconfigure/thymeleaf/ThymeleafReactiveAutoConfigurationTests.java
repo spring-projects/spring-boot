@@ -113,6 +113,14 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideMaxChunkSize() throws Exception {
+		load(BaseConfiguration.class, "spring.thymeleaf.reactive.maxChunkSize:8192");
+		ThymeleafReactiveViewResolver views = this.context
+				.getBean(ThymeleafReactiveViewResolver.class);
+		assertThat(views.getResponseMaxChunkSizeBytes()).isEqualTo(Integer.valueOf(8192));
+	}
+
+	@Test
 	public void overrideFullModeViewNames() throws Exception {
 		load(BaseConfiguration.class, "spring.thymeleaf.reactive.fullModeViewNames:foo,bar");
 		ThymeleafReactiveViewResolver views = this.context
