@@ -53,4 +53,9 @@ public class CommonsDbcp2DataSourcePoolMetadata
 		return getDataSource().getValidationQuery();
 	}
 
+	@Override
+	public Boolean getDefaultAutoCommit() {
+		return getDataSource().getDefaultAutoCommit();
+	}
+
 }

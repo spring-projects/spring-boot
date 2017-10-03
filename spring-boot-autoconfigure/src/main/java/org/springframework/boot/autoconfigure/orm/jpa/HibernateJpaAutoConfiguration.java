@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,9 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.jdbc.SchemaManagementProvider;
+import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -73,6 +77,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private static final String JTA_PLATFORM = "hibernate.transaction.jta.platform";
 
+	private static final String PROVIDER_DISABLES_AUTOCOMMIT = "hibernate.connection.provider_disables_autocommit";
+
 	/**
 	 * {@code NoJtaPlatform} implementations for various Hibernate versions.
 	 */
@@ -89,16 +95,19 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
+	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
 	public HibernateJpaAutoConfiguration(DataSource dataSource,
 			JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
+			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
 			ObjectProvider<List<SchemaManagementProvider>> providers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
 				providers.getIfAvailable(Collections::emptyList));
+		this.metadataProviders = metadataProviders.getIfAvailable();
 	}
 
 	@Override
@@ -121,6 +130,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		if (!vendorProperties.containsKey(JTA_PLATFORM)) {
 			configureJtaPlatform(vendorProperties);
 		}
+		if (!vendorProperties.containsKey(PROVIDER_DISABLES_AUTOCOMMIT)) {
+			configureProviderDisablesAutocommit(vendorProperties);
+		}
 	}
 
 	private void configureJtaPlatform(Map<String, Object> vendorProperties)
@@ -139,6 +151,18 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		}
 		else {
 			vendorProperties.put(JTA_PLATFORM, getNoJtaPlatformManager());
+		}
+	}
+
+	private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
+		CompositeDataSourcePoolMetadataProvider poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
+			this.metadataProviders);
+		DataSourcePoolMetadata poolMetadata = poolMetadataProvider
+			.getDataSourcePoolMetadata(getDataSource());
+		if (poolMetadata != null
+			&& Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit())
+			&& getJtaTransactionManager() == null) {
+			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
 		}
 	}
 
