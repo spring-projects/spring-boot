@@ -192,7 +192,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 		@Bean
 		public DataSource customDataSource() {
-			return new TestDataSource("overridedb");
+			return new TestDataSource();
 		}
 
 	}

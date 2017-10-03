@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.util.UUID;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
@@ -23,13 +25,25 @@ import org.apache.commons.dbcp2.BasicDataSource;
  *
  * @author Phillip Webb
  * @author Kazuki Shimizu
+ * @author Stephane Nicoll
  */
 public class TestDataSource extends BasicDataSource {
 
+	/**
+	 * Create an in-memory database with the specified name.
+	 * @param name the name of the database
+	 */
 	public TestDataSource(String name) {
 		setDriverClassName("org.hsqldb.jdbcDriver");
-		setUrl("jdbc:hsqldb:target/" + name);
+		setUrl("jdbc:hsqldb:mem:" + name);
 		setUsername("sa");
+	}
+
+	/**
+	 * Create an in-memory database with a random name.
+	 */
+	public TestDataSource() {
+		this(UUID.randomUUID().toString());
 	}
 
 }
