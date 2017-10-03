@@ -41,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
@@ -73,12 +75,12 @@ public class HibernateJpaAutoConfigurationTests
 		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql",
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("ddl.sql");
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("spring.datasource.schema");
-				});
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure())
+					.hasMessageContaining("ddl.sql");
+			assertThat(context.getStartupFailure())
+					.hasMessageContaining("spring.datasource.schema");
+		});
 	}
 
 	@Test
@@ -103,7 +105,7 @@ public class HibernateJpaAutoConfigurationTests
 						"spring.datasource.data:classpath:/city.sql")
 				.run((context) -> assertThat(
 						context.getBean(TestInitializedJpaConfiguration.class).called)
-								.isTrue());
+						.isTrue());
 	}
 
 	@Test
@@ -162,7 +164,7 @@ public class HibernateJpaAutoConfigurationTests
 							.getJpaPropertyMap();
 					assertThat((String) jpaPropertyMap
 							.get("hibernate.transaction.jta.platform"))
-									.isEqualTo(TestJtaPlatform.class.getName());
+							.isEqualTo(TestJtaPlatform.class.getName());
 				});
 	}
 
@@ -177,6 +179,17 @@ public class HibernateJpaAutoConfigurationTests
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 				});
+	}
+
+	@Test
+	public void autoConfigurationBacksOffWithSeveralDataSources() {
+		contextRunner().withConfiguration(
+				AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+						XADataSourceAutoConfiguration.class, JtaAutoConfiguration.class)
+		).withUserConfiguration(TestTwoDataSourcesConfiguration.class).run((context) -> {
+			assertThat(context).hasNotFailed();
+			assertThat(context).doesNotHaveBean(EntityManagerFactory.class);
+		});
 	}
 
 	@Configuration

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -26,17 +27,20 @@ import javax.sql.DataSource;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -75,26 +79,47 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void dataSourceIsNotAvailable() {
+	public void notConfiguredIfDataSourceIsNotAvailable() {
 		new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(this.autoConfiguredClass))
-				.run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure())
-							.isInstanceOf(BeanCreationException.class);
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("No qualifying bean");
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("DataSource");
-				});
+				.run(assertJpaIsNotAutoConfigured());
 	}
 
 	@Test
-	public void dataSourceIsCreatedWithDefaultConfig() {
+	public void notConfiguredIfNoSingleDataSourceCandidateIsAvailable() {
+		new ApplicationContextRunner()
+				.withUserConfiguration(TestTwoDataSourcesConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(this.autoConfiguredClass))
+				.run(assertJpaIsNotAutoConfigured());
+	}
+
+	protected ContextConsumer<AssertableApplicationContext> assertJpaIsNotAutoConfigured() {
+		return (context) -> {
+			assertThat(context).hasNotFailed();
+			assertThat(context).hasSingleBean(JpaProperties.class);
+			assertThat(context).doesNotHaveBean(PlatformTransactionManager.class);
+			assertThat(context).doesNotHaveBean(EntityManagerFactory.class);
+		};
+	}
+
+	@Test
+	public void configuredWithAutoConfiguredDataSource() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(DataSource.class);
 			assertThat(context).hasSingleBean(JpaTransactionManager.class);
+			assertThat(context).hasSingleBean(EntityManagerFactory.class);
 		});
+	}
+
+	@Test
+	public void configuredWithSingleCandidateDataSource() {
+		this.contextRunner.withUserConfiguration(
+				TestTwoDataSourcesAndPrimaryConfiguration.class).run((context) -> {
+			assertThat(context).getBeans(DataSource.class).hasSize(2);
+			assertThat(context).hasSingleBean(JpaTransactionManager.class);
+			assertThat(context).hasSingleBean(EntityManagerFactory.class);
+		});
+
 	}
 
 	@Test
@@ -213,6 +238,49 @@ public abstract class AbstractJpaAutoConfigurationTests {
 					assertThat(field.get(entityManagerFactoryBean))
 							.isEqualTo(context.getBean(PersistenceUnitManager.class));
 				});
+	}
+
+
+
+	@Configuration
+	protected static class TestTwoDataSourcesConfiguration {
+
+		@Bean
+		public DataSource firstDataSource()  {
+			return createRandomDataSource();
+		}
+
+		@Bean
+		public DataSource secondDataSource()  {
+			return createRandomDataSource();
+		}
+
+		private DataSource createRandomDataSource() {
+			String url = "jdbc:h2:mem:init-" + UUID.randomUUID().toString();
+			return DataSourceBuilder.create().url(url).build();
+		}
+
+	}
+
+	@Configuration
+	static class TestTwoDataSourcesAndPrimaryConfiguration {
+
+		@Bean
+		@Primary
+		public DataSource firstDataSource()  {
+			return createRandomDataSource();
+		}
+
+		@Bean
+		public DataSource secondDataSource()  {
+			return createRandomDataSource();
+		}
+
+		private DataSource createRandomDataSource() {
+			String url = "jdbc:h2:mem:init-" + UUID.randomUUID().toString();
+			return DataSourceBuilder.create().url(url).build();
+		}
+
 	}
 
 	@Configuration
