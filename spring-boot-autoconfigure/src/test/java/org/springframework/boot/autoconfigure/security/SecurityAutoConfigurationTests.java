@@ -47,7 +47,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -144,21 +143,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean("securityFilterChainRegistration",
 				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(12345);
-	}
-
-	@Test
-	public void testEventPublisherInjected() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestAuthenticationManagerConfiguration.class,
-				SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		AuthenticationListener listener = new AuthenticationListener();
-		this.context.addApplicationListener(listener);
-		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		manager.authenticate(new TestingAuthenticationToken("foo", "wrong"));
-		assertThat(listener.event).isInstanceOf(AuthenticationSuccessEvent.class);
 	}
 
 	@Test
