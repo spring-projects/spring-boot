@@ -264,6 +264,8 @@ public class ThymeleafAutoConfiguration {
 				resolver.setResponseMaxChunkSizeBytes(
 						this.properties.getReactive().getMaxChunkSize());
 			}
+			resolver.setFullModeViewNames(this.properties.getReactive().getFullModeViewNames());
+			resolver.setChunkedModeViewNames(this.properties.getReactive().getChunkedModeViewNames());
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
