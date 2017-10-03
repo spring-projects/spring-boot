@@ -84,12 +84,12 @@ public class ThymeleafProperties {
 	private Integer templateResolverOrder;
 
 	/**
-	 * Comma-separated list of view names that can be resolved.
+	 * Comma-separated list of view names (patterns allowed) that can be resolved.
 	 */
 	private String[] viewNames;
 
 	/**
-	 * Comma-separated list of view names that should be excluded from resolution.
+	 * Comma-separated list of view names (patterns allowed) that should be excluded from resolution.
 	 */
 	private String[] excludedViewNames;
 
@@ -218,7 +218,8 @@ public class ThymeleafProperties {
 	public static class Reactive {
 
 		/**
-		 * Maximum size of data buffers used for writing to the response, in bytes.
+		 * Maximum size of data buffers used for writing to the response, in bytes. Templates will
+		 * execute in CHUNKED mode by default if this is set a value.
 		 */
 		private int maxChunkSize;
 
