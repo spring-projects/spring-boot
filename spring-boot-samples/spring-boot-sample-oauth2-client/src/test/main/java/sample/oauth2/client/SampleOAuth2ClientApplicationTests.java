@@ -22,7 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret" })
 @DirtiesContext
 public class SampleOAuth2ClientApplicationTests {
 
