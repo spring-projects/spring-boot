@@ -73,6 +73,7 @@ public class DevToolsIntegrationTests {
 	@Before
 	public void launchApplication() throws Exception {
 		this.serverPortFile.delete();
+		System.out.println("Launching " + this.javaLauncher.getClass());
 		this.launchedApplication = this.applicationLauncher
 				.launchApplication(this.javaLauncher);
 	}
@@ -139,6 +140,7 @@ public class DevToolsIntegrationTests {
 	private int awaitServerPort() throws Exception {
 		long end = System.currentTimeMillis() + 30000;
 		while (this.serverPortFile.length() == 0) {
+			System.out.println("Getting server port " + this.serverPortFile.length());
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(
 						"server.port file was not written within 30 seconds. "
@@ -153,6 +155,7 @@ public class DevToolsIntegrationTests {
 		FileReader portReader = new FileReader(this.serverPortFile);
 		int port = Integer.valueOf(FileCopyUtils.copyToString(portReader));
 		this.serverPortFile.delete();
+		System.out.println("Got port " + port);
 		return port;
 	}
 

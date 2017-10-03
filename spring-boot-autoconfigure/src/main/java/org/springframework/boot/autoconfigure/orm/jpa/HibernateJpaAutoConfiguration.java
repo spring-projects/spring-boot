@@ -53,7 +53,7 @@ import org.springframework.util.ClassUtils;
 @Conditional(HibernateEntityManagerCondition.class)
 @EnableConfigurationProperties(JpaProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class })
-@Import(JpaHibernateConfiguration.class)
+@Import(HibernateJpaConfiguration.class)
 public class HibernateJpaAutoConfiguration {
 
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)

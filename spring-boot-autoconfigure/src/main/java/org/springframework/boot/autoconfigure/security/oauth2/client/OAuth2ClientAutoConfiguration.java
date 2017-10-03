@@ -42,4 +42,3 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 public class OAuth2ClientAutoConfiguration {
 
 }
-

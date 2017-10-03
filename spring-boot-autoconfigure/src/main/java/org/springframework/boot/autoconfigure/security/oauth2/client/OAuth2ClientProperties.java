@@ -98,8 +98,7 @@ public class OAuth2ClientProperties {
 		private ClientAuthenticationMethod clientAuthenticationMethod;
 
 		/**
-		 * Authorization grant type. May be left bank then using a pre-defined
-		 * provider.
+		 * Authorization grant type. May be left bank then using a pre-defined provider.
 		 */
 		private AuthorizationGrantType authorizationGrantType;
 
@@ -204,8 +203,8 @@ public class OAuth2ClientProperties {
 		private String userInfoUri;
 
 		/**
-		 * Name of the attribute that will be used to extract the username from the
-		 * call to 'userInfoUri'.
+		 * Name of the attribute that will be used to extract the username from the call
+		 * to 'userInfoUri'.
 		 */
 		private String userNameAttribute;
 

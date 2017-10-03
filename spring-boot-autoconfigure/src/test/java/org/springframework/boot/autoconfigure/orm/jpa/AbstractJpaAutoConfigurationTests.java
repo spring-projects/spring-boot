@@ -113,13 +113,13 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void configuredWithSingleCandidateDataSource() {
-		this.contextRunner.withUserConfiguration(
-				TestTwoDataSourcesAndPrimaryConfiguration.class).run((context) -> {
-			assertThat(context).getBeans(DataSource.class).hasSize(2);
-			assertThat(context).hasSingleBean(JpaTransactionManager.class);
-			assertThat(context).hasSingleBean(EntityManagerFactory.class);
-		});
-
+		this.contextRunner
+				.withUserConfiguration(TestTwoDataSourcesAndPrimaryConfiguration.class)
+				.run((context) -> {
+					assertThat(context).getBeans(DataSource.class).hasSize(2);
+					assertThat(context).hasSingleBean(JpaTransactionManager.class);
+					assertThat(context).hasSingleBean(EntityManagerFactory.class);
+				});
 	}
 
 	@Test
@@ -240,18 +240,16 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				});
 	}
 
-
-
 	@Configuration
 	protected static class TestTwoDataSourcesConfiguration {
 
 		@Bean
-		public DataSource firstDataSource()  {
+		public DataSource firstDataSource() {
 			return createRandomDataSource();
 		}
 
 		@Bean
-		public DataSource secondDataSource()  {
+		public DataSource secondDataSource() {
 			return createRandomDataSource();
 		}
 
@@ -267,12 +265,12 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public DataSource firstDataSource()  {
+		public DataSource firstDataSource() {
 			return createRandomDataSource();
 		}
 
 		@Bean
-		public DataSource secondDataSource()  {
+		public DataSource secondDataSource() {
 			return createRandomDataSource();
 		}
 

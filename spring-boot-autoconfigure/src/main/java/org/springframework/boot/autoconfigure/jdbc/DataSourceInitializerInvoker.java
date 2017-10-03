@@ -37,7 +37,8 @@ import org.springframework.context.ApplicationListener;
 class DataSourceInitializerInvoker
 		implements ApplicationListener<DataSourceSchemaCreatedEvent>, InitializingBean {
 
-	private static final Log logger = LogFactory.getLog(DataSourceInitializerInvoker.class);
+	private static final Log logger = LogFactory
+			.getLog(DataSourceInitializerInvoker.class);
 
 	private final ObjectProvider<DataSource> dataSource;
 
@@ -50,8 +51,7 @@ class DataSourceInitializerInvoker
 	private boolean initialized;
 
 	DataSourceInitializerInvoker(ObjectProvider<DataSource> dataSource,
-			DataSourceProperties properties,
-			ApplicationContext applicationContext) {
+			DataSourceProperties properties, ApplicationContext applicationContext) {
 		this.dataSource = dataSource;
 		this.properties = properties;
 		this.applicationContext = applicationContext;
@@ -63,21 +63,24 @@ class DataSourceInitializerInvoker
 		if (initializer != null) {
 			boolean schemaCreated = this.dataSourceInitializer.createSchema();
 			if (schemaCreated) {
-				try {
-					this.applicationContext
-							.publishEvent(new DataSourceSchemaCreatedEvent(
-									initializer.getDataSource()));
-					// The listener might not be registered yet, so don't rely on it.
-					if (!this.initialized) {
-						this.dataSourceInitializer.initSchema();
-						this.initialized = true;
-					}
-				}
-				catch (IllegalStateException ex) {
-					logger.warn("Could not send event to complete DataSource initialization ("
-							+ ex.getMessage() + ")");
-				}
+				initialize(initializer);
 			}
+		}
+	}
+
+	private void initialize(DataSourceInitializer initializer) {
+		try {
+			this.applicationContext.publishEvent(
+					new DataSourceSchemaCreatedEvent(initializer.getDataSource()));
+			// The listener might not be registered yet, so don't rely on it.
+			if (!this.initialized) {
+				this.dataSourceInitializer.initSchema();
+				this.initialized = true;
+			}
+		}
+		catch (IllegalStateException ex) {
+			logger.warn("Could not send event to complete DataSource initialization ("
+					+ ex.getMessage() + ")");
 		}
 	}
 

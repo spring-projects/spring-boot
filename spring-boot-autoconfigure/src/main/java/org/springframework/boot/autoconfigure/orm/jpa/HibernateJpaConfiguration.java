@@ -50,10 +50,9 @@ import org.springframework.util.ClassUtils;
  */
 @Configuration
 @ConditionalOnSingleCandidate(DataSource.class)
-public class JpaHibernateConfiguration extends JpaBaseConfiguration {
+class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(JpaHibernateConfiguration.class);
+	private static final Log logger = LogFactory.getLog(HibernateJpaConfiguration.class);
 
 	private static final String JTA_PLATFORM = "hibernate.transaction.jta.platform";
 
@@ -74,8 +73,7 @@ public class JpaHibernateConfiguration extends JpaBaseConfiguration {
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
-	public JpaHibernateConfiguration(DataSource dataSource,
-			JpaProperties jpaProperties,
+	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 			ObjectProvider<List<SchemaManagementProvider>> providers) {

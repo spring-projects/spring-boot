@@ -30,7 +30,8 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Stephane Nicoll
  */
 @Configuration
-@Import({ DataSourceInitializerInvoker.class, DataSourceInitializationConfiguration.Registrar.class })
+@Import({ DataSourceInitializerInvoker.class,
+		DataSourceInitializationConfiguration.Registrar.class })
 class DataSourceInitializationConfiguration {
 
 	/**

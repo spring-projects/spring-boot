@@ -51,10 +51,9 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 		return clientRegistrations;
 	}
 
-	private static ClientRegistration getClientRegistration(String registrationId, Registration properties,
-			Map<String, Provider> providers) {
-		Builder builder = getBuilder(registrationId, properties.getProvider(),
-				providers);
+	private static ClientRegistration getClientRegistration(String registrationId,
+			Registration properties, Map<String, Provider> providers) {
+		Builder builder = getBuilder(registrationId, properties.getProvider(), providers);
 		copyIfNotNull(properties::getClientId, builder::clientId);
 		copyIfNotNull(properties::getClientSecret, builder::clientSecret);
 		copyIfNotNull(properties::getClientAuthenticationMethod,
@@ -75,7 +74,8 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 		if (provider == null && !providers.containsKey(providerId)) {
 			throw new IllegalStateException("Unknown provider ID '" + providerId + "'");
 		}
-		Builder builder = (provider != null ? provider.getBuilder(registrationId) : new Builder(registrationId));
+		Builder builder = (provider != null ? provider.getBuilder(registrationId)
+				: new Builder(registrationId));
 		if (providers.containsKey(providerId)) {
 			return getBuilder(builder, providers.get(providerId));
 		}

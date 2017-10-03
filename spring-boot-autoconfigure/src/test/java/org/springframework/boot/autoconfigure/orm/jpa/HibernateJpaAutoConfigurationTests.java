@@ -75,12 +75,12 @@ public class HibernateJpaAutoConfigurationTests
 		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql",
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context.getStartupFailure())
-					.hasMessageContaining("ddl.sql");
-			assertThat(context.getStartupFailure())
-					.hasMessageContaining("spring.datasource.schema");
-		});
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("ddl.sql");
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("spring.datasource.schema");
+				});
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class HibernateJpaAutoConfigurationTests
 						"spring.datasource.data:classpath:/city.sql")
 				.run((context) -> assertThat(
 						context.getBean(TestInitializedJpaConfiguration.class).called)
-						.isTrue());
+								.isTrue());
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class HibernateJpaAutoConfigurationTests
 							.getJpaPropertyMap();
 					assertThat((String) jpaPropertyMap
 							.get("hibernate.transaction.jta.platform"))
-							.isEqualTo(TestJtaPlatform.class.getName());
+									.isEqualTo(TestJtaPlatform.class.getName());
 				});
 	}
 
@@ -183,13 +183,15 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void autoConfigurationBacksOffWithSeveralDataSources() {
-		contextRunner().withConfiguration(
-				AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
-						XADataSourceAutoConfiguration.class, JtaAutoConfiguration.class)
-		).withUserConfiguration(TestTwoDataSourcesConfiguration.class).run((context) -> {
-			assertThat(context).hasNotFailed();
-			assertThat(context).doesNotHaveBean(EntityManagerFactory.class);
-		});
+		contextRunner()
+				.withConfiguration(AutoConfigurations.of(
+						DataSourceTransactionManagerAutoConfiguration.class,
+						XADataSourceAutoConfiguration.class, JtaAutoConfiguration.class))
+				.withUserConfiguration(TestTwoDataSourcesConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context).doesNotHaveBean(EntityManagerFactory.class);
+				});
 	}
 
 	@Configuration

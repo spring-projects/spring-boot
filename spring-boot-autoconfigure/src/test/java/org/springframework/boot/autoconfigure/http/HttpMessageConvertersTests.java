@@ -114,8 +114,8 @@ public class HttpMessageConvertersTests {
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessConverters(
 					List<HttpMessageConverter<?>> converters) {
-				converters.removeIf((
-						converter) -> converter instanceof MappingJackson2XmlHttpMessageConverter);
+				converters.removeIf(
+						MappingJackson2XmlHttpMessageConverter.class::isInstance);
 				return converters;
 			}
 
@@ -141,8 +141,8 @@ public class HttpMessageConvertersTests {
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessPartConverters(
 					List<HttpMessageConverter<?>> converters) {
-				converters.removeIf((
-						converter) -> converter instanceof MappingJackson2XmlHttpMessageConverter);
+				converters.removeIf(
+						MappingJackson2XmlHttpMessageConverter.class::isInstance);
 				return converters;
 			}
 

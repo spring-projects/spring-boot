@@ -54,8 +54,7 @@ class OAuth2ClientRegistrationRepositoryConfiguration {
 
 	private final OAuth2ClientProperties properties;
 
-	OAuth2ClientRegistrationRepositoryConfiguration(
-			OAuth2ClientProperties properties) {
+	OAuth2ClientRegistrationRepositoryConfiguration(OAuth2ClientProperties properties) {
 		this.properties = properties;
 	}
 
@@ -103,4 +102,3 @@ class OAuth2ClientRegistrationRepositoryConfiguration {
 	}
 
 }
-

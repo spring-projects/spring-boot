@@ -119,7 +119,6 @@ class DataSourceInitializer {
 			String username = this.properties.getDataUsername();
 			String password = this.properties.getDataPassword();
 			runScripts(scripts, username, password);
-
 		}
 	}
 

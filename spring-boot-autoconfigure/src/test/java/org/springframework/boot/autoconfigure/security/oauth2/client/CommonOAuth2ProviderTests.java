@@ -116,7 +116,8 @@ public class CommonOAuth2ProviderTests {
 		assertThat(providerDetails.getAuthorizationUri())
 				.isEqualTo("http://example.com/auth");
 		assertThat(providerDetails.getTokenUri()).isEqualTo("http://example.com/token");
-		assertThat(providerDetails.getUserInfoEndpoint().getUri()).isEqualTo("http://example.com/info");
+		assertThat(providerDetails.getUserInfoEndpoint().getUri())
+				.isEqualTo("http://example.com/info");
 		assertThat(providerDetails.getUserInfoEndpoint().getUserNameAttributeName())
 				.isEqualTo(null);
 		assertThat(providerDetails.getJwkSetUri()).isNull();
@@ -136,9 +137,7 @@ public class CommonOAuth2ProviderTests {
 	}
 
 	private Builder builder(CommonOAuth2Provider provider) {
-		return provider.getBuilder("123")
-				.clientId("abcd")
-				.clientSecret("secret");
+		return provider.getBuilder("123").clientId("abcd").clientSecret("secret");
 	}
 
 }

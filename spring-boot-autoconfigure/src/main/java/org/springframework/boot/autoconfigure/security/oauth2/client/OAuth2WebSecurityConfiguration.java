@@ -36,7 +36,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 class OAuth2WebSecurityConfiguration {
 
 	@Configuration
-	static class OAuth2WebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+	static class OAuth2WebSecurityConfigurationAdapter
+			extends WebSecurityConfigurerAdapter {
 
 		private final ClientRegistrationRepository clientRegistrationRepository;
 
@@ -47,15 +48,10 @@ class OAuth2WebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http
-					.authorizeRequests()
-					.anyRequest()
-					.authenticated().and()
-					.oauth2Login()
+			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login()
 					.clients(this.clientRegistrationRepository);
 		}
 
 	}
 
 }
-

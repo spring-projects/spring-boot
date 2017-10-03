@@ -64,4 +64,5 @@ public class OAuth2ClientPropertiesTests {
 		this.thrown.expectMessage("Provider must not be empty.");
 		this.properties.validate();
 	}
+
 }

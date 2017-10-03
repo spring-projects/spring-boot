@@ -26,7 +26,8 @@ import org.springframework.context.ApplicationEvent;
  * are executed or when Hibernate initializes the database.
  *
  * @author Dave Syer
- * @since 1.1.0
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @SuppressWarnings("serial")
 public class DataSourceSchemaCreatedEvent extends ApplicationEvent {

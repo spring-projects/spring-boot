@@ -148,8 +148,7 @@ public class TestRestTemplate {
 			interceptors = Collections.emptyList();
 		}
 		interceptors = new ArrayList<>(interceptors);
-		interceptors.removeIf(
-				(interceptor) -> interceptor instanceof BasicAuthorizationInterceptor);
+		interceptors.removeIf(BasicAuthorizationInterceptor.class::isInstance);
 		interceptors.add(new BasicAuthorizationInterceptor(username, password));
 		restTemplate.setInterceptors(interceptors);
 	}

@@ -67,7 +67,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adaptedProvider.getAuthorizationUri())
 				.isEqualTo("http://example.com/auth");
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
-		assertThat(adaptedProvider.getUserInfoEndpoint().getUri()).isEqualTo("http://example.com/info");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+				.isEqualTo("http://example.com/info");
 		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jkw");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");

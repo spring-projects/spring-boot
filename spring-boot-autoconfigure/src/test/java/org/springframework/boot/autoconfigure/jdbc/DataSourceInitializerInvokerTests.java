@@ -58,16 +58,14 @@ import static org.junit.Assert.fail;
 public class DataSourceInitializerInvokerTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialize=false",
 					"spring.datasource.url:jdbc:hsqldb:mem:init-"
 							+ UUID.randomUUID().toString());
 
 	@Test
 	public void dataSourceInitialized() {
-		this.contextRunner
-				.withPropertyValues("spring.datasource.initialize:true")
+		this.contextRunner.withPropertyValues("spring.datasource.initialize:true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSource.class);
 					DataSource dataSource = context.getBean(DataSource.class);
@@ -76,11 +74,9 @@ public class DataSourceInitializerInvokerTests {
 				});
 	}
 
-
 	@Test
 	public void initializationAppliesToCustomDataSource() {
-		this.contextRunner
-				.withUserConfiguration(OneDataSource.class)
+		this.contextRunner.withUserConfiguration(OneDataSource.class)
 				.withPropertyValues("spring.datasource.initialize:true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSource.class);
@@ -88,11 +84,10 @@ public class DataSourceInitializerInvokerTests {
 				});
 	}
 
-
 	private void assertDataSourceIsInitialized(DataSource dataSource) {
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertThat(template.queryForObject("SELECT COUNT(*) from BAR",
-				Integer.class)).isEqualTo(1);
+		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -133,13 +128,11 @@ public class DataSourceInitializerInvokerTests {
 
 	@Test
 	public void dataSourceInitializedWithExplicitSqlScriptEncoding() {
-		this.contextRunner
-				.withPropertyValues("spring.datasource.initialize:true",
-						"spring.datasource.sqlScriptEncoding:UTF-8",
-						"spring.datasource.schema:"
-								+ getRelativeLocationFor("encoding-schema.sql"),
-						"spring.datasource.data:"
-								+ getRelativeLocationFor("encoding-data.sql"))
+		this.contextRunner.withPropertyValues("spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:"
+						+ getRelativeLocationFor("encoding-schema.sql"),
+				"spring.datasource.data:" + getRelativeLocationFor("encoding-data.sql"))
 				.run((context) -> {
 					DataSource dataSource = context.getBean(DataSource.class);
 					assertThat(dataSource).isInstanceOf(HikariDataSource.class);
@@ -161,15 +154,14 @@ public class DataSourceInitializerInvokerTests {
 
 	@Test
 	public void initializationDoesNotApplyWithSeveralDataSources() {
-		this.contextRunner
-				.withUserConfiguration(TwoDataSources.class)
+		this.contextRunner.withUserConfiguration(TwoDataSources.class)
 				.withPropertyValues("spring.datasource.initialize:true")
 				.run((context) -> {
 					assertThat(context.getBeanNamesForType(DataSource.class)).hasSize(2);
-					assertDataSourceNotInitialized(context.getBean(
-							"oneDataSource", DataSource.class));
-					assertDataSourceNotInitialized(context.getBean(
-							"twoDataSource", DataSource.class));
+					assertDataSourceNotInitialized(
+							context.getBean("oneDataSource", DataSource.class));
+					assertDataSourceNotInitialized(
+							context.getBean("twoDataSource", DataSource.class));
 				});
 	}
 
@@ -185,8 +177,7 @@ public class DataSourceInitializerInvokerTests {
 	private void assertDataSourceNotInitialized(DataSource dataSource) {
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		try {
-			template.queryForObject("SELECT COUNT(*) from BAR",
-					Integer.class);
+			template.queryForObject("SELECT COUNT(*) from BAR", Integer.class);
 			fail("Query should have failed as BAR table does not exist");
 		}
 		catch (BadSqlGrammarException ex) {
@@ -199,16 +190,13 @@ public class DataSourceInitializerInvokerTests {
 
 	@Test
 	public void dataSourceInitializedWithSchemaCredentials() {
-		this.contextRunner
-				.withPropertyValues("spring.datasource.initialize:true",
-						"spring.datasource.sqlScriptEncoding:UTF-8",
-						"spring.datasource.schema:"
-								+ getRelativeLocationFor("encoding-schema.sql"),
-						"spring.datasource.data:"
-								+ getRelativeLocationFor("encoding-data.sql"),
-						"spring.datasource.schema-username:admin",
-						"spring.datasource.schema-password:admin")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:"
+						+ getRelativeLocationFor("encoding-schema.sql"),
+				"spring.datasource.data:" + getRelativeLocationFor("encoding-data.sql"),
+				"spring.datasource.schema-username:admin",
+				"spring.datasource.schema-password:admin").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure())
 							.isInstanceOf(BeanCreationException.class);
@@ -217,16 +205,13 @@ public class DataSourceInitializerInvokerTests {
 
 	@Test
 	public void dataSourceInitializedWithDataCredentials() {
-		this.contextRunner
-				.withPropertyValues("spring.datasource.initialize:true",
-						"spring.datasource.sqlScriptEncoding:UTF-8",
-						"spring.datasource.schema:"
-								+ getRelativeLocationFor("encoding-schema.sql"),
-						"spring.datasource.data:"
-								+ getRelativeLocationFor("encoding-data.sql"),
-						"spring.datasource.data-username:admin",
-						"spring.datasource.data-password:admin")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:"
+						+ getRelativeLocationFor("encoding-schema.sql"),
+				"spring.datasource.data:" + getRelativeLocationFor("encoding-data.sql"),
+				"spring.datasource.data-username:admin",
+				"spring.datasource.data-password:admin").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure())
 							.isInstanceOf(BeanCreationException.class);
