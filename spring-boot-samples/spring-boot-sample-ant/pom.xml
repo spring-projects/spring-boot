@@ -1,19 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<!-- This POM is just to trigger the Ant/Ivy sample from Maven and to test -->
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-boot-sample-ant</artifactId>
 	<name>Spring Boot Ant Sample</name>
 	<description>Spring Boot Ant Sample</description>
-	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<ant.version>1.9.3</ant.version>
@@ -26,12 +23,16 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-loader</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-antlib</artifactId>
-			<version>2.0.0.BUILD-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>
@@ -61,8 +62,8 @@
 						<phase>package</phase>
 						<configuration>
 							<target>
-								<property name="build.compiler" value="extJavac"/>
-								<ant dir="${basedir}"/>
+								<property name="build.compiler" value="extJavac" />
+								<ant dir="${basedir}" />
 							</target>
 						</configuration>
 						<goals>
@@ -84,7 +85,7 @@
 					<dependency>
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-antlib</artifactId>
-						<version>2.0.0.BUILD-SNAPSHOT</version>
+						<version>${revision}</version>
 					</dependency>
 				</dependencies>
 			</plugin>

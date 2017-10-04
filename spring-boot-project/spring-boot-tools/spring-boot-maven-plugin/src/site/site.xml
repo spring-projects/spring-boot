@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+	<body>
+		<menu name="Overview">
+			<item name="Introduction" href="index.html"/>
+			<item name="Goals" href="plugin-info.html"/>
+			<item name="Usage" href="usage.html"/>
+		</menu>
+		<menu name="Examples">
+			<item name="Custom repackage classifier" href="examples/repackage-classifier.html"/>
+			<item name="Local repackaged artifact" href="examples/repackage-disable-attach.html"/>
+			<item name="Exclude a dependency" href="examples/exclude-dependency.html"/>
+			<item name="Debug the application" href="examples/run-debug.html"/>
+			<item name="Random port for integration tests" href="examples/it-random-port.html"/>
+			<item name="Skip integration tests" href="examples/it-skip.html"/>
+			<item name="Specify active profiles" href="examples/run-profiles.html"/>
+			<item name="Generate build information" href="examples/build-info.html"/>
+			<item name="Custom layout" href="examples/custom-layout.html"/>
+		</menu>
+		<menu ref="reports"/>
+	</body>
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.6</version>
+	</skin>
+</project>
