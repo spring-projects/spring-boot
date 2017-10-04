@@ -38,7 +38,6 @@
 		<module>spring-boot-starter-data-mongodb-reactive</module>
 		<module>spring-boot-starter-data-neo4j</module>
 		<module>spring-boot-starter-data-redis</module>
-		<module>spring-boot-starter-data-redis-reactive</module>
 		<module>spring-boot-starter-data-rest</module>
 		<module>spring-boot-starter-data-solr</module>
 		<module>spring-boot-starter-freemarker</module>

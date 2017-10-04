@@ -3352,14 +3352,13 @@ http://projects.spring.io/spring-data[projects.spring.io/spring-data].
 === Redis
 http://redis.io/[Redis] is a cache, message broker and richly-featured key-value store.
 Spring Boot offers basic auto-configuration for the
-https://github.com/xetorthio/jedis/[Jedis] and https://github.com/mp911de/lettuce/[Lettuce]
-client library and abstractions on top of it provided by
-https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
+https://github.com/lettuce-io/lettuce-core/[Lettuce] and
+https://github.com/xetorthio/jedis/[Jedis] client library and abstractions on top of it
+provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
 
 There is a `spring-boot-starter-data-redis` '`Starter`' for collecting the dependencies in
-a convenient way that uses https://github.com/xetorthio/jedis/[Jedis] by default. If you
-are building a reactive application, the `spring-boot-starter-data-redis-reactive`
-'`Starter`' will get you going.
+a convenient way that uses https://github.com/lettuce-io/lettuce-core/[Lettuce] by
+default. Both traditional and regular applications are handled by that starter.
 
 
 
@@ -3387,8 +3386,8 @@ instance will attempt to connect to a Redis server using `localhost:6379`:
 ----
 
 TIP: You can also register an arbitrary number of beans implementing
-`JedisClientConfigurationBuilderCustomizer` for more advanced customizations. If you are
-using Lettuce, `LettuceClientConfigurationBuilderCustomizer` is also available.
+`LettuceClientConfigurationBuilderCustomizer` for more advanced customizations. If you are
+using Jedis, `JedisClientConfigurationBuilderCustomizer` is also available.
 
 If you add a `@Bean` of your own of any of the auto-configured types it will replace the
 default (except in the case of `RedisTemplate` the exclusion is based on the bean name

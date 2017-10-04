@@ -3029,13 +3029,12 @@ normal in a Spring Boot application (you normally only have one application cont
 
 
 
-[[howto-use-lettuce-instead-of-jedis]]
-=== Use Lettuce instead of Jedis
+[[howto-use-jedis-instead-of-lettuce]]
+=== Use Jedis instead of Lettuce
 The Spring Boot starter (`spring-boot-starter-data-redis`) uses
-https://github.com/xetorthio/jedis/[Jedis] by default. You need to exclude that dependency
-and include the https://github.com/lettuce-io/lettuce-core/[Lettuce] one instead. You also
-need `commons-pool2`. Spring Boot manages these dependencies to help make this process as
-easy as possible.
+https://github.com/lettuce-io/lettuce-core/[Lettuce] by default. You need to exclude that
+dependency and include the https://github.com/xetorthio/jedis/[Jedis] one instead. Spring
+Boot manages these dependencies to help make this process as easy as possible.
 
 Example in Maven:
 
@@ -3046,18 +3045,14 @@ Example in Maven:
 		<artifactId>spring-boot-starter-data-redis</artifactId>
 		<exclusions>
 			<exclusion>
-				<groupId>redis.clients</groupId>
-				<artifactId>jedis</artifactId>
+				<groupId>io.lettuce</groupId>
+				<artifactId>lettuce-core</artifactId>
 			</exclusion>
 		</exclusions>
 	</dependency>
 	<dependency>
-		<groupId>io.lettuce</groupId>
-		<artifactId>lettuce-core</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.apache.commons</groupId>
-		<artifactId>commons-pool2</artifactId>
+		<groupId>redis.clients</groupId>
+		<artifactId>jedis</artifactId>
 	</dependency>
 ----
 
@@ -3066,12 +3061,11 @@ Example in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	configurations {
-		compile.exclude module: "jedis"
+		compile.exclude module: "lettuce"
 	}
 
 	dependencies {
-		compile("io.lettuce:lettuce-core")
-		compile("org.apache.commons:commons-pool2")
+		compile("redis.clients:jedis")
 		// ...
 	}
 ----
