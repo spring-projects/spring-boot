@@ -214,7 +214,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	private void addTimeTaken(Map<String, Object> trace, long startTime) {
 		long timeTaken = System.nanoTime() - startTime;
 		add(trace, Include.TIME_TAKEN, "timeTaken",
-				"" + TimeUnit.NANOSECONDS.toMillis(timeTaken));
+				String.valueOf(TimeUnit.NANOSECONDS.toMillis(timeTaken)));
 	}
 
 	@SuppressWarnings("unchecked")
