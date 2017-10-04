@@ -15,18 +15,8 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>@maven-war-plugin.version@</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>org.springframework.boot.loader.WarLauncher</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Start-Class>org.springframework.boot.load.it.war.embedded.EmbeddedWarStarter</Start-Class>
-						</manifestEntries>
-					</archive>
-				</configuration>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>@maven-compiler-plugin.version@</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -53,8 +43,37 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>@maven-surefire-plugin.version@</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>@maven-war-plugin.version@</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>org.springframework.boot.loader.WarLauncher</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Start-Class>org.springframework.boot.load.it.war.embedded.EmbeddedWarStarter</Start-Class>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>@javax-annotation.version@</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
