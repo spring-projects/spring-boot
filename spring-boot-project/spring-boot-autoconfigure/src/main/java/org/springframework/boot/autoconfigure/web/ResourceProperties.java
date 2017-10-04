@@ -18,9 +18,17 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.context.properties.bind.convert.DurationUnit;
+import org.springframework.http.CacheControl;
+import org.springframework.util.Assert;
 
 /**
  * Properties used to configure resource handling.
@@ -29,6 +37,7 @@ import org.springframework.boot.context.properties.bind.convert.DurationUnit;
  * @author Brian Clozel
  * @author Dave Syer
  * @author Venil Noronha
+ * @author Kristine Jetzke
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
@@ -36,7 +45,7 @@ public class ResourceProperties {
 
 	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
 			"classpath:/META-INF/resources/", "classpath:/resources/",
-			"classpath:/static/", "classpath:/public/" };
+			"classpath:/static/", "classpath:/public/"};
 
 	/**
 	 * Locations of static resources. Defaults to classpath:[/META-INF/resources/,
@@ -50,6 +59,12 @@ public class ResourceProperties {
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration cachePeriod;
+
+	/**
+	 * Cache control headers. Either {@link #cachePeriod} or {@link #cacheControl} can be set.
+	 */
+	@NestedConfigurationProperty
+	private CacheControlProperties cacheControl;
 
 	/**
 	 * Enable default resource handling.
@@ -83,6 +98,15 @@ public class ResourceProperties {
 		this.cachePeriod = cachePeriod;
 	}
 
+	public CacheControlProperties getCacheControl() {
+		return this.cacheControl;
+	}
+
+	public void setCacheControl(CacheControlProperties cacheControl) {
+		this.cacheControl = cacheControl;
+	}
+
+
 	public boolean isAddMappings() {
 		return this.addMappings;
 	}
@@ -93,6 +117,36 @@ public class ResourceProperties {
 
 	public Chain getChain() {
 		return this.chain;
+	}
+
+	public CacheControl createCacheControl() {
+		if (this.cachePeriod != null) {
+			return CacheControl.maxAge(this.cachePeriod.getSeconds(), TimeUnit.SECONDS);
+		}
+		if (this.cacheControl != null) {
+			return this.cacheControl.transformToHttpSpringCacheControl();
+		}
+		return null;
+	}
+
+	@PostConstruct
+	public void checkIncompatibleCacheOptions() {
+		Assert.state(this.cachePeriod == null || this.cacheControl == null,
+				"Only one of cache-period or cache-control may be set.");
+		if (this.cacheControl != null) {
+			if (this.cacheControl.getMaxAge() != null) {
+				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoCache()), "no-cache may not be set if max-age is set.");
+				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoStore()), "no-store may not be set if max-age is set.");
+			}
+			if (this.cacheControl.getNoCache() != null) {
+				Assert.state(this.cacheControl.getMaxAge() == null, "max-age may not be set if no-cache is set.");
+				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoStore()), "no-store may not be set if no-cache is set.");
+			}
+			if (this.cacheControl.getNoStore() != null) {
+				Assert.state(this.cacheControl.getMaxAge() == null, "max-age may not be set if no-store is set.");
+				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoCache()), "no-cache may not be set if no-store is set.");
+			}
+		}
 	}
 
 	/**
@@ -127,8 +181,9 @@ public class ResourceProperties {
 		/**
 		 * Return whether the resource chain is enabled. Return {@code null} if no
 		 * specific settings are present.
-		 * @return whether the resource chain is enabled or {@code null} if no specified
-		 * settings are present.
+		 *
+		 * @return whether the resource chain is enabled or {@code null} if no specified settings are
+		 * present.
 		 */
 		public Boolean getEnabled() {
 			return getEnabled(getStrategy().getFixed().isEnabled(),
@@ -206,7 +261,7 @@ public class ResourceProperties {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths = new String[] { "/**" };
+		private String[] paths = new String[]{"/**"};
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -239,7 +294,7 @@ public class ResourceProperties {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths = new String[] { "/**" };
+		private String[] paths = new String[]{"/**"};
 
 		/**
 		 * Version string to use for the Version Strategy.
@@ -271,5 +326,184 @@ public class ResourceProperties {
 		}
 
 	}
+
+	/**
+	 * Configuration for the Cache Control header.
+	 */
+
+	public static class CacheControlProperties {
+
+		private Long maxAge;
+
+		private Boolean noCache;
+
+		private Boolean noStore;
+
+		private Boolean mustRevalidate;
+
+		private Boolean noTransform;
+
+		private Boolean cachePublic;
+
+		private Boolean cachePrivate;
+
+		private Boolean proxyRevalidate;
+
+		private Long staleWhileRevalidate;
+
+		private Long staleIfError;
+
+		private Long sMaxAge;
+
+		public Long getMaxAge() {
+			return this.maxAge;
+		}
+
+		public void setMaxAge(Long maxAge) {
+			this.maxAge = maxAge;
+		}
+
+		public Boolean getNoCache() {
+			return this.noCache;
+		}
+
+		public void setNoCache(Boolean noCache) {
+			this.noCache = noCache;
+		}
+
+		public Boolean getNoStore() {
+			return this.noStore;
+		}
+
+		public void setNoStore(Boolean noStore) {
+			this.noStore = noStore;
+		}
+
+		public Boolean getMustRevalidate() {
+			return this.mustRevalidate;
+		}
+
+		public void setMustRevalidate(Boolean mustRevalidate) {
+			this.mustRevalidate = mustRevalidate;
+		}
+
+		public Boolean getNoTransform() {
+			return this.noTransform;
+		}
+
+		public void setNoTransform(Boolean noTransform) {
+			this.noTransform = noTransform;
+		}
+
+		public Boolean getCachePublic() {
+			return this.cachePublic;
+		}
+
+		public void setCachePublic(Boolean cachePublic) {
+			this.cachePublic = cachePublic;
+		}
+
+		public Boolean getCachePrivate() {
+			return this.cachePrivate;
+		}
+
+		public void setCachePrivate(Boolean cachePrivate) {
+			this.cachePrivate = cachePrivate;
+		}
+
+		public Boolean getProxyRevalidate() {
+			return this.proxyRevalidate;
+		}
+
+		public void setProxyRevalidate(Boolean proxyRevalidate) {
+			this.proxyRevalidate = proxyRevalidate;
+		}
+
+		public Long getStaleWhileRevalidate() {
+			return this.staleWhileRevalidate;
+		}
+
+		public void setStaleWhileRevalidate(Long staleWhileRevalidate) {
+			this.staleWhileRevalidate = staleWhileRevalidate;
+		}
+
+		public Long getStaleIfError() {
+			return this.staleIfError;
+		}
+
+		public void setStaleIfError(Long staleIfError) {
+			this.staleIfError = staleIfError;
+		}
+
+		public Long getsMaxAge() {
+			return this.sMaxAge;
+		}
+
+		public void setsMaxAge(Long sMaxAge) {
+			this.sMaxAge = sMaxAge;
+		}
+
+		CacheControl transformToHttpSpringCacheControl() {
+			CacheControl httpSpringCacheControl = initCacheControl();
+			httpSpringCacheControl = setFlags(httpSpringCacheControl);
+			httpSpringCacheControl = setTimes(httpSpringCacheControl);
+			return httpSpringCacheControl;
+		}
+
+		private CacheControl initCacheControl() {
+			if (this.maxAge != null) {
+				return CacheControl.maxAge(this.maxAge, TimeUnit.SECONDS);
+			}
+			if (Boolean.TRUE.equals(this.noCache)) {
+				return CacheControl.noCache();
+			}
+			if (Boolean.TRUE.equals(this.noStore)) {
+				return CacheControl.noStore();
+			}
+			return CacheControl.empty();
+		}
+
+		private CacheControl setFlags(CacheControl cacheControl) {
+			cacheControl = setBoolean(this.mustRevalidate, cacheControl::mustRevalidate,
+					cacheControl);
+			cacheControl = setBoolean(this.noTransform, cacheControl::noTransform,
+					cacheControl);
+			cacheControl = setBoolean(this.cachePublic, cacheControl::cachePublic,
+					cacheControl);
+			cacheControl = setBoolean(this.cachePrivate, cacheControl::cachePrivate,
+					cacheControl);
+			cacheControl = setBoolean(this.proxyRevalidate, cacheControl::proxyRevalidate,
+					cacheControl);
+			return cacheControl;
+		}
+
+		private static CacheControl setBoolean(Boolean value,
+				Supplier<CacheControl> setter, CacheControl cacheControl) {
+			if (Boolean.TRUE.equals(value)) {
+				return setter.get();
+			}
+			return cacheControl;
+		}
+
+		private CacheControl setTimes(CacheControl cacheControl) {
+			cacheControl = setLong(this.staleWhileRevalidate,
+					cacheControl::staleWhileRevalidate, cacheControl);
+			cacheControl = setLong(this.staleIfError, cacheControl::staleIfError,
+					cacheControl);
+			cacheControl = setLong(this.sMaxAge, cacheControl::sMaxAge, cacheControl);
+			return cacheControl;
+		}
+
+		private static CacheControl setLong(Long value,
+				BiFunction<Long, TimeUnit, CacheControl> setter,
+				CacheControl cacheControl) {
+			if (value != null) {
+				return setter.apply(value, TimeUnit.SECONDS);
+			}
+			return cacheControl;
+		}
+
+	}
+
 
 }
