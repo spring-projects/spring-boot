@@ -46,7 +46,7 @@ class DefinitionsParser {
 	private final Map<Definition, Field> definitionFields;
 
 	DefinitionsParser() {
-		this(Collections.<Definition>emptySet());
+		this(Collections.emptySet());
 	}
 
 	DefinitionsParser(Collection<? extends Definition> existing) {

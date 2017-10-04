@@ -79,7 +79,7 @@ public class SpringApplicationBuilderTests {
 	public void propertiesAsMap() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
-				.properties(Collections.<String, Object>singletonMap("bar", "foo"));
+				.properties(Collections.singletonMap("bar", "foo"));
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
 	}

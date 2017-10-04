@@ -38,7 +38,7 @@ import org.springframework.boot.cli.command.run.RunCommand;
  */
 public class DefaultCommandFactory implements CommandFactory {
 
-	private static final List<Command> defaultCommands = Arrays.<Command>asList(
+	private static final List<Command> defaultCommands = Arrays.asList(
 			new VersionCommand(), new RunCommand(), new GrabCommand(), new JarCommand(),
 			new WarCommand(), new InstallCommand(), new UninstallCommand(),
 			new InitCommand());

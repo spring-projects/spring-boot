@@ -131,7 +131,7 @@ public abstract class AutoConfigurationPackages {
 
 		@Override
 		public Set<Object> determineImports(AnnotationMetadata metadata) {
-			return Collections.<Object>singleton(new PackageImport(metadata));
+			return Collections.singleton(new PackageImport(metadata));
 		}
 
 	}

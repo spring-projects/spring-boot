@@ -738,7 +738,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void addBeforeDefaultProperties() throws Exception {
 		MapPropertySource defaultSource = new MapPropertySource("defaultProperties",
-				Collections.<String, Object>singletonMap("the.property",
+				Collections.singletonMap("the.property",
 						"fromdefaultproperties"));
 		this.environment.getPropertySources().addFirst(defaultSource);
 		this.initializer.setSearchNames("testproperties");

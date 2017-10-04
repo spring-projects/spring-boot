@@ -113,7 +113,7 @@ public class Book extends TableImpl<Record> {
 	 */
 	@Override
 	public List<UniqueKey<Record>> getKeys() {
-		return Arrays.<UniqueKey<Record>>asList(Keys.CONSTRAINT_1);
+		return Arrays.asList(Keys.CONSTRAINT_1);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class Book extends TableImpl<Record> {
 	 */
 	@Override
 	public List<ForeignKey<Record, ?>> getReferences() {
-		return Arrays.<ForeignKey<Record, ?>>asList(Keys.FK_BOOK_AUTHOR,
+		return Arrays.asList(Keys.FK_BOOK_AUTHOR,
 				Keys.FK_BOOK_LANGUAGE);
 	}
 

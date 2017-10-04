@@ -38,7 +38,7 @@ public abstract class GroovyTemplate {
 
 	public static String template(String name)
 			throws IOException, CompilationFailedException, ClassNotFoundException {
-		return template(name, Collections.<String, Object>emptyMap());
+		return template(name, Collections.emptyMap());
 	}
 
 	public static String template(String name, Map<String, ?> model)
