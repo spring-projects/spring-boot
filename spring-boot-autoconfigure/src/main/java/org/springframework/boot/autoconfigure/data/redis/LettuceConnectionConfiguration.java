@@ -22,10 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.lettuce.core.RedisClient;
-import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
-import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -50,8 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass({ GenericObjectPool.class, RedisClient.class,
-		RedisClusterClient.class })
+@ConditionalOnClass(RedisClient.class)
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
@@ -84,15 +81,6 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		return createLettuceConnectionFactory(clientConfig);
 	}
 
-	private static GenericObjectPoolConfig lettucePoolConfig(RedisProperties.Pool props) {
-		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-		config.setMaxTotal(props.getMaxActive());
-		config.setMaxIdle(props.getMaxIdle());
-		config.setMinIdle(props.getMinIdle());
-		config.setMaxWaitMillis(props.getMaxWait());
-		return config;
-	}
-
 	private LettuceConnectionFactory createLettuceConnectionFactory(
 			LettuceClientConfiguration clientConfiguration) {
 		if (getSentinelConfig() != null) {
@@ -107,14 +95,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceClientConfiguration getLettuceClientConfiguration(
 			ClientResources clientResources, Pool pool) {
-		LettuceClientConfigurationBuilder builder;
-		if (pool != null) {
-			builder = LettucePoolingClientConfiguration.builder()
-					.poolConfig(lettucePoolConfig(pool));
-		}
-		else {
-			builder = LettuceClientConfiguration.builder();
-		}
+		LettuceClientConfigurationBuilder builder = createBuilder(pool);
 		applyProperties(builder);
 		if (StringUtils.hasText(this.properties.getUrl())) {
 			customizeConfigurationFromUrl(builder);
@@ -122,6 +103,13 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		builder.clientResources(clientResources);
 		customize(builder);
 		return builder.build();
+	}
+
+	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
+		if (pool == null) {
+			return LettuceClientConfiguration.builder();
+		}
+		return new PoolBuilderFactory().createBuilder(pool);
 	}
 
 	private LettuceClientConfigurationBuilder applyProperties(
@@ -155,6 +143,27 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		for (LettuceClientConfigurationBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}
+	}
+
+	/**
+	 * Inner class to allow optional commons-pool2 dependency.
+	 */
+	private static class PoolBuilderFactory {
+
+		public LettuceClientConfigurationBuilder createBuilder(Pool properties) {
+			return LettucePoolingClientConfiguration.builder()
+					.poolConfig(getPoolConfig(properties));
+		}
+
+		private GenericObjectPoolConfig getPoolConfig(Pool properties) {
+			GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+			config.setMaxTotal(properties.getMaxActive());
+			config.setMaxIdle(properties.getMaxIdle());
+			config.setMinIdle(properties.getMinIdle());
+			config.setMaxWaitMillis(properties.getMaxWait());
+			return config;
+		}
+
 	}
 
 }
