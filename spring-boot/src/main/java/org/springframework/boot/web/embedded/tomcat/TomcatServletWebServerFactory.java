@@ -50,6 +50,7 @@ import org.apache.catalina.WebResourceRoot.ResourceSetType;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
@@ -64,6 +65,7 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 
 import org.springframework.boot.web.server.Compression;
@@ -122,7 +124,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<Valve> contextValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>(Arrays.asList(
+			new AprLifecycleListener()
+		));
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
 
@@ -173,6 +177,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 				: createTempDir("tomcat"));
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
+		connector.addUpgradeProtocol(new Http2Protocol());
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
