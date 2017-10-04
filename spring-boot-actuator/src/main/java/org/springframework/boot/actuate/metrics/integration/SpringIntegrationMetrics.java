@@ -189,8 +189,6 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	@Override
 	public void afterSingletonsInstantiated() {
-		// FIXME better would be to use a BeanPostProcessor
-		this.configurer.afterSingletonsInstantiated();
 		this.registries.forEach((registry) -> {
 			addChannelMetrics(registry);
 			addHandlerMetrics(registry);
