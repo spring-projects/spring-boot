@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.web.ResourceProperties.CacheControlProperties;
 import org.springframework.boot.testsupport.assertj.Matched;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +28,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
  * Tests for {@link ResourceProperties}.
  *
  * @author Stephane Nicoll
+ * @author Kristine Jetzke
  */
 public class ResourcePropertiesTests {
 
@@ -65,6 +67,56 @@ public class ResourcePropertiesTests {
 		this.properties.setStaticLocations(new String[] { "/foo", "/bar", "/baz/" });
 		String[] actual = this.properties.getStaticLocations();
 		assertThat(actual).containsExactly("/foo/", "/bar/", "/baz/");
+	}
+
+	@Test
+	public void cachePeriod() {
+		this.properties.setCachePeriod(5);
+		assertThat(this.properties.createCacheControl().getHeaderValue())
+				.isEqualTo("max-age=5");
+	}
+
+	@Test
+	public void cacheControlAllPropertiesSet() {
+		CacheControlProperties cacheControl = new CacheControlProperties();
+		cacheControl.setCachePrivate(true);
+		cacheControl.setCachePublic(true);
+		cacheControl.setMaxAge(4L);
+		cacheControl.setMustRevalidate(true);
+		cacheControl.setNoCache(true);
+		cacheControl.setNoCache(true);
+		cacheControl.setNoStore(true);
+		cacheControl.setNoTransform(true);
+		cacheControl.setProxyRevalidate(true);
+		cacheControl.setsMaxAge(5L);
+		cacheControl.setStaleIfError(6L);
+		cacheControl.setStaleWhileRevalidate(7L);
+		this.properties.setCacheControl(cacheControl);
+		assertThat(this.properties.createCacheControl().getHeaderValue()).isEqualTo(
+				"max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate, s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
+	}
+
+	@Test
+	public void cacheControlNoPropertiesSet() {
+		this.properties.setCacheControl(new CacheControlProperties());
+		assertThat(this.properties.createCacheControl().getHeaderValue()).isNull();
+	}
+
+	@Test
+	public void cacheControlAndCachePeriodSet() {
+		CacheControlProperties cacheControl = new CacheControlProperties();
+		cacheControl.setMaxAge(12L);
+		this.properties.setCacheControl(cacheControl);
+		this.properties.setCachePeriod(6);
+		assertThat(this.properties.createCacheControl().getHeaderValue())
+				.isEqualTo("max-age=6");
+	}
+
+	@Test
+	public void cacheControlAndCachePeriodBothNotSet() {
+		this.properties.setCacheControl(null);
+		this.properties.setCachePeriod(null);
+		assertThat(this.properties.createCacheControl()).isNull();
 	}
 
 }
