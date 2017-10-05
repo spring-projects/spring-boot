@@ -16,17 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SimpleExportConfiguration}.

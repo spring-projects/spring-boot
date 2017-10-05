@@ -16,20 +16,18 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricsEndpoint}.
@@ -53,9 +51,9 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void listNamesProducesListOfUniqueMeterNames() {
-		registry.counter("com.example.foo");
-		registry.counter("com.example.bar");
-		registry.counter("com.example.foo");
+		this.registry.counter("com.example.foo");
+		this.registry.counter("com.example.bar");
+		this.registry.counter("com.example.foo");
 
 		Map<String, List<String>> result = this.endpoint.listNames();
 
@@ -66,11 +64,11 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void metricValuesAreTheSumOfAllTimeSeriesMatchingTags() {
-		registry.counter("cache", "result", "hit", "host", "1").increment(2);
-		registry.counter("cache", "result", "miss", "host", "1").increment(2);
-		registry.counter("cache", "result", "hit", "host", "2").increment(2);
+		this.registry.counter("cache", "result", "hit", "host", "1").increment(2);
+		this.registry.counter("cache", "result", "miss", "host", "1").increment(2);
+		this.registry.counter("cache", "result", "hit", "host", "2").increment(2);
 
-		MetricsEndpoint.Response response = this.endpoint.metric("cache", emptyList());
+		MetricsEndpoint.Response response = this.endpoint.metric("cache", Collections.emptyList());
 		assertThat(response.getName()).isEqualTo("cache");
 		assertThat(availableTagKeys(response)).containsExactly("result", "host");
 		assertThat(getCount(response)).hasValue(6.0);
@@ -82,7 +80,7 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void metricWithSpaceInTagValue() {
-		registry.counter("counter", "key", "a space").increment(2);
+		this.registry.counter("counter", "key", "a space").increment(2);
 
 		MetricsEndpoint.Response response = this.endpoint.metric("counter",
 				Collections.singletonList("key:a space"));
@@ -94,7 +92,7 @@ public class MetricsEndpointTests {
 	@Test
 	public void nonExistentMetric() {
 		MetricsEndpoint.Response response = this.endpoint.metric("does.not.exist",
-				emptyList());
+				Collections.emptyList());
 
 		assertThat(response).isNull();
 	}

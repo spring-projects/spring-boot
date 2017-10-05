@@ -16,18 +16,26 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.concat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import java.util.*;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Tag;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-
-import io.micrometer.core.instrument.*;
 
 /**
  * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
@@ -47,7 +55,7 @@ public class MetricsEndpoint {
 	@ReadOperation
 	public Map<String, List<String>> listNames() {
 		return Collections.singletonMap("names", this.registry.getMeters().stream()
-				.map(this::getMeterIdName).distinct().collect(toList()));
+				.map(this::getMeterIdName).distinct().collect(Collectors.toList()));
 	}
 
 	private String getMeterIdName(Meter meter) {
@@ -63,15 +71,16 @@ public class MetricsEndpoint {
 		List<Tag> tags = tag == null ? Collections.emptyList() : tag.stream().map(t -> {
 			String[] tagParts = t.split(":", 2);
 			return Tag.of(tagParts[0], tagParts[1]);
-		}).collect(toList());
+		}).collect(Collectors.toList());
 
 		Map<Statistic, Double> samples = new HashMap<>();
-		Map<String, List<String>> availableTags = new HashMap<>();
+		Map<String, Set<String>> availableTags = new HashMap<>();
 
 		Collection<Meter> meters = this.registry.find(requiredMetricName).tags(tags)
 				.meters();
-		if (meters.isEmpty())
+		if (meters.isEmpty()) {
 			return null;
+		}
 
 		for (Meter meter : meters) {
 			for (Measurement ms : meter.measure()) {
@@ -80,8 +89,8 @@ public class MetricsEndpoint {
 
 			for (Tag availableTag : meter.getId().getTags()) {
 				availableTags.merge(availableTag.getKey(),
-						Collections.singletonList(availableTag.getValue()),
-						(t1, t2) -> concat(t1.stream(), t2.stream()).collect(toList()));
+						Collections.singleton(availableTag.getValue()),
+						(t1, t2) -> Stream.concat(t1.stream(), t2.stream()).collect(Collectors.toSet()));
 			}
 		}
 
@@ -91,13 +100,16 @@ public class MetricsEndpoint {
 				samples.entrySet().stream()
 						.map(sample -> new Response.Sample(sample.getKey(),
 								sample.getValue()))
-						.collect(toList()),
+						.collect(Collectors.toList()),
 				availableTags.entrySet().stream()
 						.map(tagValues -> new Response.AvailableTag(tagValues.getKey(),
 								tagValues.getValue()))
-						.collect(toList()));
+						.collect(Collectors.toList()));
 	}
 
+	/**
+	 * Response payload.
+	 */
 	static class Response {
 
 		private final String name;
@@ -106,7 +118,7 @@ public class MetricsEndpoint {
 
 		private final List<AvailableTag> availableTags;
 
-		public Response(String name, List<Sample> measurements,
+		Response(String name, List<Sample> measurements,
 				List<AvailableTag> availableTags) {
 			this.name = name;
 			this.measurements = measurements;
@@ -114,34 +126,37 @@ public class MetricsEndpoint {
 		}
 
 		public String getName() {
-			return name;
+			return this.name;
 		}
 
 		public List<Sample> getMeasurements() {
-			return measurements;
+			return this.measurements;
 		}
 
 		public List<AvailableTag> getAvailableTags() {
-			return availableTags;
+			return this.availableTags;
 		}
 
+		/**
+		 * A set of tags for further dimensional drilldown and their potential values.
+		 */
 		static class AvailableTag {
 
 			private final String tag;
 
-			private final List<String> values;
+			private final Set<String> values;
 
-			AvailableTag(String tag, List<String> values) {
+			AvailableTag(String tag, Set<String> values) {
 				this.tag = tag;
 				this.values = values;
 			}
 
 			public String getTag() {
-				return tag;
+				return this.tag;
 			}
 
-			public List<String> getValues() {
-				return values;
+			public Set<String> getValues() {
+				return this.values;
 			}
 		}
 

@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.graphite;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
-
 import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteProtocol;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link GraphiteProperties} to a {@link GraphiteConfig}.
