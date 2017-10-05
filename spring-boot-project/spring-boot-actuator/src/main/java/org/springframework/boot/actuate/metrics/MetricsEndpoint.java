@@ -24,6 +24,7 @@ import java.util.*;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 import io.micrometer.core.instrument.*;
@@ -54,12 +55,12 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public Response metric(@Selector String requiredMetricName, List<String> tag) {
-
-		Assert.isTrue(tag.stream().allMatch(t -> t.contains(":")),
+	public Response metric(@Selector String requiredMetricName,
+			@Nullable List<String> tag) {
+		Assert.isTrue(tag == null || tag.stream().allMatch(t -> t.contains(":")),
 				"Each tag parameter must be in the form key=value");
 
-		List<Tag> tags = tag.stream().map(t -> {
+		List<Tag> tags = tag == null ? Collections.emptyList() : tag.stream().map(t -> {
 			String[] tagParts = t.split(":", 2);
 			return Tag.of(tagParts[0], tagParts[1]);
 		}).collect(toList());
@@ -67,7 +68,8 @@ public class MetricsEndpoint {
 		Map<Statistic, Double> samples = new HashMap<>();
 		Map<String, List<String>> availableTags = new HashMap<>();
 
-		Collection<Meter> meters = this.registry.find(requiredMetricName).tags(tags).meters();
+		Collection<Meter> meters = this.registry.find(requiredMetricName).tags(tags)
+				.meters();
 		if (meters.isEmpty())
 			return null;
 
