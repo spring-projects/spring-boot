@@ -23,6 +23,12 @@ jar {
 	}
 }
 
+test {
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
 eclipseJdt {
 	inputFile = rootProject.file('../../eclipse/org.eclipse.jdt.core.prefs')
 		doLast {
