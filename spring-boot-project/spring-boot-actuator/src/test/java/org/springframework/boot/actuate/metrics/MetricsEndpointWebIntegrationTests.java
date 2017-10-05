@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,9 +61,15 @@ public class MetricsEndpointWebIntegrationTests {
 	public void selectByName() throws IOException {
 		MetricsEndpointWebIntegrationTests.client.get()
 				.uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
-				.isOk().expectBody()
-				.jsonPath("['jvmMemoryUsed.area.nonheap.id.Compressed_Class_Space']")
-				.exists().jsonPath("['jvmMemoryUsed.area.heap.id.PS_Old_Gen']");
+				.isOk().expectBody().jsonPath("$.name").isEqualTo("jvm.memory.used");
+	}
+
+	@Test
+	public void selectByTag() {
+		MetricsEndpointWebIntegrationTests.client.get()
+				.uri("/application/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen")
+				.exchange().expectStatus().isOk().expectBody().jsonPath("$.name")
+				.isEqualTo("jvm.memory.used");
 	}
 
 	@Configuration

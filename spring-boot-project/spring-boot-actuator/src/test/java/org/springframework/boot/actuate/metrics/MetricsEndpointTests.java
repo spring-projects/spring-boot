@@ -16,34 +16,33 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleCounter;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MetricsEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Jon Schneider
  */
 public class MetricsEndpointTests {
 
-	private final MeterRegistry registry = mock(MeterRegistry.class);
+	private final MeterRegistry registry = new SimpleMeterRegistry();
 
 	private final MetricsEndpoint endpoint = new MetricsEndpoint(this.registry);
 
 	@Test
 	public void listNamesHandlesEmptyListOfMeters() {
-		given(this.registry.getMeters()).willReturn(Arrays.asList());
 		Map<String, List<String>> result = this.endpoint.listNames();
 		assertThat(result).containsOnlyKeys("names");
 		assertThat(result.get("names")).isEmpty();
@@ -51,23 +50,56 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void listNamesProducesListOfUniqueMeterNames() {
-		List<Meter> meters = Arrays.asList(createCounter("com.example.foo"),
-				createCounter("com.example.bar"), createCounter("com.example.foo"));
-		given(this.registry.getMeters()).willReturn(meters);
+		this.registry.counter("com.example.foo");
+		this.registry.counter("com.example.bar");
+		this.registry.counter("com.example.foo");
 		Map<String, List<String>> result = this.endpoint.listNames();
 		assertThat(result).containsOnlyKeys("names");
 		assertThat(result.get("names")).containsOnlyOnce("com.example.foo",
 				"com.example.bar");
 	}
 
-	private Meter createCounter(String name) {
-		return new SimpleCounter(createMeterId(name));
+	@Test
+	public void metricValuesAreTheSumOfAllTimeSeriesMatchingTags() {
+		this.registry.counter("cache", "result", "hit", "host", "1").increment(2);
+		this.registry.counter("cache", "result", "miss", "host", "1").increment(2);
+		this.registry.counter("cache", "result", "hit", "host", "2").increment(2);
+		MetricsEndpoint.Response response = this.endpoint.metric("cache",
+				Collections.emptyList());
+		assertThat(response.getName()).isEqualTo("cache");
+		assertThat(availableTagKeys(response)).containsExactly("result", "host");
+		assertThat(getCount(response)).hasValue(6.0);
+		response = this.endpoint.metric("cache", Collections.singletonList("result:hit"));
+		assertThat(availableTagKeys(response)).containsExactly("host");
+		assertThat(getCount(response)).hasValue(4.0);
 	}
 
-	private Id createMeterId(String name) {
-		Id id = mock(Id.class);
-		given(id.getName()).willReturn(name);
-		return id;
+	@Test
+	public void metricWithSpaceInTagValue() {
+		this.registry.counter("counter", "key", "a space").increment(2);
+		MetricsEndpoint.Response response = this.endpoint.metric("counter",
+				Collections.singletonList("key:a space"));
+		assertThat(response.getName()).isEqualTo("counter");
+		assertThat(availableTagKeys(response)).isEmpty();
+		assertThat(getCount(response)).hasValue(2.0);
+	}
+
+	@Test
+	public void nonExistentMetric() {
+		MetricsEndpoint.Response response = this.endpoint.metric("does.not.exist",
+				Collections.emptyList());
+		assertThat(response).isNull();
+	}
+
+	private Optional<Double> getCount(MetricsEndpoint.Response response) {
+		return response.getMeasurements().stream()
+				.filter((ms) -> ms.getStatistic().equals(Statistic.Count)).findAny()
+				.map(MetricsEndpoint.Response.Sample::getValue);
+	}
+
+	private Stream<String> availableTagKeys(MetricsEndpoint.Response response) {
+		return response.getAvailableTags().stream()
+				.map(MetricsEndpoint.Response.AvailableTag::getTag);
 	}
 
 }
