@@ -16,17 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 /**
  * Tests for {@link SimpleExportConfiguration}.
@@ -45,7 +45,8 @@ public class SimpleExportConfigurationTests {
 						"spring.metrics.graphite.enabled=false",
 						"spring.metrics.influx.enabled=false",
 						"spring.metrics.jmx.enabled=false",
-						"spring.metrics.prometheus.enabled=false")
+						"spring.metrics.prometheus.enabled=false",
+						"spring.metrics.statsd.enabled=false")
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.run((context) -> {
 					CompositeMeterRegistry meterRegistry = context
