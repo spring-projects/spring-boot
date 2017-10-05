@@ -64,7 +64,7 @@ public class PrometheusExportConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock clock() {
+	public Clock micrometerClock() {
 		return Clock.SYSTEM;
 	}
 

@@ -57,7 +57,7 @@ public class AtlasExportConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock clock() {
+	public Clock micrometerClock() {
 		return Clock.SYSTEM;
 	}
 
