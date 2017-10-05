@@ -16,24 +16,17 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
 
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.NamingConvention;
-import io.micrometer.core.instrument.Statistic;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
+import java.util.*;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.util.Assert;
+
+import io.micrometer.core.instrument.*;
 
 /**
  * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
@@ -53,7 +46,7 @@ public class MetricsEndpoint {
 	@ReadOperation
 	public Map<String, List<String>> listNames() {
 		return Collections.singletonMap("names", this.registry.getMeters().stream()
-				.map(this::getMeterIdName).distinct().collect(Collectors.toList()));
+				.map(this::getMeterIdName).distinct().collect(toList()));
 	}
 
 	private String getMeterIdName(Meter meter) {
@@ -61,57 +54,122 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public Map<String, Collection<MeasurementSample>> metric(
-			@Selector String requiredMetricName) {
-		return this.registry.find(requiredMetricName).meters().stream()
-				.collect(Collectors.toMap(this::getHierarchicalName, this::getSamples));
-	}
+	public Response metric(@Selector String requiredMetricName, List<String> tag) {
 
-	private List<MeasurementSample> getSamples(Meter meter) {
-		return stream(meter.measure()).map(this::getSample).collect(Collectors.toList());
-	}
+		Assert.isTrue(tag.stream().allMatch(t -> t.contains(":")),
+				"Each tag parameter must be in the form key=value");
 
-	private MeasurementSample getSample(Measurement measurement) {
-		return new MeasurementSample(measurement.getStatistic(), measurement.getValue());
-	}
+		List<Tag> tags = tag.stream().map(t -> {
+			String[] tagParts = t.split(":", 2);
+			return Tag.of(tagParts[0], tagParts[1]);
+		}).collect(toList());
 
-	private String getHierarchicalName(Meter meter) {
-		return HierarchicalNameMapper.DEFAULT.toHierarchicalName(meter.getId(),
-				NamingConvention.camelCase);
-	}
+		Map<Statistic, Double> samples = new HashMap<>();
+		Map<String, List<String>> availableTags = new HashMap<>();
 
-	private <T> Stream<T> stream(Iterable<T> measure) {
-		return StreamSupport.stream(measure.spliterator(), false);
-	}
+		Collection<Meter> meters = this.registry.find(requiredMetricName).tags(tags).meters();
+		if (meters.isEmpty())
+			return null;
 
-	/**
-	 * A measurement sample combining a {@link Statistic statistic} and a value.
-	 */
-	static class MeasurementSample {
+		for (Meter meter : meters) {
+			for (Measurement ms : meter.measure()) {
+				samples.merge(ms.getStatistic(), ms.getValue(), Double::sum);
+			}
 
-		private final Statistic statistic;
-
-		private final Double value;
-
-		MeasurementSample(Statistic statistic, Double value) {
-			this.statistic = statistic;
-			this.value = value;
+			for (Tag availableTag : meter.getId().getTags()) {
+				availableTags.merge(availableTag.getKey(),
+						Collections.singletonList(availableTag.getValue()),
+						(t1, t2) -> concat(t1.stream(), t2.stream()).collect(toList()));
+			}
 		}
 
-		public Statistic getStatistic() {
-			return this.statistic;
-		}
+		tags.forEach(t -> availableTags.remove(t.getKey()));
 
-		public Double getValue() {
-			return this.value;
-		}
-
-		@Override
-		public String toString() {
-			return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
-					+ this.value + '}';
-		}
-
+		return new Response(requiredMetricName,
+				samples.entrySet().stream()
+						.map(sample -> new Response.Sample(sample.getKey(),
+								sample.getValue()))
+						.collect(toList()),
+				availableTags.entrySet().stream()
+						.map(tagValues -> new Response.AvailableTag(tagValues.getKey(),
+								tagValues.getValue()))
+						.collect(toList()));
 	}
 
+	static class Response {
+
+		private final String name;
+
+		private final List<Sample> measurements;
+
+		private final List<AvailableTag> availableTags;
+
+		public Response(String name, List<Sample> measurements,
+				List<AvailableTag> availableTags) {
+			this.name = name;
+			this.measurements = measurements;
+			this.availableTags = availableTags;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public List<Sample> getMeasurements() {
+			return measurements;
+		}
+
+		public List<AvailableTag> getAvailableTags() {
+			return availableTags;
+		}
+
+		static class AvailableTag {
+
+			private final String tag;
+
+			private final List<String> values;
+
+			AvailableTag(String tag, List<String> values) {
+				this.tag = tag;
+				this.values = values;
+			}
+
+			public String getTag() {
+				return tag;
+			}
+
+			public List<String> getValues() {
+				return values;
+			}
+		}
+
+		/**
+		 * A measurement sample combining a {@link Statistic statistic} and a value.
+		 */
+		static class Sample {
+
+			private final Statistic statistic;
+
+			private final Double value;
+
+			Sample(Statistic statistic, Double value) {
+				this.statistic = statistic;
+				this.value = value;
+			}
+
+			public Statistic getStatistic() {
+				return this.statistic;
+			}
+
+			public Double getValue() {
+				return this.value;
+			}
+
+			@Override
+			public String toString() {
+				return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
+						+ this.value + '}';
+			}
+		}
+	}
 }
