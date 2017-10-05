@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.graphite.GraphiteConfig;
+import io.micrometer.graphite.GraphiteProtocol;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
 
@@ -72,6 +73,11 @@ class GraphitePropertiesConfigAdapter
 	@Override
 	public int port() {
 		return get(GraphiteProperties::getPort, GraphiteConfig::port);
+	}
+
+	@Override
+	public GraphiteProtocol protocol() {
+		return get(GraphiteProperties::getProtocol, GraphiteConfig::protocol);
 	}
 
 }
