@@ -36,6 +36,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.influx.Infl
 import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleExportConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.WebFluxMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
@@ -67,7 +68,8 @@ import org.springframework.integration.support.management.IntegrationManagementC
 		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
 		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
 		InfluxExportConfiguration.class, JmxExportConfiguration.class,
-		PrometheusExportConfiguration.class, SimpleExportConfiguration.class })
+		PrometheusExportConfiguration.class, SimpleExportConfiguration.class,
+		StatsdExportConfiguration.class })
 public class MetricsAutoConfiguration {
 
 	@Bean

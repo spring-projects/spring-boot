@@ -45,7 +45,8 @@ public class SimpleExportConfigurationTests {
 						"spring.metrics.graphite.enabled=false",
 						"spring.metrics.influx.enabled=false",
 						"spring.metrics.jmx.enabled=false",
-						"spring.metrics.prometheus.enabled=false")
+						"spring.metrics.prometheus.enabled=false",
+						"spring.metrics.statsd.enabled=false")
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.run((context) -> {
 					CompositeMeterRegistry meterRegistry = context

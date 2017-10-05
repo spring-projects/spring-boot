@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.graphite;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import io.micrometer.graphite.GraphiteProtocol;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -58,6 +60,11 @@ public class GraphiteProperties {
 	 * Graphite port used for publishing.
 	 */
 	private Integer port;
+
+	/**
+	 * Protocol to use while shipping data to Graphite.
+	 */
+	private GraphiteProtocol protocol = GraphiteProtocol.Pickled;
 
 	public Boolean getEnabled() {
 		return this.enabled;
@@ -105,5 +112,13 @@ public class GraphiteProperties {
 
 	public void setPort(Integer port) {
 		this.port = port;
+	}
+
+	public GraphiteProtocol getProtocol() {
+		return this.protocol;
+	}
+
+	public void setProtocol(GraphiteProtocol protocol) {
+		this.protocol = protocol;
 	}
 }
