@@ -31,6 +31,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -43,7 +44,7 @@ import org.springframework.util.Assert;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@Endpoint(id = "metrics")
+@Endpoint(id = "metrics", defaultEnablement = DefaultEnablement.ENABLED)
 public class MetricsEndpoint {
 
 	private final MeterRegistry registry;
