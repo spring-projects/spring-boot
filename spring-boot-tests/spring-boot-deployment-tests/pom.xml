@@ -13,7 +13,7 @@
 	<description>Spring Boot Deployment Tests</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<java.version>1.7</java.version>
+		<java.version>1.8</java.version>
 		<cargo.timeout>600000</cargo.timeout>
 		<cargo.container.download-dir>${settings.localRepository}/.cache/cargo/installs</cargo.container.download-dir>
 	</properties>
