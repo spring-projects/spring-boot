@@ -88,7 +88,7 @@ public class OAuth2WebSecurityConfigurationTests {
 				.run((context) -> assertThat(getAuthCodeFilters(context)).isEmpty());
 	}
 
-	@SuppressWarnings({ "unchecked", "cast" })
+	@SuppressWarnings("unchecked")
 	private List<Filter> getAuthCodeFilters(AssertableApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
 				.getBean("springSecurityFilterChain");

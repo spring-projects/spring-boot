@@ -34,8 +34,6 @@ import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,7 +44,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -269,18 +266,6 @@ public class SecurityAutoConfigurationTests {
 				.getField(bean, "dispatcherTypes");
 		assertThat(dispatcherTypes).containsOnly(DispatcherType.INCLUDE,
 				DispatcherType.ERROR);
-	}
-
-	private static final class AuthenticationListener
-			implements ApplicationListener<AbstractAuthenticationEvent> {
-
-		private ApplicationEvent event;
-
-		@Override
-		public void onApplicationEvent(AbstractAuthenticationEvent event) {
-			this.event = event;
-		}
-
 	}
 
 	@Configuration
