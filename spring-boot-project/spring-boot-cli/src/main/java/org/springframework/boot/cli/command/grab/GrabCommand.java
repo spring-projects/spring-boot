@@ -48,17 +48,13 @@ public class GrabCommand extends OptionParsingCommand {
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
 			SourceOptions sourceOptions = new SourceOptions(options);
-
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-
 			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(
 					options, this, repositoryConfiguration);
-
 			if (System.getProperty("grape.root") == null) {
 				System.setProperty("grape.root", ".");
 			}
-
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
 			groovyCompiler.compile(sourceOptions.getSourcesArray());
 			return ExitStatus.OK;
