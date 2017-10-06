@@ -16,11 +16,14 @@
 
 package org.springframework.boot.actuate.metrics;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +32,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -52,9 +56,22 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public Map<String, List<String>> listNames() {
-		return Collections.singletonMap("names", this.registry.getMeters().stream()
-				.map(this::getMeterIdName).distinct().collect(Collectors.toList()));
+	public ListNamesResponse listNames() {
+		return new ListNamesResponse(recurseListNames(this.registry));
+	}
+
+	private Set<String> recurseListNames(MeterRegistry registry) {
+		Set<String> names = new HashSet<>();
+		if (registry instanceof CompositeMeterRegistry) {
+			for (MeterRegistry compositeMember : ((CompositeMeterRegistry) registry)
+					.getRegistries()) {
+				names.addAll(recurseListNames(compositeMember));
+			}
+		}
+		else {
+			registry.getMeters().stream().map(this::getMeterIdName).forEach(names::add);
+		}
+		return names;
 	}
 
 	private String getMeterIdName(Meter meter) {
@@ -62,13 +79,12 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public Response metric(@Selector String requiredMetricName,
+	public MetricResponse metric(@Selector String requiredMetricName,
 			@Nullable List<String> tag) {
 		Assert.isTrue(tag == null || tag.stream().allMatch((t) -> t.contains(":")),
 				"Each tag parameter must be in the form key:value");
 		List<Tag> tags = parseTags(tag);
-		Collection<Meter> meters = this.registry.find(requiredMetricName).tags(tags)
-				.meters();
+		Collection<Meter> meters = recurseFindMeter(this.registry, requiredMetricName, tags);
 		if (meters.isEmpty()) {
 			return null;
 		}
@@ -90,16 +106,30 @@ public class MetricsEndpoint {
 
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
 
-		return new Response(requiredMetricName,
+		return new MetricResponse(requiredMetricName,
 				samples.entrySet().stream()
-						.map((sample) -> new Response.Sample(sample.getKey(),
+						.map((sample) -> new MetricResponse.Sample(sample.getKey(),
 								sample.getValue()))
-				.collect(
-						Collectors.toList()),
+						.collect(Collectors.toList()),
 				availableTags.entrySet().stream()
-						.map((tagValues) -> new Response.AvailableTag(tagValues.getKey(),
-								tagValues.getValue()))
+						.map((tagValues) -> new MetricResponse.AvailableTag(
+								tagValues.getKey(), tagValues.getValue()))
 						.collect(Collectors.toList()));
+	}
+
+	private Collection<Meter> recurseFindMeter(MeterRegistry registry, String name,
+			Iterable<Tag> tags) {
+		Collection<Meter> meters = new ArrayList<>();
+		if (registry instanceof CompositeMeterRegistry) {
+			for (MeterRegistry compositeMember : ((CompositeMeterRegistry) registry)
+					.getRegistries()) {
+				meters.addAll(recurseFindMeter(compositeMember, name, tags));
+			}
+		}
+		else {
+			meters.addAll(registry.find(name).tags(tags).meters());
+		}
+		return meters;
 	}
 
 	private List<Tag> parseTags(List<String> tags) {
@@ -110,9 +140,25 @@ public class MetricsEndpoint {
 	}
 
 	/**
-	 * Response payload.
+	 * Response payload for a metric name listing.
 	 */
-	static class Response {
+	static class ListNamesResponse {
+
+		private final Set<String> names;
+
+		ListNamesResponse(Set<String> names) {
+			this.names = names;
+		}
+
+		public Set<String> getNames() {
+			return this.names;
+		}
+	}
+
+	/**
+	 * Response payload for a metric name selector.
+	 */
+	static class MetricResponse {
 
 		private final String name;
 
@@ -120,7 +166,7 @@ public class MetricsEndpoint {
 
 		private final List<AvailableTag> availableTags;
 
-		Response(String name, List<Sample> measurements,
+		MetricResponse(String name, List<Sample> measurements,
 				List<AvailableTag> availableTags) {
 			this.name = name;
 			this.measurements = measurements;
