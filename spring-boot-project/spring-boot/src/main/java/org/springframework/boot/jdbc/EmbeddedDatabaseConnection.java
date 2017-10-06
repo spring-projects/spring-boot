@@ -106,7 +106,7 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	public String getUrl(String databaseName) {
 		Assert.hasText(databaseName, "DatabaseName must not be null.");
-		return String.format(this.url, databaseName);
+		return this.url != null ? String.format(this.url, databaseName) : null;
 	}
 
 	/**

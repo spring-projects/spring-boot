@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;;
 
 /**
  * Tests for {@link DataSourceProperties}.
@@ -57,6 +58,14 @@ public class DataSourcePropertiesTests {
 		assertThat(properties.getUrl()).isNull();
 		assertThat(properties.determineUrl())
 				.isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
+	}
+
+	@Test
+	public void determineUrlUrlNull() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		assertThatThrownBy(() -> properties.determineUrl())
+				.isInstanceOf(DataSourceProperties.DataSourceBeanCreationException.class)
+				.hasMessageContaining("Cannot determine embedded database url");
 	}
 
 	@Test
