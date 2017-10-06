@@ -26,9 +26,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
+import lombok.extern.slf4j.Slf4j;
 
-	protected Log logger = LogFactory.getLog(SimpleClientWebSocketHandler.class);
+@Slf4j
+public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 
 	private final GreetingService greetingService;
 
@@ -52,7 +53,7 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
 			throws Exception {
-		this.logger.info("Received: " + message + " (" + this.latch.getCount() + ")");
+		log.info("Received: " + message + " (" + this.latch.getCount() + ")");
 		session.close();
 		this.messagePayload.set(message.getPayload());
 		this.latch.countDown();

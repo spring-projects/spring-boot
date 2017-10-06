@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +53,7 @@ public class SampleWebSocketsApplicationTests {
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
 	@LocalServerPort
-	private int port = 1234;
+	private int port = 8097;
 
 	@Test
 	public void echoEndpoint() throws Exception {

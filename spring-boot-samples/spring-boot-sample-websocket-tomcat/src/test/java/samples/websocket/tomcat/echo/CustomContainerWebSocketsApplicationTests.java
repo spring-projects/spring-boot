@@ -36,8 +36,8 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -95,8 +95,8 @@ public class CustomContainerWebSocketsApplicationTests {
 	protected static class CustomContainerConfiguration {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
-			return new TomcatServletWebServerFactory("/ws", PORT);
+		public EmbeddedServletContainerFactory webServerFactory() {
+			return new TomcatEmbeddedServletContainerFactory("/ws", PORT);
 		}
 
 	}

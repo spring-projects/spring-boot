@@ -16,11 +16,11 @@
 
 package samples.websocket.tomcat.echo;
 
-public class DefaultEchoService implements EchoService {
+public class EchoServiceImpl implements EchoService {
 
 	private final String echoFormat;
 
-	public DefaultEchoService(String echoFormat) {
+	public EchoServiceImpl(String echoFormat) {
 		this.echoFormat = (echoFormat != null) ? echoFormat : "%s";
 	}
 

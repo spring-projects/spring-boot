@@ -60,6 +60,19 @@ limitations under the License.
 			document.getElementById('echo').disabled = !connected;
 		}
 
+		function updateTarget() {
+			log(window.location);
+			log(window.location.protocol);
+			log(window.location.hostname);
+			log(window.location.host);
+			log(window.location.port);
+			if (window.location.protocol == 'http:') {
+				document.getElementById('target').value = 'ws://' + window.location.host + document.getElementById('target').value;
+			} else {
+				document.getElementById('target').value = 'wss://' + window.location.host + document.getElementById('target').value;
+			}
+		}
+
 		function connect() {
 			var target = document.getElementById('target').value;
 			ws = new SockJS(target);
@@ -87,7 +100,7 @@ limitations under the License.
 		function echo() {
 			if (ws != null) {
 				var message = document.getElementById('message').value;
-				log('Sent: ' + message);
+				log('Sent. In JS: ' + message);
 				ws.send(message);
 			} else {
 				alert('WebSocket connection not established, please connect.');
@@ -107,7 +120,7 @@ limitations under the License.
 		}
 	</script>
 </head>
-<body>
+<body><!--  onload="updateTarget()"> -->
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable
 	Javascript and reload this page!</h2></noscript>
 <div>
