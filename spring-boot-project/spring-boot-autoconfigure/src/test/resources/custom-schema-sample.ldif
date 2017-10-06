@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 dn: dc=spring,dc=org
 objectclass: top
 objectclass: domain
@@ -5,3 +6,12 @@ objectclass: extensibleObject
 objectClass: exampleAuxiliaryClass
 dc: spring
 exampleAttributeName: exampleAttributeName
+=======
+dn: dc=spring,dc=org
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+objectClass: exampleAuxiliaryClass
+dc: spring
+exampleAttributeName: exampleAttributeName
+>>>>>>> ab8aa6bb6c05417f017407e5544c49aa167da8df
