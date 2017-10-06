@@ -1,0 +1,14 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
+
+task echoJvmArguments {
+	println 'JVM arguments = ' + bootRun.jvmArgs
+}

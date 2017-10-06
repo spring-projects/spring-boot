@@ -1,0 +1,23 @@
+{
+  "groups": [
+    {
+      "name": "spring.foo",
+      "type": "org.acme.Foo2",
+      "sourceType": "org.acme.config.FooApp",
+      "sourceMethod": "foo2()",
+      "description": "This is Foo2."
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.foo.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.acme.Foo2"
+    },
+    {
+      "name": "spring.foo.type",
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Foo2"
+    }
+  ]
+}

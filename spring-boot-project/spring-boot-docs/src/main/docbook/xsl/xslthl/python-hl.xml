@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+Syntax highlighting definition for Python
+
+xslthl - XSLT Syntax Highlighting
+http://sourceforge.net/projects/xslthl/
+Copyright (C) 2005-2008 Michal Molhanec, Jirka Kosek, Michiel Hendriks
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+Michal Molhanec <mol1111 at users.sourceforge.net>
+Jirka Kosek <kosek at users.sourceforge.net>
+Michiel Hendriks <elmuerte at users.sourceforge.net>
+
+-->
+<highlighters>
+	<highlighter type="annotation">
+		<!-- these are actually called decorators -->
+		<start>@</start>
+		<valueStart>(</valueStart>
+		<valueEnd>)</valueEnd>
+	</highlighter>
+	<highlighter type="oneline-comment">#</highlighter>
+	<highlighter type="string">
+		<string>"""</string>
+		<spanNewLines />
+	</highlighter>
+	<highlighter type="string">
+		<string>'''</string>
+		<spanNewLines />
+	</highlighter>
+	<highlighter type="string">
+		<string>"</string>
+		<escape>\</escape>
+	</highlighter>
+	<highlighter type="string">
+		<string>'</string>
+		<escape>\</escape>
+	</highlighter>
+	<highlighter type="hexnumber">
+		<prefix>0x</prefix>
+		<suffix>l</suffix>
+		<ignoreCase />
+	</highlighter>
+	<highlighter type="number">
+		<point>.</point>
+		<pointStarts />
+		<exponent>e</exponent>
+		<suffix>l</suffix>
+		<ignoreCase />
+	</highlighter>
+	<highlighter type="keywords">
+		<keyword>and</keyword>
+		<keyword>del</keyword>
+		<keyword>from</keyword>
+		<keyword>not</keyword>
+		<keyword>while</keyword>
+		<keyword>as</keyword>
+		<keyword>elif</keyword>
+		<keyword>global</keyword>
+		<keyword>or</keyword>
+		<keyword>with</keyword>
+		<keyword>assert</keyword>
+		<keyword>else</keyword>
+		<keyword>if</keyword>
+		<keyword>pass</keyword>
+		<keyword>yield</keyword>
+		<keyword>break</keyword>
+		<keyword>except</keyword>
+		<keyword>import</keyword>
+		<keyword>print</keyword>
+		<keyword>class</keyword>
+		<keyword>exec</keyword>
+		<keyword>in</keyword>
+		<keyword>raise</keyword>
+		<keyword>continue</keyword>
+		<keyword>finally</keyword>
+		<keyword>is</keyword>
+		<keyword>return</keyword>
+		<keyword>def</keyword>
+		<keyword>for</keyword>
+		<keyword>lambda</keyword>
+		<keyword>try</keyword>
+	</highlighter>
+</highlighters>

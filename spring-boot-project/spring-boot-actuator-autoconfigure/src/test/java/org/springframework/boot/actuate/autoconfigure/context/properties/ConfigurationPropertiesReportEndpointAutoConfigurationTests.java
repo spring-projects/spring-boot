@@ -1,0 +1,122 @@
+/*
+ * Copyright 2012-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.actuate.autoconfigure.context.properties;
+
+import java.util.Map;
+
+import org.junit.Test;
+
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Tests for {@link ConfigurationPropertiesReportEndpointAutoConfiguration}.
+ *
+ * @author Phillip Webb
+ */
+public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations
+					.of(ConfigurationPropertiesReportEndpointAutoConfiguration.class));
+
+	@Test
+	public void runShouldHaveEndpointBean() {
+		this.contextRunner.withUserConfiguration(Config.class)
+				.run(validateTestProperties("******", "654321"));
+	}
+
+	@Test
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
+			throws Exception {
+		this.contextRunner.withPropertyValues("endpoints.configprops.enabled:false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
+	}
+
+	@Test
+	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
+		this.contextRunner.withUserConfiguration(Config.class)
+				.withPropertyValues(
+						"endpoints.configprops.keys-to-sanitize: .*pass.*, property")
+				.run(validateTestProperties("******", "******"));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> validateTestProperties(
+			String dbPassword, String myTestProperty) {
+		return (context) -> {
+			assertThat(context)
+					.hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor properties = endpoint
+					.configurationProperties();
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties).isNotNull();
+			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
+			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);
+		};
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class Config {
+
+		@Bean
+		public TestProperties testProperties() {
+			return new TestProperties();
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class TestProperties {
+
+		private String dbPassword = "123456";
+
+		private String myTestProperty = "654321";
+
+		public String getDbPassword() {
+			return this.dbPassword;
+		}
+
+		public void setDbPassword(String dbPassword) {
+			this.dbPassword = dbPassword;
+		}
+
+		public String getMyTestProperty() {
+			return this.myTestProperty;
+		}
+
+		public void setMyTestProperty(String myTestProperty) {
+			this.myTestProperty = myTestProperty;
+		}
+
+	}
+
+}

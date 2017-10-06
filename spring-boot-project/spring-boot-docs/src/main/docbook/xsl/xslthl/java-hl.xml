@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+Syntax highlighting definition for Java
+
+xslthl - XSLT Syntax Highlighting
+http://sourceforge.net/projects/xslthl/
+Copyright (C) 2005-2008 Michal Molhanec, Jirka Kosek, Michiel Hendriks
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+Michal Molhanec <mol1111 at users.sourceforge.net>
+Jirka Kosek <kosek at users.sourceforge.net>
+Michiel Hendriks <elmuerte at users.sourceforge.net>
+
+-->
+<highlighters>
+	<highlighter type="multiline-comment">
+		<start>/**</start>
+		<end>*/</end>
+		<style>doccomment</style>
+	</highlighter>
+	<highlighter type="multiline-comment">
+		<start>/*</start>
+		<end>*/</end>
+	</highlighter>
+	<highlighter type="oneline-comment">//</highlighter>
+	<highlighter type="string">
+		<string>"</string>
+		<escape>\</escape>
+	</highlighter>
+	<highlighter type="string">
+		<string>'</string>
+		<escape>\</escape>
+	</highlighter>
+	<highlighter type="annotation">
+		<start>@</start>
+		<valueStart>(</valueStart>
+		<valueEnd>)</valueEnd>
+	</highlighter>
+	<highlighter type="hexnumber">
+		<prefix>0x</prefix>
+		<ignoreCase />
+	</highlighter>
+	<highlighter type="number">
+		<point>.</point>
+		<exponent>e</exponent>
+		<suffix>f</suffix>
+		<suffix>d</suffix>
+		<suffix>l</suffix>
+		<ignoreCase />
+	</highlighter>
+	<highlighter type="keywords">
+		<keyword>abstract</keyword>
+		<keyword>boolean</keyword>
+		<keyword>break</keyword>
+		<keyword>byte</keyword>
+		<keyword>case</keyword>
+		<keyword>catch</keyword>
+		<keyword>char</keyword>
+		<keyword>class</keyword>
+		<keyword>const</keyword>
+		<keyword>continue</keyword>
+		<keyword>default</keyword>
+		<keyword>do</keyword>
+		<keyword>double</keyword>
+		<keyword>else</keyword>
+		<keyword>extends</keyword>
+		<keyword>final</keyword>
+		<keyword>finally</keyword>
+		<keyword>float</keyword>
+		<keyword>for</keyword>
+		<keyword>goto</keyword>
+		<keyword>if</keyword>
+		<keyword>implements</keyword>
+		<keyword>import</keyword>
+		<keyword>instanceof</keyword>
+		<keyword>int</keyword>
+		<keyword>interface</keyword>
+		<keyword>long</keyword>
+		<keyword>native</keyword>
+		<keyword>new</keyword>
+		<keyword>package</keyword>
+		<keyword>private</keyword>
+		<keyword>protected</keyword>
+		<keyword>public</keyword>
+		<keyword>return</keyword>
+		<keyword>short</keyword>
+		<keyword>static</keyword>
+		<keyword>strictfp</keyword>
+		<keyword>super</keyword>
+		<keyword>switch</keyword>
+		<keyword>synchronized</keyword>
+		<keyword>this</keyword>
+		<keyword>throw</keyword>
+		<keyword>throws</keyword>
+		<keyword>transient</keyword>
+		<keyword>try</keyword>
+		<keyword>void</keyword>
+		<keyword>volatile</keyword>
+		<keyword>while</keyword>
+	</highlighter>
+</highlighters>

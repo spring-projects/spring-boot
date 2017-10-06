@@ -1,0 +1,19 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github-client-1:
+            client-id: ${APP-CLIENT-ID}
+            client-secret: ${APP-CLIENT-SECRET}
+            client-name: Github user
+            provider: github
+            scope: user
+            redirect_uri: http://localhost:8080/oauth2/authorize/code/github
+          github-client-2:
+            client-id: ${APP-CLIENT-ID}
+            client-secret: ${APP-CLIENT-SECRET}
+            client-name: Github email
+            provider: github
+            scope: user:email
+            redirect_uri: http://localhost:8080/oauth2/authorize/code/github

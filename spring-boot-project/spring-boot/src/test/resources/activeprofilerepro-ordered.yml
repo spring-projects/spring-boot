@@ -1,0 +1,11 @@
+spring.profiles.active: A,B
+---
+spring.profiles: A
+version: A
+---
+spring.profiles: B
+version: B
+---
+spring.profiles: C
+version: C
+---

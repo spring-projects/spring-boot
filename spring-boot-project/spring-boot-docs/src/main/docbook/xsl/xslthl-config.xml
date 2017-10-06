@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xslthl-config>
+	<highlighter id="java" file="./xslthl/java-hl.xml" />
+	<highlighter id="groovy" file="./xslthl/java-hl.xml" />
+	<highlighter id="html" file="./xslthl/html-hl.xml" />
+	<highlighter id="ini" file="./xslthl/ini-hl.xml" />
+	<highlighter id="php" file="./xslthl/php-hl.xml" />
+	<highlighter id="c" file="./xslthl/c-hl.xml" />
+	<highlighter id="cpp" file="./xslthl/cpp-hl.xml" />
+	<highlighter id="csharp" file="./xslthl/csharp-hl.xml" />
+	<highlighter id="python" file="./xslthl/python-hl.xml" />
+	<highlighter id="ruby" file="./xslthl/ruby-hl.xml" />
+	<highlighter id="perl" file="./xslthl/perl-hl.xml" />
+	<highlighter id="javascript" file="./xslthl/javascript-hl.xml" />
+	<highlighter id="bash" file="./xslthl/bourne-hl.xml" />
+	<highlighter id="css" file="./xslthl/css-hl.xml" />
+	<highlighter id="sql" file="./xslthl/sql2003-hl.xml" />
+	<highlighter id="asciidoc" file="./xslthl/asciidoc-hl.xml" />
+	<highlighter id="properties" file="./xslthl/properties-hl.xml" />
+	<highlighter id="json" file="./xslthl/json-hl.xml" />
+	<highlighter id="yaml" file="./xslthl/yaml-hl.xml" />
+	<namespace prefix="xslthl" uri="http://xslthl.sf.net" />
+</xslthl-config>

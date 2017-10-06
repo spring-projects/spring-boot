@@ -1,0 +1,20 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+
+bootWar {
+	mainClass 'com.example.ExampleApplication'
+}
+
+// tag::properties-launcher[]
+bootWar {
+	manifest {
+		attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+	}
+}
+// end::properties-launcher[]

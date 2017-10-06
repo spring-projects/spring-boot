@@ -1,0 +1,46 @@
+[[managing-dependencies]]
+== Managing dependencies
+
+When you apply the {dependency-management-plugin}[`io.spring.dependency-management`]
+plugin, Spring Boot's plugin will
+automatically <<reacting-to-other-plugins-dependency-management,import the
+`spring-boot-dependencies` bom>> from the version of Spring Boot that you are using.
+This provides a similar dependency management experience to the one that's enjoyed by
+Maven users. For example, it allows you to omit version numbers when declaring
+dependencies that are managed in the bom. To make use of this functionality, simply
+declare dependencies in the usual way but omit the version number:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/managing-dependencies/dependencies.gradle[tags=dependencies]
+----
+
+
+
+[[managing-dependencies-customizing]]
+=== Customizing managed versions
+
+The `spring-boot-dependencies` bom that is automatically imported when the dependency
+management plugin is applied uses properties to control the versions of the dependencies
+that it manages. Please refer to the {github-code}/spring-boot-dependencies/pom.xml[bom]
+for a complete list of these properties.
+
+To customize a managed version you set its corresponding property. For example, to
+customize the version of SLF4J which is controlled by the `slf4j.version` property:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/managing-dependencies/custom-version.gradle[tags=custom-version]
+----
+
+WARNING: Each Spring Boot release is designed and tested against a specific set of
+third-party dependencies. Overriding versions may cause compatibility issues and should
+be done with care.
+
+
+
+[[managing-dependencies-learning-more]]
+=== Learning more
+
+To learn more about the capabilities of the dependency management plugin, please refer to
+its {dependency-management-plugin-documentation}[documentation].
