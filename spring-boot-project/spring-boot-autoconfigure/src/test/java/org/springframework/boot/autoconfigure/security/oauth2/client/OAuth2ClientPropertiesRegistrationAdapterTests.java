@@ -53,8 +53,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setProvider("provider");
 		registration.setClientId("clientId");
 		registration.setClientSecret("clientSecret");
-		registration.setClientAuthenticationMethod(ClientAuthenticationMethod.POST);
-		registration.setAuthorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE);
+		registration.setClientAuthenticationMethod("post");
+		registration.setAuthorizationGrantType("authorization_code");
 		registration.setRedirectUri("http://example.com/redirect");
 		registration.setScope(Collections.singleton("scope"));
 		registration.setClientName("clientName");
@@ -125,8 +125,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setProvider("google");
 		registration.setClientId("clientId");
 		registration.setClientSecret("clientSecret");
-		registration.setClientAuthenticationMethod(ClientAuthenticationMethod.POST);
-		registration.setAuthorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE);
+		registration.setClientAuthenticationMethod("post");
+		registration.setAuthorizationGrantType("authorization_code");
 		registration.setRedirectUri("http://example.com/redirect");
 		registration.setScope(Collections.singleton("scope"));
 		registration.setClientName("clientName");

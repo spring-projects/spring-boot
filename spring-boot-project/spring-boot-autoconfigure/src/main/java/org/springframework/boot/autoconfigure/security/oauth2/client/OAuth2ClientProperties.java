@@ -95,12 +95,12 @@ public class OAuth2ClientProperties {
 		 * Client authentication method. May be left bank then using a pre-defined
 		 * provider.
 		 */
-		private ClientAuthenticationMethod clientAuthenticationMethod;
+		private String clientAuthenticationMethod;
 
 		/**
 		 * Authorization grant type. May be left bank then using a pre-defined provider.
 		 */
-		private AuthorizationGrantType authorizationGrantType;
+		private String authorizationGrantType;
 
 		/**
 		 * Redirect URI. May be left bank then using a pre-defined provider.
@@ -141,21 +141,21 @@ public class OAuth2ClientProperties {
 			this.clientSecret = clientSecret;
 		}
 
-		public ClientAuthenticationMethod getClientAuthenticationMethod() {
+		public String getClientAuthenticationMethod() {
 			return this.clientAuthenticationMethod;
 		}
 
 		public void setClientAuthenticationMethod(
-				ClientAuthenticationMethod clientAuthenticationMethod) {
+				String clientAuthenticationMethod) {
 			this.clientAuthenticationMethod = clientAuthenticationMethod;
 		}
 
-		public AuthorizationGrantType getAuthorizationGrantType() {
+		public String getAuthorizationGrantType() {
 			return this.authorizationGrantType;
 		}
 
 		public void setAuthorizationGrantType(
-				AuthorizationGrantType authorizationGrantType) {
+				String authorizationGrantType) {
 			this.authorizationGrantType = authorizationGrantType;
 		}
 

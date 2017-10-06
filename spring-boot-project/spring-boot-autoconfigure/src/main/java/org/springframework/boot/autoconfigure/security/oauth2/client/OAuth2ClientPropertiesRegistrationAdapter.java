@@ -28,6 +28,8 @@ import org.springframework.boot.context.properties.bind.convert.BinderConversion
 import org.springframework.core.convert.ConversionException;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 
 /**
  * Adapter class to convert {@link OAuth2ClientProperties} to a
@@ -57,10 +59,9 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 		copyIfNotNull(properties::getClientId, builder::clientId);
 		copyIfNotNull(properties::getClientSecret, builder::clientSecret);
 		copyIfNotNull(properties::getClientAuthenticationMethod,
-				builder::clientAuthenticationMethod,
-				ClientAuthenticationMethod::getMethod);
+				builder::clientAuthenticationMethod, ClientAuthenticationMethod::new);
 		copyIfNotNull(properties::getAuthorizationGrantType,
-				builder::authorizationGrantType, AuthorizationGrantType::getType);
+				builder::authorizationGrantType, AuthorizationGrantType::new);
 		copyIfNotNull(properties::getRedirectUri, builder::redirectUri);
 		copyIfNotNull(properties::getScope, builder::scope,
 				(scope) -> scope.toArray(new String[scope.size()]));
