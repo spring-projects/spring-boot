@@ -35,7 +35,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.AuthorizationCodeAuthenticationProcessingFilter;
+import org.springframework.security.oauth2.client.web.AuthorizationCodeAuthenticationFilter;
 import org.springframework.security.oauth2.client.web.AuthorizationCodeRequestRedirectFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.FilterChainProxy;
@@ -96,13 +96,11 @@ public class OAuth2WebSecurityConfigurationTests {
 		List<Filter> filters = (List<Filter>) ReflectionTestUtils
 				.getField(filterChains.get(0), "filters");
 		List<Filter> oauth2Filters = filters.stream()
-				.filter((
-						f) -> f instanceof AuthorizationCodeAuthenticationProcessingFilter
-								|| f instanceof AuthorizationCodeRequestRedirectFilter)
+				.filter((f) -> f instanceof AuthorizationCodeAuthenticationFilter
+						|| f instanceof AuthorizationCodeRequestRedirectFilter)
 				.collect(Collectors.toList());
 		return oauth2Filters.stream()
-				.filter((
-						f) -> f instanceof AuthorizationCodeAuthenticationProcessingFilter)
+				.filter((f) -> f instanceof AuthorizationCodeAuthenticationFilter)
 				.collect(Collectors.toList());
 	}
 
