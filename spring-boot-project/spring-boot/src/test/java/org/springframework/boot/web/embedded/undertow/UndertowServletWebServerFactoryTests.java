@@ -303,6 +303,8 @@ public class UndertowServletWebServerFactoryTests
 			int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+
+		assertThat(((UndertowServletWebServer) this.webServer).started).isTrue();
 	}
 
 }
