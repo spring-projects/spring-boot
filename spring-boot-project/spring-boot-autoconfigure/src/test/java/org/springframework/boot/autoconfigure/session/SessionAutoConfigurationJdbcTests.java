@@ -54,14 +54,13 @@ public class SessionAutoConfigurationJdbcTests
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					DataSourceTransactionManagerAutoConfiguration.class,
+					JdbcTemplateAutoConfiguration.class,
 					SessionAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
 	public void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc")
-				.withConfiguration(
-						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
 				.run(this::validateDefaultConfig);
 	}
 
@@ -72,8 +71,6 @@ public class SessionAutoConfigurationJdbcTests
 						new HideClassesClassLoader(HazelcastSessionRepository.class,
 								MongoOperationsSessionRepository.class,
 								RedisOperationsSessionRepository.class))
-				.withConfiguration(
-						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
 				.run(this::validateDefaultConfig);
 	}
 
