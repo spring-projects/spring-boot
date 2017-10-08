@@ -16,6 +16,10 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -24,7 +28,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.server.WebHandler;
 
@@ -58,12 +65,29 @@ public class WebTestClientAutoConfigurationTests {
 		verify(codecCustomizer).customize(any(CodecConfigurer.class));
 	}
 
+	@Test
+	public void shouldCustomizeTimeout() throws Exception {
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.singletonMap("spring.test.webtestclient.timeout", (Object) "PT15M"));
+		load(propertySource, BaseConfiguration.class);
+		WebTestClient webTestClient = this.context.getBean(WebTestClient.class);
+		Object duration = ReflectionTestUtils.getField(webTestClient, "timeout");
+		assertThat(duration).isEqualTo(Duration.of(15, ChronoUnit.MINUTES));
+	}
+
 	private void load(Class<?>... config) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(config);
-		ctx.register(WebTestClientAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		load(null, config);
+	}
+
+	private void load(PropertySource<?> propertySource, Class<?>... config) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		if (propertySource != null) {
+			context.getEnvironment().getPropertySources().addFirst(propertySource);
+		}
+		context.register(config);
+		context.register(WebTestClientAutoConfiguration.class);
+		context.refresh();
+		this.context = context;
 	}
 
 	@Configuration
@@ -73,6 +97,7 @@ public class WebTestClientAutoConfigurationTests {
 		public WebHandler webHandler() {
 			return mock(WebHandler.class);
 		}
+
 	}
 
 	@Configuration
