@@ -3,7 +3,7 @@ resource_types:
   type: docker-image
   source:
     repository: springio/artifactory-resource
-    tag: 0.0.1
+    tag: 0.0.2-SNAPSHOT
 - name: email
   type: docker-image
   source:
