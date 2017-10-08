@@ -89,7 +89,8 @@ public class ThymeleafProperties {
 	private String[] viewNames;
 
 	/**
-	 * Comma-separated list of view names (patterns allowed) that should be excluded from resolution.
+	 * Comma-separated list of view names (patterns allowed) that should be excluded from
+	 * resolution.
 	 */
 	private String[] excludedViewNames;
 
@@ -218,8 +219,8 @@ public class ThymeleafProperties {
 	public static class Reactive {
 
 		/**
-		 * Maximum size of data buffers used for writing to the response, in bytes. Templates will
-		 * execute in CHUNKED mode by default if this is set a value.
+		 * Maximum size of data buffers used for writing to the response, in bytes.
+		 * Templates will execute in CHUNKED mode by default if this is set a value.
 		 */
 		private int maxChunkSize;
 
@@ -229,17 +230,16 @@ public class ThymeleafProperties {
 		private List<MediaType> mediaTypes;
 
 		/**
-		 * Comma-separated list of view names (patterns allowed) that should be executed in FULL mode
-		 * even if a max chunk size is set.
+		 * Comma-separated list of view names (patterns allowed) that should be executed
+		 * in FULL mode even if a max chunk size is set.
 		 */
 		private String[] fullModeViewNames;
 
 		/**
-		 * Comma-separated list of view names (patterns allowed) that should be the only ones executed
-		 * in CHUNKED mode when a max chunk size is set.
+		 * Comma-separated list of view names (patterns allowed) that should be the only
+		 * ones executed in CHUNKED mode when a max chunk size is set.
 		 */
 		private String[] chunkedModeViewNames;
-
 
 		public List<MediaType> getMediaTypes() {
 			return this.mediaTypes;
