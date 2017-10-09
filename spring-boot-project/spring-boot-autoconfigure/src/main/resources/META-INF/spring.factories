@@ -103,6 +103,7 @@ org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoCon
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.Slf4jMdcSecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.LinkedInAutoConfiguration,\
@@ -118,6 +119,7 @@ org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfigu
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.servlet.RequestSlf4jMdcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration,\
