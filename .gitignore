@@ -34,3 +34,5 @@ overridedb.*
 .DS_Store
 dump.rdb
 transaction-logs
+.flattened-pom.xml
+spring-boot-tests/
