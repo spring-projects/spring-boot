@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Thiago Hirata
  */
 class OriginTrackedPropertiesLoader {
 
@@ -154,7 +155,7 @@ class OriginTrackedPropertiesLoader {
 
 		CharacterReader(Resource resource) throws IOException {
 			this.reader = new LineNumberReader(
-					new InputStreamReader(resource.getInputStream()));
+					new InputStreamReader(resource.getInputStream(), "8859_1"));
 		}
 
 		@Override
