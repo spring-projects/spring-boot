@@ -32,7 +32,7 @@ import org.springframework.util.ClassUtils;
  */
 public class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory {
 
-	private static final String WEB_TEST_CLIENT_CLASS = "org.springframework.web.reactive.function.client.WebTestClient";
+	private static final String WEB_TEST_CLIENT_CLASS = "org.springframework.web.reactive.function.client.WebClient";
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
