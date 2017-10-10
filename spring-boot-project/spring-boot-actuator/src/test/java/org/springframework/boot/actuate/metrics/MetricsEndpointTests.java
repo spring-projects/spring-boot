@@ -63,10 +63,8 @@ public class MetricsEndpointTests {
 		SimpleMeterRegistry reg2 = new SimpleMeterRegistry();
 		composite.add(reg1);
 		composite.add(reg2);
-
 		reg1.counter("counter1").increment();
 		reg2.counter("counter2").increment();
-
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
 		assertThat(endpoint.listNames().getNames()).containsOnly("counter1", "counter2");
 	}
@@ -103,10 +101,8 @@ public class MetricsEndpointTests {
 		SimpleMeterRegistry reg2 = new SimpleMeterRegistry();
 		composite.add(reg1);
 		composite.add(reg2);
-
 		reg1.counter("counter1").increment();
 		reg2.counter("counter2").increment();
-
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
 		assertThat(endpoint.metric("counter1", Collections.emptyList())).isNotNull();
 		assertThat(endpoint.metric("counter2", Collections.emptyList())).isNotNull();

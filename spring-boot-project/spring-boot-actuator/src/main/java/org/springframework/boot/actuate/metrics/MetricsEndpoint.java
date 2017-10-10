@@ -17,17 +17,16 @@
 package org.springframework.boot.actuate.metrics;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
@@ -44,6 +43,7 @@ import org.springframework.util.Assert;
  * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
  *
  * @author Jon Schneider
+ * @author Phillip Webb
  * @since 2.0.0
  */
 @Endpoint(id = "metrics")
@@ -57,24 +57,22 @@ public class MetricsEndpoint {
 
 	@ReadOperation
 	public ListNamesResponse listNames() {
-		return new ListNamesResponse(recurseListNames(this.registry));
+		Set<String> names = new LinkedHashSet<>();
+		collectNames(names, this.registry);
+		return new ListNamesResponse(names);
 	}
 
-	private Set<String> recurseListNames(MeterRegistry registry) {
-		Set<String> names = new HashSet<>();
+	private void collectNames(Set<String> names, MeterRegistry registry) {
 		if (registry instanceof CompositeMeterRegistry) {
-			for (MeterRegistry compositeMember : ((CompositeMeterRegistry) registry)
-					.getRegistries()) {
-				names.addAll(recurseListNames(compositeMember));
-			}
+			((CompositeMeterRegistry) registry).getRegistries()
+					.forEach((member) -> collectNames(names, member));
 		}
 		else {
-			registry.getMeters().stream().map(this::getMeterIdName).forEach(names::add);
+			registry.getMeters().stream().map(this::getName).forEach(names::add);
 		}
-		return names;
 	}
 
-	private String getMeterIdName(Meter meter) {
+	private String getName(Meter meter) {
 		return meter.getId().getName();
 	}
 
@@ -84,52 +82,17 @@ public class MetricsEndpoint {
 		Assert.isTrue(tag == null || tag.stream().allMatch((t) -> t.contains(":")),
 				"Each tag parameter must be in the form key:value");
 		List<Tag> tags = parseTags(tag);
-		Collection<Meter> meters = recurseFindMeter(this.registry, requiredMetricName, tags);
+		List<Meter> meters = new ArrayList<>();
+		collectMeters(meters, this.registry, requiredMetricName, tags);
 		if (meters.isEmpty()) {
 			return null;
 		}
-
-		Map<Statistic, Double> samples = new HashMap<>();
-		Map<String, List<String>> availableTags = new HashMap<>();
-
-		for (Meter meter : meters) {
-			for (Measurement ms : meter.measure()) {
-				samples.merge(ms.getStatistic(), ms.getValue(), Double::sum);
-			}
-			for (Tag availableTag : meter.getId().getTags()) {
-				availableTags.merge(availableTag.getKey(),
-						Collections.singletonList(availableTag.getValue()),
-						(t1, t2) -> Stream.concat(t1.stream(), t2.stream())
-								.collect(Collectors.toList()));
-			}
-		}
-
+		Map<Statistic, Double> samples = getSamples(meters);
+		Map<String, List<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
-
 		return new MetricResponse(requiredMetricName,
-				samples.entrySet().stream()
-						.map((sample) -> new MetricResponse.Sample(sample.getKey(),
-								sample.getValue()))
-						.collect(Collectors.toList()),
-				availableTags.entrySet().stream()
-						.map((tagValues) -> new MetricResponse.AvailableTag(
-								tagValues.getKey(), tagValues.getValue()))
-						.collect(Collectors.toList()));
-	}
-
-	private Collection<Meter> recurseFindMeter(MeterRegistry registry, String name,
-			Iterable<Tag> tags) {
-		Collection<Meter> meters = new ArrayList<>();
-		if (registry instanceof CompositeMeterRegistry) {
-			for (MeterRegistry compositeMember : ((CompositeMeterRegistry) registry)
-					.getRegistries()) {
-				meters.addAll(recurseFindMeter(compositeMember, name, tags));
-			}
-		}
-		else {
-			meters.addAll(registry.find(name).tags(tags).meters());
-		}
-		return meters;
+				asList(samples, MetricResponse.Sample::new),
+				asList(availableTags, MetricResponse.AvailableTag::new));
 	}
 
 	private List<Tag> parseTags(List<String> tags) {
@@ -137,6 +100,55 @@ public class MetricsEndpoint {
 			String[] tagParts = t.split(":", 2);
 			return Tag.of(tagParts[0], tagParts[1]);
 		}).collect(Collectors.toList());
+	}
+
+	private void collectMeters(List<Meter> meters, MeterRegistry registry, String name,
+			Iterable<Tag> tags) {
+		if (registry instanceof CompositeMeterRegistry) {
+			((CompositeMeterRegistry) registry).getRegistries()
+					.forEach((member) -> collectMeters(meters, member, name, tags));
+		}
+		else {
+			meters.addAll(registry.find(name).tags(tags).meters());
+		}
+	}
+
+	private Map<Statistic, Double> getSamples(List<Meter> meters) {
+		Map<Statistic, Double> samples = new LinkedHashMap<>();
+		meters.forEach((meter) -> mergeMeasurements(samples, meter));
+		return samples;
+	}
+
+	private void mergeMeasurements(Map<Statistic, Double> samples, Meter meter) {
+		meter.measure().forEach((measurement) -> samples.merge(measurement.getStatistic(),
+				measurement.getValue(), Double::sum));
+	}
+
+	private Map<String, List<String>> getAvailableTags(List<Meter> meters) {
+		Map<String, List<String>> availableTags = new HashMap<>();
+		meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
+		return availableTags;
+	}
+
+	private void mergeAvailableTags(Map<String, List<String>> availableTags,
+			Meter meter) {
+		meter.getId().getTags().forEach((tag) -> {
+			List<String> value = Collections.singletonList(tag.getValue());
+			availableTags.merge(tag.getKey(), value, this::merge);
+		});
+	}
+
+	private <T> List<T> merge(List<T> list1, List<T> list2) {
+		List<T> result = new ArrayList<>(list1.size() + list2.size());
+		result.addAll(list1);
+		result.addAll(list2);
+		return result;
+	}
+
+	private <K, V, T> List<T> asList(Map<K, V> map, BiFunction<K, V, T> mapper) {
+		return map.entrySet().stream()
+				.map((entry) -> mapper.apply(entry.getKey(), entry.getValue()))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
@@ -235,6 +247,8 @@ public class MetricsEndpoint {
 				return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
 						+ this.value + '}';
 			}
+
 		}
+
 	}
 }
