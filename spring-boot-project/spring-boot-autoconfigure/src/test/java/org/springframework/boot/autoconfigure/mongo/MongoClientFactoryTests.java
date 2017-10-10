@@ -118,30 +118,6 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCannotBeSetWithCredentials() {
-		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		properties.setUsername("user");
-		properties.setPassword("secret".toCharArray());
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
-	}
-
-	@Test
-	public void uriCannotBeSetWithHostPort() {
-		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		properties.setHost("localhost");
-		properties.setPort(4567);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
-	}
-
-	@Test
 	public void uriIsIgnoredInEmbeddedMode() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo.example.com:1234/mydb");

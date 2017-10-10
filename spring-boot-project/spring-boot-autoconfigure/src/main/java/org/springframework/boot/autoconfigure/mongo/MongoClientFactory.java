@@ -89,12 +89,11 @@ public class MongoClientFactory {
 	}
 
 	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
-
+		if (this.properties.getUri() != null) {
+			return new MongoClient(
+					new MongoClientURI(this.properties.getUri(), builder(options)));
+		}
 		if (hasCustomAddress() || hasCustomCredentials()) {
-			if (this.properties.getUri() != null) {
-				throw new IllegalStateException("Invalid mongo configuration, "
-						+ "either uri or host/port/credentials must be specified");
-			}
 			if (options == null) {
 				options = MongoClientOptions.builder().build();
 			}
@@ -115,9 +114,8 @@ public class MongoClientFactory {
 					Collections.singletonList(new ServerAddress(host, port)), credentials,
 					options);
 		}
-		// The options and credentials are in the URI
 		return new MongoClient(
-				new MongoClientURI(this.properties.determineUri(), builder(options)));
+				new MongoClientURI(MongoProperties.DEFAULT_URI, builder(options)));
 	}
 
 	private boolean hasCustomAddress() {
