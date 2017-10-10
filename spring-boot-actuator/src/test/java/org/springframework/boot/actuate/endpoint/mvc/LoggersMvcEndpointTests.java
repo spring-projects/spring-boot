@@ -49,6 +49,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -57,6 +58,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -174,7 +176,8 @@ public class LoggersMvcEndpointTests {
 	public void setLoggerWithWrongLogLevel() throws Exception {
 		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"configuredLevel\":\"other\"}"))
-				.andExpect(status().is4xxClientError());
+				.andExpect(status().is4xxClientError())
+				.andExpect(status().reason(is("No such log level")));
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
