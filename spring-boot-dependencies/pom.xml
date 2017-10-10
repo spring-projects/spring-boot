@@ -160,7 +160,7 @@
 		<spring-integration.version>4.3.12.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.3.RELEASE</spring-integration-java-dsl.version>
 		<spring-kafka.version>1.1.7.RELEASE</spring-kafka.version>
-		<spring-ldap.version>2.3.1.RELEASE</spring-ldap.version>
+		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-loaded.version>1.2.8.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
