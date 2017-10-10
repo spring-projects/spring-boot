@@ -227,6 +227,12 @@ public class OriginTrackedPropertiesLoaderTests {
 		assertThat(getValue(mango)).isEqualTo("Mango");
 		assertThat(getLocation(mango)).isEqualTo("27:1");
 	}
+	
+	@Test
+	public void getPropertyWithISO88591Character() throws Exception {
+		OriginTrackedValue value = this.properties.get("test-iso8859-1-chars");
+		assertThat(getValue(value)).isEqualTo("æ×ÈÅÞßáñÀÿ");
+	}
 
 	private Object getValue(OriginTrackedValue value) {
 		return (value == null ? null : value.getValue());
@@ -238,5 +244,4 @@ public class OriginTrackedPropertiesLoaderTests {
 		}
 		return ((TextResourceOrigin) value.getOrigin()).getLocation().toString();
 	}
-
 }
