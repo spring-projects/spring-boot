@@ -46,7 +46,6 @@ public class JsonbAutoConfigurationTests {
 
 	public class DataObject {
 
-		@SuppressWarnings("unused")
 		private String data = "hello";
 
 		public String getData() {
