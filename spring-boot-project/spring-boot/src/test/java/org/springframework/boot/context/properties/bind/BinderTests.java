@@ -251,15 +251,25 @@ public class BinderTests {
 	@Test
 	public void bindToValidatedBeanWithResourceAndNonEnumerablePropertySource() {
 		ConfigurationPropertySources.from(new PropertySource<String>("test") {
+
 			@Override
 			public Object getProperty(String name) {
 				return null;
 			}
+
 		}).forEach(this.sources::add);
 		Validator validator = new SpringValidatorAdapter(Validation.byDefaultProvider()
 				.configure().buildValidatorFactory().getValidator());
 		this.binder.bind("foo", Bindable.of(ResourceBean.class),
 				new ValidationBindHandler(validator));
+	}
+
+	@Test
+	public void bindToBeanWithCycle() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		this.sources.add(source.nonIterable());
+		Bindable<CycleBean1> target = Bindable.of(CycleBean1.class);
+		this.binder.bind("foo", target);
 	}
 
 	public static class JavaBean {
@@ -299,6 +309,34 @@ public class BinderTests {
 
 		public void setResource(Resource resource) {
 			this.resource = resource;
+		}
+
+	}
+
+	public static class CycleBean1 {
+
+		private CycleBean2 two;
+
+		public CycleBean2 getTwo() {
+			return this.two;
+		}
+
+		public void setTwo(CycleBean2 two) {
+			this.two = two;
+		}
+
+	}
+
+	public static class CycleBean2 {
+
+		private CycleBean1 one;
+
+		public CycleBean1 getOne() {
+			return this.one;
+		}
+
+		public void setOne(CycleBean1 one) {
+			this.one = one;
 		}
 
 	}

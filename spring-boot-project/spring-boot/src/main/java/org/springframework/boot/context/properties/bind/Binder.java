@@ -183,18 +183,18 @@ public class Binder {
 		Assert.notNull(target, "Target must not be null");
 		handler = (handler != null ? handler : BindHandler.DEFAULT);
 		Context context = new Context();
-		T bound = bind(name, target, handler, context);
+		T bound = bind(name, target, handler, context, false);
 		return BindResult.of(bound);
 	}
 
 	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context) {
+			BindHandler handler, Context context, boolean skipIfHasBoundBean) {
 		context.clearConfigurationProperty();
 		try {
 			if (!handler.onStart(name, target, context)) {
 				return null;
 			}
-			Object bound = bindObject(name, target, handler, context);
+			Object bound = bindObject(name, target, handler, context, skipIfHasBoundBean);
 			return handleBindResult(name, target, handler, context, bound);
 		}
 		catch (Exception ex) {
@@ -234,7 +234,8 @@ public class Binder {
 	}
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context) throws Exception {
+			BindHandler handler, Context context, boolean skipIfHasBoundBean)
+					throws Exception {
 		ConfigurationProperty property = findProperty(name, context);
 		if (property == null && containsNoDescendantOf(context.streamSources(), name)) {
 			return null;
@@ -246,7 +247,7 @@ public class Binder {
 		if (property != null) {
 			return bindProperty(name, target, handler, context, property);
 		}
-		return bindBean(name, target, handler, context);
+		return bindBean(name, target, handler, context, skipIfHasBoundBean);
 	}
 
 	private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
@@ -266,7 +267,8 @@ public class Binder {
 	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
-			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context);
+			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context,
+					false);
 			return context.withSource(source, supplier);
 		};
 		return context.withIncreasedDepth(
@@ -290,15 +292,16 @@ public class Binder {
 	}
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
-			BindHandler handler, Context context) {
+			BindHandler handler, Context context, boolean skipIfHasBoundBean) {
 		if (containsNoDescendantOf(context.streamSources(), name)
 				|| isUnbindableBean(name, target, context)) {
 			return null;
 		}
 		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
-				name.append(propertyName), propertyTarget, handler, context);
+				name.append(propertyName), propertyTarget, handler, context, true);
 		Class<?> type = target.getType().resolve();
-		if (context.hasBoundBean(type)) {
+		if (skipIfHasBoundBean && context.hasBoundBean(type)) {
+			System.err.println(type + " " + name);
 			return null;
 		}
 		return context.withBean(type, () -> {
