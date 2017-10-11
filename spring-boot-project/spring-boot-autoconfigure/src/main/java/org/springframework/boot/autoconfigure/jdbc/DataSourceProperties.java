@@ -53,7 +53,7 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "spring.datasource")
 public class DataSourceProperties
-		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {	
+	implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(DataSourceProperties.class);
 
