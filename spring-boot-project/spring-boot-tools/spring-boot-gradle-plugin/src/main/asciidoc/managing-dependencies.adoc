@@ -22,7 +22,7 @@ include::../gradle/managing-dependencies/dependencies.gradle[tags=dependencies]
 
 The `spring-boot-dependencies` bom that is automatically imported when the dependency
 management plugin is applied uses properties to control the versions of the dependencies
-that it manages. Please refer to the {github-code}/spring-boot-dependencies/pom.xml[bom]
+that it manages. Please refer to the {github-code}/spring-boot-project/spring-boot-dependencies/pom.xml[bom]
 for a complete list of these properties.
 
 To customize a managed version you set its corresponding property. For example, to

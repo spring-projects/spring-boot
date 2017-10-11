@@ -2449,7 +2449,7 @@ Jackson's date serialization configuration settings.
 If you use a Maven build that inherits directly or indirectly from `spring-boot-dependencies`
 (for instance `spring-boot-starter-parent`) but you want to override a specific
 third-party dependency you can add appropriate `<properties>` elements. Browse
-the {github-code}/spring-boot-dependencies/pom.xml[`spring-boot-dependencies`]
+the {github-code}/spring-boot-project/spring-boot-dependencies/pom.xml[`spring-boot-dependencies`]
 POM for a complete list of properties. For example, to pick a different `slf4j` version
 you would add the following:
 

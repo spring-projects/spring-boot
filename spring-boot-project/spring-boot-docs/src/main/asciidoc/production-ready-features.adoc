@@ -17,7 +17,7 @@ unless you enable Spring MVC as well.>>
 
 [[production-ready-enabling]]
 == Enabling production-ready features
-The {github-code}/spring-boot-actuator[`spring-boot-actuator`] module provides all of
+The {github-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of
 Spring Boot's production-ready features. The simplest way to enable the features is to add
 a dependency to the `spring-boot-starter-actuator` '`Starter`'.
 
