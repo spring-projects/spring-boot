@@ -227,10 +227,8 @@ public class Binder {
 	}
 
 	private <T> T convert(Object value, Bindable<T> target) {
-		if (value == null) {
-			return null;
-		}
-		return this.conversionService.convert(value, target);
+		return ResolvableTypeDescriptor.forBindable(target)
+				.convert(this.conversionService, value);
 	}
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
@@ -287,7 +285,7 @@ public class Binder {
 		context.setConfigurationProperty(property);
 		Object result = property.getValue();
 		result = this.placeholdersResolver.resolvePlaceholders(result);
-		result = this.conversionService.convert(result, target);
+		result = convert(result, target);
 		return result;
 	}
 

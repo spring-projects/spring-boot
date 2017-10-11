@@ -122,11 +122,10 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private <C> C convert(Object value, ResolvableType type) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		BinderConversionService conversionService = getContext().getConversionService();
-		return (C) conversionService.convert(value, type);
+		return ResolvableTypeDescriptor.forType(type).convert(conversionService, value);
 	}
 
 	/**
