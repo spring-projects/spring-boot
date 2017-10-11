@@ -87,7 +87,8 @@ public class UndertowServletWebServer implements WebServer {
 
 	private Undertow undertow;
 
-	private volatile boolean started = false;
+	// visible for testing
+	volatile boolean started = false;
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
@@ -153,8 +154,8 @@ public class UndertowServletWebServer implements WebServer {
 				if (this.undertow == null) {
 					this.undertow = createUndertowServer();
 				}
-				this.undertow.start();
 				this.started = true;
+				this.undertow.start();
 				UndertowServletWebServer.logger
 						.info("Undertow started on port(s) " + getPortsDescription());
 			}
