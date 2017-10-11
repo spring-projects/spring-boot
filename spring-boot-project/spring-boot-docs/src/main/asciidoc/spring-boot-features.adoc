@@ -6650,7 +6650,7 @@ when relevant classes are found and when you have not declared your own `@Config
 
 You can browse the source code of {sc-spring-boot-autoconfigure}[`spring-boot-autoconfigure`]
 to see the `@Configuration` classes that we provide (see the
-{github-code}/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories[`META-INF/spring.factories`]
+{github-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories[`META-INF/spring.factories`]
 file).
 
 
