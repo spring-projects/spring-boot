@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
-import javax.servlet.Servlet;
+import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(Servlet.class)
+@ConditionalOnClass(Flux.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 public class ReactiveManagementContextAutoConfiguration {
 
