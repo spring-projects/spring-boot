@@ -63,7 +63,8 @@ public class DataSourcePropertiesTests {
 	@Test
 	public void determineUrlUrlNull() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
-		assertThatThrownBy(() -> properties.determineUrl())
+		assertThatThrownBy(
+			() -> properties.determineUrl())
 				.isInstanceOf(DataSourceProperties.DataSourceBeanCreationException.class)
 				.hasMessageContaining("Cannot determine embedded database url");
 	}
