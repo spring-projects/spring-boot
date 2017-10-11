@@ -102,7 +102,7 @@ add the following to your `pom.xml`.
 	</properties>
 ----
 
-TIP: Check the {github-code}/spring-boot-dependencies/pom.xml[`spring-boot-dependencies` pom]
+TIP: Check the {github-code}/spring-boot-project/spring-boot-dependencies/pom.xml[`spring-boot-dependencies` pom]
 for a list of supported properties.
 
 
@@ -313,7 +313,7 @@ or swap specific technical facets:
 include::../../../target/generated-resources/technical-starters.adoc[]
 
 TIP: For a list of additional community contributed starters, see the
-{github-master-code}/spring-boot-starters/README.adoc[README file] in the
+{github-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the
 `spring-boot-starters` module on GitHub.
 
 
