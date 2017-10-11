@@ -318,6 +318,9 @@ public class UndertowEmbeddedServletContainerFactoryTests
 			int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+		Object undertow = ReflectionTestUtils.getField(this.container, "undertow");
+		Object worker = ReflectionTestUtils.getField(undertow, "worker");
+		assertThat(worker).isNull();
 	}
 
 }

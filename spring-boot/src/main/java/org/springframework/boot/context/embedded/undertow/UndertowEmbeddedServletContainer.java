@@ -160,18 +160,37 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 						.info("Undertow started on port(s) " + getPortsDescription());
 			}
 			catch (Exception ex) {
-				if (findBindException(ex) != null) {
-					List<Port> failedPorts = getConfiguredPorts();
-					List<Port> actualPorts = getActualPorts();
-					failedPorts.removeAll(actualPorts);
-					if (failedPorts.size() == 1) {
-						throw new PortInUseException(
-								failedPorts.iterator().next().getNumber());
+				try {
+					if (findBindException(ex) != null) {
+						List<Port> failedPorts = getConfiguredPorts();
+						List<Port> actualPorts = getActualPorts();
+						failedPorts.removeAll(actualPorts);
+						if (failedPorts.size() == 1) {
+							throw new PortInUseException(
+									failedPorts.iterator().next().getNumber());
+						}
 					}
+					throw new EmbeddedServletContainerException(
+							"Unable to start embedded Undertow", ex);
 				}
-				throw new EmbeddedServletContainerException(
-						"Unable to start embedded Undertow", ex);
+				finally {
+					stopSilently();
+				}
 			}
+		}
+	}
+
+	private void stopSilently() {
+		try {
+			if (this.manager != null) {
+				this.manager.stop();
+			}
+			if (this.undertow != null) {
+				this.undertow.stop();
+			}
+		}
+		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
