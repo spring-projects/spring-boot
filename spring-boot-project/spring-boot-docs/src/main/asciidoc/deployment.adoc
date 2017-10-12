@@ -226,7 +226,7 @@ Your application should now be up and running on Heroku.
 
 [[cloud-deployment-openshift]]
 === OpenShift
-https://www.openshift.com/[OpenShift] is the RedHat public (and enterprise) extension of the 
+https://www.openshift.com/[OpenShift] is the Red Hat public (and enterprise) extension of the 
 Kubernetes container orchestration platform.  Just as in Kubernetes, OpenShift has many 
 options for installing Spring Boot based applications. 
 
