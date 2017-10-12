@@ -2844,38 +2844,31 @@ makes use of the properties under `OAuth2ClientProperties`.
 You can register multiple OAuth2 clients and providers under the
 `spring.security.oauth2.client` prefix. For example:
 
-[source,yaml,indent=0]
+[source,properties,indent=0]
 ----
-	spring:
-		security:
-			oauth2:
-				client:
-					registration:
-						my-client-1:
-							client-id: abcd
-							client-secret: password
-							client-name: Client for user scope
-							provider: my-oauth-provider
-							scope: user
-							redirect-uri: http://my-redirect-uri.com
-							client-authentication-method: basic
-							authorization-grant-type: authorization_code
-						my-client2:
-							client-id: abcd
-							client-secret: password
-							client-name: Client for email scope
-							provider: my-oauth-provider
-							scope: email
-							redirect-uri: http://my-redirect-uri.com
-							client-authentication-method: basic
-							authorization-grant-type: authorization_code
-				provider:
-					my-oauth-provider:
-						authorization-uri: http://my-auth-server/oauth/authorize
-						token-uri: http://my-auth-server/oauth/token
-						user-info-uri: http://my-auth-server/userinfo
-						jwk-set-uri: http://my-auth-server/token_keys
-						user-name-attribute: name
+	spring.security.oauth2.client.registration.my-client-1.client-id:=abcd
+	spring.security.oauth2.client.registration.my-client-1.client-secret=password
+	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
+	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.my-client-1.scope=user
+	spring.security.oauth2.client.registration.my-client-1.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
+	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
+
+	spring.security.oauth2.client.registration.my-client-2.client-id=abcd
+	spring.security.oauth2.client.registration.my-client-2.client-secret=password
+	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
+	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.my-client-2.scope=email
+	spring.security.oauth2.client.registration.my-client-2.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
+	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
+
+	spring.security.oauth2.client.provider.my-oauth-provider.authorization-uri=http://my-auth-server/oauth/authorize
+	spring.security.oauth2.client.provider.my-oauth-provider.token-uri=http://my-auth-server/oauth/token
+	spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=http://my-auth-server/userinfo
+	spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=http://my-auth-server/token_keys
+	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
 ----
 
 NOTE: For common OAuth2 and OpenID providers such as Google, Github, Facebook and Okta,
