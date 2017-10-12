@@ -82,7 +82,7 @@ got you covered>>.
 * *Packaging your app:*
   <<using-spring-boot.adoc#using-boot-packaging-for-production, Production jars>>
 * *Spring Boot CLI:*
-<<using-spring-boot-cli.adoc#cli, Using the CLI>>
+<<spring-boot-cli.adoc#cli, Using the CLI>>
 
 
 
