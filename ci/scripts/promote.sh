@@ -40,7 +40,7 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 		-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
 		-H "Content-type:application/json" \
 		-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
-		-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\"}"
+		-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\"}" \
 		-f \
 		-X \
 		POST "${ARTIFACTORY_SERVER}/api/build/distribute/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
@@ -50,7 +50,7 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 		--connect-timeout 240 \
 		--max-time 900 \
 		-u ${BINTRAY_USERNAME}:${BINTRAY_PASSWORD} \
-		-H "Content-Type: application/json" -d "{\"username\": \"${SONATYPE_USERNAME}\", \"password\": \"${SONATYPE_PASSWORD}\"}"
+		-H "Content-Type: application/json" -d "{\"username\": \"${SONATYPE_USERNAME}\", \"password\": \"${SONATYPE_PASSWORD}\"}" \
 		-f \
 		-X \
 		POST "https://api.bintray.com/maven_central_sync/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/${groupId}/versions/${version}" > /dev/null || { echo "Failed to sync" >&2; exit 1; }
