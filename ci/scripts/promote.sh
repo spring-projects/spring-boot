@@ -29,7 +29,7 @@ curl \
 	-X \
 	POST "${ARTIFACTORY_SERVER}/api/build/promote/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to promote" >&2; exit 1; }
 
-elif [[ $RELEASE_TYPE = "RELEASE" ]]; then
+if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	curl \
 		-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
 		-H"Content-type:application/json" \
