@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -247,9 +248,9 @@ public class Handler extends URLStreamHandler {
 		String source = file.substring(0, separatorIndex);
 		String entry = canonicalize(file.substring(separatorIndex + 2));
 		try {
-			result += new URL(source).hashCode();
+			result += new URL(source).toURI().hashCode();
 		}
-		catch (MalformedURLException ex) {
+		catch (MalformedURLException | URISyntaxException ex) {
 			result += source.hashCode();
 		}
 		result += entry.hashCode();

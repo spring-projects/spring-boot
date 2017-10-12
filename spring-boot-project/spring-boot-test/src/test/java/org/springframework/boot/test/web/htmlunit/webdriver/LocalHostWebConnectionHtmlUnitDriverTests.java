@@ -142,7 +142,7 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 
 		@Override
 		public boolean matches(WebRequest argument) {
-			return argument.getUrl().equals(this.expectedUrl);
+			return argument.getUrl().toExternalForm().equals(this.expectedUrl.toExternalForm());
 		}
 
 	}
