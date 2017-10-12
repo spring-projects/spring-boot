@@ -24,7 +24,7 @@ echo "Promoting ${buildName}/${buildNumber} to ${targetRepo}"
 curl \
 	-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
 	-H"Content-type:application/json" \
-	-d "{\"status\": \"staged\", \"sourceRepo\": \"libs-staging-local\", \"targetRepo\": \"\"}"  \
+	-d "{\"status\": \"staged\", \"sourceRepo\": \"libs-staging-local\", \"targetRepo\": \"${targetRepo}\"}"  \
 	-f \
 	-X \
 	POST "${ARTIFACTORY_SERVER}/api/build/promote/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to promote" >&2; exit 1; }
