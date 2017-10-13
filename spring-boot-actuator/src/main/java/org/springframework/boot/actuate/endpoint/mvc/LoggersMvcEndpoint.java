@@ -70,19 +70,19 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			// disabled
 			return getDisabledResponse();
 		}
-		try {
-			LogLevel logLevel = getLogLevel(configuration);
-			this.delegate.setLogLevel(name, logLevel);
-			return ResponseEntity.ok().build();
-		}
-		catch (IllegalArgumentException ex) {
-			throw new InvalidLogLevelException("No such log level " + configuration.get("configuredLevel"));
-		}
+		LogLevel logLevel = getLogLevel(configuration);
+		this.delegate.setLogLevel(name, logLevel);
+		return ResponseEntity.ok().build();
 	}
 
 	private LogLevel getLogLevel(Map<String, String> configuration) {
 		String level = configuration.get("configuredLevel");
-		return (level == null ? null : LogLevel.valueOf(level.toUpperCase()));
+		try {
+			return (level == null ? null : LogLevel.valueOf(level.toUpperCase()));
+		}
+		catch (IllegalArgumentException ex) {
+			throw new InvalidLogLevelException(level);
+		}
 	}
 
 	/**
@@ -92,8 +92,8 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "No such log level")
 	public static class InvalidLogLevelException extends RuntimeException {
 
-		public InvalidLogLevelException(String string) {
-			super(string);
+		public InvalidLogLevelException(String level) {
+			super("Log level '" + level + "' is invalid");
 		}
 
 	}
