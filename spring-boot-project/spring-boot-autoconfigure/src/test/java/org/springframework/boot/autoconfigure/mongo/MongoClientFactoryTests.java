@@ -23,9 +23,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.connection.Cluster;
 import com.mongodb.connection.ClusterSettings;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  */
 public class MongoClientFactoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private MockEnvironment environment = new MockEnvironment();
 

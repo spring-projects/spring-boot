@@ -48,7 +48,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		provider.setAuthorizationUri("http://example.com/auth");
 		provider.setTokenUri("http://example.com/token");
 		provider.setUserInfoUri("http://example.com/info");
-		provider.setJwkSetUri("http://example.com/jkw");
+		provider.setJwkSetUri("http://example.com/jwk");
 		Registration registration = new Registration();
 		registration.setProvider("provider");
 		registration.setClientId("clientId");
@@ -69,7 +69,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("http://example.com/info");
-		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jkw");
+		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");

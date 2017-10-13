@@ -27,7 +27,7 @@ import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicati
 import org.springframework.context.ApplicationContext;
 
 /**
- * A {@link AbstractApplicationContextRunner ApplicationContext runner} for a
+ * An {@link AbstractApplicationContextRunner ApplicationContext runner} for a
  * {@link ConfigurableReactiveWebApplicationContext}.
  * <p>
  * See {@link AbstractApplicationContextRunner} for details.
