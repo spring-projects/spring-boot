@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.admin;
 
+import java.util.List;
+
 import javax.management.MalformedObjectNameException;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -55,13 +57,13 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	 */
 	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
-	private final MBeanExporter mbeanExporter;
+	private final List<MBeanExporter> mbeanExporters;
 
 	private final Environment environment;
 
 	public SpringApplicationAdminJmxAutoConfiguration(
-			ObjectProvider<MBeanExporter> mbeanExporter, Environment environment) {
-		this.mbeanExporter = mbeanExporter.getIfAvailable();
+			ObjectProvider<List<MBeanExporter>> mbeanExporters, Environment environment) {
+		this.mbeanExporters = mbeanExporters.getIfAvailable();
 		this.environment = environment;
 	}
 
@@ -71,8 +73,10 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 			throws MalformedObjectNameException {
 		String jmxName = this.environment.getProperty(JMX_NAME_PROPERTY,
 				DEFAULT_JMX_NAME);
-		if (this.mbeanExporter != null) { // Make sure to not register that MBean twice
-			this.mbeanExporter.addExcludedBean(jmxName);
+		if (this.mbeanExporters != null) { // Make sure to not register that MBean twice
+			for (MBeanExporter mbeanExporter : this.mbeanExporters) {
+				mbeanExporter.addExcludedBean(jmxName);
+			}
 		}
 		return new SpringApplicationAdminMXBeanRegistrar(jmxName);
 	}
