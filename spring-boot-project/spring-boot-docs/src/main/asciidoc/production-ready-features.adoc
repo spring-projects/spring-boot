@@ -580,7 +580,7 @@ The `application.properties` example above will change the endpoint from `/appli
 
 NOTE: Unless the management port has been configured to
 <<production-ready-customizing-management-server-port,expose endpoints using a different
-HTTP port>>, `management.context-path` is relative to `server.context-path`.
+HTTP port>>, `management.context-path` is relative to `server.servlet.context-path`.
 
 
 

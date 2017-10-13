@@ -252,7 +252,7 @@ endif::[]
 [[getting-started-installing-the-cli]]
 === Installing the Spring Boot CLI
 The Spring Boot CLI is a command line tool that can be used if you want to quickly
-prototype with Spring. It allows you to run http://groovy.codehaus.org/[Groovy] scripts,
+prototype with Spring. It allows you to run http://groovy-lang.org/[Groovy] scripts,
 which means that you have a familiar Java-like syntax, without so much boilerplate code.
 
 You don't need to use the CLI to work with Spring Boot but it's definitely the quickest

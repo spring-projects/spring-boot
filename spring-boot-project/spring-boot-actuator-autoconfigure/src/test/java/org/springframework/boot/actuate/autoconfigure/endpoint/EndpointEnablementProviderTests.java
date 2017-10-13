@@ -153,7 +153,7 @@ public class EndpointEnablementProviderTests {
 	}
 
 	@Test
-	public void defaultEnablementNeutralWebWithTechDisablement() {
+	public void defaultEnablementNeutralJmxWithTechDisablement() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
 				"endpoints.default.jmx.enabled=false");
@@ -177,7 +177,7 @@ public class EndpointEnablementProviderTests {
 	}
 
 	@Test
-	public void defaultEnablementNeutralWebWithUnrelatedTechDisablement() {
+	public void defaultEnablementNeutralJmxWithUnrelatedTechDisablement() {
 		EndpointEnablement enablement = getEndpointEnablement("biz",
 				DefaultEnablement.NEUTRAL, EndpointExposure.JMX,
 				"endpoints.default.web.enabled=false");
@@ -235,20 +235,20 @@ public class EndpointEnablementProviderTests {
 	}
 
 	private EndpointEnablement getEndpointEnablement(String id,
-			DefaultEnablement enabledByDefault, String... environment) {
-		return getEndpointEnablement(id, enabledByDefault, null, environment);
+			DefaultEnablement defaultEnablement, String... environment) {
+		return getEndpointEnablement(id, defaultEnablement, null, environment);
 	}
 
 	private EndpointEnablement getEndpointEnablement(String id,
-			DefaultEnablement enabledByDefault, EndpointExposure exposure,
+			DefaultEnablement defaultEnablement, EndpointExposure exposure,
 			String... environment) {
 		MockEnvironment env = new MockEnvironment();
 		TestPropertyValues.of(environment).applyTo(env);
 		EndpointEnablementProvider provider = new EndpointEnablementProvider(env);
 		if (exposure != null) {
-			return provider.getEndpointEnablement(id, enabledByDefault, exposure);
+			return provider.getEndpointEnablement(id, defaultEnablement, exposure);
 		}
-		return provider.getEndpointEnablement(id, enabledByDefault);
+		return provider.getEndpointEnablement(id, defaultEnablement);
 	}
 
 	private void validate(EndpointEnablement enablement, boolean enabled,
