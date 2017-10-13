@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties("endpoints.configprops")
+@ConfigurationProperties("management.endpoint.configprops")
 public class ConfigurationPropertiesReportEndpointProperties {
 
 	/**

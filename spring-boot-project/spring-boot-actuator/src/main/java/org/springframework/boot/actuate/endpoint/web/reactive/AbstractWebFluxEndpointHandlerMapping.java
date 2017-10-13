@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,7 +57,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 	private final EndpointMapping endpointMapping;
 
-	private final Collection<EndpointInfo<WebEndpointOperation>> webEndpoints;
+	private final Collection<EndpointInfo<WebOperation>> webEndpoints;
 
 	private final EndpointMediaTypes endpointMediaTypes;
 
@@ -71,7 +71,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public AbstractWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> collection,
+			Collection<EndpointInfo<WebOperation>> collection,
 			EndpointMediaTypes endpointMediaTypes) {
 		this(endpointMapping, collection, endpointMediaTypes, null);
 	}
@@ -85,7 +85,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
 	public AbstractWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
 		this.endpointMapping = endpointMapping;
 		this.webEndpoints = webEndpoints;
@@ -118,7 +118,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	}
 
 	protected RequestMappingInfo createRequestMappingInfo(
-			WebEndpointOperation operationInfo) {
+			WebOperation operationInfo) {
 		OperationRequestPredicate requestPredicate = operationInfo.getRequestPredicate();
 		PatternsRequestCondition patterns = new PatternsRequestCondition(pathPatternParser
 				.parse(this.endpointMapping.createSubPath(requestPredicate.getPath())));
@@ -142,13 +142,13 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		return this.corsConfiguration;
 	}
 
-	public Collection<EndpointInfo<WebEndpointOperation>> getEndpoints() {
+	public Collection<EndpointInfo<WebOperation>> getEndpoints() {
 		return this.webEndpoints;
 	}
 
 	protected abstract Method getLinks();
 
-	protected abstract void registerMappingForOperation(WebEndpointOperation operation);
+	protected abstract void registerMappingForOperation(WebOperation operation);
 
 	@Override
 	protected boolean isHandler(Class<?> beanType) {

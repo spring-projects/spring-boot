@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.After;
@@ -24,13 +25,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -79,7 +81,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				RestTemplateAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				CloudFoundryActuatorAutoConfiguration.class);
 	}
 
@@ -208,30 +210,34 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWeb()
+	public void allEndpointsAvailableUnderCloudFoundryWithoutExposeAllOnWeb()
 			throws Exception {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getId()).isEqualTo("test");
+		assertThat(endpoints.stream()
+				.filter((candidate) -> "test".equals(candidate.getId())).findFirst())
+						.isNotEmpty();
 	}
 
 	@Test
 	public void endpointPathCustomizationIsNotApplied() throws Exception {
-		TestPropertyValues.of("endpoints.test.web.path=another/custom")
+		TestPropertyValues.of("management.endpoints.web.path-mapping.test=custom")
 				.applyTo(this.context);
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getOperations()).hasSize(1);
-		assertThat(endpoints.get(0).getOperations().iterator().next()
-				.getRequestPredicate().getPath()).isEqualTo("test");
+		EndpointInfo<WebOperation> endpoint = endpoints.stream()
+				.filter((candidate) -> "test".equals(candidate.getId())).findFirst()
+				.get();
+		Collection<WebOperation> operations = endpoint.getOperations();
+		assertThat(operations).hasSize(1);
+		assertThat(operations.iterator().next().getRequestPredicate().getPath())
+				.isEqualTo("test");
 	}
 
 	private CloudFoundryWebEndpointServletHandlerMapping getHandlerMapping() {

@@ -7,10 +7,6 @@ Spring Boot includes a number of additional features to help you monitor and man
 application when you push it to production. You can choose to manage and monitor your
 application by using HTTP endpoints or with JMX. Auditing, health, and metrics gathering
 can also be automatically applied to your application.
-
-Actuator HTTP endpoints are only available with a Spring MVC-based application. In
-particular, it does not work with Jersey <<howto.adoc#howto-use-actuator-with-jersey,
-unless you enable Spring MVC as well.>>
 --
 
 
@@ -146,88 +142,113 @@ content.
 
 |===
 
-[[production-ready-endpoints-security]]
-=== Securing Endpoints
-By default, all HTTP endpoints are secured such that only users that have an `ACTUATOR`
-role may access them. Security is enforced by using the standard
-`HttpServletRequest.isUserInRole` method.
 
-TIP: If you want to use something other than `ACTUATOR` as the role, set the
-`management.security.roles` property to the value you want to use.
 
-If you deploy applications behind a firewall, you may prefer that all your actuator
-endpoints can be accessed without requiring authentication. You can do so by changing the
-`management.security.enabled` property, as follows:
+[[production-ready-endpoints-exposing-endpoints]]
+=== Exposing Endpoints
+Since Endpoints may contain sensitive information, careful consideration should be given
+about when to expose them. Out of the box, Spring Boot will expose all enabled endpoints
+over JMX, but only the `health` and `info` endpoints over HTTP.
+
+To change the endpoints that are exposed you can use the `expose` and `exclude` property
+for the technology. For example, to only expose the `health` over JMX you would use:
 
 .application.properties
 [source,properties,indent=0]
 ----
-	management.security.enabled=false
+	management.endpoints.jmx.expose=health
 ----
 
-CAUTION: By default, actuator endpoints are exposed on the same port that serves regular
-HTTP traffic. Take care not to accidentally expose sensitive information if you change
-the `management.security.enabled` property.
+The `*` character can be used to indicate all endpoints. For example, to expose everything
+over HTTP except the `env` endpoint you would use:
 
-If you deploy applications publicly, you may want to add '`Spring Security`' to handle
-user authentication. When '`Spring Security`' is added, by default, '`basic`'
-authentication is used. The username is`user` and the password is a random generated
-password (which is printed on the console when the application starts).
-
-TIP: Generated passwords are logged as the application starts. To find the password in
-the console, search for '`Using default security password`'.
-
-You can use Spring properties to change the username and password and to change the
-security role(s) required to access the endpoints. For example, you might set the
-following properties in your `application.properties`:
-
+.application.properties
 [source,properties,indent=0]
 ----
-	security.user.name=admin
-	security.user.password=secret
-	management.security.roles=SUPERUSER
+	management.endpoints.web.expose=*
+	management.endpoints.web.exclude=env
 ----
 
-If your application has custom security configuration and you want all your actuator
-endpoints to be accessible without authentication, you need to explicitly configure that
-in your security configuration. Also, you need to change the
-`management.security.enabled` property to `false`.
+NOTE: If your application is exposed publicly we strongly recommend that you also
+<<production-ready-endpoints-security, secure your endpoints>>.
 
-If your custom security configuration secures your actuator endpoints, you also need to
-ensure that the authenticated user has the roles specified under
-`management.security.roles`.
+TIP: If you want to implement your own strategy for when endpoints are exposed you can
+register an `EndpointFilter` bean.
 
-TIP: If you do not have a use case for exposing basic health information to
-unauthenticated users and you have secured the actuator endpoints with custom security,
-you can set `management.security.enabled` to `false`. This tells Spring Boot to skip the
-additional role check.
+
+
+[[production-ready-endpoints-security]]
+=== Securing HTTP Endpoints
+You should take care to secure HTTP endpoints in the same way that you would any other
+sensitive URL. Spring Boot will not apply any security on your behalf, however, it does
+provide some convenient `ReqestMatchers` that can be used in combination with Spring
+Security.
+
+A typical Spring Security configuration could look something like this:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+					.anyRequest().hasRole("ENDPOINT_ADMIN")
+					.and()
+				.httpBasic();
+		}
+
+	}
+----
+
+The above uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint, then
+ensure that thet all have the `ENDPOINT_ADMIN` role. Several other matcher methods are
+also available on `EndpointRequest` (see the API documentation for details).
+
+If you deploy applications behind a firewall, you may prefer that all your actuator
+endpoints can be accessed without requiring authentication. You can do so by changing the
+`management.endpoints.web.expose` property, as follows:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.expose=*
+----
 
 
 
 [[production-ready-customizing-endpoints]]
 === Customizing Endpoints
 Endpoints can be customized by using Spring properties. You can change whether an
-endpoint is `enabled`.
+endpoint is `enabled` and the amount of time it will cache reponses.
 
-For example, the following `application.properties` enables the `shutdown` endpoint:
-
-[source,properties,indent=0]
-----
-	endpoints.shutdown.enabled=true
-----
-
-NOTE: The prefix ‟`endpoints` + `.` + `id`” is used to uniquely identify the endpoint
-that is being configured.
-
-By default, all endpoints except for `shutdown` are enabled. If you prefer to specifically
-"`opt-in`" endpoint enablement, you can use the `endpoints.default.enabled` property. For
-example, the following settings disables _all_ endpoints except for `info`:
+For example, the following `application.properties` changes the time-to-live of the
+`beans` endpoint and also enables `shutdown`:
 
 [source,properties,indent=0]
 ----
-	endpoints.default.enabled=false
-	endpoints.info.enabled=true
+	management.endpoint.beans.cache.time-to-live=10
+	management.endpoint.shutdown.enabled=true
 ----
+
+NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the
+endpoint that is being configured.
+
+By default, all endpoints except for `shutdown` are enabled. If you prefer to
+specifically "`opt-in`" endpoint enablement, you can use the
+`management.endpoints.enabled-by-default` property. For example, the following settings
+disable _all_ endpoints except for `info`:
+
+[source,properties,indent=0]
+----
+	management.endpoints.enabled-by-default=flase
+	management.endpoint.info.enabled=true
+----
+
+NOTE: Disabled endpoints are removed entirely from the `ApplicationContext`. If you only
+want to change the technologies over which an endpoint is exposed you can use the `expose`
+and `exclude` properties (see <<production-ready-endpoints-exposing-endpoints>>).
 
 
 
@@ -244,6 +265,25 @@ disabled to prevent the possibility of a clash with other mappings.
 
 
 
+[[production-ready-endpoint-custom-mapping]]
+=== Actuator Web Endpoint Paths
+By default, endpoints are exposed over HTTP under the `/application` path using ID of the
+endpoint. For example, the `beans` endpoint is exposed under `/application/beans`. If you
+want to map endpoints to a different path you can use the
+`management.endpoints.web.path-mapping` property. You can also use
+`management.endpoints.web.base-path` if you want change the base path.
+
+Here's an example that remaps `/application/health` to `/healthcheck`:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.base-path=/
+	management.endpoints.path-mapping.health=healthcheck
+----
+
+
+
 [[production-ready-endpoint-cors]]
 === CORS Support
 http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
@@ -252,13 +292,13 @@ flexible way what kind of cross domain requests are authorized. If you use Sprin
 Spring WebFlux, Actuator's web endpoints can be configured to support such scenarios.
 
 CORS support is disabled by default and is only enabled once the
-`management.endpoints.cors.allowed-origins` property has been set. The following
+`management.endpoints.web.cors.allowed-origins` property has been set. The following
 configuration permits `GET` and `POST` calls from the `example.com` domain:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.cors.allowed-origins=http://example.com
-	management.endpoints.cors.allowed-methods=GET,POST
+	management.endpoints.web.cors.allowed-origins=http://example.com
+	management.endpoints.web.cors.allowed-methods=GET,POST
 ----
 
 TIP: See {sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties] for a complete list of options.
@@ -268,14 +308,22 @@ TIP: See {sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpoi
 [[production-ready-customizing-endpoints-programmatically]]
 === Adding Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with
-`@ReadOperation` or `@WriteOperation` are automatically exposed over JMX and, in a web
-application, over HTTP as well.
+`@ReadOperation`, `@WriteOperation` or `@DeleteOperaion` are automatically exposed over
+JMX and, in a web application, over HTTP as well.
 
-TIP: If you do this as a library feature, consider adding a configuration class annotated
-with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the key,
-`org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration`. If you
-do so and if your users ask for a separate management port or address, the endpoint moves
-to a child context with all the other web endpoints.
+You can also write technology specific endpoints by using `@JmxEndpoint` or
+`@WebEndpoint`. These endpoints are filtered to their respective technologies. For
+example, `@WebEndpoint` will be exposed only over HTTP and not over JMX.
+
+Finally, it's possible to write technology specific extensions using
+`@EndpointWebExtension` and `@EndpointJmxExtension`. These annotations allow you to
+provide technology specific operations to augment an existing endpoint.
+
+TIP: If you add endpoints as a library feature, consider adding a configuration class
+annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
+key, `org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration`. If
+you do so and if your users ask for a separate management port or address, the endpoint
+moves to a child context with all the other web endpoints.
 
 
 

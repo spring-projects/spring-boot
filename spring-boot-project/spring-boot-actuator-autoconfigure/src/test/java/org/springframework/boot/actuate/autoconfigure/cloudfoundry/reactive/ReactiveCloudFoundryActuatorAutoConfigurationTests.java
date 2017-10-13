@@ -18,18 +18,20 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -190,16 +192,17 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWeb()
+	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWebInclues()
 			throws Exception {
 		setupContextWithCloudEnabled();
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getId()).isEqualTo("test");
+		List<String> endpointIds = endpoints.stream().map(EndpointInfo::getId)
+				.collect(Collectors.toList());
+		assertThat(endpointIds).contains("test");
 	}
 
 	@Test
@@ -208,12 +211,14 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getOperations()).hasSize(1);
-		assertThat(endpoints.get(0).getOperations().iterator().next()
-				.getRequestPredicate().getPath()).isEqualTo("test");
+		EndpointInfo<WebOperation> endpoint = endpoints.stream()
+				.filter((candidate) -> "test".equals(candidate.getId())).findFirst()
+				.get();
+		assertThat(endpoint.getOperations()).hasSize(1);
+		WebOperation operation = endpoint.getOperations().iterator().next();
+		assertThat(operation.getRequestPredicate().getPath()).isEqualTo("test");
 	}
 
 	private void setupContextWithCloudEnabled() {
@@ -231,6 +236,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class,
 				ReactiveCloudFoundryActuatorAutoConfiguration.class);
 	}
 

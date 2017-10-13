@@ -49,8 +49,9 @@ public class LoggersEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.loggers.enabled:false").run(
-				(context) -> assertThat(context).doesNotHaveBean(LoggersEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.loggers.enabled:false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LoggersEndpoint.class));
 	}
 
 	@Configuration

@@ -71,10 +71,11 @@ public class LogFileWebEndpointManagementContextConfiguration {
 				return ConditionOutcome
 						.match(message.found("logging.path").items(config));
 			}
-			config = environment.getProperty("endpoints.logfile.external-file");
+			config = environment.getProperty("management.endpoint.logfile.external-file");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome.match(
-						message.found("endpoints.logfile.external-file").items(config));
+				return ConditionOutcome
+						.match(message.found("management.endpoint.logfile.external-file")
+								.items(config));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("logging file").atAll());
 		}

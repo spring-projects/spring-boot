@@ -20,14 +20,11 @@ import java.util.HashSet;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -49,27 +46,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(ResourceConfig.class)
-@ConditionalOnBean(ResourceConfig.class)
+@ConditionalOnBean({ ResourceConfig.class, WebAnnotationEndpointDiscoverer.class })
 @ConditionalOnMissingBean(type = "org.springframework.web.servlet.DispatcherServlet")
 class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
 	public ResourceConfigCustomizer webEndpointRegistrar(
-			EndpointProvider<WebEndpointOperation> provider,
+			WebAnnotationEndpointDiscoverer endpointDiscoverer,
 			EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		return (resourceConfig) -> resourceConfig.registerResources(
 				new HashSet<>(new JerseyEndpointResourceFactory().createEndpointResources(
 						new EndpointMapping(webEndpointProperties.getBasePath()),
-						provider.getEndpoints(), endpointMediaTypes)));
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointPathProvider endpointPathProvider(
-			EndpointProvider<WebEndpointOperation> provider,
-			WebEndpointProperties webEndpointProperties) {
-		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
+						endpointDiscoverer.discoverEndpoints(), endpointMediaTypes)));
 	}
 
 }

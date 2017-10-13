@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import org.junit.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.actuate.health.HealthReactiveWebEndpointExtension;
-import org.springframework.boot.actuate.health.HealthWebEndpointExtension;
-import org.springframework.boot.actuate.health.StatusReactiveWebEndpointExtension;
-import org.springframework.boot.actuate.health.StatusWebEndpointExtension;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ReactiveStatusEndpointWebExtension;
+import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
@@ -59,25 +59,25 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 		servletWebRunner()
 				.run((context) -> context.getBean(WebEndpointTestApplication.class));
 		servletWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(HealthWebEndpointExtension.class));
+				.hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
 	public void statusEndpointWebExtensionIsAutoConfigured() {
 		servletWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(StatusWebEndpointExtension.class));
+				.hasSingleBean(StatusEndpointWebExtension.class));
 	}
 
 	@Test
 	public void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(HealthReactiveWebEndpointExtension.class));
+				.hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}
 
 	@Test
 	public void statusEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(StatusReactiveWebEndpointExtension.class));
+				.hasSingleBean(ReactiveStatusEndpointWebExtension.class));
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {

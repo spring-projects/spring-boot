@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.util.Assert;
 
 /**
@@ -33,29 +33,34 @@ import org.springframework.util.Assert;
  */
 public class DefaultEndpointPathProvider implements EndpointPathProvider {
 
-	private final Collection<EndpointInfo<WebEndpointOperation>> endpoints;
-
 	private final String basePath;
 
-	public DefaultEndpointPathProvider(EndpointProvider<WebEndpointOperation> provider,
+	private final EndpointDiscoverer<WebOperation> endpointDiscoverer;
+
+	public DefaultEndpointPathProvider(
+			EndpointDiscoverer<WebOperation> endpointDiscoverer,
 			WebEndpointProperties webEndpointProperties) {
-		this.endpoints = provider.getEndpoints();
+		this.endpointDiscoverer = endpointDiscoverer;
 		this.basePath = webEndpointProperties.getBasePath();
 	}
 
 	@Override
 	public List<String> getPaths() {
-		return this.endpoints.stream().map(this::getPath).collect(Collectors.toList());
+		return getEndpoints().map(this::getPath).collect(Collectors.toList());
 	}
 
 	@Override
 	public String getPath(String id) {
 		Assert.notNull(id, "ID must not be null");
-		return this.endpoints.stream().filter((info) -> id.equals(info.getId()))
-				.findFirst().map(this::getPath).orElse(null);
+		return getEndpoints().filter((info) -> id.equals(info.getId())).findFirst()
+				.map(this::getPath).orElse(null);
 	}
 
-	private String getPath(EndpointInfo<WebEndpointOperation> endpointInfo) {
+	private Stream<EndpointInfo<WebOperation>> getEndpoints() {
+		return this.endpointDiscoverer.discoverEndpoints().stream();
+	}
+
+	private String getPath(EndpointInfo<WebOperation> endpointInfo) {
 		return this.basePath + "/" + endpointInfo.getId();
 	}
 

@@ -20,7 +20,7 @@ import java.util.Date;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDescriptor;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExtension;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.EndpointJmxExtension;
 
 /**
  * JMX-specific extension of the {@link AuditEventsEndpoint}.
@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExten
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@JmxEndpointExtension(endpoint = AuditEventsEndpoint.class)
+@EndpointJmxExtension(endpoint = AuditEventsEndpoint.class)
 public class AuditEventsJmxEndpointExtension {
 
 	private final AuditEventsEndpoint delegate;

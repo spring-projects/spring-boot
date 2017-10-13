@@ -1,6 +1,6 @@
 {"properties": [
   {
-    "name": "endpoints.configprops.keys-to-sanitize",
+    "name": "management.endpoint.configprops.keys-to-sanitize",
     "defaultValue": [
       "password",
       "secret",
@@ -11,25 +11,12 @@
     ]
   },
   {
-    "name": "endpoints.default.enabled",
+    "name": "management.endpoints.enabled-by-default",
     "type": "java.lang.Boolean",
-    "description": "Enable all endpoints by default.",
-    "defaultValue": true
+    "description": "Enable or disable all endpoints by default."
   },
   {
-    "name": "endpoints.default.jmx.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable all endpoints as JMX MBeans by default.",
-    "defaultValue": true
-  },
-  {
-    "name": "endpoints.default.web.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable all endpoints as Web endpoints by default.",
-    "defaultValue": false
-  },
-  {
-    "name": "endpoints.env.keys-to-sanitize",
+    "name": "management.endpoint.env.keys-to-sanitize",
     "defaultValue": [
       "password",
       "secret",
@@ -40,7 +27,7 @@
     ]
   },
   {
-    "name": "endpoints.trace.filter.enabled",
+    "name": "management.endpoint.trace.filter.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the trace servlet filter.",
     "defaultValue": true,
@@ -321,7 +308,7 @@
     "type": "java.lang.Boolean",
     "description": "Set whether credentials are supported. When not set, credentials are not supported.",
     "deprecation": {
-      "replacement": "management.endpoints.cors.allow-credentials",
+      "replacement": "management.endpoints.web.cors.allow-credentials",
       "level": "error"
     }
   },
@@ -330,7 +317,7 @@
     "type": "java.util.List<java.lang.String>",
     "description": "Comma-separated list of headers to allow in a request. '*' allows all headers.",
     "deprecation": {
-      "replacement": "management.endpoints.cors.allowed-headers",
+      "replacement": "management.endpoints.web.cors.allowed-headers",
       "level": "error"
     }
   },
@@ -339,7 +326,7 @@
     "type": "java.util.List<java.lang.String>",
     "description": "Comma-separated list of methods to allow. '*' allows all methods. When not set,\n defaults to GET.",
     "deprecation": {
-      "replacement": "management.endpoints.cors.allowed-methods",
+      "replacement": "management.endpoints.web.cors.allowed-methods",
       "level": "error"
     }
   },
@@ -348,7 +335,7 @@
     "type": "java.util.List<java.lang.String>",
     "description": "Comma-separated list of origins to allow. '*' allows all origins. When not set,\n CORS support is disabled.",
     "deprecation": {
-      "replacement": "management.endpoints.cors.allowed-origins",
+      "replacement": "management.endpoints.web.cors.allowed-origins",
       "level": "error"
     }
   },
@@ -357,7 +344,7 @@
     "type": "java.util.List<java.lang.String>",
     "description": "Comma-separated list of headers to include in a response.",
     "deprecation": {
-      "replacement": "management.endpoints.cors.exposed-headers",
+      "replacement": "management.endpoints.web.cors.exposed-headers",
       "level": "error"
     }
   },
@@ -367,7 +354,7 @@
     "description": "How long, in seconds, the response from a pre-flight request can be cached by\n clients.",
     "defaultValue": 1800,
     "deprecation": {
-      "replacement": "management.endpoints.cors.max-age",
+      "replacement": "management.endpoints.web.cors.max-age",
       "level": "error"
     }
   },
@@ -1202,7 +1189,7 @@
   }
 ],"hints": [
   {
-    "name": "management.endpoints.cors.allowed-headers",
+    "name": "management.endpoints.web.cors.allowed-headers",
     "values": [
       {
         "value": "*"
@@ -1215,7 +1202,7 @@
     ]
   },
   {
-    "name": "management.endpoints.cors.allowed-methods",
+    "name": "management.endpoints.web.cors.allowed-methods",
     "values": [
       {
         "value": "*"
@@ -1228,7 +1215,7 @@
     ]
   },
   {
-    "name": "management.endpoints.cors.allowed-origins",
+    "name": "management.endpoints.web.cors.allowed-origins",
     "values": [
       {
         "value": "*"

@@ -16,45 +16,62 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointEnablement;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointEnablementProvider;
-import org.springframework.boot.actuate.endpoint.DefaultEnablement;
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExtension;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * A condition that checks if an endpoint is enabled.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @see ConditionalOnEnabledEndpoint
  */
 class OnEnabledEndpointCondition extends SpringBootCondition {
+
+	private static final String ENABLED_BY_DEFAULT_KEY = "management.endpoints.enabled-by-default";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		EndpointAttributes attributes = getEndpointAttributes(context, metadata);
-		EndpointEnablement endpointEnablement = attributes
-				.getEnablement(new EndpointEnablementProvider(context.getEnvironment()));
-		return new ConditionOutcome(endpointEnablement.isEnabled(),
-				ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
-						.because(endpointEnablement.getReason()));
+		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
+		String id = attributes.getString("id");
+		String key = "management.endpoint." + id + ".enabled";
+		Boolean userDefinedEnabled = context.getEnvironment().getProperty(key,
+				Boolean.class);
+		if (userDefinedEnabled != null) {
+			return new ConditionOutcome(userDefinedEnabled,
+					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
+							.because("found property " + key + " with value "
+									+ userDefinedEnabled));
+		}
+		Boolean userDefinedDefault = context.getEnvironment()
+				.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class);
+		if (userDefinedDefault != null) {
+			return new ConditionOutcome(userDefinedDefault,
+					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
+							.because("no property " + key
+									+ " found so using user defined default from "
+									+ ENABLED_BY_DEFAULT_KEY));
+		}
+		boolean endpointDefault = attributes.getBoolean("enableByDefault");
+		return new ConditionOutcome(endpointDefault,
+				ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class).because(
+						"no property " + key + " found so using endpoint default"));
 	}
 
-	private EndpointAttributes getEndpointAttributes(ConditionContext context,
+	private AnnotationAttributes getEndpointAttributes(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		Assert.state(
 				metadata instanceof MethodMetadata
@@ -63,77 +80,35 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		return getEndpointAttributes(context, (MethodMetadata) metadata);
 	}
 
-	private EndpointAttributes getEndpointAttributes(ConditionContext context,
-			MethodMetadata methodMetadata) {
+	private AnnotationAttributes getEndpointAttributes(ConditionContext context,
+			MethodMetadata metadata) {
+		// We should be safe to load at this point since we are in the REGISTER_BEAN phase
 		try {
-			// We should be safe to load at this point since we are in the
-			// REGISTER_BEAN phase
-			Class<?> returnType = ClassUtils.forName(methodMetadata.getReturnTypeName(),
+			Class<?> returnType = ClassUtils.forName(metadata.getReturnTypeName(),
 					context.getClassLoader());
-			return extractEndpointAttributes(returnType);
+			return getEndpointAttributes(returnType);
 		}
 		catch (Throwable ex) {
 			throw new IllegalStateException("Failed to extract endpoint id for "
-					+ methodMetadata.getDeclaringClassName() + "."
-					+ methodMetadata.getMethodName(), ex);
+					+ metadata.getDeclaringClassName() + "." + metadata.getMethodName(),
+					ex);
 		}
 	}
 
-	protected EndpointAttributes extractEndpointAttributes(Class<?> type) {
-		EndpointAttributes attributes = extractEndpointAttributesFromEndpoint(type);
-		if (attributes != null) {
-			return attributes;
-		}
-		JmxEndpointExtension jmxExtension = AnnotationUtils.findAnnotation(type,
-				JmxEndpointExtension.class);
-		if (jmxExtension != null) {
-			return extractEndpointAttributes(jmxExtension.endpoint());
-		}
-		WebEndpointExtension webExtension = AnnotationUtils.findAnnotation(type,
-				WebEndpointExtension.class);
-		if (webExtension != null) {
-			return extractEndpointAttributes(webExtension.endpoint());
-		}
-		throw new IllegalStateException(
-				"OnEnabledEndpointCondition may only be used on @Bean methods that return"
-						+ " @Endpoint, @JmxEndpointExtension, or @WebEndpointExtension");
-	}
-
-	private EndpointAttributes extractEndpointAttributesFromEndpoint(
-			Class<?> endpointClass) {
-		Endpoint endpoint = AnnotationUtils.findAnnotation(endpointClass, Endpoint.class);
-		if (endpoint == null) {
-			return null;
-		}
-		// If both types are set, all exposure technologies are exposed
-		EndpointExposure[] exposures = endpoint.exposure();
-		return new EndpointAttributes(endpoint.id(), endpoint.defaultEnablement(),
-				(exposures.length == 1 ? exposures[0] : null));
-	}
-
-	private static class EndpointAttributes {
-
-		private final String id;
-
-		private final DefaultEnablement defaultEnablement;
-
-		private final EndpointExposure exposure;
-
-		EndpointAttributes(String id, DefaultEnablement defaultEnablement,
-				EndpointExposure exposure) {
-			if (!StringUtils.hasText(id)) {
-				throw new IllegalStateException("Endpoint id could not be determined");
+	protected AnnotationAttributes getEndpointAttributes(Class<?> type) {
+		AnnotationAttributes attributes = AnnotatedElementUtils
+				.findMergedAnnotationAttributes(type, Endpoint.class, true, true);
+		if (attributes == null) {
+			attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
+					EndpointExtension.class, false, true);
+			if (attributes != null) {
+				return getEndpointAttributes(attributes.getClass("endpoint"));
 			}
-			this.id = id;
-			this.defaultEnablement = defaultEnablement;
-			this.exposure = exposure;
 		}
-
-		public EndpointEnablement getEnablement(EndpointEnablementProvider provider) {
-			return provider.getEndpointEnablement(this.id, this.defaultEnablement,
-					this.exposure);
-		}
-
+		Assert.state(attributes != null,
+				"OnEnabledEndpointCondition may only be used on @Bean methods that "
+						+ "return an @Endpoint or and @EndpointExtension");
+		return attributes;
 	}
 
 }

@@ -13,6 +13,7 @@ org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseHealthIndicato
 org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticsearchHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.flyway.FlywayEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration,\

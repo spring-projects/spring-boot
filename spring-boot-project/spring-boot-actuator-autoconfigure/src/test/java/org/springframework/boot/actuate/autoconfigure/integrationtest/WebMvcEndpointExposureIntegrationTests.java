@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -52,7 +53,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 					JacksonAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class,
 					WebMvcAutoConfiguration.class, EndpointAutoConfiguration.class,
-					EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class,
 					ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class,
 					ManagementContextAutoConfiguration.class,
@@ -79,9 +80,9 @@ public class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	@Test
-	public void webEndpointsCanBeEnabled() {
+	public void webEndpointsCanBeExposed() {
 		WebApplicationContextRunner contextRunner = this.contextRunner
-				.withPropertyValues("endpoints.default.web.enabled=true");
+				.withPropertyValues("management.endpoints.web.expose=*");
 		contextRunner.run((context) -> {
 			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();
@@ -99,23 +100,43 @@ public class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	@Test
-	public void singleWebEndpointCanBeEnabled() {
-		WebApplicationContextRunner contextRunner = this.contextRunner.withPropertyValues(
-				"endpoints.default.web.enabled=false",
-				"endpoints.beans.web.enabled=true");
+	public void singleWebEndpointCanBeExposed() {
+		WebApplicationContextRunner contextRunner = this.contextRunner
+				.withPropertyValues("management.endpoints.web.expose=beans");
 		contextRunner.run((context) -> {
 			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			assertThat(isExposed(mvc, HttpMethod.GET, "autoconfig")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isFalse();
-			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
-			assertThat(isExposed(mvc, HttpMethod.GET, "status")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "status")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isFalse();
+		});
+	}
+
+	@Test
+	public void singleWebEndpointCanBeExcluded() {
+		WebApplicationContextRunner contextRunner = this.contextRunner.withPropertyValues(
+				"management.endpoints.web.expose=*",
+				"management.endpoints.web.exclude=shutdown");
+		contextRunner.run((context) -> {
+			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "status")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isTrue();
 		});
 	}
 

@@ -25,7 +25,6 @@ import javax.management.MBeanParameterInfo;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -45,11 +44,11 @@ public class EndpointMBeanInfoAssemblerTests {
 
 	@Test
 	public void exposeSimpleReadOperation() {
-		JmxEndpointOperation operation = new JmxEndpointOperation(OperationType.READ,
+		JmxOperation operation = new JmxOperation(OperationType.READ,
 				new DummyOperationInvoker(), "getAll", Object.class, "Test operation",
 				Collections.emptyList());
-		EndpointInfo<JmxEndpointOperation> endpoint = new EndpointInfo<>("test",
-				DefaultEnablement.ENABLED, Collections.singletonList(operation));
+		EndpointInfo<JmxOperation> endpoint = new EndpointInfo<>("test", true,
+				Collections.singletonList(operation));
 		EndpointMBeanInfo endpointMBeanInfo = this.mBeanInfoAssembler
 				.createEndpointMBeanInfo(endpoint);
 		assertThat(endpointMBeanInfo).isNotNull();
@@ -74,12 +73,12 @@ public class EndpointMBeanInfoAssemblerTests {
 
 	@Test
 	public void exposeSimpleWriteOperation() {
-		JmxEndpointOperation operation = new JmxEndpointOperation(OperationType.WRITE,
+		JmxOperation operation = new JmxOperation(OperationType.WRITE,
 				new DummyOperationInvoker(), "update", Object.class, "Update operation",
 				Collections.singletonList(new JmxEndpointOperationParameterInfo("test",
 						String.class, "Test argument")));
-		EndpointInfo<JmxEndpointOperation> endpoint = new EndpointInfo<>("another",
-				DefaultEnablement.ENABLED, Collections.singletonList(operation));
+		EndpointInfo<JmxOperation> endpoint = new EndpointInfo<>("another", true,
+				Collections.singletonList(operation));
 		EndpointMBeanInfo endpointMBeanInfo = this.mBeanInfoAssembler
 				.createEndpointMBeanInfo(endpoint);
 		assertThat(endpointMBeanInfo).isNotNull();

@@ -45,7 +45,6 @@ import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxAnnotationEndpointDiscoverer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -341,10 +340,11 @@ public class EndpointMBeanTests {
 			Consumer<JmxAnnotationEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration)) {
-			consumer.accept(new JmxAnnotationEndpointDiscoverer(context,
-					new ConversionServiceParameterMapper(
-							DefaultConversionService.getSharedInstance()),
-					(id) -> new CachingConfiguration(0)));
+			ConversionServiceParameterMapper parameterMapper = new ConversionServiceParameterMapper(
+					DefaultConversionService.getSharedInstance());
+			JmxAnnotationEndpointDiscoverer discoverer = new JmxAnnotationEndpointDiscoverer(
+					context, parameterMapper, null, null);
+			consumer.accept(discoverer);
 		}
 	}
 

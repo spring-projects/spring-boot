@@ -29,13 +29,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.ParametersMissingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -78,7 +78,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> collection,
+			Collection<EndpointInfo<WebOperation>> collection,
 			EndpointMediaTypes endpointMediaTypes) {
 		this(endpointMapping, collection, endpointMediaTypes, null);
 	}
@@ -92,7 +92,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
 		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);
 		setOrder(-100);
@@ -104,7 +104,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	}
 
 	@Override
-	protected void registerMappingForOperation(WebEndpointOperation operation) {
+	protected void registerMappingForOperation(WebOperation operation) {
 		OperationType operationType = operation.getType();
 		OperationInvoker operationInvoker = operation.getInvoker();
 		if (operation.isBlocking()) {

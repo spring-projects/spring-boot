@@ -46,7 +46,8 @@ public class ScheduledTasksEndpointAutoConfigurationTests {
 
 	@Test
 	public void endpointCanBeDisabled() {
-		this.contextRunner.withPropertyValues("endpoints.scheduledtasks.enabled:false")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.scheduledtasks.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ScheduledTasksEndpoint.class));
 	}

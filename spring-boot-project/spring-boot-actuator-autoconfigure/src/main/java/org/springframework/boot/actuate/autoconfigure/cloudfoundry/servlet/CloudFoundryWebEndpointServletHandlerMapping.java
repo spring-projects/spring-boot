@@ -35,13 +35,13 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.ParametersMissingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.http.HttpMethod;
@@ -78,7 +78,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
 
 	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
 			CloudFoundrySecurityInterceptor securityInterceptor) {
 		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);
@@ -125,7 +125,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 	}
 
 	@Override
-	protected void registerMappingForOperation(WebEndpointOperation operation) {
+	protected void registerMappingForOperation(WebOperation operation) {
 		registerMapping(createRequestMappingInfo(operation),
 				new OperationHandler(operation.getInvoker(), operation.getId(),
 						this.securityInterceptor),

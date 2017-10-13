@@ -50,11 +50,11 @@ public class JmxEndpointMBeanFactory {
 	 * @return the MBeans
 	 */
 	public Collection<EndpointMBean> createMBeans(
-			Collection<EndpointInfo<JmxEndpointOperation>> endpoints) {
+			Collection<EndpointInfo<JmxOperation>> endpoints) {
 		return endpoints.stream().map(this::createMBean).collect(Collectors.toList());
 	}
 
-	private EndpointMBean createMBean(EndpointInfo<JmxEndpointOperation> endpointInfo) {
+	private EndpointMBean createMBean(EndpointInfo<JmxOperation> endpointInfo) {
 		EndpointMBeanInfo endpointMBeanInfo = this.assembler
 				.createEndpointMBeanInfo(endpointInfo);
 		return new EndpointMBean(this.resultMapper::mapResponse, endpointMBeanInfo);

@@ -84,15 +84,18 @@ public class HealthEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveStatusEndpointBeanEvenIfDefaultIsDisabled() {
-		this.contextRunner.withPropertyValues("endpoints.default.enabled:false").run(
-				(context) -> assertThat(context).hasSingleBean(StatusEndpoint.class));
+		// FIXME
+		this.contextRunner.withPropertyValues("management.endpoint.default.enabled:false")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(StatusEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveStatusEndpointBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.status.enabled:false").run(
-				(context) -> assertThat(context).doesNotHaveBean(StatusEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.status.enabled:false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(StatusEndpoint.class));
 	}
 
 	@Configuration

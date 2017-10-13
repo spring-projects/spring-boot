@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.audit;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
+import org.springframework.boot.actuate.audit.AuditEventsEndpointWebExtension;
 import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
-import org.springframework.boot.actuate.audit.AuditEventsWebEndpointExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -54,17 +54,18 @@ public class AuditEventsEndpointAutoConfigurationTests {
 	@Test
 	public void runShouldHaveWebExtensionBean() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(AuditEventsWebEndpointExtension.class));
+				.hasSingleBean(AuditEventsEndpointWebExtension.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointOrExtensionBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.auditevents.enabled:false")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.auditevents.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(AuditEventsEndpoint.class)
 						.doesNotHaveBean(AuditEventsJmxEndpointExtension.class)
-						.doesNotHaveBean(AuditEventsWebEndpointExtension.class));
+						.doesNotHaveBean(AuditEventsEndpointWebExtension.class));
 	}
 
 }

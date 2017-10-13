@@ -61,8 +61,8 @@ public class JmxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void jmxEndpointsCanBeDisabled() {
-		this.contextRunner.withPropertyValues("endpoints.default.jmx.enabled:false")
+	public void jmxEndpointsCanBeExcluded() {
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.exclude:*")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[0],
@@ -74,9 +74,9 @@ public class JmxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void singleJmxEndpointCanBeEnabled() {
-		this.contextRunner.withPropertyValues("endpoints.default.jmx.enabled=false",
-				"endpoints.beans.jmx.enabled=true").run((context) -> {
+	public void singleJmxEndpointCanBeExposed() {
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.expose=beans")
+				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans" },
 							new String[] { "conditions", "configprops", "env", "health",

@@ -38,13 +38,13 @@ public class EndpointLinksResolver {
 	 * @return the links
 	 */
 	public Map<String, Link> resolveLinks(
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			String requestUrl) {
 		String normalizedUrl = normalizeRequestUrl(requestUrl);
 		Map<String, Link> links = new LinkedHashMap<>();
 		links.put("self", new Link(normalizedUrl));
-		for (EndpointInfo<WebEndpointOperation> endpoint : webEndpoints) {
-			for (WebEndpointOperation operation : endpoint.getOperations()) {
+		for (EndpointInfo<WebOperation> endpoint : webEndpoints) {
+			for (WebOperation operation : endpoint.getOperations()) {
 				webEndpoints.stream().map(EndpointInfo::getId).forEach((id) -> links
 						.put(operation.getId(), createLink(normalizedUrl, operation)));
 			}
@@ -59,7 +59,7 @@ public class EndpointLinksResolver {
 		return requestUrl;
 	}
 
-	private Link createLink(String requestUrl, WebEndpointOperation operation) {
+	private Link createLink(String requestUrl, WebOperation operation) {
 		String path = operation.getRequestPredicate().getPath();
 		return new Link(requestUrl + (path.startsWith("/") ? path : "/" + path));
 	}

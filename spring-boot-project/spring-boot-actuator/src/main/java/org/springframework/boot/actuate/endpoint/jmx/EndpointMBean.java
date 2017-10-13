@@ -33,8 +33,8 @@ import javax.management.ReflectionException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.ParametersMissingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -76,7 +76,7 @@ public class EndpointMBean implements DynamicMBean {
 	@Override
 	public Object invoke(String actionName, Object[] params, String[] signature)
 			throws MBeanException, ReflectionException {
-		JmxEndpointOperation operation = this.endpointInfo.getOperations()
+		JmxOperation operation = this.endpointInfo.getOperations()
 				.get(actionName);
 		if (operation != null) {
 			Map<String, Object> arguments = getArguments(params,

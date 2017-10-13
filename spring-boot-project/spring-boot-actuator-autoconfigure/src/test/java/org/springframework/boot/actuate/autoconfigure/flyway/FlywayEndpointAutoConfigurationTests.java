@@ -49,8 +49,9 @@ public class FlywayEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.flyway.enabled:false").run(
-				(context) -> assertThat(context).doesNotHaveBean(FlywayEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.flyway.enabled:false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(FlywayEndpoint.class));
 	}
 
 	@Configuration

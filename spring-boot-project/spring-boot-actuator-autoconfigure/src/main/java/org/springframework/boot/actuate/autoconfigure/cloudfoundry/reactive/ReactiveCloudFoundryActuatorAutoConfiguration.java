@@ -21,10 +21,9 @@ import java.util.Collections;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.endpoint.DefaultCachingConfigurationFactory;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -68,17 +67,16 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	@Bean
 	public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebFluxEndpointHandlerMapping(
 			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
-			WebClient.Builder webClientBuilder, Environment environment,
-			DefaultCachingConfigurationFactory cachingConfigurationFactory,
-			WebEndpointProperties webEndpointProperties) {
+			WebClient.Builder webClientBuilder) {
 		WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
-				this.applicationContext, parameterMapper, cachingConfigurationFactory,
-				endpointMediaTypes, (id) -> id);
+				this.applicationContext, parameterMapper, endpointMediaTypes,
+				EndpointPathResolver.useEndpointId(), null, null);
+		ReactiveCloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
+				webClientBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebFluxEndpointHandlerMapping(
 				new EndpointMapping("/cloudfoundryapplication"),
 				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
-				getCorsConfiguration(),
-				getSecurityInterceptor(webClientBuilder, environment));
+				getCorsConfiguration(), securityInterceptor);
 	}
 
 	private ReactiveCloudFoundrySecurityInterceptor getSecurityInterceptor(

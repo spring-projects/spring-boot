@@ -63,7 +63,8 @@ public class LogFileWebEndpointManagementContextConfigurationTests {
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
 		this.contextRunner
-				.withPropertyValues("endpoints.logfile.external-file:external.log")
+				.withPropertyValues(
+						"management.endpoint.logfile.external-file:external.log")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(LogFileWebEndpoint.class));
 	}
@@ -72,7 +73,7 @@ public class LogFileWebEndpointManagementContextConfigurationTests {
 	public void logFileWebEndpointCanBeDisabled() {
 		this.contextRunner
 				.withPropertyValues("logging.file:test.log",
-						"endpoints.logfile.enabled:false")
+						"management.endpoint.logfile.enabled:false")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(LogFileWebEndpoint.class));
 	}
@@ -81,9 +82,8 @@ public class LogFileWebEndpointManagementContextConfigurationTests {
 	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
 		File file = this.temp.newFile("logfile");
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
-		this.contextRunner
-				.withPropertyValues(
-						"endpoints.logfile.external-file:" + file.getAbsolutePath())
+		this.contextRunner.withPropertyValues(
+				"management.endpoint.logfile.external-file:" + file.getAbsolutePath())
 				.run((context) -> {
 					assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
 					LogFileWebEndpoint endpoint = context

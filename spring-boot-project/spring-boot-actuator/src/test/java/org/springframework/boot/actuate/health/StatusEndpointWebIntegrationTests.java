@@ -29,7 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Integration tests for {@link StatusEndpoint} and {@link StatusWebEndpointExtension}
+ * Integration tests for {@link StatusEndpoint} and {@link StatusEndpointWebExtension}
  * exposed by Jersey, Spring MVC, and WebFlux.
  *
  * @author Stephane Nicoll
@@ -68,9 +68,9 @@ public class StatusEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public StatusWebEndpointExtension statusWebEndpointExtension(
+		public StatusEndpointWebExtension statusWebEndpointExtension(
 				StatusEndpoint delegate) {
-			return new StatusWebEndpointExtension(delegate, new HealthStatusHttpMapper());
+			return new StatusEndpointWebExtension(delegate, new HealthStatusHttpMapper());
 		}
 
 		@Bean

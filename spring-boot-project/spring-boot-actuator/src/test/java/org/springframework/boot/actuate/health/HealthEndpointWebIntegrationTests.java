@@ -29,7 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Integration tests for {@link HealthEndpoint} and {@link HealthWebEndpointExtension}
+ * Integration tests for {@link HealthEndpoint} and {@link HealthEndpointWebExtension}
  * exposed by Jersey, Spring MVC, and WebFlux.
  *
  * @author Andy Wilkinson
@@ -71,9 +71,9 @@ public class HealthEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public HealthWebEndpointExtension healthWebEndpointExtension(
+		public HealthEndpointWebExtension healthWebEndpointExtension(
 				HealthEndpoint delegate) {
-			return new HealthWebEndpointExtension(delegate, new HealthStatusHttpMapper());
+			return new HealthEndpointWebExtension(delegate, new HealthStatusHttpMapper());
 		}
 
 		@Bean

@@ -20,9 +20,10 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -105,7 +106,7 @@ public class MvcWebEndpointIntegrationTests extends
 		@Bean
 		public WebMvcEndpointHandlerMapping webEndpointHandlerMapping(
 				Environment environment,
-				WebAnnotationEndpointDiscoverer webEndpointDiscoverer,
+				EndpointDiscoverer<WebOperation> webEndpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));

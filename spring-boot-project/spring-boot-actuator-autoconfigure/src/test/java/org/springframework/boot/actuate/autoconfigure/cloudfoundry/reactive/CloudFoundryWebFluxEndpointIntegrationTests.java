@@ -28,15 +28,16 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -217,7 +218,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 
 		@Bean
 		public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				WebAnnotationEndpointDiscoverer webEndpointDiscoverer,
+				EndpointDiscoverer<WebOperation> webEndpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes,
 				ReactiveCloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -236,8 +237,8 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 			ParameterMapper parameterMapper = new ConversionServiceParameterMapper(
 					DefaultConversionService.getSharedInstance());
 			return new WebAnnotationEndpointDiscoverer(applicationContext,
-					parameterMapper, (id) -> new CachingConfiguration(0),
-					endpointMediaTypes, EndpointPathResolver.useEndpointId());
+					parameterMapper, endpointMediaTypes,
+					EndpointPathResolver.useEndpointId(), null, null);
 		}
 
 		@Bean

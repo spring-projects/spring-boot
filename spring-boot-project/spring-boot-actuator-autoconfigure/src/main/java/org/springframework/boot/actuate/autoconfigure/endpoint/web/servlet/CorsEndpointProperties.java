@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.endpoints.cors")
+@ConfigurationProperties(prefix = "management.endpoints.web.cors")
 public class CorsEndpointProperties {
 
 	/**

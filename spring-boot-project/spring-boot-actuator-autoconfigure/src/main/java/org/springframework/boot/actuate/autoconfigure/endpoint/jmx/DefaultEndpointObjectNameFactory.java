@@ -36,13 +36,13 @@ import org.springframework.util.StringUtils;
  */
 class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
-	private final JmxEndpointExporterProperties properties;
+	private final JmxEndpointProperties properties;
 
 	private final MBeanServer mBeanServer;
 
 	private final String contextId;
 
-	DefaultEndpointObjectNameFactory(JmxEndpointExporterProperties properties,
+	DefaultEndpointObjectNameFactory(JmxEndpointProperties properties,
 			MBeanServer mBeanServer, String contextId) {
 		this.properties = properties;
 		this.mBeanServer = mBeanServer;

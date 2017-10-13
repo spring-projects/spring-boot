@@ -99,9 +99,9 @@ public class AuditEventsEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public AuditEventsWebEndpointExtension auditEventsWebEndpointExtension(
+		public AuditEventsEndpointWebExtension auditEventsEndpointWebExtension(
 				AuditEventsEndpoint auditEventsEndpoint) {
-			return new AuditEventsWebEndpointExtension(auditEventsEndpoint);
+			return new AuditEventsEndpointWebExtension(auditEventsEndpoint);
 		}
 
 		private AuditEvent createEvent(String instant, String principal, String type) {

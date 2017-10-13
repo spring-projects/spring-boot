@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.util.Assert;
 
 /**
  * Information describing an endpoint.
@@ -29,7 +32,7 @@ public class EndpointInfo<T extends Operation> {
 
 	private final String id;
 
-	private final DefaultEnablement defaultEnablement;
+	private final boolean enableByDefault;
 
 	private final Collection<T> operations;
 
@@ -37,14 +40,15 @@ public class EndpointInfo<T extends Operation> {
 	 * Creates a new {@code EndpointInfo} describing an endpoint with the given {@code id}
 	 * and {@code operations}.
 	 * @param id the id of the endpoint
-	 * @param defaultEnablement the {@link DefaultEnablement} of the endpoint
+	 * @param enableByDefault if the endpoint is enabled by default
 	 * @param operations the operations of the endpoint
 	 */
-	public EndpointInfo(String id, DefaultEnablement defaultEnablement,
-			Collection<T> operations) {
+	public EndpointInfo(String id, boolean enableByDefault, Collection<T> operations) {
+		Assert.hasText(id, "ID must not be empty");
+		Assert.notNull(operations, "Operations must not be null");
 		this.id = id;
-		this.defaultEnablement = defaultEnablement;
-		this.operations = operations;
+		this.enableByDefault = enableByDefault;
+		this.operations = Collections.unmodifiableCollection(operations);
 	}
 
 	/**
@@ -56,11 +60,11 @@ public class EndpointInfo<T extends Operation> {
 	}
 
 	/**
-	 * Return the {@link DefaultEnablement} of the endpoint.
-	 * @return the default enablement
+	 * Returns if the endpoint is enabled by default.
+	 * @return if the endpoint is enabled by default
 	 */
-	public DefaultEnablement getDefaultEnablement() {
-		return this.defaultEnablement;
+	public boolean isEnableByDefault() {
+		return this.enableByDefault;
 	}
 
 	/**

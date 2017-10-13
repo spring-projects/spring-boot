@@ -18,9 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.DefaultCachingConfigurationFactory;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
@@ -71,17 +70,17 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	@Bean
 	public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-			ParameterMapper parameterMapper,
-			DefaultCachingConfigurationFactory cachingConfigurationFactory,
-			EndpointMediaTypes endpointMediaTypes, Environment environment,
-			RestTemplateBuilder builder) {
+			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
+			RestTemplateBuilder restTemplateBuilder) {
 		WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
-				this.applicationContext, parameterMapper, cachingConfigurationFactory,
-				endpointMediaTypes, EndpointPathResolver.useEndpointId());
+				this.applicationContext, parameterMapper, endpointMediaTypes,
+				EndpointPathResolver.useEndpointId(), null, null);
+		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
+				restTemplateBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebEndpointServletHandlerMapping(
 				new EndpointMapping("/cloudfoundryapplication"),
 				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
-				getCorsConfiguration(), getSecurityInterceptor(builder, environment));
+				getCorsConfiguration(), securityInterceptor);
 	}
 
 	private CloudFoundrySecurityInterceptor getSecurityInterceptor(

@@ -25,15 +25,15 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicatorFactory;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthReactiveWebEndpointExtension;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
-import org.springframework.boot.actuate.health.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveStatusEndpointWebExtension;
 import org.springframework.boot.actuate.health.StatusEndpoint;
-import org.springframework.boot.actuate.health.StatusReactiveWebEndpointExtension;
-import org.springframework.boot.actuate.health.StatusWebEndpointExtension;
+import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -84,9 +84,9 @@ public class HealthWebEndpointManagementContextConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
-		public HealthReactiveWebEndpointExtension healthWebEndpointExtension(
+		public ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
 				HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new HealthReactiveWebEndpointExtension(this.reactiveHealthIndicator,
+			return new ReactiveHealthEndpointWebExtension(this.reactiveHealthIndicator,
 					healthStatusHttpMapper);
 		}
 
@@ -94,9 +94,9 @@ public class HealthWebEndpointManagementContextConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(StatusEndpoint.class)
-		public StatusReactiveWebEndpointExtension statusWebEndpointExtension(
+		public ReactiveStatusEndpointWebExtension reactiveStatusEndpointWebExtension(
 				HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new StatusReactiveWebEndpointExtension(this.reactiveHealthIndicator,
+			return new ReactiveStatusEndpointWebExtension(this.reactiveHealthIndicator,
 					healthStatusHttpMapper);
 		}
 
@@ -110,18 +110,18 @@ public class HealthWebEndpointManagementContextConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
-		public HealthWebEndpointExtension healthWebEndpointExtension(
+		public HealthEndpointWebExtension healthEndpointWebExtension(
 				HealthEndpoint delegate, HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new HealthWebEndpointExtension(delegate, healthStatusHttpMapper);
+			return new HealthEndpointWebExtension(delegate, healthStatusHttpMapper);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(StatusEndpoint.class)
-		public StatusWebEndpointExtension statusWebEndpointExtension(
+		public StatusEndpointWebExtension statusEndpointWebExtension(
 				StatusEndpoint delegate, HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new StatusWebEndpointExtension(delegate, healthStatusHttpMapper);
+			return new StatusEndpointWebExtension(delegate, healthStatusHttpMapper);
 		}
 
 	}

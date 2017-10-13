@@ -33,14 +33,14 @@ public class Operation {
 	/**
 	 * Creates a new {@code EndpointOperation} for an operation of the given {@code type}.
 	 * The operation can be performed using the given {@code operationInvoker}.
-	 * @param type the type of the operation
-	 * @param operationInvoker used to perform the operation
+	 * @param operationType the type of the operation
+	 * @param invoker used to perform the operation
 	 * @param blocking whether or not this is a blocking operation
 	 */
-	public Operation(OperationType type, OperationInvoker operationInvoker,
+	public Operation(OperationType operationType, OperationInvoker invoker,
 			boolean blocking) {
-		this.type = type;
-		this.invoker = operationInvoker;
+		this.type = operationType;
+		this.invoker = invoker;
 		this.blocking = blocking;
 	}
 

@@ -25,10 +25,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
-import org.springframework.boot.actuate.endpoint.DefaultEnablement;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -41,7 +40,7 @@ import static org.mockito.BDDMockito.given;
 public class DefaultEndpointPathProviderTests {
 
 	@Mock
-	private EndpointProvider<WebEndpointOperation> endpointProvider;
+	private EndpointDiscoverer<WebOperation> discoverer;
 
 	@Before
 	public void setup() {
@@ -81,16 +80,13 @@ public class DefaultEndpointPathProviderTests {
 	}
 
 	private DefaultEndpointPathProvider createProvider(String contextPath) {
-		Collection<EndpointInfo<WebEndpointOperation>> endpoints = new ArrayList<>();
-		endpoints.add(new EndpointInfo<>("foo", DefaultEnablement.ENABLED,
-				Collections.emptyList()));
-		endpoints.add(new EndpointInfo<>("bar", DefaultEnablement.ENABLED,
-				Collections.emptyList()));
-		given(this.endpointProvider.getEndpoints()).willReturn(endpoints);
+		Collection<EndpointInfo<WebOperation>> endpoints = new ArrayList<>();
+		endpoints.add(new EndpointInfo<>("foo", true, Collections.emptyList()));
+		endpoints.add(new EndpointInfo<>("bar", true, Collections.emptyList()));
+		given(this.discoverer.discoverEndpoints()).willReturn(endpoints);
 		WebEndpointProperties webEndpointProperties = new WebEndpointProperties();
 		webEndpointProperties.setBasePath(contextPath);
-		return new DefaultEndpointPathProvider(this.endpointProvider,
-				webEndpointProperties);
+		return new DefaultEndpointPathProvider(this.discoverer, webEndpointProperties);
 	}
 
 }

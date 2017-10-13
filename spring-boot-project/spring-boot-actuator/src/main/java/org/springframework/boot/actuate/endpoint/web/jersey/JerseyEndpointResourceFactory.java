@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.jersey;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,22 +40,22 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.ParametersMissingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * A factory for creating Jersey {@link Resource Resources} for
- * {@link WebEndpointOperation web endpoint operations}.
+ * A factory for creating Jersey {@link Resource Resources} for {@link WebOperation web
+ * endpoint operations}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
@@ -72,7 +73,7 @@ public class JerseyEndpointResourceFactory {
 	 * @return the resources for the operations
 	 */
 	public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes) {
 		List<Resource> resources = new ArrayList<>();
 		webEndpoints.stream()
@@ -87,7 +88,7 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	private Resource createResource(EndpointMapping endpointMapping,
-			WebEndpointOperation operation) {
+			WebOperation operation) {
 		OperationRequestPredicate requestPredicate = operation.getRequestPredicate();
 		Builder resourceBuilder = Resource.builder()
 				.path(endpointMapping.createSubPath(requestPredicate.getPath()));
@@ -104,7 +105,7 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	private Resource createEndpointLinksResource(String endpointPath,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes) {
 		Builder resourceBuilder = Resource.builder().path(endpointPath);
 		resourceBuilder.addMethod("GET")
@@ -115,10 +116,13 @@ public class JerseyEndpointResourceFactory {
 		return resourceBuilder.build();
 	}
 
+	/**
+	 * {@link Inflector} to invoke the endpoint.
+	 */
 	private static final class EndpointInvokingInflector
 			implements Inflector<ContainerRequestContext, Object> {
 
-		private static final List<Function<Object, Object>> bodyConverters;
+		private static final List<Function<Object, Object>> BODY_CONVERTERS;
 
 		static {
 			List<Function<Object, Object>> converters = new ArrayList<>();
@@ -127,7 +131,7 @@ public class JerseyEndpointResourceFactory {
 					EndpointInvokingInflector.class.getClassLoader())) {
 				converters.add(new MonoBodyConverter());
 			}
-			bodyConverters = Collections.unmodifiableList(converters);
+			BODY_CONVERTERS = Collections.unmodifiableList(converters);
 		}
 
 		private final OperationInvoker operationInvoker;
@@ -209,7 +213,7 @@ public class JerseyEndpointResourceFactory {
 		}
 
 		private Object convertIfNecessary(Object body) throws IOException {
-			for (Function<Object, Object> converter : bodyConverters) {
+			for (Function<Object, Object> converter : BODY_CONVERTERS) {
 				body = converter.apply(body);
 			}
 			return body;
@@ -217,6 +221,10 @@ public class JerseyEndpointResourceFactory {
 
 	}
 
+	/**
+	 * Body converter from {@link org.springframework.core.io.Resource} to
+	 * {@link InputStream}.
+	 */
 	private static final class ResourceBodyConverter implements Function<Object, Object> {
 
 		@Override
@@ -234,6 +242,9 @@ public class JerseyEndpointResourceFactory {
 
 	}
 
+	/**
+	 * Body converter from {@link Mono} to {@link Mono#block()}.
+	 */
 	private static final class MonoBodyConverter implements Function<Object, Object> {
 
 		@Override
@@ -246,15 +257,17 @@ public class JerseyEndpointResourceFactory {
 
 	}
 
+	/**
+	 * {@link Inflector} to for endpoint links.
+	 */
 	private static final class EndpointLinksInflector
 			implements Inflector<ContainerRequestContext, Response> {
 
-		private final Collection<EndpointInfo<WebEndpointOperation>> endpoints;
+		private final Collection<EndpointInfo<WebOperation>> endpoints;
 
 		private final EndpointLinksResolver linksResolver;
 
-		private EndpointLinksInflector(
-				Collection<EndpointInfo<WebEndpointOperation>> endpoints,
+		private EndpointLinksInflector(Collection<EndpointInfo<WebOperation>> endpoints,
 				EndpointLinksResolver linksResolver) {
 			this.endpoints = endpoints;
 			this.linksResolver = linksResolver;

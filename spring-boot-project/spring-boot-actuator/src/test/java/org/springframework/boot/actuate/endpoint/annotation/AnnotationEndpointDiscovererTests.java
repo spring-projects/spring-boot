@@ -16,30 +16,39 @@
 
 package org.springframework.boot.actuate.endpoint.annotation;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
+import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -127,11 +136,11 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsNotCachedWithTtlSetToZero() {
+		Function<String, Long> timeToLive = (endpointId) -> 0L;
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
-					new TestAnnotationEndpointDiscoverer(context,
-							(endpointId) -> new CachingConfiguration(0))
-									.discoverEndpoints());
+					new TestAnnotationEndpointDiscoverer(context, timeToLive)
+							.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
@@ -143,13 +152,11 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsNotCachedWithNonMatchingId() {
-		CachingConfigurationFactory cachingConfigurationFactory = (
-				endpointId) -> (endpointId.equals("foo") ? new CachingConfiguration(500)
-						: new CachingConfiguration(0));
+		Function<String, Long> timeToLive = (id) -> (id.equals("foo") ? 500L : 0L);
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
-					new TestAnnotationEndpointDiscoverer(context,
-							cachingConfigurationFactory).discoverEndpoints());
+					new TestAnnotationEndpointDiscoverer(context, timeToLive)
+							.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
@@ -161,13 +168,11 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsCachedWithMatchingId() {
-		CachingConfigurationFactory cachingConfigurationFactory = (
-				endpointId) -> (endpointId.equals("test") ? new CachingConfiguration(500)
-						: new CachingConfiguration(0));
+		Function<String, Long> timeToLive = (id) -> (id.equals("test") ? 500L : 0L);
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
-					new TestAnnotationEndpointDiscoverer(context,
-							cachingConfigurationFactory).discoverEndpoints());
+					new TestAnnotationEndpointDiscoverer(context, timeToLive)
+							.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
@@ -187,12 +192,55 @@ public class AnnotationEndpointDiscovererTests {
 		});
 	}
 
-	private Map<String, EndpointInfo<TestEndpointOperation>> mapEndpoints(
-			Collection<EndpointInfo<TestEndpointOperation>> endpoints) {
-		Map<String, EndpointInfo<TestEndpointOperation>> endpointById = new LinkedHashMap<>();
+	@Test
+	public void specializedEndpointsAreFilteredFromRegular() throws Exception {
+		load(TestEndpointsConfiguration.class, (context) -> {
+			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
+					new TestAnnotationEndpointDiscoverer(context).discoverEndpoints());
+			assertThat(endpoints).containsOnlyKeys("test");
+		});
+	}
+
+	@Test
+	public void specializedEndpointsAreNotFilteredFromSpecialized() throws Exception {
+		load(TestEndpointsConfiguration.class, (context) -> {
+			Map<String, EndpointInfo<SpecializedTestEndpointOperation>> endpoints = mapEndpoints(
+					new SpecializedTestAnnotationEndpointDiscoverer(context)
+							.discoverEndpoints());
+			assertThat(endpoints).containsOnlyKeys("test", "specialized");
+		});
+	}
+
+	@Test
+	public void extensionsAreApplied() throws Exception {
+		load(TestEndpointsConfiguration.class, (context) -> {
+			Map<String, EndpointInfo<SpecializedTestEndpointOperation>> endpoints = mapEndpoints(
+					new SpecializedTestAnnotationEndpointDiscoverer(context)
+							.discoverEndpoints());
+			Map<Method, TestEndpointOperation> operations = mapOperations(
+					endpoints.get("specialized"));
+			assertThat(operations).containsKeys(
+					ReflectionUtils.findMethod(SpecializedExtension.class, "getSpecial"));
+		});
+	}
+
+	@Test
+	public void filtersAreApplied() throws Exception {
+		load(TestEndpointsConfiguration.class, (context) -> {
+			EndpointFilter<SpecializedTestEndpointOperation> filter = (info,
+					discoverer) -> !(info.getId().equals("specialized"));
+			Map<String, EndpointInfo<SpecializedTestEndpointOperation>> endpoints = mapEndpoints(
+					new SpecializedTestAnnotationEndpointDiscoverer(context,
+							Collections.singleton(filter)).discoverEndpoints());
+			assertThat(endpoints).containsOnlyKeys("test");
+		});
+	}
+
+	private <T extends Operation> Map<String, EndpointInfo<T>> mapEndpoints(
+			Collection<EndpointInfo<T>> endpoints) {
+		Map<String, EndpointInfo<T>> endpointById = new LinkedHashMap<>();
 		endpoints.forEach((endpoint) -> {
-			EndpointInfo<TestEndpointOperation> existing = endpointById
-					.put(endpoint.getId(), endpoint);
+			EndpointInfo<T> existing = endpointById.put(endpoint.getId(), endpoint);
 			if (existing != null) {
 				throw new AssertionError(String.format(
 						"Found endpoints with duplicate id '%s'", endpoint.getId()));
@@ -202,15 +250,14 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	private Map<Method, TestEndpointOperation> mapOperations(
-			EndpointInfo<TestEndpointOperation> endpoint) {
+			EndpointInfo<? extends TestEndpointOperation> endpoint) {
 		Map<Method, TestEndpointOperation> operationByMethod = new HashMap<>();
 		endpoint.getOperations().forEach((operation) -> {
-			Operation existing = operationByMethod.put(operation.getOperationMethod(),
-					operation);
+			Method method = operation.getMethodInfo().getMethod();
+			Operation existing = operationByMethod.put(method, operation);
 			if (existing != null) {
 				throw new AssertionError(String.format(
-						"Found endpoint with duplicate operation method '%s'",
-						operation.getOperationMethod()));
+						"Found endpoint with duplicate operation method '%s'", method));
 			}
 		});
 		return operationByMethod;
@@ -276,6 +323,16 @@ public class AnnotationEndpointDiscovererTests {
 
 	}
 
+	@SpecializedEndpoint(id = "specialized")
+	static class SpecializedTestEndpoint {
+
+		@ReadOperation
+		public Object getAll() {
+			return null;
+		}
+
+	}
+
 	static class TestEndpointSubclass extends TestEndpoint {
 
 		@WriteOperation
@@ -305,6 +362,12 @@ public class AnnotationEndpointDiscovererTests {
 
 	}
 
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class,
+			SpecializedExtension.class })
+	static class TestEndpointsConfiguration {
+
+	}
+
 	@Configuration
 	static class ClashingEndpointConfiguration {
 
@@ -317,67 +380,116 @@ public class AnnotationEndpointDiscovererTests {
 		public TestEndpoint testEndpointOne() {
 			return new TestEndpoint();
 		}
-	}
-
-	private static final class TestEndpointOperation extends Operation {
-
-		private final Method operationMethod;
-
-		private TestEndpointOperation(OperationType type,
-				OperationInvoker operationInvoker, Method operationMethod) {
-			super(type, operationInvoker, true);
-			this.operationMethod = operationMethod;
-		}
-
-		private Method getOperationMethod() {
-			return this.operationMethod;
-		}
 
 	}
 
-	private static class TestAnnotationEndpointDiscoverer
-			extends AnnotationEndpointDiscoverer<TestEndpointOperation, Method> {
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Endpoint
+	@FilteredEndpoint(SpecializedEndpointFilter.class)
+	public @interface SpecializedEndpoint {
 
-		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-				CachingConfigurationFactory cachingConfigurationFactory) {
-			super(applicationContext, endpointOperationFactory(),
-					TestEndpointOperation::getOperationMethod,
-					cachingConfigurationFactory);
+		@AliasFor(annotation = Endpoint.class)
+		String id();
+
+	}
+
+	@EndpointExtension(endpoint = SpecializedTestEndpoint.class, filter = SpecializedEndpointFilter.class)
+	public static class SpecializedExtension {
+
+		@ReadOperation
+		public Object getSpecial() {
+			return null;
 		}
 
-		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext) {
-			this(applicationContext, (id) -> null);
-		}
+	}
+
+	static class SpecializedEndpointFilter
+			implements EndpointFilter<SpecializedTestEndpointOperation> {
 
 		@Override
-		public Collection<EndpointInfo<TestEndpointOperation>> discoverEndpoints() {
-			return discoverEndpoints(null, null).stream()
-					.map(EndpointInfoDescriptor::getEndpointInfo)
-					.collect(Collectors.toList());
+		public boolean match(EndpointInfo<SpecializedTestEndpointOperation> info,
+				EndpointDiscoverer<SpecializedTestEndpointOperation> discoverer) {
+			return discoverer instanceof SpecializedTestAnnotationEndpointDiscoverer;
 		}
 
-		private static EndpointOperationFactory<TestEndpointOperation> endpointOperationFactory() {
-			return new EndpointOperationFactory<TestEndpointOperation>() {
+	}
 
-				@Override
-				public TestEndpointOperation createOperation(String endpointId,
-						AnnotationAttributes operationAttributes, Object target,
-						Method operationMethod, OperationType operationType,
-						long timeToLive) {
-					return new TestEndpointOperation(operationType,
-							createOperationInvoker(timeToLive), operationMethod);
-				}
+	public static class TestAnnotationEndpointDiscoverer
+			extends AnnotationEndpointDiscoverer<Method, TestEndpointOperation> {
 
-				private OperationInvoker createOperationInvoker(long timeToLive) {
-					OperationInvoker invoker = (arguments) -> null;
-					if (timeToLive > 0) {
-						return new CachingOperationInvoker(invoker, timeToLive);
-					}
-					else {
-						return invoker;
-					}
-				}
-			};
+		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext) {
+			this(applicationContext, (id) -> null, null);
+		}
+
+		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
+				Function<String, Long> timeToLive) {
+			this(applicationContext, timeToLive, null);
+		}
+
+		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
+				Function<String, Long> timeToLive,
+				Collection<? extends EndpointFilter<TestEndpointOperation>> filters) {
+			super(applicationContext, TestEndpointOperation::new,
+					TestEndpointOperation::getMethod,
+					new ConversionServiceParameterMapper(),
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+					filters);
+		}
+
+	}
+
+	public static class SpecializedTestAnnotationEndpointDiscoverer extends
+			AnnotationEndpointDiscoverer<Method, SpecializedTestEndpointOperation> {
+
+		SpecializedTestAnnotationEndpointDiscoverer(
+				ApplicationContext applicationContext) {
+			this(applicationContext, (id) -> null, null);
+		}
+
+		SpecializedTestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
+				Collection<? extends EndpointFilter<SpecializedTestEndpointOperation>> filters) {
+			this(applicationContext, (id) -> null, filters);
+		}
+
+		SpecializedTestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
+				Function<String, Long> timeToLive,
+				Collection<? extends EndpointFilter<SpecializedTestEndpointOperation>> filters) {
+			super(applicationContext, SpecializedTestEndpointOperation::new,
+					SpecializedTestEndpointOperation::getMethod,
+					new ConversionServiceParameterMapper(),
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+					filters);
+		}
+
+	}
+
+	public static class TestEndpointOperation extends Operation {
+
+		private final OperationMethodInfo methodInfo;
+
+		public TestEndpointOperation(String endpointId, OperationMethodInfo methodInfo,
+				Object target, OperationInvoker invoker) {
+			super(methodInfo.getOperationType(), invoker, true);
+			this.methodInfo = methodInfo;
+		}
+
+		public Method getMethod() {
+			return this.methodInfo.getMethod();
+		}
+
+		public OperationMethodInfo getMethodInfo() {
+			return this.methodInfo;
+		}
+
+	}
+
+	public static class SpecializedTestEndpointOperation extends TestEndpointOperation {
+
+		public SpecializedTestEndpointOperation(String endpointId,
+				OperationMethodInfo methodInfo, Object target, OperationInvoker invoker) {
+			super(endpointId, methodInfo, target, invoker);
 		}
 
 	}

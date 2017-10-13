@@ -49,7 +49,8 @@ public class LiquibaseEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.liquibase.enabled:false")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.liquibase.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(LiquibaseEndpoint.class));
 	}

@@ -49,8 +49,10 @@ public class SessionsEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.sessions.enabled:false").run(
-				(context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
+		this.contextRunner
+				.withPropertyValues("management.endpoint.sessions.enabled:false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(SessionsEndpoint.class));
 	}
 
 	@Configuration

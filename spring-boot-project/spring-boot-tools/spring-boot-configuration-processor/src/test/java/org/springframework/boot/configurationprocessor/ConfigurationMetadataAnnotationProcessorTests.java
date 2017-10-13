@@ -39,11 +39,9 @@ import org.springframework.boot.configurationprocessor.metadata.TestJsonConverte
 import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEndpoint;
 import org.springframework.boot.configurationsample.endpoint.DisabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
-import org.springframework.boot.configurationsample.endpoint.OnlyJmxEndpoint;
-import org.springframework.boot.configurationsample.endpoint.OnlyWebEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
+import org.springframework.boot.configurationsample.endpoint.SpecificEndpoint;
 import org.springframework.boot.configurationsample.endpoint.incremental.IncrementalEndpoint;
-import org.springframework.boot.configurationsample.endpoint.incremental.IncrementalJmxEndpoint;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
@@ -536,12 +534,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
 		assertThat(metadata).has(
 				Metadata.withGroup("endpoints.simple").fromSource(SimpleEndpoint.class));
-		assertThat(metadata).has(enabledFlag("simple", null));
-		assertThat(metadata).has(jmxEnabledFlag("simple", null));
-		assertThat(metadata).has(webEnabledFlag("simple", null));
-		assertThat(metadata).has(webPath("simple"));
+		assertThat(metadata).has(enabledFlag("simple", true));
 		assertThat(metadata).has(cacheTtl("simple"));
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
@@ -550,11 +545,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("endpoints.disabled")
 				.fromSource(DisabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("disabled", false));
-		assertThat(metadata).has(jmxEnabledFlag("disabled", false));
-		assertThat(metadata).has(webEnabledFlag("disabled", false));
-		assertThat(metadata).has(webPath("disabled"));
 		assertThat(metadata).has(cacheTtl("disabled"));
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
@@ -563,11 +555,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("endpoints.enabled")
 				.fromSource(EnabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("enabled", true));
-		assertThat(metadata).has(jmxEnabledFlag("enabled", true));
-		assertThat(metadata).has(webEnabledFlag("enabled", true));
-		assertThat(metadata).has(webPath("enabled"));
 		assertThat(metadata).has(cacheTtl("enabled"));
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
@@ -577,35 +566,19 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(CustomPropertiesEndpoint.class));
 		assertThat(metadata).has(Metadata.withProperty("endpoints.customprops.name")
 				.ofType(String.class).withDefaultValue("test"));
-		assertThat(metadata).has(enabledFlag("customprops", null));
-		assertThat(metadata).has(jmxEnabledFlag("customprops", null));
-		assertThat(metadata).has(webEnabledFlag("customprops", null));
-		assertThat(metadata).has(webPath("customprops"));
+		assertThat(metadata).has(enabledFlag("customprops", true));
 		assertThat(metadata).has(cacheTtl("customprops"));
-		assertThat(metadata.getItems()).hasSize(7);
-	}
-
-	@Test
-	public void jmxOnlyEndpoint() throws IOException {
-		ConfigurationMetadata metadata = compile(OnlyJmxEndpoint.class);
-		assertThat(metadata).has(
-				Metadata.withGroup("endpoints.jmx").fromSource(OnlyJmxEndpoint.class));
-		assertThat(metadata).has(enabledFlag("jmx", null));
-		assertThat(metadata).has(jmxEnabledFlag("jmx", null));
-		assertThat(metadata).has(cacheTtl("jmx"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
-	public void webOnlyEndpoint() throws IOException {
-		ConfigurationMetadata metadata = compile(OnlyWebEndpoint.class);
-		assertThat(metadata).has(
-				Metadata.withGroup("endpoints.web").fromSource(OnlyWebEndpoint.class));
-		assertThat(metadata).has(enabledFlag("web", null));
-		assertThat(metadata).has(webEnabledFlag("web", null));
-		assertThat(metadata).has(webPath("web"));
-		assertThat(metadata).has(cacheTtl("web"));
-		assertThat(metadata.getItems()).hasSize(5);
+	public void specificEndpoint() throws IOException {
+		ConfigurationMetadata metadata = compile(SpecificEndpoint.class);
+		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(enabledFlag("specific", true));
+		assertThat(metadata).has(cacheTtl("specific"));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
@@ -615,74 +588,37 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
 				.fromSource(IncrementalEndpoint.class));
-		assertThat(metadata).has(enabledFlag("incremental", null));
-		assertThat(metadata).has(jmxEnabledFlag("incremental", null));
-		assertThat(metadata).has(webEnabledFlag("incremental", null));
-		assertThat(metadata).has(webPath("incremental"));
+		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(3);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
-				"id = \"incremental\", defaultEnablement = org.springframework.boot."
-						+ "configurationsample.DefaultEnablement.DISABLED");
+				"id = \"incremental\", enableByDefault = false");
 		metadata = project.incrementalBuild(IncrementalEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
 				.fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", false));
-		assertThat(metadata).has(jmxEnabledFlag("incremental", false));
-		assertThat(metadata).has(webEnabledFlag("incremental", false));
-		assertThat(metadata).has(webPath("incremental"));
 		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
-	public void incrementalEndpointBuildDisableJmxEndpoint() throws Exception {
+	public void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
 		TestProject project = new TestProject(this.temporaryFolder,
-				IncrementalEndpoint.class);
+				SpecificEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
-				.fromSource(IncrementalEndpoint.class));
-		assertThat(metadata).has(enabledFlag("incremental", null));
-		assertThat(metadata).has(jmxEnabledFlag("incremental", null));
-		assertThat(metadata).has(webEnabledFlag("incremental", null));
-		assertThat(metadata).has(webPath("incremental"));
-		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(6);
-		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
-				"id = \"incremental\", exposure = org.springframework.boot."
-						+ "configurationsample.EndpointExposure.WEB");
-		metadata = project.incrementalBuild(IncrementalEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
-				.fromSource(IncrementalEndpoint.class));
-		assertThat(metadata).has(enabledFlag("incremental", null));
-		assertThat(metadata).has(webEnabledFlag("incremental", null));
-		assertThat(metadata).has(webPath("incremental"));
-		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(5);
-	}
-
-	@Test
-	public void incrementalEndpointBuildEnableJmxEndpoint() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder,
-				IncrementalJmxEndpoint.class);
-		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
-				.fromSource(IncrementalJmxEndpoint.class));
-		assertThat(metadata).has(enabledFlag("incremental", null));
-		assertThat(metadata).has(jmxEnabledFlag("incremental", null));
-		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(4);
-		project.replaceText(IncrementalJmxEndpoint.class,
-				", exposure = EndpointExposure.JMX", "");
-		metadata = project.incrementalBuild(IncrementalJmxEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
-				.fromSource(IncrementalJmxEndpoint.class));
-		assertThat(metadata).has(enabledFlag("incremental", null));
-		assertThat(metadata).has(jmxEnabledFlag("incremental", null));
-		assertThat(metadata).has(webEnabledFlag("incremental", null));
-		assertThat(metadata).has(webPath("incremental"));
-		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(enabledFlag("specific", true));
+		assertThat(metadata).has(cacheTtl("specific"));
+		assertThat(metadata.getItems()).hasSize(3);
+		project.replaceText(SpecificEndpoint.class, "enableByDefault = true",
+				"enableByDefault = false");
+		metadata = project.incrementalBuild(SpecificEndpoint.class);
+		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(enabledFlag("specific", false));
+		assertThat(metadata).has(cacheTtl("specific"));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
@@ -690,26 +626,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		return Metadata.withEnabledFlag("endpoints." + endpointId + ".enabled")
 				.withDefaultValue(defaultValue)
 				.withDescription(String.format("Enable the %s endpoint.", endpointId));
-	}
-
-	private Metadata.MetadataItemCondition jmxEnabledFlag(String endpointId,
-			Boolean defaultValue) {
-		return Metadata.withEnabledFlag("endpoints." + endpointId + ".jmx.enabled")
-				.withDefaultValue(defaultValue).withDescription(String
-						.format("Expose the %s endpoint as a JMX MBean.", endpointId));
-	}
-
-	private Metadata.MetadataItemCondition webEnabledFlag(String endpointId,
-			Boolean defaultValue) {
-		return Metadata.withEnabledFlag("endpoints." + endpointId + ".web.enabled")
-				.withDefaultValue(defaultValue).withDescription(String
-						.format("Expose the %s endpoint as a Web endpoint.", endpointId));
-	}
-
-	private Metadata.MetadataItemCondition webPath(String endpointId) {
-		return Metadata.withProperty("endpoints." + endpointId + ".web.path")
-				.ofType(String.class).withDefaultValue(endpointId)
-				.withDescription(String.format("Path of the %s endpoint.", endpointId));
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
