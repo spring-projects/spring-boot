@@ -2035,7 +2035,7 @@ particular controller and/or exception type.
 ----
 
 In the example above, if `YourException` is thrown by a controller defined in the same
-package as `FooController`, a json representation of the `CustomerErrorType` POJO will be
+package as `FooController`, a json representation of the `CustomErrorType` POJO will be
 used instead of the `ErrorAttributes` representation.
 
 
