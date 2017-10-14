@@ -78,6 +78,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kristine Jetzke
  * @since 1.4.0
  */
 public class TestRestTemplate {
@@ -163,6 +164,15 @@ public class TestRestTemplate {
 	 */
 	public void setUriTemplateHandler(UriTemplateHandler handler) {
 		this.restTemplate.setUriTemplateHandler(handler);
+	}
+
+	public String getRootUri() {
+		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
+		if (RootUriTemplateHandler.class
+				.isAssignableFrom(uriTemplateHandler.getClass())) {
+			return ((RootUriTemplateHandler) uriTemplateHandler).getRootUri();
+		}
+		return "";
 	}
 
 	/**
