@@ -69,7 +69,7 @@ public class JolokiaManagementContextConfiguration {
 
 	@Bean
 	public ServletRegistrationBean<AgentServlet> jolokiaServlet() {
-		String path = this.managementServletContext.getContextPath()
+		String path = this.managementServletContext.getServletPath()
 				+ this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
 		ServletRegistrationBean<AgentServlet> registration = new ServletRegistrationBean<>(

@@ -46,7 +46,7 @@ public class ManagementServerPropertiesTests {
 	public void defaultManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort()).isNull();
-		assertThat(properties.getContextPath()).isEqualTo("/application");
+		assertThat(properties.getContextPath()).isEqualTo("");
 		assertThat(properties.getAddApplicationContextHeader()).isEqualTo(false);
 	}
 

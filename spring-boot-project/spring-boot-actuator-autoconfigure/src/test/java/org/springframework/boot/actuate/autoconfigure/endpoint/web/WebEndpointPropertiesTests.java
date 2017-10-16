@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.servlet;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web;
+
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Provides information about the management servlet context for MVC controllers to use.
+ * Tests for {@link WebEndpointProperties}.
  *
- * @author Phillip Webb
  * @author Madhura Bhave
- * @since 2.0.0
  */
-@FunctionalInterface
-public interface ManagementServletContext {
+public class WebEndpointPropertiesTests {
 
-	/**
-	 * Return the servlet path of the management server.
-	 * @return the servlet path
-	 */
-	String getServletPath();
+	@Test
+	public void defaultBasePathShouldBeApplication() throws Exception {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		assertThat(properties.getBasePath()).isEqualTo("/application");
+	}
 
 }
+

@@ -74,10 +74,10 @@ public class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void endpointsAreSecureByDefaultWithCustomContextPath() throws Exception {
+	public void endpointsAreSecureByDefaultWithCustomBasePath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.context-path:/management")
+		TestPropertyValues.of("management.endpoints.web.base-path:/management")
 				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans").accept(MediaType.APPLICATION_JSON))
@@ -85,13 +85,13 @@ public class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void endpointsAreSecureWithActuatorRoleWithCustomContextPath()
+	public void endpointsAreSecureWithActuatorRoleWithCustomBasePath()
 			throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.context-path:/management",
+		TestPropertyValues.of("management.endpoints.web.base-path:/management",
 				"endpoints.default.web.enabled=true").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());

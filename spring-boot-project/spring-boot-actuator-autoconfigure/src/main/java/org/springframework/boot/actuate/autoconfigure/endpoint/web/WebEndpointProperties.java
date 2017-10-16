@@ -14,22 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.servlet;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Provides information about the management servlet context for MVC controllers to use.
+ * Configuration properties for web management endpoints.
  *
- * @author Phillip Webb
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@FunctionalInterface
-public interface ManagementServletContext {
+@ConfigurationProperties(prefix = "management.endpoints.web")
+public class WebEndpointProperties {
 
 	/**
-	 * Return the servlet path of the management server.
-	 * @return the servlet path
+	 * The base-path for the web endpoints. Relative to `server.context-path` or
+	 * `management.server.context-path`, if `management.server.port` is different.
 	 */
-	String getServletPath();
+	private String basePath = "/application";
+
+	public String getBasePath() {
+		return this.basePath;
+	}
+
+	public void setBasePath(String basePath) {
+			this.basePath = basePath;
+	}
 
 }
+
+

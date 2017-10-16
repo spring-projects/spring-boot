@@ -43,7 +43,7 @@ public enum ManagementPortType {
 
 	static ManagementPortType get(Environment environment) {
 		Integer serverPort = getPortProperty(environment, "server.");
-		Integer managementPort = getPortProperty(environment, "management.");
+		Integer managementPort = getPortProperty(environment, "management.server.");
 		if (managementPort != null && managementPort < 0) {
 			return DISABLED;
 		}

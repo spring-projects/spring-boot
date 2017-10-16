@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  * @see ServerProperties
  */
-@ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "management.server", ignoreUnknownFields = true)
 public class ManagementServerProperties implements SecurityPrerequisite {
 
 	/**
@@ -54,7 +54,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Management endpoint context-path.
 	 */
-	private String contextPath = "/application";
+	private String contextPath = "";
 
 	/**
 	 * Add the "X-Application-Context" HTTP header in each response.

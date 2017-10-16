@@ -1197,25 +1197,25 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.web.enabled= # Expose the trace endpoint as a Web endpoint.
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/web/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
-	management.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
-	management.address= # Network address that the management endpoints should bind to.
-	management.context-path= # Management endpoint context-path. For instance `/actuator`
-	management.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
-	management.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
-	management.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.port.
-	management.ssl.enabled= # Enable SSL support. Requires a custom management.port.
-	management.ssl.enabled-protocols= # Enabled SSL protocols. Requires a custom management.port.
-	management.ssl.key-alias= # Alias that identifies the key in the key store. Requires a custom management.port.
-	management.ssl.key-password= # Password used to access the key in the key store. Requires a custom management.port.
-	management.ssl.key-store= # Path to the key store that holds the SSL certificate (typically a jks file). Requires a custom management.port.
-	management.ssl.key-store-password= # Password used to access the key store. Requires a custom management.port.
-	management.ssl.key-store-provider= # Provider for the key store. Requires a custom management.port.
-	management.ssl.key-store-type= # Type of the key store. Requires a custom management.port.
-	management.ssl.protocol=TLS # SSL protocol to use. Requires a custom management.port.
-	management.ssl.trust-store= # Trust store that holds SSL certificates. Requires a custom management.port.
-	management.ssl.trust-store-password= # Password used to access the trust store. Requires a custom management.port.
-	management.ssl.trust-store-provider= # Provider for the trust store. Requires a custom management.port.
-	management.ssl.trust-store-type= # Type of the trust store. Requires a custom management.port.
+	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response. Requires a custom management.server.port.
+	management.server.address= # Network address that the management endpoints should bind to. Requires a custom management.server.port.
+	management.server.context-path= # Management endpoint context-path. For instance `/actuator`. Requires a custom management.server.port
+	management.server.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
+	management.server.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
+	management.server.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.server.port.
+	management.server.ssl.enabled= # Enable SSL support. Requires a custom management.server.port.
+	management.server.ssl.enabled-protocols= # Enabled SSL protocols. Requires a custom management.server.port.
+	management.server.ssl.key-alias= # Alias that identifies the key in the key store. Requires a custom management.server.port.
+	management.server.ssl.key-password= # Password used to access the key in the key store. Requires a custom management.server.port.
+	management.server.ssl.key-store= # Path to the key store that holds the SSL certificate (typically a jks file). Requires a custom management.server.port.
+	management.server.ssl.key-store-password= # Password used to access the key store. Requires a custom management.server.port.
+	management.server.ssl.key-store-provider= # Provider for the key store. Requires a custom management.server.port.
+	management.server.ssl.key-store-type= # Type of the key store. Requires a custom management.server.port.
+	management.server.ssl.protocol=TLS # SSL protocol to use. Requires a custom management.server.port.
+	management.server.ssl.trust-store= # Trust store that holds SSL certificates. Requires a custom management.server.port.
+	management.server.ssl.trust-store-password= # Password used to access the trust store. Requires a custom management.server.port.
+	management.server.ssl.trust-store-provider= # Provider for the trust store. Requires a custom management.server.port.
+	management.server.ssl.trust-store-type= # Type of the trust store. Requires a custom management.server.port.
 
 	# CLOUDFOUNDRY
 	management.cloudfoundry.enabled=true # Enable extended Cloud Foundry actuator endpoints.
@@ -1228,6 +1228,9 @@ content into your application; rather pick only the properties that you need.
 	management.endpoints.cors.allowed-origins= # Comma-separated list of origins to allow. '*' allows all origins. When not set, CORS support is disabled.
 	management.endpoints.cors.exposed-headers= # Comma-separated list of headers to include in a response.
 	management.endpoints.cors.max-age=1800 # How long, in seconds, the response from a pre-flight request can be cached by clients.
+
+	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint/ManagementEndpointProperties.{sc-ext}[JmxEndpointExporterProperties])
+	management.endpoints.web.base-path # Base path for Web endpoints. Relative to server.context-path or management.server.context-path if management.server.port is configured.
 
 	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint/infrastructure/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.

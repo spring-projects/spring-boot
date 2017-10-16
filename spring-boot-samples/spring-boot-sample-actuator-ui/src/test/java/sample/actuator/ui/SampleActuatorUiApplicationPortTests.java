@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.port:0" })
+		"management.server.port:0" })
 @DirtiesContext
 public class SampleActuatorUiApplicationPortTests {
 

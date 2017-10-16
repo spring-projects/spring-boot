@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
@@ -88,10 +87,10 @@ public class DefaultEndpointPathProviderTests {
 		endpoints.add(new EndpointInfo<>("bar", DefaultEnablement.ENABLED,
 				Collections.emptyList()));
 		given(this.endpointProvider.getEndpoints()).willReturn(endpoints);
-		ManagementServerProperties managementServerProperties = new ManagementServerProperties();
-		managementServerProperties.setContextPath(contextPath);
+		WebEndpointProperties webEndpointProperties = new WebEndpointProperties();
+		webEndpointProperties.setBasePath(contextPath);
 		return new DefaultEndpointPathProvider(this.endpointProvider,
-				managementServerProperties);
+				webEndpointProperties);
 	}
 
 }
