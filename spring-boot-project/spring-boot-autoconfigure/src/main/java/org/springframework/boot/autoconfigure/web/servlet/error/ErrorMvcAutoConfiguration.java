@@ -51,6 +51,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -302,7 +303,7 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	/**
-	 * {@link ServletWebServerFactoryCustomizer} that configures the server's error pages.
+	 * {@link WebServerFactoryCustomizer} that configures the server's error pages.
 	 */
 	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 

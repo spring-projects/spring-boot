@@ -116,6 +116,7 @@ org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration,
 org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration,\

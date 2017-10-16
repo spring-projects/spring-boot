@@ -2242,7 +2242,7 @@ method:
 
 
 
-[[boot-features-spring-webflux]]
+[[boot-features-webflux]]
 === The '`Spring WebFlux framework`'
 
 Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
@@ -2325,7 +2325,7 @@ behavior has been chosen because many Spring developers will add
 
 
 
-[[boot-features-spring-webflux-auto-configuration]]
+[[boot-features-webflux-auto-configuration]]
 ==== Spring WebFlux auto-configuration
 Spring Boot provides auto-configuration for Spring WebFlux that works well with most
 applications.
@@ -2345,7 +2345,7 @@ If you want to take complete control of Spring WebFlux, you can add your own
 
 
 
-[[boot-features-spring-webflux-httpcodecs]]
+[[boot-features-webflux-httpcodecs]]
 ==== HTTP codecs with HttpMessageReaders and HttpMessageWriters
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interface to convert
 HTTP requests and responses. They are configured with `CodecConfigurer` with sensible
@@ -2378,7 +2378,7 @@ You can also leverage <<boot-features-json-components,Boot's custom JSON seriali
 
 
 
-[[boot-features-spring-webflux-static-content]]
+[[boot-features-webflux-static-content]]
 ==== Static Content
 By default Spring Boot will serve static content from a directory called `/static` (or
 `/public` or `/resources` or `/META-INF/resources`) in the classpath.
@@ -2410,7 +2410,7 @@ be deployed as war and have no use of the `src/main/webapp` directory.
 
 
 
-[[boot-features-spring-webflux-template-engines]]
+[[boot-features-webflux-template-engines]]
 ==== Template engines
 As well as REST web services, you can also use Spring WebFlux to serve dynamic HTML
 content. Spring WebFlux supports a variety of templating technologies including Thymeleaf,
@@ -2424,6 +2424,89 @@ Spring Boot includes auto-configuration support for the following templating eng
 
 When you're using one of these templating engines with the default configuration, your
 templates will be picked up automatically from `src/main/resources/templates`.
+
+
+
+[[boot-features-webflux-error-handling]]
+==== Error Handling
+
+Spring Boot provides a `WebExceptionHandler` that handles all errors in a sensible way;
+it is ordered right before the ones provided by WebFlux, which are considered as last
+resort. For machine clients it will produce a JSON response with details of the error,
+the HTTP status and the exception message. For browser clients there is a '`whitelabel`'
+error handler that renders the same data in HTML format. You can also provide your own
+HTML templates to display errors
+(see <<boot-features-webflux-error-handling-custom-error-pages,next section>>).
+
+The first step to customizing this feature is often about using the existing mechanism
+but replacing or augmenting the error contents. For that, you can simply add a bean
+of type `ErrorAttributes`.
+
+To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and
+register a bean definition of that type; because a `WebExceptionHandler` is quite
+low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler`
+to let you handle errors in a WebFlux functional way:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	public class CustomErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
+
+		// Define constructor here
+
+		@Override
+		protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+
+			return RouterFunctions
+					.route(aPredicate, aHandler)
+					.andRoute(anotherPredicate, anotherHandler);
+		}
+
+	}
+----
+
+For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler`
+directly and override specific methods.
+
+
+
+[[boot-features-webflux-error-handling-custom-error-pages]]
+===== Custom error pages
+
+If you want to display a custom HTML error page for a given status code, you can add
+a file to an `/error` folder. Error pages can either be static HTML (i.e. added under
+any of the static resource folders) or built using templates. The name of the file
+should be the exact status code or a series mask.
+
+For example, to map `404` to a static HTML file, your folder structure would look like
+this:
+
+[source,indent=0,subs="verbatim,quotes,attributes"]
+----
+	src/
+	 +- main/
+	     +- java/
+	     |   + <source code>
+	     +- resources/
+	         +- public/
+	             +- error/
+	             |   +- 404.html
+	             +- <other public assets>
+----
+
+To map all `5xx` errors using a Mustache template, you'd have a structure like this:
+
+[source,indent=0,subs="verbatim,quotes,attributes"]
+----
+	src/
+	 +- main/
+	     +- java/
+	     |   + <source code>
+	     +- resources/
+	         +- templates/
+	             +- error/
+	             |   +- 5xx.mustache
+	             +- <other templates>
+----
 
 
 
@@ -5030,7 +5113,7 @@ out-of-the-box experience. See the
 
 Spring Boot will create and pre-configure such a builder for you; for example,
 client HTTP codecs will be configured just like the server ones
-(see <<boot-features-spring-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>).
+(see <<boot-features-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>).
 
 Here's a typical example:
 

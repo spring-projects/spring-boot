@@ -127,7 +127,7 @@ public class WebFluxAutoConfiguration {
 		@Override
 		public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
 			if (this.argumentResolvers != null) {
-				this.argumentResolvers.stream().forEach(configurer::addCustomResolver);
+				this.argumentResolvers.forEach(configurer::addCustomResolver);
 			}
 		}
 
