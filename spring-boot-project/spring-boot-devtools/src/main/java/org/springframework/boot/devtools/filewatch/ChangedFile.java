@@ -76,7 +76,7 @@ public final class ChangedFile {
 		File file = this.file.getAbsoluteFile();
 		String folderName = StringUtils.cleanPath(folder.getPath());
 		String fileName = StringUtils.cleanPath(file.getPath());
-		Assert.state(fileName.startsWith(folderName), "The file " + fileName
+		Assert.state(fileName.startsWith(folderName), () -> "The file " + fileName
 				+ " is not contained in the source folder " + folderName);
 		return fileName.substring(folderName.length() + 1);
 	}

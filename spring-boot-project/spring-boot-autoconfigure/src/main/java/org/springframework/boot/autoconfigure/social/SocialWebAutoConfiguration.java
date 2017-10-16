@@ -178,7 +178,7 @@ public class SocialWebAutoConfiguration {
 			SecurityContext context = SecurityContextHolder.getContext();
 			Authentication authentication = context.getAuthentication();
 			Assert.state(authentication != null,
-					"Unable to get a " + "ConnectionRepository: no user signed in");
+					"Unable to get a ConnectionRepository: no user signed in");
 			return authentication.getName();
 		}
 

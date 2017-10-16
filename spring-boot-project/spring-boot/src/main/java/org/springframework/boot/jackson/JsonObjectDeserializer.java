@@ -131,7 +131,7 @@ public abstract class JsonObjectDeserializer<T>
 		Assert.notNull(tree, "Tree must not be null");
 		JsonNode node = tree.get(fieldName);
 		Assert.state(node != null && !(node instanceof NullNode),
-				"Missing JSON field '" + fieldName + "'");
+				() -> "Missing JSON field '" + fieldName + "'");
 		return node;
 	}
 

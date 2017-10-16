@@ -299,7 +299,7 @@ public class HttpTunnelServer {
 				long timeout = HttpTunnelServer.this.disconnectTimeout;
 				long duration = System.currentTimeMillis() - this.lastHttpRequestTime;
 				Assert.state(duration < timeout,
-						"Disconnect timeout: " + timeout + " " + duration);
+						() -> "Disconnect timeout: " + timeout + " " + duration);
 			}
 		}
 
