@@ -248,8 +248,8 @@ jobs:
       ARTIFACTORY_PASSWORD: ((artifactory-password))
       BINTRAY_USERNAME: ((bintray-username))
       BINTRAY_PASSWORD: ((bintray-password))
-      SONATYPE_USERNAME: ((sonattype-username))
-      SONATYPE_PASSWORD: ((sonattype-password))
+      SONATYPE_USERNAME: ((sonatype-username))
+      SONATYPE_PASSWORD: ((sonatype-password))
       BINTRAY_SUBJECT: ((bintray-subject))
       BINTRAY_REPO: ((bintray-repo))
 groups:
