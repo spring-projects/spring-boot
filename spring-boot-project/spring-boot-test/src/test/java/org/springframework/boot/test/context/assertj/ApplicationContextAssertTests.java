@@ -74,7 +74,6 @@ public class ApplicationContextAssertTests {
 	@Test
 	public void hasBeanWhenNotStartedShouldFail() {
 		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("failed to start");
 		this.thrown.expectMessage(String
 				.format("but context failed to start:%n java.lang.RuntimeException"));
 		assertThat(getAssert(this.failure)).hasBean("foo");

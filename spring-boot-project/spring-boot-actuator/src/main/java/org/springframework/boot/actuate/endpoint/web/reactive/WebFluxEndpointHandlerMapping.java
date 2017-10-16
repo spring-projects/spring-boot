@@ -103,7 +103,7 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
-	 * @param endpointMapping the path beneath which all endpoints should be mapped
+	 * @param endpointMapping the base mapping for all endpoints
 	 * @param webEndpoints the web endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
