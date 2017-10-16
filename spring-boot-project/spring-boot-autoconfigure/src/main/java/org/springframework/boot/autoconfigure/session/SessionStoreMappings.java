@@ -48,7 +48,7 @@ final class SessionStoreMappings {
 	public static String getConfigurationClass(StoreType sessionStoreType) {
 		Class<?> configurationClass = MAPPINGS.get(sessionStoreType);
 		Assert.state(configurationClass != null,
-				"Unknown session store type " + sessionStoreType);
+				() -> "Unknown session store type " + sessionStoreType);
 		return configurationClass.getName();
 	}
 

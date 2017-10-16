@@ -380,7 +380,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	void inject(Field field, Object target, Definition definition) {
 		String beanName = this.beanNameRegistry.get(definition);
 		Assert.state(StringUtils.hasLength(beanName),
-				"No bean found for definition " + definition);
+				() -> "No bean found for definition " + definition);
 		inject(field, target, beanName, definition);
 	}
 
@@ -389,7 +389,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		try {
 			field.setAccessible(true);
 			Assert.state(ReflectionUtils.getField(field, target) == null,
-					"The field " + field + " cannot have an existing value");
+					() -> "The field " + field + " cannot have an existing value");
 			Object bean = this.beanFactory.getBean(beanName, field.getType());
 			if (definition.isProxyTargetAware() && isAopProxy(bean)) {
 				MockitoAopProxyTargetInterceptor.applyTo(bean);

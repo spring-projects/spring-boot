@@ -44,7 +44,7 @@ public class JavaExecutable {
 		File bin = new File(new File(javaHome), "bin");
 		File command = new File(bin, "java.exe");
 		command = (command.exists() ? command : new File(bin, "java"));
-		Assert.state(command.exists(), "Unable to find java in " + javaHome);
+		Assert.state(command.exists(), () -> "Unable to find java in " + javaHome);
 		return command;
 	}
 
