@@ -113,6 +113,7 @@ jobs:
   plan:
   - get: spring-boot-jdk9-ci-image
   - get: git-repo
+    trigger: true
   - do:
     - task: build-project
       timeout: 1h30m
