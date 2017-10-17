@@ -27,7 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * A {@link AbstractApplicationContextRunner ApplicationContext runner} for a standard,
+ * An {@link AbstractApplicationContextRunner ApplicationContext runner} for a standard,
  * non-web environment {@link ConfigurableApplicationContext}.
  * <p>
  * See {@link AbstractApplicationContextRunner} for details.

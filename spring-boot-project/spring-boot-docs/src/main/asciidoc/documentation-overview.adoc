@@ -123,7 +123,7 @@ When you're ready to push your Spring Boot application to production, we've got
 <<production-ready-features.adoc#production-ready-customizing-endpoints, Customization>>
 * *Connection options:*
 <<production-ready-features.adoc#production-ready-monitoring, HTTP>> |
-<<production-ready-features.adoc#production-ready-jmx, JMX>> |
+<<production-ready-features.adoc#production-ready-jmx, JMX>>
 * *Monitoring:*
 <<production-ready-features.adoc#production-ready-metrics, Metrics>> |
 <<production-ready-features.adoc#production-ready-auditing, Auditing>> |

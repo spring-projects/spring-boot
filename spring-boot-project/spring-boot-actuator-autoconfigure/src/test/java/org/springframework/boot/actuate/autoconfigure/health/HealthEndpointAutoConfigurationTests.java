@@ -89,7 +89,7 @@ public class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveStatusEndpointBean()
 			throws Exception {
 		this.contextRunner.withPropertyValues("endpoints.status.enabled:false").run(
 				(context) -> assertThat(context).doesNotHaveBean(StatusEndpoint.class));
