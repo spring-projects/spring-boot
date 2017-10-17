@@ -135,7 +135,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 */
 	protected void configure(Registration.Dynamic registration) {
 		Assert.state(registration != null,
-				"Registration is null. Was something already registered for name=["
+				() -> "Registration is null. Was something already registered for name=["
 						+ this.name + "]?");
 		registration.setAsyncSupported(this.asyncSupported);
 		if (!this.initParameters.isEmpty()) {

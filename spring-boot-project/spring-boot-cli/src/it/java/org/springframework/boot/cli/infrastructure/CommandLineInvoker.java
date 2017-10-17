@@ -93,7 +93,7 @@ public final class CommandLineInvoker {
 		}
 		File bin = new File(unpacked.listFiles()[0], "bin");
 		File launchScript = new File(bin, isWindows() ? "spring.bat" : "spring");
-		Assert.state(launchScript.exists() && launchScript.isFile(),
+		Assert.state(launchScript.exists() && launchScript.isFile(), () ->
 				"Could not find CLI launch script " + launchScript.getAbsolutePath());
 		return launchScript;
 	}

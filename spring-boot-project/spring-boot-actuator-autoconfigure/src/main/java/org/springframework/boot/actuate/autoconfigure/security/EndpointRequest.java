@@ -163,7 +163,7 @@ public final class EndpointRequest {
 		private String getPathId(Class<?> source) {
 			Endpoint annotation = AnnotationUtils.findAnnotation(source, Endpoint.class);
 			Assert.state(annotation != null,
-					"Class " + source + " is not annotated with @Endpoint");
+					() -> "Class " + source + " is not annotated with @Endpoint");
 			return annotation.id();
 		}
 
