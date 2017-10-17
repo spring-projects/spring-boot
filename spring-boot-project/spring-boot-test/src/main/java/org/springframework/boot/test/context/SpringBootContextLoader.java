@@ -96,7 +96,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		Assert.state(
 				!ObjectUtils.isEmpty(configClasses)
 						|| !ObjectUtils.isEmpty(configLocations),
-				"No configuration classes "
+				() -> "No configuration classes "
 						+ "or locations found in @SpringApplicationConfiguration. "
 						+ "For default configuration detection to work you need "
 						+ "Spring 4.0.3 or better (found " + SpringVersion.getVersion()

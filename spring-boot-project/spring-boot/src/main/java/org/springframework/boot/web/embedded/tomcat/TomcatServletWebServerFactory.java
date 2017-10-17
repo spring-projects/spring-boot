@@ -492,7 +492,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private void configurePersistSession(Manager manager) {
 		Assert.state(manager instanceof StandardManager,
-				"Unable to persist HTTP session state using manager type "
+				() -> "Unable to persist HTTP session state using manager type "
 						+ manager.getClass().getName());
 		File dir = getValidSessionStoreDir();
 		File file = new File(dir, "SESSIONS.ser");

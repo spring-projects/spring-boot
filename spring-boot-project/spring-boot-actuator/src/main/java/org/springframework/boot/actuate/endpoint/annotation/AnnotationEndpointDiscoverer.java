@@ -140,7 +140,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 			AnnotationAttributes endpointAttributes = AnnotatedElementUtils
 					.getMergedAnnotationAttributes(endpointType, Endpoint.class);
 			Assert.state(isExposedOver(endpointAttributes, exposure),
-					"Invalid extension " + beanType.getName() + "': endpoint '"
+					() -> "Invalid extension " + beanType.getName() + "': endpoint '"
 							+ endpointType.getName()
 							+ "' does not support such extension");
 			EndpointInfo<T> info = getEndpointInfo(endpoints, beanType, endpointType);
@@ -163,7 +163,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 	private EndpointInfo<T> getEndpointInfo(Map<Class<?>, EndpointInfo<T>> endpoints,
 			Class<?> beanType, Class<?> endpointClass) {
 		EndpointInfo<T> endpoint = endpoints.get(endpointClass);
-		Assert.state(endpoint != null, "Invalid extension '" + beanType.getName()
+		Assert.state(endpoint != null, () -> "Invalid extension '" + beanType.getName()
 				+ "': no endpoint found with type '" + endpointClass.getName() + "'");
 		return endpoint;
 	}

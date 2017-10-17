@@ -52,7 +52,7 @@ final class CacheConfigurations {
 
 	public static String getConfigurationClass(CacheType cacheType) {
 		Class<?> configurationClass = MAPPINGS.get(cacheType);
-		Assert.state(configurationClass != null, "Unknown cache type " + cacheType);
+		Assert.state(configurationClass != null, () -> "Unknown cache type " + cacheType);
 		return configurationClass.getName();
 	}
 
