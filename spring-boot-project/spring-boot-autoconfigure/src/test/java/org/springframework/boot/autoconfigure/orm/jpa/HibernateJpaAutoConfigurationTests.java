@@ -33,6 +33,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.junit.Test;
 
@@ -52,6 +53,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -75,12 +77,12 @@ public class HibernateJpaAutoConfigurationTests
 		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql",
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("ddl.sql");
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("spring.datasource.schema");
-				});
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure())
+					.hasMessageContaining("ddl.sql");
+			assertThat(context.getStartupFailure())
+					.hasMessageContaining("spring.datasource.schema");
+		});
 	}
 
 	@Test
@@ -105,7 +107,7 @@ public class HibernateJpaAutoConfigurationTests
 						"spring.datasource.data:classpath:/city.sql")
 				.run((context) -> assertThat(
 						context.getBean(TestInitializedJpaConfiguration.class).called)
-								.isTrue());
+						.isTrue());
 	}
 
 	@Test
@@ -164,7 +166,7 @@ public class HibernateJpaAutoConfigurationTests
 							.getJpaPropertyMap();
 					assertThat((String) jpaPropertyMap
 							.get("hibernate.transaction.jta.platform"))
-									.isEqualTo(TestJtaPlatform.class.getName());
+							.isEqualTo(TestJtaPlatform.class.getName());
 				});
 	}
 
@@ -192,6 +194,62 @@ public class HibernateJpaAutoConfigurationTests
 					assertThat(context).hasNotFailed();
 					assertThat(context).doesNotHaveBean(EntityManagerFactory.class);
 				});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsConfigured() {
+		contextRunner().withPropertyValues(
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.auto-commit:false").run((context) -> {
+			Map<String, Object> jpaProperties = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+			assertThat(jpaProperties).contains(entry(
+					"hibernate.connection.provider_disables_autocommit", "true"));
+		});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsNotConfiguredIfAutoCommitIsEnabled() {
+		contextRunner().withPropertyValues(
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.auto-commit:true").run((context) -> {
+			Map<String, Object> jpaProperties = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+			assertThat(jpaProperties).doesNotContainKeys(
+					"hibernate.connection.provider_disables_autocommit");
+		});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsNotConfiguredIfPropertyIsSet() {
+		contextRunner().withPropertyValues(
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.auto-commit:false",
+				"spring.jpa.properties.hibernate.connection.provider_disables_autocommit=false"
+		).run((context) -> {
+			Map<String, Object> jpaProperties = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+			assertThat(jpaProperties).contains(entry(
+					"hibernate.connection.provider_disables_autocommit", "false"));
+		});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsNotConfiguredWihJta() {
+		contextRunner()
+				.withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
+				.withPropertyValues(
+						"spring.datasource.type:" + HikariDataSource.class.getName(),
+						"spring.datasource.hikari.auto-commit:false").run((context) -> {
+			Map<String, Object> jpaProperties = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+			assertThat(jpaProperties).doesNotContainKeys(
+					"hibernate.connection.provider_disables_autocommit");
+		});
 	}
 
 	@Configuration

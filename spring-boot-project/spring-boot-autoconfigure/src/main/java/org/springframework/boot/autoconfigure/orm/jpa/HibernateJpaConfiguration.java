@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,7 +78,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
-	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
+
+	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
@@ -88,7 +90,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				transactionManagerCustomizers);
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
 				providers.getIfAvailable(Collections::emptyList));
-		this.metadataProviders = metadataProviders.getIfAvailable();
+		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
+				metadataProviders.getIfAvailable());
 	}
 
 	@Override
@@ -136,15 +139,16 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	}
 
 	private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
-		CompositeDataSourcePoolMetadataProvider poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
-			this.metadataProviders);
-		DataSourcePoolMetadata poolMetadata = poolMetadataProvider
-			.getDataSourcePoolMetadata(getDataSource());
-		if (poolMetadata != null
-			&& Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit())
-			&& getJtaTransactionManager() == null) {
+		if (isDataSourceAutoCommitDisabled() && !isJta()) {
 			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
 		}
+	}
+
+	private boolean isDataSourceAutoCommitDisabled() {
+		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
+				.getDataSourcePoolMetadata(getDataSource());
+		return poolMetadata != null
+				&& Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit());
 	}
 
 	private boolean runningOnWebSphere() {

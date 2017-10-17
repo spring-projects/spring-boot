@@ -50,6 +50,14 @@ public class HikariDataSourcePoolMetadataTests
 				.isEqualTo("SELECT FROM FOO");
 	}
 
+	@Override
+	public void getDefaultAutoCommit() {
+		HikariDataSource dataSource = createDataSource(0, 4);
+		dataSource.setAutoCommit(false);
+		assertThat(new HikariDataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
+				.isFalse();
+	}
+
 	private HikariDataSource createDataSource(int minSize, int maxSize) {
 		HikariDataSource dataSource = initializeBuilder().type(HikariDataSource.class)
 				.build();
