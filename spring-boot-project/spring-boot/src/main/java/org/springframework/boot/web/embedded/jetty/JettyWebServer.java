@@ -92,8 +92,8 @@ public class JettyWebServer implements WebServer {
 					@Override
 					protected void doStart() throws Exception {
 						for (Connector connector : JettyWebServer.this.connectors) {
-							Assert.state(connector.isStopped(), () -> "Connector " + connector
-									+ " has been started prematurely");
+							Assert.state(connector.isStopped(), () -> "Connector "
+									+ connector + " has been started prematurely");
 						}
 						JettyWebServer.this.server.setConnectors(null);
 					}
