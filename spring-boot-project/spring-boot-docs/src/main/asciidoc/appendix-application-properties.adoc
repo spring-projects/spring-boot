@@ -1137,7 +1137,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.liquibase.jmx.enabled= # Expose the liquibase endpoint as a JMX MBean.
 	endpoints.liquibase.web.enabled= # Expose the liquibase endpoint as a Web endpoint.
 
-	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logger/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint])
+	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logging/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint])
 	endpoints.logfile.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.logfile.enabled= # Enable the logfile endpoint.
 	endpoints.logfile.external-file= # External Logfile to be accessed. Can be used if the logfile is written by output redirect and not by the logging system itself.
@@ -1196,7 +1196,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.jmx.enabled= # Expose the trace endpoint as a JMX MBean.
 	endpoints.trace.web.enabled= # Expose the trace endpoint as a Web endpoint.
 
-	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/web/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
+	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
 	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response. Requires a custom management.server.port.
 	management.server.address= # Network address that the management endpoints should bind to. Requires a custom management.server.port.
 	management.server.context-path= # Management endpoint context-path. For instance `/actuator`. Requires a custom management.server.port
@@ -1221,7 +1221,7 @@ content into your application; rather pick only the properties that you need.
 	management.cloudfoundry.enabled=true # Enable extended Cloud Foundry actuator endpoints.
     management.cloudfoundry.skip-ssl-validation=false # Skip SSL verification for Cloud Foundry actuator endpoint security calls.
 
-	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint/infrastructure/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
+	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
 	management.endpoints.cors.allow-credentials= # Set whether credentials are supported. When not set, credentials are not supported.
 	management.endpoints.cors.allowed-headers= # Comma-separated list of headers to allow in a request. '*' allows all headers.
 	management.endpoints.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
@@ -1232,7 +1232,7 @@ content into your application; rather pick only the properties that you need.
 	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint/ManagementEndpointProperties.{sc-ext}[JmxEndpointExporterProperties])
 	management.endpoints.web.base-path # Base path for Web endpoints. Relative to server.context-path or management.server.context-path if management.server.port is configured.
 
-	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint/infrastructure/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
+	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
 	management.endpoints.jmx.static-names=false # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
 	management.endpoints.jmx.unique-names=false # Ensure that ObjectNames are modified in case of conflict.
@@ -1259,19 +1259,19 @@ content into your application; rather pick only the properties that you need.
 	management.health.status.http-mapping= # Mapping of health statuses to HTTP status codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UP, UNKNOWN # Comma-separated list of health statuses in order of severity.
 
-	# INFO CONTRIBUTORS ({sc-spring-boot-actuator}/autoconfigure/info/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
+	# INFO CONTRIBUTORS ({sc-spring-boot-actuator-autoconfigure}/info/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
 	management.info.build.enabled=true # Enable build info.
 	management.info.defaults.enabled=true # Enable default info contributors.
 	management.info.env.enabled=true # Enable environment info.
 	management.info.git.enabled=true # Enable git info.
 	management.info.git.mode=simple # Mode to use to expose git information.
 
-	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	# JOLOKIA ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
 	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
 	management.jolokia.enabled=false # Enable Jolokia.
 	management.jolokia.path=/jolokia # Path at which Jolokia will be available.
 
-	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
+	# TRACING ({sc-spring-boot-actuator-autoconfigure}/trace/TraceEndpointProperties.{sc-ext}[TraceEndpointProperties])
 	management.trace.filter.enabled=true # Enable the trace servlet filter.
 	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
