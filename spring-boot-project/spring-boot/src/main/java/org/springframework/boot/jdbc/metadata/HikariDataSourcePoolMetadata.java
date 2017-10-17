@@ -66,4 +66,9 @@ public class HikariDataSourcePoolMetadata
 		return getDataSource().getConnectionTestQuery();
 	}
 
+	@Override
+	public Boolean getDefaultAutoCommit() {
+		return getDataSource().isAutoCommit();
+	}
+
 }

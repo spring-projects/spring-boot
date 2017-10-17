@@ -86,6 +86,9 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 	@Test
 	public abstract void getValidationQuery();
 
+	@Test
+	public abstract void getDefaultAutoCommit();
+
 	protected DataSourceBuilder<?> initializeBuilder() {
 		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
 				.url("jdbc:hsqldb:mem:test").username("sa");
