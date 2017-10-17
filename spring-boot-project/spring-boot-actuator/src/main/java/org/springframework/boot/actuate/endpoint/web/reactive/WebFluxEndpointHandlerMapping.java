@@ -34,6 +34,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
@@ -87,6 +88,8 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 
 	private final Collection<EndpointInfo<WebEndpointOperation>> webEndpoints;
 
+	private final EndpointMediaTypes endpointMediaTypes;
+
 	private final CorsConfiguration corsConfiguration;
 
 	/**
@@ -94,10 +97,12 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param collection the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> collection) {
-		this(endpointMapping, collection, null);
+			Collection<EndpointInfo<WebEndpointOperation>> collection,
+			EndpointMediaTypes endpointMediaTypes) {
+		this(endpointMapping, collection, endpointMediaTypes, null);
 	}
 
 	/**
@@ -105,13 +110,15 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointMapping the path beneath which all endpoints should be mapped
 	 * @param webEndpoints the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
-			CorsConfiguration corsConfiguration) {
+			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
 		this.endpointMapping = endpointMapping;
 		this.webEndpoints = webEndpoints;
+		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
 		setOrder(-100);
 	}
@@ -127,11 +134,18 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 	}
 
 	private void registerLinksMapping() {
-		registerMapping(new RequestMappingInfo(
-				new PatternsRequestCondition(
-						pathPatternParser.parse(this.endpointMapping.getPath())),
-				new RequestMethodsRequestCondition(RequestMethod.GET), null, null, null,
-				null, null), this, this.links);
+		registerMapping(
+				new RequestMappingInfo(
+						new PatternsRequestCondition(
+								pathPatternParser.parse(this.endpointMapping.getPath())),
+						new RequestMethodsRequestCondition(RequestMethod.GET), null, null,
+						null,
+						new ProducesRequestCondition(
+								this.endpointMediaTypes.getProduced()
+										.toArray(new String[this.endpointMediaTypes
+												.getProduced().size()])),
+						null),
+				this, this.links);
 	}
 
 	@Override

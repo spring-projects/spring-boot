@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathP
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -55,11 +56,12 @@ class JerseyWebEndpointManagementContextConfiguration {
 	@Bean
 	public ResourceConfigCustomizer webEndpointRegistrar(
 			EndpointProvider<WebEndpointOperation> provider,
+			EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		return (resourceConfig) -> resourceConfig.registerResources(
 				new HashSet<>(new JerseyEndpointResourceFactory().createEndpointResources(
 						new EndpointMapping(webEndpointProperties.getBasePath()),
-						provider.getEndpoints())));
+						provider.getEndpoints(), endpointMediaTypes)));
 	}
 
 	@Bean

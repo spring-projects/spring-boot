@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -191,27 +192,34 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		}
 
 		@Bean
+		public EndpointMediaTypes EndpointMediaTypes() {
+			return new EndpointMediaTypes(Collections.singletonList("application/json"),
+					Collections.singletonList("application/json"));
+		}
+
+		@Bean
 		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 				WebAnnotationEndpointDiscoverer webEndpointDiscoverer,
+				EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cfApplication"),
-					webEndpointDiscoverer.discoverEndpoints(), corsConfiguration,
-					interceptor);
+					webEndpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+					corsConfiguration, interceptor);
 		}
 
 		@Bean
 		public WebAnnotationEndpointDiscoverer webEndpointDiscoverer(
-				ApplicationContext applicationContext) {
+				ApplicationContext applicationContext,
+				EndpointMediaTypes endpointMediaTypes) {
 			OperationParameterMapper parameterMapper = new ConversionServiceOperationParameterMapper(
 					DefaultConversionService.getSharedInstance());
 			return new WebAnnotationEndpointDiscoverer(applicationContext,
 					parameterMapper, (id) -> new CachingConfiguration(0),
-					Collections.singletonList("application/json"),
-					Collections.singletonList("application/json"));
+					endpointMediaTypes);
 		}
 
 		@Bean

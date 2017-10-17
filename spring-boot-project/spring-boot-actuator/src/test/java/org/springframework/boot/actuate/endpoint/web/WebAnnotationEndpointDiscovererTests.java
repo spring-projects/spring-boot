@@ -247,12 +247,14 @@ public class WebAnnotationEndpointDiscovererTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);
 		try {
-			consumer.accept(new WebAnnotationEndpointDiscoverer(context,
-					new ConversionServiceOperationParameterMapper(
-							DefaultConversionService.getSharedInstance()),
-					cachingConfigurationFactory,
-					Collections.singletonList("application/json"),
-					Collections.singletonList("application/json")));
+			consumer.accept(
+					new WebAnnotationEndpointDiscoverer(context,
+							new ConversionServiceOperationParameterMapper(
+									DefaultConversionService.getSharedInstance()),
+							cachingConfigurationFactory,
+							new EndpointMediaTypes(
+									Collections.singletonList("application/json"),
+									Collections.singletonList("application/json"))));
 		}
 		finally {
 			context.close();

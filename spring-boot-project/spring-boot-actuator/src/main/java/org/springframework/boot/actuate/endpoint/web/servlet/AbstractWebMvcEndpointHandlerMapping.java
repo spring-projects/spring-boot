@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.endpoint.web.EndpointMapping;
@@ -56,6 +57,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 	private final Collection<EndpointInfo<WebEndpointOperation>> webEndpoints;
 
+	private final EndpointMediaTypes endpointMediaTypes;
+
 	private final CorsConfiguration corsConfiguration;
 
 	/**
@@ -63,10 +66,12 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param collection the web endpoints operations
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> collection) {
-		this(endpointMapping, collection, null);
+			Collection<EndpointInfo<WebEndpointOperation>> collection,
+			EndpointMediaTypes endpointMediaTypes) {
+		this(endpointMapping, collection, endpointMediaTypes, null);
 	}
 
 	/**
@@ -74,13 +79,15 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param webEndpoints the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
-			CorsConfiguration corsConfiguration) {
+			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
 		this.endpointMapping = endpointMapping;
 		this.webEndpoints = webEndpoints;
+		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
 		setOrder(-100);
 	}
@@ -107,8 +114,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		PatternsRequestCondition patterns = patternsRequestConditionForPattern("");
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.GET);
+		ProducesRequestCondition produces = new ProducesRequestCondition(
+				this.endpointMediaTypes.getProduced().toArray(
+						new String[this.endpointMediaTypes.getProduced().size()]));
 		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null,
-				null, null, null);
+				null, produces, null);
 		registerMapping(mapping, this, getLinks());
 	}
 

@@ -24,6 +24,7 @@ import org.junit.runners.model.InitializationError;
 
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -99,12 +100,15 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 		public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
 					ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
+					mediaTypes);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
 					new ConversionServiceOperationParameterMapper(), (id) -> null,
-					mediaTypes, mediaTypes);
+					endpointMediaTypes);
 			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/application"),
-					discoverer.discoverEndpoints(), new CorsConfiguration());
+					discoverer.discoverEndpoints(), endpointMediaTypes,
+					new CorsConfiguration());
 		}
 
 	}

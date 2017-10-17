@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -40,11 +41,15 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 /**
  * Tests for {@link CloudFoundryActuatorAutoConfiguration}.
@@ -90,6 +95,18 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
 		assertThat(corsConfiguration.getAllowedHeaders()).containsAll(
 				Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
+	}
+
+	@Test
+	public void cloudfoundryapplicationProducesActuatorMediaType() throws Exception {
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:http://my-cloud-controller.com")
+				.applyTo(this.context);
+		this.context.refresh();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/cloudfoundryapplication")).andExpect(header()
+				.string("Content-Type", ActuatorMediaType.V2_JSON + ";charset=UTF-8"));
 	}
 
 	@Test

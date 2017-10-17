@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -67,11 +68,12 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 		@Bean
 		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				EndpointProvider<WebEndpointOperation> provider, Environment environment,
+				EndpointProvider<WebEndpointOperation> provider,
+				EndpointMediaTypes endpointMediaTypes, Environment environment,
 				RestTemplateBuilder builder) {
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cloudfoundryapplication"),
-					provider.getEndpoints(), getCorsConfiguration(),
+					provider.getEndpoints(), endpointMediaTypes, getCorsConfiguration(),
 					getSecurityInterceptor(builder, environment));
 		}
 

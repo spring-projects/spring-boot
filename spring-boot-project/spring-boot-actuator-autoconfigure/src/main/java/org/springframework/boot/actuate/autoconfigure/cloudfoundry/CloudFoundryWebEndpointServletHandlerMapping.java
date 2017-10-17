@@ -36,6 +36,7 @@ import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -76,9 +77,9 @@ class CloudFoundryWebEndpointServletHandlerMapping
 
 	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
-			CorsConfiguration corsConfiguration,
+			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
 			CloudFoundrySecurityInterceptor securityInterceptor) {
-		super(endpointMapping, webEndpoints, corsConfiguration);
+		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);
 		this.securityInterceptor = securityInterceptor;
 	}
 

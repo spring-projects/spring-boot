@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -28,6 +30,7 @@ import org.junit.runners.model.InitializationError;
 
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -41,7 +44,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 
 /**
  * {@link BlockJUnit4ClassRunner} for Jersey.
@@ -90,15 +92,17 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 		}
 
 		private void customize(ResourceConfig config) {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
+			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON,
 					ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
+					mediaTypes);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
 					new ConversionServiceOperationParameterMapper(), (id) -> null,
-					mediaTypes, mediaTypes);
+					endpointMediaTypes);
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
 					.createEndpointResources(new EndpointMapping("/application"),
-							discoverer.discoverEndpoints());
+							discoverer.discoverEndpoints(), endpointMediaTypes);
 			config.registerResources(new HashSet<>(resources));
 		}
 

@@ -39,6 +39,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
@@ -68,17 +69,16 @@ public class WebAnnotationEndpointDiscoverer extends
 	 * @param operationParameterMapper the {@link OperationParameterMapper} used to
 	 * convert arguments when an operation is invoked
 	 * @param cachingConfigurationFactory the {@link CachingConfiguration} factory to use
-	 * @param consumedMediaTypes the media types consumed by web endpoint operations
-	 * @param producedMediaTypes the media types produced by web endpoint operations
+	 * @param endpointMediaTypes the media types produced and consumed by web endpoint
+	 * operations
 	 */
 	public WebAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
 			OperationParameterMapper operationParameterMapper,
 			CachingConfigurationFactory cachingConfigurationFactory,
-			Collection<String> consumedMediaTypes,
-			Collection<String> producedMediaTypes) {
+			EndpointMediaTypes endpointMediaTypes) {
 		super(applicationContext,
 				new WebEndpointOperationFactory(operationParameterMapper,
-						consumedMediaTypes, producedMediaTypes),
+						endpointMediaTypes),
 				WebEndpointOperation::getRequestPredicate, cachingConfigurationFactory);
 	}
 
@@ -119,16 +119,12 @@ public class WebAnnotationEndpointDiscoverer extends
 
 		private final OperationParameterMapper parameterMapper;
 
-		private final Collection<String> consumedMediaTypes;
-
-		private final Collection<String> producedMediaTypes;
+		private final EndpointMediaTypes endpointMediaTypes;
 
 		private WebEndpointOperationFactory(OperationParameterMapper parameterMapper,
-				Collection<String> consumedMediaTypes,
-				Collection<String> producedMediaTypes) {
+				EndpointMediaTypes endpointMediaTypes) {
 			this.parameterMapper = parameterMapper;
-			this.consumedMediaTypes = consumedMediaTypes;
-			this.producedMediaTypes = producedMediaTypes;
+			this.endpointMediaTypes = endpointMediaTypes;
 		}
 
 		@Override
@@ -172,7 +168,7 @@ public class WebAnnotationEndpointDiscoverer extends
 		private Collection<String> determineConsumedMediaTypes(
 				WebEndpointHttpMethod httpMethod, Method method) {
 			if (WebEndpointHttpMethod.POST == httpMethod && consumesRequestBody(method)) {
-				return this.consumedMediaTypes;
+				return this.endpointMediaTypes.getConsumed();
 			}
 			return Collections.emptyList();
 		}
@@ -189,7 +185,7 @@ public class WebAnnotationEndpointDiscoverer extends
 			if (producesResourceResponseBody(method)) {
 				return Collections.singletonList("application/octet-stream");
 			}
-			return this.producedMediaTypes;
+			return this.endpointMediaTypes.getProduced();
 		}
 
 		private boolean producesResourceResponseBody(Method method) {

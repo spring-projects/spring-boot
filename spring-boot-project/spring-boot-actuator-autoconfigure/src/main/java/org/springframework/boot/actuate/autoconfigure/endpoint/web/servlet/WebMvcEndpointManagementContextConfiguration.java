@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -56,11 +57,12 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
 			EndpointProvider<WebEndpointOperation> provider,
+			EndpointMediaTypes endpointMediaTypes,
 			CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
 		WebMvcEndpointHandlerMapping handlerMapping = new WebMvcEndpointHandlerMapping(
 				new EndpointMapping(webEndpointProperties.getBasePath()),
-				provider.getEndpoints(), getCorsConfiguration(corsProperties));
+				provider.getEndpoints(), endpointMediaTypes, getCorsConfiguration(corsProperties));
 		return handlerMapping;
 	}
 

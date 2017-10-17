@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathP
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,10 +46,11 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(
 			EndpointProvider<WebEndpointOperation> provider,
+			EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		return new WebFluxEndpointHandlerMapping(
 				new EndpointMapping(webEndpointProperties.getBasePath()),
-				provider.getEndpoints());
+				provider.getEndpoints(), endpointMediaTypes);
 	}
 
 	@Bean
