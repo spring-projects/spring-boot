@@ -19,12 +19,13 @@ package org.springframework.boot.autoconfigure.web.reactive.error;
 import org.springframework.web.server.WebExceptionHandler;
 
 /**
- * Marker interface that indicates that a {@link WebExceptionHandler}
- * is used to render errors.
+ * Marker interface that indicates that a {@link WebExceptionHandler} is used to render
+ * errors.
  *
  * @author Brian Clozel
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface ErrorWebExceptionHandler extends WebExceptionHandler {
 
 }

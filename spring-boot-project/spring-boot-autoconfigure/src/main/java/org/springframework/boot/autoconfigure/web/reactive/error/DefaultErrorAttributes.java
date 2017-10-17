@@ -71,7 +71,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	@Override
-	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+	public Map<String, Object> getErrorAttributes(ServerRequest request,
+			boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
@@ -90,7 +91,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		}
 		else {
 			errorAttributes.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			errorAttributes.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+			errorAttributes.put("error",
+					HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
 		}
 		return errorAttributes;
 	}
@@ -115,7 +117,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Throwable getError(ServerRequest request) {
 		return (Throwable) request.attribute(ERROR_ATTRIBUTE)
-				.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
+				.orElseThrow(() -> new IllegalStateException(
+						"Missing exception attribute in ServerWebExchange"));
 	}
 
 	@Override

@@ -145,8 +145,7 @@ public class OAuth2ClientProperties {
 			return this.clientAuthenticationMethod;
 		}
 
-		public void setClientAuthenticationMethod(
-				String clientAuthenticationMethod) {
+		public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
 			this.clientAuthenticationMethod = clientAuthenticationMethod;
 		}
 
@@ -154,8 +153,7 @@ public class OAuth2ClientProperties {
 			return this.authorizationGrantType;
 		}
 
-		public void setAuthorizationGrantType(
-				String authorizationGrantType) {
+		public void setAuthorizationGrantType(String authorizationGrantType) {
 			this.authorizationGrantType = authorizationGrantType;
 		}
 

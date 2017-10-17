@@ -74,51 +74,45 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	@Test
 	public void jsonError() throws Exception {
 		load();
-		this.webTestClient.get().uri("/").exchange()
-				.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectBody().jsonPath("status").isEqualTo("500")
-				.jsonPath("error").isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-				.jsonPath("path").isEqualTo(("/"))
-				.jsonPath("message").isEqualTo("Expected!")
-				.jsonPath("exception").doesNotExist()
+		this.webTestClient.get().uri("/").exchange().expectStatus()
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+				.jsonPath("status").isEqualTo("500").jsonPath("error")
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+				.jsonPath("path").isEqualTo(("/")).jsonPath("message")
+				.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
 				.jsonPath("trace").doesNotExist();
 	}
 
 	@Test
 	public void notFound() throws Exception {
 		load();
-		this.webTestClient.get().uri("/notFound").exchange()
-				.expectStatus().isEqualTo(HttpStatus.NOT_FOUND)
-				.expectBody().jsonPath("status").isEqualTo("404")
-				.jsonPath("error").isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase())
-				.jsonPath("path").isEqualTo(("/notFound"))
-				.jsonPath("exception").doesNotExist();
+		this.webTestClient.get().uri("/notFound").exchange().expectStatus()
+				.isEqualTo(HttpStatus.NOT_FOUND).expectBody().jsonPath("status")
+				.isEqualTo("404").jsonPath("error")
+				.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase()).jsonPath("path")
+				.isEqualTo(("/notFound")).jsonPath("exception").doesNotExist();
 	}
 
 	@Test
 	public void htmlError() throws Exception {
 		load();
-		String body = this.webTestClient.get().uri("/").accept(MediaType.TEXT_HTML).exchange()
-				.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectHeader().contentType(MediaType.TEXT_HTML)
-				.expectBody(String.class).returnResult().getResponseBody();
+		String body = this.webTestClient.get().uri("/").accept(MediaType.TEXT_HTML)
+				.exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+				.expectHeader().contentType(MediaType.TEXT_HTML).expectBody(String.class)
+				.returnResult().getResponseBody();
 		assertThat(body).contains("status: 500").contains("message: Expected!");
 	}
 
 	@Test
 	public void bindingResultError() throws Exception {
 		load();
-		this.webTestClient.post().uri("/bind")
-				.contentType(MediaType.APPLICATION_JSON)
-				.syncBody("{}")
-				.exchange()
-				.expectStatus().isEqualTo(HttpStatus.BAD_REQUEST)
-				.expectBody().jsonPath("status").isEqualTo("400")
-				.jsonPath("error").isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase())
-				.jsonPath("path").isEqualTo(("/bind"))
-				.jsonPath("exception").doesNotExist()
-				.jsonPath("errors").isArray()
-				.jsonPath("message").isNotEmpty();
+		this.webTestClient.post().uri("/bind").contentType(MediaType.APPLICATION_JSON)
+				.syncBody("{}").exchange().expectStatus()
+				.isEqualTo(HttpStatus.BAD_REQUEST).expectBody().jsonPath("status")
+				.isEqualTo("400").jsonPath("error")
+				.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path")
+				.isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
+				.jsonPath("errors").isArray().jsonPath("message").isNotEmpty();
 
 	}
 
@@ -126,10 +120,10 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	public void includeStackTraceOnParam() throws Exception {
 		load("--server.error.include-exception=true",
 				"--server.error.include-stacktrace=on-trace-param");
-		this.webTestClient.get().uri("/?trace=true").exchange()
-				.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectBody().jsonPath("status").isEqualTo("500")
-				.jsonPath("error").isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+		this.webTestClient.get().uri("/?trace=true").exchange().expectStatus()
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+				.jsonPath("status").isEqualTo("500").jsonPath("error")
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 				.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
 				.jsonPath("trace").exists();
 	}
@@ -138,10 +132,10 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	public void alwaysIncludeStackTrace() throws Exception {
 		load("--server.error.include-exception=true",
 				"--server.error.include-stacktrace=always");
-		this.webTestClient.get().uri("/?trace=false").exchange()
-				.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectBody().jsonPath("status").isEqualTo("500")
-				.jsonPath("error").isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+		this.webTestClient.get().uri("/?trace=false").exchange().expectStatus()
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+				.jsonPath("status").isEqualTo("500").jsonPath("error")
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 				.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
 				.jsonPath("trace").exists();
 	}
@@ -150,10 +144,10 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	public void neverIncludeStackTrace() throws Exception {
 		load("--server.error.include-exception=true",
 				"--server.error.include-stacktrace=never");
-		this.webTestClient.get().uri("/?trace=true").exchange()
-				.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectBody().jsonPath("status").isEqualTo("500")
-				.jsonPath("error").isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+		this.webTestClient.get().uri("/?trace=true").exchange().expectStatus()
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+				.jsonPath("status").isEqualTo("500").jsonPath("error")
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 				.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
 				.jsonPath("trace").doesNotExist();
 	}
@@ -161,21 +155,22 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	@Test
 	public void statusException() throws Exception {
 		load("--server.error.include-exception=true");
-		this.webTestClient.get().uri("/badRequest").exchange()
-				.expectStatus().isEqualTo(HttpStatus.BAD_REQUEST)
-				.expectBody().jsonPath("status").isEqualTo("400")
-				.jsonPath("error").isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase())
-				.jsonPath("exception").isEqualTo(ResponseStatusException.class.getName());
+		this.webTestClient.get().uri("/badRequest").exchange().expectStatus()
+				.isEqualTo(HttpStatus.BAD_REQUEST).expectBody().jsonPath("status")
+				.isEqualTo("400").jsonPath("error")
+				.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("exception")
+				.isEqualTo(ResponseStatusException.class.getName());
 	}
 
 	@Test
 	public void defaultErrorView() throws Exception {
 		load("--spring.mustache.prefix=classpath:/unknown/");
-		String body = this.webTestClient.get().uri("/").accept(MediaType.TEXT_HTML).exchange()
-				.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectHeader().contentType(MediaType.TEXT_HTML)
-				.expectBody(String.class).returnResult().getResponseBody();
-		assertThat(body).contains("Whitelabel Error Page").contains("<div>Expected!</div>");
+		String body = this.webTestClient.get().uri("/").accept(MediaType.TEXT_HTML)
+				.exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+				.expectHeader().contentType(MediaType.TEXT_HTML).expectBody(String.class)
+				.returnResult().getResponseBody();
+		assertThat(body).contains("Whitelabel Error Page")
+				.contains("<div>Expected!</div>");
 	}
 
 	private void load(String... arguments) {
@@ -193,9 +188,10 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ReactiveWebServerAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
-			WebFluxAutoConfiguration.class, ErrorWebFluxAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class})
+	@Import({ ReactiveWebServerAutoConfiguration.class,
+			HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
+			ErrorWebFluxAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	private @interface MinimalWebConfiguration {
 
 	}

@@ -51,15 +51,14 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
 	@Test
 	public void applyAnyReplace() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
-					.hasMessageContaining(
-							"Failed to replace DataSource with an embedded database for tests.")
-					.hasMessageContaining(
-							"If you want an embedded database please put a supported one on the classpath")
-					.hasMessageContaining(
-							"or tune the replace attribute of @AutoconfigureTestDatabase.");
-		});
+		this.contextRunner.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(BeanCreationException.class)
+				.hasMessageContaining(
+						"Failed to replace DataSource with an embedded database for tests.")
+				.hasMessageContaining(
+						"If you want an embedded database please put a supported one on the classpath")
+				.hasMessageContaining(
+						"or tune the replace attribute of @AutoconfigureTestDatabase."));
 	}
 
 	@Test

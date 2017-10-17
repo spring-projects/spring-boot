@@ -47,10 +47,8 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 	public static Map<String, ClientRegistration> getClientRegistrations(
 			OAuth2ClientProperties properties) {
 		Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
-		properties.getRegistration().forEach((key, value) -> {
-			clientRegistrations.put(key,
-					getClientRegistration(key, value, properties.getProvider()));
-		});
+		properties.getRegistration().forEach((key, value) -> clientRegistrations.put(key,
+				getClientRegistration(key, value, properties.getProvider())));
 		return clientRegistrations;
 	}
 

@@ -51,7 +51,8 @@ public class MustacheViewTests {
 
 	@Test
 	public void viewResolvesHandlebars() throws Exception {
-		this.exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
+		this.exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").build());
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
 		view.setUrl(this.templateUrl);

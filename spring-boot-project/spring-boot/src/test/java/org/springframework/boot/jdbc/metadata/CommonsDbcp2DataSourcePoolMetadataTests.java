@@ -85,8 +85,9 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 	public void getDefaultAutoCommit() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setDefaultAutoCommit(false);
-		assertThat(new CommonsDbcp2DataSourcePoolMetadata(dataSource)
-				.getDefaultAutoCommit()).isFalse();
+		assertThat(
+				new CommonsDbcp2DataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
+						.isFalse();
 	}
 
 	private CommonsDbcp2DataSourcePoolMetadata createDataSourceMetadata(int minSize,

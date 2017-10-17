@@ -37,20 +37,20 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-
 /**
- * Basic global {@link org.springframework.web.server.WebExceptionHandler},
- * rendering {@link ErrorAttributes}.
+ * Basic global {@link org.springframework.web.server.WebExceptionHandler}, rendering
+ * {@link ErrorAttributes}.
  *
- * <p>More specific errors can be handled either using Spring WebFlux abstractions
- * (e.g. {@code @ExceptionHandler} with the annotation model) or by adding
+ * <p>
+ * More specific errors can be handled either using Spring WebFlux abstractions (e.g.
+ * {@code @ExceptionHandler} with the annotation model) or by adding
  * {@link RouterFunction} to the chain.
  *
- * <p>This implementation will render error as HTML views if the client explicitly
- * supports that media type. It attempts to resolve error views
- * using well known conventions. Will search for templates and static assets under
- * {@code '/error'} using the {@link HttpStatus status code} and the
- * {@link HttpStatus#series() status series}.
+ * <p>
+ * This implementation will render error as HTML views if the client explicitly supports
+ * that media type. It attempts to resolve error views using well known conventions. Will
+ * search for templates and static assets under {@code '/error'} using the
+ * {@link HttpStatus status code} and the {@link HttpStatus#series() status series}.
  * <p>
  * For example, an {@code HTTP 404} will search (in the specific order):
  * <ul>
@@ -62,10 +62,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
  * <li>{@code '/<static>/error/error.html'}</li>
  * </ul>
  *
- * <p>If none found, a default "Whitelabel Error" HTML view will be rendered.
+ * <p>
+ * If none found, a default "Whitelabel Error" HTML view will be rendered.
  *
- * <p>If the client doesn't support HTML, the error information will be rendered
- * as a JSON payload.
+ * <p>
+ * If the client doesn't support HTML, the error information will be rendered as a JSON
+ * payload.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -99,10 +101,10 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	@Override
-	protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+	protected RouterFunction<ServerResponse> getRoutingFunction(
+			ErrorAttributes errorAttributes) {
 
-		return RouterFunctions
-				.route(acceptsTextHtml(), this::renderErrorView)
+		return RouterFunctions.route(acceptsTextHtml(), this::renderErrorView)
 				.andRoute(RequestPredicates.all(), this::renderErrorResponse);
 	}
 
@@ -119,12 +121,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		ServerResponse.BodyBuilder response = ServerResponse.status(errorStatus)
 				.contentType(MediaType.TEXT_HTML);
 
-		return Flux.just("error/" + errorStatus.toString(),
-				"error/" + SERIES_VIEWS.get(errorStatus.series()),
-				"error/error")
-				.flatMap(viewName -> renderErrorView(viewName, response, error))
-				.switchIfEmpty(renderDefaultErrorView(response, error))
-				.next();
+		return Flux
+				.just("error/" + errorStatus.toString(),
+						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
+				.flatMap((viewName) -> renderErrorView(viewName, response, error))
+				.switchIfEmpty(renderDefaultErrorView(response, error)).next();
 	}
 
 	/**
@@ -146,9 +147,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	protected boolean isIncludeStackTrace(ServerRequest request,
-			MediaType produces) {
-		ErrorProperties.IncludeStacktrace include = this.errorProperties.getIncludeStacktrace();
+	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
+		ErrorProperties.IncludeStacktrace include = this.errorProperties
+				.getIncludeStacktrace();
 		if (include == ErrorProperties.IncludeStacktrace.ALWAYS) {
 			return true;
 		}
@@ -169,17 +170,19 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	/**
-	 * Predicate that checks whether the current request
-	 * explicitly support {@code "text/html"} media type.
-	 * <p>The "match-all" media type is not considered here.
+	 * Predicate that checks whether the current request explicitly support
+	 * {@code "text/html"} media type.
+	 * <p>
+	 * The "match-all" media type is not considered here.
 	 * @return the request predicate
 	 */
 	protected RequestPredicate acceptsTextHtml() {
-		return serverRequest -> {
+		return (serverRequest) -> {
 			List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
 			acceptedMediaTypes.remove(MediaType.ALL);
 			MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
-			return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
+			return acceptedMediaTypes.stream()
+					.anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 		};
 	}
 

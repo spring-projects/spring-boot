@@ -138,7 +138,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
+	private void configureProviderDisablesAutocommit(
+			Map<String, Object> vendorProperties) {
 		if (isDataSourceAutoCommitDisabled() && !isJta()) {
 			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
 		}

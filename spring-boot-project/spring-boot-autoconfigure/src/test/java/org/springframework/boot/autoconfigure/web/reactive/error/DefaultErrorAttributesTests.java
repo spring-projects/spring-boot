@@ -49,20 +49,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultErrorAttributesTests {
 
-	private static final ResponseStatusException NOT_FOUND = new ResponseStatusException(HttpStatus.NOT_FOUND);
+	private static final ResponseStatusException NOT_FOUND = new ResponseStatusException(
+			HttpStatus.NOT_FOUND);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
-	private List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
+	private List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create()
+			.getReaders();
 
 	@Test
 	public void missingExceptionAttribute() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Missing exception attribute in ServerWebExchange");
-		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
+		MockServerWebExchange exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
 		this.errorAttributes.getErrorAttributes(request, false);
 	}
@@ -117,7 +120,8 @@ public class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(serverRequest, false);
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("exception"))
+				.isEqualTo(RuntimeException.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -160,14 +164,15 @@ public class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(buildServerRequest(request, ex), false);
 
-		assertThat(attributes.get("message"))
-				.asString().startsWith("Validation failed for argument at index 0 in method: " +
-				"public int org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorAttributesTests" +
-				".method(java.lang.String), with 1 error(s)");
+		assertThat(attributes.get("message")).asString()
+				.startsWith("Validation failed for argument at index 0 in method: "
+						+ "public int org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorAttributesTests"
+						+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 	}
 
-	private ServerRequest buildServerRequest(MockServerHttpRequest request, Throwable error) {
+	private ServerRequest buildServerRequest(MockServerHttpRequest request,
+			Throwable error) {
 		ServerWebExchange exchange = MockServerWebExchange.from(request);
 		this.errorAttributes.storeErrorInformation(error, exchange);
 		return ServerRequest.create(exchange, this.readers);

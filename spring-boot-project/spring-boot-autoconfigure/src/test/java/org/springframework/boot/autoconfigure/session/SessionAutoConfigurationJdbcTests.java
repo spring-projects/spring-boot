@@ -54,8 +54,7 @@ public class SessionAutoConfigurationJdbcTests
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					DataSourceTransactionManagerAutoConfiguration.class,
-					JdbcTemplateAutoConfiguration.class,
-					SessionAutoConfiguration.class))
+					JdbcTemplateAutoConfiguration.class, SessionAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test

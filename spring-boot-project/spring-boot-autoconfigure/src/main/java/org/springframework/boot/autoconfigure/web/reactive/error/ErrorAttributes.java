@@ -38,11 +38,12 @@ public interface ErrorAttributes {
 	 * @param includeStackTrace if stack trace elements should be included
 	 * @return a map of error attributes
 	 */
-	Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace);
+	Map<String, Object> getErrorAttributes(ServerRequest request,
+			boolean includeStackTrace);
 
 	/**
-	 * Return the underlying cause of the error or {@code null} if the error
-	 * cannot be extracted.
+	 * Return the underlying cause of the error or {@code null} if the error cannot be
+	 * extracted.
 	 * @param request the source ServerRequest
 	 * @return the {@link Exception} that caused the error or {@code null}
 	 */

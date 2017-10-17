@@ -46,7 +46,8 @@ import org.springframework.web.server.ServerWebExchange;
  * @since 2.0.0
  * @see ErrorAttributes
  */
-public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler, InitializingBean {
+public abstract class AbstractErrorWebExceptionHandler
+		implements ErrorWebExceptionHandler, InitializingBean {
 
 	private final ApplicationContext applicationContext;
 
@@ -71,7 +72,8 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		this.errorAttributes = errorAttributes;
 		this.resourceProperties = resourceProperties;
 		this.applicationContext = applicationContext;
-		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
+		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(
+				applicationContext);
 	}
 
 	/**
@@ -101,13 +103,14 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	/**
-	 * Extract the error attributes from the current request, to be used
-	 * to populate error views or JSON payloads.
+	 * Extract the error attributes from the current request, to be used to populate error
+	 * views or JSON payloads.
 	 * @param request the source request
 	 * @param includeStackTrace whether to include the error stacktrace information
 	 * @return the error attributes as a Map.
 	 */
-	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+	protected Map<String, Object> getErrorAttributes(ServerRequest request,
+			boolean includeStackTrace) {
 		return this.errorAttributes.getErrorAttributes(request, includeStackTrace);
 	}
 
@@ -117,16 +120,16 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	/**
-	 * Render the given error data as a view, using a template view if available
-	 * or a static HTML file if available otherwise. This will return an empty
+	 * Render the given error data as a view, using a template view if available or a
+	 * static HTML file if available otherwise. This will return an empty
 	 * {@code Publisher} if none of the above are available.
 	 * @param viewName the view name
 	 * @param responseBody the error response being built
 	 * @param error the error data as a map
 	 * @return a Publisher of the {@link ServerResponse}
 	 */
-	protected Mono<ServerResponse> renderErrorView(String viewName, ServerResponse.BodyBuilder responseBody,
-			Map<String, Object> error) {
+	protected Mono<ServerResponse> renderErrorView(String viewName,
+			ServerResponse.BodyBuilder responseBody, Map<String, Object> error) {
 		if (isTemplateAvailable(viewName)) {
 			return responseBody.render(viewName, error);
 		}
@@ -138,7 +141,8 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	private boolean isTemplateAvailable(String viewName) {
-		return this.templateAvailabilityProviders.getProvider(viewName, this.applicationContext) != null;
+		return this.templateAvailabilityProviders.getProvider(viewName,
+				this.applicationContext) != null;
 	}
 
 	private Resource resolveResource(String viewName) {
@@ -158,23 +162,23 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 
 	/**
 	 * Render a default HTML "Whitelabel Error Page".
-	 * <p>Useful when no other error view is available in the application.
+	 * <p>
+	 * Useful when no other error view is available in the application.
 	 * @param responseBody the error response being built
 	 * @param error the error data as a map
 	 * @return a Publisher of the {@link ServerResponse}
 	 */
-	protected Mono<ServerResponse> renderDefaultErrorView(ServerResponse.BodyBuilder responseBody,
-			Map<String, Object> error) {
+	protected Mono<ServerResponse> renderDefaultErrorView(
+			ServerResponse.BodyBuilder responseBody, Map<String, Object> error) {
 		StringBuilder builder = new StringBuilder();
 		Date timestamp = (Date) error.get("timestamp");
 		builder.append("<html><body><h1>Whitelabel Error Page</h1>")
 				.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
-				.append("<div id='created'>").append(timestamp.toString()).append("</div>")
-				.append("<div>There was an unexpected error (type=")
-				.append(error.get("error")).append(", status=").append(error.get("status"))
-				.append(").</div>")
-				.append("<div>").append(error.get("message")).append("</div>")
-				.append("</body></html>");
+				.append("<div id='created'>").append(timestamp.toString())
+				.append("</div>").append("<div>There was an unexpected error (type=")
+				.append(error.get("error")).append(", status=")
+				.append(error.get("status")).append(").</div>").append("<div>")
+				.append(error.get("message")).append("</div>").append("</body></html>");
 		return responseBody.syncBody(builder.toString());
 	}
 
@@ -188,27 +192,31 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	/**
 	 * Create a {@link RouterFunction} that can route and handle errors as JSON responses
 	 * or HTML views.
-	 * <p>If the returned {@link RouterFunction} doesn't route to a {@code HandlerFunction},
+	 * <p>
+	 * If the returned {@link RouterFunction} doesn't route to a {@code HandlerFunction},
 	 * the original exception is propagated in the pipeline and can be processed by other
 	 * {@link org.springframework.web.server.WebExceptionHandler}s.
-	 * @param errorAttributes the {@code ErrorAttributes} instance to use to extract error information
+	 * @param errorAttributes the {@code ErrorAttributes} instance to use to extract error
+	 * information
 	 * @return a {@link RouterFunction} that routes and handles errors
 	 */
-	protected abstract RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes);
+	protected abstract RouterFunction<ServerResponse> getRoutingFunction(
+			ErrorAttributes errorAttributes);
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable throwable) {
 
 		this.errorAttributes.storeErrorInformation(throwable, exchange);
 		ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
-		return getRoutingFunction(this.errorAttributes)
-				.route(request)
+		return getRoutingFunction(this.errorAttributes).route(request)
 				.switchIfEmpty(Mono.error(throwable))
-				.flatMap(handler -> handler.handle(request))
-				.flatMap(response -> {
-					// force content-type since writeTo won't overwrite response header values
-					exchange.getResponse().getHeaders().setContentType(response.headers().getContentType());
+				.flatMap((handler) -> handler.handle(request)).flatMap((response) -> {
+					// force content-type since writeTo won't overwrite response header
+					// values
+					exchange.getResponse().getHeaders()
+							.setContentType(response.headers().getContentType());
 					return response.writeTo(exchange, new ServerResponse.Context() {
+
 						@Override
 						public List<HttpMessageWriter<?>> messageWriters() {
 							return AbstractErrorWebExceptionHandler.this.messageWriters;
@@ -218,7 +226,9 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 						public List<ViewResolver> viewResolvers() {
 							return AbstractErrorWebExceptionHandler.this.viewResolvers;
 						}
+
 					});
 				});
 	}
+
 }

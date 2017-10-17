@@ -85,8 +85,7 @@ public class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void endpointsAreSecureWithActuatorRoleWithCustomBasePath()
-			throws Exception {
+	public void endpointsAreSecureWithActuatorRoleWithCustomBasePath() throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();

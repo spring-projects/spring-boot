@@ -57,12 +57,12 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
 			EndpointProvider<WebEndpointOperation> provider,
-			EndpointMediaTypes endpointMediaTypes,
-			CorsEndpointProperties corsProperties,
+			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
 		WebMvcEndpointHandlerMapping handlerMapping = new WebMvcEndpointHandlerMapping(
 				new EndpointMapping(webEndpointProperties.getBasePath()),
-				provider.getEndpoints(), endpointMediaTypes, getCorsConfiguration(corsProperties));
+				provider.getEndpoints(), endpointMediaTypes,
+				getCorsConfiguration(corsProperties));
 		return handlerMapping;
 	}
 

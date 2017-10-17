@@ -38,9 +38,7 @@ public class WebEndpointProperties {
 	}
 
 	public void setBasePath(String basePath) {
-			this.basePath = basePath;
+		this.basePath = basePath;
 	}
 
 }
-
-

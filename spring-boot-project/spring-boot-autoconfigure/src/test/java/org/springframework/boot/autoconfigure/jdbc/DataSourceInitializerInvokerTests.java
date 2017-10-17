@@ -166,7 +166,7 @@ public class DataSourceInitializerInvokerTests {
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertInitializationIsDisabled() {
-		return context -> {
+		return (context) -> {
 			assertThat(context).hasSingleBean(DataSource.class);
 			DataSource dataSource = context.getBean(DataSource.class);
 			context.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
