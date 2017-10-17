@@ -45,7 +45,7 @@ public class HttpHeaderInterceptor implements ClientHttpRequestInterceptor {
 	 */
 	public HttpHeaderInterceptor(String name, String value) {
 		Assert.hasLength(name, "Name must not be empty");
-		Assert.hasLength(value, "Value" + " must not be empty");
+		Assert.hasLength(value, "Value must not be empty");
 		this.name = name;
 		this.value = value;
 	}
