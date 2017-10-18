@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
@@ -30,11 +30,14 @@ import org.springframework.util.ReflectionUtils;
  * An {@code OperationInvoker} that invokes an operation using reflection.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	private final OperationParameterMapper parameterMapper;
+
+	private final Function<Method, Map<String, Parameter>> parameterNameMapper;
 
 	private final Object target;
 
@@ -49,8 +52,10 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	 * @param method the method to call
 	 */
 	public ReflectiveOperationInvoker(OperationParameterMapper parameterMapper,
+			Function<Method, Map<String, Parameter>> parameterNameMapper,
 			Object target, Method method) {
 		this.parameterMapper = parameterMapper;
+		this.parameterNameMapper = parameterNameMapper;
 		this.target = target;
 		ReflectionUtils.makeAccessible(method);
 		this.method = method;
@@ -58,22 +63,25 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	@Override
 	public Object invoke(Map<String, Object> arguments) {
-		validateRequiredParameters(arguments);
+		Map<String, Parameter> parameters = this.parameterNameMapper.apply(this.method);
+		validateRequiredParameters(parameters, arguments);
 		return ReflectionUtils.invokeMethod(this.method, this.target,
-				resolveArguments(arguments));
+				resolveArguments(parameters, arguments));
 	}
 
-	private void validateRequiredParameters(Map<String, Object> arguments) {
-		Set<String> missingParameters = Stream.of(this.method.getParameters())
-				.filter((p) -> isMissing(p, arguments)).map(Parameter::getName)
+	private void validateRequiredParameters(Map<String, Parameter> parameters,
+			Map<String, Object> arguments) {
+		Set<String> missingParameters = parameters.keySet().stream()
+				.filter((n) -> isMissing(n, parameters.get(n), arguments))
 				.collect(Collectors.toSet());
 		if (!missingParameters.isEmpty()) {
 			throw new ParametersMissingException(missingParameters);
 		}
 	}
 
-	private boolean isMissing(Parameter parameter, Map<String, Object> arguments) {
-		Object resolved = arguments.get(parameter.getName());
+	private boolean isMissing(String name, Parameter parameter,
+			Map<String, Object> arguments) {
+		Object resolved = arguments.get(name);
 		return (resolved == null && !isExplicitNullable(parameter));
 	}
 
@@ -81,15 +89,16 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 		return (parameter.getAnnotationsByType(Nullable.class).length != 0);
 	}
 
-	private Object[] resolveArguments(Map<String, Object> arguments) {
-		return Stream.of(this.method.getParameters())
-				.map((parameter) -> resolveArgument(parameter, arguments))
+	private Object[] resolveArguments(Map<String, Parameter> parameters,
+			Map<String, Object> arguments) {
+		return parameters.keySet().stream()
+				.map((name) -> resolveArgument(name, parameters.get(name), arguments))
 				.collect(Collectors.collectingAndThen(Collectors.toList(),
 						(list) -> list.toArray(new Object[list.size()])));
 	}
 
-	private Object resolveArgument(Parameter parameter, Map<String, Object> arguments) {
-		Object resolved = arguments.get(parameter.getName());
+	private Object resolveArgument(String name, Parameter parameter, Map<String, Object> arguments) {
+		Object resolved = arguments.get(name);
 		return this.parameterMapper.mapParameter(resolved, parameter.getType());
 	}
 

@@ -17,11 +17,14 @@
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +32,7 @@ import org.reactivestreams.Publisher;
 
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.ParameterNameMapper;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -127,6 +131,8 @@ public class WebAnnotationEndpointDiscoverer extends
 
 		private final EndpointPathResolver endpointPathResolver;
 
+		private final Function<Method, Map<String, Parameter>> parameterNameMapper = new ParameterNameMapper();
+
 		private WebEndpointOperationFactory(OperationParameterMapper parameterMapper,
 				EndpointMediaTypes endpointMediaTypes,
 				EndpointPathResolver endpointPathResolver) {
@@ -146,7 +152,7 @@ public class WebAnnotationEndpointDiscoverer extends
 					determineProducedMediaTypes(
 							operationAttributes.getStringArray("produces"), method));
 			OperationInvoker invoker = new ReflectiveOperationInvoker(
-					this.parameterMapper, target, method);
+					this.parameterMapper, this.parameterNameMapper, target, method);
 			if (timeToLive > 0) {
 				invoker = new CachingOperationInvoker(invoker, timeToLive);
 			}
