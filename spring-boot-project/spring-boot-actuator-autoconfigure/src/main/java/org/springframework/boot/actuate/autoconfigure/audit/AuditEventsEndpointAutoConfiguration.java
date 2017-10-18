@@ -52,7 +52,6 @@ public class AuditEventsEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	@ConditionalOnBean(AuditEventsEndpoint.class)
 	public AuditEventsJmxEndpointExtension auditEventsJmxEndpointExtension(
 			AuditEventsEndpoint auditEventsEndpoint) {
@@ -61,7 +60,6 @@ public class AuditEventsEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	@ConditionalOnBean(AuditEventsEndpoint.class)
 	public AuditEventsWebEndpointExtension auditEventsWebEndpointExtension(
 			AuditEventsEndpoint auditEventsEndpoint) {
