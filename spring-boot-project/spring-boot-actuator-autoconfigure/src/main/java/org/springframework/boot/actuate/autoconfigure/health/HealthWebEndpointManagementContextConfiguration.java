@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicatorFactory;
 import org.springframework.boot.actuate.health.HealthAggregator;
@@ -82,7 +81,6 @@ public class HealthWebEndpointManagementContextConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
 		public HealthReactiveWebEndpointExtension healthWebEndpointExtension(
 				HealthStatusHttpMapper healthStatusHttpMapper) {
@@ -92,7 +90,6 @@ public class HealthWebEndpointManagementContextConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(StatusEndpoint.class)
 		public StatusReactiveWebEndpointExtension statusWebEndpointExtension(
 				HealthStatusHttpMapper healthStatusHttpMapper) {
@@ -108,7 +105,6 @@ public class HealthWebEndpointManagementContextConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
 		public HealthWebEndpointExtension healthWebEndpointExtension(
 				HealthEndpoint delegate, HealthStatusHttpMapper healthStatusHttpMapper) {
@@ -117,7 +113,6 @@ public class HealthWebEndpointManagementContextConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(StatusEndpoint.class)
 		public StatusWebEndpointExtension statusWebEndpointExtension(
 				StatusEndpoint delegate, HealthStatusHttpMapper healthStatusHttpMapper) {

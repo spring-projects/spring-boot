@@ -52,7 +52,6 @@ public class SessionsEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	@ConditionalOnBean(SessionsEndpoint.class)
 	public SessionsWebEndpointExtension sessionsWebEndpointExtension(
 			SessionsEndpoint sessionsEndpoint) {
