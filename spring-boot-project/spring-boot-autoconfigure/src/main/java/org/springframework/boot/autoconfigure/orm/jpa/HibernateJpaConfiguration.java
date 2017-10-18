@@ -54,7 +54,7 @@ import org.springframework.util.ClassUtils;
  */
 @Configuration
 @ConditionalOnSingleCandidate(DataSource.class)
-class HibernateJpaConfiguration extends JpaBaseConfiguration {
+public class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private static final Log logger = LogFactory.getLog(HibernateJpaConfiguration.class);
 
