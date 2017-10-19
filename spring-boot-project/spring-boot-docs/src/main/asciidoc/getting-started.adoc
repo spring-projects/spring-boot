@@ -439,10 +439,10 @@ support it.
 [TIP]
 ====
 The http://spring.io[spring.io] web site contains many "`Getting Started`" guides
-that use Spring Boot. If you're looking to solve a specific problem; check there first.
+that use Spring Boot. If you're looking to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the
-`web` starter from the dependencies searcher. This will automatically generate a new
+"Web" starter from the dependencies searcher. This will automatically generate a new
 project structure so that you can <<getting-started-first-application-code,start coding
 right away>>. Check the https://github.com/spring-io/initializr[documentation for
 more details].
@@ -527,7 +527,7 @@ This should give you a working build, you can test it out by running `mvn packag
 can ignore the "`jar will be empty - no content was marked for inclusion!`" warning for
 now).
 
-NOTE: At this point you could import the project into an IDE (most modern Java IDE's
+NOTE: At this point you could import the project into an IDE (most modern Java IDEs
 include built-in support for Maven). For simplicity, we will continue to use a plain
 text editor for this example.
 
@@ -584,7 +584,6 @@ file named `src/main/java/Example.java`:
 ----
 	import org.springframework.boot.*;
 	import org.springframework.boot.autoconfigure.*;
-	import org.springframework.stereotype.*;
 	import org.springframework.web.bind.annotation.*;
 
 	@RestController

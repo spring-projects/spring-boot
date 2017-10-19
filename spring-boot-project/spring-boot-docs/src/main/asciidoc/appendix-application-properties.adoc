@@ -1230,8 +1230,8 @@ content into your application; rather pick only the properties that you need.
 	management.endpoints.cors.exposed-headers= # Comma-separated list of headers to include in a response.
 	management.endpoints.cors.max-age=1800 # How long, in seconds, the response from a pre-flight request can be cached by clients.
 
-	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/endpoint/ManagementEndpointProperties.{sc-ext}[JmxEndpointExporterProperties])
-	management.endpoints.web.base-path # Base path for Web endpoints. Relative to server.context-path or management.server.context-path if management.server.port is configured.
+	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
+	management.endpoints.web.base-path=/application # Base path for Web endpoints. Relative to server.context-path or management.server.context-path if management.server.port is configured.
 
 	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
