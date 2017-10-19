@@ -27,15 +27,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.core.userdetails.MapUserDetailsRepository;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsRepository;
 
 /**
  * Default user {@link Configuration} for a reactive web application. Configures a
- * {@link UserDetailsRepository} with a default user and generated password. This
- * backs-off completely if there is a bean of type {@link UserDetailsRepository} or
+ * {@link ReactiveUserDetailsService} with a default user and generated password. This
+ * backs-off completely if there is a bean of type {@link ReactiveUserDetailsService} or
  * {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
@@ -44,7 +44,7 @@ import org.springframework.security.core.userdetails.UserDetailsRepository;
 @Configuration
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
 @ConditionalOnMissingBean({ ReactiveAuthenticationManager.class,
-		UserDetailsRepository.class })
+		ReactiveUserDetailsService.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveAuthenticationManagerConfiguration {
 
@@ -52,11 +52,11 @@ public class ReactiveAuthenticationManagerConfiguration {
 			.getLog(ReactiveAuthenticationManagerConfiguration.class);
 
 	@Bean
-	public MapUserDetailsRepository userDetailsRepository() {
+	public MapReactiveUserDetailsService reactiveUserDetailsService() {
 		String password = UUID.randomUUID().toString();
 		logger.info(String.format("%n%nUsing default security password: %s%n", password));
 		UserDetails user = User.withUsername("user").password(password).roles().build();
-		return new MapUserDetailsRepository(user);
+		return new MapReactiveUserDetailsService(user);
 	}
 
 }

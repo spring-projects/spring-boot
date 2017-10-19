@@ -76,7 +76,7 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 			throw new IllegalStateException(getErrorMessage(configuredProviderId, registrationId));
 		}
 		Builder builder = (provider != null ? provider.getBuilder(registrationId)
-				: new Builder(registrationId));
+				: ClientRegistration.withRegistrationId(registrationId));
 		if (providers.containsKey(providerId)) {
 			return getBuilder(builder, providers.get(providerId));
 		}
