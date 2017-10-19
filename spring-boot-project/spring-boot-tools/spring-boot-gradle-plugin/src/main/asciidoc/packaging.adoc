@@ -93,8 +93,16 @@ property:
 include::../gradle/packaging/boot-jar-main-class.gradle[tags=main-class]
 ----
 
-Alternatively, if the {application-plugin}[`application` plugin] has been applied
-its `mainClassName` project property can be used:
+Alternatively, the main class name can be configured project-wide using the
+`mainClassName` property of the Spring Boot DSL:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
+----
+
+If the {application-plugin}[`application` plugin] has been applied its `mainClassName`
+project property can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----

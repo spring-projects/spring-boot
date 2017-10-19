@@ -39,6 +39,8 @@ public class SpringBootExtension {
 
 	private final Project project;
 
+	private String mainClassName;
+
 	/**
 	 * Creates a new {@code SpringBootPluginExtension} that is associated with the given
 	 * {@code project}.
@@ -47,6 +49,24 @@ public class SpringBootExtension {
 	 */
 	public SpringBootExtension(Project project) {
 		this.project = project;
+	}
+
+	/**
+	 * Returns the main class name of the application.
+	 *
+	 * @return the name of the application's main class
+	 */
+	public String getMainClassName() {
+		return this.mainClassName;
+	}
+
+	/**
+	 * Sets the main class name of the application.
+	 *
+	 * @param mainClassName the name of the application's main class
+	 */
+	public void setMainClassName(String mainClassName) {
+		this.mainClassName = mainClassName;
 	}
 
 	/**

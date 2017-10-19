@@ -19,8 +19,16 @@ classpath. The main class can also be configured explicitly using the task's
 include::../gradle/running/boot-run-main.gradle[tags=main]
 ----
 
-Alternatively, if the {application-plugin}[`application` plugin] has been applied
-its `mainClassName` project property can be used:
+Alternatively, the main class name can be configured project-wide using the
+`mainClassName` property of the Spring Boot DSL:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/running/spring-boot-dsl-main-class-name.gradle[tags=main-class]
+----
+
+If the {application-plugin}[`application` plugin] has been applied its `mainClassName`
+project property can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----
