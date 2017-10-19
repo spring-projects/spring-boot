@@ -64,9 +64,6 @@ public class OAuth2ClientProperties {
 		if (!StringUtils.hasText(registration.getClientSecret())) {
 			throw new IllegalStateException("Client secret must not be empty.");
 		}
-		if (!StringUtils.hasText(registration.getProvider())) {
-			throw new IllegalStateException("Provider must not be empty.");
-		}
 	}
 
 	/**

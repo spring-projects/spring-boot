@@ -54,15 +54,4 @@ public class OAuth2ClientPropertiesTests {
 		this.properties.validate();
 	}
 
-	@Test
-	public void providerAbsentThrowsException() throws Exception {
-		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
-		registration.setClientId("foo");
-		registration.setClientSecret("secret");
-		this.properties.getRegistration().put("foo", registration);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Provider must not be empty.");
-		this.properties.validate();
-	}
-
 }

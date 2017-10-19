@@ -167,4 +167,49 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
 	}
 
+	@Test
+	public void getClientRegistrationsWhenProviderNotSpecifiedShouldUseRegistrationId()
+			throws Exception {
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		Registration registration = new Registration();
+		registration.setClientId("clientId");
+		registration.setClientSecret("clientSecret");
+		properties.getRegistration().put("google", registration);
+		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
+				.getClientRegistrations(properties);
+		ClientRegistration adapted = registrations.get("google");
+		ProviderDetails adaptedProvider = adapted.getProviderDetails();
+		assertThat(adaptedProvider.getAuthorizationUri())
+				.isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
+		assertThat(adaptedProvider.getTokenUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getJwkSetUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
+		assertThat(adapted.getRegistrationId()).isEqualTo("google");
+		assertThat(adapted.getClientId()).isEqualTo("clientId");
+		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
+		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(
+				org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC);
+		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
+				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
+		assertThat(adapted.getRedirectUri()).isEqualTo(
+				"{scheme}://{serverName}:{serverPort}{contextPath}/oauth2/authorize/code/{registrationId}");
+		assertThat(adapted.getScope()).containsExactly("openid", "profile", "email",
+				"address", "phone");
+		assertThat(adapted.getClientName()).isEqualTo("Google");
+	}
+
+	@Test
+	public void getClientRegistrationsWhenProviderNotSpecifiedAndUnknownProviderShouldThrowException()
+			throws Exception {
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		Registration registration = new Registration();
+		properties.getRegistration().put("missing", registration);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Provider ID must be specified for client registration 'missing'");
+		OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
+	}
+
 }
