@@ -10,6 +10,6 @@ apply plugin: 'org.springframework.boot'
 task echoMainClassName {
 	dependsOn compileJava
 	doLast {
-		println 'Main class name = ' + bootRun.main
+		println 'Main class name = ' + bootRun.mainClassName
 	}
 }

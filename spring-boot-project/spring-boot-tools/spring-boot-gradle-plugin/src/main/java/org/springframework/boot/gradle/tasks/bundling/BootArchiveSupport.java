@@ -73,10 +73,10 @@ class BootArchiveSupport {
 		configureExclusions();
 	}
 
-	void configureManifest(Jar jar, String mainClass) {
+	void configureManifest(Jar jar, String mainClassName) {
 		Attributes attributes = jar.getManifest().getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
-		attributes.putIfAbsent("Start-Class", mainClass);
+		attributes.putIfAbsent("Start-Class", mainClassName);
 	}
 
 	CopyAction createCopyAction(Jar jar) {

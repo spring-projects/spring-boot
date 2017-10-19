@@ -8,7 +8,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'war'
 
 bootWar {
-	mainClass 'com.example.ExampleApplication'
+	mainClassName 'com.example.ExampleApplication'
 	classpath file('spring-boot-devtools-1.2.3.RELEASE.jar')
 }
 

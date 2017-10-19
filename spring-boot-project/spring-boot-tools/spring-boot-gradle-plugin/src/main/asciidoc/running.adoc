@@ -11,8 +11,8 @@ To run your application without first building an archive use the `bootRun` task
 The `bootRun` task is automatically configured to use the runtime classpath of the
 main source set. By default, the main class will be discovered by looking for a class
 with a `public static void main(String[])` method in directories on the task's
-classpath. The main class can also be configured explicitly using the task's `main`
-property:
+classpath. The main class can also be configured explicitly using the task's
+`mainClassName` property:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----

@@ -38,7 +38,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	public void providedClasspathJarsArePackagedInWebInfLibProvided() throws IOException {
-		getTask().setMainClass("com.example.Main");
+		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("one.jar"),
 				this.temp.newFile("two.jar"));
 		getTask().execute();
@@ -51,7 +51,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath()
 			throws IOException {
-		getTask().setMainClass("com.example.Main");
+		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().execute();
 		assertThat(getTask().getArchivePath().exists());
@@ -65,7 +65,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath()
 			throws IOException {
-		getTask().setMainClass("com.example.Main");
+		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().setExcludeDevtools(false);
 		getTask().execute();
@@ -85,7 +85,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		orgFolder.mkdir();
 		new File(orgFolder, "foo.txt").createNewFile();
 		getTask().from(webappFolder);
-		getTask().setMainClass("com.example.Main");
+		getTask().setMainClassName("com.example.Main");
 		getTask().execute();
 		assertThat(getTask().getArchivePath().exists());
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {

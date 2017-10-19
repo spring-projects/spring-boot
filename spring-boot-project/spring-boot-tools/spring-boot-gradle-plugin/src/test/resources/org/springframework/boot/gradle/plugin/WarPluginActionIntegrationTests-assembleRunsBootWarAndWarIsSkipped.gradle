@@ -8,5 +8,5 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'war'
 
 bootWar {
-	mainClass = 'com.example.Application'
+	mainClassName = 'com.example.Application'
 }

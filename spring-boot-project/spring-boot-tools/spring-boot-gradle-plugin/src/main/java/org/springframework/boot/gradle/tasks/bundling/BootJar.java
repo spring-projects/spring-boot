@@ -42,7 +42,7 @@ public class BootJar extends Jar implements BootArchive {
 
 	private FileCollection classpath;
 
-	private String mainClass;
+	private String mainClassName;
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -63,7 +63,7 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClass());
+		this.support.configureManifest(this, getMainClassName());
 		super.copy();
 	}
 
@@ -73,13 +73,13 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	@Override
-	public String getMainClass() {
-		return this.mainClass;
+	public String getMainClassName() {
+		return this.mainClassName;
 	}
 
 	@Override
-	public void setMainClass(String mainClass) {
-		this.mainClass = mainClass;
+	public void setMainClassName(String mainClassName) {
+		this.mainClassName = mainClassName;
 	}
 
 	@Override

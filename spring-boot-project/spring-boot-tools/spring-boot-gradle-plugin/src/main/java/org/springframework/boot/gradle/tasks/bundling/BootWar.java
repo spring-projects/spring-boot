@@ -41,7 +41,7 @@ public class BootWar extends War implements BootArchive {
 	private final BootArchiveSupport support = new BootArchiveSupport(
 			"org.springframework.boot.loader.WarLauncher", this::resolveZipCompression);
 
-	private String mainClass;
+	private String mainClassName;
 
 	private FileCollection providedClasspath;
 
@@ -57,7 +57,7 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClass());
+		this.support.configureManifest(this, getMainClassName());
 		super.copy();
 	}
 
@@ -67,13 +67,13 @@ public class BootWar extends War implements BootArchive {
 	}
 
 	@Override
-	public String getMainClass() {
-		return this.mainClass;
+	public String getMainClassName() {
+		return this.mainClassName;
 	}
 
 	@Override
-	public void setMainClass(String mainClass) {
-		this.mainClass = mainClass;
+	public void setMainClassName(String mainClass) {
+		this.mainClassName = mainClass;
 	}
 
 	@Override

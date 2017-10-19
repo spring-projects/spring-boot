@@ -85,7 +85,8 @@ By default, the executable archive's main class will be configured automatically
 looking for a class with a `public static void main(String[])` method in directories on
 the task's classpath.
 
-The main class can also be configured explicitly using the task's `mainClass` property:
+The main class can also be configured explicitly using the task's `mainClassName`
+property:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----
