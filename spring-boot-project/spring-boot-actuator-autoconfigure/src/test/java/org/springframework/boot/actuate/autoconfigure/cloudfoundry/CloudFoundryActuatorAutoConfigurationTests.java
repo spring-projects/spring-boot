@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,7 +26,11 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -35,6 +40,8 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -200,6 +207,16 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				.isFalse();
 	}
 
+	@Test
+	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWeb() throws Exception {
+		this.context.register(TestConfiguration.class);
+		this.context.refresh();
+		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
+		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping.getEndpoints();
+		assertThat(endpoints.size()).isEqualTo(1);
+		assertThat(endpoints.get(0).getId()).isEqualTo("test");
+	}
+
 	private CloudFoundryWebEndpointServletHandlerMapping getHandlerMapping() {
 		TestPropertyValues
 				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
@@ -208,6 +225,26 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.context.refresh();
 		return this.context.getBean("cloudFoundryWebEndpointServletHandlerMapping",
 				CloudFoundryWebEndpointServletHandlerMapping.class);
+	}
+
+	@Configuration
+	static class TestConfiguration {
+
+		@Bean
+		public TestEndpoint testEndpoint() {
+			return new TestEndpoint();
+		}
+
+	}
+
+	@Endpoint(id = "test")
+	static class TestEndpoint {
+
+		@ReadOperation
+		public String hello() {
+			return "hello world";
+		}
+
 	}
 
 }

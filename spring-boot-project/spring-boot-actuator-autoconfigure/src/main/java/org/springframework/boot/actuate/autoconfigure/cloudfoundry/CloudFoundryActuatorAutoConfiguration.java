@@ -18,10 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.util.Arrays;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.DefaultCachingConfigurationFactory;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -33,6 +34,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -66,14 +68,24 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@ConditionalOnBean(DispatcherServlet.class)
 	static class MvcWebEndpointConfiguration {
 
+		private final ApplicationContext applicationContext;
+
+		MvcWebEndpointConfiguration(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
 		@Bean
 		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				EndpointProvider<WebEndpointOperation> provider,
+				OperationParameterMapper parameterMapper,
+				DefaultCachingConfigurationFactory cachingConfigurationFactory,
 				EndpointMediaTypes endpointMediaTypes, Environment environment,
 				RestTemplateBuilder builder) {
+			WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
+					this.applicationContext, parameterMapper, cachingConfigurationFactory,
+					endpointMediaTypes);
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cloudfoundryapplication"),
-					provider.getEndpoints(), endpointMediaTypes, getCorsConfiguration(),
+					endpointDiscoverer.discoverEndpoints(), endpointMediaTypes, getCorsConfiguration(),
 					getSecurityInterceptor(builder, environment));
 		}
 
