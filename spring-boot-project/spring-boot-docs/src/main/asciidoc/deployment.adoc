@@ -41,7 +41,7 @@ developed>> in the "`Getting Started`" section up and running in the Cloud.
 === Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java buildpack]
-has excellent support for Spring applications, including Spring Boot.  You can deploy
+has excellent support for Spring applications, including Spring Boot. You can deploy
 stand-alone executable jar applications, as well as traditional `.war` packaged
 applications.
 

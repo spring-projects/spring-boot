@@ -825,7 +825,7 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 [[production-ready-loggers]]
 == Loggers
 Spring Boot Actuator includes the ability to view and configure the log levels of your
-application at runtime.  You can view either the entire list or an individual logger's
+application at runtime. You can view either the entire list or an individual logger's
 configuration which is made up of both the explicitly configured logging level as well as
 the effective logging level given to it by the logging framework.  These levels can be:
 
