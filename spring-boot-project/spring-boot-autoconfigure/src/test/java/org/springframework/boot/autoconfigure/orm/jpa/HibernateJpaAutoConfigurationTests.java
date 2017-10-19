@@ -45,6 +45,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.mapping.NonAnnotatedEntity;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
@@ -252,6 +253,22 @@ public class HibernateJpaAutoConfigurationTests
 							.getJpaPropertyMap();
 					assertThat(jpaProperties).doesNotContainKeys(
 							"hibernate.connection.provider_disables_autocommit");
+				});
+	}
+
+	@Test
+	public void customResourceMapping() {
+		contextRunner()
+				.withClassLoader(new HideDataScriptClassLoader())
+				.withPropertyValues(
+						"spring.datasource.data:classpath:/db/non-annotated-data.sql",
+						"spring.jpa.mapping-resources=META-INF/mappings/non-annotated.xml")
+				.run((context) -> {
+					EntityManager em = context.getBean(EntityManagerFactory.class)
+							.createEntityManager();
+					NonAnnotatedEntity found = em.find(NonAnnotatedEntity.class, 2000L);
+					assertThat(found).isNotNull();
+					assertThat(found.getValue()).isEqualTo("Test");
 				});
 	}
 

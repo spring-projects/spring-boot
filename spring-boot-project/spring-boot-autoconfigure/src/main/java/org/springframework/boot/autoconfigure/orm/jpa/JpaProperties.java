@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -42,6 +44,11 @@ public class JpaProperties {
 	 * Additional native properties to set on the JPA provider.
 	 */
 	private Map<String, String> properties = new HashMap<>();
+
+	/**
+	 * Mapping resources (equivalent to "mapping-file" entries in persistence.xml).
+	 */
+	private final List<String> mappingResources = new ArrayList<>();
 
 	/**
 	 * Name of the target database to operate on, auto-detected by default. Can be
@@ -73,6 +80,10 @@ public class JpaProperties {
 
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
+	}
+
+	public List<String> getMappingResources() {
+		return this.mappingResources;
 	}
 
 	public String getDatabasePlatform() {

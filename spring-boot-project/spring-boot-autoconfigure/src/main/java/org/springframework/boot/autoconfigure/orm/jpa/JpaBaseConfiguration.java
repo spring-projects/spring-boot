@@ -130,7 +130,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		Map<String, Object> vendorProperties = getVendorProperties();
 		customizeVendorProperties(vendorProperties);
 		return factoryBuilder.dataSource(this.dataSource).packages(getPackagesToScan())
-				.properties(vendorProperties).jta(isJta()).build();
+				.properties(vendorProperties).mappingResources(getMappingResources())
+				.jta(isJta()).build();
 	}
 
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
@@ -156,6 +157,11 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
 		return packages.toArray(new String[packages.size()]);
+	}
+
+	private String[] getMappingResources() {
+		List<String> mappingResources = this.properties.getMappingResources();
+		return mappingResources.toArray(new String[mappingResources.size()]);
 	}
 
 	/**
