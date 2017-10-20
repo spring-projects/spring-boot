@@ -20,6 +20,7 @@ import java.io.File;
 import java.net.UnknownHostException;
 
 import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.config.IMongoCmdOptions;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
@@ -151,6 +152,84 @@ public class EmbeddedMongoAutoConfigurationTests {
 		assertThat(
 				this.context.getBean(IMongodConfig.class).replication().getReplSetName())
 						.isEqualTo("testing");
+	}
+
+	@Test
+	public void defaultCmdOptionsConfiguration() {
+		load(MongoClientConfiguration.class);
+		IMongoCmdOptions cmdOptions = this.context.getBean(IMongodConfig.class).cmdOptions();
+		assertThat(cmdOptions.syncDelay()).isEqualTo(0);
+		assertThat(cmdOptions.storageEngine()).isNull();
+		assertThat(cmdOptions.isVerbose()).isFalse();
+		assertThat(cmdOptions.useNoPrealloc()).isTrue();
+		assertThat(cmdOptions.useSmallFiles()).isTrue();
+		assertThat(cmdOptions.useNoJournal()).isTrue();
+		assertThat(cmdOptions.enableTextSearch()).isFalse();
+		assertThat(cmdOptions.auth()).isFalse();
+		assertThat(cmdOptions.master()).isFalse();
+	}
+
+	@Test
+	public void customSyncDelayIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.syncDelay=10");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().syncDelay())
+				.isEqualTo(10);
+	}
+
+	@Test
+	public void customStorageEngineIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.storageEngine=mmapv1");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().storageEngine())
+				.isEqualTo("mmapv1");
+	}
+
+	@Test
+	public void customVerboseIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.verbose=true");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().isVerbose())
+				.isTrue();
+	}
+
+	@Test
+	public void customUseNoPreallocIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.useNoPrealloc=false");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().useNoPrealloc())
+				.isFalse();
+	}
+
+	@Test
+	public void customUseSmallFilesIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.useSmallFiles=false");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().useSmallFiles())
+				.isFalse();
+	}
+
+	@Test
+	public void customUseNoJournalIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.useNoJournal=false");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().useNoJournal())
+				.isFalse();
+	}
+
+	@Test
+	public void customEnableTextSearchIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.enableTextSearch=true");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().enableTextSearch())
+				.isTrue();
+	}
+
+	@Test
+	public void customAuthIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.auth=true");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().auth())
+				.isTrue();
+	}
+
+	@Test
+	public void customMasterIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.cmdOptions.master=true");
+		assertThat(this.context.getBean(IMongodConfig.class).cmdOptions().master())
+				.isTrue();
 	}
 
 	private void assertVersionConfiguration(String configuredVersion,

@@ -32,6 +32,7 @@ import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
 import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongoCmdOptionsBuilder;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
@@ -75,6 +76,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Yogesh Lonkar
  * @author Mark Paluch
+ * @author Adrien Colson
  * @since 1.3.0
  */
 @Configuration
@@ -139,6 +141,35 @@ public class EmbeddedMongoAutoConfiguration {
 							this.embeddedProperties.getStorage().getOplogSize() != null
 									? this.embeddedProperties.getStorage().getOplogSize()
 									: 0));
+		}
+		if (this.embeddedProperties.getCmdOptions() != null) {
+			final MongoCmdOptionsBuilder cmdOptionsBuilder = new MongoCmdOptionsBuilder();
+			cmdOptionsBuilder.syncDelay(this.embeddedProperties.getCmdOptions().getSyncDelay() != null
+					? this.embeddedProperties.getCmdOptions().getSyncDelay()
+					: 0);
+			cmdOptionsBuilder.useStorageEngine(this.embeddedProperties.getCmdOptions().getStorageEngine());
+			cmdOptionsBuilder.verbose(this.embeddedProperties.getCmdOptions().isVerbose() != null
+					? this.embeddedProperties.getCmdOptions().isVerbose()
+					: false);
+			cmdOptionsBuilder.useNoPrealloc(this.embeddedProperties.getCmdOptions().isUseNoPrealloc() != null
+					? this.embeddedProperties.getCmdOptions().isUseNoPrealloc()
+					: true);
+			cmdOptionsBuilder.useSmallFiles(this.embeddedProperties.getCmdOptions().isUseSmallFiles() != null
+					? this.embeddedProperties.getCmdOptions().isUseSmallFiles()
+					: true);
+			cmdOptionsBuilder.useNoJournal(this.embeddedProperties.getCmdOptions().isUseNoJournal() != null
+					? this.embeddedProperties.getCmdOptions().isUseNoJournal()
+					: true);
+			cmdOptionsBuilder.enableTextSearch(this.embeddedProperties.getCmdOptions().isEnableTextSearch() != null
+					? this.embeddedProperties.getCmdOptions().isEnableTextSearch()
+					: false);
+			cmdOptionsBuilder.enableAuth(this.embeddedProperties.getCmdOptions().isAuth() != null
+					? this.embeddedProperties.getCmdOptions().isAuth()
+					: false);
+			cmdOptionsBuilder.master(this.embeddedProperties.getCmdOptions().isMaster() != null
+					? this.embeddedProperties.getCmdOptions().isMaster()
+					: false);
+			builder.cmdOptions(cmdOptionsBuilder.build());
 		}
 		Integer configuredPort = this.properties.getPort();
 		if (configuredPort != null && configuredPort > 0) {
