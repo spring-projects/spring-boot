@@ -2846,7 +2846,7 @@ You can register multiple OAuth2 clients and providers under the
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.client.registration.my-client-1.client-id:=abcd
+	spring.security.oauth2.client.registration.my-client-1.client-id=abcd
 	spring.security.oauth2.client.registration.my-client-1.client-secret=password
 	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
 	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
@@ -2871,10 +2871,25 @@ You can register multiple OAuth2 clients and providers under the
 	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
 ----
 
-NOTE: For common OAuth2 and OpenID providers such as Google, Github, Facebook and Okta,
-we provide a set of provider defaults. If you don't need to customize these providers, you
-do not need to provide the `provider` configuration. The client registration `provider`
-key should reference one these providers.
+For common OAuth2 and OpenID providers such as Google, Github, Facebook and Okta,
+we provide a set of provider defaults (`google`, `github`, `facebook` and `okta`
+respectively).
+
+If you don't need to customize these providers, you can set the `provider` attribute to
+the one you need to infer defaults. Also if the id of your client matches one the
+out-of-the-box supported provider, we'll infer that as well.
+
+In other words, these two configurations will use the Google provider:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.client.registration.my-client.client-id=abcd
+	spring.security.oauth2.client.registration.my-client.client-secret=password
+	spring.security.oauth2.client.registration.my-client.provider=google
+
+	spring.security.oauth2.client.registration.google.client-id=abcd
+	spring.security.oauth2.client.registration.google.client-secret=password
+----
 
 
 
