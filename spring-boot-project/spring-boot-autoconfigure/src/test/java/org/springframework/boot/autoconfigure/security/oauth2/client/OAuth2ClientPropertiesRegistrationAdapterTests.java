@@ -111,7 +111,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUri()).isEqualTo(
-				"{scheme}://{serverName}:{serverPort}{contextPath}/oauth2/authorize/code/{registrationId}");
+				"{scheme}://{serverName}:{serverPort}{contextPath}/login/oauth2/authorize/code/{registrationId}");
 		assertThat(adapted.getScopes()).containsExactly("openid", "profile", "email",
 				"address", "phone");
 		assertThat(adapted.getClientName()).isEqualTo("Google");
@@ -195,7 +195,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUri()).isEqualTo(
-				"{scheme}://{serverName}:{serverPort}{contextPath}/oauth2/authorize/code/{registrationId}");
+				"{scheme}://{serverName}:{serverPort}{contextPath}/login/oauth2/authorize/code/{registrationId}");
 		assertThat(adapted.getScopes()).containsExactly("openid", "profile", "email",
 				"address", "phone");
 		assertThat(adapted.getClientName()).isEqualTo("Google");
