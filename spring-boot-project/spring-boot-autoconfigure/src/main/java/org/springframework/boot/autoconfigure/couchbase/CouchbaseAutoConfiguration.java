@@ -36,7 +36,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 
 /**
- * {@link EnableAutoConfiguration Auto-Configuration} for Couchbase.
+ * {@link EnableAutoConfiguration Auto-configuration} for Couchbase.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll

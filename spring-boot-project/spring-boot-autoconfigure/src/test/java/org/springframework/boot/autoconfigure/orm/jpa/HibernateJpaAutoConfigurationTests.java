@@ -241,7 +241,7 @@ public class HibernateJpaAutoConfigurationTests
 	}
 
 	@Test
-	public void providerDisablesAutoCommitIsNotConfiguredWihJta() {
+	public void providerDisablesAutoCommitIsNotConfiguredWithJta() {
 		contextRunner()
 				.withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
 				.withPropertyValues(
