@@ -242,6 +242,17 @@ Application events are sent in the following order, as your application runs:
 TIP: You often won't need to use application events, but it can be handy to know that they
 exist. Internally, Spring Boot uses events to handle a variety of tasks.
 
+Application events are sent using Spring Framework's event publishing mechanism. Part of
+this mechanism ensures that an event published to the listeners in a child context
+is also published to the listeners in any ancestors contexts. As a result of this, if
+your application uses a hierarchy of `SpringApplication` instances, a listener may
+receive multiple instances of the same type of application event.
+
+To allow your listener to distinguish between an event for its context and an event for
+a descendant context, it should request that its application context is injected and
+then compare the injected context with context of the event. The context can be injected
+by implementing `ApplicationContextAware` or, if the listener is a bean, using `@Autowired`.
+
 
 
 [[boot-features-web-environment]]
