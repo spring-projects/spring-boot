@@ -5398,11 +5398,12 @@ The search algorithm works up from the package that contains the test until it f
 <<using-boot-structuring-your-code, structured your code>> in a sensible way your main
 configuration is usually found.
 
-NOTE: If you use a <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,
-test annotation to test a more specific slice of your application>> with such setup, any
-user configuration defined on your `@SpringBootApplication` will be processed. This can
-break the purpose of slicing and it is recommended to move such configuration to a
-`@Configuration` class alongside your `@SpringBootApplication`.
+NOTE: If you use a
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests, test
+annotation to test a more specific slice of your application>> with such setup, you should
+avoid adding configuration that are specific to a particular area on the
+<<boot-features-testing-spring-boot-applications-testing-user-configuration, main's
+application class>>.
 
 If you want to customize the primary configuration, you can use a nested
 `@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
@@ -6009,6 +6010,66 @@ automatically generate the default snippets:
 
 	}
 ----
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-user-configuration]]
+==== User configuration and slicing
+If you've <<using-boot-structuring-your-code, structured your code>> in a sensible way,
+your `@SpringBootApplication` class is
+<<boot-features-testing-spring-boot-applications-detecting-config, used by default>> as
+the configuration of your tests.
+
+It then becomes important not to litter the application's main class with configuration
+that are are specific to a particular area of its functionality.
+
+Let's assume that you are using Spring Batch and you're relying on the auto-configuration
+for it. Your could define your `@SpringBootApplication` as follows:
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+	@EnableBatchProcessing
+	public class SampleApplication { ... }
+----
+
+Because this class is the source configuration for the test, any slice test will actually
+attempt to start Spring Batch, which is definitely now what you want to do. A recommended
+approach is to move that area-specific configuration to a separate `@Configuration`
+class at the same level as your application.
+
+[source,java,indent=0]
+----
+	@Configuration
+	@EnableBatchProcessing
+	public class BatchConfiguration { ... }
+----
+
+NOTE: Depending on the surface area of your application, you may either have a single
+`ApplicationConfiguration` class for your customizations or one class per domain area
+when it makes sense. The latter approach allows you to enable it in one of your test
+if necessary via `@Import`.
+
+Another source of confusion is classpath scanning. Let's assume that, while you've
+structured your code in a sensible way, you need to scan an additional package. Your
+application may look like this:
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+	@ComponentScan({ "com.example.app", "org.acme.another" })
+	public class SampleApplication { ... }
+----
+
+This effectively overrides the default component scan directive with the side effect of
+scanning those two packages regardless of the slice that you've chosen. For instance a
+`@DataJpaTest` will all the sudden scan components and user configurations of your
+application. Again, moving the custom directive to a separate class is a good way to fix
+this issue.
+
+TIP: If this is not an option for you, you can create a `@SpringBootConfiguration`
+somewhere in the hierarchy of your test so that it is used instead. Or you can specify
+a source for your test which will disable the behaviour of finding a default one.
 
 
 
