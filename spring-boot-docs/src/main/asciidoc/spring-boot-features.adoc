@@ -6045,7 +6045,7 @@ for it. Your could define your `@SpringBootApplication` as follows:
 ----
 
 Because this class is the source configuration for the test, any slice test will actually
-attempt to start Spring Batch, which is definitely now what you want to do. A recommended
+attempt to start Spring Batch, which is definitely not what you want to do. A recommended
 approach is to move that area-specific configuration to a separate `@Configuration`
 class at the same level as your application.
 
@@ -6074,7 +6074,7 @@ application may look like this:
 
 This effectively overrides the default component scan directive with the side effect of
 scanning those two packages regardless of the slice that you've chosen. For instance a
-`@DataJpaTest` will all the sudden scan components and user configurations of your
+`@DataJpaTest` will all of a sudden scan components and user configurations of your
 application. Again, moving the custom directive to a separate class is a good way to fix
 this issue.
 
