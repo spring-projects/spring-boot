@@ -5651,6 +5651,12 @@ The search algorithm works up from the package that contains the test until it f
 <<using-boot-structuring-your-code, structured your code>> in a sensible way your main
 configuration is usually found.
 
+NOTE: If you use a <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,
+test annotation to test a more specific slice of your application>> with such setup, any
+user configuration defined on your `@SpringBootApplication` will be processed. This can
+break the purpose of slicing and it is recommended to move such configuration to a
+`@Configuration` class alongside your `@SpringBootApplication`.
+
 If you want to customize the primary configuration, you can use a nested
 `@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
 instead of your application's primary configuration, a nested `@TestConfiguration` class
