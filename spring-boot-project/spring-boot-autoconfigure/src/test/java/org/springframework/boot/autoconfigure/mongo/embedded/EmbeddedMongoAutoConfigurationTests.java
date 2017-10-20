@@ -48,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Henryk Konsek
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Adrien Colson
  */
 public class EmbeddedMongoAutoConfigurationTests {
 
