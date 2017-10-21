@@ -119,7 +119,7 @@
 		<mongo-driver-reactivestreams.version>1.6.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.5.0</mongodb.version>
 		<mysql.version>5.1.44</mysql.version>
-		<narayana.version>5.7.0.Final</narayana.version>
+		<narayana.version>5.7.1.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.0.0</neo4j-ogm.version>
 		<netty.version>4.1.16.Final</netty.version>
