@@ -49,10 +49,6 @@ public class AetherGrapeEngineTests {
 	private final RepositoryConfiguration springMilestones = new RepositoryConfiguration(
 			"spring-milestones", URI.create("https://repo.spring.io/milestone"), false);
 
-	private final RepositoryConfiguration springExtRelease = new RepositoryConfiguration(
-			"spring-milestones", URI.create("https://repo.spring.io/ext-release-local"),
-			false);
-
 	private AetherGrapeEngine createGrapeEngine(
 			RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
@@ -69,7 +65,7 @@ public class AetherGrapeEngineTests {
 	@Test
 	public void dependencyResolution() {
 		Map<String, Object> args = new HashMap<>();
-		createGrapeEngine(this.springMilestones, this.springExtRelease).grab(args,
+		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
 		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
 	}
@@ -134,7 +130,7 @@ public class AetherGrapeEngineTests {
 		GroovyClassLoader customClassLoader = new GroovyClassLoader();
 		args.put("classLoader", customClassLoader);
 
-		createGrapeEngine(this.springMilestones, this.springExtRelease).grab(args,
+		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
 
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(0);

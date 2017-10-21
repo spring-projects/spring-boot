@@ -61,8 +61,6 @@ public final class RepositoryConfigurationFactory {
 		MavenSettings mavenSettings = new MavenSettingsReader().readSettings();
 		List<RepositoryConfiguration> repositoryConfiguration = new ArrayList<>();
 		repositoryConfiguration.add(MAVEN_CENTRAL);
-		repositoryConfiguration.add(new RepositoryConfiguration("spring-ext-release",
-				URI.create("https://repo.spring.io/ext-release-local"), false));
 		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
 			repositoryConfiguration.add(SPRING_MILESTONE);
 			repositoryConfiguration.add(SPRING_SNAPSHOT);
