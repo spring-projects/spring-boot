@@ -79,6 +79,14 @@
 			</snapshots>
 		</repository>
 		<repository>
+			<id>spring-release</id>
+			<name>Spring Release</name>
+			<url>https://repo.spring.io/ext-release-local</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>spring-milestone</id>
 			<name>Spring Milestone</name>
 			<url>http://repo.spring.io/milestone</url>
