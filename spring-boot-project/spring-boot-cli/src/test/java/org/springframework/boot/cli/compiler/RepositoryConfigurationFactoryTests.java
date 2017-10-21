@@ -40,7 +40,7 @@ public class RepositoryConfigurationFactoryTests {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
 			assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
-					"spring-snapshot", "spring-milestone");
+					"spring-snapshot", "spring-milestone", "spring-ext-release");
 		}, "user.home:src/test/resources/maven-settings/basic");
 	}
 
@@ -49,7 +49,8 @@ public class RepositoryConfigurationFactoryTests {
 		SystemProperties.doWithSystemProperties(() -> {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-			assertRepositoryConfiguration(repositoryConfiguration, "central", "local");
+			assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
+					"spring-ext-release");
 		}, "user.home:src/test/resources/maven-settings/basic",
 				"disableSpringSnapshotRepos:true");
 	}
@@ -60,7 +61,8 @@ public class RepositoryConfigurationFactoryTests {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
 			assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
-					"spring-snapshot", "spring-milestone", "active-by-default");
+					"spring-snapshot", "spring-milestone", "active-by-default",
+					"spring-ext-release");
 		}, "user.home:src/test/resources/maven-settings/active-profile-repositories");
 	}
 
@@ -70,7 +72,8 @@ public class RepositoryConfigurationFactoryTests {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
 			assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
-					"spring-snapshot", "spring-milestone", "active-by-property");
+					"spring-snapshot", "spring-milestone", "active-by-property",
+					"spring-ext-release");
 		}, "user.home:src/test/resources/maven-settings/active-profile-repositories",
 				"foo:bar");
 	}
@@ -82,7 +85,7 @@ public class RepositoryConfigurationFactoryTests {
 					.createDefaultRepositoryConfiguration();
 			assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
 					"spring-snapshot", "spring-milestone", "interpolate-releases",
-					"interpolate-snapshots");
+					"interpolate-snapshots", "spring-ext-release");
 		}, "user.home:src/test/resources/maven-settings/active-profile-repositories",
 				"interpolate:true");
 	}
