@@ -28,7 +28,7 @@
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.58</appengine-sdk.version>
 		<artemis.version>2.3.0</artemis.version>
-		<aspectj.version>1.8.11</aspectj.version>
+		<aspectj.version>1.8.12</aspectj.version>
 		<assertj.version>3.8.0</assertj.version>
 		<atomikos.version>4.0.4</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
