@@ -276,6 +276,7 @@ instructions from the unpacked archive. In summary: there is a `spring` script
 can use `java -jar` with the `.jar` file (the script helps you to be sure that the
 classpath is set correctly).
 
+NOTE: when setting `JAVA_OPTS` on windows be sure to quote the entire instruction such as `set "JAVA_OPTS=-Xms256m -Xmx2048m"` this will ensure the values are passed properly to the process.
 
 
 [[getting-started-sdkman-cli-installation]]
