@@ -949,11 +949,6 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
- 			<dependency>
-				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-extra</artifactId>
-				<version>3.1.1.RELEASE</version>
-			</dependency>
 			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>
