@@ -12,7 +12,7 @@
 		<revision>2.0.0.BUILD-SNAPSHOT</revision>
 		<main.basedir>${basedir}</main.basedir>
 	</properties>
-	<!-- Most elementss are in profiles so they are stripped out during maven-flatten -->
+	<!-- Most elements are in profiles so they are stripped out during maven-flatten -->
 	<profiles>
 		<!-- Default profile for command line build -->
 		<profile>
