@@ -374,7 +374,7 @@
   },
   {
     "name": "spring.mustache.suffix",
-    "defaultValue": ".html"
+    "defaultValue": ".mustache"
   },
   {
     "name": "spring.mvc.favicon.enabled",
