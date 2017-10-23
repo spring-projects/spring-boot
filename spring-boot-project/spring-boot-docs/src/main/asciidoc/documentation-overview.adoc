@@ -13,7 +13,7 @@ as a map for the rest of the document.
 == About the documentation
 The Spring Boot reference guide is available as
 
-* {spring-boot-docs}/html[HTML],
+* {spring-boot-docs}/html[HTML]
 * {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
 * {spring-boot-docs}/epub/spring-boot-reference.epub[EPUB]
 
