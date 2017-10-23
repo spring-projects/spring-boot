@@ -127,7 +127,7 @@
 		<postgresql.version>42.1.4</postgresql.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.1.4</querydsl.version>
-		<reactor-bom.version>Bismuth-SR1</reactor-bom.version>
+		<reactor-bom.version>Bismuth-SR2</reactor-bom.version>
 		<rest-assured.version>3.0.5</rest-assured.version>
 		<reactive-streams.version>1.0.1</reactive-streams.version>
 		<rxjava.version>1.3.3</rxjava.version>
@@ -948,6 +948,11 @@
 				<version>${netty.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
+			</dependency>
+ 			<dependency>
+				<groupId>io.projectreactor</groupId>
+				<artifactId>reactor-extra</artifactId>
+				<version>3.1.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>io.projectreactor</groupId>
