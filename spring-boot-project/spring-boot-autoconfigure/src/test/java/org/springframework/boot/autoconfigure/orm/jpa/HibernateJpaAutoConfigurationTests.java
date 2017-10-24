@@ -258,8 +258,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void customResourceMapping() {
-		contextRunner()
-				.withClassLoader(new HideDataScriptClassLoader())
+		contextRunner().withClassLoader(new HideDataScriptClassLoader())
 				.withPropertyValues(
 						"spring.datasource.data:classpath:/db/non-annotated-data.sql",
 						"spring.jpa.mapping-resources=META-INF/mappings/non-annotated.xml")

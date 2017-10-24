@@ -53,9 +53,9 @@ import org.springframework.validation.Validator;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-		BeanFactoryAware, EnvironmentAware, ApplicationContextAware, InitializingBean,
-		PriorityOrdered {
+public class ConfigurationPropertiesBindingPostProcessor
+		implements BeanPostProcessor, BeanFactoryAware, EnvironmentAware,
+		ApplicationContextAware, InitializingBean, PriorityOrdered {
 
 	private static final Log logger = LogFactory
 			.getLog(ConfigurationPropertiesBindingPostProcessor.class);

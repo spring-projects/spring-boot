@@ -41,8 +41,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
  * @author Madhura Bhave
  */
 @Configuration
-@ConditionalOnClass({ AuthenticationManager.class,
-		EnableWebSecurity.class })
+@ConditionalOnClass({ AuthenticationManager.class, EnableWebSecurity.class })
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
 		AuthenticationManagerConfiguration.class, SecurityDataConfiguration.class })

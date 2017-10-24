@@ -208,11 +208,13 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWeb() throws Exception {
+	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWeb()
+			throws Exception {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping.getEndpoints();
+		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+				.getEndpoints();
 		assertThat(endpoints.size()).isEqualTo(1);
 		assertThat(endpoints.get(0).getId()).isEqualTo("test");
 	}

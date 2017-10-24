@@ -103,8 +103,8 @@ public class ReactiveSecurityAutoConfigurationTests {
 						TestConfig.class)
 				.withConfiguration(
 						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.run((context) -> assertThat(context).getBean(ReactiveUserDetailsService.class)
-						.isNull());
+				.run((context) -> assertThat(context)
+						.getBean(ReactiveUserDetailsService.class).isNull());
 	}
 
 	@Configuration

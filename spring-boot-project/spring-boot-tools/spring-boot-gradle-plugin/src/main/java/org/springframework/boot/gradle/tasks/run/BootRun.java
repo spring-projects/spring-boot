@@ -40,7 +40,8 @@ import org.gradle.process.JavaExecSpec;
  */
 public class BootRun extends DefaultTask {
 
-	private final PropertyState<String> mainClassName = getProject().property(String.class);
+	private final PropertyState<String> mainClassName = getProject()
+			.property(String.class);
 
 	@SuppressWarnings("unchecked")
 	private final PropertyState<List<String>> jvmArgs = (PropertyState<List<String>>) (Object) getProject()
@@ -90,7 +91,8 @@ public class BootRun extends DefaultTask {
 	}
 
 	/**
-	 * Sets the name of the main class to be executed using the given {@code mainClassNameProvider}.
+	 * Sets the name of the main class to be executed using the given
+	 * {@code mainClassNameProvider}.
 	 *
 	 * @param mainClassNameProvider provider of the main class name
 	 */

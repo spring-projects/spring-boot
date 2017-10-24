@@ -109,8 +109,8 @@ class DefinitionsParser {
 	private void addDefinition(AnnotatedElement element, Definition definition,
 			String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
-		Assert.state(isNewDefinition, () ->
-				"Duplicate " + type + " definition " + definition);
+		Assert.state(isNewDefinition,
+				() -> "Duplicate " + type + " definition " + definition);
 		if (element instanceof Field) {
 			Field field = (Field) element;
 			this.definitionFields.put(definition, field);

@@ -85,8 +85,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 					endpointMediaTypes);
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cloudfoundryapplication"),
-					endpointDiscoverer.discoverEndpoints(), endpointMediaTypes, getCorsConfiguration(),
-					getSecurityInterceptor(builder, environment));
+					endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+					getCorsConfiguration(), getSecurityInterceptor(builder, environment));
 		}
 
 		private CloudFoundrySecurityInterceptor getSecurityInterceptor(

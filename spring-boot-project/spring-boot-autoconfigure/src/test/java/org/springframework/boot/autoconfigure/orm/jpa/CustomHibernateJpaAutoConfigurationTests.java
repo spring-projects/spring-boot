@@ -55,31 +55,31 @@ public class CustomHibernateJpaAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class));
 
-
 	@Test
 	public void namingStrategyDelegatorTakesPrecedence() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
-								+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator"
-				).run((context) -> {
-			JpaProperties bean = context.getBean(JpaProperties.class);
-			Map<String, String> hibernateProperties = bean
-					.getHibernateProperties("create-drop");
-			assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy")).isNull();
-		});
+								+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
+				.run((context) -> {
+					JpaProperties bean = context.getBean(JpaProperties.class);
+					Map<String, String> hibernateProperties = bean
+							.getHibernateProperties("create-drop");
+					assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"))
+							.isNull();
+				});
 	}
 
 	@Test
 	public void defaultDatabaseForH2() {
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.url:jdbc:h2:mem:testdb",
+		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:h2:mem:testdb",
 				"spring.datasource.initialize:false").run((context) -> {
-			HibernateJpaVendorAdapter bean = context
-					.getBean(HibernateJpaVendorAdapter.class);
-			Database database = (Database) ReflectionTestUtils.getField(bean, "database");
-			assertThat(database).isEqualTo(Database.H2);
-		});
+					HibernateJpaVendorAdapter bean = context
+							.getBean(HibernateJpaVendorAdapter.class);
+					Database database = (Database) ReflectionTestUtils.getField(bean,
+							"database");
+					assertThat(database).isEqualTo(Database.H2);
+				});
 	}
 
 	@Configuration

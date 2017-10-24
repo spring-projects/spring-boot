@@ -120,9 +120,9 @@ public abstract class AbstractBootArchiveIntegrationTests {
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(
 				new File(this.gradleBuild.getProjectDir(), "build/libs")
-				.listFiles()[0])) {
+						.listFiles()[0])) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Start-Class"))
-			.isEqualTo("com.example.CustomMain");
+					.isEqualTo("com.example.CustomMain");
 		}
 	}
 

@@ -39,8 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = "spring.main.web-application-type=reactive", classes = { WebTestClientSpringBootTestIntegrationTests.TestConfiguration.class,
-ExampleWebFluxApplication.class })
+@SpringBootTest(properties = "spring.main.web-application-type=reactive", classes = {
+		WebTestClientSpringBootTestIntegrationTests.TestConfiguration.class,
+		ExampleWebFluxApplication.class })
 @AutoConfigureWebTestClient
 public class WebTestClientSpringBootTestIntegrationTests {
 
@@ -71,7 +72,8 @@ public class WebTestClientSpringBootTestIntegrationTests {
 	@Configuration
 	static class TestConfiguration {
 		@Bean
-		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http)
+				throws Exception {
 			http.authorizeExchange().anyExchange().permitAll();
 			return http.build();
 		}

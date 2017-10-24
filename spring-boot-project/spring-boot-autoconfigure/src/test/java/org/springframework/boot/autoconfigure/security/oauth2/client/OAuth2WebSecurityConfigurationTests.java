@@ -154,7 +154,8 @@ public class OAuth2WebSecurityConfigurationTests {
 		}
 
 		private ClientRegistration getClientRegistration(String id, String userInfoUri) {
-			ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(id);
+			ClientRegistration.Builder builder = ClientRegistration
+					.withRegistrationId(id);
 			builder.clientName("foo").clientId("foo")
 					.clientAuthenticationMethod(
 							org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)

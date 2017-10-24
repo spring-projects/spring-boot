@@ -196,7 +196,8 @@ public class GradleBuild implements TestRule {
 			XPathFactory xPathFactory = XPathFactory.newInstance();
 			XPath xpath = xPathFactory.newXPath();
 			XPathExpression expr = xpath.compile(expression);
-			String version = expr.evaluate(new InputSource(new FileReader(".flattened-pom.xml")));
+			String version = expr
+					.evaluate(new InputSource(new FileReader(".flattened-pom.xml")));
 			return version;
 		}
 		catch (Exception ex) {

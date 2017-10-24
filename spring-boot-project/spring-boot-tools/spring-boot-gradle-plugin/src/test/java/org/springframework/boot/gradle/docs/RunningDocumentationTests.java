@@ -56,7 +56,7 @@ public class RunningDocumentationTests {
 		assertThat(this.gradleBuild
 				.script("src/main/gradle/running/spring-boot-dsl-main-class-name.gradle")
 				.build("configuredMainClass").getOutput())
-		.contains("com.example.ExampleApplication");
+						.contains("com.example.ExampleApplication");
 	}
 
 	@Test

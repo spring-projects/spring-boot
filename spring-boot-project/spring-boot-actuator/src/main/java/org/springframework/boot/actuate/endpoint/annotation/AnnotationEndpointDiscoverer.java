@@ -163,8 +163,10 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 	private EndpointInfo<T> getEndpointInfo(Map<Class<?>, EndpointInfo<T>> endpoints,
 			Class<?> beanType, Class<?> endpointClass) {
 		EndpointInfo<T> endpoint = endpoints.get(endpointClass);
-		Assert.state(endpoint != null, () -> "Invalid extension '" + beanType.getName()
-				+ "': no endpoint found with type '" + endpointClass.getName() + "'");
+		Assert.state(endpoint != null,
+				() -> "Invalid extension '" + beanType.getName()
+						+ "': no endpoint found with type '" + endpointClass.getName()
+						+ "'");
 		return endpoint;
 	}
 

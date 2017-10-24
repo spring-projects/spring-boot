@@ -208,7 +208,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		Registration registration = new Registration();
 		properties.getRegistration().put("missing", registration);
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Provider ID must be specified for client registration 'missing'");
+		this.thrown.expectMessage(
+				"Provider ID must be specified for client registration 'missing'");
 		OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
 	}
 
