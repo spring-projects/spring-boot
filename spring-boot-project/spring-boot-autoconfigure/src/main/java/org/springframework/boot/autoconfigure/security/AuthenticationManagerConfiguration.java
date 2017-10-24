@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
@@ -54,11 +57,15 @@ public class AuthenticationManagerConfiguration {
 			.getLog(AuthenticationManagerConfiguration.class);
 
 	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
+			ObjectProvider<PasswordEncoder> passwordEncoder) throws Exception {
 		String password = UUID.randomUUID().toString();
 		logger.info(String.format("%n%nUsing default security password: %s%n", password));
+		String encodedPassword = passwordEncoder
+				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
+				.encode(password);
 		return new InMemoryUserDetailsManager(
-				User.withUsername("user").password(password).roles().build());
+				User.withUsername("user").password(encodedPassword).roles().build());
 	}
 
 }

@@ -18,7 +18,6 @@ package sample.security.method;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.boot.actuate.autoconfigure.security.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -73,10 +72,11 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Bean
 		public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
-			String password = UUID.randomUUID().toString();
 			return new InMemoryUserDetailsManager(
-					User.withUsername("admin").password("admin").roles("ADMIN", "USER", "ACTUATOR").build(),
-					User.withUsername("user").password("user").roles("USER").build());
+					User.withDefaultPasswordEncoder().username("admin").password("admin")
+							.roles("ADMIN", "USER", "ACTUATOR").build(),
+					User.withDefaultPasswordEncoder().username("user").password("user")
+							.roles("USER").build());
 		}
 
 	}

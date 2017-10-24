@@ -42,8 +42,8 @@ public class SampleSecureWebFluxApplication {
 
 	@Bean
 	public ReactiveUserDetailsService userDetailsRepository() {
-		return new MapReactiveUserDetailsService(
-				User.withUsername("foo").password("password").roles("USER").build());
+		return new MapReactiveUserDetailsService(User.withDefaultPasswordEncoder()
+				.username("foo").password("password").roles("USER").build());
 	}
 
 }

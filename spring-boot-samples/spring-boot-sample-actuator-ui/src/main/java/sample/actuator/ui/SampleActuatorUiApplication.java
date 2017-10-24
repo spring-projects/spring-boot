@@ -33,9 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SampleActuatorUiApplication {
 
 	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
-		return new InMemoryUserDetailsManager(
-				User.withUsername("user").password("password").roles("USER").build());
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
+				.username("user").password("password").roles("USER").build());
 	}
 
 	@GetMapping("/")

@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -31,6 +32,8 @@ import org.springframework.security.core.userdetails.MapReactiveUserDetailsServi
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Default user {@link Configuration} for a reactive web application. Configures a
@@ -52,10 +55,15 @@ public class ReactiveAuthenticationManagerConfiguration {
 			.getLog(ReactiveAuthenticationManagerConfiguration.class);
 
 	@Bean
-	public MapReactiveUserDetailsService reactiveUserDetailsService() {
+	public MapReactiveUserDetailsService reactiveUserDetailsService(
+			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		String password = UUID.randomUUID().toString();
 		logger.info(String.format("%n%nUsing default security password: %s%n", password));
-		UserDetails user = User.withUsername("user").password(password).roles().build();
+		String encodedPassword = passwordEncoder
+				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
+				.encode(password);
+		UserDetails user = User.withUsername("user").password(encodedPassword).roles()
+				.build();
 		return new MapReactiveUserDetailsService(user);
 	}
 
