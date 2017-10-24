@@ -46,9 +46,9 @@ public class ConfigurationPropertySourcesTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system",
-				Collections.<String, Object>singletonMap("SERVER_PORT", "1234")));
+				Collections.singletonMap("SERVER_PORT", "1234")));
 		sources.addLast(new MapPropertySource("config",
-				Collections.<String, Object>singletonMap("server.port", "4568")));
+				Collections.singletonMap("server.port", "4568")));
 		int size = sources.size();
 		ConfigurationPropertySources.attach(environment);
 		assertThat(sources.size()).isEqualTo(size + 1);
@@ -66,8 +66,8 @@ public class ConfigurationPropertySourcesTests {
 	public void getWhenAttachedShouldReturnAttached() throws Exception {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
-		sources.addFirst(new MapPropertySource("test",
-				Collections.<String, Object>singletonMap("a", "b")));
+		sources.addFirst(
+				new MapPropertySource("test", Collections.singletonMap("a", "b")));
 		int expectedSize = sources.size();
 		ConfigurationPropertySources.attach(environment);
 		assertThat(ConfigurationPropertySources.get(environment)).hasSize(expectedSize);
@@ -89,7 +89,7 @@ public class ConfigurationPropertySourcesTests {
 	public void fromPropertySourceShouldReturnSpringConfigurationPropertySource()
 			throws Exception {
 		PropertySource<?> source = new MapPropertySource("foo",
-				Collections.<String, Object>singletonMap("foo", "bar"));
+				Collections.singletonMap("foo", "bar"));
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySources
 				.from(source).iterator().next();
 		assertThat(configurationPropertySource)
@@ -99,10 +99,10 @@ public class ConfigurationPropertySourcesTests {
 	@Test
 	public void fromPropertySourceShouldFlattenPropertySources() throws Exception {
 		StandardEnvironment environment = new StandardEnvironment();
-		environment.getPropertySources().addFirst(new MapPropertySource("foo",
-				Collections.<String, Object>singletonMap("foo", "bar")));
-		environment.getPropertySources().addFirst(new MapPropertySource("far",
-				Collections.<String, Object>singletonMap("far", "far")));
+		environment.getPropertySources().addFirst(
+				new MapPropertySource("foo", Collections.singletonMap("foo", "bar")));
+		environment.getPropertySources().addFirst(
+				new MapPropertySource("far", Collections.singletonMap("far", "far")));
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addFirst(new PropertySource<Environment>("env", environment) {
 
@@ -112,8 +112,8 @@ public class ConfigurationPropertySourcesTests {
 			}
 
 		});
-		sources.addLast(new MapPropertySource("baz",
-				Collections.<String, Object>singletonMap("baz", "barf")));
+		sources.addLast(
+				new MapPropertySource("baz", Collections.singletonMap("baz", "barf")));
 		Iterable<ConfigurationPropertySource> configurationSources = ConfigurationPropertySources
 				.from(sources);
 		assertThat(configurationSources.iterator()).hasSize(5);

@@ -93,7 +93,7 @@ public abstract class MockServletWebServer {
 			given(this.servletContext.getInitParameter(anyString())).willAnswer(
 					(invocation) -> initParameters.get(invocation.getArgument(0)));
 			given(this.servletContext.getAttributeNames())
-					.willReturn(MockServletWebServer.<String>emptyEnumeration());
+					.willReturn(MockServletWebServer.emptyEnumeration());
 			given(this.servletContext.getNamedDispatcher("default"))
 					.willReturn(mock(RequestDispatcher.class));
 			for (Initializer initializer : this.initializers) {

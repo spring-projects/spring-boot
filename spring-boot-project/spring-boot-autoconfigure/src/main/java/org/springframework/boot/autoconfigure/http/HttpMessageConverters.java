@@ -103,8 +103,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	public HttpMessageConverters(boolean addDefaultConverters,
 			Collection<HttpMessageConverter<?>> converters) {
 		List<HttpMessageConverter<?>> combined = getCombinedConverters(converters,
-				addDefaultConverters ? getDefaultConverters()
-						: Collections.<HttpMessageConverter<?>>emptyList());
+				addDefaultConverters ? getDefaultConverters() : Collections.emptyList());
 		combined = postProcessConverters(combined);
 		this.converters = Collections.unmodifiableList(combined);
 	}

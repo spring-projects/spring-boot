@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
@@ -59,8 +58,7 @@ public class RequestMappingEndpointTests {
 		mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.initApplicationContext();
-		this.endpoint.setHandlerMappings(
-				Collections.<AbstractUrlHandlerMapping>singletonList(mapping));
+		this.endpoint.setHandlerMappings(Collections.singletonList(mapping));
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
@@ -120,8 +118,7 @@ public class RequestMappingEndpointTests {
 	@Test
 	public void concreteMethodMappings() {
 		WebMvcEndpointHandlerMapping mapping = createHandlerMapping();
-		this.endpoint.setMethodMappings(
-				Collections.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
+		this.endpoint.setMethodMappings(Collections.singletonList(mapping));
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
 		assertThat(result.keySet())

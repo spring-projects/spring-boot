@@ -211,7 +211,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		assertThat(first.getOne()).isEqualTo("foo");
 		source.put("example.one", "bar");
 		sources.addFirst(new MapPropertySource("extra",
-				Collections.<String, Object>singletonMap("example.two", "baz")));
+				Collections.singletonMap("example.two", "baz")));
 		PrototypeBean second = this.context.getBean(PrototypeBean.class);
 		assertThat(second.getOne()).isEqualTo("bar");
 		assertThat(second.getTwo()).isEqualTo("baz");

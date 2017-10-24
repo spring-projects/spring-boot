@@ -485,7 +485,7 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(new MapPropertySource("commandLineArgs",
-				Collections.<String, Object>singletonMap("foo", "original")));
+				Collections.singletonMap("foo", "original")));
 		application.setEnvironment(environment);
 		this.context = application.run("--foo=bar", "--bar=foo");
 		assertThat(environment).has(

@@ -818,13 +818,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergingOfHintWithProvider() throws Exception {
-		writeAdditionalHints(new ItemHint("simple.theName",
-				Collections.<ItemHint.ValueHint>emptyList(),
-				Arrays.asList(
-						new ItemHint.ValueProvider("first",
-								Collections.<String, Object>singletonMap("target",
-										"org.foo")),
-						new ItemHint.ValueProvider("second", null))));
+		writeAdditionalHints(
+				new ItemHint("simple.theName",
+						Collections
+								.emptyList(),
+						Arrays.asList(
+								new ItemHint.ValueProvider("first",
+										Collections.singletonMap("target", "org.foo")),
+								new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
 				.fromSource(SimpleProperties.class)

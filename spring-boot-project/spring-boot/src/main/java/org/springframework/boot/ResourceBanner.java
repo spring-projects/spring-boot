@@ -130,8 +130,8 @@ public class ResourceBanner implements Banner {
 	private PropertyResolver getTitleResolver(Class<?> sourceClass) {
 		MutablePropertySources sources = new MutablePropertySources();
 		String applicationTitle = getApplicationTitle(sourceClass);
-		Map<String, Object> titleMap = Collections.<String, Object>singletonMap(
-				"application.title", (applicationTitle == null ? "" : applicationTitle));
+		Map<String, Object> titleMap = Collections.singletonMap("application.title",
+				(applicationTitle == null ? "" : applicationTitle));
 		sources.addFirst(new MapPropertySource("title", titleMap));
 		return new PropertySourcesPropertyResolver(sources);
 	}

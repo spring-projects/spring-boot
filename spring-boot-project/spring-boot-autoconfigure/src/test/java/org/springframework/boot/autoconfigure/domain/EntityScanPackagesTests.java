@@ -92,7 +92,7 @@ public class EntityScanPackagesTests {
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Registry must not be null");
-		EntityScanPackages.register(null, Collections.<String>emptyList());
+		EntityScanPackages.register(null, Collections.emptyList());
 	}
 
 	@Test

@@ -56,8 +56,8 @@ public class LdapAutoConfiguration {
 		source.setPassword(this.properties.getPassword());
 		source.setBase(this.properties.getBase());
 		source.setUrls(this.properties.determineUrls(this.environment));
-		source.setBaseEnvironmentProperties(Collections
-				.<String, Object>unmodifiableMap(this.properties.getBaseEnvironment()));
+		source.setBaseEnvironmentProperties(
+				Collections.unmodifiableMap(this.properties.getBaseEnvironment()));
 		return source;
 	}
 

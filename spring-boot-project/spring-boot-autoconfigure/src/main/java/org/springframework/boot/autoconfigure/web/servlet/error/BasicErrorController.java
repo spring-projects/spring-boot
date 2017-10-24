@@ -62,8 +62,7 @@ public class BasicErrorController extends AbstractErrorController {
 	 */
 	public BasicErrorController(ErrorAttributes errorAttributes,
 			ErrorProperties errorProperties) {
-		this(errorAttributes, errorProperties,
-				Collections.<ErrorViewResolver>emptyList());
+		this(errorAttributes, errorProperties, Collections.emptyList());
 	}
 
 	/**

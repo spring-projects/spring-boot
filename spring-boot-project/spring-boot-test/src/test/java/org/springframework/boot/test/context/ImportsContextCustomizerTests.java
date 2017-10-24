@@ -162,7 +162,7 @@ public class ImportsContextCustomizerTests {
 
 		@Override
 		public Set<Object> determineImports(AnnotationMetadata metadata) {
-			return Collections.<Object>singleton(TestConfig.class.getName());
+			return Collections.singleton(TestConfig.class.getName());
 		}
 
 	}

@@ -62,7 +62,7 @@ public class EntityScanner {
 			throws ClassNotFoundException {
 		List<String> packages = getPackages();
 		if (packages.isEmpty()) {
-			return Collections.<Class<?>>emptySet();
+			return Collections.emptySet();
 		}
 		Set<Class<?>> entitySet = new HashSet<>();
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
