@@ -36,6 +36,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
@@ -73,7 +74,7 @@ public class ProjectInfoAutoConfiguration {
 
 	protected Properties loadFrom(Resource location, String prefix) throws IOException {
 		String p = prefix.endsWith(".") ? prefix : prefix + ".";
-		Properties source = PropertiesLoaderUtils.loadProperties(location);
+		Properties source = PropertiesLoaderUtils.loadProperties(new EncodedResource(location, "UTF-8"));
 		Properties target = new Properties();
 		for (String key : source.stringPropertyNames()) {
 			if (key.startsWith(p)) {
