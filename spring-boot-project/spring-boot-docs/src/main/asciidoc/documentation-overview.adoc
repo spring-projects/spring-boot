@@ -3,18 +3,21 @@
 
 [partintro]
 --
-This section provides a brief overview of Spring Boot reference documentation. Think of
-it as map for the rest of the document. You can read this reference guide in a linear
-fashion, or you can skip sections if something doesn't interest you.
+This section provides a brief overview of Spring Boot reference documentation. It serves
+as a map for the rest of the document.
 --
 
 
 
 [[boot-documentation-about]]
 == About the documentation
-The Spring Boot reference guide is available as {spring-boot-docs}/html[html],
-{spring-boot-docs}/pdf/spring-boot-reference.pdf[pdf]
-and {spring-boot-docs}/epub/spring-boot-reference.epub[epub] documents. The latest copy
+The Spring Boot reference guide is available as
+
+* {spring-boot-docs}/html[HTML]
+* {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
+* {spring-boot-docs}/epub/spring-boot-reference.epub[EPUB]
+
+The latest copy
 is available at {spring-boot-docs-current}.
 
 Copies of this document may be made for your own use and for
@@ -26,26 +29,26 @@ print or electronically.
 
 [[boot-documentation-getting-help]]
 == Getting help
-Having trouble with Spring Boot, We'd like to help!
+If you have trouble with Spring Boot, we would like to help.
 
-* Try the <<howto.adoc#howto, How-to's>> -- they provide solutions to the most common
+* Try the <<howto.adoc#howto, How-to documents>>. They provide solutions to the most common
   questions.
-* Learn the Spring basics -- Spring Boot builds on many other Spring projects, check
+* Learn the Spring basics. Spring Boot builds on many other Spring projects. Check
   the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
-  you are just starting out with Spring, try one of the http://spring.io/guides[guides].
-* Ask a question - we monitor http://stackoverflow.com[stackoverflow.com] for questions
+  you are starting out with Spring, try one of the http://spring.io/guides[guides].
+* Ask a question. We monitor http://stackoverflow.com[stackoverflow.com] for questions
   tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`].
 * Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
 
-NOTE: All of Spring Boot is open source, including the documentation! If you find problems
-with the docs; or if you just want to improve them, please {github-code}[get involved].
+NOTE: All of Spring Boot is open source, including the documentation. If you find problems
+with the docs or if you want to improve them, please {github-code}[get involved].
 
 
 
 [[boot-documentation-first-steps]]
 == First steps
-If you're just getting started with Spring Boot, or 'Spring' in general,
-<<getting-started.adoc#getting-started, this is the place to start!>>
+If you are getting started with Spring Boot or 'Spring' in general, start with
+<<getting-started.adoc#getting-started, the following topics>>:
 
 * *From scratch:*
   <<getting-started.adoc#getting-started-introducing-spring-boot, Overview>> |
@@ -61,8 +64,8 @@ If you're just getting started with Spring Boot, or 'Spring' in general,
 
 
 == Working with Spring Boot
-Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, We've
-got you covered>>.
+Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, We have
+you covered>>:
 
 * *Build systems:*
   <<using-spring-boot.adoc#using-boot-maven, Maven>> |
@@ -88,7 +91,7 @@ got you covered>>.
 
 == Learning about Spring Boot features
 Need more details about Spring Boot's core features?
-<<spring-boot-features.adoc#boot-features, This is for you>>!
+<<spring-boot-features.adoc#boot-features, The following content is for you>>:
 
 * *Core Features:*
   <<spring-boot-features.adoc#boot-features-spring-application, SpringApplication>> |
@@ -115,8 +118,8 @@ Need more details about Spring Boot's core features?
 
 
 == Moving to production
-When you're ready to push your Spring Boot application to production, we've got
-<<production-ready-features.adoc#production-ready, some tricks that you might like>>!
+When you are ready to push your Spring Boot application to production, we have
+<<production-ready-features.adoc#production-ready, some tricks>> that you might like:
 
 * *Management endpoints:*
 <<production-ready-features.adoc#production-ready-endpoints, Overview>> |
@@ -133,9 +136,9 @@ When you're ready to push your Spring Boot application to production, we've got
 
 
 == Advanced topics
-Lastly, we have a few topics for the more advanced user.
+Finally, we have a few topics for more advanced users:
 
-* *Deploy Spring Boot Applications:*
+* *Spring Boot Applications Deployment:*
 <<deployment.adoc#cloud-deployment, Cloud Deployment>> |
 <<deployment.adoc#deployment-service, OS Service>>
 * *Build tool plugins:*
@@ -145,7 +148,3 @@ Lastly, we have a few topics for the more advanced user.
 <<appendix-application-properties.adoc#common-application-properties, Application Properties>> |
 <<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration classes>> |
 <<appendix-executable-jar-format.adoc#executable-jar, Executable Jars>>
-
-
-
-
