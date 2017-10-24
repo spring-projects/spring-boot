@@ -114,6 +114,16 @@ public class OriginTrackedYamlLoaderTests {
 		assertThat(getLocation(bar2)).isEqualTo("26:19");
 	}
 
+	@Test
+	public void processEmptyAndNullValues() throws Exception {
+		OriginTrackedValue empty = getValue("empty");
+		OriginTrackedValue nullValue = getValue("null-value");
+		assertThat(empty.getValue()).isEqualTo("");
+		assertThat(getLocation(empty)).isEqualTo("27:8");
+		assertThat(nullValue.getValue()).isEqualTo("");
+		assertThat(getLocation(nullValue)).isEqualTo("28:13");
+	}
+
 	private OriginTrackedValue getValue(String name) {
 		if (this.result == null) {
 			this.result = this.loader.load();

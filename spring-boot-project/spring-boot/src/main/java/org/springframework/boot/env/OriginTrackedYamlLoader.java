@@ -108,7 +108,11 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 		private Object constructTrackedObject(Node node, Object value) {
 			Origin origin = getOrigin(node);
-			return OriginTrackedValue.of(value, origin);
+			return OriginTrackedValue.of(getValue(value), origin);
+		}
+
+		private Object getValue(Object value) {
+			return (value != null ? value : "");
 		}
 
 		private Origin getOrigin(Node node) {
