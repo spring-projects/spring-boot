@@ -58,8 +58,7 @@ public class RequestMappingEndpointTests {
 		mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.initApplicationContext();
-		this.endpoint.setHandlerMappings(
-				Collections.singletonList(mapping));
+		this.endpoint.setHandlerMappings(Collections.singletonList(mapping));
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
@@ -119,8 +118,7 @@ public class RequestMappingEndpointTests {
 	@Test
 	public void concreteMethodMappings() {
 		WebMvcEndpointHandlerMapping mapping = createHandlerMapping();
-		this.endpoint.setMethodMappings(
-				Collections.singletonList(mapping));
+		this.endpoint.setMethodMappings(Collections.singletonList(mapping));
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
 		assertThat(result.keySet())

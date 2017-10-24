@@ -55,8 +55,7 @@ public class AuthorizationAuditListenerTests {
 	public void testAuthenticationCredentialsNotFound() {
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthenticationCredentialsNotFoundEvent(this,
-						Collections.singletonList(
-								new SecurityConfig("USER")),
+						Collections.singletonList(new SecurityConfig("USER")),
 						new AuthenticationCredentialsNotFoundException("Bad user")));
 		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
@@ -66,8 +65,7 @@ public class AuthorizationAuditListenerTests {
 	public void testAuthorizationFailure() {
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthorizationFailureEvent(this,
-						Collections.singletonList(
-								new SecurityConfig("USER")),
+						Collections.singletonList(new SecurityConfig("USER")),
 						new UsernamePasswordAuthenticationToken("user", "password"),
 						new AccessDeniedException("Bad user")));
 		assertThat(event.getAuditEvent().getType())
@@ -82,8 +80,7 @@ public class AuthorizationAuditListenerTests {
 		authentication.setDetails(details);
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthorizationFailureEvent(this,
-						Collections.singletonList(
-								new SecurityConfig("USER")),
+						Collections.singletonList(new SecurityConfig("USER")),
 						authentication, new AccessDeniedException("Bad user")));
 		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);

@@ -935,8 +935,7 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public javax.cache.CacheManager customJCacheCacheManager() {
 			javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
-			given(cacheManager.getCacheNames())
-					.willReturn(Collections.emptyList());
+			given(cacheManager.getCacheNames()).willReturn(Collections.emptyList());
 			return cacheManager;
 		}
 
