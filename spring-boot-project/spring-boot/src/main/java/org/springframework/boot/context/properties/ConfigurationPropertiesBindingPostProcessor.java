@@ -25,15 +25,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
@@ -58,7 +55,7 @@ import org.springframework.validation.Validator;
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, EnvironmentAware, ApplicationContextAware, InitializingBean,
-		DisposableBean, ApplicationListener<ContextRefreshedEvent>, PriorityOrdered {
+		PriorityOrdered {
 
 	private static final Log logger = LogFactory
 			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
@@ -150,23 +147,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		if (this.propertySources == null) {
 			this.propertySources = deducePropertySources();
 		}
-	}
-
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		freeBinder();
-	}
-
-	@Override
-	public void destroy() {
-		freeBinder();
-	}
-
-	private void freeBinder() {
-		if (this.configurationPropertiesBinder != null) {
-			this.configurationPropertiesBinder.destroy();
-		}
-		this.configurationPropertiesBinder = null;
 	}
 
 	private PropertySources deducePropertySources() {

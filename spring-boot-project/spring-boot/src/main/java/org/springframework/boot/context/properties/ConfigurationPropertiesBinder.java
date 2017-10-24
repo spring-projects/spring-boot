@@ -106,15 +106,6 @@ public class ConfigurationPropertiesBinder {
 		}
 	}
 
-	/**
-	 * Destroy this binder instance.
-	 */
-	void destroy() {
-		if (this.validator instanceof InternalValidator) {
-			((InternalValidator) this.validator).destroy();
-		}
-	}
-
 	private Validator determineValidator(Object bean) {
 		boolean supportsBean = (this.validator != null
 				&& this.validator.supports(bean.getClass()));
@@ -152,16 +143,6 @@ public class ConfigurationPropertiesBinder {
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
 		return details.toString();
-	}
-
-	/**
-	 * {@link Validator} extension to be implemented to signal that that validator can be
-	 * destroyed once the binder is no longer in use.
-	 */
-	interface InternalValidator extends Validator {
-
-		void destroy();
-
 	}
 
 	/**

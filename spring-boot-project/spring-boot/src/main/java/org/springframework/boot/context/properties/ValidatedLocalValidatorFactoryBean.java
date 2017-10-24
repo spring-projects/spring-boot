@@ -31,8 +31,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Phillip Webb
  */
-class ValidatedLocalValidatorFactoryBean extends LocalValidatorFactoryBean
-		implements ConfigurationPropertiesBinder.InternalValidator {
+class ValidatedLocalValidatorFactoryBean extends LocalValidatorFactoryBean {
 
 	private static final Log logger = LogFactory
 			.getLog(ConfigurationPropertiesBindingPostProcessor.class);

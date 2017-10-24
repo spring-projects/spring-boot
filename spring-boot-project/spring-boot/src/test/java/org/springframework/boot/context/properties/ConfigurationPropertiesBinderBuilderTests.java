@@ -22,7 +22,6 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.context.support.StaticApplicationContext;
@@ -39,8 +38,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ConfigurationPropertiesBinderBuilder}.
@@ -138,19 +135,6 @@ public class ConfigurationPropertiesBinderBuilderTests {
 		binder.bind(target);
 		assertThat(target.getFoo()).isEqualTo("123456");
 		assertThat(target.getBar()).isEqualTo("654321");
-	}
-
-	@Test
-	public void internalValidatorIsClosed() throws Exception {
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment).build();
-		Object validator = ReflectionTestUtils.getField(binder, "validator");
-		assertThat(validator).isNotNull();
-		assertThat(validator).isInstanceOf(DisposableBean.class);
-		DisposableBean validatorSpy = spy((DisposableBean) validator);
-		ReflectionTestUtils.setField(binder, "validator", validatorSpy);
-		binder.destroy();
-		verify(validatorSpy).destroy();
 	}
 
 	private ValidationErrors bindWithValidationErrors(
