@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.kafka;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.config.ContainerProperties;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 
@@ -34,6 +35,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private KafkaProperties properties;
 
 	private RecordMessageConverter messageConverter;
+
+	private KafkaTemplate<Object, Object> replyTemplate;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -52,6 +55,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link KafkaTemplate} to use to send replies.
+	 * @param replyTemplate the reply template
+	 */
+	void setReplyTemplate(KafkaTemplate<Object, Object> replyTemplate) {
+		this.replyTemplate = replyTemplate;
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerContainerFactory the {@link ConcurrentKafkaListenerContainerFactory}
@@ -64,6 +75,9 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		listenerContainerFactory.setConsumerFactory(consumerFactory);
 		if (this.messageConverter != null) {
 			listenerContainerFactory.setMessageConverter(this.messageConverter);
+		}
+		if (this.replyTemplate != null) {
+			listenerContainerFactory.setReplyTemplate(this.replyTemplate);
 		}
 		Listener container = this.properties.getListener();
 		ContainerProperties containerProperties = listenerContainerFactory
