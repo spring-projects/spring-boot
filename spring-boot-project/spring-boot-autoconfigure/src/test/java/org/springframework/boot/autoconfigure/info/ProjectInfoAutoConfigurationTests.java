@@ -93,6 +93,14 @@ public class ProjectInfoAutoConfigurationTests {
 	}
 
 	@Test
+	public void gitPropertiesWithUnicode() {
+		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties",
+				"spring.info.git.encoding=utf-8");
+		GitProperties gitProperties = this.context.getBean(GitProperties.class);
+		assertThat(gitProperties.get("commit.unicode")).isEqualTo("中文");
+	}
+
+	@Test
 	public void buildPropertiesDefaultLocation() {
 		load();
 		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
