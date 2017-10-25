@@ -38,6 +38,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
@@ -150,15 +151,30 @@ public class ConfigurationPropertiesBindingPostProcessor
 	}
 
 	private PropertySources deducePropertySources() {
+		MutablePropertySources environmentPropertySources = extractEnvironmentPropertySources();
 		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
-		if (configurer != null) {
-			return configurer.getAppliedPropertySources();
+		if (configurer == null) {
+			if (environmentPropertySources != null) {
+				return environmentPropertySources;
+			}
+			throw new IllegalStateException("Unable to obtain PropertySources from "
+					+ "PropertySourcesPlaceholderConfigurer or Environment");
 		}
+		PropertySources appliedPropertySources = configurer.getAppliedPropertySources();
+		return environmentPropertySources == null ? appliedPropertySources
+				: new CompositePropertySources(
+						new FilteredPropertySources(appliedPropertySources,
+								PropertySourcesPlaceholderConfigurer.ENVIRONMENT_PROPERTIES_PROPERTY_SOURCE_NAME),
+						environmentPropertySources);
+	}
+
+	private MutablePropertySources extractEnvironmentPropertySources() {
+		MutablePropertySources environmentPropertySources = null;
 		if (this.environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) this.environment).getPropertySources();
+			environmentPropertySources = ((ConfigurableEnvironment) this.environment)
+					.getPropertySources();
 		}
-		throw new IllegalStateException("Unable to obtain PropertySources from "
-				+ "PropertySourcesPlaceholderConfigurer or Environment");
+		return environmentPropertySources;
 	}
 
 	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {

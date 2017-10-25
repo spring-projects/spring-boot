@@ -39,13 +39,13 @@ import org.springframework.util.ObjectUtils;
 class SpringConfigurationPropertySources
 		implements Iterable<ConfigurationPropertySource> {
 
-	private final MutablePropertySources sources;
+	private final Iterable<PropertySource<?>> sources;
 
 	private volatile PropertySourcesKey lastKey;
 
 	private volatile List<ConfigurationPropertySource> adaptedSources;
 
-	SpringConfigurationPropertySources(MutablePropertySources sources) {
+	SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
 	}
@@ -65,7 +65,7 @@ class SpringConfigurationPropertySources
 		}
 	}
 
-	private void onChange(MutablePropertySources sources) {
+	private void onChange(Iterable<PropertySource<?>> sources) {
 		this.adaptedSources = streamPropertySources(sources)
 				.map(SpringConfigurationPropertySource::from)
 				.collect(Collectors.toList());
@@ -94,7 +94,7 @@ class SpringConfigurationPropertySources
 
 		private final List<PropertySourceKey> keys = new ArrayList<>();
 
-		PropertySourcesKey(MutablePropertySources sources) {
+		PropertySourcesKey(Iterable<PropertySource<?>> sources) {
 			sources.forEach(this::addKey);
 		}
 

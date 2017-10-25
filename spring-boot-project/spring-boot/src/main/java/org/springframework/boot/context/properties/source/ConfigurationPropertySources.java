@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -115,34 +114,19 @@ public final class ConfigurationPropertySources {
 
 	/**
 	 * Return {@link Iterable} containing new {@link ConfigurationPropertySource}
-	 * instances adapted from the given Spring {@link MutablePropertySources}.
-	 * <p>
-	 * This method will flatten any nested property sources and will filter all
-	 * {@link StubPropertySource stub property sources}. Updates to the underlying source
-	 * will be automatically tracked.
-	 * @param sources the Spring property sources to adapt
-	 * @return an {@link Iterable} containing newly adapted
-	 * {@link SpringConfigurationPropertySource} instances
-	 */
-	public static Iterable<ConfigurationPropertySource> from(
-			MutablePropertySources sources) {
-		return new SpringConfigurationPropertySources(sources);
-	}
-
-	/**
-	 * Return {@link Iterable} containing new {@link ConfigurationPropertySource}
 	 * instances adapted from the given Spring {@link PropertySource PropertySources}.
 	 * <p>
 	 * This method will flatten any nested property sources and will filter all
-	 * {@link StubPropertySource stub property sources}.
+	 * {@link StubPropertySource stub property sources}. Updates to the underlying source,
+	 * identified by changes in the sources returned by its iterator, will be
+	 * automatically tracked.
 	 * @param sources the Spring property sources to adapt
 	 * @return an {@link Iterable} containing newly adapted
 	 * {@link SpringConfigurationPropertySource} instances
 	 */
 	public static Iterable<ConfigurationPropertySource> from(
 			Iterable<PropertySource<?>> sources) {
-		return streamPropertySources(sources).map(SpringConfigurationPropertySource::from)
-				.collect(Collectors.toList());
+		return new SpringConfigurationPropertySources(sources);
 	}
 
 	private static Stream<PropertySource<?>> streamPropertySources(

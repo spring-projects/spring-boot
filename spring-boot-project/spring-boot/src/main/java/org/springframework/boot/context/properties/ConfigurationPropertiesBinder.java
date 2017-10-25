@@ -28,7 +28,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -59,14 +58,7 @@ public class ConfigurationPropertiesBinder {
 		this.propertySources = propertySources;
 		this.conversionService = conversionService;
 		this.validator = validator;
-		if (propertySources instanceof MutablePropertySources) {
-			this.configurationSources = ConfigurationPropertySources
-					.from((MutablePropertySources) propertySources);
-		}
-		else {
-			this.configurationSources = ConfigurationPropertySources
-					.from(propertySources);
-		}
+		this.configurationSources = ConfigurationPropertySources.from(propertySources);
 	}
 
 	/**

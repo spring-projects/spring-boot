@@ -218,6 +218,28 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void rebindableConfigurationPropertiesWithPropertySourcesPlaceholderConfigurer()
+			throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("example.one", "foo");
+		sources.addFirst(new MapPropertySource("test-source", source));
+		this.context.register(PrototypePropertiesConfig.class);
+		this.context.register(PropertySourcesPlaceholderConfigurerConfiguration.class);
+		this.context.refresh();
+		PrototypeBean first = this.context.getBean(PrototypeBean.class);
+		assertThat(first.getOne()).isEqualTo("foo");
+		source.put("example.one", "bar");
+		sources.addFirst(new MapPropertySource("extra",
+				Collections.singletonMap("example.two", "baz")));
+		PrototypeBean second = this.context.getBean(PrototypeBean.class);
+		assertThat(second.getOne()).isEqualTo("bar");
+		assertThat(second.getTwo()).isEqualTo("baz");
+	}
+
+	@Test
 	public void converterIsFound() {
 		prepareConverterContext(ConverterConfiguration.class, PersonProperty.class);
 		this.context.refresh();
@@ -378,6 +400,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@ConfigurationProperties("example")
 		public PrototypeBean prototypeBean() {
 			return new PrototypeBean();
+		}
+
+	}
+
+	@Configuration
+	public static class PropertySourcesPlaceholderConfigurerConfiguration {
+
+		@Bean
+		public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 	}
