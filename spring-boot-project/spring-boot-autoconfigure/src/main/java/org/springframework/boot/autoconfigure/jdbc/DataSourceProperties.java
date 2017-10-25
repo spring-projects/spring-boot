@@ -24,6 +24,9 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,11 +49,14 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Benedikt Ritter
  * @author Eddú Meléndez
+ * @author Kristine Jetzke
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
 public class DataSourceProperties
 		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
+
+	private static final Log logger = LogFactory.getLog(DataSourceProperties.class);
 
 	private ClassLoader classLoader;
 
@@ -288,6 +294,8 @@ public class DataSourceProperties
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
+
+		logger.debug("No url defined, looking for embedded database.");
 		String url = this.embeddedDatabaseConnection.getUrl(determineDatabaseName());
 		if (!StringUtils.hasText(url)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
