@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import io.spring.gradle.dependencymanagement.dsl.ImportsHandler;
 import org.gradle.api.Action;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+
 
 import org.springframework.boot.gradle.PluginFeatures;
 
@@ -40,8 +42,18 @@ public class DependencyManagementPluginFeatures implements PluginFeatures {
 			+ SPRING_BOOT_VERSION;
 
 	@Override
-	public void apply(Project project) {
-		project.getPlugins().apply(DependencyManagementPlugin.class);
+	public void apply(final Project project) {
+		project.getPlugins().withType(DependencyManagementPlugin.class, new Action<Plugin>() {
+
+			@Override
+			public void execute(Plugin importsHandler) {
+				configureDependencyManagement(project);
+			}
+
+		});
+	}
+
+	private void configureDependencyManagement(Project project) {
 		DependencyManagementExtension dependencyManagement = project.getExtensions()
 				.findByType(DependencyManagementExtension.class);
 		dependencyManagement.imports(new Action<ImportsHandler>() {
