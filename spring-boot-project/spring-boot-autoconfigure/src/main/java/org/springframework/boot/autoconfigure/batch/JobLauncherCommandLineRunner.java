@@ -180,8 +180,7 @@ public class JobLauncherCommandLineRunner
 		Map<String, JobParameter> merged = new HashMap<>();
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals);
-		parameters = new JobParameters(merged);
-		return parameters;
+		return new JobParameters(merged);
 	}
 
 	private void executeRegisteredJobs(JobParameters jobParameters)
@@ -198,7 +197,6 @@ public class JobLauncherCommandLineRunner
 				}
 				catch (NoSuchJobException ex) {
 					logger.debug("No job found in registry for job name: " + jobName);
-					continue;
 				}
 			}
 		}
@@ -209,11 +207,9 @@ public class JobLauncherCommandLineRunner
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException,
 			JobParametersNotFoundException {
 		JobParameters nextParameters = getNextJobParameters(job, jobParameters);
-		if (nextParameters != null) {
-			JobExecution execution = this.jobLauncher.run(job, nextParameters);
-			if (this.publisher != null) {
-				this.publisher.publishEvent(new JobExecutionEvent(execution));
-			}
+		JobExecution execution = this.jobLauncher.run(job, nextParameters);
+		if (this.publisher != null) {
+			this.publisher.publishEvent(new JobExecutionEvent(execution));
 		}
 	}
 
