@@ -3025,6 +3025,11 @@
 					<version>${flyway.version}</version>
 				</plugin>
 				<plugin>
+					<groupId>kotlin-maven-plugin</groupId>
+					<artifactId>org.jetbrains.kotlin</artifactId>
+					<version>${kotlin.version}</version>
+				</plugin>
+				<plugin>
 					<groupId>pl.project13.maven</groupId>
 					<artifactId>git-commit-id-plugin</artifactId>
 					<version>${git-commit-id-plugin.version}</version>
