@@ -56,8 +56,8 @@ defaults. The parent project provides the following features:
 
 * Java 1.8 as the default compiler level.
 * UTF-8 source encoding.
-* A <<using-boot-dependency-management,Dependency Management section>> that lets you
-  omit `<version>` tags for common dependencies that are inherited from the
+* A <<using-boot-dependency-management,Dependency Management section>>, letting you
+  omit `<version>` tags for common dependencies, inherited from the
   `spring-boot-dependencies` POM.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
@@ -66,9 +66,9 @@ defaults. The parent project provides the following features:
 * Sensible resource filtering for `application.properties` and `application.yml` including
   profile-specific files (for example, `application-foo.properties` and `application-foo.yml`)
 
-On the last point: Note that, since the default config files accept
+Note that, since the `application.properties` and `application.yml` files accept
 Spring style placeholders (`${...}`), the Maven filtering is changed to
-use `@..@` placeholders. (You can override that with a Maven property
+use `@..@` placeholders. (You can override that by setting a Maven property called
 `resource.delimiter`.)
 
 
@@ -137,7 +137,7 @@ The preceding sample setup does not let you override individual dependencies by 
 explained above. To achieve the same result, you need to add an entry in the
 `dependencyManagement` of your project **before** the `spring-boot-dependencies`
 entry. For instance, to upgrade to another Spring Data release train, you could add the
-following to your `pom.xml`, as follows:
+following element to your `pom.xml`:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -186,7 +186,7 @@ section if you want to use it, as shown in the following example:
 ----
 
 NOTE: If you use the Spring Boot starter parent pom, you need to add only the plugin.
-There is no need for to configure it unless you want to change the settings defined in
+There is no need to configure it unless you want to change the settings defined in
 the parent.
 
 
@@ -290,8 +290,8 @@ installed, you can simply hit `ctrl-space` in the POM editor and type
 As explained in the <<spring-boot-features#boot-features-custom-starter,Creating Your Own Starter>>
 section, third party starters should not start with `spring-boot`, as it is reserved for
 official Spring Boot artifacts. Rather, a third-party starter typically starts with the
-name of the organization that made it. For example, a third-party starter from `acme`
-would typically be named `acme-spring-boot-starter`.
+name of the project. For example, a third-party starter project called `thirdpartyproject`
+would typically be named `thirdpartyproject-spring-boot-starter`.
 ****
 
 The following application starters are provided by Spring Boot under the
@@ -457,7 +457,7 @@ selection of core loggers and logs an auto-configuration report to the console.
 
 [[using-boot-disabling-specific-auto-configuration]]
 === Disabling Specific Auto-configuration Classes
-If you find that specific auto-configure classes that you do not want are being applied,
+If you find that specific auto-configuration classes that you do not want are being applied,
 you can use the exclude attribute of `@EnableAutoConfiguration` to disable them, as shown
 in the following example:
 
@@ -981,7 +981,7 @@ Then you need to set a `spring.devtools.remote.secret` property, as shown in the
 WARNING: Enabling `spring-boot-devtools` on a remote application is a security risk. You
 should never enable support on a production deployment.
 
-Remote devtools support is provided in two parts: a server_side endpoint that
+Remote devtools support is provided in two parts: a server-side endpoint that
 accepts connections and a client application that you run in your IDE. The server
 component is automatically enabled when the `spring.devtools.remote.secret` property
 is set. The client component must be launched manually.
@@ -991,8 +991,8 @@ is set. The client component must be launched manually.
 ==== Running the Remote Client Application
 The remote client application is designed to be run from within your IDE. You need to run
 `org.springframework.boot.devtools.RemoteSpringApplication` with the same classpath as
-the remote project that you connect to. The _non-optional_ argument passed to the
-application should be the remote URL that you are connecting to.
+the remote project that you connect to.
+The application's single required argument is the remote URL to which it connects.
 
 For example, if you are using Eclipse or STS and you have a project named `my-app` that
 you have deployed to Cloud Foundry, you would do the following:
