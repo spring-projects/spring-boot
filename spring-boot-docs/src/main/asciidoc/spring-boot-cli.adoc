@@ -117,7 +117,9 @@ To set JVM command line arguments you can use the `JAVA_OPTS` environment variab
 	$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
 ----
 
-
+NOTE: When setting `JAVA_OPTS` on Microsoft Windows, make sure to quote the entire
+instruction such as `set "JAVA_OPTS=-Xms256m -Xmx2048m"`. This will ensure the values
+are passed properly to the process.
 
 [[cli-deduced-grab-annotations]]
 ==== Deduced "`grab`" dependencies
