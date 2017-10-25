@@ -127,6 +127,9 @@ do as they were designed before this was clarified.
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
+| https://developer.okta.com/[Okta]
+| https://github.com/okta/okta-spring-boot
+
 | http://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
