@@ -49,10 +49,10 @@ class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JdbcSessionDatabaseInitializer jdbcSessionDatabaseInitializer(
+	public JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(
 			DataSource dataSource, ResourceLoader resourceLoader,
 			JdbcSessionProperties properties) {
-		return new JdbcSessionDatabaseInitializer(dataSource, resourceLoader, properties);
+		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
 	}
 
 	@Configuration

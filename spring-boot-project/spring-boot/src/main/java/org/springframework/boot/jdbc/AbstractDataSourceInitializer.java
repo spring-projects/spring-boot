@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.jdbc;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -29,13 +27,13 @@ import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.util.Assert;
 
 /**
- * Base class used for database initialization.
+ * Base class used for {@link DataSource} initialization.
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @since 1.5.0
  */
-public abstract class AbstractDatabaseInitializer {
+public abstract class AbstractDataSourceInitializer {
 
 	private static final String PLATFORM_PLACEHOLDER = "@@platform@@";
 
@@ -43,7 +41,7 @@ public abstract class AbstractDatabaseInitializer {
 
 	private final ResourceLoader resourceLoader;
 
-	protected AbstractDatabaseInitializer(DataSource dataSource,
+	protected AbstractDataSourceInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader) {
 		Assert.notNull(dataSource, "DataSource must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
@@ -68,17 +66,17 @@ public abstract class AbstractDatabaseInitializer {
 	}
 
 	private boolean isEnabled() {
-		if (getMode() == DatabaseInitializationMode.NEVER) {
+		if (getMode() == DataSourceInitializationMode.NEVER) {
 			return false;
 		}
-		if (getMode() == DatabaseInitializationMode.EMBEDDED
+		if (getMode() == DataSourceInitializationMode.EMBEDDED
 				&& !EmbeddedDatabaseConnection.isEmbedded(this.dataSource)) {
 			return false;
 		}
 		return true;
 	}
 
-	protected abstract DatabaseInitializationMode getMode();
+	protected abstract DataSourceInitializationMode getMode();
 
 	protected abstract String getSchemaLocation();
 

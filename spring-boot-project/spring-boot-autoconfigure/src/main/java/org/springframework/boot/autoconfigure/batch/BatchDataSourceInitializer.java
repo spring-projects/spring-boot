@@ -14,40 +14,49 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.integration;
+package org.springframework.boot.autoconfigure.batch;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
-import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
+import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
+import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 /**
- * Initializer for Spring Integration schema.
+ * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
  *
+ * @author Dave Syer
  * @author Vedran Pavic
- * @since 2.0.0
  */
-public class IntegrationDatabaseInitializer extends AbstractDatabaseInitializer {
+public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 
-	private final IntegrationProperties.Jdbc properties;
+	private final BatchProperties properties;
 
-	public IntegrationDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, IntegrationProperties properties) {
+	public BatchDataSourceInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader, BatchProperties properties) {
 		super(dataSource, resourceLoader);
-		Assert.notNull(properties, "IntegrationProperties must not be null");
-		this.properties = properties.getJdbc();
+		Assert.notNull(properties, "BatchProperties must not be null");
+		this.properties = properties;
 	}
 
 	@Override
-	protected DatabaseInitializationMode getMode() {
+	protected DataSourceInitializationMode getMode() {
 		return this.properties.getInitializeSchema();
 	}
 
 	@Override
 	protected String getSchemaLocation() {
 		return this.properties.getSchema();
+	}
+
+	@Override
+	protected String getDatabaseName() {
+		String databaseName = super.getDatabaseName();
+		if ("oracle".equals(databaseName)) {
+			return "oracle10g";
+		}
+		return databaseName;
 	}
 
 }

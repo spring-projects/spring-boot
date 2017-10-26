@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.session;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
-import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
+import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
+import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
@@ -29,11 +29,11 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer {
+public class JdbcSessionDataSourceInitializer extends AbstractDataSourceInitializer {
 
 	private final JdbcSessionProperties properties;
 
-	public JdbcSessionDatabaseInitializer(DataSource dataSource,
+	public JdbcSessionDataSourceInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "JdbcSessionProperties must not be null");
@@ -41,7 +41,7 @@ public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer 
 	}
 
 	@Override
-	protected DatabaseInitializationMode getMode() {
+	protected DataSourceInitializationMode getMode() {
 		return this.properties.getInitializeSchema();
 	}
 

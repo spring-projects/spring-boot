@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.jdbc;
 
 /**
- * Supported {@link AbstractDatabaseInitializer database initializer} modes.
+ * Supported {@link javax.sql.DataSource} initialization modes.
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @see AbstractDataSourceInitializer
  */
-public enum DatabaseInitializationMode {
+public enum DataSourceInitializationMode {
 
 	/**
-	 * Always initialize the database.
+	 * Always initialize the datasource.
 	 */
 	ALWAYS,
 
 	/**
-	 * Only initialize an embedded database.
+	 * Only initialize an embedded datasource.
 	 */
 	EMBEDDED,
 
 	/**
-	 * Do not initialize the database.
+	 * Do not initialize the datasource.
 	 */
 	NEVER
 

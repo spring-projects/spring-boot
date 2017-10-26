@@ -18,22 +18,22 @@ package org.springframework.boot.autoconfigure.quartz;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
-import org.springframework.boot.autoconfigure.DatabaseInitializationMode;
+import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
+import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 /**
- * Initializer for Quartz Scheduler schema.
+ * Initialize the Quartz Scheduler schema.
  *
  * @author Vedran Pavic
  * @since 2.0.0
  */
-public class QuartzDatabaseInitializer extends AbstractDatabaseInitializer {
+public class QuartzDataSourceInitializer extends AbstractDataSourceInitializer {
 
 	private final QuartzProperties properties;
 
-	public QuartzDatabaseInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+	public QuartzDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
 			QuartzProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "QuartzProperties must not be null");
@@ -41,7 +41,7 @@ public class QuartzDatabaseInitializer extends AbstractDatabaseInitializer {
 	}
 
 	@Override
-	protected DatabaseInitializationMode getMode() {
+	protected DataSourceInitializationMode getMode() {
 		return this.properties.getJdbc().getInitializeSchema();
 	}
 
