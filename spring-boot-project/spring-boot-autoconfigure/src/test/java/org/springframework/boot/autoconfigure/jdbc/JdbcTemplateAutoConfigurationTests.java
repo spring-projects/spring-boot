@@ -158,7 +158,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	public void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialize:false",
+		TestPropertyValues.of("spring.datasource.initialization-mode:never",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
 				.applyTo(ctx);
 		TestPropertyValues.of(environment).applyTo(ctx);

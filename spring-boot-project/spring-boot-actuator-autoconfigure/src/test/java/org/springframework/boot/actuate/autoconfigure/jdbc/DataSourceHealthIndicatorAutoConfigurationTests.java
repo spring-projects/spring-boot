@@ -51,7 +51,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class,
 					DataSourceHealthIndicatorAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.initialize=false");
+			.withPropertyValues("spring.datasource.initialization-mode=never");
 
 	@Test
 	public void runShouldCreateIndicator() {

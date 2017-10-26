@@ -658,7 +658,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.driver-class-name= # Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
 	spring.datasource.generate-unique-name=false # Generate a random datasource name.
 	spring.datasource.hikari.*= # Hikari specific settings
-	spring.datasource.initialize=true # Populate the database using 'data.sql'.
+	spring.datasource.initialization-mode=embedded # Initialize the datasource using available DDL and DML scripts.
 	spring.datasource.jmx-enabled=false # Enable JMX support (if provided by the underlying pool).
 	spring.datasource.jndi-name= # JNDI location of the datasource. Class, url, username & password are ignored when set.
 	spring.datasource.name=testdb # Name of the datasource.

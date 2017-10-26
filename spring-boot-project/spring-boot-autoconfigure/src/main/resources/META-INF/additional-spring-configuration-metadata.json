@@ -86,6 +86,10 @@
     "defaultValue": false
   },
   {
+    "name": "spring.datasource.initialization-mode",
+    "defaultValue": "embedded"
+  },
+  {
     "name": "spring.data.cassandra.compression",
     "defaultValue": "none"
   },
@@ -1028,6 +1032,14 @@
     "description": "Compiler to use.",
     "deprecation": {
       "reason": "Not supported anymore as of Neo4j 3.",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.datasource.initialize",
+    "defaultValue": true,
+    "deprecation": {
+      "replacement": "spring.datasource.initialization-mode",
       "level": "error"
     }
   },

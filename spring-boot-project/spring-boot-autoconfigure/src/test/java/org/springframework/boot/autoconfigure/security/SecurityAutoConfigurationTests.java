@@ -209,7 +209,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		TestPropertyValues.of("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
-				"spring.datasource.initialize:false").applyTo(this.context);
+				"spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,

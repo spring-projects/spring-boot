@@ -73,7 +73,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	@Test
 	public void defaultDatabaseForH2() {
 		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:h2:mem:testdb",
-				"spring.datasource.initialize:false").run((context) -> {
+				"spring.datasource.initialization-mode:never").run((context) -> {
 					HibernateJpaVendorAdapter bean = context
 							.getBean(HibernateJpaVendorAdapter.class);
 					Database database = (Database) ReflectionTestUtils.getField(bean,

@@ -63,7 +63,7 @@ public class DataSourceAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.initialize=false",
+			.withPropertyValues("spring.datasource.initialization-mode=never",
 					"spring.datasource.url:jdbc:hsqldb:mem:testdb-"
 							+ new Random().nextInt());
 
@@ -219,7 +219,7 @@ public class DataSourceAutoConfigurationTests {
 	public void testDataSourceIsInitializedEarly() {
 		this.contextRunner
 				.withUserConfiguration(TestInitializedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.initialize=true")
+				.withPropertyValues("spring.datasource.initialization-mode=always")
 				.run((context) -> assertThat(context
 						.getBean(TestInitializedDataSourceConfiguration.class).called)
 								.isTrue());

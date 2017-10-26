@@ -63,7 +63,8 @@ public class HikariDriverConfigurationFailureAnalyzerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.datasource.type=" + HikariDataSource.class.getName(),
-						"spring.datasource.hikari.data-source-class-name=com.example.Foo")
+						"spring.datasource.hikari.data-source-class-name=com.example.Foo",
+						"spring.datasource.initialization-mode=always")
 				.applyTo(context);
 		context.register(configuration);
 		try {

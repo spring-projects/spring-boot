@@ -62,7 +62,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.initialization-mode:never")
+				.applyTo(this.context);
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -71,7 +72,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testMixedRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.initialization-mode:never")
+				.applyTo(this.context);
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -81,7 +83,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithMongoTemplate() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.initialization-mode:never")
+				.applyTo(this.context);
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -90,7 +93,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithMongoOverlap() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialize:false").applyTo(this.context);
+		TestPropertyValues.of("spring.datasource.initialization-mode:never")
+				.applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -101,7 +105,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.datasource.initialize:false",
+				.of("spring.datasource.initialization-mode:never",
 						"spring.data.mongodb.repositories.enabled:false")
 				.applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);

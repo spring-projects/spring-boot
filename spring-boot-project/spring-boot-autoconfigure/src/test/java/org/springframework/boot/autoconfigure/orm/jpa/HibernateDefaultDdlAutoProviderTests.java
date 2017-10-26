@@ -42,7 +42,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.initialize:false");
+			.withPropertyValues("spring.datasource.initialization-mode:never");
 
 	@Test
 	public void defaultDdlAutoForMysql() {

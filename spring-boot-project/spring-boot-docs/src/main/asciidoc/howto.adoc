@@ -1921,6 +1921,10 @@ is the value of `spring.datasource.platform`. This allows you to switch to datab
 specific scripts if necessary, e.g. you might choose to set it to the vendor name of the
 database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql` etc.).
 
+Spring Boot automatically creates the schema of an embedded `DataSource`. This behavior
+can be customized using the `spring.datasource.initialization-mode` property (can also be
+`always` or `never`).
+
 Spring Boot enables the fail-fast feature of the Spring JDBC initializer by default, so if
 the scripts cause exceptions the application will fail to start. You can tune that using
 `spring.datasource.continue-on-error`.
@@ -1928,8 +1932,6 @@ the scripts cause exceptions the application will fail to start. You can tune th
 NOTE: In a JPA-based app, you can choose to let Hibernate create the schema or use
 `schema.sql` but not both. Make sure to disable `spring.jpa.hibernate.ddl-auto` if you
 chose the later.
-
-You can also disable initialization by setting `spring.datasource.initialize` to `false`.
 
 
 
