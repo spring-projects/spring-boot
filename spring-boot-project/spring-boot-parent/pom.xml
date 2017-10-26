@@ -269,6 +269,14 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.jetbrains.kotlin</groupId>
+					<artifactId>kotlin-maven-plugin</artifactId>
+					<version>${kotlin.version}</version>
+					<configuration>
+						<jvmTarget>${java.version}</jvmTarget>
+					</configuration>
+				</plugin>
+				<plugin>
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
 					<version>1.5.5</version>

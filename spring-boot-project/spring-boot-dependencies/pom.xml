@@ -2246,26 +2246,6 @@
 				<version>${jdom2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jolokia</groupId>
-				<artifactId>jolokia-core</artifactId>
-				<version>${jolokia.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jooq</groupId>
-				<artifactId>jooq</artifactId>
-				<version>${jooq.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jooq</groupId>
-				<artifactId>jooq-meta</artifactId>
-				<version>${jooq.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jooq</groupId>
-				<artifactId>jooq-codegen</artifactId>
-				<version>${jooq.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-reflect</artifactId>
 				<version>${kotlin.version}</version>
@@ -2284,6 +2264,26 @@
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-stdlib-jre8</artifactId>
 				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jolokia</groupId>
+				<artifactId>jolokia-core</artifactId>
+				<version>${jolokia.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq</artifactId>
+				<version>${jooq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-meta</artifactId>
+				<version>${jooq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen</artifactId>
+				<version>${jooq.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
@@ -2882,6 +2882,11 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>kotlin-maven-plugin</groupId>
+					<artifactId>org.jetbrains.kotlin</artifactId>
+					<version>${kotlin.version}</version>
+				</plugin>
+				<plugin>
 					<groupId>org.jooq</groupId>
 					<artifactId>jooq-codegen-maven</artifactId>
 					<version>${jooq.version}</version>
@@ -3023,11 +3028,6 @@
 					<groupId>org.flywaydb</groupId>
 					<artifactId>flyway-maven-plugin</artifactId>
 					<version>${flyway.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>kotlin-maven-plugin</groupId>
-					<artifactId>org.jetbrains.kotlin</artifactId>
-					<version>${kotlin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
