@@ -1077,18 +1077,21 @@ content into your application; rather pick only the properties that you need.
 	endpoints.auditevents.enabled= # Enable the auditevents endpoint.
 	endpoints.auditevents.jmx.enabled= # Expose the auditevents endpoint as a JMX MBean.
 	endpoints.auditevents.web.enabled= # Expose the auditevents endpoint as a Web endpoint.
+	endpoints.auditevents.web.path=auditevents # Path of the auditevents endpoint.
 
 	# AUTO-CONFIGURATION REPORT ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/condition/AutoConfigurationReportEndpoint.{sc-ext}[AutoConfigurationReportEndpoint])
 	endpoints.autoconfig.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.autoconfig.enabled= # Enable the autoconfig endpoint.
 	endpoints.autoconfig.jmx.enabled= # Expose the autoconfig endpoint as a JMX MBean.
 	endpoints.autoconfig.web.enabled= # Expose the autoconfig endpoint as a Web endpoint.
+	endpoints.autoconfig.web.path=autoconfig # Path of the autoconfig endpoint.
 
 	# BEANS ENDPOINT ({sc-spring-boot-actuator}/beans/BeansEndpoint.{sc-ext}[BeansEndpoint])
 	endpoints.beans.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.beans.enabled= # Enable the beans endpoint.
 	endpoints.beans.jmx.enabled= # Expose the beans endpoint as a JMX MBean.
 	endpoints.beans.web.enabled= # Expose the beans endpoint as a Web endpoint.
+	endpoints.beans.web.path=beans # Path of the beans endpoint.
 
 	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint])
 	endpoints.configprops.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
@@ -1096,6 +1099,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.configprops.jmx.enabled= # Expose the configprops endpoint as a JMX MBean.
 	endpoints.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 	endpoints.configprops.web.enabled= # Expose the configprops endpoint as a Web endpoint.
+	endpoints.configprops.web.path=configprops # Path of the configprops endpoint.
 
 	# ENDPOINT DEFAULT SETTINGS
 	endpoints.default.enabled=true # Enable all endpoints by default.
@@ -1108,94 +1112,110 @@ content into your application; rather pick only the properties that you need.
 	endpoints.env.jmx.enabled= # Expose the env endpoint as a JMX MBean.
 	endpoints.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 	endpoints.env.web.enabled= # Expose the env endpoint as a Web endpoint.
+	endpoints.env.web.path=env # Path of the env endpoint.
 
 	# FLYWAY ENDPOINT ({sc-spring-boot-actuator}/flyway/FlywayEndpoint.{sc-ext}[FlywayEndpoint])
 	endpoints.flyway.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.flyway.enabled= # Enable the flyway endpoint.
 	endpoints.flyway.jmx.enabled= # Expose the flyway endpoint as a JMX MBean.
 	endpoints.flyway.web.enabled= # Expose the flyway endpoint as a Web endpoint.
+	endpoints.flyway.web.path=flyway # Path of the flyway endpoint.
 
 	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint])
 	endpoints.health.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.health.enabled= # Enable the health endpoint.
 	endpoints.health.jmx.enabled= # Expose the health endpoint as a JMX MBean.
 	endpoints.health.web.enabled= # Expose the health endpoint as a Web endpoint.
+	endpoints.health.web.path=health # Path of the health endpoint.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
 	endpoints.heapdump.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.heapdump.enabled= # Enable the heapdump endpoint.
 	endpoints.heapdump.web.enabled= # Expose the heapdump endpoint as a Web endpoint.
+	endpoints.heapdump.web.path=heapdump # Path of the heapdump endpoint.
 
 	# INFO ENDPOINT ({sc-spring-boot-actuator}/info/InfoEndpoint.{sc-ext}[InfoEndpoint])
 	endpoints.info.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.info.enabled=true # Enable the info endpoint.
 	endpoints.info.jmx.enabled=true # Expose the info endpoint as a JMX MBean.
 	endpoints.info.web.enabled=true # Expose the info endpoint as a Web endpoint.
+	endpoints.info.web.path=info # Path of the info endpoint.
 
 	# LIQUIBASE ENDPOINT ({sc-spring-boot-actuator}/liquibase/LiquibaseEndpoint.{sc-ext}[LiquibaseEndpoint])
 	endpoints.liquibase.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.liquibase.enabled= # Enable the liquibase endpoint.
 	endpoints.liquibase.jmx.enabled= # Expose the liquibase endpoint as a JMX MBean.
 	endpoints.liquibase.web.enabled= # Expose the liquibase endpoint as a Web endpoint.
+	endpoints.liquibase.web.path=liquibase # Path of the liquibase endpoint.
 
 	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logging/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint])
 	endpoints.logfile.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.logfile.enabled= # Enable the logfile endpoint.
 	endpoints.logfile.external-file= # External Logfile to be accessed. Can be used if the logfile is written by output redirect and not by the logging system itself.
 	endpoints.logfile.web.enabled= # Expose the logfile endpoint as a Web endpoint.
+	endpoints.logfile.web.path=logfile # Path of the logfile endpoint.
 
 	# LOGGERS ENDPOINT ({sc-spring-boot-actuator}/logging/LoggersEndpoint.{sc-ext}[LoggersEndpoint])
 	endpoints.loggers.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.loggers.enabled= # Enable the loggers endpoint.
 	endpoints.loggers.jmx.enabled= # Expose the loggers endpoint as a JMX MBean.
 	endpoints.loggers.web.enabled= # Expose the loggers endpoint as a Web endpoint.
+	endpoints.loggers.web.path=loggers # Path of the loggers endpoint.
 
 	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator-autoconfigure}/web/servlet/RequestMappingEndpoint.{sc-ext}[RequestMappingEndpoint])
 	endpoints.mappings.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.mappings.enabled= # Enable the mappings endpoint.
 	endpoints.mappings.jmx.enabled= # Expose the mappings endpoint as a JMX MBean.
 	endpoints.mappings.web.enabled= # Expose the mappings endpoint as a Web endpoint.
+	endpoints.mappings.web.path=mappings # Path of the mappings endpoint.
 
 	# METRICS ENDPOINT ({sc-spring-boot-actuator}/metrics/MetricsEndpoint.{sc-ext}[MetricsEndpoint])
 	endpoints.metrics.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.metrics.enabled= # Enable the metrics endpoint.
 	endpoints.metrics.jmx.enabled= # Expose the metrics endpoint as a JMX MBean.
 	endpoints.metrics.web.enabled= # Expose the metrics endpoint as a Web endpoint.
+	endpoints.metrics.web.path=metrics # Path of the metrics endpoint.
 
 	# PROMETHEUS ENDPOINT ({sc-spring-boot-actuator}/metrics/export/prometheus/PrometheusScrapeEndpoint.{sc-ext}[PrometheusScrapeEndpoint])
 	endpoints.prometheus.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.prometheus.enabled= # Enable the metrics endpoint.
 	endpoints.prometheus.web.enabled= # Expose the metrics endpoint as a Web endpoint.
+	endpoints.prometheus.web.path=prometheus # Path of the prometheus endpoint.
 
 	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
 	endpoints.sessions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.sessions.enabled= # Enable the sessions endpoint.
 	endpoints.sessions.jmx.enabled= # Expose the sessions endpoint as a JMX MBean.
 	endpoints.sessions.web.enabled= # Expose the sessions endpoint as a Web endpoint.
+	endpoints.sessions.web.path=sessions # Path of the sessions endpoint.
 
 	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/context/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
 	endpoints.shutdown.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.shutdown.enabled=false # Enable the shutdown endpoint.
 	endpoints.shutdown.jmx.enabled=false # Expose the shutdown endpoint as a JMX MBean.
 	endpoints.shutdown.web.enabled=false # Expose the shutdown endpoint as a Web endpoint.
+	endpoints.shutdown.web.path=shutdown # Path of the shutdown endpoint.
 
 	# STATUS ENDPOINT ({sc-spring-boot-actuator}/health/StatusEndpoint.{sc-ext}[StatusEndpoint])
 	endpoints.status.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.status.enabled=true # Enable the status endpoint.
 	endpoints.status.jmx.enabled=true # Expose the status endpoint as a JMX MBean.
 	endpoints.status.web.enabled=true # Expose the status endpoint as a Web endpoint.
+	endpoints.status.web.path=status # Path of the status endpoint.
 
 	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/management/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])
 	endpoints.threaddump.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.threaddump.enabled= # Enable the threaddump endpoint.
 	endpoints.threaddump.jmx.enabled= # Expose the threaddump endpoint as a JMX MBean.
 	endpoints.threaddump.web.enabled= # Expose the threaddump endpoint as a Web endpoint.
+	endpoints.threaddump.web.path=threaddump # Path of the threaddump endpoint.
 
 	# TRACE ENDPOINT ({sc-spring-boot-actuator}/trace/TraceEndpoint.{sc-ext}[TraceEndpoint])
 	endpoints.trace.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.trace.enabled= # Enable the trace endpoint.
 	endpoints.trace.jmx.enabled= # Expose the trace endpoint as a JMX MBean.
 	endpoints.trace.web.enabled= # Expose the trace endpoint as a Web endpoint.
+	endpoints.trace.web.path=trace # Path of the trace endpoint.
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
 	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response. Requires a custom management.server.port.

@@ -219,7 +219,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 					DefaultConversionService.getSharedInstance());
 			return new WebAnnotationEndpointDiscoverer(applicationContext,
 					parameterMapper, (id) -> new CachingConfiguration(0),
-					endpointMediaTypes);
+					endpointMediaTypes, (id) -> id);
 		}
 
 		@Bean

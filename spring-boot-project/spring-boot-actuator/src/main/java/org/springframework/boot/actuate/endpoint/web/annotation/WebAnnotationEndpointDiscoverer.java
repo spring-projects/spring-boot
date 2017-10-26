@@ -40,6 +40,7 @@ import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
@@ -71,14 +72,17 @@ public class WebAnnotationEndpointDiscoverer extends
 	 * @param cachingConfigurationFactory the {@link CachingConfiguration} factory to use
 	 * @param endpointMediaTypes the media types produced and consumed by web endpoint
 	 * operations
+	 * @param endpointPathResolver the {@link EndpointPathResolver} used to resolve
+	 * endpoint paths
 	 */
 	public WebAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
 			OperationParameterMapper operationParameterMapper,
 			CachingConfigurationFactory cachingConfigurationFactory,
-			EndpointMediaTypes endpointMediaTypes) {
+			EndpointMediaTypes endpointMediaTypes,
+			EndpointPathResolver endpointPathResolver) {
 		super(applicationContext,
 				new WebEndpointOperationFactory(operationParameterMapper,
-						endpointMediaTypes),
+						endpointMediaTypes, endpointPathResolver),
 				WebEndpointOperation::getRequestPredicate, cachingConfigurationFactory);
 	}
 
@@ -121,10 +125,14 @@ public class WebAnnotationEndpointDiscoverer extends
 
 		private final EndpointMediaTypes endpointMediaTypes;
 
+		private final EndpointPathResolver endpointPathResolver;
+
 		private WebEndpointOperationFactory(OperationParameterMapper parameterMapper,
-				EndpointMediaTypes endpointMediaTypes) {
+				EndpointMediaTypes endpointMediaTypes,
+				EndpointPathResolver endpointPathResolver) {
 			this.parameterMapper = parameterMapper;
 			this.endpointMediaTypes = endpointMediaTypes;
+			this.endpointPathResolver = endpointPathResolver;
 		}
 
 		@Override
@@ -147,7 +155,8 @@ public class WebAnnotationEndpointDiscoverer extends
 		}
 
 		private String determinePath(String endpointId, Method operationMethod) {
-			StringBuilder path = new StringBuilder(endpointId);
+			StringBuilder path = new StringBuilder(
+					this.endpointPathResolver.resolvePath(endpointId));
 			Stream.of(operationMethod.getParameters())
 					.filter((
 							parameter) -> parameter.getAnnotation(Selector.class) != null)

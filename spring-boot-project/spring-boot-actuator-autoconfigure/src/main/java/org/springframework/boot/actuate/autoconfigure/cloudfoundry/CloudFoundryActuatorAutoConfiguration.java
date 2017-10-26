@@ -82,7 +82,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 				RestTemplateBuilder builder) {
 			WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext, parameterMapper, cachingConfigurationFactory,
-					endpointMediaTypes);
+					endpointMediaTypes, (id) -> id);
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cloudfoundryapplication"),
 					endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,

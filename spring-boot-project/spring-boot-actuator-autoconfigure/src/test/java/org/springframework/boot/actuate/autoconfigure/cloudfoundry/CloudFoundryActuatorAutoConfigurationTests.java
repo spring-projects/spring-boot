@@ -219,6 +219,22 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		assertThat(endpoints.get(0).getId()).isEqualTo("test");
 	}
 
+	@Test
+	public void endpointPathCustomizationIsNotApplied()
+			throws Exception {
+		TestPropertyValues.of("endpoints.test.web.path=another/custom")
+				.applyTo(this.context);
+		this.context.register(TestConfiguration.class);
+		this.context.refresh();
+		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
+		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+				.getEndpoints();
+		assertThat(endpoints.size()).isEqualTo(1);
+		assertThat(endpoints.get(0).getOperations()).hasSize(1);
+		assertThat(endpoints.get(0).getOperations().iterator().next()
+				.getRequestPredicate().getPath()).isEqualTo("test");
+	}
+
 	private CloudFoundryWebEndpointServletHandlerMapping getHandlerMapping() {
 		TestPropertyValues
 				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",

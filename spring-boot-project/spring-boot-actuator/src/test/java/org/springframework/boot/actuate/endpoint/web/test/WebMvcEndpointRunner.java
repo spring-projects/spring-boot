@@ -88,7 +88,7 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
 					new ConversionServiceOperationParameterMapper(), (id) -> null,
-					endpointMediaTypes);
+					endpointMediaTypes, (id) -> id);
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/application"),
 					discoverer.discoverEndpoints(), endpointMediaTypes,
 					new CorsConfiguration());

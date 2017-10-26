@@ -105,7 +105,7 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
 					new ConversionServiceOperationParameterMapper(), (id) -> null,
-					endpointMediaTypes);
+					endpointMediaTypes, (id) -> id);
 			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/application"),
 					discoverer.discoverEndpoints(), endpointMediaTypes,
 					new CorsConfiguration());

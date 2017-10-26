@@ -539,8 +539,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("simple", null));
 		assertThat(metadata).has(jmxEnabledFlag("simple", null));
 		assertThat(metadata).has(webEnabledFlag("simple", null));
+		assertThat(metadata).has(webPath("simple"));
 		assertThat(metadata).has(cacheTtl("simple"));
-		assertThat(metadata.getItems()).hasSize(5);
+		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	@Test
@@ -551,8 +552,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("disabled", false));
 		assertThat(metadata).has(jmxEnabledFlag("disabled", false));
 		assertThat(metadata).has(webEnabledFlag("disabled", false));
+		assertThat(metadata).has(webPath("disabled"));
 		assertThat(metadata).has(cacheTtl("disabled"));
-		assertThat(metadata.getItems()).hasSize(5);
+		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	@Test
@@ -563,8 +565,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("enabled", true));
 		assertThat(metadata).has(jmxEnabledFlag("enabled", true));
 		assertThat(metadata).has(webEnabledFlag("enabled", true));
+		assertThat(metadata).has(webPath("enabled"));
 		assertThat(metadata).has(cacheTtl("enabled"));
-		assertThat(metadata.getItems()).hasSize(5);
+		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	@Test
@@ -577,8 +580,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("customprops", null));
 		assertThat(metadata).has(jmxEnabledFlag("customprops", null));
 		assertThat(metadata).has(webEnabledFlag("customprops", null));
+		assertThat(metadata).has(webPath("customprops"));
 		assertThat(metadata).has(cacheTtl("customprops"));
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(7);
 	}
 
 	@Test
@@ -599,8 +603,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				Metadata.withGroup("endpoints.web").fromSource(OnlyWebEndpoint.class));
 		assertThat(metadata).has(enabledFlag("web", null));
 		assertThat(metadata).has(webEnabledFlag("web", null));
+		assertThat(metadata).has(webPath("web"));
 		assertThat(metadata).has(cacheTtl("web"));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
@@ -613,8 +618,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("incremental", null));
 		assertThat(metadata).has(jmxEnabledFlag("incremental", null));
 		assertThat(metadata).has(webEnabledFlag("incremental", null));
+		assertThat(metadata).has(webPath("incremental"));
 		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(5);
+		assertThat(metadata.getItems()).hasSize(6);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
 				"id = \"incremental\", defaultEnablement = org.springframework.boot."
 						+ "configurationsample.DefaultEnablement.DISABLED");
@@ -624,8 +630,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("incremental", false));
 		assertThat(metadata).has(jmxEnabledFlag("incremental", false));
 		assertThat(metadata).has(webEnabledFlag("incremental", false));
+		assertThat(metadata).has(webPath("incremental"));
 		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(5);
+		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	@Test
@@ -638,8 +645,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("incremental", null));
 		assertThat(metadata).has(jmxEnabledFlag("incremental", null));
 		assertThat(metadata).has(webEnabledFlag("incremental", null));
+		assertThat(metadata).has(webPath("incremental"));
 		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(5);
+		assertThat(metadata.getItems()).hasSize(6);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
 				"id = \"incremental\", exposure = org.springframework.boot."
 						+ "configurationsample.EndpointExposure.WEB");
@@ -648,8 +656,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", null));
 		assertThat(metadata).has(webEnabledFlag("incremental", null));
+		assertThat(metadata).has(webPath("incremental"));
 		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
@@ -671,8 +680,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("incremental", null));
 		assertThat(metadata).has(jmxEnabledFlag("incremental", null));
 		assertThat(metadata).has(webEnabledFlag("incremental", null));
+		assertThat(metadata).has(webPath("incremental"));
 		assertThat(metadata).has(cacheTtl("incremental"));
-		assertThat(metadata.getItems()).hasSize(5);
+		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
@@ -694,6 +704,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		return Metadata.withEnabledFlag("endpoints." + endpointId + ".web.enabled")
 				.withDefaultValue(defaultValue).withDescription(String
 						.format("Expose the %s endpoint as a Web endpoint.", endpointId));
+	}
+
+	private Metadata.MetadataItemCondition webPath(String endpointId) {
+		return Metadata.withProperty("endpoints." + endpointId + ".web.path")
+				.ofType(String.class).withDefaultValue(endpointId).withDescription(String
+								.format("Path of the %s endpoint.", endpointId));
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {

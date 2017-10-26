@@ -189,8 +189,8 @@ public class WebAnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsCachedWithMatchingId() {
-		load((id) -> new CachingConfiguration(500), TestEndpointConfiguration.class,
-				(discoverer) -> {
+		load((id) -> new CachingConfiguration(500), (id) -> id,
+				TestEndpointConfiguration.class, (discoverer) -> {
 					Map<String, EndpointInfo<WebEndpointOperation>> endpoints = mapEndpoints(
 							discoverer.discoverEndpoints());
 					assertThat(endpoints).containsOnlyKeys("test");
@@ -237,12 +237,29 @@ public class WebAnnotationEndpointDiscovererTests {
 		});
 	}
 
+	@Test
+	public void endpointPathCanBeCustomized() {
+		load((id) -> null, (id) -> "custom/" + id,
+			AdditionalOperationWebEndpointConfiguration.class, (discoverer) -> {
+				Map<String, EndpointInfo<WebEndpointOperation>> endpoints = mapEndpoints(
+						discoverer.discoverEndpoints());
+				assertThat(endpoints).containsOnlyKeys("test");
+				EndpointInfo<WebEndpointOperation> endpoint = endpoints.get("test");
+				assertThat(requestPredicates(endpoint)).has(requestPredicates(
+						path("custom/test").httpMethod(WebEndpointHttpMethod.GET).consumes()
+								.produces("application/json"),
+						path("custom/test/{id}").httpMethod(WebEndpointHttpMethod.GET).consumes()
+								.produces("application/json")));
+			});
+	}
+
 	private void load(Class<?> configuration,
 			Consumer<WebAnnotationEndpointDiscoverer> consumer) {
-		this.load((id) -> null, configuration, consumer);
+		this.load((id) -> null, (id) -> id, configuration, consumer);
 	}
 
 	private void load(CachingConfigurationFactory cachingConfigurationFactory,
+			EndpointPathResolver endpointPathResolver,
 			Class<?> configuration, Consumer<WebAnnotationEndpointDiscoverer> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);
@@ -254,7 +271,8 @@ public class WebAnnotationEndpointDiscovererTests {
 							cachingConfigurationFactory,
 							new EndpointMediaTypes(
 									Collections.singletonList("application/json"),
-									Collections.singletonList("application/json"))));
+									Collections.singletonList("application/json")),
+							endpointPathResolver));
 		}
 		finally {
 			context.close();
