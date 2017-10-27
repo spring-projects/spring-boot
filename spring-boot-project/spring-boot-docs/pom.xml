@@ -664,7 +664,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-core</artifactId>
+			<artifactId>spring-cloud-connectors-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
