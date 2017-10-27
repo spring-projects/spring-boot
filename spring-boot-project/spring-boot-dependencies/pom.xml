@@ -107,6 +107,7 @@
 		<junit.version>4.12</junit.version>
 		<junit-jupiter.version>5.0.1</junit-jupiter.version>
 		<junit-platform.version>1.0.1</junit-platform.version>
+		<kotlin.version>1.1.51</kotlin.version>
 		<lettuce.version>5.0.0.RELEASE</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.9.1</log4j2.version>
@@ -2245,6 +2246,26 @@
 				<version>${jdom2.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-reflect</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jre7</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jre8</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.jolokia</groupId>
 				<artifactId>jolokia-core</artifactId>
 				<version>${jolokia.version}</version>
@@ -2860,6 +2881,11 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>kotlin-maven-plugin</groupId>
+					<artifactId>org.jetbrains.kotlin</artifactId>
+					<version>${kotlin.version}</version>
+				</plugin>
 				<plugin>
 					<groupId>org.jooq</groupId>
 					<artifactId>jooq-codegen-maven</artifactId>
