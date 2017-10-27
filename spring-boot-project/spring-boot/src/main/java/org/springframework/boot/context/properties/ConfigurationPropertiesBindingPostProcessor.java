@@ -35,14 +35,11 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.validation.Validator;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
@@ -63,29 +60,15 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
 
-	private Iterable<PropertySource<?>> propertySources;
-
-	private Validator validator;
-
-	private ConversionService conversionService;
-
 	private BeanFactory beanFactory;
 
 	private Environment environment = new StandardEnvironment();
 
 	private ApplicationContext applicationContext;
 
-	private int order = Ordered.HIGHEST_PRECEDENCE + 1;
-
 	private ConfigurationPropertiesBinder configurationPropertiesBinder;
 
-	/**
-	 * Set the order of the bean.
-	 * @param order the order
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+	private PropertySources propertySources;
 
 	/**
 	 * Return the order of the bean.
@@ -93,31 +76,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 	 */
 	@Override
 	public int getOrder() {
-		return this.order;
-	}
-
-	/**
-	 * Set the property sources to bind.
-	 * @param propertySources the property sources
-	 */
-	public void setPropertySources(Iterable<PropertySource<?>> propertySources) {
-		this.propertySources = propertySources;
-	}
-
-	/**
-	 * Set the bean validator used to validate property fields.
-	 * @param validator the validator
-	 */
-	public void setValidator(Validator validator) {
-		this.validator = validator;
-	}
-
-	/**
-	 * Set the conversion service used to convert property values.
-	 * @param conversionService the conversion service
-	 */
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
 	/**
@@ -145,9 +104,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (this.propertySources == null) {
-			this.propertySources = deducePropertySources();
-		}
+		this.propertySources = deducePropertySources();
 	}
 
 	private PropertySources deducePropertySources() {
@@ -230,9 +187,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 	private ConfigurationPropertiesBinder getBinder() {
 		if (this.configurationPropertiesBinder == null) {
 			this.configurationPropertiesBinder = new ConfigurationPropertiesBinderBuilder(
-					this.applicationContext).withConversionService(this.conversionService)
-							.withValidator(this.validator)
-							.withPropertySources(this.propertySources).build();
+					this.applicationContext).withPropertySources(this.propertySources)
+							.build();
 		}
 		return this.configurationPropertiesBinder;
 	}
