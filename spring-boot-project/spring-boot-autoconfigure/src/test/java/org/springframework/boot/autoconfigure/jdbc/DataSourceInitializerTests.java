@@ -45,8 +45,8 @@ public class DataSourceInitializerTests {
 	@Test
 	public void initializeEmbeddedByDefault() {
 		try (HikariDataSource dataSource = createDataSource()) {
-			DataSourceInitializer initializer = new DataSourceInitializer(
-					dataSource, new DataSourceProperties());
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
+					new DataSourceProperties());
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 			assertThat(initializer.createSchema()).isTrue();
 			assertNumberOfRows(jdbcTemplate, 0);
@@ -60,8 +60,8 @@ public class DataSourceInitializerTests {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.ALWAYS);
-			DataSourceInitializer initializer = new DataSourceInitializer(
-					dataSource, properties);
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
+					properties);
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 			assertThat(initializer.createSchema()).isTrue();
 			assertNumberOfRows(jdbcTemplate, 0);
@@ -80,8 +80,8 @@ public class DataSourceInitializerTests {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.NEVER);
-			DataSourceInitializer initializer = new DataSourceInitializer(
-					dataSource, properties);
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
+					properties);
 			assertThat(initializer.createSchema()).isFalse();
 		}
 	}
@@ -95,15 +95,14 @@ public class DataSourceInitializerTests {
 		DataSource dataSource = mock(DataSource.class);
 		given(dataSource.getConnection()).willReturn(connection);
 
-		DataSourceInitializer initializer = new DataSourceInitializer(
-				dataSource, new DataSourceProperties());
+		DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
+				new DataSourceProperties());
 		assertThat(initializer.createSchema()).isFalse();
-		verify(dataSource.getConnection());
+		verify(dataSource).getConnection();
 	}
 
 	private HikariDataSource createDataSource() {
-		return DataSourceBuilder.create()
-				.type(HikariDataSource.class)
+		return DataSourceBuilder.create().type(HikariDataSource.class)
 				.url("jdbc:h2:mem:" + UUID.randomUUID().toString()).build();
 	}
 
