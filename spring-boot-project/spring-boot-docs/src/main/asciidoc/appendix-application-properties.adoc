@@ -487,7 +487,7 @@ content into your application; rather pick only the properties that you need.
 	spring.flyway.baseline-description= #
 	spring.flyway.baseline-on-migrate= #
 	spring.flyway.baseline-version=1 # version to start migration
-	spring.flyway.check-location=false # Check that migration scripts location exists.
+	spring.flyway.check-location=true # Check that migration scripts location exists.
 	spring.flyway.clean-disabled= #
 	spring.flyway.clean-on-validation-error= #
 	spring.flyway.enabled=true # Enable flyway.

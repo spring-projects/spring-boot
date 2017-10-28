@@ -173,8 +173,7 @@ public class FlywayAutoConfigurationTests {
 	public void checkLocationsAllMissing() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
-						"spring.flyway.locations:classpath:db/missing1,classpath:db/migration2",
-						"spring.flyway.check-location:true")
+						"spring.flyway.locations:classpath:db/missing1,classpath:db/migration2")
 				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure()
@@ -188,8 +187,7 @@ public class FlywayAutoConfigurationTests {
 	public void checkLocationsAllExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
-						"spring.flyway.locations:classpath:db/changelog,classpath:db/migration",
-						"spring.flyway.check-location:true")
+						"spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
