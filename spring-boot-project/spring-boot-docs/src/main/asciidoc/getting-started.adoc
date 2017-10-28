@@ -6,8 +6,8 @@
 If you are getting started with Spring Boot, or "Spring" in general, start by reading
 this section. It answers the basic "`what?`", "`how?`" and "`why?`" questions. It includes
 an introduction to Spring Boot, along with installation instructions.
-We then walk you through building your first Spring Boot application, discussing some core principles as
-we go.
+We then walk you through building your first Spring Boot application, discussing some core
+principles as we go.
 --
 
 
@@ -15,12 +15,12 @@ we go.
 == Introducing Spring Boot
 Spring Boot makes it easy to create stand-alone, production-grade Spring based
 Applications that you can run. We take an opinionated view of the Spring
-platform and third-party libraries, so that you can get started with minimum fuss. Most Spring
-Boot applications need very little Spring configuration.
+platform and third-party libraries, so that you can get started with minimum fuss. Most
+Spring Boot applications need very little Spring configuration.
 
-You can use Spring Boot to create Java applications that can be started by using `java -jar`
-or more traditional war deployments. We also provide a command line tool that runs
-"`spring scripts`".
+You can use Spring Boot to create Java applications that can be started by using
+`java -jar` or more traditional war deployments. We also provide a command line tool that
+runs "`spring scripts`".
 
 Our primary goals are:
 
@@ -29,7 +29,8 @@ Spring development.
 * Be opinionated out of the box but get out of the way quickly as requirements start to
 diverge from the defaults.
 * Provide a range of non-functional features that are common to large classes of projects
-(such as embedded servers, security, metrics, health checks, and externalized configuration).
+(such as embedded servers, security, metrics, health checks, and externalized
+configuration).
 * Absolutely no code generation and no requirement for XML configuration.
 
 
@@ -74,18 +75,18 @@ begin, you should check your current Java installation by using the following co
 ----
 
 If you are new to Java development or if you want to experiment with Spring Boot,
-you might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> (Command Line Interface) first,
-otherwise, read on for "`classic`" installation instructions.
+you might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> (Command
+Line Interface) first, otherwise, read on for "`classic`" installation instructions.
 
 
 
 [[getting-started-installation-instructions-for-java]]
 === Installation Instructions for the Java Developer
-You can use Spring Boot in the same way as any standard Java library. To do so, include the
-appropriate `+spring-boot-*.jar+` files on your classpath. Spring Boot does not require
-any special tools integration, so you can use any IDE or text editor. Also, there is
-nothing special about a Spring Boot application, so you can run and debug a Spring Boot application as you would
-any other Java program.
+You can use Spring Boot in the same way as any standard Java library. To do so, include
+the appropriate `+spring-boot-*.jar+` files on your classpath. Spring Boot does not
+require any special tools integration, so you can use any IDE or text editor. Also, there
+is nothing special about a Spring Boot application, so you can run and debug a Spring Boot
+application as you would any other Java program.
 
 Although you _could_ copy Spring Boot jars, we generally recommend that you use a
 build tool that supports dependency management (such as Maven or Gradle).
@@ -191,8 +192,9 @@ can follow the instructions at http://www.gradle.org/.
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more
 <<using-spring-boot.adoc#using-boot-starter, "`Starters`">>. Spring Boot
-provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle plugin>>
-that can be used to simplify dependency declarations and to create executable jars.
+provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle
+plugin>> that can be used to simplify dependency declarations and to create executable
+jars.
 
 .Gradle Wrapper
 ****
@@ -251,8 +253,8 @@ endif::[]
 
 [[getting-started-installing-the-cli]]
 === Installing the Spring Boot CLI
-The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly
-prototype with Spring. It lets you run http://groovy-lang.org/[Groovy] scripts,
+The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to
+quickly prototype with Spring. It lets you run http://groovy-lang.org/[Groovy] scripts,
 which means that you have a familiar Java-like syntax without so much boilerplate code.
 
 You do not need to use the CLI to work with Spring Boot, but it is definitely the quickest
@@ -267,8 +269,8 @@ You can download the Spring CLI distribution from the Spring software repository
 * http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
 * http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
 
-Cutting edge http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions]
-are also available.
+Cutting edge http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot
+distributions] are also available.
 
 Once downloaded, follow the {github-raw}/spring-boot-project/spring-boot-cli/src/main/content/INSTALL.txt[INSTALL.txt]
 instructions from the unpacked archive. In summary, there is a `spring` script
@@ -363,9 +365,10 @@ The Spring Boot CLI includes scripts that provide command completion for
 the http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
 http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
 `spring`) in any shell or put it in your personal or system-wide bash completion
-initialization. On a Debian system, the system-wide scripts are in `/shell-completion/bash`
-and all scripts in that directory are executed when a new shell starts. For example, to run the script
-manually if you have installed using SDKMAN!, use the following commands:
+initialization. On a Debian system, the system-wide scripts are in
+`/shell-completion/bash` and all scripts in that directory are executed when a new shell
+starts. For example, to run the script manually if you have installed using SDKMAN!, use
+the following commands:
 
 [indent=0]
 ----
@@ -432,9 +435,9 @@ update your `PATH` environment variable to remove any older references.
 
 [[getting-started-first-application]]
 == Developing Your First Spring Boot Application
-This section describes how to develop a simple "`Hello World!`" web application that highlights some
-of Spring Boot's key features. We use Maven to build this project, since most IDEs
-support it.
+This section describes how to develop a simple "`Hello World!`" web application that
+highlights some of Spring Boot's key features. We use Maven to build this project, since
+most IDEs support it.
 
 [TIP]
 ====
@@ -444,12 +447,12 @@ that use Spring Boot. If you need to solve a specific problem, check there first
 You can shortcut the steps below by going to https://start.spring.io and choosing the
 "Web" starter from the dependencies searcher. Doing so generates a new
 project structure so that you can <<getting-started-first-application-code,start coding
-right away>>. Check the https://github.com/spring-io/initializr[Spring Initializr documentation] for
-more details.
+right away>>. Check the https://github.com/spring-io/initializr[Spring Initializr
+documentation] for more details.
 ====
 
-Before we begin, open a terminal and run the following commands to ensure that you have valid versions of Java and Maven
-installed:
+Before we begin, open a terminal and run the following commands to ensure that you have
+valid versions of Java and Maven installed:
 
 [indent=0]
 ----
@@ -523,8 +526,9 @@ endif::[]
 	</project>
 ----
 
-The preceding listing should give you a working build. You can test it by running `mvn package` (for
-now, you can ignore the "`jar will be empty - no content was marked for inclusion!`" warning).
+The preceding listing should give you a working build. You can test it by running
+`mvn package` (for now, you can ignore the "`jar will be empty - no content was marked for
+inclusion!`" warning).
 
 NOTE: At this point, you could import the project into an IDE (most modern Java IDEs
 include built-in support for Maven). For simplicity, we continue to use a plain
@@ -553,10 +557,10 @@ currently have by running the following command:
 	[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
 ----
 
-The `mvn dependency:tree` command prints a tree representation of your project dependencies.
-You can see that `spring-boot-starter-parent` provides no
-dependencies by itself. To add the necessary dependencies, edit your `pom.xml` and add the `spring-boot-starter-web` dependency
-immediately below the `parent` section:
+The `mvn dependency:tree` command prints a tree representation of your project
+dependencies. You can see that `spring-boot-starter-parent` provides no
+dependencies by itself. To add the necessary dependencies, edit your `pom.xml` and add the
+`spring-boot-starter-web` dependency immediately below the `parent` section:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -575,9 +579,9 @@ additional dependencies, including the Tomcat web server and Spring Boot itself.
 
 [[getting-started-first-application-code]]
 === Writing the Code
-To finish our application, we need to create a single Java file. By default, Maven compiles sources
-from `src/main/java`, so you need to create that folder structure and then add a
-file named `src/main/java/Example.java` to contain the following code:
+To finish our application, we need to create a single Java file. By default, Maven
+compiles sources from `src/main/java`, so you need to create that folder structure and
+then add a file named `src/main/java/Example.java` to contain the following code:
 
 [source,java,indent=0]
 ----
@@ -619,8 +623,8 @@ that any HTTP request with the `/` path should be mapped to the `home` method. T
 back to the caller.
 
 TIP: The `@RestController` and `@RequestMapping` annotations are Spring MVC annotations.
-(They are not specific to Spring Boot.) See the {spring-reference}web.html#mvc[MVC section] in
-the Spring Reference Documentation for more details.
+(They are not specific to Spring Boot.) See the {spring-reference}web.html#mvc[MVC
+section] in the Spring Reference Documentation for more details.
 
 
 
@@ -702,9 +706,9 @@ themselves contained within a jar). This can be problematic if you are looking t
 distribute a self-contained application.
 
 To solve this problem, many developers use "`uber`" jars. An uber jar packages
-all the classes from all the application's dependencies into a single archive. The problem with this approach is that
-it becomes hard to see which libraries are in your application. It can
-also be problematic if the same filename is used (but with different content) in
+all the classes from all the application's dependencies into a single archive. The problem
+with this approach is that it becomes hard to see which libraries are in your application.
+It can also be problematic if the same filename is used (but with different content) in
 multiple jars.
 
 Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different
@@ -753,7 +757,8 @@ Save your `pom.xml` and run `mvn package` from the command line, as follows:
 ----
 
 If you look in the `target` directory, you should see `myproject-0.0.1-SNAPSHOT.jar`. The
-file should be around 10 MB in size. If you want to peek inside, you can use `jar tvf`, as follows:
+file should be around 10 MB in size. If you want to peek inside, you can use `jar tvf`, as
+follows:
 
 [indent=0]
 ----
