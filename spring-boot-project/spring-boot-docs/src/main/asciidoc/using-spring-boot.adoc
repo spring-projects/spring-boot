@@ -7,12 +7,11 @@ This section goes into more detail about how you should use Spring Boot. It cove
 such as build systems, auto-configuration, and how to run your applications. We also cover
 some Spring Boot best practices. Although there is nothing particularly special about
 Spring Boot (it is just another library that you can consume), there are a few
-recommendations that, when followed, make your development process a
-little easier.
+recommendations that, when followed, make your development process a little easier.
 
 If you are starting out with Spring Boot, you should probably read the
-_<<getting-started.adoc#getting-started, Getting Started>>_ guide before diving into
-this section.
+_<<getting-started.adoc#getting-started, Getting Started>>_ guide before diving into this
+section.
 --
 
 
@@ -20,26 +19,25 @@ this section.
 [[using-boot-build-systems]]
 == Build Systems
 It is strongly recommended that you choose a build system that supports
-<<using-boot-dependency-management,_dependency management_>> and
-that can consume artifacts published to the "`Maven Central`" repository. We
-would recommend that you choose Maven or Gradle. It is possible to get Spring Boot to
-work with other build systems (Ant, for example), but they are not particularly well
-supported.
+<<using-boot-dependency-management,_dependency management_>> and that can consume
+artifacts published to the "`Maven Central`" repository. We would recommend that you
+choose Maven or Gradle. It is possible to get Spring Boot to work with other build systems
+(Ant, for example), but they are not particularly well supported.
 
 
 
 [[using-boot-dependency-management]]
 === Dependency Management
 Each release of Spring Boot provides a curated list of dependencies that it supports. In
-practice, you do not need to provide a version for any of these dependencies in your
-build configuration, as Spring Boot is managing that for you. When you upgrade Spring
-Boot itself, these dependencies are upgraded as well in a consistent way.
+practice, you do not need to provide a version for any of these dependencies in your build
+configuration, as Spring Boot is managing that for you. When you upgrade Spring Boot
+itself, these dependencies are upgraded as well in a consistent way.
 
 NOTE: You can still specify a version and override Spring Boot's recommendations if you
 need to do so.
 
-The curated list contains all the spring modules that you can use with Spring Boot as
-well as a refined list of third party libraries. The list is available as a standard
+The curated list contains all the spring modules that you can use with Spring Boot as well
+as a refined list of third party libraries. The list is available as a standard
 <<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>>
 that can be used with both <<using-boot-maven-parent-pom,Maven>> and
 <<using-boot-gradle,Gradle>>.
@@ -57,20 +55,21 @@ defaults. The parent project provides the following features:
 * Java 1.8 as the default compiler level.
 * UTF-8 source encoding.
 * A <<using-boot-dependency-management,Dependency Management section>>, inherited from
-the spring-boot-dependencies pom, that manages the versions of common dependencies. This
-dependency management lets you omit <version> tags for those dependencies when used
-in your own pom.
-* Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
+  the spring-boot-dependencies pom, that manages the versions of common dependencies. This
+  dependency management lets you omit <version> tags for those dependencies when used in
+  your own pom.
+* Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource
+  filtering].
 * Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
   https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and
   http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including
-  profile-specific files (for example, `application-foo.properties` and `application-foo.yml`)
+  profile-specific files (for example, `application-foo.properties` and
+  `application-foo.yml`)
 
-Note that, since the `application.properties` and `application.yml` files accept
-Spring style placeholders (`${...}`), the Maven filtering is changed to
-use `@..@` placeholders. (You can override that by setting a Maven property called
-`resource.delimiter`.)
+Note that, since the `application.properties` and `application.yml` files accept Spring
+style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
+(You can override that by setting a Maven property called `resource.delimiter`.)
 
 
 
@@ -93,8 +92,8 @@ NOTE: You should need to specify only the Spring Boot version number on this dep
 If you import additional starters, you can safely omit the version number.
 
 With that setup, you can also override individual dependencies by overriding a property
-in your own project. For instance, to upgrade to another Spring Data release train, you would
-add the following to your `pom.xml`:
+in your own project. For instance, to upgrade to another Spring Data release train, you
+would add the following to your `pom.xml`:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -134,11 +133,11 @@ dependency, as follows:
 	</dependencyManagement>
 ----
 
-The preceding sample setup does not let you override individual dependencies by using a property, as
-explained above. To achieve the same result, you need to add an entry in the
-`dependencyManagement` of your project **before** the `spring-boot-dependencies`
-entry. For instance, to upgrade to another Spring Data release train, you could add the
-following element to your `pom.xml`:
+The preceding sample setup does not let you override individual dependencies by using a
+property, as explained above. To achieve the same result, you need to add an entry in the
+`dependencyManagement` of your project **before** the `spring-boot-dependencies` entry.
+For instance, to upgrade to another Spring Data release train, you could add the following
+element to your `pom.xml`:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -163,16 +162,16 @@ following element to your `pom.xml`:
 	</dependencyManagement>
 ----
 
-NOTE: In the preceding example, we specify a _BOM_, but any dependency type can be overridden
-in the same way.
+NOTE: In the preceding example, we specify a _BOM_, but any dependency type can be
+overridden in the same way.
 
 
 
 [[using-boot-maven-plugin]]
 ==== Using the Spring Boot Maven Plugin
-Spring Boot includes a <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>>
-that can package the project as an executable jar. Add the plugin to your `<plugins>`
-section if you want to use it, as shown in the following example:
+Spring Boot includes a <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven
+plugin>> that can package the project as an executable jar. Add the plugin to your
+`<plugins>` section if you want to use it, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -187,8 +186,8 @@ section if you want to use it, as shown in the following example:
 ----
 
 NOTE: If you use the Spring Boot starter parent pom, you need to add only the plugin.
-There is no need to configure it unless you want to change the settings defined in
-the parent.
+There is no need to configure it unless you want to change the settings defined in the
+parent.
 
 
 
@@ -207,7 +206,8 @@ It is possible to build a Spring Boot project using Apache Ant+Ivy. The
 `spring-boot-antlib` "`AntLib`" module is also available to help Ant create executable
 jars.
 
-To declare dependencies, a typical `ivy.xml` file looks something like the following example:
+To declare dependencies, a typical `ivy.xml` file looks something like the following
+example:
 
 [source,xml,indent=0]
 ----
@@ -288,11 +288,11 @@ search dependencies by name. For example, with the appropriate Eclipse or STS pl
 installed, you can simply hit `ctrl-space` in the POM editor and type
 "`spring-boot-starter`" for a complete list.
 
-As explained in the <<spring-boot-features#boot-features-custom-starter,Creating Your Own Starter>>
-section, third party starters should not start with `spring-boot`, as it is reserved for
-official Spring Boot artifacts. Rather, a third-party starter typically starts with the
-name of the project. For example, a third-party starter project called `thirdpartyproject`
-would typically be named `thirdpartyproject-spring-boot-starter`.
+As explained in the <<spring-boot-features#boot-features-custom-starter,Creating Your Own
+Starter>> section, third party starters should not start with `spring-boot`, as it is
+reserved for official Spring Boot artifacts. Rather, a third-party starter typically
+starts with the name of the project. For example, a third-party starter project called
+`thirdpartyproject` would typically be named `thirdpartyproject-spring-boot-starter`.
 ****
 
 The following application starters are provided by Spring Boot under the
@@ -307,15 +307,16 @@ _<<production-ready-features.adoc#production-ready, production ready>>_ features
 .Spring Boot production starters
 include::../../../target/generated-resources/production-starters.adoc[]
 
-Finally, Spring Boot also includes the following starters that can be used if you want to exclude
+Finally, Spring Boot also includes the following starters that can be used if you want to
+exclude
 or swap specific technical facets:
 
 .Spring Boot technical starters
 include::../../../target/generated-resources/technical-starters.adoc[]
 
 TIP: For a list of additional community contributed starters, see the
-{github-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the
-`spring-boot-starters` module on GitHub.
+{github-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in
+the `spring-boot-starters` module on GitHub.
 
 
 
@@ -331,11 +332,11 @@ best practices that help.
 When a class does not include a `package` declaration, it is considered to be in the
 "`default package`". The use of the "`default package`" is generally discouraged and
 should be avoided. It can cause particular problems for Spring Boot applications that
-use the `@ComponentScan`, `@EntityScan`, or `@SpringBootApplication` annotations, since every
-class from every jar is read.
+use the `@ComponentScan`, `@EntityScan`, or `@SpringBootApplication` annotations, since
+every class from every jar is read.
 
-TIP: We recommend that you follow Java's recommended package naming conventions
-and use a reversed domain name (for example, `com.example.project`).
+TIP: We recommend that you follow Java's recommended package naming conventions and use a
+reversed domain name (for example, `com.example.project`).
 
 
 
@@ -347,9 +348,9 @@ main class, and it implicitly defines a base "`search package`" for certain item
 example, if you are writing a JPA application, the package of the
 `@EnableAutoConfiguration` annotated class is used to search for `@Entity` items.
 
-Using a root package also lets the `@ComponentScan` annotation be used without
-needing to specify a `basePackage` attribute. You can also use the
-`@SpringBootApplication` annotation if your main class is in the root package.
+Using a root package also lets the `@ComponentScan` annotation be used without needing to
+specify a `basePackage` attribute. You can also use the `@SpringBootApplication`
+annotation if your main class is in the root package.
 
 The following listing shows a typical layout:
 
@@ -402,9 +403,9 @@ The `Application.java` file would declare the `main` method, along with the basi
 [[using-boot-configuration-classes]]
 == Configuration Classes
 Spring Boot favors Java-based configuration. Although it is possible to use
-`SpringApplication` with XML sources, we generally recommend that your primary
-source be a single `@Configuration` class. Usually the class that defines the `main`
-method is a good candidate as the primary `@Configuration`.
+`SpringApplication` with XML sources, we generally recommend that your primary source be a
+single `@Configuration` class. Usually the class that defines the `main` method is a good
+candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
 configuration. If possible, always try to use the equivalent Java-based configuration.
@@ -414,9 +415,9 @@ Searching for `+Enable*+` annotations can be a good starting point.
 
 [[using-boot-importing-configuration]]
 === Importing Additional Configuration Classes
-You need not put all your `@Configuration` into a single class. The `@Import`
-annotation can be used to import additional configuration classes. Alternatively, you
-can use `@ComponentScan` to automatically pick up all Spring components, including
+You need not put all your `@Configuration` into a single class. The `@Import` annotation
+can be used to import additional configuration classes. Alternatively, you can use
+`@ComponentScan` to automatically pick up all Spring components, including
 `@Configuration` classes.
 
 
@@ -424,8 +425,8 @@ can use `@ComponentScan` to automatically pick up all Spring components, includi
 [[using-boot-importing-xml-configuration]]
 === Importing XML Configuration
 If you absolutely must use XML based configuration, we recommend that you still start
-with a `@Configuration` class. You can then use an `@ImportResource`
-annotation to load XML configuration files.
+with a `@Configuration` class. You can then use an `@ImportResource` annotation to load
+XML configuration files.
 
 
 
@@ -447,20 +448,20 @@ recommend that you add it to your primary `@Configuration` class.
 [[using-boot-replacing-auto-configuration]]
 === Gradually Replacing Auto-configuration
 Auto-configuration is noninvasive. At any point, you can start to define your own
-configuration to replace specific parts of the auto-configuration. For example, if
-you add your own `DataSource` bean, the default embedded database support backs away.
+configuration to replace specific parts of the auto-configuration. For example, if you add
+your own `DataSource` bean, the default embedded database support backs away.
 
-If you need to find out what auto-configuration is currently being applied, and why,
-start your application with the `--debug` switch. Doing so enables debug logs for a
-selection of core loggers and logs an auto-configuration report to the console.
+If you need to find out what auto-configuration is currently being applied, and why, start
+your application with the `--debug` switch. Doing so enables debug logs for a selection of
+core loggers and logs an auto-configuration report to the console.
 
 
 
 [[using-boot-disabling-specific-auto-configuration]]
 === Disabling Specific Auto-configuration Classes
-If you find that specific auto-configuration classes that you do not want are being applied,
-you can use the exclude attribute of `@EnableAutoConfiguration` to disable them, as shown
-in the following example:
+If you find that specific auto-configuration classes that you do not want are being
+applied, you can use the exclude attribute of `@EnableAutoConfiguration` to disable them,
+as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -474,10 +475,10 @@ in the following example:
 	}
 ----
 
-If the class is not on the classpath, you can use the `excludeName` attribute of
-the annotation and specify the fully qualified name instead. Finally, you can also
-control the list of auto-configuration classes to exclude by using the
-`spring.autoconfigure.exclude` property.
+If the class is not on the classpath, you can use the `excludeName` attribute of the
+annotation and specify the fully qualified name instead. Finally, you can also control the
+list of auto-configuration classes to exclude by using the `spring.autoconfigure.exclude`
+property.
 
 TIP: You can define exclusions both at the annotation level and by using the property.
 
@@ -536,8 +537,8 @@ example:
 	}
 ----
 
-TIP: Notice how using constructor injection lets the `riskAssessor` field be marked
-as `final`, indicating that it cannot be subsequently changed.
+TIP: Notice how using constructor injection lets the `riskAssessor` field be marked as
+`final`, indicating that it cannot be subsequently changed.
 
 
 
@@ -545,8 +546,9 @@ as `final`, indicating that it cannot be subsequently changed.
 == Using the @SpringBootApplication Annotation
 Many Spring Boot developers always have their main class annotated with `@Configuration`,
 `@EnableAutoConfiguration`, and `@ComponentScan`. Since these annotations are so frequently
-used together (especially if you follow the <<using-boot-structuring-your-code, best practices>>
-above), Spring Boot provides a convenient `@SpringBootApplication` alternative.
+used together (especially if you follow the <<using-boot-structuring-your-code, best
+practices>> above), Spring Boot provides a convenient `@SpringBootApplication`
+alternative.
 
 The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 `@EnableAutoConfiguration`, and `@ComponentScan` with their default attributes, as shown
@@ -589,18 +591,18 @@ application as a war file, you should refer to your server and IDE documentation
 [[using-boot-running-from-an-ide]]
 === Running from an IDE
 You can run a Spring Boot application from your IDE as a simple Java application. However,
-you first need to import your project. Import steps vary depending on your IDE
-and build system. Most IDEs can import Maven projects directly. For example, Eclipse users
-can select `Import...` -> `Existing Maven Projects` from the `File` menu.
+you first need to import your project. Import steps vary depending on your IDE and build
+system. Most IDEs can import Maven projects directly. For example, Eclipse users can
+select `Import...` -> `Existing Maven Projects` from the `File` menu.
 
 If you cannot directly import your project into your IDE, you may be able to generate IDE
 metadata by using a build plugin. Maven includes plugins for
 http://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
-http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]. Gradle offers plugins
-for {gradle-user-guide}/userguide.html[various IDEs].
+http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]. Gradle offers plugins for
+{gradle-user-guide}/userguide.html[various IDEs].
 
-TIP: If you accidentally run a web application twice, you see a "`Port already in
-use`" error. STS users can use the `Relaunch` button rather than the `Run` button to ensure that
+TIP: If you accidentally run a web application twice, you see a "`Port already in use`"
+error. STS users can use the `Relaunch` button rather than the `Run` button to ensure that
 any existing instance is closed.
 
 
@@ -616,7 +618,8 @@ run your application using `java -jar`, as shown in the following example:
 ----
 
 It is also possible to run a packaged application with remote debugging support enabled.
-Doing so lets you attach a debugger to your packaged application, as shown in the following example:
+Doing so lets you attach a debugger to your packaged application, as shown in the
+following example:
 
 [indent=0,subs="attributes"]
 ----
@@ -636,7 +639,8 @@ and run your application. Applications run in an exploded form, as they do in yo
 	$ mvn spring-boot:run
 ----
 
-You might also want to use the `MAVEN_OPTS` operating system environment variable, as shown in the following example:
+You might also want to use the `MAVEN_OPTS` operating system environment variable, as
+shown in the following example:
 
 [indent=0,subs="attributes"]
 ----
@@ -647,8 +651,8 @@ You might also want to use the `MAVEN_OPTS` operating system environment variabl
 
 [[using-boot-running-with-the-gradle-plugin]]
 === Using the Gradle Plugin
-The Spring Boot Gradle plugin also includes a `bootRun` task that can be used to run
-your application in an exploded form. The `bootRun` task is added whenever you apply the
+The Spring Boot Gradle plugin also includes a `bootRun` task that can be used to run your
+application in an exploded form. The `bootRun` task is added whenever you apply
 the `org.springframework.boot` and `java` plugins and is shown in the following example:
 
 [indent=0,subs="attributes"]
@@ -656,7 +660,8 @@ the `org.springframework.boot` and `java` plugins and is shown in the following 
 	$ gradle bootRun
 ----
 
-You might also want to use the `JAVA_OPTS` operating system environment variable, as shown in the following example:
+You might also want to use the `JAVA_OPTS` operating system environment variable, as shown
+in the following example:
 
 [indent=0,subs="attributes"]
 ----
@@ -684,7 +689,8 @@ See the <<using-boot-devtools>> section below and the
 Spring Boot includes an additional set of tools that can make the application
 development experience a little more pleasant. The `spring-boot-devtools` module can be
 included in any project to provide additional development-time features. To include
-devtools support, add the module dependency to your build, as shown in the following listings for Maven and Gradle:
+devtools support, add the module dependency to your build, as shown in the following
+listings for Maven and Gradle:
 
 .Maven
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -724,9 +730,9 @@ Maven and Gradle plugins.
 [[using-boot-devtools-property-defaults]]
 === Property Defaults
 Several of the libraries supported by Spring Boot use caches to improve performance. For
-example, <<spring-boot-features#boot-features-spring-mvc-template-engines,template engines>>
-cache compiled templates to avoid repeatedly parsing template files.
-Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
+example, <<spring-boot-features#boot-features-spring-mvc-template-engines,template
+engines>> cache compiled templates to avoid repeatedly parsing template files. Also,
+Spring MVC can add HTTP caching headers to responses when serving static resources.
 
 While caching is very beneficial in production, it can be counter-productive during
 development, preventing you from seeing the changes you just made in your application.
@@ -734,8 +740,8 @@ For this reason, spring-boot-devtools disables the caching options by default.
 
 Cache options are usually configured by settings in your `application.properties` file.
 For example, Thymeleaf offers the `spring.thymeleaf.cache` property. Rather than needing
-to set these properties manually, the `spring-boot-devtools` module automatically
-applies sensible development-time configuration.
+to set these properties manually, the `spring-boot-devtools` module automatically applies
+sensible development-time configuration.
 
 TIP: For a complete list of the properties that are applied by the devtools, see
 {sc-spring-boot-devtools}/env/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
@@ -744,35 +750,35 @@ TIP: For a complete list of the properties that are applied by the devtools, see
 
 [[using-boot-devtools-restart]]
 === Automatic Restart
-Applications that use `spring-boot-devtools` automatically restart whenever files
-on the classpath change. This can be a useful feature when working in an IDE, as it gives
-a very fast feedback loop for code changes. By default, any entry on the classpath that
-points to a folder is monitored for changes. Note that certain resources, such as
-static assets and view templates, <<using-boot-devtools-restart-exclude, do not need to
-restart the application>>.
+Applications that use `spring-boot-devtools` automatically restart whenever files on the
+classpath change. This can be a useful feature when working in an IDE, as it gives a very
+fast feedback loop for code changes. By default, any entry on the classpath that points to
+a folder is monitored for changes. Note that certain resources, such as static assets and
+view templates, <<using-boot-devtools-restart-exclude, do not need to restart the
+application>>.
 
 .Triggering a restart
 ****
 As DevTools monitors classpath resources, the only way to trigger a restart is to update
 the classpath. The way in which you cause the classpath to be updated depends on the IDE
-that you are using. In Eclipse, saving a modified file causes the classpath to be
-updated and triggers a restart. In IntelliJ IDEA, building the project (`Build +->+ Make
-Project`) will have the same effect.
+that you are using. In Eclipse, saving a modified file causes the classpath to be updated
+and triggers a restart. In IntelliJ IDEA, building the project (`Build +->+ Make Project`)
+will have the same effect.
 ****
 
 [NOTE]
 ====
 As long as forking is enabled, you can also start your application by using the supported
-build plugins (Maven and Gradle), since DevTools needs an isolated application
-classloader to operate properly. By default, Gradle and Maven do that when they detect
-DevTools on the classpath.
+build plugins (Maven and Gradle), since DevTools needs an isolated application classloader
+to operate properly. By default, Gradle and Maven do that when they detect DevTools on the
+classpath.
 
 ====
 
 TIP: Automatic restart works very well when used with LiveReload.
-<<using-boot-devtools-livereload,See the LiveReload section>> for details. If you use JRebel, automatic
-restarts are disabled in favor of dynamic class reloading. Other devtools features
-(such as LiveReload and property overrides) can still be used.
+<<using-boot-devtools-livereload,See the LiveReload section>> for details. If you use
+JRebel, automatic restarts are disabled in favor of dynamic class reloading. Other
+devtools features (such as LiveReload and property overrides) can still be used.
 
 NOTE: DevTools relies on the application context's shutdown hook to close it during a
 restart. It does not work correctly if you have disabled the shutdown hook
@@ -789,9 +795,9 @@ the `getResource` method on the `ApplicationContext` is not supported.
 [[using-spring-boot-restart-vs-reload]]
 .Restart vs Reload
 ****
-The restart technology provided by Spring Boot works by using two classloaders.
-Classes that do not change (for example, those from third-party jars) are loaded into a
-_base_ classloader. Classes that you are actively developing are loaded into a _restart_
+The restart technology provided by Spring Boot works by using two classloaders. Classes
+that do not change (for example, those from third-party jars) are loaded into a _base_
+classloader. Classes that you are actively developing are loaded into a _restart_
 classloader. When the application is restarted, the _restart_ classloader is thrown away
 and a new one is created. This approach means that application restarts are typically much
 faster than "`cold starts`", since the _base_ classloader is already available and
@@ -844,8 +850,9 @@ If you do not want to use the restart feature, you can disable it by using the
 watch for file changes).
 
 If you need to _completely_ disable restart support (for example, because it doesn't work
-with a specific library), you need to set the `spring.devtools.restart.enabled` `System` property to `false` before calling
-`SpringApplication.run(...)`, as shown in the following example:
+with a specific library), you need to set the `spring.devtools.restart.enabled` `System`
+property to `false` before calling `SpringApplication.run(...)`, as shown in the following
+example:
 
 [source,java,indent=0]
 ----
@@ -866,7 +873,8 @@ Changing the file only triggers the check and the restart will only occur if Dev
 detected it has to do something. The trigger file can be updated manually or via an IDE
 plugin.
 
-To use a trigger file, set the `spring.devtools.restart.trigger-file` property to the path of your trigger file.
+To use a trigger file, set the `spring.devtools.restart.trigger-file` property to the path
+of your trigger file.
 
 TIP: You might want to set `spring.devtools.restart.trigger-file` as a
 <<using-boot-devtools-globalsettings,global setting>>, so that all your projects behave
@@ -880,13 +888,13 @@ As described in the <<using-spring-boot-restart-vs-reload>> section above, resta
 functionality is implemented by using two classloaders. For most applications, this
 approach works well. However, sometimes it can cause classloading issues.
 
-By default, any open project in your IDE is loaded with the "`restart`" classloader,
-and any regular `.jar` file is loaded with the "`base`" classloader. If you work on
-a multi-module project, and not every module is imported into your IDE, you may need to
+By default, any open project in your IDE is loaded with the "`restart`" classloader, and
+any regular `.jar` file is loaded with the "`base`" classloader. If you work on a
+multi-module project, and not every module is imported into your IDE, you may need to
 customize things. To do so, you can create a `META-INF/spring-devtools.properties` file.
 
-The `spring-devtools.properties` file can contain properties prefixed with `restart.exclude` and
-`restart.include`. The `include` elements are items that should be
+The `spring-devtools.properties` file can contain properties prefixed with
+`restart.exclude` and `restart.include`. The `include` elements are items that should be
 pulled up into the "`restart`" classloader, and the `exclude` elements are items that
 should be pushed down into the "`base`" classloader. The value of the property is a regex
 pattern that is applied to the classpath, as shown in the following example:
@@ -908,8 +916,8 @@ package files inside your project, or in the libraries that the project consumes
 [[using-boot-devtools-known-restart-limitations]]
 ==== Known Limitations
 Restart functionality does not work well with objects that are deserialized by using a
-standard `ObjectInputStream`. If you need to deserialize data, you may need to use Spring's
-`ConfigurableObjectInputStream` in combination with
+standard `ObjectInputStream`. If you need to deserialize data, you may need to use
+Spring's `ConfigurableObjectInputStream` in combination with
 `Thread.currentThread().getContextClassLoader()`.
 
 Unfortunately, several third-party libraries deserialize without considering the context
@@ -938,10 +946,10 @@ from your IDE, only the first has LiveReload support.
 === Global Settings
 You can configure global devtools settings by adding a file named
 `.spring-boot-devtools.properties` to your `$HOME` folder (note that the filename starts
-with "`.`"). Any properties added to this file apply to _all_ Spring Boot
-applications on your machine that use devtools. For example, to configure restart to
-always use a <<using-boot-devtools-restart-triggerfile, trigger file>>, you would add
-the following property:
+with "`.`"). Any properties added to this file apply to _all_ Spring Boot applications on
+your machine that use devtools. For example, to configure restart to always use a
+<<using-boot-devtools-restart-triggerfile, trigger file>>, you would add the following
+property:
 
 .~/.spring-boot-devtools.properties
 [source,properties,indent=0]
@@ -955,7 +963,8 @@ the following property:
 === Remote Applications
 The Spring Boot developer tools are not just limited to local development. You can also
 use several features when running applications remotely. Remote support is opt-in. To
-enable it, you need to make sure that `devtools` is included in the repackaged archive, as shown in the following listing:
+enable it, you need to make sure that `devtools` is included in the repackaged archive, as
+shown in the following listing:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -972,7 +981,8 @@ enable it, you need to make sure that `devtools` is included in the repackaged a
 	</build>
 ----
 
-Then you need to set a `spring.devtools.remote.secret` property, as shown in the following example:
+Then you need to set a `spring.devtools.remote.secret` property, as shown in the following
+example:
 
 [source,properties,indent=0]
 ----
@@ -982,18 +992,18 @@ Then you need to set a `spring.devtools.remote.secret` property, as shown in the
 WARNING: Enabling `spring-boot-devtools` on a remote application is a security risk. You
 should never enable support on a production deployment.
 
-Remote devtools support is provided in two parts: a server-side endpoint that
-accepts connections and a client application that you run in your IDE. The server
-component is automatically enabled when the `spring.devtools.remote.secret` property
-is set. The client component must be launched manually.
+Remote devtools support is provided in two parts: a server-side endpoint that accepts
+connections and a client application that you run in your IDE. The server component is
+automatically enabled when the `spring.devtools.remote.secret` property is set. The client
+component must be launched manually.
 
 
 
 ==== Running the Remote Client Application
 The remote client application is designed to be run from within your IDE. You need to run
 `org.springframework.boot.devtools.RemoteSpringApplication` with the same classpath as
-the remote project that you connect to.
-The application's single required argument is the remote URL to which it connects.
+the remote project that you connect to. The application's single required argument is the
+remote URL to which it connects.
 
 For example, if you are using Eclipse or STS and you have a project named `my-app` that
 you have deployed to Cloud Foundry, you would do the following:
@@ -1028,8 +1038,8 @@ NOTE: Because the remote client is using the same classpath as the real applicat
 can directly read application properties. This is how the `spring.devtools.remote.secret`
 property is read and passed to the server for authentication.
 
-TIP: It is always advisable to use `https://` as the connection protocol, so that traffic is
-encrypted and passwords cannot be intercepted.
+TIP: It is always advisable to use `https://` as the connection protocol, so that traffic
+is encrypted and passwords cannot be intercepted.
 
 TIP: If you need to use a proxy to access the remote application, configure the
 `spring.devtools.remote.proxy.host` and `spring.devtools.remote.proxy.port` properties.
@@ -1038,12 +1048,11 @@ TIP: If you need to use a proxy to access the remote application, configure the
 
 [[using-boot-devtools-remote-update]]
 ==== Remote Update
-The remote client monitors your application classpath for changes in the same way as
-the <<using-boot-devtools-restart,local restart>>. Any updated resource is pushed
-to the remote application and (_if required_) triggers a restart. This can be helpful
-if you iterate on a feature that uses a cloud service that you do not have locally.
-Generally, remote updates and restarts are much quicker than a full rebuild and deploy
-cycle.
+The remote client monitors your application classpath for changes in the same way as the
+<<using-boot-devtools-restart,local restart>>. Any updated resource is pushed to the
+remote application and (_if required_) triggers a restart. This can be helpful if you
+iterate on a feature that uses a cloud service that you do not have locally. Generally,
+remote updates and restarts are much quicker than a full rebuild and deploy cycle.
 
 NOTE: Files are only monitored when the remote client is running. If you change a file
 before starting the remote client, it is not pushed to the remote server.
@@ -1063,9 +1072,8 @@ _<<production-ready-features.adoc#production-ready>>_ for details.
 
 [[using-boot-whats-next]]
 == What to Read Next
-You should now understand how you can use Spring Boot and some best
-practices that you should follow. You can now go on to learn about specific
-_<<spring-boot-features#boot-features, Spring Boot features>>_ in depth, or you
-could skip ahead and read about the
-"`<<production-ready-features#production-ready, production ready>>`" aspects of Spring
-Boot.
+You should now understand how you can use Spring Boot and some best practices that you
+should follow. You can now go on to learn about specific
+_<<spring-boot-features#boot-features, Spring Boot features>>_ in depth, or you could skip
+ahead and read about the "`<<production-ready-features#production-ready, production
+ready>>`" aspects of Spring Boot.
