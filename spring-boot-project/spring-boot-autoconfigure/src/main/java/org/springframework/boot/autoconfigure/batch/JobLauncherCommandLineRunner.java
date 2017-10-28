@@ -132,7 +132,6 @@ public class JobLauncherCommandLineRunner
 				}
 				catch (NoSuchJobException ex) {
 					logger.debug("No job found in registry for job name: " + jobName);
-					continue;
 				}
 			}
 		}
@@ -144,11 +143,9 @@ public class JobLauncherCommandLineRunner
 			JobParametersNotFoundException {
 		JobParameters nextParameters = new JobParametersBuilder(jobParameters, this.jobExplorer)
 				.getNextJobParameters(job).toJobParameters();
-		if (nextParameters != null) {
-			JobExecution execution = this.jobLauncher.run(job, nextParameters);
-			if (this.publisher != null) {
-				this.publisher.publishEvent(new JobExecutionEvent(execution));
-			}
+		JobExecution execution = this.jobLauncher.run(job, nextParameters);
+		if (this.publisher != null) {
+			this.publisher.publishEvent(new JobExecutionEvent(execution));
 		}
 	}
 
