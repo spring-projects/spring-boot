@@ -154,8 +154,20 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void loadTwoPropertiesFilesWithProfiles() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"spring.config.location="
-						+ "classpath:enableprofile.properties,classpath:enableother.properties");
+				"spring.config.location=classpath:enableprofile.properties,"
+						+ "classpath:enableother.properties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("other");
+		String property = this.environment.getProperty("my.property");
+		assertThat(property).isEqualTo("fromenableotherpropertiesfile");
+	}
+
+	@Test
+	public void loadTwoPropertiesFilesWithProfilesUsingAdditionalLocation()
+			throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.additional-location=classpath:enableprofile.properties,"
+						+ "classpath:enableother.properties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("other");
 		String property = this.environment.getProperty("my.property");
@@ -566,6 +578,22 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(property).isEqualTo("fromspecificlocation");
 		assertThat(this.environment).has(matchingPropertySource(
 				"applicationConfig: " + "[classpath:specificlocation.properties]"));
+		// The default property source is not there
+		assertThat(this.environment).doesNotHave(matchingPropertySource(
+				"applicationConfig: " + "[classpath:/application.properties]"));
+		assertThat(this.environment.getProperty("foo")).isNull();
+	}
+
+	@Test
+	public void specificResourceFromAdditionalLocation() throws Exception {
+		String additionalLocation = "classpath:specificlocation.properties";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.additional-location=" + additionalLocation);
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("the.property");
+		assertThat(property).isEqualTo("fromspecificlocation");
+		assertThat(this.environment).has(matchingPropertySource(
+				"applicationConfig: " + "[classpath:specificlocation.properties]"));
 		// The default property source is still there
 		assertThat(this.environment).has(matchingPropertySource(
 				"applicationConfig: " + "[classpath:/application.properties]"));
@@ -814,6 +842,34 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles())
 				.containsExactly("testPropertySource");
+	}
+
+	@Test
+	public void additionalLocationTakesPrecedenceOverDefaultLocation() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.additional-location=classpath:override.properties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("foo")).isEqualTo("bar");
+		assertThat(this.environment.getProperty("value")).isEqualTo("1234");
+	}
+
+	@Test
+	public void lastAdditionalLocationWins() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.additional-location=classpath:override.properties,"
+						+ "classpath:some.properties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("foo")).isEqualTo("spam");
+		assertThat(this.environment.getProperty("value")).isEqualTo("1234");
+	}
+
+	@Test
+	public void locationReplaceDefaultLocation() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=classpath:override.properties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("foo")).isEqualTo("bar");
+		assertThat(this.environment.getProperty("value")).isNull();
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(

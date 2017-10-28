@@ -122,6 +122,11 @@ public class ConfigFileApplicationListener
 	public static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
 	/**
+	 * The "config additional location" property name.
+	 */
+	public static final String CONFIG_ADDITIONAL_LOCATION_PROPERTY = "spring.config.additional-location";
+
+	/**
 	 * The default order for the processor.
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
@@ -563,11 +568,22 @@ public class ConfigFileApplicationListener
 		}
 
 		private Set<String> getSearchLocations() {
-			Set<String> locations = new LinkedHashSet<>();
-			// User-configured settings take precedence, so we do them first
 			if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
+				return getSearchLocations(CONFIG_LOCATION_PROPERTY);
+			}
+			Set<String> locations = getSearchLocations(
+					CONFIG_ADDITIONAL_LOCATION_PROPERTY);
+			locations.addAll(
+					asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
+							DEFAULT_SEARCH_LOCATIONS));
+			return locations;
+		}
+
+		private Set<String> getSearchLocations(String propertyName) {
+			Set<String> locations = new LinkedHashSet<>();
+			if (this.environment.containsProperty(propertyName)) {
 				for (String path : asResolvedSet(
-						this.environment.getProperty(CONFIG_LOCATION_PROPERTY), null)) {
+						this.environment.getProperty(propertyName), null)) {
 					if (!path.contains("$")) {
 						path = StringUtils.cleanPath(path);
 						if (!ResourceUtils.isUrl(path)) {
@@ -577,9 +593,6 @@ public class ConfigFileApplicationListener
 					locations.add(path);
 				}
 			}
-			locations.addAll(
-					asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
-							DEFAULT_SEARCH_LOCATIONS));
 			return locations;
 		}
 

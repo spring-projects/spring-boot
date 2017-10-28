@@ -555,17 +555,27 @@ before being loaded, including profile-specific file names). Files specified in
 and are overridden by any profile-specific properties.
 
 Config locations are searched in reverse order. By default, the configured locations are
-`classpath:/,classpath:/config/,file:./,file:./config/`. The resulting search order is:
+`classpath:/,classpath:/config/,file:./,file:./config/`. The resulting search order is the
+following:
 
 . `file:./config/`
 . `file:./`
 . `classpath:/config/`
 . `classpath:/`
 
-When custom config locations are configured, they are used in addition to the default
-locations. Custom locations are searched before the default locations. For example, if
-custom locations of `classpath:/custom-config/,file:./custom-config/` are configured, the
-search order becomes:
+When custom config locations are configured using `spring.config.location` they replace
+the default locations. For example, if `spring.config.location` is configured with the
+value `classpath:/custom-config/,file:./custom-config/`, the search order becomes the
+following:
+
+. `file:./custom-config/`
+. `classpath:custom-config/`
+
+Alternatively, when custom config locations are configured using
+`spring.config.addition-location`, they are used in addition to the default locations.
+Additional locations are search before the default locations. For example, if
+additional locations of `classpath:/custom-config/,file:./custom-config/` are configured,
+the search order becomes the following:
 
 . `file:./custom-config/`
 . `classpath:custom-config/`
