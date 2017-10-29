@@ -100,13 +100,19 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.cassandra.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.couchbase.consistency",
     "defaultValue": "read-your-own-writes"
   },
   {
-    "name": "spring.data.cassandra.repositories.enabled",
+    "name": "spring.data.couchbase.reactive-repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Cassandra repositories.",
+    "description": "Enable Couchbase reactive repositories.",
     "defaultValue": true
   },
   {
