@@ -150,7 +150,7 @@ public class JarFileArchive implements Archive {
 			OutputStream outputStream = new FileOutputStream(file);
 			try {
 				byte[] buffer = new byte[BUFFER_SIZE];
-				int bytesRead = -1;
+				int bytesRead;
 				while ((bytesRead = inputStream.read(buffer)) != -1) {
 					outputStream.write(buffer, 0, bytesRead);
 				}
