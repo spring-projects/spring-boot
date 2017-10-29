@@ -42,14 +42,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
- * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
 @ConditionalOnMissingBean({ ReactiveAuthenticationManager.class,
 		ReactiveUserDetailsService.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-public class ReactiveAuthenticationManagerConfiguration {
+class ReactiveAuthenticationManagerConfiguration {
 
 	private static final Log logger = LogFactory
 			.getLog(ReactiveAuthenticationManagerConfiguration.class);

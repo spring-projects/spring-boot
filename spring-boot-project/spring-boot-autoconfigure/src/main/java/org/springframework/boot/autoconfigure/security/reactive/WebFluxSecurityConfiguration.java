@@ -27,12 +27,11 @@ import org.springframework.security.web.server.WebFilterChainProxy;
  * annotation has not been added by the user.
  *
  * @author Madhura Bhave
- * @since 2.0.0
  */
 @ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class })
 @ConditionalOnMissingBean(WebFilterChainProxy.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableWebFluxSecurity
-public class WebFluxSecurityConfiguration {
+class WebFluxSecurityConfiguration {
 
 }
