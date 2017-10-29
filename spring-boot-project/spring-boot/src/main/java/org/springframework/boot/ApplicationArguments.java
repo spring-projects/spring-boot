@@ -34,7 +34,7 @@ public interface ApplicationArguments {
 	String[] getSourceArgs();
 
 	/**
-	 * Return then names of all option arguments. For example, if the arguments were
+	 * Return the names of all option arguments. For example, if the arguments were
 	 * "--foo=bar --debug" would return the values {@code ["foo", "debug"]}.
 	 * @return the option names or an empty set
 	 */
