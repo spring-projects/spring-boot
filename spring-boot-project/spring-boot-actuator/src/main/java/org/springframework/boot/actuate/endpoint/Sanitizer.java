@@ -81,9 +81,12 @@ public class Sanitizer {
 	 * @return the potentially sanitized value
 	 */
 	public Object sanitize(String key, Object value) {
+		if (value == null) {
+			return null;
+		}
 		for (Pattern pattern : this.keysToSanitize) {
 			if (pattern.matcher(key).matches()) {
-				return (value == null ? null : "******");
+				return "******";
 			}
 		}
 		return value;
