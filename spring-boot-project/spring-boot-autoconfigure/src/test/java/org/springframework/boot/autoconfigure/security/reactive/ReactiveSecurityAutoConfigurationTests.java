@@ -29,8 +29,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.config.annotation.web.reactive.ServerHttpSecurityConfiguration;
-import org.springframework.security.config.annotation.web.reactive.WebFluxSecurityConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -58,7 +56,7 @@ public class ReactiveSecurityAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 				.run((context) -> {
-					assertThat(context).getBean(ServerHttpSecurityConfiguration.class)
+					assertThat(context).getBean(WebFilterChainProxy.class)
 							.isNotNull();
 					assertThat(context).getBean(WebFluxSecurityConfiguration.class)
 							.isNotNull();

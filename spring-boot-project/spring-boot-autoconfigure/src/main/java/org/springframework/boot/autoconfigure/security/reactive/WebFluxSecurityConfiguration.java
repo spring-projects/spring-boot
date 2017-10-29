@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.web.server.WebFilterChainProxy;
 
 /**
  * Switches on {@link EnableWebFluxSecurity} for a reactive web application if this
@@ -28,8 +29,8 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@ConditionalOnClass(EnableWebFluxSecurity.class)
-@ConditionalOnMissingBean(org.springframework.security.config.annotation.web.reactive.WebFluxSecurityConfiguration.class)
+@ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class })
+@ConditionalOnMissingBean(WebFilterChainProxy.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableWebFluxSecurity
 public class WebFluxSecurityConfiguration {
