@@ -300,7 +300,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		@Override
 		public void write(OutputStream outputStream) throws IOException {
 			byte[] buffer = new byte[BUFFER_SIZE];
-			int bytesRead = -1;
+			int bytesRead;
 			while ((bytesRead = this.inputStream.read(buffer)) != -1) {
 				outputStream.write(buffer, 0, bytesRead);
 			}
@@ -383,7 +383,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
 		private void load(InputStream inputStream) throws IOException {
 			byte[] buffer = new byte[BUFFER_SIZE];
-			int bytesRead = -1;
+			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
 				this.crc.update(buffer, 0, bytesRead);
 				this.size += bytesRead;
