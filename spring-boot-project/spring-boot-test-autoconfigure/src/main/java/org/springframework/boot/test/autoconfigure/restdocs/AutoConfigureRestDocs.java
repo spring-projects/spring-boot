@@ -49,7 +49,7 @@ import org.springframework.core.annotation.AliasFor;
 public @interface AutoConfigureRestDocs {
 
 	/**
-	 * The output directory to which generated snippets will be written. A alias for
+	 * The output directory to which generated snippets will be written. An alias for
 	 * {@link #outputDir}.
 	 * @return the output directory
 	 */
@@ -57,7 +57,7 @@ public @interface AutoConfigureRestDocs {
 	String value() default "";
 
 	/**
-	 * The output directory to which generated snippets will be written. A alias for
+	 * The output directory to which generated snippets will be written. An alias for
 	 * {@link #value}.
 	 * @return the output directory
 	 */
