@@ -23,14 +23,24 @@ import reactor.core.publisher.Mono;
  * {@link Health} instance and error handling.
  *
  * @author Stephane Nicoll
+ * @author Nikolay Rybak
  * @since 2.0.0
  */
 public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthIndicator {
 
 	@Override
 	public final Mono<Health> health() {
-		return doHealthCheck(new Health.Builder())
-				.onErrorResume((ex) -> Mono.just(new Health.Builder().down(ex).build()));
+		try {
+			return doHealthCheck(new Health.Builder())
+					.onErrorResume(this::handleFailure);
+		}
+		catch (Exception ex) {
+			return handleFailure(ex);
+		}
+	}
+
+	private Mono<Health> handleFailure(Throwable ex) {
+		return Mono.just(new Health.Builder().down(ex).build());
 	}
 
 	/**
