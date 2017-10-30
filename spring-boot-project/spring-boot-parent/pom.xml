@@ -199,11 +199,6 @@
 				<version>${aether.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-runtime</artifactId>
-				<version>1.1.4-3</version>
-			</dependency>
-			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
 				<artifactId>plexus-build-api</artifactId>
 				<version>0.0.7</version>
