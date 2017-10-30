@@ -226,6 +226,10 @@
     "defaultValue": "mbeanServer"
   },
   {
+    "name": "spring.jpa.open-in-view",
+    "defaultValue": true
+  },
+  {
     "name": "spring.jta.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JTA support.",
