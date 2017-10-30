@@ -62,6 +62,7 @@ class RedisSessionConfiguration {
 			}
 			setRedisNamespace(redisSessionProperties.getNamespace());
 			setRedisFlushMode(redisSessionProperties.getFlushMode());
+			setCleanupCron(redisSessionProperties.getCleanupCron());
 		}
 
 	}
