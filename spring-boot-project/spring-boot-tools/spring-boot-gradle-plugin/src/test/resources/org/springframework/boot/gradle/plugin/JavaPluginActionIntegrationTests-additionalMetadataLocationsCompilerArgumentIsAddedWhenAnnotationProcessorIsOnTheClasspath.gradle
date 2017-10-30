@@ -1,0 +1,22 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'java'
+
+repositories {
+	flatDir { dirs 'libs' }
+}
+
+dependencies {
+	compile name: 'spring-boot-configuration-processor-1.2.3'
+}
+
+compileJava {
+	doLast {
+		println "$name compiler args: ${options.compilerArgs}"
+	}
+}

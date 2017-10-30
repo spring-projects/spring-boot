@@ -119,6 +119,16 @@ public class MetadataStore {
 		if (standardLocation.exists()) {
 			return standardLocation;
 		}
+		String locations = this.environment.getOptions().get(
+				ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION);
+		if (locations != null) {
+			for (String location : locations.split(",")) {
+				File candidate = new File(location, ADDITIONAL_METADATA_PATH);
+				if (candidate.isFile()) {
+					return candidate;
+				}
+			}
+		}
 		return new File(locateGradleResourcesFolder(standardLocation),
 				ADDITIONAL_METADATA_PATH);
 	}

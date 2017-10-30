@@ -16,8 +16,11 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -34,6 +37,7 @@ import org.gradle.api.tasks.compile.JavaCompile;
 
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Action} that is executed in response to the {@link JavaPlugin} being applied.
@@ -63,6 +67,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
 		configureParametersCompilerArg(project);
+		configureAdditionalMetadataLocations(project);
 	}
 
 	private void disableJarTask(Project project) {
@@ -132,6 +137,50 @@ final class JavaPluginAction implements PluginApplicationAction {
 				compilerArgs.add(PARAMETERS_COMPILER_ARG);
 			}
 		});
+	}
+
+	private void configureAdditionalMetadataLocations(Project project) {
+		project.afterEvaluate((evaluated) -> {
+			evaluated.getTasks().withType(JavaCompile.class, (compile) -> {
+				configureAdditionalMetadataLocations(project, compile);
+			});
+		});
+	}
+
+	private void configureAdditionalMetadataLocations(Project project,
+			JavaCompile compile) {
+		compile.doFirst((task) -> {
+			if (hasConfigurationProcessorOnClasspath(compile)) {
+				findMatchingSourceSet(compile).ifPresent((sourceSet) -> {
+					configureAdditionalMetadataLocations(compile, sourceSet);
+				});
+			}
+		});
+	}
+
+	private Optional<SourceSet> findMatchingSourceSet(JavaCompile compile) {
+		return compile.getProject().getConvention().getPlugin(JavaPluginConvention.class)
+				.getSourceSets().stream().filter((sourceSet) -> sourceSet
+						.getCompileJavaTaskName().equals(compile.getName()))
+				.findFirst();
+	}
+
+	private boolean hasConfigurationProcessorOnClasspath(JavaCompile compile) {
+		Set<File> files = compile.getOptions().getAnnotationProcessorPath() != null
+				? compile.getOptions().getAnnotationProcessorPath().getFiles()
+				: compile.getClasspath().getFiles();
+		return files.stream().map(File::getName)
+				.filter((name) -> name.startsWith("spring-boot-configuration-processor"))
+				.findFirst().isPresent();
+	}
+
+	private void configureAdditionalMetadataLocations(JavaCompile compile,
+			SourceSet sourceSet) {
+		String locations = StringUtils
+				.collectionToCommaDelimitedString(sourceSet.getResources().getSrcDirs());
+		compile.getOptions().getCompilerArgs()
+				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+						+ locations);
 	}
 
 }
