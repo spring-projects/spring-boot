@@ -22,6 +22,9 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -214,8 +217,23 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		@Configuration
 		protected static class JpaWebMvcConfiguration implements WebMvcConfigurer {
 
+			private static final Log logger = LogFactory
+					.getLog(JpaWebMvcConfiguration.class);
+
+			private final JpaProperties jpaProperties;
+
+			protected JpaWebMvcConfiguration(JpaProperties jpaProperties) {
+				this.jpaProperties = jpaProperties;
+			}
+
 			@Bean
 			public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+				if (this.jpaProperties.getOpenInView() == null) {
+					logger.warn("spring.jpa.open-in-view is enabled by default. "
+							+ "Therefore, database queries may be performed during view "
+							+ "rendering. Explicitly configure "
+							+ "spring.jpa.open-in-view to disable this warning");
+				}
 				return new OpenEntityManagerInViewInterceptor();
 			}
 

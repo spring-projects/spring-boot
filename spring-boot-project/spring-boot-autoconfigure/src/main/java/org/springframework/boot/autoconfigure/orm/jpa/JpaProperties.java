@@ -72,6 +72,12 @@ public class JpaProperties {
 	 */
 	private boolean showSql = false;
 
+	/**
+	 * Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the
+	 * thread for the entire processing of the request.
+	 */
+	private Boolean openInView;
+
 	private Hibernate hibernate = new Hibernate();
 
 	public Map<String, String> getProperties() {
@@ -116,6 +122,14 @@ public class JpaProperties {
 
 	public void setShowSql(boolean showSql) {
 		this.showSql = showSql;
+	}
+
+	public Boolean getOpenInView() {
+		return this.openInView;
+	}
+
+	public void setOpenInView(Boolean openInView) {
+		this.openInView = openInView;
 	}
 
 	public Hibernate getHibernate() {

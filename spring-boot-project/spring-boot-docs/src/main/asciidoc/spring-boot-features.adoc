@@ -3723,7 +3723,7 @@ By default, if you are running a web application, the session is bound to the th
 the entire processing of the request (i.e. the "Open Session in View" pattern). If you
 don't want this behavior add the following to your `application.properties`:
 
-
+[source,properties,indent=0]
 ----
 	spring.data.neo4j.open-in-view=false
 ----

@@ -146,12 +146,6 @@
     "defaultValue": true
   },
   {
-    "name": "spring.data.neo4j.open-in-view",
-    "type": "java.lang.Boolean",
-    "description": "Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.",
-    "defaultValue": false
-  },
-  {
     "name": "spring.data.neo4j.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Neo4j repositories.",
@@ -226,12 +220,6 @@
     "type": "java.lang.String",
     "description": "MBeanServer bean name.",
     "defaultValue": "mbeanServer"
-  },
-  {
-    "name": "spring.jpa.open-in-view",
-    "type": "java.lang.Boolean",
-    "description": "Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.",
-    "defaultValue": true
   },
   {
     "name": "spring.jta.enabled",

@@ -66,6 +66,12 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 */
 	private AutoIndexMode autoIndex = AutoIndexMode.NONE;
 
+	/**
+	 * Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the
+	 * entire processing of the request.",
+	 */
+	private Boolean openInView;
+
 	private final Embedded embedded = new Embedded();
 
 	private ClassLoader classLoader = Neo4jProperties.class.getClassLoader();
@@ -100,6 +106,14 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	public void setAutoIndex(AutoIndexMode autoIndex) {
 		this.autoIndex = autoIndex;
+	}
+
+	public Boolean getOpenInView() {
+		return this.openInView;
+	}
+
+	public void setOpenInView(Boolean openInView) {
+		this.openInView = openInView;
 	}
 
 	public Embedded getEmbedded() {
