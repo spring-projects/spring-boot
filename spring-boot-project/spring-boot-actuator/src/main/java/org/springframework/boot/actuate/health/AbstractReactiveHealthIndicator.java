@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
  * {@link Health} instance and error handling.
  *
  * @author Stephane Nicoll
+ * @author Nikolay Rybak
  * @since 2.0.0
  */
 public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthIndicator {
@@ -33,7 +34,7 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 			return doHealthCheck(new Health.Builder())
 					.onErrorResume(this::handleFailure);
 		}
-		catch (Throwable ex) {
+		catch (Exception ex) {
 			return handleFailure(ex);
 		}
 	}
