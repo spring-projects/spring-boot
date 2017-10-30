@@ -140,7 +140,8 @@ public class HypermediaAutoConfigurationTests {
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
 				assertThat(converter.getSupportedMediaTypes())
-						.containsExactly(MediaTypes.HAL_JSON);
+						.containsExactly(MediaTypes.HAL_JSON, MediaType.parseMediaType(
+								MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"));
 			}
 		}
 	}
