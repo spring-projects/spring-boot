@@ -2,6 +2,7 @@ email-server: "smtp.svc.pivotal.io"
 email-from: "ci@spring.io"
 email-to: ["spring-boot-dev@pivotal.io"]
 github-repo: "https://github.com/spring-projects/spring-boot.git"
+github-repo-name: "spring-projects/spring-boot"
 docker-hub-organization: "springci"
 artifactory-server: "https://repo.spring.io/"
 branch: "master"
