@@ -37,16 +37,19 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxExpo
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdExportConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.WebFluxMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,11 +68,13 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @EnableConfigurationProperties(MetricsProperties.class)
 @Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
 		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
+		DataSourcePoolMetricsConfiguration.class,
 		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
 		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
 		InfluxExportConfiguration.class, JmxExportConfiguration.class,
 		PrometheusExportConfiguration.class, SimpleExportConfiguration.class,
 		StatsdExportConfiguration.class })
+@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MetricsAutoConfiguration {
 
 	@Bean

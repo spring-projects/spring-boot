@@ -1302,6 +1302,8 @@ content into your application; rather pick only the properties that you need.
 	spring.metrics.ganglia.enabled=true # Whether not exporting of metrics to Ganglia is enabled.
 	spring.metrics.graphite.enabled=true # Whether not exporting of metrics to Graphite is enabled.
 	spring.metrics.influx.enabled=true # Whether not exporting of metrics to InfluxDB is enabled.
+	spring.metrics.jdbc.datasource-metric-name=data.source # Name of the metric for data source usage.
+	spring.metrics.jdbc.instrument-datasource=true # Instrument all available data sources.
 	spring.metrics.jmx.enabled=true # Whether not exporting of metrics to JMX is enabled.
 	spring.metrics.prometheus.enabled=true # Whether not exporting of metrics to Prometheus is enabled.
 	spring.metrics.simple.enabled=true # Whether not exporting of metrics to a simple in-memory store is enabled.
