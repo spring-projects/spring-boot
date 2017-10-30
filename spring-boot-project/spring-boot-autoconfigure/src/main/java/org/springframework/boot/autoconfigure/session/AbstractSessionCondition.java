@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -27,13 +28,20 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * General condition used with all session configuration classes.
+ * Base class for Servlet and reactive session conditions.
  *
  * @author Tommy Ludwig
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
-class SessionCondition extends SpringBootCondition {
+class AbstractSessionCondition extends SpringBootCondition {
+
+	private final WebApplicationType webApplicationType;
+
+	protected AbstractSessionCondition(WebApplicationType webApplicationType) {
+		this.webApplicationType = webApplicationType;
+	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -41,8 +49,8 @@ class SessionCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("Session Condition");
 		Environment environment = context.getEnvironment();
-		StoreType required = SessionStoreMappings
-				.getType(((AnnotationMetadata) metadata).getClassName());
+		StoreType required = SessionStoreMappings.getType(this.webApplicationType,
+				((AnnotationMetadata) metadata).getClassName());
 		if (!environment.containsProperty("spring.session.store-type")) {
 			return ConditionOutcome.match(message.didNotFind("property", "properties")
 					.items(ConditionMessage.Style.QUOTE, "spring.session.store-type"));

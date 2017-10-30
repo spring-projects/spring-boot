@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,14 +29,12 @@ import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
-import org.springframework.web.server.session.WebSessionManager;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpHandler}.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
- * @author Andy Wilkinson
  * @since 2.0.0
  */
 @Configuration
@@ -58,16 +55,9 @@ public class HttpHandlerAutoConfiguration {
 		}
 
 		@Bean
-		public HttpHandler httpHandler(
-				ObjectProvider<WebSessionManager> webSessionManagerProvider) {
-			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder
-					.applicationContext(this.applicationContext);
-			WebSessionManager webSessionManager = webSessionManagerProvider
-					.getIfAvailable();
-			if (webSessionManager != null) {
-				builder.sessionManager(webSessionManager);
-			}
-			return builder.build();
+		public HttpHandler httpHandler() {
+			return WebHttpHandlerBuilder.applicationContext(this.applicationContext)
+					.build();
 		}
 
 	}

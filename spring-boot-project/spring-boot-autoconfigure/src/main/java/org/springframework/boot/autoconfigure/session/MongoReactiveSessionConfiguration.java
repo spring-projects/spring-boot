@@ -23,45 +23,35 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.SessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
+import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.data.mongo.config.annotation.web.reactive.ReactiveMongoWebSessionConfiguration;
 
 /**
- * Redis backed session configuration.
+ * Mongo-backed reactive session configuration.
  *
  * @author Andy Wilkinson
- * @author Tommy Ludwig
- * @author Eddú Meléndez
- * @author Stephane Nicoll
- * @author Vedran Pavic
  */
 @Configuration
-@ConditionalOnClass({ RedisTemplate.class, RedisOperationsSessionRepository.class })
-@ConditionalOnMissingBean(SessionRepository.class)
-@ConditionalOnBean(RedisConnectionFactory.class)
-@Conditional(ServletSessionCondition.class)
-@EnableConfigurationProperties(RedisSessionProperties.class)
-class RedisSessionConfiguration {
+@ConditionalOnClass(ReactiveMongoWebSessionConfiguration.class)
+@ConditionalOnMissingBean(ReactiveSessionRepository.class)
+@ConditionalOnBean(ReactiveMongoOperations.class)
+@Conditional(ReactiveSessionCondition.class)
+@EnableConfigurationProperties(MongoSessionProperties.class)
+class MongoReactiveSessionConfiguration {
 
 	@Configuration
-	public static class SpringBootRedisHttpSessionConfiguration
-			extends RedisHttpSessionConfiguration {
-
-		private SessionProperties sessionProperties;
+	static class SpringBootReactiveMongoWebSessionConfiguration
+			extends ReactiveMongoWebSessionConfiguration {
 
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
-				RedisSessionProperties redisSessionProperties) {
-			this.sessionProperties = sessionProperties;
-			Integer timeout = this.sessionProperties.getTimeout();
+				MongoSessionProperties mongoSessionProperties) {
+			Integer timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds(timeout);
 			}
-			setRedisNamespace(redisSessionProperties.getNamespace());
-			setRedisFlushMode(redisSessionProperties.getFlushMode());
+			setCollectionName(mongoSessionProperties.getCollectionName());
 		}
 
 	}

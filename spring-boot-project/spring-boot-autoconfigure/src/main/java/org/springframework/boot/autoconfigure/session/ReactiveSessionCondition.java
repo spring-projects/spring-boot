@@ -16,19 +16,17 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.session.SessionRepository;
+import org.springframework.boot.WebApplicationType;
 
 /**
- * No-op session configuration used to disable Spring Session using the environment.
+ * General condition used with all reactive session configuration classes.
  *
- * @author Tommy Ludwig
+ * @author Andy Wilkinson
  */
-@Configuration
-@ConditionalOnMissingBean(SessionRepository.class)
-@Conditional(ServletSessionCondition.class)
-class NoOpSessionConfiguration {
+class ReactiveSessionCondition extends AbstractSessionCondition {
+
+	ReactiveSessionCondition() {
+		super(WebApplicationType.REACTIVE);
+	}
 
 }

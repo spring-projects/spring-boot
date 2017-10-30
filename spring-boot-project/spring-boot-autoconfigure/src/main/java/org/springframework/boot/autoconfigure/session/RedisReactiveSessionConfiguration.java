@@ -23,32 +23,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.SessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
+import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
+import org.springframework.session.data.redis.config.annotation.web.server.RedisWebSessionConfiguration;
 
 /**
- * Redis backed session configuration.
+ * Redis-backed reactive session configuration.
  *
  * @author Andy Wilkinson
- * @author Tommy Ludwig
- * @author Eddú Meléndez
- * @author Stephane Nicoll
- * @author Vedran Pavic
  */
 @Configuration
-@ConditionalOnClass({ RedisTemplate.class, RedisOperationsSessionRepository.class })
-@ConditionalOnMissingBean(SessionRepository.class)
-@ConditionalOnBean(RedisConnectionFactory.class)
-@Conditional(ServletSessionCondition.class)
+@ConditionalOnClass({ ReactiveRedisConnectionFactory.class,
+		ReactiveRedisOperationsSessionRepository.class })
+@ConditionalOnMissingBean(ReactiveSessionRepository.class)
+@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
+@Conditional(ReactiveSessionCondition.class)
 @EnableConfigurationProperties(RedisSessionProperties.class)
-class RedisSessionConfiguration {
+class RedisReactiveSessionConfiguration {
 
 	@Configuration
-	public static class SpringBootRedisHttpSessionConfiguration
-			extends RedisHttpSessionConfiguration {
+	static class SpringBootRedisWebSessionConfiguration
+			extends RedisWebSessionConfiguration {
 
 		private SessionProperties sessionProperties;
 

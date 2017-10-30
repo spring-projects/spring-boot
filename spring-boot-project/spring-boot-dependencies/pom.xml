@@ -157,7 +157,7 @@
 		<spring-retry.version>1.2.1.RELEASE</spring-retry.version>
 		<spring-security.version>5.0.0.BUILD-SNAPSHOT</spring-security.version>
 		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
-		<spring-session-data-mongodb.version>2.0.0.M4</spring-session-data-mongodb.version>
+		<spring-session-data-mongodb.version>2.0.0.BUILD-SNAPSHOT</spring-session-data-mongodb.version>
 		<spring-social.version>2.0.0.M4</spring-social.version>
 		<spring-social-facebook.version>3.0.0.M3</spring-social-facebook.version>
 		<spring-social-linkedin.version>2.0.0.M3</spring-social-linkedin.version>

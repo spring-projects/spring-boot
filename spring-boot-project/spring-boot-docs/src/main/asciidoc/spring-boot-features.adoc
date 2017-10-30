@@ -5506,11 +5506,17 @@ classes for more details.
 
 [[boot-features-session]]
 == Spring Session
-Spring Boot provides Spring Session auto-configuration for a wide range of stores:
+Spring Boot provides Spring Session auto-configuration for a wide range of stores. When
+building a Servlet web application, the following stores can be auto-configured:
 
 * JDBC
 * Redis
 * Hazelcast
+* MongoDB
+
+When building a reactive web applicaiton, the following stores can be auto-configured:
+
+* Redis
 * MongoDB
 
 If Spring Session is available, you must choose the
