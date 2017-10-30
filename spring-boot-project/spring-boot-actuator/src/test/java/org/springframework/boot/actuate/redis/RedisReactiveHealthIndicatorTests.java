@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.redis;
 
 import java.util.Properties;
 
+import io.lettuce.core.RedisConnectionException;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -61,7 +62,7 @@ public class RedisReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void redisIsDown() throws Exception {
+	public void redisCommandIsDown() throws Exception {
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
 		given(commands.info()).willReturn(
 				Mono.error(new RedisConnectionFailureException("Connection failed")));
@@ -73,6 +74,18 @@ public class RedisReactiveHealthIndicatorTests {
 				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
 		verify(redisConnection).close();
+	}
+
+	@Test
+	public void redisConnectionIsDown() throws Exception {
+		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
+		given(redisConnectionFactory.getReactiveConnection()).willThrow(
+				new RedisConnectionException("Unable to connect to localhost:6379"));
+		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
+		Mono<Health> health = healthIndicator.health();
+		StepVerifier.create(health)
+				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+				.verifyComplete();
 	}
 
 	private RedisReactiveHealthIndicator createHealthIndicator(
