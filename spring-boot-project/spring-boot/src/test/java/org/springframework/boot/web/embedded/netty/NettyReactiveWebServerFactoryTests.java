@@ -16,13 +16,20 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.util.Arrays;
+
 import org.junit.Test;
+import org.mockito.InOrder;
+import reactor.ipc.netty.http.server.HttpServerOptions;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link NettyReactiveWebServerFactory}.
@@ -33,7 +40,7 @@ public class NettyReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
-	protected AbstractReactiveWebServerFactory getFactory() {
+	protected NettyReactiveWebServerFactory getFactory() {
 		return new NettyReactiveWebServerFactory(0);
 	}
 
@@ -48,6 +55,22 @@ public class NettyReactiveWebServerFactoryTests
 		this.thrown.expectMessage(
 				equalTo("Port " + this.webServer.getPort() + " is already in use"));
 		factory.getWebServer(new EchoHandler()).start();
+	}
+
+	@Test
+	public void nettyCustomizers() throws Exception {
+		NettyReactiveWebServerFactory factory = getFactory();
+		NettyServerCustomizer[] customizers = new NettyServerCustomizer[2];
+		for (int i = 0; i < customizers.length; i++) {
+			customizers[i] = mock(NettyServerCustomizer.class);
+		}
+		factory.setNettyServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		this.webServer = factory.getWebServer(new EchoHandler());
+
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (NettyServerCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(HttpServerOptions.Builder.class));
+		}
 	}
 
 }
