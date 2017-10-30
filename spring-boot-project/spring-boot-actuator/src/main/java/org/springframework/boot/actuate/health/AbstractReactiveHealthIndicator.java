@@ -29,8 +29,17 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 
 	@Override
 	public final Mono<Health> health() {
-		return doHealthCheck(new Health.Builder())
-				.onErrorResume((ex) -> Mono.just(new Health.Builder().down(ex).build()));
+		try {
+			return doHealthCheck(new Health.Builder())
+					.onErrorResume(this::handleFailure);
+		}
+		catch (Throwable ex) {
+			return handleFailure(ex);
+		}
+	}
+
+	private Mono<Health> handleFailure(Throwable ex) {
+		return Mono.just(new Health.Builder().down(ex).build());
 	}
 
 	/**
