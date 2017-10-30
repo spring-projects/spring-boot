@@ -609,6 +609,11 @@ public class ServerProperties {
 		 */
 		private List<String> additionalTldSkipPatterns = new ArrayList<>();
 
+		/**
+		 * Static resource configuration.
+		 */
+		private final Resource resource = new Resource();
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -739,6 +744,10 @@ public class ServerProperties {
 
 		public void setAdditionalTldSkipPatterns(List<String> additionalTldSkipPatterns) {
 			this.additionalTldSkipPatterns = additionalTldSkipPatterns;
+		}
+
+		public Resource getResource() {
+			return this.resource;
 		}
 
 		/**
@@ -876,6 +885,26 @@ public class ServerProperties {
 
 			public void setBuffered(boolean buffered) {
 				this.buffered = buffered;
+			}
+
+		}
+
+		/**
+		 * Tomcat static resource properties.
+		 */
+		public static class Resource {
+
+			/**
+			 * Time-to-live in milliseconds of the static resource cache.
+			 */
+			private Long cacheTtl;
+
+			public Long getCacheTtl() {
+				return this.cacheTtl;
+			}
+
+			public void setCacheTtl(Long cacheTtl) {
+				this.cacheTtl = cacheTtl;
 			}
 
 		}

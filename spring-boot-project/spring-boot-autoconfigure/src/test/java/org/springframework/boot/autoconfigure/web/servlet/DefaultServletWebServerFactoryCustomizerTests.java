@@ -31,6 +31,7 @@ import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
@@ -600,6 +601,25 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 				UndertowServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory, never()).setAccessLogEnabled(anyBoolean());
+	}
+
+	@Test
+	public void customTomcatStaticResourceCacheTtl() {
+		Map<String, String> map = new HashMap<>();
+		map.put("server.tomcat.resource.cache-ttl", "10000");
+		bindProperties(map);
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
+		this.customizer.customize(factory);
+		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
+		embeddedFactory.start();
+		try {
+			Tomcat tomcat = embeddedFactory.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(context.getResources().getCacheTtl()).isEqualTo(10000L);
+		}
+		finally {
+			embeddedFactory.stop();
+		}
 	}
 
 	private void triggerInitializers(ConfigurableServletWebServerFactory factory,

@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
 import io.undertow.UndertowOptions;
+import org.apache.catalina.Lifecycle;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
@@ -41,6 +42,7 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Resource;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
@@ -259,6 +261,7 @@ public class DefaultServletWebServerFactoryCustomizer
 				factory.getTldSkipPatterns()
 						.addAll(tomcatProperties.getAdditionalTldSkipPatterns());
 			}
+			customizeStaticResources(serverProperties.getTomcat().getResource(), factory);
 		}
 
 		private static void customizeAcceptCount(TomcatServletWebServerFactory factory,
@@ -382,6 +385,20 @@ public class DefaultServletWebServerFactoryCustomizer
 				final boolean redirectContextRoot) {
 			factory.addContextCustomizers((context) -> context
 					.setMapperContextRootRedirectEnabled(redirectContextRoot));
+		}
+
+		private static void customizeStaticResources(Resource resource,
+				TomcatServletWebServerFactory factory) {
+			if (resource.getCacheTtl() == null) {
+				return;
+			}
+			factory.addContextCustomizers((context) -> {
+				context.addLifecycleListener((event) -> {
+					if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
+						context.getResources().setCacheTtl(resource.getCacheTtl());
+					}
+				});
+			});
 		}
 
 	}
