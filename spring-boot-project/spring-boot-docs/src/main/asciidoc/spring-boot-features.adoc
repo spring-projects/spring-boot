@@ -5419,7 +5419,7 @@ Spring Boot offers several conveniences for working with the Quartz scheduler, i
 the `spring-boot-starter-quartz` '`Starter`'. If Quartz is available, a `Scheduler` will
 be auto-configured (via the `SchedulerFactoryBean` abstraction).
 
-Beans of the following types will be automatically picked up and associated with the
+Beans of the following types will be automatically picked up and associated with
 the `Scheduler`:
 
 * `JobDetail`: defines a particular Job. `JobDetail` instance can easily be built with
