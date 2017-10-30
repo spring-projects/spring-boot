@@ -67,6 +67,7 @@ class JdbcSessionConfiguration {
 				setMaxInactiveIntervalInSeconds(timeout);
 			}
 			setTableName(jdbcSessionProperties.getTableName());
+			setCleanupCron(jdbcSessionProperties.getCleanupCron());
 		}
 
 	}

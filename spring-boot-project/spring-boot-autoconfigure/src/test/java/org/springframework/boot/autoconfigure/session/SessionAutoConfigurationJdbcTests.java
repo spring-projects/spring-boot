@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration.SpringBootJdbcHttpSessionConfiguration;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.test.context.HideClassesClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -82,7 +83,10 @@ public class SessionAutoConfigurationJdbcTests
 				.isEqualTo(DataSourceInitializationMode.EMBEDDED);
 		assertThat(context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
-
+		SpringBootJdbcHttpSessionConfiguration configuration = context
+				.getBean(SpringBootJdbcHttpSessionConfiguration.class);
+		assertThat(new DirectFieldAccessor(configuration).getPropertyValue("cleanupCron"))
+				.isEqualTo("0 * * * * *");
 	}
 
 	@Test
@@ -114,10 +118,9 @@ public class SessionAutoConfigurationJdbcTests
 
 	@Test
 	public void customTableName() {
-		this.contextRunner
-				.withPropertyValues("spring.session.store-type=jdbc",
-						"spring.session.jdbc.table-name=FOO_BAR",
-						"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc",
+				"spring.session.jdbc.table-name=FOO_BAR",
+				"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
 				.run((context) -> {
 					JdbcOperationsSessionRepository repository = validateSessionRepository(
 							context, JdbcOperationsSessionRepository.class);
@@ -128,6 +131,22 @@ public class SessionAutoConfigurationJdbcTests
 									.isEqualTo(DataSourceInitializationMode.EMBEDDED);
 					assertThat(context.getBean(JdbcOperations.class)
 							.queryForList("select * from FOO_BAR")).isEmpty();
+				});
+	}
+
+	@Test
+	public void customCleanupCron() {
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc",
+						"spring.session.jdbc.cleanup-cron=0 0 12 * * *")
+				.run((context) -> {
+					assertThat(
+							context.getBean(JdbcSessionProperties.class).getCleanupCron())
+									.isEqualTo("0 0 12 * * *");
+					SpringBootJdbcHttpSessionConfiguration configuration = context
+							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
+					assertThat(new DirectFieldAccessor(configuration)
+							.getPropertyValue("cleanupCron")).isEqualTo("0 0 12 * * *");
 				});
 	}
 
