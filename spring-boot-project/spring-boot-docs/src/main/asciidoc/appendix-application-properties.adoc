@@ -620,7 +620,7 @@ content into your application; rather pick only the properties that you need.
 	# NEO4J ({sc-spring-boot-autoconfigure}/data/neo4j/Neo4jProperties.{sc-ext}[Neo4jProperties])
 	spring.data.neo4j.auto-index=none # Auto index mode.
 	spring.data.neo4j.embedded.enabled=true # Enable embedded mode if the embedded driver is available.
-	spring.data.neo4j.open-in-view=false # Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.
+	spring.data.neo4j.open-in-view=true # Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.
 	spring.data.neo4j.password= # Login password of the server.
 	spring.data.neo4j.repositories.enabled=true # Enable Neo4j repositories.
 	spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.

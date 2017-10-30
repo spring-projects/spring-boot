@@ -146,6 +146,10 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.neo4j.open-in-view",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.neo4j.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Neo4j repositories.",
