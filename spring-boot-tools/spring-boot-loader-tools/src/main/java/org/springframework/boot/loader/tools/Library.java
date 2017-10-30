@@ -71,7 +71,7 @@ public class Library {
 
 	/**
 	 * Return the name of file as it should be written.
-	 * @return then name.
+	 * @return the name
 	 */
 	public String getName() {
 		return this.name;
