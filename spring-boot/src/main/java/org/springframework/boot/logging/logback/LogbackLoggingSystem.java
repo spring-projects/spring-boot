@@ -130,6 +130,9 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		context.putProperty("LOG_LEVEL_PATTERN",
 				initializationContext.getEnvironment().resolvePlaceholders(
 						"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
+		context.putProperty("LOG_DATEFORMAT_PATTERN",
+				initializationContext.getEnvironment().resolvePlaceholders(
+						"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
 		context.setPackagingDataEnabled(true);

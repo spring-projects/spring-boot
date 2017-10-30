@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.io.File;
 import java.io.FileReader;
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Handler;
@@ -315,6 +316,18 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertThat(getLineWithText(output, "Hello world")).contains("XINFOX");
+	}
+
+	@Test
+	public void testDateformatPatternProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.dateformat", "yyyy-MM-dd'T'hh:mm:ss.SSSZ");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertThat(getLineWithText(output, "Hello world")).contains(LocalDate.now().toString() + "T");
 	}
 
 	@Test

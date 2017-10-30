@@ -146,6 +146,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
 
 	/**
+	 * The name of the System property that contains the log dateformat pattern.
+	 */
+	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
+
+	/**
 	 * The name of the {@link LoggingSystem} bean.
 	 */
 	public static final String LOGGING_SYSTEM_BEAN_NAME = "springBootLoggingSystem";
