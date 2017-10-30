@@ -49,7 +49,7 @@ class OAuth2WebSecurityConfiguration {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login()
-					.clients(this.clientRegistrationRepository);
+					.clientRegistrationRepository(this.clientRegistrationRepository);
 		}
 
 	}
