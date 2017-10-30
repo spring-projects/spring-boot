@@ -1112,8 +1112,8 @@ if needed.
 
 [[production-ready-process-monitoring]]
 == Process monitoring
-In Spring Boot Actuator you can find a couple of classes to create files that are useful
-for process monitoring:
+In the `spring-boot` module you can find a couple of classes to create files that are
+useful for process monitoring:
 
 * `ApplicationPidFileWriter` creates a file containing the application PID (by default in
   the application directory with the file name `application.pid`).
@@ -1135,7 +1135,7 @@ writes a PID file. Example:
 ----
 	org.springframework.context.ApplicationListener=\
 	org.springframework.boot.system.ApplicationPidFileWriter,\
-	org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
+	org.springframework.boot.system.EmbeddedServerPortFileWriter
 ----
 
 
