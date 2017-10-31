@@ -3,10 +3,10 @@
 
 [partintro]
 --
-The Spring Boot CLI is a command line tool that you can use if you want to quickly
-develop a Spring application. It lets you run Groovy scripts, which means that you have a
-familiar Java-like syntax without so much boilerplate code. You can also bootstrap
-a new project or write your own command for it.
+The Spring Boot CLI is a command line tool that you can use if you want to quickly develop
+a Spring application. It lets you run Groovy scripts, which means that you have a familiar
+Java-like syntax without so much boilerplate code. You can also bootstrap a new project or
+write your own command for it.
 --
 
 
@@ -15,8 +15,8 @@ a new project or write your own command for it.
 == Installing the CLI
 The Spring Boot CLI (Command-Line Interface) can be installed manually by using SDKMAN!
 (the SDK Manager) or by using Homebrew or MacPorts if you are an OSX user. See
-_<<getting-started.adoc#getting-started-installing-the-cli>>_
-in the "`Getting started`" section for comprehensive installation instructions.
+_<<getting-started.adoc#getting-started-installing-the-cli>>_ in the "`Getting started`"
+section for comprehensive installation instructions.
 
 
 
@@ -104,8 +104,8 @@ To compile and run the application type the following command:
 	$ spring run hello.groovy
 ----
 
-To pass command-line arguments to the application, use a `--` to separate
-the commands from the "`spring`" command arguments, as shown in the following example:
+To pass command-line arguments to the application, use a `--` to separate the commands
+from the "`spring`" command arguments, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -126,14 +126,13 @@ are properly passed to the process.
 
 [[cli-deduced-grab-annotations]]
 ==== Deduced "`grab`" Dependencies
-Standard Groovy includes a `@Grab` annotation, which lets you declare dependencies
-on third-party libraries. This useful technique lets Groovy download jars in the
-same way as Maven or Gradle would but without requiring you to use a build tool.
+Standard Groovy includes a `@Grab` annotation, which lets you declare dependencies on
+third-party libraries. This useful technique lets Groovy download jars in the same way as
+Maven or Gradle would but without requiring you to use a build tool.
 
-Spring Boot extends this technique further and tries to deduce which libraries to
-"`grab`" based on your code. For example, since the `WebApplication` code shown
-previously uses `@RestController` annotations, Spring Boot grabs"`Tomcat`" and
-"`Spring MVC`".
+Spring Boot extends this technique further and tries to deduce which libraries to "`grab`"
+based on your code. For example, since the `WebApplication` code shown previously uses
+`@RestController` annotations, Spring Boot grabs"`Tomcat`" and "`Spring MVC`".
 
 The following items are used as "`grab hints`":
 
@@ -189,24 +188,24 @@ in the Spring Boot CLI source code to understand exactly how customizations are 
 [[cli-default-grab-deduced-coordinates]]
 ==== Deduced "`grab`" Coordinates
 Spring Boot extends Groovy's standard `@Grab` support by letting you specify a dependency
-without a group or version (for example, `@Grab('freemarker')`). Doing so consults Spring Boot's
-default dependency metadata to deduce the artifact's group and version. Note that the default
-metadata is tied to the version of the CLI that you use – it changes only when you move
-to a new version of the CLI, putting you in control of when the versions of your dependencies
-may change. A table showing the dependencies and their versions that are included in the default
-metadata can be found in the <<appendix-dependency-versions, appendix>>.
+without a group or version (for example, `@Grab('freemarker')`). Doing so consults Spring
+Boot's default dependency metadata to deduce the artifact's group and version. Note that
+the default metadata is tied to the version of the CLI that you use – it changes only when
+you move to a new version of the CLI, putting you in control of when the versions of your
+dependencies may change. A table showing the dependencies and their versions that are
+included in the default metadata can be found in the <<appendix-dependency-versions,
+appendix>>.
 
 
 
 [[cli-default-import-statements]]
 ==== Default Import Statements
-To help reduce the size of your Groovy code, several `import` statements are
-automatically included. Notice how the preceding example refers to `@Component`,
-`@RestController`, and `@RequestMapping` without needing to use
-fully-qualified names or `import` statements.
+To help reduce the size of your Groovy code, several `import` statements are automatically
+included. Notice how the preceding example refers to `@Component`, `@RestController`, and
+`@RequestMapping` without needing to use fully-qualified names or `import` statements.
 
-TIP: Many Spring annotations work without using `import` statements. Try running
-your application to see what fails before adding imports.
+TIP: Many Spring annotations work without using `import` statements. Try running your
+application to see what fails before adding imports.
 
 
 
@@ -223,9 +222,9 @@ Unlike the equivalent Java application, you do not need to include a
 ==== Custom Dependency Management
 By default, the CLI uses the dependency management declared in `spring-boot-dependencies`
 when resolving `@Grab` dependencies. Additional dependency management, which overrides
-the default dependency management, can be configured by using the `@DependencyManagementBom`
-annotation. The annotation's value should specify the coordinates
-(`groupId:artifactId:version`) of one or more Maven BOMs.
+the default dependency management, can be configured by using the
+`@DependencyManagementBom` annotation. The annotation's value should specify the
+coordinates (`groupId:artifactId:version`) of one or more Maven BOMs.
 
 For example, consider the following declaration:
 
@@ -251,10 +250,10 @@ dependency management in `custom-bom`.
 
 You can use `@DependencyManagementBom` anywhere that you can use `@Grab`. However, to
 ensure consistent ordering of the dependency management, you can use
-`@DependencyManagementBom` at most once in your application. A useful source of
-dependency management (which is a superset of Spring Boot's dependency management) is the
-http://platform.spring.io/[Spring IO Platform], which you might include with the
-following line:
+`@DependencyManagementBom` at most once in your application. A useful source of dependency
+management (which is a superset of Spring Boot's dependency management) is the
+http://platform.spring.io/[Spring IO Platform], which you might include with the following
+line:
 
 [source,java,indent=0]
 ----
@@ -276,20 +275,20 @@ you use multiple files from a single directory, as shown in the following exampl
 
 [[cli-jar]]
 === Packaging Your Application
-You can use the `jar` command to package your application into a self-contained
-executable jar file, as shown in the following example:
+You can use the `jar` command to package your application into a self-contained executable
+jar file, as shown in the following example:
 
 [indent=0]
 ----
 	$ spring jar my-app.jar *.groovy
 ----
 
-The resulting jar contains the classes produced by compiling the application and all
-of the application's dependencies so that it can then be run by using `java -jar`. The jar
-file also contains entries from the application's classpath. You can add explicit
-paths to the jar by using `--include` and `--exclude`. Both are comma-separated, and both
-accept prefixes, in the form of "`+`" and "`-`", to signify that they should be removed from
-the defaults. The default includes are as follows:
+The resulting jar contains the classes produced by compiling the application and all of
+the application's dependencies so that it can then be run by using `java -jar`. The jar
+file also contains entries from the application's classpath. You can add explicit paths to
+the jar by using `--include` and `--exclude`. Both are comma-separated, and both accept
+prefixes, in the form of "`+`" and "`-`", to signify that they should be removed from the
+defaults. The default includes are as follows:
 
 [indent=0]
 ----
@@ -309,8 +308,8 @@ Type `spring help jar` on the command line for more information.
 
 [[cli-init]]
 === Initialize a New Project
-The `init` command lets you create a new project by using https://start.spring.io
-without leaving the shell, as shown in the following example:
+The `init` command lets you create a new project by using https://start.spring.io without
+leaving the shell, as shown in the following example:
 
 [indent=0]
 ----
@@ -349,7 +348,8 @@ capabilities of the service by using the `--list` flag, as shown in the followin
 ----
 
 The `init` command supports many options. See the `help` output for more details. For
-instance, the following command creates a Gradle project that uses Java 8 and `war` packaging:
+instance, the following command creates a Gradle project that uses Java 8 and `war`
+packaging:
 
 [indent=0]
 ----
@@ -381,8 +381,8 @@ From inside the embedded shell, you can run other commands directly:
 	Spring CLI v{spring-boot-version}
 ----
 
-The embedded shell supports ANSI color output as well as `tab` completion. If you need
-to run a native command, you can use the `!` prefix. To exit the embedded shell, press
+The embedded shell supports ANSI color output as well as `tab` completion. If you need to
+run a native command, you can use the `!` prefix. To exit the embedded shell, press
 `ctrl-c`.
 
 
@@ -426,9 +426,9 @@ following example:
 [[cli-groovy-beans-dsl]]
 == Developing Applications with the Groovy Beans DSL
 Spring Framework 4.0 has native support for a `beans{}` "`DSL`" (borrowed from
-http://grails.org/[Grails]),  and you can embed bean definitions in your Groovy
-application scripts by using the same format. This is sometimes a good way to include
-external features like middleware declarations, as shown in the following example:
+http://grails.org/[Grails]), and you can embed bean definitions in your Groovy application
+scripts by using the same format. This is sometimes a good way to include external
+features like middleware declarations, as shown in the following example:
 
 [source,groovy,indent=0]
 ----
@@ -474,20 +474,18 @@ to configure Aether. The following configuration settings are honored by the CLI
  ** Repositories
  * Active profiles
 
-See https://maven.apache.org/settings.html[Maven's settings documentation] for
-further information.
+See https://maven.apache.org/settings.html[Maven's settings documentation] for further
+information.
 
 
 
 [[cli-whats-next]]
 == What to Read Next
 There are some {github-code}/spring-boot-project/spring-boot-cli/samples[sample groovy
-scripts] available from the GitHub repository that you can use to try out the
-Spring Boot CLI. There is also extensive Javadoc throughout the
-{sc-spring-boot-cli}[source code].
+scripts] available from the GitHub repository that you can use to try out the Spring Boot
+CLI. There is also extensive Javadoc throughout the {sc-spring-boot-cli}[source code].
 
-If you find that you reach the limit of the CLI tool, you probably want to look
-at converting your application to a full Gradle or Maven built "`Groovy project`". The
-next section covers Spring Boot's
-"<<build-tool-plugins.adoc#build-tool-plugins, Build tool plugins>>", which you can
-use with Gradle or Maven.
+If you find that you reach the limit of the CLI tool, you probably want to look at
+converting your application to a full Gradle or Maven built "`Groovy project`". The
+next section covers Spring Boot's "<<build-tool-plugins.adoc#build-tool-plugins, Build
+tool plugins>>", which you can use with Gradle or Maven.
