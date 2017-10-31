@@ -42,7 +42,7 @@ developed>> in the "`Getting Started`" section up and running in the Cloud.
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java buildpack]
 has excellent support for Spring applications, including Spring Boot. You can deploy
-stand-alone executable jar applications\ as well as traditional `.war` packaged
+stand-alone executable jar applications as well as traditional `.war` packaged
 applications.
 
 Once you have built your application (by using, for example, `mvn clean package`) and have
@@ -149,7 +149,7 @@ Spring's `Environment` abstraction, as shown in the following example:
 All Cloud Foundry properties are prefixed with `vcap`. You can use `vcap` properties to
 access application information (such as the public URL of the application) and service
 information (such as database credentials). See
-https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/cloud/CloudFoundryVcapEnvironmentPostProcessor.html['`CloudFoundryVcapEnvironmentPostProcessor`']
+{dc-spring-boot}/cloud/CloudFoundryVcapEnvironmentPostProcessor.html['`CloudFoundryVcapEnvironmentPostProcessor`']
 Javadoc for complete details.
 
 TIP: The http://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project
@@ -307,7 +307,7 @@ By default an Elastic Beanstalk environment is load balanced. The load balancer 
 significant cost. To avoid that cost, set the environment type to "`Single instance`", as
 described in
 http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[the Amazon documentation].
-You can also create single instance environments by using the CLI by using the
+You can also create single instance environments by using the CLI and the
 following command:
 
 [indent=0]
@@ -339,7 +339,7 @@ Once you have created a https://console.boxfuse.com[Boxfuse account], connected 
 your AWS account, installed the latest version of the Boxfuse Client, and ensured that
 the application has been built by Maven or Gradle (by using, for example, `mvn clean
 package`), you can deploy your Spring Boot application to AWS with a command similar to
-the following command:
+the following:
 
 [indent=0]
 ----
