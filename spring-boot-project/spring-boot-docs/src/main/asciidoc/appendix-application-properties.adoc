@@ -165,6 +165,7 @@ content into your application; rather pick only the properties that you need.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.
+	server.http2.enabled=true # Enable HTTP/2 support if the current environment supports it.
 	server.jetty.acceptors= # Number of acceptor threads to use.
 	server.jetty.accesslog.append=false # Append to log.
 	server.jetty.accesslog.date-format=dd/MMM/yyyy:HH:mm:ss Z # Timestamp format of the request log.

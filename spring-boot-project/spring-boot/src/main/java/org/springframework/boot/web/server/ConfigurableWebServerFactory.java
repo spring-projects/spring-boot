@@ -63,6 +63,12 @@ public interface ConfigurableWebServerFactory
 	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 	/**
+	 * Sets the HTTP/2 configuration that will be applied to the server.
+	 * @param http2 the HTTP/2 configuration
+	 */
+	void setHttp2(Http2 http2);
+
+	/**
 	 * Sets the compression configuration that will be applied to the server's default
 	 * connector.
 	 * @param compression the compression configuration
