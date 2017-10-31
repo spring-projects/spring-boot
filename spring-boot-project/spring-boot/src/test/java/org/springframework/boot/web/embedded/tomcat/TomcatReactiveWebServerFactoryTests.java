@@ -19,13 +19,17 @@ package org.springframework.boot.web.embedded.tomcat;
 import java.util.Arrays;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.AprLifecycleListener;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.http.server.reactive.HttpHandler;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -57,6 +61,30 @@ public class TomcatReactiveWebServerFactoryTests
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatContextCustomizer listener : listeners) {
 			ordered.verify(listener).customize(any(Context.class));
+		}
+	}
+
+	@Test
+	public void defaultTomcatListeners() throws Exception {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThat(factory.getContextLifecycleListeners())
+				.hasSize(1)
+				.first().isInstanceOf(AprLifecycleListener.class);
+	}
+
+	@Test
+	public void tomcatListeners() throws Exception {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		LifecycleListener[] listeners = new LifecycleListener[4];
+		for (int i = 0; i < listeners.length; i++) {
+			listeners[i] = mock(LifecycleListener.class);
+		}
+		factory.setContextLifecycleListeners(Arrays.asList(listeners[0], listeners[1]));
+		factory.addContextLifecycleListeners(listeners[2], listeners[3]);
+		this.webServer = factory.getWebServer(mock(HttpHandler.class));
+		InOrder ordered = inOrder((Object[]) listeners);
+		for (LifecycleListener listener : listeners) {
+			ordered.verify(listener).lifecycleEvent(any(LifecycleEvent.class));
 		}
 	}
 

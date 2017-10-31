@@ -37,6 +37,7 @@ import org.apache.catalina.Service;
 import org.apache.catalina.SessionIdGenerator;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
@@ -100,6 +101,14 @@ public class TomcatServletWebServerFactoryTests
 		assertThat(firstName).as("Tomcat engines must have different names")
 				.isNotEqualTo(secondName);
 		tomcatWebServer.stop();
+	}
+
+	@Test
+	public void defaultTomcatListeners() throws Exception {
+		TomcatServletWebServerFactory factory = getFactory();
+		assertThat(factory.getContextLifecycleListeners())
+				.hasSize(1)
+				.first().isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test
