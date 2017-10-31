@@ -20,7 +20,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Default {@link RestartInitializer} that only enable initial restart when running a
@@ -53,9 +52,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 				return null;
 			}
 		}
-		URL[] urls = getUrls(thread);
-		Stream.of(urls).forEach(System.out::println);
-		return urls;
+		return getUrls(thread);
 	}
 
 	/**
