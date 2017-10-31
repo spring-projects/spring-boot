@@ -150,22 +150,23 @@ public class QuartzAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public QuartzDatabaseInitializer quartzDatabaseInitializer(DataSource dataSource,
-				ResourceLoader resourceLoader, QuartzProperties properties) {
-			return new QuartzDatabaseInitializer(dataSource, resourceLoader, properties);
+		public QuartzDataSourceInitializer quartzDataSourceInitializer(
+				DataSource dataSource, ResourceLoader resourceLoader,
+				QuartzProperties properties) {
+			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 		@Bean
-		public static DatabaseInitializerSchedulerDependencyPostProcessor databaseInitializerSchedulerDependencyPostProcessor() {
-			return new DatabaseInitializerSchedulerDependencyPostProcessor();
+		public static DataSourceInitializerSchedulerDependencyPostProcessor dataSourceInitializerSchedulerDependencyPostProcessor() {
+			return new DataSourceInitializerSchedulerDependencyPostProcessor();
 		}
 
-		private static class DatabaseInitializerSchedulerDependencyPostProcessor
+		private static class DataSourceInitializerSchedulerDependencyPostProcessor
 				extends AbstractDependsOnBeanFactoryPostProcessor {
 
-			DatabaseInitializerSchedulerDependencyPostProcessor() {
+			DataSourceInitializerSchedulerDependencyPostProcessor() {
 				super(Scheduler.class, SchedulerFactoryBean.class,
-						"quartzDatabaseInitializer");
+						"quartzDataSourceInitializer");
 			}
 
 		}

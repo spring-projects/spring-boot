@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.springframework.aop.scope.ScopedProxyUtils;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -380,7 +379,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	void inject(Field field, Object target, Definition definition) {
 		String beanName = this.beanNameRegistry.get(definition);
 		Assert.state(StringUtils.hasLength(beanName),
-				"No bean found for definition " + definition);
+				() -> "No bean found for definition " + definition);
 		inject(field, target, beanName, definition);
 	}
 
@@ -389,24 +388,12 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		try {
 			field.setAccessible(true);
 			Assert.state(ReflectionUtils.getField(field, target) == null,
-					"The field " + field + " cannot have an existing value");
+					() -> "The field " + field + " cannot have an existing value");
 			Object bean = this.beanFactory.getBean(beanName, field.getType());
-			if (definition.isProxyTargetAware() && isAopProxy(bean)) {
-				MockitoAopProxyTargetInterceptor.applyTo(bean);
-			}
 			ReflectionUtils.setField(field, target, bean);
 		}
 		catch (Throwable ex) {
 			throw new BeanCreationException("Could not inject field: " + field, ex);
-		}
-	}
-
-	private boolean isAopProxy(Object object) {
-		try {
-			return AopUtils.isAopProxy(object);
-		}
-		catch (Throwable ex) {
-			return false;
 		}
 	}
 

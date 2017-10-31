@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
@@ -56,8 +55,7 @@ public class AuthorizationAuditListenerTests {
 	public void testAuthenticationCredentialsNotFound() {
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthenticationCredentialsNotFoundEvent(this,
-						Collections.<ConfigAttribute>singletonList(
-								new SecurityConfig("USER")),
+						Collections.singletonList(new SecurityConfig("USER")),
 						new AuthenticationCredentialsNotFoundException("Bad user")));
 		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
@@ -67,8 +65,7 @@ public class AuthorizationAuditListenerTests {
 	public void testAuthorizationFailure() {
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthorizationFailureEvent(this,
-						Collections.<ConfigAttribute>singletonList(
-								new SecurityConfig("USER")),
+						Collections.singletonList(new SecurityConfig("USER")),
 						new UsernamePasswordAuthenticationToken("user", "password"),
 						new AccessDeniedException("Bad user")));
 		assertThat(event.getAuditEvent().getType())
@@ -83,8 +80,7 @@ public class AuthorizationAuditListenerTests {
 		authentication.setDetails(details);
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthorizationFailureEvent(this,
-						Collections.<ConfigAttribute>singletonList(
-								new SecurityConfig("USER")),
+						Collections.singletonList(new SecurityConfig("USER")),
 						authentication, new AccessDeniedException("Bad user")));
 		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);

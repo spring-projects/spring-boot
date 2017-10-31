@@ -52,7 +52,7 @@ class UnresolvedDependenciesAnalyzer {
 			StringBuilder message = new StringBuilder();
 			message.append("\nDuring the build, one or more dependencies that were "
 					+ "declared without a version failed to resolve:\n");
-			this.dependenciesWithNoVersion.stream()
+			this.dependenciesWithNoVersion
 					.forEach((dependency) -> message.append("    " + dependency + "\n"));
 			message.append("\nDid you forget to apply the "
 					+ "io.spring.dependency-management plugin to the " + project.getName()

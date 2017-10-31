@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -89,39 +88,46 @@ public class MongoClientFactory {
 	}
 
 	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
-
+		MongoProperties properties = this.properties;
+		if (properties.getUri() != null) {
+			return createMongoClient(properties.getUri(), options);
+		}
 		if (hasCustomAddress() || hasCustomCredentials()) {
-			if (this.properties.getUri() != null) {
-				throw new IllegalStateException("Invalid mongo configuration, "
-						+ "either uri or host/port/credentials must be specified");
-			}
 			if (options == null) {
 				options = MongoClientOptions.builder().build();
 			}
-			List<MongoCredential> credentials = new ArrayList<>();
-			if (hasCustomCredentials()) {
-				String database = this.properties.getAuthenticationDatabase() == null
-						? this.properties.getMongoClientDatabase()
-						: this.properties.getAuthenticationDatabase();
-				credentials.add(
-						MongoCredential.createCredential(this.properties.getUsername(),
-								database, this.properties.getPassword()));
-			}
-			String host = this.properties.getHost() == null ? "localhost"
-					: this.properties.getHost();
-			int port = this.properties.getPort() != null ? this.properties.getPort()
-					: MongoProperties.DEFAULT_PORT;
-			return new MongoClient(
-					Collections.singletonList(new ServerAddress(host, port)), credentials,
-					options);
+			List<MongoCredential> credentials = getCredentials(properties);
+			String host = getValue(properties.getHost(), "localhost");
+			int port = getValue(properties.getPort(), MongoProperties.DEFAULT_PORT);
+			List<ServerAddress> seeds = Collections
+					.singletonList(new ServerAddress(host, port));
+			return new MongoClient(seeds, credentials, options);
 		}
-		// The options and credentials are in the URI
-		return new MongoClient(
-				new MongoClientURI(this.properties.determineUri(), builder(options)));
+		return createMongoClient(MongoProperties.DEFAULT_URI, options);
+	}
+
+	private MongoClient createMongoClient(String uri, MongoClientOptions options) {
+		return new MongoClient(new MongoClientURI(uri, builder(options)));
+	}
+
+	private <T> T getValue(T value, T fallback) {
+		return (value == null ? fallback : value);
 	}
 
 	private boolean hasCustomAddress() {
 		return this.properties.getHost() != null || this.properties.getPort() != null;
+	}
+
+	private List<MongoCredential> getCredentials(MongoProperties properties) {
+		if (!hasCustomCredentials()) {
+			return Collections.emptyList();
+		}
+		String username = properties.getUsername();
+		String database = getValue(properties.getAuthenticationDatabase(),
+				properties.getMongoClientDatabase());
+		char[] password = properties.getPassword();
+		return Collections.singletonList(
+				MongoCredential.createCredential(username, database, password));
 	}
 
 	private boolean hasCustomCredentials() {

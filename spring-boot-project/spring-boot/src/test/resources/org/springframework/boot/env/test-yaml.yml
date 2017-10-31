@@ -24,6 +24,8 @@ example:
         bar:
           - bar1: baz
           - bar2: bling
+empty: ""
+null-value: null
 ---
 
 spring:

@@ -99,8 +99,8 @@ public class DevToolPropertiesIntegrationTests {
 		SpringApplication application = new SpringApplication(
 				BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setDefaultProperties(Collections.<String, Object>singletonMap(
-				"spring.devtools.remote.secret", "donttell"));
+		application.setDefaultProperties(
+				Collections.singletonMap("spring.devtools.remote.secret", "donttell"));
 		this.context = application.run();
 		this.context.getBean(MyBean.class);
 	}

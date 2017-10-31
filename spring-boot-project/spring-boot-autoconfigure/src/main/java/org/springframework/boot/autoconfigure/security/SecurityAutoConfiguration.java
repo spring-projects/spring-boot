@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
@@ -41,8 +41,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
  * @author Madhura Bhave
  */
 @Configuration
-@ConditionalOnClass({ AuthenticationManager.class,
-		GlobalAuthenticationConfigurerAdapter.class })
+@ConditionalOnClass({ AuthenticationManager.class, EnableWebSecurity.class })
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
 		AuthenticationManagerConfiguration.class, SecurityDataConfiguration.class })

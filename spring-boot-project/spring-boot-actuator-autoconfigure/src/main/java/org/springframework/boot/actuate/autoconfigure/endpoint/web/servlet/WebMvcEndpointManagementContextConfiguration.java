@@ -19,9 +19,11 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -48,18 +50,19 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean(DispatcherServlet.class)
 @EnableConfigurationProperties({ CorsEndpointProperties.class,
-		ManagementServerProperties.class })
+		WebEndpointProperties.class, ManagementServerProperties.class })
 public class WebMvcEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
 			EndpointProvider<WebEndpointOperation> provider,
-			CorsEndpointProperties corsProperties,
-			ManagementServerProperties managementServerProperties) {
+			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
+			WebEndpointProperties webEndpointProperties) {
 		WebMvcEndpointHandlerMapping handlerMapping = new WebMvcEndpointHandlerMapping(
-				new EndpointMapping(managementServerProperties.getContextPath()),
-				provider.getEndpoints(), getCorsConfiguration(corsProperties));
+				new EndpointMapping(webEndpointProperties.getBasePath()),
+				provider.getEndpoints(), endpointMediaTypes,
+				getCorsConfiguration(corsProperties));
 		return handlerMapping;
 	}
 
@@ -67,8 +70,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	public EndpointPathProvider endpointPathProvider(
 			EndpointProvider<WebEndpointOperation> provider,
-			ManagementServerProperties managementServerProperties) {
-		return new DefaultEndpointPathProvider(provider, managementServerProperties);
+			WebEndpointProperties webEndpointProperties) {
+		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
 	}
 
 	private CorsConfiguration getCorsConfiguration(CorsEndpointProperties properties) {

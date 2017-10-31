@@ -25,26 +25,21 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.validation.Validator;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
@@ -56,20 +51,14 @@ import org.springframework.validation.Validator;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-		BeanFactoryAware, EnvironmentAware, ApplicationContextAware, InitializingBean,
-		DisposableBean, ApplicationListener<ContextRefreshedEvent>, PriorityOrdered {
+public class ConfigurationPropertiesBindingPostProcessor
+		implements BeanPostProcessor, BeanFactoryAware, EnvironmentAware,
+		ApplicationContextAware, InitializingBean, PriorityOrdered {
 
 	private static final Log logger = LogFactory
 			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
 
 	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
-
-	private Iterable<PropertySource<?>> propertySources;
-
-	private Validator validator;
-
-	private ConversionService conversionService;
 
 	private BeanFactory beanFactory;
 
@@ -77,17 +66,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ApplicationContext applicationContext;
 
-	private int order = Ordered.HIGHEST_PRECEDENCE + 1;
-
 	private ConfigurationPropertiesBinder configurationPropertiesBinder;
 
-	/**
-	 * Set the order of the bean.
-	 * @param order the order
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+	private PropertySources propertySources;
 
 	/**
 	 * Return the order of the bean.
@@ -95,31 +76,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	 */
 	@Override
 	public int getOrder() {
-		return this.order;
-	}
-
-	/**
-	 * Set the property sources to bind.
-	 * @param propertySources the property sources
-	 */
-	public void setPropertySources(Iterable<PropertySource<?>> propertySources) {
-		this.propertySources = propertySources;
-	}
-
-	/**
-	 * Set the bean validator used to validate property fields.
-	 * @param validator the validator
-	 */
-	public void setValidator(Validator validator) {
-		this.validator = validator;
-	}
-
-	/**
-	 * Set the conversion service used to convert property values.
-	 * @param conversionService the conversion service
-	 */
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
 	/**
@@ -147,38 +104,34 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (this.propertySources == null) {
-			this.propertySources = deducePropertySources();
-		}
-	}
-
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		freeBinder();
-	}
-
-	@Override
-	public void destroy() {
-		freeBinder();
-	}
-
-	private void freeBinder() {
-		if (this.configurationPropertiesBinder != null) {
-			this.configurationPropertiesBinder.destroy();
-		}
-		this.configurationPropertiesBinder = null;
+		this.propertySources = deducePropertySources();
 	}
 
 	private PropertySources deducePropertySources() {
+		MutablePropertySources environmentPropertySources = extractEnvironmentPropertySources();
 		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
-		if (configurer != null) {
-			return configurer.getAppliedPropertySources();
+		if (configurer == null) {
+			if (environmentPropertySources != null) {
+				return environmentPropertySources;
+			}
+			throw new IllegalStateException("Unable to obtain PropertySources from "
+					+ "PropertySourcesPlaceholderConfigurer or Environment");
 		}
+		PropertySources appliedPropertySources = configurer.getAppliedPropertySources();
+		return environmentPropertySources == null ? appliedPropertySources
+				: new CompositePropertySources(
+						new FilteredPropertySources(appliedPropertySources,
+								PropertySourcesPlaceholderConfigurer.ENVIRONMENT_PROPERTIES_PROPERTY_SOURCE_NAME),
+						environmentPropertySources);
+	}
+
+	private MutablePropertySources extractEnvironmentPropertySources() {
+		MutablePropertySources environmentPropertySources = null;
 		if (this.environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) this.environment).getPropertySources();
+			environmentPropertySources = ((ConfigurableEnvironment) this.environment)
+					.getPropertySources();
 		}
-		throw new IllegalStateException("Unable to obtain PropertySources from "
-				+ "PropertySourcesPlaceholderConfigurer or Environment");
+		return environmentPropertySources;
 	}
 
 	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
@@ -234,9 +187,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private ConfigurationPropertiesBinder getBinder() {
 		if (this.configurationPropertiesBinder == null) {
 			this.configurationPropertiesBinder = new ConfigurationPropertiesBinderBuilder(
-					this.applicationContext).withConversionService(this.conversionService)
-							.withValidator(this.validator)
-							.withPropertySources(this.propertySources).build();
+					this.applicationContext).withPropertySources(this.propertySources)
+							.build();
 		}
 		return this.configurationPropertiesBinder;
 	}

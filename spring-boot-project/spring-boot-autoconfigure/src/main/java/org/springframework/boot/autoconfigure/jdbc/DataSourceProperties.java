@@ -29,6 +29,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.EnvironmentAware;
@@ -99,9 +100,9 @@ public class DataSourceProperties
 	private String jndiName;
 
 	/**
-	 * Populate the database using 'data.sql'.
+	 * Initialize the datasource using available DDL and DML scripts.
 	 */
-	private boolean initialize = true;
+	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
 
 	/**
 	 * Platform to use in the DDL or DML scripts (e.g. schema-${platform}.sql or
@@ -232,7 +233,7 @@ public class DataSourceProperties
 	public String determineDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
 			Assert.state(driverClassIsLoadable(),
-					"Cannot load driver class: " + this.driverClassName);
+					() -> "Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
 		String driverClassName = null;
@@ -376,12 +377,12 @@ public class DataSourceProperties
 		this.jndiName = jndiName;
 	}
 
-	public boolean isInitialize() {
-		return this.initialize;
+	public DataSourceInitializationMode getInitializationMode() {
+		return this.initializationMode;
 	}
 
-	public void setInitialize(boolean initialize) {
-		this.initialize = initialize;
+	public void setInitializationMode(DataSourceInitializationMode initializationMode) {
+		this.initializationMode = initializationMode;
 	}
 
 	public String getPlatform() {

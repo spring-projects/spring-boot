@@ -9,5 +9,5 @@ apply plugin: 'application'
 apply plugin: 'war'
 
 bootWar {
-	mainClass = 'com.example.ExampleApplication'
+	mainClassName = 'com.example.ExampleApplication'
 }

@@ -248,8 +248,7 @@ public class AutoConfigurationImportSelectorTests {
 
 		@Override
 		protected List<AutoConfigurationImportListener> getAutoConfigurationImportListeners() {
-			return Collections.<AutoConfigurationImportListener>singletonList(
-					(event) -> this.lastEvent = event);
+			return Collections.singletonList((event) -> this.lastEvent = event);
 		}
 
 		public AutoConfigurationImportEvent getLastEvent() {

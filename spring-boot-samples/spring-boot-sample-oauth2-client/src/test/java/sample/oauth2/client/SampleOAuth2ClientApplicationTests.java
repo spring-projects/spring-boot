@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,9 @@ public class SampleOAuth2ClientApplicationTests {
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody())
-				.contains("/oauth2/authorization/code/github-client-1");
+				.contains("/oauth2/authorization/github-client-1");
 		assertThat(entity.getBody())
-				.contains("/oauth2/authorization/code/github-client-2");
+				.contains("/oauth2/authorization/github-client-2");
 	}
 
 }

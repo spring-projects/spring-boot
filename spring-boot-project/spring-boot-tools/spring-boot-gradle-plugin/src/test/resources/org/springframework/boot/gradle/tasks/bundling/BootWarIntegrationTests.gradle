@@ -8,7 +8,7 @@ apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 
 bootWar {
-	mainClass = 'com.example.Application'
+	mainClassName = 'com.example.Application'
 	if (project.hasProperty('includeLaunchScript') ? includeLaunchScript : false) {
 		launchScript {
 			properties 'prop' : project.hasProperty('launchScriptProperty') ? launchScriptProperty : 'default'

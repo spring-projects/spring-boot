@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -515,6 +516,19 @@ public class MapBinderTests {
 		assertThat(map).containsEntry("x [B] y", "[ball]");
 	}
 
+	@Test
+	public void nestedMapsShouldNotBindToNull() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "one");
+		source.put("foo.foos.foo1.value", "two");
+		source.put("foo.foos.foo2.value", "three");
+		this.sources.add(source);
+		BindResult<NestableFoo> foo = this.binder.bind("foo", NestableFoo.class);
+		assertThat(foo.get().getValue()).isNotNull();
+		assertThat(foo.get().getFoos().get("foo1").getValue()).isEqualTo("two");
+		assertThat(foo.get().getFoos().get("foo2").getValue()).isEqualTo("three");
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
 			ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
@@ -543,6 +557,26 @@ public class MapBinderTests {
 
 		public void setPattern(String pattern) {
 			this.pattern = pattern;
+		}
+
+	}
+
+	static class NestableFoo {
+
+		private Map<String, NestableFoo> foos = new LinkedHashMap<>();
+
+		private String value;
+
+		public Map<String, NestableFoo> getFoos() {
+			return this.foos;
+		}
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
 		}
 
 	}

@@ -21,23 +21,27 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import org.apache.catalina.loader.WebappClassLoader;
+import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Extension of Tomcat's {@link WebappClassLoader} that does not consider the
+ * Extension of Tomcat's {@link ParallelWebappClassLoader} that does not consider the
  * {@link ClassLoader#getSystemClassLoader() system classloader}. This is required to
- * ensure that any custom context classloader is always used (as is the case with some
+ * ensure that any custom context class loader is always used (as is the case with some
  * executable archives).
  *
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
+public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
 	private static final Log logger = LogFactory
 			.getLog(TomcatEmbeddedWebappClassLoader.class);
+
+	static {
+		ClassLoader.registerAsParallelCapable();
+	}
 
 	public TomcatEmbeddedWebappClassLoader() {
 		super();
@@ -58,14 +62,16 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	}
 
 	@Override
-	public synchronized Class<?> loadClass(String name, boolean resolve)
+	public Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		Class<?> result = findExistingLoadedClass(name);
-		result = (result == null ? doLoadClass(name) : result);
-		if (result == null) {
-			throw new ClassNotFoundException(name);
+		synchronized (getClassLoadingLock(name)) {
+			Class<?> result = findExistingLoadedClass(name);
+			result = (result == null ? doLoadClass(name) : result);
+			if (result == null) {
+				throw new ClassNotFoundException(name);
+			}
+			return resolveIfNecessary(result, resolve);
 		}
-		return resolveIfNecessary(result, resolve);
 	}
 
 	private Class<?> findExistingLoadedClass(String name) {

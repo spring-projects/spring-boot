@@ -17,7 +17,7 @@ unless you enable Spring MVC as well.>>
 
 [[production-ready-enabling]]
 == Enabling production-ready features
-The {github-code}/spring-boot-actuator[`spring-boot-actuator`] module provides all of
+The {github-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of
 Spring Boot's production-ready features. The simplest way to enable the features is to add
 a dependency to the `spring-boot-starter-actuator` '`Starter`'.
 
@@ -261,7 +261,7 @@ permits `GET` and `POST` calls from the `example.com` domain:
 	management.endpoints.cors.allowed-methods=GET,POST
 ----
 
-TIP: Check {sc-spring-boot-actuator}/autoconfigure/endpoint/infrastructure/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties]
+TIP: Check {sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties]
 for a complete list of options.
 
 
@@ -307,34 +307,34 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |===
 |Name |Description
 
-|{sc-spring-boot-actuator}/health/CassandraHealthIndicator.{sc-ext}[`CassandraHealthIndicator`]
+|{sc-spring-boot-actuator}/cassandra/CassandraHealthIndicator.{sc-ext}[`CassandraHealthIndicator`]
 |Checks that a Cassandra database is up.
 
-|{sc-spring-boot-actuator}/health/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
+|{sc-spring-boot-actuator}/system/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
 |Checks for low disk space.
 
-|{sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
+|{sc-spring-boot-actuator}/jdbc/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
 |Checks that a connection to `DataSource` can be obtained.
 
-|{sc-spring-boot-actuator}/health/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
+|{sc-spring-boot-actuator}/elasticsearch/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
 |Checks that an Elasticsearch cluster is up.
 
-|{sc-spring-boot-actuator}/health/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
+|{sc-spring-boot-actuator}/jms/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
 |Checks that a JMS broker is up.
 
-|{sc-spring-boot-actuator}/health/MailHealthIndicator.{sc-ext}[`MailHealthIndicator`]
+|{sc-spring-boot-actuator}/mail/MailHealthIndicator.{sc-ext}[`MailHealthIndicator`]
 |Checks that a mail server is up.
 
-|{sc-spring-boot-actuator}/health/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
+|{sc-spring-boot-actuator}/mongo/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
 |Checks that a Mongo database is up.
 
-|{sc-spring-boot-actuator}/health/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
+|{sc-spring-boot-actuator}/amqp/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
 |Checks that a Rabbit server is up.
 
-|{sc-spring-boot-actuator}/health/RedisHealthIndicator.{sc-ext}[`RedisHealthIndicator`]
+|{sc-spring-boot-actuator}/redis/RedisHealthIndicator.{sc-ext}[`RedisHealthIndicator`]
 |Checks that a Redis server is up.
 
-|{sc-spring-boot-actuator}/health/SolrHealthIndicator.{sc-ext}[`SolrHealthIndicator`]
+|{sc-spring-boot-actuator}/solr/SolrHealthIndicator.{sc-ext}[`SolrHealthIndicator`]
 |Checks that a Solr server is up.
 |===
 
@@ -567,12 +567,12 @@ is exposed as `/application/health`.
 === Customizing the management endpoint paths
 Sometimes it is useful to customize the prefix for the management endpoints.
 For example, your application might already use `/application` for another purpose.
-You can use the `management.context-path` property to change the prefix for your
+You can use the `management.endpoints.web.base-path` property to change the prefix for your
 management endpoint:
 
 [source,properties,indent=0]
 ----
-	management.context-path=/manage
+	management.endpoints.web.base-path=/manage
 ----
 
 The `application.properties` example above will change the endpoint from `/application/{id}` to
@@ -580,7 +580,8 @@ The `application.properties` example above will change the endpoint from `/appli
 
 NOTE: Unless the management port has been configured to
 <<production-ready-customizing-management-server-port,expose endpoints using a different
-HTTP port>>, `management.context-path` is relative to `server.context-path`.
+HTTP port>>, `management.endpoints.web.base-path` is relative to `server.context-path`. If `management.server.port`
+is configured, `management.endpoints.web.base-path`, is relative to `management.server.servlet.context-path`.
 
 
 
@@ -590,11 +591,11 @@ Exposing management endpoints using the default HTTP port is a sensible choice f
 based deployments. If, however, your application runs inside your own data center you
 may prefer to expose endpoints using a different HTTP port.
 
-The `management.port` property can be used to change the HTTP port.
+The `management.server.port` property can be used to change the HTTP port.
 
 [source,properties,indent=0]
 ----
-	management.port=8081
+	management.server.port=8081
 ----
 
 Since your management port is often protected by a firewall, and not exposed to the public
@@ -615,7 +616,7 @@ disable the management security in this way, and it might even break the applica
 [[production-ready-management-specific-ssl]]
 === Configuring management-specific SSL
 When configured to use a custom port, the management server can also be configured with
-its own SSL using the various `management.ssl.*` properties. For example, this allows a
+its own SSL using the various `management.server.ssl.*` properties. For example, this allows a
 management server to be available via HTTP while the main application uses HTTPS:
 
 [source,properties,indent=0]
@@ -624,8 +625,8 @@ management server to be available via HTTP while the main application uses HTTPS
 	server.ssl.enabled=true
 	server.ssl.key-store=classpath:store.jks
 	server.ssl.key-password=secret
-	management.port=8080
-	management.ssl.enabled=false
+	management.server.port=8080
+	management.server.ssl.enabled=false
 ----
 
 Alternatively, both the main server and the management server can use SSL but with
@@ -637,10 +638,10 @@ different key stores:
 	server.ssl.enabled=true
 	server.ssl.key-store=classpath:main.jks
 	server.ssl.key-password=secret
-	management.port=8080
-	management.ssl.enabled=true
-	management.ssl.key-store=classpath:management.jks
-	management.ssl.key-password=secret
+	management.server.port=8080
+	management.server.ssl.enabled=true
+	management.server.ssl.key-store=classpath:management.jks
+	management.server.ssl.key-password=secret
 ----
 
 
@@ -648,7 +649,7 @@ different key stores:
 [[production-ready-customizing-management-server-address]]
 === Customizing the management server address
 You can customize the address that the management endpoints are available on by
-setting the `management.address` property. This can be useful if you want to
+setting the `management.server.address` property. This can be useful if you want to
 listen only on an internal or ops-facing network, or to only listen for connections from
 `localhost`.
 
@@ -660,8 +661,8 @@ connections:
 
 [source,properties,indent=0]
 ----
-	management.port=8081
-	management.address=127.0.0.1
+	management.server.port=8081
+	management.server.address=127.0.0.1
 ----
 
 
@@ -672,7 +673,7 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 
 [source,properties,indent=0]
 ----
-	management.port=-1
+	management.server.port=-1
 ----
 
 
@@ -824,7 +825,7 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 [[production-ready-loggers]]
 == Loggers
 Spring Boot Actuator includes the ability to view and configure the log levels of your
-application at runtime.  You can view either the entire list or an individual logger's
+application at runtime. You can view either the entire list or an individual logger's
 configuration which is made up of both the explicitly configured logging level as well as
 the effective logging level given to it by the logging framework.  These levels can be:
 
@@ -1111,8 +1112,8 @@ if needed.
 
 [[production-ready-process-monitoring]]
 == Process monitoring
-In Spring Boot Actuator you can find a couple of classes to create files that are useful
-for process monitoring:
+In the `spring-boot` module you can find a couple of classes to create files that are
+useful for process monitoring:
 
 * `ApplicationPidFileWriter` creates a file containing the application PID (by default in
   the application directory with the file name `application.pid`).
@@ -1134,7 +1135,7 @@ writes a PID file. Example:
 ----
 	org.springframework.context.ApplicationListener=\
 	org.springframework.boot.system.ApplicationPidFileWriter,\
-	org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
+	org.springframework.boot.system.EmbeddedServerPortFileWriter
 ----
 
 

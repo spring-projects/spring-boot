@@ -18,7 +18,7 @@ package org.springframework.boot.test.mock.mockito;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.util.MockUtil;
+import org.mockito.Mockito;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.example.ExampleGenericStringServiceCaller;
@@ -50,7 +50,8 @@ public class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegration
 	@Test
 	public void testSpying() throws Exception {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say two");
-		assertThat(MockUtil.getMockName(this.spy).toString()).isEqualTo("two");
+		assertThat(Mockito.mockingDetails(this.spy).getMockCreationSettings()
+				.getMockName().toString()).isEqualTo("two");
 		verify(this.spy).greeting();
 	}
 

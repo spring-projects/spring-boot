@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ public class ResourceBannerTests {
 		ResourceBanner banner = new MockResourceBanner(resource, bootVersion,
 				applicationVersion, applicationTitle);
 		ConfigurableEnvironment environment = new MockEnvironment();
-		Map<String, Object> source = Collections.<String, Object>singletonMap("a", "1");
+		Map<String, Object> source = Collections.singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		banner.printBanner(environment, getClass(), new PrintStream(out));

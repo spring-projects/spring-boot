@@ -22,6 +22,9 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -130,7 +133,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		Map<String, Object> vendorProperties = getVendorProperties();
 		customizeVendorProperties(vendorProperties);
 		return factoryBuilder.dataSource(this.dataSource).packages(getPackagesToScan())
-				.properties(vendorProperties).jta(isJta()).build();
+				.properties(vendorProperties).mappingResources(getMappingResources())
+				.jta(isJta()).build();
 	}
 
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
@@ -156,6 +160,11 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
 		return packages.toArray(new String[packages.size()]);
+	}
+
+	private String[] getMappingResources() {
+		List<String> mappingResources = this.properties.getMappingResources();
+		return mappingResources.toArray(new String[mappingResources.size()]);
 	}
 
 	/**
@@ -208,8 +217,23 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		@Configuration
 		protected static class JpaWebMvcConfiguration implements WebMvcConfigurer {
 
+			private static final Log logger = LogFactory
+					.getLog(JpaWebMvcConfiguration.class);
+
+			private final JpaProperties jpaProperties;
+
+			protected JpaWebMvcConfiguration(JpaProperties jpaProperties) {
+				this.jpaProperties = jpaProperties;
+			}
+
 			@Bean
 			public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+				if (this.jpaProperties.getOpenInView() == null) {
+					logger.warn("spring.jpa.open-in-view is enabled by default. "
+							+ "Therefore, database queries may be performed during view "
+							+ "rendering. Explicitly configure "
+							+ "spring.jpa.open-in-view to disable this warning");
+				}
 				return new OpenEntityManagerInViewInterceptor();
 			}
 

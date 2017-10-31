@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public final class ChangedFile {
 		File file = this.file.getAbsoluteFile();
 		String folderName = StringUtils.cleanPath(folder.getPath());
 		String fileName = StringUtils.cleanPath(file.getPath());
-		Assert.state(fileName.startsWith(folderName), "The file " + fileName
+		Assert.state(fileName.startsWith(folderName), () -> "The file " + fileName
 				+ " is not contained in the source folder " + folderName);
 		return fileName.substring(folderName.length() + 1);
 	}

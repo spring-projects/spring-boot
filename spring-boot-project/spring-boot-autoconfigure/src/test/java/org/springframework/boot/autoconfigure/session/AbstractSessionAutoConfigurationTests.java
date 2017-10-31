@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.SessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +40,20 @@ public abstract class AbstractSessionAutoConfigurationTests {
 	}
 
 	protected Integer getSessionTimeout(SessionRepository<?> sessionRepository) {
+		return (Integer) new DirectFieldAccessor(sessionRepository)
+				.getPropertyValue("defaultMaxInactiveInterval");
+	}
+
+	protected <T extends ReactiveSessionRepository<?>> T validateSessionRepository(
+			AssertableReactiveWebApplicationContext context, Class<T> type) {
+		assertThat(context).hasSingleBean(ReactiveSessionRepository.class);
+		ReactiveSessionRepository<?> repository = context
+				.getBean(ReactiveSessionRepository.class);
+		assertThat(repository).as("Wrong session repository type").isInstanceOf(type);
+		return type.cast(repository);
+	}
+
+	protected Integer getSessionTimeout(ReactiveSessionRepository<?> sessionRepository) {
 		return (Integer) new DirectFieldAccessor(sessionRepository)
 				.getPropertyValue("defaultMaxInactiveInterval");
 	}

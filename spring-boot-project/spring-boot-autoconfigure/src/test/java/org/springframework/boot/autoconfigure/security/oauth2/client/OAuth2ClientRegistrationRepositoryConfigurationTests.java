@@ -41,7 +41,7 @@ public class OAuth2ClientRegistrationRepositoryConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(
 						OAuth2ClientRegistrationRepositoryConfiguration.class)
-				.run(context -> assertThat(context)
+				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ClientRegistrationRepository.class));
 	}
 
@@ -54,7 +54,7 @@ public class OAuth2ClientRegistrationRepositoryConfigurationTests {
 				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
 						REGISTRATION_PREFIX + ".foo.client-secret=secret",
 						REGISTRATION_PREFIX + ".foo.provider=github")
-				.run(context -> {
+				.run((context) -> {
 					ClientRegistrationRepository repository = context
 							.getBean(ClientRegistrationRepository.class);
 					ClientRegistration registration = repository

@@ -111,8 +111,8 @@ public class RestTemplateBuilder {
 		this.basicAuthorization = null;
 		this.restTemplateCustomizers = Collections
 				.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(customizers)));
-		this.requestFactoryCustomizers = Collections.<RequestFactoryCustomizer>emptySet();
-		this.interceptors = Collections.<ClientHttpRequestInterceptor>emptySet();
+		this.requestFactoryCustomizers = Collections.emptySet();
+		this.interceptors = Collections.emptySet();
 	}
 
 	private RestTemplateBuilder(boolean detectRequestFactory, String rootUri,
@@ -596,15 +596,13 @@ public class RestTemplateBuilder {
 	}
 
 	private <T> Set<T> append(Set<T> set, T addition) {
-		Set<T> result = new LinkedHashSet<>(
-				set == null ? Collections.<T>emptySet() : set);
+		Set<T> result = new LinkedHashSet<>(set == null ? Collections.emptySet() : set);
 		result.add(addition);
 		return Collections.unmodifiableSet(result);
 	}
 
 	private <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<>(
-				set == null ? Collections.<T>emptySet() : set);
+		Set<T> result = new LinkedHashSet<>(set == null ? Collections.emptySet() : set);
 		result.addAll(additions);
 		return Collections.unmodifiableSet(result);
 	}

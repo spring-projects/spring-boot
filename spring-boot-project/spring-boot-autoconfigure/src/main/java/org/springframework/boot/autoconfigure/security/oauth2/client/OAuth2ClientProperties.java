@@ -37,12 +37,12 @@ public class OAuth2ClientProperties {
 	/**
 	 * OAuth provider details.
 	 */
-	private Map<String, Provider> provider = new HashMap<>();
+	private final Map<String, Provider> provider = new HashMap<>();
 
 	/**
 	 * OAuth client registrations.
 	 */
-	private Map<String, Registration> registration = new HashMap<>();
+	private final Map<String, Registration> registration = new HashMap<>();
 
 	public Map<String, Provider> getProvider() {
 		return this.provider;
@@ -63,9 +63,6 @@ public class OAuth2ClientProperties {
 		}
 		if (!StringUtils.hasText(registration.getClientSecret())) {
 			throw new IllegalStateException("Client secret must not be empty.");
-		}
-		if (!StringUtils.hasText(registration.getProvider())) {
-			throw new IllegalStateException("Provider must not be empty.");
 		}
 	}
 
@@ -92,28 +89,28 @@ public class OAuth2ClientProperties {
 		private String clientSecret;
 
 		/**
-		 * Client authentication method. May be left bank then using a pre-defined
+		 * Client authentication method. May be left blank then using a pre-defined
 		 * provider.
 		 */
 		private String clientAuthenticationMethod;
 
 		/**
-		 * Authorization grant type. May be left bank then using a pre-defined provider.
+		 * Authorization grant type. May be left blank then using a pre-defined provider.
 		 */
 		private String authorizationGrantType;
 
 		/**
-		 * Redirect URI. May be left bank then using a pre-defined provider.
+		 * Redirect URI. May be left blank then using a pre-defined provider.
 		 */
 		private String redirectUri;
 
 		/**
-		 * Authorization scopes. May be left bank then using a pre-defined provider.
+		 * Authorization scopes. May be left blank then using a pre-defined provider.
 		 */
 		private Set<String> scope;
 
 		/**
-		 * Client name. May be left bank then using a pre-defined provider.
+		 * Client name. May be left blank then using a pre-defined provider.
 		 */
 		private String clientName;
 
@@ -145,8 +142,7 @@ public class OAuth2ClientProperties {
 			return this.clientAuthenticationMethod;
 		}
 
-		public void setClientAuthenticationMethod(
-				String clientAuthenticationMethod) {
+		public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
 			this.clientAuthenticationMethod = clientAuthenticationMethod;
 		}
 
@@ -154,8 +150,7 @@ public class OAuth2ClientProperties {
 			return this.authorizationGrantType;
 		}
 
-		public void setAuthorizationGrantType(
-				String authorizationGrantType) {
+		public void setAuthorizationGrantType(String authorizationGrantType) {
 			this.authorizationGrantType = authorizationGrantType;
 		}
 

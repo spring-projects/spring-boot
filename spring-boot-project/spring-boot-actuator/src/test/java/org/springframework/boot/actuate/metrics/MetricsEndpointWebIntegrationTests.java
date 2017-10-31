@@ -67,7 +67,7 @@ public class MetricsEndpointWebIntegrationTests {
 	@Test
 	public void selectByTag() {
 		MetricsEndpointWebIntegrationTests.client.get()
-				.uri("/application/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen")
+				.uri("/application/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space")
 				.exchange().expectStatus().isOk().expectBody().jsonPath("$.name")
 				.isEqualTo("jvm.memory.used");
 	}

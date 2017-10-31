@@ -18,7 +18,8 @@ package org.springframework.boot.test.mock.mockito;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.util.MockUtil;
+import org.mockito.MockingDetails;
+import org.mockito.Mockito;
 
 import org.springframework.boot.test.mock.mockito.example.SimpleExampleStringGenericService;
 import org.springframework.context.annotation.Bean;
@@ -42,8 +43,10 @@ public class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 
 	@Test
 	public void testSpying() throws Exception {
-		assertThat(MockUtil.isSpy(this.spy)).isTrue();
-		assertThat(MockUtil.getMockName(this.spy).toString()).isEqualTo("two");
+		MockingDetails mockingDetails = Mockito.mockingDetails(this.spy);
+		assertThat(mockingDetails.isMock()).isTrue();
+		assertThat(mockingDetails.getMockCreationSettings().getMockName().toString())
+				.isEqualTo("two");
 	}
 
 	@Configuration

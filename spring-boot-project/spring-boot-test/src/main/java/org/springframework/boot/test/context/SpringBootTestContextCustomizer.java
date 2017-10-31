@@ -57,7 +57,6 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			registerTestRestTemplate(context, (BeanDefinitionRegistry) context);
 		}
-
 	}
 
 	private void registerTestRestTemplate(ConfigurableApplicationContext context,

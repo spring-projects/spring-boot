@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.validation.Validation;
+
 import org.assertj.core.matcher.AssertionMatcher;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,14 +32,21 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
 import org.mockito.InOrder;
 
+import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -239,6 +248,30 @@ public class BinderTests {
 		this.binder.bind("foo", target);
 	}
 
+	@Test
+	public void bindToValidatedBeanWithResourceAndNonEnumerablePropertySource() {
+		ConfigurationPropertySources.from(new PropertySource<String>("test") {
+
+			@Override
+			public Object getProperty(String name) {
+				return null;
+			}
+
+		}).forEach(this.sources::add);
+		Validator validator = new SpringValidatorAdapter(Validation.byDefaultProvider()
+				.configure().buildValidatorFactory().getValidator());
+		this.binder.bind("foo", Bindable.of(ResourceBean.class),
+				new ValidationBindHandler(validator));
+	}
+
+	@Test
+	public void bindToBeanWithCycle() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		this.sources.add(source.nonIterable());
+		Bindable<CycleBean1> target = Bindable.of(CycleBean1.class);
+		this.binder.bind("foo", target);
+	}
+
 	public static class JavaBean {
 
 		private String value;
@@ -262,6 +295,49 @@ public class BinderTests {
 	public enum ExampleEnum {
 
 		FOO_BAR, BAR_BAZ, BAZ_BOO
+
+	}
+
+	@Validated
+	public static class ResourceBean {
+
+		private Resource resource;
+
+		public Resource getResource() {
+			return this.resource;
+		}
+
+		public void setResource(Resource resource) {
+			this.resource = resource;
+		}
+
+	}
+
+	public static class CycleBean1 {
+
+		private CycleBean2 two;
+
+		public CycleBean2 getTwo() {
+			return this.two;
+		}
+
+		public void setTwo(CycleBean2 two) {
+			this.two = two;
+		}
+
+	}
+
+	public static class CycleBean2 {
+
+		private CycleBean1 one;
+
+		public CycleBean1 getOne() {
+			return this.one;
+		}
+
+		public void setOne(CycleBean1 one) {
+			this.one = one;
+		}
 
 	}
 

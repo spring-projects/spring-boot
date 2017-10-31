@@ -71,4 +71,12 @@ public interface DataSourcePoolMetadata {
 	 */
 	String getValidationQuery();
 
+	/**
+	 * The default auto-commit state of connections created by this pool. If not set
+	 * ({@code null}), default is JDBC driver default (If set to null then the
+	 * java.sql.Connection.setAutoCommit(boolean) method will not be called.)
+	 * @return the default auto-commit state or {@code null}
+	 */
+	Boolean getDefaultAutoCommit();
+
 }

@@ -40,7 +40,8 @@ import org.gradle.process.JavaExecSpec;
  */
 public class BootRun extends DefaultTask {
 
-	private final PropertyState<String> main = getProject().property(String.class);
+	private final PropertyState<String> mainClassName = getProject()
+			.property(String.class);
 
 	@SuppressWarnings("unchecked")
 	private final PropertyState<List<String>> jvmArgs = (PropertyState<List<String>>) (Object) getProject()
@@ -85,26 +86,27 @@ public class BootRun extends DefaultTask {
 	 * Returns the name of the main class to be run.
 	 * @return the main class name or {@code null}
 	 */
-	public String getMain() {
-		return this.main.getOrNull();
+	public String getMainClassName() {
+		return this.mainClassName.getOrNull();
 	}
 
 	/**
-	 * Sets the main class to be executed using the given {@code mainProvider}.
+	 * Sets the name of the main class to be executed using the given
+	 * {@code mainClassNameProvider}.
 	 *
-	 * @param mainProvider provider of the main class name
+	 * @param mainClassNameProvider provider of the main class name
 	 */
-	public void setMain(Provider<String> mainProvider) {
-		this.main.set(mainProvider);
+	public void setMainClassName(Provider<String> mainClassNameProvider) {
+		this.mainClassName.set(mainClassNameProvider);
 	}
 
 	/**
-	 * Sets the main class to be run.
+	 * Sets the name of the main class to be run.
 	 *
-	 * @param main the main class name
+	 * @param mainClassName the main class name
 	 */
-	public void setMain(String main) {
-		this.main.set(main);
+	public void setMainClassName(String mainClassName) {
+		this.mainClassName.set(mainClassName);
 	}
 
 	/**
@@ -171,7 +173,7 @@ public class BootRun extends DefaultTask {
 	public void run() {
 		getProject().javaexec((spec) -> {
 			spec.classpath(this.classpath);
-			spec.setMain(this.main.getOrNull());
+			spec.setMain(this.mainClassName.getOrNull());
 			if (this.jvmArgs.isPresent()) {
 				spec.setJvmArgs(this.jvmArgs.get());
 			}

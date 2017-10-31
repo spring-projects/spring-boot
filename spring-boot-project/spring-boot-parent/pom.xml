@@ -199,11 +199,6 @@
 				<version>${aether.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-runtime</artifactId>
-				<version>1.1.4-3</version>
-			</dependency>
-			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
 				<artifactId>plexus-build-api</artifactId>
 				<version>0.0.7</version>
@@ -268,6 +263,14 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.jetbrains.kotlin</groupId>
+					<artifactId>kotlin-maven-plugin</artifactId>
+					<version>${kotlin.version}</version>
+					<configuration>
+						<jvmTarget>${java.version}</jvmTarget>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
@@ -708,7 +711,7 @@
 				<jdk>9</jdk>
 			</activation>
 			<properties>
-				<aspectj.version>1.9.0.BETA-7</aspectj.version>
+				<aspectj.version>1.9.0.RC1</aspectj.version>
 			</properties>
 			<build>
 				<plugins>

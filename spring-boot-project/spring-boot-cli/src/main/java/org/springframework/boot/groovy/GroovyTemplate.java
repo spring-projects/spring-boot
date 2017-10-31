@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public abstract class GroovyTemplate {
 
 	public static String template(String name)
 			throws IOException, CompilationFailedException, ClassNotFoundException {
-		return template(name, Collections.<String, Object>emptyMap());
+		return template(name, Collections.emptyMap());
 	}
 
 	public static String template(String name, Map<String, ?> model)

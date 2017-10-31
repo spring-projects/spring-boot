@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class ApplicationTemp {
 				this.dir = new File(getTempDirectory(), toHexString(hash));
 				this.dir.mkdirs();
 				Assert.state(this.dir.exists(),
-						"Unable to create temp directory " + this.dir);
+						() -> "Unable to create temp directory " + this.dir);
 			}
 		}
 		return this.dir;
@@ -90,8 +90,9 @@ public class ApplicationTemp {
 		String property = System.getProperty("java.io.tmpdir");
 		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
 		File file = new File(property);
-		Assert.state(file.exists(), "Temp directory" + file + " does not exist");
-		Assert.state(file.isDirectory(), "Temp location " + file + " is not a directory");
+		Assert.state(file.exists(), () -> "Temp directory" + file + " does not exist");
+		Assert.state(file.isDirectory(),
+				() -> "Temp location " + file + " is not a directory");
 		return file;
 	}
 

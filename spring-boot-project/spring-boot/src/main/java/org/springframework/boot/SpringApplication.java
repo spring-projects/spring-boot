@@ -332,6 +332,7 @@ public class SpringApplication {
 				new StartupInfoLogger(this.mainApplicationClass)
 						.logStarted(getApplicationLog(), stopWatch);
 			}
+			callRunners(context, applicationArguments);
 			return context;
 		}
 		catch (Throwable ex) {
@@ -757,7 +758,6 @@ public class SpringApplication {
 	 */
 	protected void afterRefresh(ConfigurableApplicationContext context,
 			ApplicationArguments args) {
-		callRunners(context, args);
 	}
 
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {

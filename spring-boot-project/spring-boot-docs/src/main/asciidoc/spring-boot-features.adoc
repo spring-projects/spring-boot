@@ -242,6 +242,17 @@ Application events are sent in the following order, as your application runs:
 TIP: You often won't need to use application events, but it can be handy to know that they
 exist. Internally, Spring Boot uses events to handle a variety of tasks.
 
+Application events are sent using Spring Framework's event publishing mechanism. Part of
+this mechanism ensures that an event published to the listeners in a child context
+is also published to the listeners in any ancestors contexts. As a result of this, if
+your application uses a hierarchy of `SpringApplication` instances, a listener may
+receive multiple instances of the same type of application event.
+
+To allow your listener to distinguish between an event for its context and an event for
+a descendant context, it should request that its application context is injected and
+then compare the injected context with context of the event. The context can be injected
+by implementing `ApplicationContextAware` or, if the listener is a bean, using `@Autowired`.
+
 
 
 [[boot-features-web-environment]]
@@ -2062,7 +2073,7 @@ particular controller and/or exception type.
 ----
 
 In the example above, if `YourException` is thrown by a controller defined in the same
-package as `FooController`, a json representation of the `CustomerErrorType` POJO will be
+package as `FooController`, a json representation of the `CustomErrorType` POJO will be
 used instead of the `ErrorAttributes` representation.
 
 
@@ -2242,7 +2253,7 @@ method:
 
 
 
-[[boot-features-spring-webflux]]
+[[boot-features-webflux]]
 === The '`Spring WebFlux framework`'
 
 Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
@@ -2325,7 +2336,7 @@ behavior has been chosen because many Spring developers will add
 
 
 
-[[boot-features-spring-webflux-auto-configuration]]
+[[boot-features-webflux-auto-configuration]]
 ==== Spring WebFlux auto-configuration
 Spring Boot provides auto-configuration for Spring WebFlux that works well with most
 applications.
@@ -2345,7 +2356,7 @@ If you want to take complete control of Spring WebFlux, you can add your own
 
 
 
-[[boot-features-spring-webflux-httpcodecs]]
+[[boot-features-webflux-httpcodecs]]
 ==== HTTP codecs with HttpMessageReaders and HttpMessageWriters
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interface to convert
 HTTP requests and responses. They are configured with `CodecConfigurer` with sensible
@@ -2378,7 +2389,7 @@ You can also leverage <<boot-features-json-components,Boot's custom JSON seriali
 
 
 
-[[boot-features-spring-webflux-static-content]]
+[[boot-features-webflux-static-content]]
 ==== Static Content
 By default Spring Boot will serve static content from a directory called `/static` (or
 `/public` or `/resources` or `/META-INF/resources`) in the classpath.
@@ -2410,7 +2421,7 @@ be deployed as war and have no use of the `src/main/webapp` directory.
 
 
 
-[[boot-features-spring-webflux-template-engines]]
+[[boot-features-webflux-template-engines]]
 ==== Template engines
 As well as REST web services, you can also use Spring WebFlux to serve dynamic HTML
 content. Spring WebFlux supports a variety of templating technologies including Thymeleaf,
@@ -2424,6 +2435,89 @@ Spring Boot includes auto-configuration support for the following templating eng
 
 When you're using one of these templating engines with the default configuration, your
 templates will be picked up automatically from `src/main/resources/templates`.
+
+
+
+[[boot-features-webflux-error-handling]]
+==== Error Handling
+
+Spring Boot provides a `WebExceptionHandler` that handles all errors in a sensible way;
+it is ordered right before the ones provided by WebFlux, which are considered as last
+resort. For machine clients it will produce a JSON response with details of the error,
+the HTTP status and the exception message. For browser clients there is a '`whitelabel`'
+error handler that renders the same data in HTML format. You can also provide your own
+HTML templates to display errors
+(see <<boot-features-webflux-error-handling-custom-error-pages,next section>>).
+
+The first step to customizing this feature is often about using the existing mechanism
+but replacing or augmenting the error contents. For that, you can simply add a bean
+of type `ErrorAttributes`.
+
+To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and
+register a bean definition of that type; because a `WebExceptionHandler` is quite
+low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler`
+to let you handle errors in a WebFlux functional way:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	public class CustomErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
+
+		// Define constructor here
+
+		@Override
+		protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+
+			return RouterFunctions
+					.route(aPredicate, aHandler)
+					.andRoute(anotherPredicate, anotherHandler);
+		}
+
+	}
+----
+
+For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler`
+directly and override specific methods.
+
+
+
+[[boot-features-webflux-error-handling-custom-error-pages]]
+===== Custom error pages
+
+If you want to display a custom HTML error page for a given status code, you can add
+a file to an `/error` folder. Error pages can either be static HTML (i.e. added under
+any of the static resource folders) or built using templates. The name of the file
+should be the exact status code or a series mask.
+
+For example, to map `404` to a static HTML file, your folder structure would look like
+this:
+
+[source,indent=0,subs="verbatim,quotes,attributes"]
+----
+	src/
+	 +- main/
+	     +- java/
+	     |   + <source code>
+	     +- resources/
+	         +- public/
+	             +- error/
+	             |   +- 404.html
+	             +- <other public assets>
+----
+
+To map all `5xx` errors using a Mustache template, you'd have a structure like this:
+
+[source,indent=0,subs="verbatim,quotes,attributes"]
+----
+	src/
+	 +- main/
+	     +- java/
+	     |   + <source code>
+	     +- resources/
+	         +- templates/
+	             +- error/
+	             |   +- 5xx.mustache
+	             +- <other templates>
+----
 
 
 
@@ -2753,7 +2847,7 @@ explicitly configure the paths that you do want to override.
 [[boot-features-security-oauth2]]
 === OAuth2
 
-=== Client
+==== Client
 If you have `spring-security-oauth2-client` on your classpath you can take advantage of
 some auto-configuration to make it easy to set up an OAuth2 Client. This configuration
 makes use of the properties under `OAuth2ClientProperties`.
@@ -2761,44 +2855,52 @@ makes use of the properties under `OAuth2ClientProperties`.
 You can register multiple OAuth2 clients and providers under the
 `spring.security.oauth2.client` prefix. For example:
 
-[source,yaml,indent=0]
+[source,properties,indent=0]
 ----
-	spring:
-		security:
-			oauth2:
-				client:
-					registration:
-						my-client-1:
-							client-id: abcd
-							client-secret: password
-							client-name: Client for user scope
-							provider: my-oauth-provider
-							scope: user
-							redirect-uri: http://my-redirect-uri.com
-							authentication-method: basic
-							authorization-grant-type: authorization_code
-						my-client2:
-							client-id: abcd
-							client-secret: password
-							client-name: Client for email scope
-							provider: my-oauth-provider
-							scope: email
-							redirect-uri: http://my-redirect-uri.com
-							authentication-method: basic
-							authorization-grant-type: authorization_code
-				provider:
-					my-oauth-provider:
-						authorization-uri: http://my-auth-server/oauth/authorize
-						token-uri: http://my-auth-server/oauth/token
-						user-info-uri: http://my-auth-server/userinfo
-						jwk-set-uri: http://my-auth-server/token_keys
-						user-name-attribute: name
+	spring.security.oauth2.client.registration.my-client-1.client-id=abcd
+	spring.security.oauth2.client.registration.my-client-1.client-secret=password
+	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
+	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.my-client-1.scope=user
+	spring.security.oauth2.client.registration.my-client-1.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
+	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
+
+	spring.security.oauth2.client.registration.my-client-2.client-id=abcd
+	spring.security.oauth2.client.registration.my-client-2.client-secret=password
+	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
+	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.my-client-2.scope=email
+	spring.security.oauth2.client.registration.my-client-2.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
+	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
+
+	spring.security.oauth2.client.provider.my-oauth-provider.authorization-uri=http://my-auth-server/oauth/authorize
+	spring.security.oauth2.client.provider.my-oauth-provider.token-uri=http://my-auth-server/oauth/token
+	spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=http://my-auth-server/userinfo
+	spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=http://my-auth-server/token_keys
+	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
 ----
 
-NOTE: For common OAuth2 and OpenID providers such as Google, Github, Facebook and Okta,
-we provide a set of provider defaults. If you don't need to customize these providers, you
-do not need to provide the `provider` configuration. The client registration `provider`
-key should reference one these providers.
+For common OAuth2 and OpenID providers such as Google, Github, Facebook and Okta,
+we provide a set of provider defaults (`google`, `github`, `facebook` and `okta`
+respectively).
+
+If you don't need to customize these providers, you can set the `provider` attribute to
+the one you need to infer defaults. Also if the id of your client matches one the
+out-of-the-box supported provider, we'll infer that as well.
+
+In other words, these two configurations will use the Google provider:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.client.registration.my-client.client-id=abcd
+	spring.security.oauth2.client.registration.my-client.client-secret=password
+	spring.security.oauth2.client.registration.my-client.provider=google
+
+	spring.security.oauth2.client.registration.google.client-id=abcd
+	spring.security.oauth2.client.registration.google.client-secret=password
+----
 
 
 
@@ -3203,18 +3305,6 @@ to `true` in production.
 ==== Changing the H2 console's path
 By default the console will be available at `/h2-console`. You can customize the console's
 path using the `spring.h2.console.path` property.
-
-
-
-[[boot-features-sql-h2-console-securing]]
-==== Securing the H2 console
-When Spring Security is on the classpath and basic auth is enabled, the H2 console will be
-automatically secured using basic auth. The following properties can be used to customize
-the security configuration:
-
-* `security.user.role`
-* `security.basic.authorize-mode`
-* `security.basic.enabled`
 
 
 
@@ -3633,7 +3723,7 @@ By default, if you are running a web application, the session is bound to the th
 the entire processing of the request (i.e. the "Open Session in View" pattern). If you
 don't want this behavior add the following to your `application.properties`:
 
-
+[source,properties,indent=0]
 ----
 	spring.data.neo4j.open-in-view=false
 ----
@@ -5030,7 +5120,7 @@ out-of-the-box experience. See the
 
 Spring Boot will create and pre-configure such a builder for you; for example,
 client HTTP codecs will be configured just like the server ones
-(see <<boot-features-spring-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>).
+(see <<boot-features-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>).
 
 Here's a typical example:
 
@@ -5329,7 +5419,7 @@ Spring Boot offers several conveniences for working with the Quartz scheduler, i
 the `spring-boot-starter-quartz` '`Starter`'. If Quartz is available, a `Scheduler` will
 be auto-configured (via the `SchedulerFactoryBean` abstraction).
 
-Beans of the following types will be automatically picked up and associated with the
+Beans of the following types will be automatically picked up and associated with
 the `Scheduler`:
 
 * `JobDetail`: defines a particular Job. `JobDetail` instance can easily be built with
@@ -5416,11 +5506,17 @@ classes for more details.
 
 [[boot-features-session]]
 == Spring Session
-Spring Boot provides Spring Session auto-configuration for a wide range of stores:
+Spring Boot provides Spring Session auto-configuration for a wide range of stores. When
+building a Servlet web application, the following stores can be auto-configured:
 
 * JDBC
 * Redis
 * Hazelcast
+* MongoDB
+
+When building a reactive web applicaiton, the following stores can be auto-configured:
+
+* Redis
 * MongoDB
 
 If Spring Session is available, you must choose the
@@ -5571,6 +5667,13 @@ The search algorithm works up from the package that contains the test until it f
 `@SpringBootApplication` or `@SpringBootConfiguration` annotated class. As long as you've
 <<using-boot-structuring-your-code, structured your code>> in a sensible way your main
 configuration is usually found.
+
+NOTE: If you use a
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests, test
+annotation to test a more specific slice of your application>> with such setup, you should
+avoid adding configuration that are specific to a particular area on the
+<<boot-features-testing-spring-boot-applications-testing-user-configuration, main's
+application class>>.
 
 If you want to customize the primary configuration, you can use a nested
 `@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
@@ -6443,6 +6546,66 @@ include::{code-examples}/test/autoconfigure/restdocs/restassured/AdvancedConfigu
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-user-configuration]]
+==== User configuration and slicing
+If you've <<using-boot-structuring-your-code, structured your code>> in a sensible way,
+your `@SpringBootApplication` class is
+<<boot-features-testing-spring-boot-applications-detecting-config, used by default>> as
+the configuration of your tests.
+
+It then becomes important not to litter the application's main class with configuration
+that are are specific to a particular area of its functionality.
+
+Let's assume that you are using Spring Batch and you're relying on the auto-configuration
+for it. Your could define your `@SpringBootApplication` as follows:
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+	@EnableBatchProcessing
+	public class SampleApplication { ... }
+----
+
+Because this class is the source configuration for the test, any slice test will actually
+attempt to start Spring Batch, which is definitely not what you want to do. A recommended
+approach is to move that area-specific configuration to a separate `@Configuration`
+class at the same level as your application.
+
+[source,java,indent=0]
+----
+	@Configuration
+	@EnableBatchProcessing
+	public class BatchConfiguration { ... }
+----
+
+NOTE: Depending on the surface area of your application, you may either have a single
+`ApplicationConfiguration` class for your customizations or one class per domain area
+when it makes sense. The latter approach allows you to enable it in one of your test
+if necessary via `@Import`.
+
+Another source of confusion is classpath scanning. Let's assume that, while you've
+structured your code in a sensible way, you need to scan an additional package. Your
+application may look like this:
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+	@ComponentScan({ "com.example.app", "org.acme.another" })
+	public class SampleApplication { ... }
+----
+
+This effectively overrides the default component scan directive with the side effect of
+scanning those two packages regardless of the slice that you've chosen. For instance a
+`@DataJpaTest` will all of a sudden scan components and user configurations of your
+application. Again, moving the custom directive to a separate class is a good way to fix
+this issue.
+
+TIP: If this is not an option for you, you can create a `@SpringBootConfiguration`
+somewhere in the hierarchy of your test so that it is used instead. Or you can specify
+a source for your test which will disable the behaviour of finding a default one.
+
+
+
 [[boot-features-testing-spring-boot-applications-with-spock]]
 ==== Using Spock to test Spring Boot applications
 If you wish to use Spock to test a Spring Boot application you should add a dependency
@@ -6650,7 +6813,7 @@ when relevant classes are found and when you have not declared your own `@Config
 
 You can browse the source code of {sc-spring-boot-autoconfigure}[`spring-boot-autoconfigure`]
 to see the `@Configuration` classes that we provide (see the
-{github-code}/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories[`META-INF/spring.factories`]
+{github-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories[`META-INF/spring.factories`]
 file).
 
 
@@ -6676,7 +6839,7 @@ you provide web-specific configuration, your class may need to be applied after
 `WebMvcAutoConfiguration`.
 
 If you want to order certain auto-configurations that shouldn't have any direct
-knowledge of each other, you can also use `@AutoconfigureOrder`. That annotation has the
+knowledge of each other, you can also use `@AutoConfigureOrder`. That annotation has the
 same semantic as the regular `@Order` annotation but provides a dedicated order for
 auto-configuration classes.
 

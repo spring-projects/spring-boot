@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.port=0", "management.context-path=/admin" })
+		"management.server.port=0", "management.endpoints.web.base-path=/admin" })
 @DirtiesContext
 public class ManagementPortAndPathSampleActuatorApplicationTests {
 

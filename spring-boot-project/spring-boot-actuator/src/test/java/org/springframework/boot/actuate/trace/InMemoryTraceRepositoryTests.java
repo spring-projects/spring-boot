@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ public class InMemoryTraceRepositoryTests {
 	@Test
 	public void capacityLimited() {
 		this.repository.setCapacity(2);
-		this.repository.add(Collections.<String, Object>singletonMap("foo", "bar"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
+		this.repository.add(Collections.singletonMap("foo", "bar"));
+		this.repository.add(Collections.singletonMap("bar", "foo"));
+		this.repository.add(Collections.singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
 		assertThat(traces).hasSize(2);
 		assertThat(traces.get(0).getInfo().get("bar")).isEqualTo("bar");
@@ -48,9 +48,9 @@ public class InMemoryTraceRepositoryTests {
 	public void reverseFalse() {
 		this.repository.setReverse(false);
 		this.repository.setCapacity(2);
-		this.repository.add(Collections.<String, Object>singletonMap("foo", "bar"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
+		this.repository.add(Collections.singletonMap("foo", "bar"));
+		this.repository.add(Collections.singletonMap("bar", "foo"));
+		this.repository.add(Collections.singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
 		assertThat(traces).hasSize(2);
 		assertThat(traces.get(1).getInfo().get("bar")).isEqualTo("bar");

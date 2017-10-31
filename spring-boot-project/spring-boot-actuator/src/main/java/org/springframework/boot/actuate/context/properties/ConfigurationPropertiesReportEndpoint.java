@@ -154,7 +154,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return result;
 		}
 		catch (Exception ex) {
-			return new HashMap<>(Collections.<String, Object>singletonMap("error",
+			return new HashMap<>(Collections.singletonMap("error",
 					"Cannot serialize '" + prefix + "'"));
 		}
 	}

@@ -20,7 +20,7 @@ import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
- * A {@link AbstractFailureAnalyzer} for {@link NonUniqueSessionRepositoryException}.
+ * An {@link AbstractFailureAnalyzer} for {@link NonUniqueSessionRepositoryException}.
  *
  * @author Stephane Nicoll
  */

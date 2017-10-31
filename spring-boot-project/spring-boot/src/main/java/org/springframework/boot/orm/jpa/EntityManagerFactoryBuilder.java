@@ -113,6 +113,8 @@ public class EntityManagerFactoryBuilder {
 
 		private Map<String, Object> properties = new HashMap<>();
 
+		private String[] mappingResources;
+
 		private boolean jta;
 
 		private Builder(DataSource dataSource) {
@@ -167,6 +169,21 @@ public class EntityManagerFactoryBuilder {
 		}
 
 		/**
+		 * The mapping resources (equivalent to {@code <mapping-file>} entries in
+		 * {@code persistence.xml}) for the persistence unit.
+		 * <p>
+		 * Note that mapping resources must be relative to the classpath root, e.g.
+		 * "META-INF/mappings.xml" or "com/mycompany/repository/mappings.xml", so that
+		 * they can be loaded through {@code ClassLoader.getResource}.
+		 * @param mappingResources the mapping resources to use
+		 * @return the builder for fluent usage
+		 */
+		public Builder mappingResources(String... mappingResources) {
+			this.mappingResources = mappingResources;
+			return this;
+		}
+
+		/**
 		 * Configure if using a JTA {@link DataSource}, i.e. if
 		 * {@link LocalContainerEntityManagerFactoryBean#setDataSource(DataSource)
 		 * setDataSource} or
@@ -203,6 +220,9 @@ public class EntityManagerFactoryBuilder {
 			entityManagerFactoryBean.getJpaPropertyMap()
 					.putAll(EntityManagerFactoryBuilder.this.jpaProperties);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
+			if (this.mappingResources != null) {
+				entityManagerFactoryBean.setMappingResources(this.mappingResources);
+			}
 			URL rootLocation = EntityManagerFactoryBuilder.this.persistenceUnitRootLocation;
 			if (rootLocation != null) {
 				entityManagerFactoryBean

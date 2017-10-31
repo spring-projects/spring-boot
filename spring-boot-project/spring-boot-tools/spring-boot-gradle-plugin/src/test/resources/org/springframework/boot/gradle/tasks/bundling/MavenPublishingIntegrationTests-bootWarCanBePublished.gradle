@@ -9,7 +9,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'maven-publish'
 
 bootWar {
-	mainClass = 'com.example.Application'
+	mainClassName = 'com.example.Application'
 }
 
 group = 'com.example'

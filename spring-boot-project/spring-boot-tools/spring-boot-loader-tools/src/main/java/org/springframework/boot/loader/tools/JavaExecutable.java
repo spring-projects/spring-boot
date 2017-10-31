@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class JavaExecutable {
 		File bin = new File(new File(javaHome), "bin");
 		File command = new File(bin, "java.exe");
 		command = (command.exists() ? command : new File(bin, "java"));
-		Assert.state(command.exists(), "Unable to find java in " + javaHome);
+		Assert.state(command.exists(), () -> "Unable to find java in " + javaHome);
 		return command;
 	}
 

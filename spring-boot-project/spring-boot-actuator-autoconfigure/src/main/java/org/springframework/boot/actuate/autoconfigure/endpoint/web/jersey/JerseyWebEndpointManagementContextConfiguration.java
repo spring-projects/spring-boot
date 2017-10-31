@@ -23,9 +23,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -55,19 +56,20 @@ class JerseyWebEndpointManagementContextConfiguration {
 	@Bean
 	public ResourceConfigCustomizer webEndpointRegistrar(
 			EndpointProvider<WebEndpointOperation> provider,
-			ManagementServerProperties managementServerProperties) {
+			EndpointMediaTypes endpointMediaTypes,
+			WebEndpointProperties webEndpointProperties) {
 		return (resourceConfig) -> resourceConfig.registerResources(
 				new HashSet<>(new JerseyEndpointResourceFactory().createEndpointResources(
-						new EndpointMapping(managementServerProperties.getContextPath()),
-						provider.getEndpoints())));
+						new EndpointMapping(webEndpointProperties.getBasePath()),
+						provider.getEndpoints(), endpointMediaTypes)));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointPathProvider endpointPathProvider(
 			EndpointProvider<WebEndpointOperation> provider,
-			ManagementServerProperties managementServerProperties) {
-		return new DefaultEndpointPathProvider(provider, managementServerProperties);
+			WebEndpointProperties webEndpointProperties) {
+		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
 	}
 
 }

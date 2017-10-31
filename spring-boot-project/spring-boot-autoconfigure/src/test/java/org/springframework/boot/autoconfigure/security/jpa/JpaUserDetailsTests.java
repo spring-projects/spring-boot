@@ -25,9 +25,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.user.SecurityConfig;
 import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,7 +55,6 @@ public class JpaUserDetailsTests {
 	@Import({ EmbeddedDataSourceConfiguration.class, DataSourceAutoConfiguration.class,
 			HibernateJpaAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
-	@ComponentScan(basePackageClasses = SecurityConfig.class)
 	public static class Main {
 
 	}

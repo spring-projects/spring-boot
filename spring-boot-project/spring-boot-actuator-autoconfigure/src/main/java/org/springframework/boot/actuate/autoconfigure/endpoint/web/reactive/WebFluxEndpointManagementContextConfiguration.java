@@ -19,9 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,18 +46,19 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(
 			EndpointProvider<WebEndpointOperation> provider,
-			ManagementServerProperties managementServerProperties) {
+			EndpointMediaTypes endpointMediaTypes,
+			WebEndpointProperties webEndpointProperties) {
 		return new WebFluxEndpointHandlerMapping(
-				new EndpointMapping(managementServerProperties.getContextPath()),
-				provider.getEndpoints());
+				new EndpointMapping(webEndpointProperties.getBasePath()),
+				provider.getEndpoints(), endpointMediaTypes);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointPathProvider endpointPathProvider(
 			EndpointProvider<WebEndpointOperation> provider,
-			ManagementServerProperties managementServerProperties) {
-		return new DefaultEndpointPathProvider(provider, managementServerProperties);
+			WebEndpointProperties webEndpointProperties) {
+		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
 	}
 
 }

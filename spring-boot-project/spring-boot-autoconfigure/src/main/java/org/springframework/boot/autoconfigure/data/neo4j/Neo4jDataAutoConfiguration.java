@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.EventListener;
 
@@ -117,8 +119,23 @@ public class Neo4jDataAutoConfiguration {
 		@Configuration
 		protected static class Neo4jWebMvcConfiguration implements WebMvcConfigurer {
 
+			private static final Log logger = LogFactory
+					.getLog(Neo4jWebMvcConfiguration.class);
+
+			private final Neo4jProperties neo4jProperties;
+
+			protected Neo4jWebMvcConfiguration(Neo4jProperties neo4jProperties) {
+				this.neo4jProperties = neo4jProperties;
+			}
+
 			@Bean
 			public OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {
+				if (this.neo4jProperties.getOpenInView() == null) {
+					logger.warn("spring.data.neo4j.open-in-view is enabled by default."
+							+ "Therefore, database queries may be performed during view "
+							+ "rendering. Explicitly configure "
+							+ "spring.data.neo4j.open-in-view to disable this warning");
+				}
 				return new OpenSessionInViewInterceptor();
 			}
 

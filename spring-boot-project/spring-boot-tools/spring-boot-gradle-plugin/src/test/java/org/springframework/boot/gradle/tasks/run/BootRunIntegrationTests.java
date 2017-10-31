@@ -97,6 +97,15 @@ public class BootRunIntegrationTests {
 	}
 
 	@Test
+	public void springBootExtensionMainClassNameIsUsed() throws IOException {
+		BuildResult result = this.gradleBuild.build("echoMainClassName");
+		assertThat(result.task(":echoMainClassName").getOutcome())
+				.isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput())
+				.contains("Main class name = com.example.CustomMainClass");
+	}
+
+	@Test
 	public void applicationPluginMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
 		assertThat(result.task(":echoMainClassName").getOutcome())

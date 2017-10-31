@@ -33,6 +33,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.junit.Test;
 
@@ -44,6 +45,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.mapping.NonAnnotatedEntity;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
@@ -52,6 +54,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -111,7 +114,7 @@ public class HibernateJpaAutoConfigurationTests
 	@Test
 	public void testFlywaySwitchOffDdlAuto() {
 		contextRunner()
-				.withPropertyValues("spring.datasource.initialize:false",
+				.withPropertyValues("spring.datasource.initialization-mode:never",
 						"spring.flyway.locations:classpath:db/city")
 				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasNotFailed());
@@ -120,7 +123,7 @@ public class HibernateJpaAutoConfigurationTests
 	@Test
 	public void testFlywayPlusValidation() {
 		contextRunner()
-				.withPropertyValues("spring.datasource.initialize:false",
+				.withPropertyValues("spring.datasource.initialization-mode:never",
 						"spring.flyway.locations:classpath:db/city",
 						"spring.jpa.hibernate.ddl-auto:validate")
 				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
@@ -130,7 +133,7 @@ public class HibernateJpaAutoConfigurationTests
 	@Test
 	public void testLiquibasePlusValidation() {
 		contextRunner()
-				.withPropertyValues("spring.datasource.initialize:false",
+				.withPropertyValues("spring.datasource.initialization-mode:never",
 						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
 						"spring.jpa.hibernate.ddl-auto:validate")
 				.withConfiguration(
@@ -191,6 +194,80 @@ public class HibernateJpaAutoConfigurationTests
 				.run((context) -> {
 					assertThat(context).hasNotFailed();
 					assertThat(context).doesNotHaveBean(EntityManagerFactory.class);
+				});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsConfigured() {
+		contextRunner().withPropertyValues(
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.auto-commit:false").run((context) -> {
+					Map<String, Object> jpaProperties = context
+							.getBean(LocalContainerEntityManagerFactoryBean.class)
+							.getJpaPropertyMap();
+					assertThat(jpaProperties).contains(entry(
+							"hibernate.connection.provider_disables_autocommit", "true"));
+				});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsNotConfiguredIfAutoCommitIsEnabled() {
+		contextRunner().withPropertyValues(
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.auto-commit:true").run((context) -> {
+					Map<String, Object> jpaProperties = context
+							.getBean(LocalContainerEntityManagerFactoryBean.class)
+							.getJpaPropertyMap();
+					assertThat(jpaProperties).doesNotContainKeys(
+							"hibernate.connection.provider_disables_autocommit");
+				});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsNotConfiguredIfPropertyIsSet() {
+		contextRunner()
+				.withPropertyValues(
+						"spring.datasource.type:" + HikariDataSource.class.getName(),
+						"spring.datasource.hikari.auto-commit:false",
+						"spring.jpa.properties.hibernate.connection.provider_disables_autocommit=false")
+				.run((context) -> {
+					Map<String, Object> jpaProperties = context
+							.getBean(LocalContainerEntityManagerFactoryBean.class)
+							.getJpaPropertyMap();
+					assertThat(jpaProperties).contains(
+							entry("hibernate.connection.provider_disables_autocommit",
+									"false"));
+				});
+	}
+
+	@Test
+	public void providerDisablesAutoCommitIsNotConfiguredWithJta() {
+		contextRunner()
+				.withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
+				.withPropertyValues(
+						"spring.datasource.type:" + HikariDataSource.class.getName(),
+						"spring.datasource.hikari.auto-commit:false")
+				.run((context) -> {
+					Map<String, Object> jpaProperties = context
+							.getBean(LocalContainerEntityManagerFactoryBean.class)
+							.getJpaPropertyMap();
+					assertThat(jpaProperties).doesNotContainKeys(
+							"hibernate.connection.provider_disables_autocommit");
+				});
+	}
+
+	@Test
+	public void customResourceMapping() {
+		contextRunner().withClassLoader(new HideDataScriptClassLoader())
+				.withPropertyValues(
+						"spring.datasource.data:classpath:/db/non-annotated-data.sql",
+						"spring.jpa.mapping-resources=META-INF/mappings/non-annotated.xml")
+				.run((context) -> {
+					EntityManager em = context.getBean(EntityManagerFactory.class)
+							.createEntityManager();
+					NonAnnotatedEntity found = em.find(NonAnnotatedEntity.class, 2000L);
+					assertThat(found).isNotNull();
+					assertThat(found.getValue()).isEqualTo("Test");
 				});
 	}
 

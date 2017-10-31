@@ -52,6 +52,14 @@ public class RunningDocumentationTests {
 	}
 
 	@Test
+	public void springBootDslMainClassName() throws IOException {
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/running/spring-boot-dsl-main-class-name.gradle")
+				.build("configuredMainClass").getOutput())
+						.contains("com.example.ExampleApplication");
+	}
+
+	@Test
 	public void bootRunSourceResources() throws IOException {
 		assertThat(this.gradleBuild
 				.script("src/main/gradle/running/boot-run-source-resources.gradle")

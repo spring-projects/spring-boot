@@ -147,10 +147,10 @@ public class IntegrationAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public IntegrationDatabaseInitializer integrationDatabaseInitializer(
+		public IntegrationDataSourceInitializer integrationDataSourceInitializer(
 				DataSource dataSource, ResourceLoader resourceLoader,
 				IntegrationProperties properties) {
-			return new IntegrationDatabaseInitializer(dataSource, resourceLoader,
+			return new IntegrationDataSourceInitializer(dataSource, resourceLoader,
 					properties);
 		}
 

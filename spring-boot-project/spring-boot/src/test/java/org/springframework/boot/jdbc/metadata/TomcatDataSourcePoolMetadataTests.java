@@ -50,6 +50,14 @@ public class TomcatDataSourcePoolMetadataTests
 				.isEqualTo("SELECT FROM FOO");
 	}
 
+	@Override
+	public void getDefaultAutoCommit() {
+		DataSource dataSource = createDataSource(0, 4);
+		dataSource.setDefaultAutoCommit(false);
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
+				.isFalse();
+	}
+
 	private DataSource createDataSource(int minSize, int maxSize) {
 		DataSource dataSource = initializeBuilder().type(DataSource.class).build();
 		dataSource.setMinIdle(minSize);

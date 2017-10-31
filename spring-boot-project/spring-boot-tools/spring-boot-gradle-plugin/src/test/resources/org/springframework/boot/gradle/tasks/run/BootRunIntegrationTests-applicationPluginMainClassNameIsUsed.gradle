@@ -10,5 +10,5 @@ apply plugin: 'org.springframework.boot'
 mainClassName = 'com.example.CustomMainClass'
 
 task echoMainClassName {
-	println 'Main class name = ' + bootRun.main
+	println 'Main class name = ' + bootRun.mainClassName
 }

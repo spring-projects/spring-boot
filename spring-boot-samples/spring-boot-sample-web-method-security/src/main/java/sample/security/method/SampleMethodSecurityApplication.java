@@ -22,15 +22,16 @@ import java.util.Map;
 import org.springframework.boot.actuate.autoconfigure.security.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,14 +68,15 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	@Configuration
-	protected static class AuthenticationSecurity
-			extends GlobalAuthenticationConfigurerAdapter {
+	protected static class AuthenticationSecurity {
 
-		@Override
-		public void init(AuthenticationManagerBuilder auth) throws Exception {
-			auth.inMemoryAuthentication().withUser("admin").password("admin")
-					.roles("ADMIN", "USER", "ACTUATOR").and().withUser("user")
-					.password("user").roles("USER");
+		@Bean
+		public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+			return new InMemoryUserDetailsManager(
+					User.withDefaultPasswordEncoder().username("admin").password("admin")
+							.roles("ADMIN", "USER", "ACTUATOR").build(),
+					User.withDefaultPasswordEncoder().username("user").password("user")
+							.roles("USER").build());
 		}
 
 	}

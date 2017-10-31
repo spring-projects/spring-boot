@@ -75,9 +75,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	public LettuceConnectionFactory redisConnectionFactory(
 			ClientResources clientResources) throws UnknownHostException {
-		LettuceClientConfiguration clientConfig;
-		clientConfig = getLettuceClientConfiguration(clientResources,
-				this.properties.getLettuce().getPool());
+		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(
+				clientResources, this.properties.getLettuce().getPool());
 		return createLettuceConnectionFactory(clientConfig);
 	}
 

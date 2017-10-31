@@ -16,14 +16,21 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.net.UnknownHostException;
+import java.util.List;
+
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.ServerAddress;
+import com.mongodb.connection.Cluster;
+import com.mongodb.connection.ClusterSettings;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,6 +111,66 @@ public class MongoPropertiesTests {
 		assertThat(wrapped.getLocalThreshold()).isEqualTo(options.getLocalThreshold());
 		assertThat(wrapped.getRequiredReplicaSetName())
 				.isEqualTo(options.getRequiredReplicaSetName());
+	}
+
+	@Test
+	public void uriOverridesHostAndPort() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setHost("localhost");
+		properties.setPort(27017);
+		properties.setUri("mongodb://mongo1.example.com:12345");
+		MongoClient client = new MongoClientFactory(properties, null)
+				.createMongoClient(null);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
+	}
+
+	@Test
+	public void onlyHostAndPortSetShouldUseThat() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setHost("localhost");
+		properties.setPort(27017);
+		MongoClient client = new MongoClientFactory(properties, null)
+				.createMongoClient(null);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "localhost", 27017);
+	}
+
+	@Test
+	public void onlyUriSetShouldUseThat() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://mongo1.example.com:12345");
+		MongoClient client = new MongoClientFactory(properties, null)
+				.createMongoClient(null);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
+	}
+
+	@Test
+	public void noCustomAddressAndNoUriUsesDefaultUri() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		MongoClient client = new MongoClientFactory(properties, null)
+				.createMongoClient(null);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "localhost", 27017);
+	}
+
+	private List<ServerAddress> extractServerAddresses(MongoClient client) {
+		Cluster cluster = (Cluster) ReflectionTestUtils.getField(client, "cluster");
+		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils
+				.getField(cluster, "settings");
+		List<ServerAddress> allAddresses = clusterSettings.getHosts();
+		return allAddresses;
+	}
+
+	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
+			int expectedPort) {
+		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
+		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
 	}
 
 	@Configuration

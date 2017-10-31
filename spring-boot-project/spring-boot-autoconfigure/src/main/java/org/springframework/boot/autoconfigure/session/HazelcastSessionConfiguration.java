@@ -41,7 +41,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
 @ConditionalOnClass(HazelcastSessionRepository.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
-@Conditional(SessionCondition.class)
+@Conditional(ServletSessionCondition.class)
 @EnableConfigurationProperties(HazelcastSessionProperties.class)
 class HazelcastSessionConfiguration {
 

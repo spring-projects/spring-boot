@@ -16,13 +16,13 @@ version you should run:
 
 	java -version
 
-Alternatively, you can set the JAVA_HOME environment variable to point an suitable JDK.
+Alternatively, you can set the JAVA_HOME environment variable to point a suitable JDK.
 
 
 Environment Variables
 ---------------------
 No specific environment variables are required to run the CLI, however, you may want to
-set SPRING_HOME to point to a specific installation.  You should also add SPRING_HOME/bin
+set SPRING_HOME to point to a specific installation. You should also add SPRING_HOME/bin
 to your PATH environment variable.
 
 
@@ -37,7 +37,7 @@ location for your environment. For example, something like:
 
 Checking Your Installation
 --------------------------
-To test if you have successfully install the CLI you can run the following command:
+To test if you have successfully installed the CLI you can run the following command:
 
 	spring --version
 

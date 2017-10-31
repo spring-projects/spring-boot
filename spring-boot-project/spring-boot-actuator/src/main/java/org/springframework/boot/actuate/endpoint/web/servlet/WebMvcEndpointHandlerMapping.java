@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -65,10 +66,12 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param collection the web endpoints operations
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public WebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> collection) {
-		this(endpointMapping, collection, null);
+			Collection<EndpointInfo<WebEndpointOperation>> collection,
+			EndpointMediaTypes endpointMediaTypes) {
+		this(endpointMapping, collection, endpointMediaTypes, null);
 	}
 
 	/**
@@ -76,12 +79,13 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param webEndpoints the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
 	public WebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
-			CorsConfiguration corsConfiguration) {
-		super(endpointMapping, webEndpoints, corsConfiguration);
+			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
+		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);
 		setOrder(-100);
 	}
 

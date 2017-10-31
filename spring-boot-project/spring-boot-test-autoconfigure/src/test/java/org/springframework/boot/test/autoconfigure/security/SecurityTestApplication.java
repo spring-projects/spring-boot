@@ -34,9 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityTestApplication {
 
 	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
-		return new InMemoryUserDetailsManager(
-				User.withUsername("user").password("secret").roles("USER").build());
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
+				.username("user").password("secret").roles("USER").build());
 	}
 
 	@RestController

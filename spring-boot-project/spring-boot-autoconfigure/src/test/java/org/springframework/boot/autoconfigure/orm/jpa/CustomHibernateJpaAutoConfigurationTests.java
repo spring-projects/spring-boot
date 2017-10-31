@@ -23,16 +23,13 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.vendor.Database;
@@ -44,49 +41,45 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link HibernateJpaAutoConfiguration}.
+ * Additional tests for {@link HibernateJpaAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class CustomHibernateJpaAutoConfigurationTests {
 
-	protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withUserConfiguration(TestConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					HibernateJpaAutoConfiguration.class));
 
-	@After
-	public void close() {
-		this.context.close();
+	@Test
+	public void namingStrategyDelegatorTakesPrecedence() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
+								+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
+				.run((context) -> {
+					JpaProperties bean = context.getBean(JpaProperties.class);
+					Map<String, String> hibernateProperties = bean
+							.getHibernateProperties("create-drop");
+					assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"))
+							.isNull();
+				});
 	}
 
 	@Test
-	public void testNamingStrategyDelegatorTakesPrecedence() {
-		TestPropertyValues
-				.of("spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
-						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator");
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
-		this.context.refresh();
-		JpaProperties bean = this.context.getBean(JpaProperties.class);
-		Map<String, String> hibernateProperties = bean
-				.getHibernateProperties("create-drop");
-		assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy")).isNull();
-	}
-
-	@Test
-	public void testDefaultDatabaseForH2() throws Exception {
-		TestPropertyValues.of("spring.datasource.url:jdbc:h2:mem:testdb",
-				"spring.datasource.initialize:false").applyTo(this.context);
-		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
-		this.context.refresh();
-		HibernateJpaVendorAdapter bean = this.context
-				.getBean(HibernateJpaVendorAdapter.class);
-		Database database = (Database) ReflectionTestUtils.getField(bean, "database");
-		assertThat(database).isEqualTo(Database.H2);
+	public void defaultDatabaseForH2() {
+		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:h2:mem:testdb",
+				"spring.datasource.initialization-mode:never").run((context) -> {
+					HibernateJpaVendorAdapter bean = context
+							.getBean(HibernateJpaVendorAdapter.class);
+					Database database = (Database) ReflectionTestUtils.getField(bean,
+							"database");
+					assertThat(database).isEqualTo(Database.H2);
+				});
 	}
 
 	@Configuration

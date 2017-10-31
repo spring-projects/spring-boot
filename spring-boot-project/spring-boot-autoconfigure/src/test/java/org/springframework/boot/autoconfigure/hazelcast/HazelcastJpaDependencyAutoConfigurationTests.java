@@ -49,7 +49,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 					HibernateJpaAutoConfiguration.class,
 					HazelcastJpaDependencyAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true",
-					"spring.datasource.initialize=false");
+					"spring.datasource.initialization-mode=never");
 
 	@Test
 	public void registrationIfHazelcastInstanceHasRegularBeanName() {
@@ -102,8 +102,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 		String[] dependsOn = ((BeanDefinitionRegistry) context
 				.getSourceApplicationContext()).getBeanDefinition("entityManagerFactory")
 						.getDependsOn();
-		return dependsOn != null ? Arrays.asList(dependsOn)
-				: Collections.<String>emptyList();
+		return dependsOn != null ? Arrays.asList(dependsOn) : Collections.emptyList();
 	}
 
 	@Configuration

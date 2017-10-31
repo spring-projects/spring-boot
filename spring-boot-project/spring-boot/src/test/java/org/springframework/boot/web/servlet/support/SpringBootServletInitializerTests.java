@@ -138,7 +138,7 @@ public class SpringBootServletInitializerTests {
 		given(servletContext.getInitParameter("spring.profiles.active"))
 				.willReturn("from-servlet-context");
 		given(servletContext.getAttributeNames())
-				.willReturn(Collections.enumeration(Collections.<String>emptyList()));
+				.willReturn(Collections.enumeration(Collections.emptyList()));
 		try (ConfigurableApplicationContext context = (ConfigurableApplicationContext) new PropertySourceVerifyingSpringBootServletInitializer()
 				.createRootApplicationContext(servletContext)) {
 			assertThat(context.getEnvironment().getActiveProfiles())

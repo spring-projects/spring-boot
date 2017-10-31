@@ -76,7 +76,7 @@ public class JolokiaManagementContextConfigurationTests {
 	public void customManagementPath() {
 		this.contextRunner
 				.withPropertyValues("management.jolokia.enabled=true",
-						"management.context-path=/admin")
+						"management.endpoints.web.base-path=/admin")
 				.run(isDefinedOnPath("/admin/jolokia/*"));
 	}
 

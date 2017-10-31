@@ -74,8 +74,8 @@ public class ShutdownEndpointTests {
 				EmptyConfig.class).child(EndpointConfig.class)
 						.web(WebApplicationType.NONE).run();
 		CountDownLatch latch = context.getBean(EndpointConfig.class).latch;
-		assertThat(context.getBean(ShutdownEndpoint.class).shutdown()
-				.get("message")).startsWith("Shutting down");
+		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().get("message"))
+				.startsWith("Shutting down");
 		assertThat(context.isActive()).isTrue();
 		assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
 	}
@@ -87,8 +87,8 @@ public class ShutdownEndpointTests {
 						.web(WebApplicationType.NONE).run();
 		CountDownLatch parentLatch = context.getBean(EndpointConfig.class).latch;
 		CountDownLatch childLatch = context.getBean(EmptyConfig.class).latch;
-		assertThat(context.getBean(ShutdownEndpoint.class).shutdown()
-				.get("message")).startsWith("Shutting down");
+		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().get("message"))
+				.startsWith("Shutting down");
 		assertThat(context.isActive()).isTrue();
 		assertThat(parentLatch.await(10, TimeUnit.SECONDS)).isTrue();
 		assertThat(childLatch.await(10, TimeUnit.SECONDS)).isTrue();

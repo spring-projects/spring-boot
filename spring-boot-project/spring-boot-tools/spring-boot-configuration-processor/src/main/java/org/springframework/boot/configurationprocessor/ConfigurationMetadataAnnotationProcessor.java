@@ -394,6 +394,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					type, null, String.format("Expose the %s endpoint as a Web endpoint.",
 							endpointId),
 					enabledByDefault, null));
+			this.metadataCollector.add(ItemMetadata.newProperty(
+					endpointKey(endpointId), "web.path", String.class.getName(), type,
+					null, String.format("Path of the %s endpoint.", endpointId),
+					endpointId, null));
 		}
 	}
 

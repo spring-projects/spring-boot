@@ -8,7 +8,7 @@ apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 
 bootJar {
-	mainClass = 'com.example.CustomMain'
+	mainClassName = 'com.example.CustomMain'
 	duplicatesStrategy = "exclude"
 }
 

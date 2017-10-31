@@ -50,7 +50,6 @@
 							<addTestClassPath>true</addTestClassPath>
 							<skipInvocation>${skipTests}</skipInvocation>
 							<streamLogs>true</streamLogs>
-							<!-- <properties> <revision>${revision}</revision> </properties> -->
 						</configuration>
 					</execution>
 				</executions>

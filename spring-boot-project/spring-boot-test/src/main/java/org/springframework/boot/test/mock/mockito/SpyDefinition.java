@@ -18,9 +18,12 @@ package org.springframework.boot.test.mock.mockito;
 
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
+import org.mockito.listeners.VerificationStartedEvent;
+import org.mockito.listeners.VerificationStartedListener;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -93,7 +96,25 @@ class SpyDefinition extends Definition {
 		}
 		settings.spiedInstance(instance);
 		settings.defaultAnswer(Mockito.CALLS_REAL_METHODS);
+		if (this.isProxyTargetAware()) {
+			settings.verificationStartedListeners(
+					new SpringAopBypassingVerificationStartedListener());
+		}
 		return (T) Mockito.mock(instance.getClass(), settings);
+	}
+
+	/**
+	 * A {@link VerificationStartedListener} that bypasses any proxy created by Spring AOP
+	 * when the verification of a spy starts.
+	 */
+	private static final class SpringAopBypassingVerificationStartedListener
+			implements VerificationStartedListener {
+
+		@Override
+		public void onVerificationStarted(VerificationStartedEvent event) {
+			event.setMock(AopTestUtils.getUltimateTargetObject(event.getMock()));
+		}
+
 	}
 
 }

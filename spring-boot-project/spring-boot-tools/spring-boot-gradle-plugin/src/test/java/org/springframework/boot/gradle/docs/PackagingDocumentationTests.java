@@ -90,6 +90,20 @@ public class PackagingDocumentationTests {
 	}
 
 	@Test
+	public void springBootDslMainClass() throws IOException {
+		this.gradleBuild
+				.script("src/main/gradle/packaging/spring-boot-dsl-main-class.gradle")
+				.build("bootJar");
+		File file = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(file).isFile();
+		try (JarFile jar = new JarFile(file)) {
+			assertThat(jar.getManifest().getMainAttributes().getValue("Start-Class"))
+					.isEqualTo("com.example.ExampleApplication");
+		}
+	}
+
+	@Test
 	public void bootWarIncludeDevtools() throws IOException {
 		new File(this.gradleBuild.getProjectDir(),
 				"spring-boot-devtools-1.2.3.RELEASE.jar").createNewFile();

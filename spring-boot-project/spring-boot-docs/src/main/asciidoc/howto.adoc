@@ -1251,7 +1251,7 @@ added.
 Check out {sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`] and
-{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
+{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`].
 
 
 
@@ -1805,7 +1805,7 @@ then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean`
 id '`entityManagerFactory`', and set the persistence unit name there.
 
 See
-https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
+{sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
 for the default settings.
 
 
@@ -1921,6 +1921,10 @@ is the value of `spring.datasource.platform`. This allows you to switch to datab
 specific scripts if necessary, e.g. you might choose to set it to the vendor name of the
 database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql` etc.).
 
+Spring Boot automatically creates the schema of an embedded `DataSource`. This behavior
+can be customized using the `spring.datasource.initialization-mode` property (can also be
+`always` or `never`).
+
 Spring Boot enables the fail-fast feature of the Spring JDBC initializer by default, so if
 the scripts cause exceptions the application will fail to start. You can tune that using
 `spring.datasource.continue-on-error`.
@@ -1928,8 +1932,6 @@ the scripts cause exceptions the application will fail to start. You can tune th
 NOTE: In a JPA-based app, you can choose to let Hibernate create the schema or use
 `schema.sql` but not both. Make sure to disable `spring.jpa.hibernate.ddl-auto` if you
 chose the later.
-
-You can also disable initialization by setting `spring.datasource.initialize` to `false`.
 
 
 
@@ -2116,12 +2118,12 @@ for more details.
 === Change the HTTP port or address of the actuator endpoints
 In a standalone application the Actuator HTTP port defaults to the same as the main HTTP
 port. To make the application listen on a different port set the external property
-`management.port`. To listen on a completely different network address (e.g. if you have
+`management.server.port`. To listen on a completely different network address (e.g. if you have
 an internal network for management and an external one for user applications) you can
-also set `management.address` to a valid IP address that the server is able to bind to.
+also set `management.server.address` to a valid IP address that the server is able to bind to.
 
 For more detail look at the
-{sc-spring-boot-actuator}/autoconfigure/web/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
+{sc-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
 source code and
 _<<production-ready-features.adoc#production-ready-customizing-management-server-port>>_
 in the '`Production-ready features`' section.
@@ -2449,7 +2451,7 @@ Jackson's date serialization configuration settings.
 If you use a Maven build that inherits directly or indirectly from `spring-boot-dependencies`
 (for instance `spring-boot-starter-parent`) but you want to override a specific
 third-party dependency you can add appropriate `<properties>` elements. Browse
-the {github-code}/spring-boot-dependencies/pom.xml[`spring-boot-dependencies`]
+the {github-code}/spring-boot-project/spring-boot-dependencies/pom.xml[`spring-boot-dependencies`]
 POM for a complete list of properties. For example, to pick a different `slf4j` version
 you would add the following:
 

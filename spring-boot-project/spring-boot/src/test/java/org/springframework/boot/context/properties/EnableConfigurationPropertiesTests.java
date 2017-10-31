@@ -123,7 +123,7 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(ExceptionIfInvalidTestConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"name:foo");
-		this.thrown.expectCause(Matchers.<Throwable>instanceOf(BindException.class));
+		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
 		this.context.refresh();
 	}
 

@@ -90,6 +90,15 @@ public class ReactiveWebServerApplicationContext
 	}
 
 	/**
+	 * Returns the {@link WebServer} that was created by the context or {@code null} if
+	 * the server has not yet been created.
+	 * @return the web server
+	 */
+	public WebServer getWebServer() {
+		return this.webServer;
+	}
+
+	/**
 	 * Return the {@link ReactiveWebServerFactory} that should be used to create the
 	 * reactive web server. By default this method searches for a suitable bean in the
 	 * context itself.

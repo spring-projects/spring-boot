@@ -41,6 +41,7 @@
 	</dependencies>
 	<profiles>
 		<profile>
+			<id>jdk8</id>
 			<activation>
 				<jdk>1.8</jdk>
 			</activation>

@@ -9,12 +9,12 @@ apply plugin: 'java'
 
 // tag::main[]
 bootRun {
-	main = 'com.example.ExampleApplication'
+	mainClassName = 'com.example.ExampleApplication'
 }
 // end::main[]
 
 task configuredMainClass {
 	doLast {
-		println bootRun.main
+		println bootRun.mainClassName
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class HttpHeaderInterceptor implements ClientHttpRequestInterceptor {
 	 */
 	public HttpHeaderInterceptor(String name, String value) {
 		Assert.hasLength(name, "Name must not be empty");
-		Assert.hasLength(value, "Value" + " must not be empty");
+		Assert.hasLength(value, "Value must not be empty");
 		this.name = name;
 		this.value = value;
 	}

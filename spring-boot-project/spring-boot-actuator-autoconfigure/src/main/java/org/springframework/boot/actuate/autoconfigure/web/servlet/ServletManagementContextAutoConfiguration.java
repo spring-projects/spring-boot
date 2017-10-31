@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import javax.servlet.Servlet;
 
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,8 +48,8 @@ public class ServletManagementContextAutoConfiguration {
 
 	@Bean
 	public ManagementServletContext managementServletContext(
-			ManagementServerProperties properties) {
-		return () -> properties.getContextPath();
+			WebEndpointProperties properties) {
+		return () -> properties.getBasePath();
 	}
 
 	// Put Servlets and Filters in their own nested class so they don't force early

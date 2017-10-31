@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -42,17 +43,18 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the management context. If the
- * {@code management.port} is the same as the {@code server.port} the management context
- * will be the same as the main application context. If the {@code management.port} is
- * different to the {@code server.port} the management context will be a separate context
- * that has the main application context as its parent.
+ * {@code management.server.port} is the same as the {@code server.port} the management
+ * context will be the same as the main application context. If the
+ * {@code management.server.port} is different to the {@code server.port} the management
+ * context will be a separate context that has the main application context as its parent.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
  */
 @Configuration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@EnableConfigurationProperties(ManagementServerProperties.class)
+@EnableConfigurationProperties({ WebEndpointProperties.class,
+		ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
 
 	@Configuration
@@ -76,8 +78,8 @@ public class ManagementContextAutoConfiguration {
 		}
 
 		private void verifySslConfiguration() {
-			Boolean enabled = this.environment.getProperty("management.ssl.enabled",
-					Boolean.class, false);
+			Boolean enabled = this.environment
+					.getProperty("management.server.ssl.enabled", Boolean.class, false);
 			Assert.state(!enabled,
 					"Management-specific SSL cannot be configured as the management "
 							+ "server is not listening on a separate port");

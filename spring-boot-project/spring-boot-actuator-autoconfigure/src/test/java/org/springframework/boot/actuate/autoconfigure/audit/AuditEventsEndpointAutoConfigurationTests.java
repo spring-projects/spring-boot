@@ -63,7 +63,8 @@ public class AuditEventsEndpointAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("endpoints.auditevents.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(AuditEventsEndpoint.class)
-						.doesNotHaveBean(AuditEventsJmxEndpointExtension.class));
+						.doesNotHaveBean(AuditEventsJmxEndpointExtension.class)
+						.doesNotHaveBean(AuditEventsWebEndpointExtension.class));
 	}
 
 }

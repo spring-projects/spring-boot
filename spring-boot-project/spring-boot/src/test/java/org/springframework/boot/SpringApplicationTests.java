@@ -38,6 +38,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.BeansException;
@@ -485,7 +488,7 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(new MapPropertySource("commandLineArgs",
-				Collections.<String, Object>singletonMap("foo", "original")));
+				Collections.singletonMap("foo", "original")));
 		application.setEnvironment(environment);
 		this.context = application.run("--foo=bar", "--bar=foo");
 		assertThat(environment).has(
@@ -580,6 +583,33 @@ public class SpringApplicationTests {
 		assertThat(this.context).has(runTestRunnerBean("runnerA"));
 		assertThat(this.context).has(runTestRunnerBean("runnerB"));
 		assertThat(this.context).has(runTestRunnerBean("runnerC"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void runnersAreCalledAfterApplicationReadyEventIsPublished() throws Exception {
+		SpringApplication application = new SpringApplication(
+				MockRunnerConfiguration.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ApplicationListener<ApplicationReadyEvent> eventListener = mock(
+				ApplicationListener.class);
+		application.addListeners(eventListener);
+		this.context = application.run();
+		ApplicationRunner applicationRunner = this.context
+				.getBean(ApplicationRunner.class);
+		CommandLineRunner commandLineRunner = this.context
+				.getBean(CommandLineRunner.class);
+		InOrder applicationRunnerOrder = Mockito.inOrder(eventListener,
+				applicationRunner);
+		applicationRunnerOrder.verify(eventListener)
+				.onApplicationEvent(ArgumentMatchers.any(ApplicationReadyEvent.class));
+		applicationRunnerOrder.verify(applicationRunner)
+				.run(ArgumentMatchers.any(ApplicationArguments.class));
+		InOrder commandLineRunnerOrder = Mockito.inOrder(eventListener,
+				commandLineRunner);
+		commandLineRunnerOrder.verify(eventListener)
+				.onApplicationEvent(ArgumentMatchers.any(ApplicationReadyEvent.class));
+		commandLineRunnerOrder.verify(commandLineRunner).run();
 	}
 
 	@Test
@@ -1213,6 +1243,21 @@ public class SpringApplicationTests {
 		@PostConstruct
 		public void fail() {
 			throw new RefreshFailureException();
+		}
+
+	}
+
+	@Configuration
+	static class MockRunnerConfiguration {
+
+		@Bean
+		public CommandLineRunner commandLineRunner() {
+			return mock(CommandLineRunner.class);
+		}
+
+		@Bean
+		public ApplicationRunner applicationRunner() {
+			return mock(ApplicationRunner.class);
 		}
 
 	}

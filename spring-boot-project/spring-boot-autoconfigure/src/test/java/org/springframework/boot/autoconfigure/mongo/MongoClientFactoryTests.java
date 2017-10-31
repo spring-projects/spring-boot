@@ -23,9 +23,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.connection.Cluster;
 import com.mongodb.connection.ClusterSettings;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  */
 public class MongoClientFactoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private MockEnvironment environment = new MockEnvironment();
 
@@ -115,30 +110,6 @@ public class MongoClientFactoryTests {
 		List<MongoCredential> credentialsList = client.getCredentialsList();
 		assertThat(credentialsList).hasSize(1);
 		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
-	}
-
-	@Test
-	public void uriCannotBeSetWithCredentials() {
-		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		properties.setUsername("user");
-		properties.setPassword("secret".toCharArray());
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
-	}
-
-	@Test
-	public void uriCannotBeSetWithHostPort() {
-		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		properties.setHost("localhost");
-		properties.setPort(4567);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
 	}
 
 	@Test

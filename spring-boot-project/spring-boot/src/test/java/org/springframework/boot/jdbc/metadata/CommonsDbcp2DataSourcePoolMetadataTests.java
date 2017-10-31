@@ -81,6 +81,15 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 						.isEqualTo("SELECT FROM FOO");
 	}
 
+	@Override
+	public void getDefaultAutoCommit() {
+		BasicDataSource dataSource = createDataSource();
+		dataSource.setDefaultAutoCommit(false);
+		assertThat(
+				new CommonsDbcp2DataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
+						.isFalse();
+	}
+
 	private CommonsDbcp2DataSourcePoolMetadata createDataSourceMetadata(int minSize,
 			int maxSize) {
 		BasicDataSource dataSource = createDataSource();

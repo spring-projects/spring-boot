@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.core.convert.ConversionException;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -46,10 +47,8 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 	public static Map<String, ClientRegistration> getClientRegistrations(
 			OAuth2ClientProperties properties) {
 		Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
-		properties.getRegistration().forEach((key, value) -> {
-			clientRegistrations.put(key,
-					getClientRegistration(key, value, properties.getProvider()));
-		});
+		properties.getRegistration().forEach((key, value) -> clientRegistrations.put(key,
+				getClientRegistration(key, value, properties.getProvider())));
 		return clientRegistrations;
 	}
 
@@ -69,18 +68,29 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 		return builder.build();
 	}
 
-	private static Builder getBuilder(String registrationId, String providerId,
+	private static Builder getBuilder(String registrationId, String configuredProviderId,
 			Map<String, Provider> providers) {
+		String providerId = (configuredProviderId == null ? registrationId
+				: configuredProviderId);
 		CommonOAuth2Provider provider = getCommonProvider(providerId);
 		if (provider == null && !providers.containsKey(providerId)) {
-			throw new IllegalStateException("Unknown provider ID '" + providerId + "'");
+			throw new IllegalStateException(
+					getErrorMessage(configuredProviderId, registrationId));
 		}
 		Builder builder = (provider != null ? provider.getBuilder(registrationId)
-				: new Builder(registrationId));
+				: ClientRegistration.withRegistrationId(registrationId));
 		if (providers.containsKey(providerId)) {
 			return getBuilder(builder, providers.get(providerId));
 		}
 		return builder;
+	}
+
+	private static String getErrorMessage(String configuredProviderId,
+			String registrationId) {
+		return (configuredProviderId == null
+				? "Provider ID must be specified for client registration '"
+						+ registrationId + "'"
+				: "Unknown provider ID '" + configuredProviderId + "'");
 	}
 
 	private static Builder getBuilder(Builder builder, Provider provider) {

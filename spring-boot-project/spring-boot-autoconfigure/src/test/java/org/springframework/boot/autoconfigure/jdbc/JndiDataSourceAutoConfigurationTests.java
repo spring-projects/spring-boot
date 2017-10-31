@@ -117,6 +117,29 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void mbeanDataSourceIsExcludedFromExportByAllExporters()
+			throws IllegalStateException, NamingException {
+		DataSource dataSource = new BasicDataSource();
+		configureJndi("foo", dataSource);
+
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
+		this.context.register(JndiDataSourceAutoConfiguration.class,
+				MBeanExporterConfiguration.class,
+				AnotherMBeanExporterConfiguration.class);
+		this.context.refresh();
+
+		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
+		for (MBeanExporter exporter : this.context.getBeansOfType(MBeanExporter.class)
+				.values()) {
+			Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
+					.getPropertyValue("excludedBeans");
+			assertThat(excludedBeans).containsExactly("dataSource");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void standardDataSourceIsNotExcludedFromExport()
 			throws IllegalStateException, NamingException {
 		DataSource dataSource = mock(DataSource.class);
@@ -144,6 +167,15 @@ public class JndiDataSourceAutoConfigurationTests {
 
 		@Bean
 		MBeanExporter mbeanExporter() {
+			return new MBeanExporter();
+		}
+
+	}
+
+	private static class AnotherMBeanExporterConfiguration {
+
+		@Bean
+		MBeanExporter anotherMbeanExporter() {
 			return new MBeanExporter();
 		}
 

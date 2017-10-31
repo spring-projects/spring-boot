@@ -20,15 +20,16 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
  * Provides information about the management servlet context for MVC controllers to use.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 @FunctionalInterface
 public interface ManagementServletContext {
 
 	/**
-	 * Return the context path of the management server.
-	 * @return the context path
+	 * Return the servlet path of the management server.
+	 * @return the servlet path
 	 */
-	String getContextPath();
+	String getServletPath();
 
 }

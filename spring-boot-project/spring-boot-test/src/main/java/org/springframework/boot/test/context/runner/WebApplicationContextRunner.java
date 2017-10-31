@@ -29,7 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
- * A {@link AbstractApplicationContextRunner ApplicationContext runner} for a Servlet
+ * An {@link AbstractApplicationContextRunner ApplicationContext runner} for a Servlet
  * based {@link ConfigurableWebApplicationContext}.
  * <p>
  * See {@link AbstractApplicationContextRunner} for details.

@@ -89,7 +89,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 	@Test
 	public void deviceDelegatingFreeMarkerViewResolver() throws Exception {
-		load(Collections.<Class<?>>singletonList(FreeMarkerAutoConfiguration.class),
+		load(Collections.singletonList(FreeMarkerAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
 				.hasSize(2);
@@ -100,7 +100,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 	@Test
 	public void deviceDelegatingGroovyMarkupViewResolver() throws Exception {
-		load(Collections.<Class<?>>singletonList(GroovyTemplateAutoConfiguration.class),
+		load(Collections.singletonList(GroovyTemplateAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
 				.hasSize(2);
@@ -111,7 +111,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 	@Test
 	public void deviceDelegatingMustacheViewResolver() throws Exception {
-		load(Collections.<Class<?>>singletonList(MustacheAutoConfiguration.class),
+		load(Collections.singletonList(MustacheAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
 				.hasSize(2);
@@ -122,7 +122,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 	@Test
 	public void deviceDelegatingThymeleafViewResolver() throws Exception {
-		load(Collections.<Class<?>>singletonList(ThymeleafAutoConfiguration.class),
+		load(Collections.singletonList(ThymeleafAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
 				.hasSize(2);

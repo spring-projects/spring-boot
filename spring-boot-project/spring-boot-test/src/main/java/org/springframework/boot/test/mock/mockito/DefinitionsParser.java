@@ -46,7 +46,7 @@ class DefinitionsParser {
 	private final Map<Definition, Field> definitionFields;
 
 	DefinitionsParser() {
-		this(Collections.<Definition>emptySet());
+		this(Collections.emptySet());
 	}
 
 	DefinitionsParser(Collection<? extends Definition> existing) {
@@ -76,7 +76,7 @@ class DefinitionsParser {
 	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element) {
 		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value());
 		Assert.state(!typesToMock.isEmpty(),
-				"Unable to deduce type to mock from " + element);
+				() -> "Unable to deduce type to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
 			Assert.state(typesToMock.size() == 1,
 					"The name attribute can only be used when mocking a single class");
@@ -93,7 +93,7 @@ class DefinitionsParser {
 	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element) {
 		Set<ResolvableType> typesToSpy = getOrDeduceTypes(element, annotation.value());
 		Assert.state(!typesToSpy.isEmpty(),
-				"Unable to deduce type to spy from " + element);
+				() -> "Unable to deduce type to spy from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
 			Assert.state(typesToSpy.size() == 1,
 					"The name attribute can only be used when spying a single class");
@@ -109,7 +109,8 @@ class DefinitionsParser {
 	private void addDefinition(AnnotatedElement element, Definition definition,
 			String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
-		Assert.state(isNewDefinition, "Duplicate " + type + " definition " + definition);
+		Assert.state(isNewDefinition,
+				() -> "Duplicate " + type + " definition " + definition);
 		if (element instanceof Field) {
 			Field field = (Field) element;
 			this.definitionFields.put(definition, field);

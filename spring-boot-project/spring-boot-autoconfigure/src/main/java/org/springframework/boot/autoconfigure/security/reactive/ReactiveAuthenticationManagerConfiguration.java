@@ -21,42 +21,49 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.core.userdetails.MapUserDetailsRepository;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsRepository;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Default user {@link Configuration} for a reactive web application. Configures a
- * {@link UserDetailsRepository} with a default user and generated password. This
- * backs-off completely if there is a bean of type {@link UserDetailsRepository} or
+ * {@link ReactiveUserDetailsService} with a default user and generated password. This
+ * backs-off completely if there is a bean of type {@link ReactiveUserDetailsService} or
  * {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
- * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
 @ConditionalOnMissingBean({ ReactiveAuthenticationManager.class,
-		UserDetailsRepository.class })
+		ReactiveUserDetailsService.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-public class ReactiveAuthenticationManagerConfiguration {
+class ReactiveAuthenticationManagerConfiguration {
 
 	private static final Log logger = LogFactory
 			.getLog(ReactiveAuthenticationManagerConfiguration.class);
 
 	@Bean
-	public MapUserDetailsRepository userDetailsRepository() {
+	public MapReactiveUserDetailsService reactiveUserDetailsService(
+			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		String password = UUID.randomUUID().toString();
 		logger.info(String.format("%n%nUsing default security password: %s%n", password));
-		UserDetails user = User.withUsername("user").password(password).roles().build();
-		return new MapUserDetailsRepository(user);
+		String encodedPassword = passwordEncoder
+				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
+				.encode(password);
+		UserDetails user = User.withUsername("user").password(encodedPassword).roles()
+				.build();
+		return new MapReactiveUserDetailsService(user);
 	}
 
 }

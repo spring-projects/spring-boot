@@ -87,7 +87,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			return mainSourceSet.getRuntimeClasspath();
 		});
-		bootJar.conventionMapping("mainClass",
+		bootJar.conventionMapping("mainClassName",
 				new MainClassConvention(project, bootJar::getClasspath));
 		return bootJar;
 	}
@@ -112,7 +112,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 			}
 			return Collections.emptyList();
 		}));
-		run.setMain(
+		run.setMainClassName(
 				project.provider(new MainClassConvention(project, run::getClasspath)));
 	}
 

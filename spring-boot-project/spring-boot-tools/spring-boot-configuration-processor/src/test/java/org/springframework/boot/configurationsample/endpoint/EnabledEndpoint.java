@@ -20,7 +20,7 @@ import org.springframework.boot.configurationsample.DefaultEnablement;
 import org.springframework.boot.configurationsample.Endpoint;
 
 /**
- * An endpoint that is enabled unless configured explicitly..
+ * An endpoint that is enabled unless configured explicitly.
  *
  * @author Stephane Nicoll
  */

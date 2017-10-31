@@ -185,8 +185,7 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void defaultMessageConvertersShouldSetDefaultList() throws Exception {
 		RestTemplate template = new RestTemplate(
-				Collections.<HttpMessageConverter<?>>singletonList(
-						new StringHttpMessageConverter()));
+				Collections.singletonList(new StringHttpMessageConverter()));
 		this.builder.defaultMessageConverters().configure(template);
 		assertThat(template.getMessageConverters())
 				.hasSameSizeAs(new RestTemplate().getMessageConverters());
@@ -195,8 +194,7 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void defaultMessageConvertersShouldClearExisting() throws Exception {
 		RestTemplate template = new RestTemplate(
-				Collections.<HttpMessageConverter<?>>singletonList(
-						new StringHttpMessageConverter()));
+				Collections.singletonList(new StringHttpMessageConverter()));
 		this.builder.additionalMessageConverters(this.messageConverter)
 				.defaultMessageConverters().configure(template);
 		assertThat(template.getMessageConverters())

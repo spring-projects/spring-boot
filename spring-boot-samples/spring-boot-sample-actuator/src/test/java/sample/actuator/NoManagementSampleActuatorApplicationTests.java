@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.port=-1" })
+		"management.server.port=-1" })
 @DirtiesContext
 public class NoManagementSampleActuatorApplicationTests {
 

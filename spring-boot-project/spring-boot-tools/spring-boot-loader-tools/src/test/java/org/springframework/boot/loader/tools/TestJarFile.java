@@ -95,7 +95,7 @@ public class TestJarFile {
 	}
 
 	private void copy(InputStream in, OutputStream out) throws IOException {
-		int bytesRead = -1;
+		int bytesRead;
 		while ((bytesRead = in.read(this.buffer)) != -1) {
 			out.write(this.buffer, 0, bytesRead);
 		}

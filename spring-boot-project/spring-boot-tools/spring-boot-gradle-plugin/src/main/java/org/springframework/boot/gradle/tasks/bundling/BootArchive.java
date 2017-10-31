@@ -35,20 +35,20 @@ import org.gradle.api.tasks.Optional;
 public interface BootArchive extends Task {
 
 	/**
-	 * Returns the main class of the application.
+	 * Returns the name of the main class of the application.
 	 *
-	 * @return the main class
+	 * @return the main class name
 	 */
 	@Input
 	@Optional
-	String getMainClass();
+	String getMainClassName();
 
 	/**
-	 * Sets the main class of the application.
+	 * Sets the name of the main class of the application.
 	 *
-	 * @param mainClass the main class of the application
+	 * @param mainClassName the name of the main class of the application
 	 */
-	void setMainClass(String mainClass);
+	void setMainClassName(String mainClassName);
 
 	/**
 	 * Adds Ant-style patterns that identify files that must be unpacked from the archive

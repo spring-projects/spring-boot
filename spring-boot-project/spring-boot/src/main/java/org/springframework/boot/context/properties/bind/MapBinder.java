@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -102,8 +101,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source) {
 					Bindable<?> valueBindable = getValueBindable(name);
 					ConfigurationPropertyName entryName = getEntryName(source, name);
-					Object key = getContext().getConversionService()
-							.convert(getKeyName(entryName), this.keyType);
+					Object key = convert(getKeyName(entryName), this.keyType);
 					map.computeIfAbsent(key,
 							(k) -> this.elementBinder.bind(entryName, valueBindable));
 				}
@@ -159,9 +157,17 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			}
 			Object value = property.getValue();
 			value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
-			BinderConversionService conversionService = getContext()
-					.getConversionService();
-			return conversionService.canConvert(value, this.valueType);
+			return canConvert(value, this.valueType);
+		}
+
+		private boolean canConvert(Object source, ResolvableType targetType) {
+			return ResolvableTypeDescriptor.forType(targetType)
+					.canConvert(getContext().getConversionService(), source);
+		}
+
+		private Object convert(Object source, ResolvableType targetType) {
+			return ResolvableTypeDescriptor.forType(targetType)
+					.convert(getContext().getConversionService(), source);
 		}
 
 		private String getKeyName(ConfigurationPropertyName name) {

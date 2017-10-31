@@ -37,7 +37,6 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
-import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.FailureHandler;
 import org.springframework.boot.devtools.restart.MockRestartInitializer;
@@ -146,7 +145,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles>emptySet(), false);
+				Collections.emptySet(), false);
 		this.context.publishEvent(event);
 		verify(server).triggerReload();
 	}
@@ -157,7 +156,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles>emptySet(), true);
+				Collections.emptySet(), true);
 		this.context.publishEvent(event);
 		verify(server, never()).triggerReload();
 	}
@@ -175,7 +174,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void restartTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles>emptySet(), true);
+				Collections.emptySet(), true);
 		this.context.publishEvent(event);
 		verify(this.mockRestarter.getMock()).restart(any(FailureHandler.class));
 	}
@@ -184,7 +183,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void restartNotTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles>emptySet(), false);
+				Collections.emptySet(), false);
 		this.context.publishEvent(event);
 		verify(this.mockRestarter.getMock(), never()).restart();
 	}
@@ -251,7 +250,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
 			String... args) {
-		return initializeAndRun(config, Collections.<String, Object>emptyMap(), args);
+		return initializeAndRun(config, Collections.emptyMap(), args);
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,

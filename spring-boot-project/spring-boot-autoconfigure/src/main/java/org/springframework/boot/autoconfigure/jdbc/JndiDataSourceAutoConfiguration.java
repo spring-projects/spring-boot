@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -65,14 +64,11 @@ public class JndiDataSourceAutoConfiguration {
 	}
 
 	private void excludeMBeanIfNecessary(Object candidate, String beanName) {
-		try {
-			MBeanExporter mbeanExporter = this.context.getBean(MBeanExporter.class);
+		for (MBeanExporter mbeanExporter : this.context
+				.getBeansOfType(MBeanExporter.class).values()) {
 			if (JmxUtils.isMBean(candidate.getClass())) {
 				mbeanExporter.addExcludedBean(beanName);
 			}
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			// No exporter. Exclusion is unnecessary
 		}
 	}
 

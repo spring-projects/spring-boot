@@ -36,7 +36,7 @@ git commit -m"Release v$stageVersion" > /dev/null
 git tag -a "v$stageVersion" -m"Release v$stageVersion" > /dev/null
 
 run_maven -f spring-boot-project/pom.xml clean deploy -U -Dfull -DaltDeploymentRepository=distribution::default::file://${repository}
-run_maven -f spring-boot-tests/spring-boot-sample-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository}
+run_maven -f spring-boot-samples/pom.xml clean install -U -Dfull -Drepository=file://${repository}
 run_maven -f spring-boot-tests/spring-boot-integration-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository}
 run_maven -f spring-boot-tests/spring-boot-deployment-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository}
 

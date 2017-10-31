@@ -41,6 +41,7 @@ import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
 import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Opcodes;
+import org.springframework.asm.SpringAsmInfo;
 import org.springframework.asm.Type;
 
 /**
@@ -298,7 +299,7 @@ public abstract class MainClassFinder {
 		private boolean mainMethodFound;
 
 		ClassDescriptor() {
-			super(Opcodes.ASM4);
+			super(SpringAsmInfo.ASM_VERSION);
 		}
 
 		@Override

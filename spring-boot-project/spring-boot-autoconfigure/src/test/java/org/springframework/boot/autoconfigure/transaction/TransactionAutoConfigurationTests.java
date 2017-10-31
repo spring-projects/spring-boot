@@ -70,7 +70,7 @@ public class TransactionAutoConfigurationTests {
 	public void singleTransactionManager() {
 		load(new Class<?>[] { DataSourceAutoConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class },
-				"spring.datasource.initialize:false");
+				"spring.datasource.initialization-mode:never");
 		PlatformTransactionManager transactionManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		TransactionTemplate transactionTemplate = this.context

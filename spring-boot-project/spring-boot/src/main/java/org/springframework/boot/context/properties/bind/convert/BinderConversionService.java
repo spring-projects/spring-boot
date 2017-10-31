@@ -18,9 +18,7 @@ package org.springframework.boot.context.properties.bind.convert;
 
 import java.util.function.Function;
 
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
@@ -54,19 +52,6 @@ public class BinderConversionService implements ConversionService {
 		this.additionalConversionService = createAdditionalConversionService();
 	}
 
-	/**
-	 * Return {@code true} if the given source object can be converted to the
-	 * {@code targetType}.
-	 * @param source the source object
-	 * @param targetType the target type to convert to (required)
-	 * @return {@code true} if a conversion can be performed, {@code false} if not
-	 * @throws IllegalArgumentException if {@code targetType} is {@code null}
-	 */
-	public boolean canConvert(Object source, ResolvableType targetType) {
-		TypeDescriptor sourceType = TypeDescriptor.forObject(source);
-		return canConvert(sourceType, ResolvableTypeDescriptor.forType(targetType));
-	}
-
 	@Override
 	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
 		return (this.conversionService != null
@@ -79,20 +64,6 @@ public class BinderConversionService implements ConversionService {
 		return (this.conversionService != null
 				&& this.conversionService.canConvert(sourceType, targetType))
 				|| this.additionalConversionService.canConvert(sourceType, targetType);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T convert(Object value, ResolvableType type) {
-		TypeDescriptor sourceType = TypeDescriptor.forObject(value);
-		TypeDescriptor targetType = ResolvableTypeDescriptor.forType(type);
-		return (T) convert(value, sourceType, targetType);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T convert(Object value, Bindable<T> bindable) {
-		TypeDescriptor sourceType = TypeDescriptor.forObject(value);
-		TypeDescriptor targetType = ResolvableTypeDescriptor.forBindable(bindable);
-		return (T) convert(value, sourceType, targetType);
 	}
 
 	@Override

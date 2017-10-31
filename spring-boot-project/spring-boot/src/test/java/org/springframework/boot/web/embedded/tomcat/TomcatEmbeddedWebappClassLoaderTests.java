@@ -28,7 +28,7 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.loader.WebappClassLoader;
+import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.catalina.webresources.WarResourceSet;
 import org.junit.Rule;
@@ -73,7 +73,7 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 			throws Exception {
 		URLClassLoader parent = new URLClassLoader(
 				new URL[] { new URL(webInfClassesUrlString(war)) }, null);
-		try (WebappClassLoader classLoader = new TomcatEmbeddedWebappClassLoader(
+		try (ParallelWebappClassLoader classLoader = new TomcatEmbeddedWebappClassLoader(
 				parent)) {
 			StandardContext context = new StandardContext();
 			context.setName("test");

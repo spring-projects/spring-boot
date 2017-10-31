@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -44,6 +46,11 @@ public class JpaProperties {
 	private Map<String, String> properties = new HashMap<>();
 
 	/**
+	 * Mapping resources (equivalent to "mapping-file" entries in persistence.xml).
+	 */
+	private final List<String> mappingResources = new ArrayList<>();
+
+	/**
 	 * Name of the target database to operate on, auto-detected by default. Can be
 	 * alternatively set using the "Database" enum.
 	 */
@@ -65,6 +72,12 @@ public class JpaProperties {
 	 */
 	private boolean showSql = false;
 
+	/**
+	 * Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the
+	 * thread for the entire processing of the request.
+	 */
+	private Boolean openInView;
+
 	private Hibernate hibernate = new Hibernate();
 
 	public Map<String, String> getProperties() {
@@ -73,6 +86,10 @@ public class JpaProperties {
 
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
+	}
+
+	public List<String> getMappingResources() {
+		return this.mappingResources;
 	}
 
 	public String getDatabasePlatform() {
@@ -105,6 +122,14 @@ public class JpaProperties {
 
 	public void setShowSql(boolean showSql) {
 		this.showSql = showSql;
+	}
+
+	public Boolean getOpenInView() {
+		return this.openInView;
+	}
+
+	public void setOpenInView(Boolean openInView) {
+		this.openInView = openInView;
 	}
 
 	public Hibernate getHibernate() {

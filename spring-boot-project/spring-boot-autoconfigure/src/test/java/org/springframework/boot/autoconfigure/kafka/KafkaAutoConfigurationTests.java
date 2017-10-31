@@ -326,6 +326,19 @@ public class KafkaAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void testConcurrentKafkaListenerContainerFactoryWithKafkaTemplate() {
+		this.contextRunner
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(
+							kafkaListenerContainerFactory);
+					assertThat(dfa.getPropertyValue("replyTemplate"))
+							.isSameAs(context.getBean(KafkaTemplate.class));
+				});
+	}
+
 	@Configuration
 	protected static class TestConfiguration {
 

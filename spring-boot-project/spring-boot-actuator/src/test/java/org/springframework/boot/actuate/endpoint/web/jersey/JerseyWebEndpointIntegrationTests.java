@@ -28,6 +28,7 @@ import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -80,12 +81,13 @@ public class JerseyWebEndpointIntegrationTests extends
 
 		@Bean
 		public ResourceConfig resourceConfig(Environment environment,
-				WebAnnotationEndpointDiscoverer endpointDiscoverer) {
+				WebAnnotationEndpointDiscoverer endpointDiscoverer,
+				EndpointMediaTypes endpointMediaTypes) {
 			ResourceConfig resourceConfig = new ResourceConfig();
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
 					.createEndpointResources(
 							new EndpointMapping(environment.getProperty("endpointPath")),
-							endpointDiscoverer.discoverEndpoints());
+							endpointDiscoverer.discoverEndpoints(), endpointMediaTypes);
 			resourceConfig.registerResources(new HashSet<>(resources));
 			resourceConfig.register(JacksonFeature.class);
 			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()),

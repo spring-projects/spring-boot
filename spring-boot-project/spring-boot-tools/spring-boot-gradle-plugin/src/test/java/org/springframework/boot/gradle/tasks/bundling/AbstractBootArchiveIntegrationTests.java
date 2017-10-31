@@ -112,7 +112,18 @@ public abstract class AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Start-Class"))
 					.isEqualTo("com.example.CustomMain");
 		}
+	}
 
+	@Test
+	public void springBootExtensionMainClassNameIsUsed() throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName)
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		try (JarFile jarFile = new JarFile(
+				new File(this.gradleBuild.getProjectDir(), "build/libs")
+						.listFiles()[0])) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Start-Class"))
+					.isEqualTo("com.example.CustomMain");
+		}
 	}
 
 	@Test

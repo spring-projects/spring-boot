@@ -68,7 +68,7 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	@Test
-	public void endpointIsInParentContextIsDiscovered() {
+	public void endpointInParentContextIsDiscovered() {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext(
 				TestEndpointConfiguration.class);
 		loadWithParent(parent, EmptyConfiguration.class, hasTestEndpoint());

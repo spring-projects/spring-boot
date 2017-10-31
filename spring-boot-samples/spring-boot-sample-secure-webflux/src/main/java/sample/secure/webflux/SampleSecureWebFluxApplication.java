@@ -19,9 +19,9 @@ package sample.secure.webflux;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.MapUserDetailsRepository;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsRepository;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -41,9 +41,9 @@ public class SampleSecureWebFluxApplication {
 	}
 
 	@Bean
-	public UserDetailsRepository userDetailsRepository() {
-		return new MapUserDetailsRepository(
-				User.withUsername("foo").password("password").roles("USER").build());
+	public ReactiveUserDetailsService userDetailsRepository() {
+		return new MapReactiveUserDetailsService(User.withDefaultPasswordEncoder()
+				.username("foo").password("password").roles("USER").build());
 	}
 
 }

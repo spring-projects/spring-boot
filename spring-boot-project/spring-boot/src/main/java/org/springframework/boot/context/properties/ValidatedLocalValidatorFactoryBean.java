@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -31,11 +28,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Phillip Webb
  */
-class ValidatedLocalValidatorFactoryBean extends LocalValidatorFactoryBean
-		implements ConfigurationPropertiesBinder.InternalValidator {
-
-	private static final Log logger = LogFactory
-			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
+class ValidatedLocalValidatorFactoryBean extends LocalValidatorFactoryBean {
 
 	ValidatedLocalValidatorFactoryBean(ApplicationContext applicationContext) {
 		setApplicationContext(applicationContext);
@@ -45,22 +38,8 @@ class ValidatedLocalValidatorFactoryBean extends LocalValidatorFactoryBean
 
 	@Override
 	public boolean supports(Class<?> type) {
-		if (!super.supports(type)) {
-			return false;
-		}
-		if (AnnotatedElementUtils.hasAnnotation(type, Validated.class)) {
-			return true;
-		}
-		if (type.getPackage() != null
-				&& type.getPackage().getName().startsWith("org.springframework.boot")) {
-			return false;
-		}
-		if (getConstraintsForClass(type).isBeanConstrained()) {
-			logger.warn("The @ConfigurationProperties bean " + type
-					+ " contains validation constraints but had not been annotated "
-					+ "with @Validated.");
-		}
-		return true;
+		return super.supports(type)
+				&& AnnotatedElementUtils.hasAnnotation(type, Validated.class);
 	}
 
 }

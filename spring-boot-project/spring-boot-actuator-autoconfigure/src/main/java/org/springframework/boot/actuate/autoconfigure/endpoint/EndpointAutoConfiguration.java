@@ -25,6 +25,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -72,13 +74,26 @@ public class EndpointAutoConfiguration {
 		}
 
 		@Bean
+		public EndpointMediaTypes endpointMediaTypes() {
+			return new EndpointMediaTypes(MEDIA_TYPES, MEDIA_TYPES);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public EndpointPathResolver endpointPathResolver(
+				Environment environment) {
+			return new DefaultEndpointPathResolver(environment);
+		}
+
+		@Bean
 		public EndpointProvider<WebEndpointOperation> webEndpointProvider(
 				OperationParameterMapper parameterMapper,
-				DefaultCachingConfigurationFactory cachingConfigurationFactory) {
+				DefaultCachingConfigurationFactory cachingConfigurationFactory,
+				EndpointPathResolver endpointPathResolver) {
 			Environment environment = this.applicationContext.getEnvironment();
 			WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext, parameterMapper, cachingConfigurationFactory,
-					MEDIA_TYPES, MEDIA_TYPES);
+					endpointMediaTypes(), endpointPathResolver);
 			return new EndpointProvider<>(environment, endpointDiscoverer,
 					EndpointExposure.WEB);
 		}

@@ -103,7 +103,7 @@ public class LiquibaseAutoConfiguration {
 				Resource resource = this.resourceLoader
 						.getResource(this.properties.getChangeLog());
 				Assert.state(resource.exists(),
-						"Cannot find changelog location: " + resource
+						() -> "Cannot find changelog location: " + resource
 								+ " (please add changelog or check your Liquibase "
 								+ "configuration)");
 			}

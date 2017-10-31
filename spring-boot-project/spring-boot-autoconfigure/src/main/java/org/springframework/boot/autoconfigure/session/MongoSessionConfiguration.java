@@ -37,7 +37,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
 @ConditionalOnClass(MongoHttpSessionConfiguration.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(MongoOperations.class)
-@Conditional(SessionCondition.class)
+@Conditional(ServletSessionCondition.class)
 @EnableConfigurationProperties(MongoSessionProperties.class)
 class MongoSessionConfiguration {
 

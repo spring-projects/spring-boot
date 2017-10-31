@@ -53,4 +53,9 @@ public class TomcatDataSourcePoolMetadata
 		return getDataSource().getValidationQuery();
 	}
 
+	@Override
+	public Boolean getDefaultAutoCommit() {
+		return getDataSource().isDefaultAutoCommit();
+	}
+
 }

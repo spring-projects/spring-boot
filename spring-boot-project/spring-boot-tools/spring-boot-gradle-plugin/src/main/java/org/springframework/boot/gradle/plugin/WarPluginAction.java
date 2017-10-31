@@ -55,7 +55,7 @@ class WarPluginAction implements PluginApplicationAction {
 		bootWar.providedClasspath(providedRuntimeConfiguration(project));
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootWar);
 		this.singlePublishedArtifact.addCandidate(artifact);
-		bootWar.conventionMapping("mainClass",
+		bootWar.conventionMapping("mainClassName",
 				new MainClassConvention(project, bootWar::getClasspath));
 	}
 
