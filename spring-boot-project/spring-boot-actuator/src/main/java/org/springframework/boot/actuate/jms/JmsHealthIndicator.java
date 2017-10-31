@@ -16,8 +16,14 @@
 
 package org.springframework.boot.actuate.jms;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -27,6 +33,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  * {@link HealthIndicator} for a JMS {@link ConnectionFactory}.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisfov
  * @since 2.0.0
  */
 public class JmsHealthIndicator extends AbstractHealthIndicator {
@@ -40,9 +47,31 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		try (Connection connection = this.connectionFactory.createConnection()) {
-			connection.start();
-			builder.up().withDetail("provider",
-					connection.getMetaData().getJMSProviderName());
+			CompletableFuture<Exception> future = CompletableFuture.supplyAsync(() -> {
+				try {
+					connection.start();
+					return null;
+				}
+				catch (JMSException e) {
+					return e;
+				}
+			});
+			try {
+				Exception exception = future.get(100, TimeUnit.MILLISECONDS);
+				if (exception != null) {
+					throw exception;
+				}
+				builder.up().withDetail("provider",
+						connection.getMetaData().getJMSProviderName());
+			}
+			catch (TimeoutException ex) {
+				builder.unknown().withDetail("provider",
+						connection.getMetaData().getJMSProviderName())
+						.withDetail("cause", "Could not connect for 100 milliseconds");
+			}
+			catch (ExecutionException ex) {
+				throw ex;
+			}
 		}
 	}
 
