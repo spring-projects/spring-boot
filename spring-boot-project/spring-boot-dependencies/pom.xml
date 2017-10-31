@@ -2887,8 +2887,8 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>kotlin-maven-plugin</groupId>
-					<artifactId>org.jetbrains.kotlin</artifactId>
+					<groupId>org.jetbrains.kotlin</groupId>
+					<artifactId>kotlin-maven-plugin</artifactId>
 					<version>${kotlin.version}</version>
 				</plugin>
 				<plugin>
