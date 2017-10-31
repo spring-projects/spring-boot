@@ -3,10 +3,10 @@
 
 [partintro]
 --
-Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a
-variety of features, including the packaging of executable jars. This section provides
-more details on both plugins as well as some help should you need to extend an
-unsupported build system. If you are just getting started, you might want to read
+Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a variety
+of features, including the packaging of executable jars. This section provides more
+details on both plugins as well as some help should you need to extend an unsupported
+build system. If you are just getting started, you might want to read
 "`<<using-spring-boot.adoc#using-boot-build-systems>>`" from the
 "`<<using-spring-boot.adoc#using-boot>>`" section first.
 --
@@ -19,8 +19,8 @@ The {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin] provides Spring B
 support in Maven, letting you package executable jar or war archives and run an
 application "`in-place`". To use it, you must use Maven 3.2 (or later).
 
-NOTE: See the {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin Site]
-for complete plugin documentation.
+NOTE: See the {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin Site] for complete
+plugin documentation.
 
 
 
@@ -55,9 +55,9 @@ section of your `pom.xml`, as shown in the following example:
 	</project>
 ----
 
-The preceding configuration repackages a jar or war that is built during the `package` phase of
-the Maven lifecycle. The following example shows both the repackaged jar as well as the
-original jar in the `target` directory:
+The preceding configuration repackages a jar or war that is built during the `package`
+phase of the Maven lifecycle. The following example shows both the repackaged jar as well
+as the original jar in the `target` directory:
 
 [indent=0]
 ----
@@ -68,8 +68,7 @@ original jar in the `target` directory:
 
 
 If you do not include the `<execution/>` configuration as shown in the prior example, you
-can run the plugin on its own (but only if the package goal is used as well). For
-example:
+can run the plugin on its own (but only if the package goal is used as well). For example:
 
 [indent=0]
 ----
@@ -116,9 +115,9 @@ the usual `packaging` element, as shown in the following example:
 ----
 
 Your existing archive is enhanced by Spring Boot during the `package` phase. The main
-class that you want to launch can either be specified by using a configuration option
-or by adding a `Main-Class` attribute to the manifest in the usual way. If you do not
-specify a main class, the plugin searches for a class with a
+class that you want to launch can either be specified by using a configuration option or
+by adding a `Main-Class` attribute to the manifest in the usual way. If you do not specify
+a main class, the plugin searches for a class with a
 `public static void main(String[] args)` method.
 
 To build and run a project artifact, you can type the following:
@@ -156,8 +155,8 @@ following example:
 	</project>
 ----
 
-TIP: See the "`<<howto-create-a-deployable-war-file>>`" section for more details on
-how to create a deployable war file.
+TIP: See the "`<<howto-create-a-deployable-war-file>>`" section for more details on how to
+create a deployable war file.
 
 Advanced configuration options and examples are available in the
 {spring-boot-maven-plugin-site}/[plugin info page].
@@ -166,10 +165,10 @@ Advanced configuration options and examples are available in the
 
 [[build-tool-plugins-gradle-plugin]]
 == Spring Boot Gradle Plugin
-The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting you
-package executable jar or war archives, run Spring Boot applications, and use the
-dependency management provided by `spring-boot-dependencies`. It requires Gradle 4.0 or
-later. Please refer to the plugin's documentation to learn more:
+The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting you package
+executable jar or war archives, run Spring Boot applications, and use the dependency
+management provided by `spring-boot-dependencies`. It requires Gradle 4.0 or later. Please
+refer to the plugin's documentation to learn more:
 
 * Reference ({spring-boot-gradle-plugin}/reference/html[HTML] and
   {spring-boot-gradle-plugin}/reference/pdf/spring-boot-gradle-plugin-reference.pdf[PDF])
@@ -181,8 +180,7 @@ later. Please refer to the plugin's documentation to learn more:
 == Spring Boot AntLib Module
 The Spring Boot AntLib module provides basic Spring Boot support for Apache Ant. You can
 use the module to create executable jars. To use the module, you need to declare an
-additional `spring-boot` namespace in your `build.xml`, as shown in the following
-example:
+additional `spring-boot` namespace in your `build.xml`, as shown in the following example:
 
 [source,xml,indent=0]
 ----
@@ -206,8 +204,8 @@ TIP: The "`Using Spring Boot`" section includes a more complete example of
 
 
 === Spring Boot Ant Tasks
-Once the `spring-boot-antlib` namespace has been declared, the following additional
-tasks are available:
+Once the `spring-boot-antlib` namespace has been declared, the following additional tasks
+are available:
 
 * <<spring-boot-ant-exejar>>
 * <<spring-boot-ant-findmainclass>>
@@ -241,14 +239,14 @@ The following nested elements can be used with the task:
 |Element |Description
 
 |`resources`
-|One or more {ant-manual}/Types/resources.html#collection[Resource Collections]
-describing a set of {ant-manual}/Types/resources.html[Resources] that should be added to
-the content of the created +jar+ file.
+|One or more {ant-manual}/Types/resources.html#collection[Resource Collections] describing
+a set of {ant-manual}/Types/resources.html[Resources] that should be added to the content
+of the created +jar+ file.
 
 |`lib`
-|One or more {ant-manual}/Types/resources.html#collection[Resource Collections]
-that should be added to the set of jar libraries that make up the runtime dependency
-classpath of the application.
+|One or more {ant-manual}/Types/resources.html#collection[Resource Collections] that
+should be added to the set of jar libraries that make up the runtime dependency classpath
+of the application.
 |====
 
 
@@ -344,8 +342,7 @@ To repackage an existing archive so that it becomes a self-contained executable 
 use `org.springframework.boot.loader.tools.Repackager`. The `Repackager` class takes a
 single constructor argument that refers to an existing jar or war archive. Use one of the
 two available `repackage()` methods to either replace the original file or write to a new
-destination. Various settings can also be configured on the repackager before it is
-run.
+destination. Various settings can also be configured on the repackager before it is run.
 
 
 
@@ -362,9 +359,9 @@ If your archive already includes libraries, you can use `Libraries.NONE`.
 [[build-tool-plugins-find-a-main-class]]
 === Finding a Main Class
 If you do not use `Repackager.setMainClass()` to specify a main class, the repackager
-uses http://asm.ow2.org/[ASM] to read class files and tries to find a suitable class
-with a `public static void main(String[] args)` method. An exception is thrown if more
-than one candidate is found.
+uses http://asm.ow2.org/[ASM] to read class files and tries to find a suitable class with
+a `public static void main(String[] args)` method. An exception is thrown if more than one
+candidate is found.
 
 
 
@@ -391,7 +388,7 @@ The following listing shows a typical example repackage:
 == What to Read Next
 If you are interested in how the build tool plugins work, you can
 look at the {github-code}/spring-boot-project/spring-boot-tools[`spring-boot-tools`]
-module on GitHub. More technical details of the executable jar formate are covered in 
+module on GitHub. More technical details of the executable jar format are covered in
 <<appendix-executable-jar-format.adoc#executable-jar,the appendix>>.
 
 If you have specific build-related questions, you can check out the
