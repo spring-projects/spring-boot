@@ -21,12 +21,12 @@ specifically), so they need some intermediary layer that adapts _your_ applicati
 _cloud's_ notion of a running process.
 
 Two popular cloud providers, Heroku and Cloud Foundry, employ a "`buildpack`" approach.
-The buildpack wraps your deployed code in whatever is needed to _start_ your
-application: it might be a JDK and a call to `java`, it might be an embedded web server,
-or it might be a full-fledged application server. A buildpack is pluggable, but ideally
-you should be able to get by with as few customizations to it as possible.
-This reduces the footprint of functionality that is not under your control. It minimizes
-divergence between development and production environments.
+The buildpack wraps your deployed code in whatever is needed to _start_ your application:
+it might be a JDK and a call to `java`, it might be an embedded web server, or it might be
+a full-fledged application server. A buildpack is pluggable, but ideally you should be
+able to get by with as few customizations to it as possible. This reduces the footprint of
+unctionality that is not under your control. It minimizes divergence between development
+and production environments.
 
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs
 to run packaged within it.
@@ -40,26 +40,26 @@ developed>> in the "`Getting Started`" section up and running in the Cloud.
 [[cloud-deployment-cloud-foundry]]
 === Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
-specified. The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java buildpack]
-has excellent support for Spring applications, including Spring Boot. You can deploy
-stand-alone executable jar applications as well as traditional `.war` packaged
+specified. The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java
+buildpack] has excellent support for Spring applications, including Spring Boot. You can
+deploy stand-alone executable jar applications as well as traditional `.war` packaged
 applications.
 
 Once you have built your application (by using, for example, `mvn clean package`) and have
 http://docs.cloudfoundry.org/devguide/installcf/install-go-cli.html[installed the `cf`
-command line tool], deploy your application by using the `cf push` command,
-substituting the path to your compiled `.jar`. Be sure to have
-http://docs.cloudfoundry.org/devguide/installcf/whats-new-v6.html#login[logged in with your
-`cf` command line client] before pushing an application. The following line shows using
-the `cf push` command to deploy an application:
+command line tool], deploy your application by using the `cf push` command, substituting
+the path to your compiled `.jar`. Be sure to have
+http://docs.cloudfoundry.org/devguide/installcf/whats-new-v6.html#login[logged in with
+your `cf` command line client] before pushing an application. The following line shows
+using the `cf push` command to deploy an application:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
 	$ cf push acloudyspringtime -p target/demo-0.0.1-SNAPSHOT.jar
 ----
 
-NOTE: In the preceding example, we substitute `acloudyspringtime` for whatever value you give `cf`
-as the name of your application.
+NOTE: In the preceding example, we substitute `acloudyspringtime` for whatever value you
+give `cf` as the name of your application.
 
 See the http://docs.cloudfoundry.org/devguide/installcf/whats-new-v6.html#push[`cf push`
 documentation] for more options. If there is a Cloud Foundry
@@ -121,13 +121,13 @@ it at `\http://acloudyspringtime.cfapps.io/`.
 ==== Binding to Services
 By default, metadata about the running application as well as service connection
 information is exposed to the application as environment variables (for example:
-`$VCAP_SERVICES`). This architecture decision is due to Cloud Foundry's polyglot
-(any language and platform can be supported as a buildpack) nature. Process-scoped
-environment variables are language agnostic.
+`$VCAP_SERVICES`). This architecture decision is due to Cloud Foundry's polyglot (any
+language and platform can be supported as a buildpack) nature. Process-scoped environment
+variables are language agnostic.
 
 Environment variables do not always make for the easiest API, so Spring Boot automatically
-extracts them and flattens the data into properties that can be accessed through
-Spring's `Environment` abstraction, as shown in the following example:
+extracts them and flattens the data into properties that can be accessed through Spring's
+`Environment` abstraction, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -178,8 +178,8 @@ Spring Boot makes `-D` arguments available as properties accessible from a Sprin
 Tomcat, Jetty, or Undertow instance which, then uses the port when it starts up. The `$PORT`
 environment variable is assigned to us by the Heroku PaaS.
 
-This should be everything you need. The most common deployment workflow for Heroku deployments is to
-`git push` the code to production, as shown in the following example:
+This should be everything you need. The most common deployment workflow for Heroku
+deployments is to `git push` the code to production, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -230,11 +230,12 @@ Your application should now be up and running on Heroku.
 
 [[cloud-deployment-openshift]]
 === OpenShift
-https://www.openshift.com/[OpenShift] is the Red Hat public (and enterprise) extension of the
-Kubernetes container orchestration platform.  Similarly to Kubernetes, OpenShift has many
-options for installing Spring Boot based applications.
+https://www.openshift.com/[OpenShift] is the Red Hat public (and enterprise) extension of
+the Kubernetes container orchestration platform.  Similarly to Kubernetes, OpenShift has
+many options for installing Spring Boot based applications.
 
-OpenShift has many resources describing how to deploy Spring Boot applications, which include:
+OpenShift has many resources describing how to deploy Spring Boot applications, which
+include:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
 * https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[Architecture guide]
@@ -260,15 +261,16 @@ simplest option: AWS Elastic Beanstalk.
 
 
 ==== AWS Elastic Beanstalk
-As described in the official http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
+As described in the official
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
 Beanstalk Java guide], there are two main options to deploy a Java application. You can
 either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
 
 
 ===== Using the Tomcat Platform
-This option applies to Spring Boot projects that produce a war file. There is no any special
-configuration required. You need only follow the official guide.
+This option applies to Spring Boot projects that produce a war file. There is no any
+special configuration required. You need only follow the official guide.
 
 
 
@@ -306,9 +308,9 @@ best to upload the binaries instead. To do so, add the following lines to your
 By default an Elastic Beanstalk environment is load balanced. The load balancer has a
 significant cost. To avoid that cost, set the environment type to "`Single instance`", as
 described in
-http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[the Amazon documentation].
-You can also create single instance environments by using the CLI and the
-following command:
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[the
+Amazon documentation]. You can also create single instance environments by using the CLI
+and the following command:
 
 [indent=0]
 ----
@@ -318,11 +320,11 @@ following command:
 
 
 ==== Summary
-This is one of the easiest ways to get to AWS, but there are more things
-to cover, such as how to integrate Elastic Beanstalk into any CI / CD tool, use the
-Elastic Beanstalk maven plugin instead of the CLI, and others. There is a
-https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog post]
-covering these topics more in detail.
+This is one of the easiest ways to get to AWS, but there are more things to cover, such as
+how to integrate Elastic Beanstalk into any CI / CD tool, use the Elastic Beanstalk Maven
+plugin instead of the CLI, and others. There is a
+https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/
+[blog post] covering these topics more in detail.
 
 
 
@@ -350,15 +352,15 @@ See the https://boxfuse.com/docs/commandline/run.html[`boxfuse run` documentatio
 more options. If there is a https://boxfuse.com/docs/commandline/#configuration
 [`boxfuse.conf`] file present in the current directory, it is considered.
 
-TIP: By default, Boxfuse activates a Spring profile named `boxfuse` on startup. If
-your executable jar or war contains an
+TIP: By default, Boxfuse activates a Spring profile named `boxfuse` on startup. If your
+executable jar or war contains an
 https://boxfuse.com/docs/payloads/springboot.html#configuration
-[`application-boxfuse.properties`]
-file, Boxfuse bases its configuration based on the properties it contains.
+[`application-boxfuse.properties`] file, Boxfuse bases its configuration based on the
+properties it contains.
 
-At this point, `boxfuse` creates an image for your application, uploads it, and
-configures and starts the necessary resources on AWS resulting in output similar to the
-following example:
+At this point, `boxfuse` creates an image for your application, uploads it, and configures
+and starts the necessary resources on AWS resulting in output similar to the following
+example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -430,8 +432,8 @@ following file:
 	  ENCRYPT_KEY: your_encryption_key_here
 ----
 
-You can deploy the app (for example, with a Maven plugin) by adding the project ID
-to the build configuration, as shown in the following example:
+You can deploy the app (for example, with a Maven plugin) by adding the project ID to the
+build configuration, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -456,18 +458,18 @@ Spring Application there without some modifications. See the
 
 [[deployment-install]]
 == Installing Spring Boot Applications
-In additional to running Spring Boot applications by using `java -jar`, it is also possible
-to make fully executable applications for Unix systems. A fully executable jar can be
-executed like any other executable binary or it can be <<deployment-service,registered
-with `init.d` or `systemd`>>. This makes it very easy to install and manage Spring Boot
-applications in common production environments.
+In additional to running Spring Boot applications by using `java -jar`, it is also
+possible to make fully executable applications for Unix systems. A fully executable jar
+can be executed like any other executable binary or it can be
+<<deployment-service,registered with `init.d` or `systemd`>>. This makes it very easy to
+install and manage Spring Boot applications in common production environments.
 
-WARNING: Fully executable jars work by embedding an extra script at the front of the
-file. Currently, some tools do not accept this format, so you may not always be able to
-use this technique. For example, `jar -xf` may silently fail to extract a jar or war that
-has been made fully executable. It is recommended that you only make your jar or war
-fully executable if you intend to execute it directly, rather than running it with
-`java -jar` or deploying it to a servlet container.
+WARNING: Fully executable jars work by embedding an extra script at the front of the file.
+Currently, some tools do not accept this format, so you may not always be able to use this
+technique. For example, `jar -xf` may silently fail to extract a jar or war that has been
+made fully executable. It is recommended that you only make your jar or war fully
+executable if you intend to execute it directly, rather than running it with `java -jar`
+or deploying it to a servlet container.
 
 To create a '`fully executable`' jar with Maven, use the following plugin configuration:
 
@@ -491,31 +493,30 @@ The following example shows the equivalent Gradle configuration:
 	}
 ----
 
-You can then run your application by typing `./my-application.jar` (where
-`my-application` is the name of your artifact). The directory containing the
-jar is used as your application's working directory.
+You can then run your application by typing `./my-application.jar` (where `my-application`
+is the name of your artifact). The directory containing the jar is used as your
+application's working directory.
 
 [[deployment-install-supported-operating-systems]]
 === Supported Operating Systems
-The default script supports most Linux distributions and is tested on CentOS and
-Ubuntu. Other platforms, such as OS X and FreeBSD, require the use of a custom
+The default script supports most Linux distributions and is tested on CentOS and Ubuntu.
+Other platforms, such as OS X and FreeBSD, require the use of a custom
 `embeddedLaunchScript`.
 
 
 
 [[deployment-service]]
 === Unix/Linux Services
-Spring Boot application can be easily started as Unix/Linux services by using either `init.d`
-or `systemd`.
+Spring Boot application can be easily started as Unix/Linux services by using either
+`init.d` or `systemd`.
 
 
 [[deployment-initd-service]]
 ==== Installation as an `init.d` Service (System V)
-If you configured Spring Boot's Maven or Gradle plugin to generate a
-<<deployment-install,fully executable jar>>, and you do not use a custom
-`embeddedLaunchScript`, your application can be used as an `init.d` service. To do so,
-symlink the jar to `init.d` to support the standard `start`, `stop`, `restart` and
-`status` commands.
+If you configured Spring Boot's Maven or Gradle plugin to generate a <<deployment-install,
+fully executable jar>>, and you do not use a custom `embeddedLaunchScript`, your
+application can be used as an `init.d` service. To do so, symlink the jar to `init.d` to
+support the standard `start`, `stop`, `restart` and `status` commands.
 
 The script supports the following features:
 
@@ -555,17 +556,15 @@ system tools. For example, on Debian, you could use the following command:
 [[deployment-initd-service-securing]]
 ===== Securing an `init.d` Service
 
-NOTE: The following is a set of guidelines on how to secure a Spring Boot application
-that runs as an init.d service. It is not intended to be an exhaustive list of
-everything that should be done to harden an application and the environment in which it
-runs.
+NOTE: The following is a set of guidelines on how to secure a Spring Boot application that
+runs as an init.d service. It is not intended to be an exhaustive list of everything that
+should be done to harden an application and the environment in which it runs.
 
 When executed as root, as is the case when root is being used to start an init.d service,
-the default executable script runs the application as the user who owns the jar
-file. You should never run a Spring Boot application as `root`, so your application's jar
-file should never be owned by root. Instead, create a specific user to run your
-application and use `chown` to make it the owner of the jar file, as shown in the
-following example:
+the default executable script runs the application as the user who owns the jar file. You
+should never run a Spring Boot application as `root`, so your application's jar file
+should never be owned by root. Instead, create a specific user to run your application and
+use `chown` to make it the owner of the jar file, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -587,10 +586,10 @@ executed by its owner, as shown in the following example:
 	$ chmod 500 your-app.jar
 ----
 
-Second, you should also take steps to limit the damage if your application or the
-account that's running it is compromised. If an attacker does gain access, they could make
-the jar file writable and change its contents. One way to protect against this is to make
-it immutable by using `chattr`, as shown in the following example:
+Second, you should also take steps to limit the damage if your application or the account
+that's running it is compromised. If an attacker does gain access, they could make the jar
+file writable and change its contents. One way to protect against this is to make it
+immutable by using `chattr`, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -601,9 +600,9 @@ This will prevent any user, including root, from modifying the jar.
 
 If root is used to control the application's service and you
 <<deployment-script-customization-conf-file, use a `.conf` file>> to customize its
-startup, the `.conf` file is read and evaluated by the root user. It should be
-secured accordingly. Use `chmod` so that the file can only be read by the owner and use
-`chown` to make root the owner, as shown in the following example:
+startup, the `.conf` file is read and evaluated by the root user. It should be secured
+accordingly. Use `chmod` so that the file can only be read by the owner and use `chown` to
+make root the owner, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -615,13 +614,14 @@ secured accordingly. Use `chmod` so that the file can only be read by the owner 
 
 [[deployment-systemd-service]]
 ==== Installation as a `systemd` Service
-`systemd` is the successor of the System V init system and is now being used by many modern
-Linux distributions. Although you can continue to use `init.d` scripts with `systemd`, it
-is also possible to launch Spring Boot applications by using `systemd` '`service`' scripts.
+`systemd` is the successor of the System V init system and is now being used by many
+modern Linux distributions. Although you can continue to use `init.d` scripts with
+`systemd`, it is also possible to launch Spring Boot applications by using `systemd`
+'`service`' scripts.
 
 Assuming that you have a Spring Boot application installed in `/var/myapp`, to install a
-Spring Boot application as a `systemd` service, create a script named `myapp.service`
-and place it in `/etc/systemd/system` directory. The following script offers an example:
+Spring Boot application as a `systemd` service, create a script named `myapp.service` and
+place it in `/etc/systemd/system` directory. The following script offers an example:
 
 [indent=0]
 ----
@@ -641,12 +641,12 @@ and place it in `/etc/systemd/system` directory. The following script offers an 
 IMPORTANT: Remember to change the `Description`, `User` and `ExecStart` fields for your
 application.
 
-NOTE: The `ExecStart` field does not declare the script action command, which means
-that the `run` command is used by default.
+NOTE: The `ExecStart` field does not declare the script action command, which means that
+the `run` command is used by default.
 
-Note that, unlike when running as an `init.d` service, the user that runs the application, the PID
-file, and the console log file are managed by `systemd` itself and therefore must be configured
-by using appropriate fields in the '`service`' script. Consult the
+Note that, unlike when running as an `init.d` service, the user that runs the application,
+the PID file, and the console log file are managed by `systemd` itself and therefore must
+be configured by using appropriate fields in the '`service`' script. Consult the
 http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
 configuration man page] for more details.
 
@@ -664,19 +664,18 @@ Refer to `man systemctl` for more details.
 [[deployment-script-customization]]
 ==== Customizing the Startup Script
 The default embedded startup script written by the Maven or Gradle plugin can be
-customized in a number of ways. For most people, using the default script along with
-a few customizations is usually enough. If you find you cannot customize something that
-you need to, you can always use the `embeddedLaunchScript` option to write your own
-file entirely.
+customized in a number of ways. For most people, using the default script along with a few
+customizations is usually enough. If you find you cannot customize something that you need
+to, you can always use the `embeddedLaunchScript` option to write your own file entirely.
 
 
 
 [[deployment-script-customization-when-it-written]]
 ===== Customizing the Start Script when It Is Written
 It often makes sense to customize elements of the start script as it is written into the
-jar file. For example, init.d scripts can provide a "`description`". Since you know
-the description up front (and it need not change), you may as well provide it when the
-jar is generated.
+jar file. For example, init.d scripts can provide a "`description`". Since you know the
+description up front (and it need not change), you may as well provide it when the jar is
+generated.
 
 To customize written elements, use the `embeddedLaunchScriptProperties` option of the
 Spring Boot Maven or Gradle plugins.
@@ -723,8 +722,8 @@ for Gradle and to `${project.name}` for Maven.
 
 |`inlinedConfScript`
 |Reference to a file script that should be inlined in the default launch script.
- This can be used to set environmental variables such as `JAVA_OPTS` before
- any external config files are loaded.
+ This can be used to set environmental variables such as `JAVA_OPTS` before any external
+ config files are loaded.
 
 |`logFolder`
 |The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
@@ -752,8 +751,8 @@ for Gradle and to `${project.name}` for Maven.
 [[deployment-script-customization-when-it-runs]]
 ===== Customizing a Script When It Runs
 For items of the script that need to be customized _after_ the jar has been written, you
-can use environment variables or a
-<<deployment-script-customization-conf-file, config file>>.
+can use environment variables or a <<deployment-script-customization-conf-file, config
+file>>.
 
 The following environment properties are supported with the default script:
 
@@ -763,10 +762,10 @@ The following environment properties are supported with the default script:
 
 |`MODE`
 |The "`mode`" of operation. The default depends on the way the jar was built but is
- usually `auto` (meaning it tries to guess if it is an init script by checking if it
- is a symlink in a directory called `init.d`). You can explicitly set it to `service` so
- that the `stop\|start\|status\|restart` commands work or to `run` if you want to
- run the script in the foreground.
+ usually `auto` (meaning it tries to guess if it is an init script by checking if it is a
+ symlink in a directory called `init.d`). You can explicitly set it to `service` so that
+ the `stop\|start\|status\|restart` commands work or to `run` if you want to run the
+ script in the foreground.
 
 |`USE_START_STOP_DAEMON`
 |Whether the `start-stop-daemon` command, when it's available, should be used to control
@@ -786,9 +785,8 @@ The following environment properties are supported with the default script:
 |The name of the log file in the `LOG_FOLDER` (`<appname>.log` by default).
 
 |`APP_NAME`
-|The name of the app. If the jar is run from a symlink, the script guesses the app name
- If it is not a symlink or you want to explicitly set the app name, this can be
- useful.
+|The name of the app. If the jar is run from a symlink, the script guesses the app name if
+ it is not a symlink or you want to explicitly set the app name, this can be useful.
 
 |`RUN_ARGS`
 |The arguments to pass to the program (the Spring Boot app).
@@ -809,21 +807,21 @@ The following environment properties are supported with the default script:
  in the script.
 
 |`STOP_WAIT_TIME`
-|The time in seconds to wait when stopping the application before forcing a shutdown
- (`60` by default).
+|The time in seconds to wait when stopping the application before forcing a shutdown (`60`
+ by default).
 |===
 
 NOTE: The `PID_FOLDER`, `LOG_FOLDER`, and `LOG_FILENAME` variables are only valid for an
-`init.d` service. For `systemd`, the equivalent customizations are made by using the '`service`'
-script. See the
+`init.d` service. For `systemd`, the equivalent customizations are made by using the
+'`service`' script. See the
 http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
 configuration man page] for more details.
 
 [[deployment-script-customization-conf-file]]
-With the exception of `JARFILE` and `APP_NAME`, the above settings can be configured by using
-a `.conf` file. The file is expected to be next to the jar file and have the same name but
-suffixed with `.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar`
-uses the configuration file named `/var/myapp/myapp.conf`.
+With the exception of `JARFILE` and `APP_NAME`, the above settings can be configured by
+using a `.conf` file. The file is expected to be next to the jar file and have the same
+name but suffixed with `.conf` rather than `.jar`. For example, a jar named
+`/var/myapp/myapp.jar` uses the configuration file named `/var/myapp/myapp.conf`.
 
 .myapp.conf
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -845,8 +843,8 @@ A Spring Boot application can be started as a Windows service by using
 https://github.com/kohsuke/winsw[`winsw`].
 
 A sample (https://github.com/snicoll-scratches/spring-boot-daemon[maintained separately])
-describes step-by-step how you can create a Windows service for
-your Spring Boot application.
+describes step-by-step how you can create a Windows service for your Spring Boot
+application.
 
 
 
