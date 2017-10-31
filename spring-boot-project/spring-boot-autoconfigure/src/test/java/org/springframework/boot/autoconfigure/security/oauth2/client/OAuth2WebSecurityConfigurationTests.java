@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -55,7 +57,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void securityConfigurerRegistersClientRegistrations() throws Exception {
+	public void securityConfigurerConfiguresOAuth2Login() throws Exception {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					ClientRegistrationRepository expected = context
@@ -86,6 +88,34 @@ public class OAuth2WebSecurityConfigurationTests {
 				.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
 						OAuth2WebSecurityConfiguration.class)
 				.run((context) -> assertThat(getAuthCodeFilters(context)).isEmpty());
+	}
+
+	@Test
+	public void configurationRegistersAuthorizedClientServiceBean() throws Exception {
+		this.contextRunner
+				.withUserConfiguration(ClientRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run(context -> {
+					OAuth2AuthorizedClientService bean = context.getBean(OAuth2AuthorizedClientService.class);
+					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
+							.getField(getAuthCodeFilters(context).get(0),
+									"authorizedClientService");
+					assertThat(authorizedClientService).isEqualTo(bean);
+				});
+	}
+
+	@Test
+	public void authorizedClientServiceBeanIsConditionalOnMissingBean() throws Exception {
+		this.contextRunner
+				.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run(context -> {
+					OAuth2AuthorizedClientService bean = context.getBean(OAuth2AuthorizedClientService.class);
+					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
+							.getField(getAuthCodeFilters(context).get(0),
+									"authorizedClientService");
+					assertThat(authorizedClientService).isEqualTo(bean);
+				});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -173,6 +203,17 @@ public class OAuth2WebSecurityConfigurationTests {
 	@Configuration
 	@Import({ ClientRepositoryConfiguration.class })
 	static class TestWebSecurityConfigurerConfig extends WebSecurityConfigurerAdapter {
+
+	}
+
+	@Configuration
+	@Import({ ClientRepositoryConfiguration.class })
+	static class OAuth2AuthorizedClientServiceConfiguration {
+
+		@Bean
+		public OAuth2AuthorizedClientService testAuthorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
+			return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
+		}
 
 	}
 
