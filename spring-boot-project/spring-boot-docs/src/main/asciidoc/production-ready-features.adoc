@@ -961,6 +961,7 @@ the following:
 
 
 [[production-ready-metrics-integration]]
+=== Spring Integration metrics
 Auto-configuration will enable binding of a number of Spring Integration-related
 metrics:
 
