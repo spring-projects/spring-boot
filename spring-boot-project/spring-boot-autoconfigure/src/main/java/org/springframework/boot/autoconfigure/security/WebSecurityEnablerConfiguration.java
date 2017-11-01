@@ -16,24 +16,27 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import javax.servlet.Filter;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * If there is a bean of type WebSecurityConfigurerAdapter, this adds the
- * {@code @EnableWebSecurity} annotation if it is not already specified. This will make
+ * {@link EnableWebSecurity} annotation. This will make
  * sure that the annotation is present with default security auto-configuration and also
- * if the user adds custom security and forgets to add the annotation.
+ * if the user adds custom security and forgets to add the annotation. If {@link EnableWebSecurity}
+ * has already been added or if a {@link Filter} with name springSecurityFilterChain
+ * has been configured by the user, this will back-off.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @ConditionalOnBean(WebSecurityConfigurerAdapter.class)
-@ConditionalOnMissingBean(WebSecurityConfiguration.class)
+@ConditionalOnMissingBean(value = Filter.class, name = "springSecurityFilterChain")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableWebSecurity
 public class WebSecurityEnablerConfiguration {
