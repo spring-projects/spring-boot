@@ -471,7 +471,7 @@ $ java -jar myapp.jar --spring.application.json='{"foo":"bar"}'
 
 You can also supply the JSON as a JNDI variable, as follows:
 `java:comp/env/spring.application.json`.
-
+====
 
 
 
