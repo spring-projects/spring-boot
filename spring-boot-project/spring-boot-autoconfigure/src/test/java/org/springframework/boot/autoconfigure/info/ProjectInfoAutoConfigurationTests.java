@@ -57,27 +57,6 @@ public class ProjectInfoAutoConfigurationTests {
 	}
 
 	@Test
-	public void gitLocationTakesPrecedenceOverLegacyKey() {
-		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties",
-				"spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties");
-		GitProperties gitProperties = this.context.getBean(GitProperties.class);
-		assertThat(gitProperties.getBranch()).isNull();
-		assertThat(gitProperties.getCommitId())
-				.isEqualTo("f95038ec09e29d8f91982fd1cbcc0f3b131b1d0a");
-		assertThat(gitProperties.getCommitTime().getTime()).isEqualTo(1456995720000L);
-	}
-
-	@Test
-	public void gitLegacyKeyIsUsedAsFallback() {
-		load("spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-epoch.properties");
-		GitProperties gitProperties = this.context.getBean(GitProperties.class);
-		assertThat(gitProperties.getBranch()).isEqualTo("master");
-		assertThat(gitProperties.getCommitId())
-				.isEqualTo("5009933788f5f8c687719de6a697074ff80b1b69");
-		assertThat(gitProperties.getCommitTime().getTime()).isEqualTo(1457103850000L);
-	}
-
-	@Test
 	public void gitPropertiesWithNoData() {
 		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties");
 		GitProperties gitProperties = this.context.getBean(GitProperties.class);

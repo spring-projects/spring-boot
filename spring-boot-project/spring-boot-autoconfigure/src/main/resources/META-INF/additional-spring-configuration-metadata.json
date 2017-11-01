@@ -178,6 +178,14 @@
     ]
   },
   {
+    "name": "spring.info.build.location",
+    "defaultValue": "classpath:META-INF/build-info.properties"
+  },
+  {
+    "name": "spring.info.git.location",
+    "defaultValue": "classpath:git.properties"
+  },
+  {
     "name": "spring.freemarker.prefix",
     "defaultValue": ""
   },
@@ -1036,6 +1044,15 @@
     "defaultValue": true,
     "deprecation": {
       "replacement": "spring.datasource.initialization-mode",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.git.properties",
+    "type": "java.lang.String",
+    "description": "Resource reference to a generated git info properties file.",
+    "deprecation": {
+      "replacement": "spring.info.git.location",
       "level": "error"
     }
   },

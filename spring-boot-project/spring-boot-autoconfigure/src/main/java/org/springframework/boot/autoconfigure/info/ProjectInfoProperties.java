@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.info;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -41,16 +39,6 @@ public class ProjectInfoProperties {
 
 	public Git getGit() {
 		return this.git;
-	}
-
-	/**
-	 * Make sure that the "spring.git.properties" legacy key is used by default.
-	 * @param defaultGitLocation the default git location to use
-	 */
-	@Autowired
-	void setDefaultGitLocation(
-			@Value("${spring.git.properties:classpath:git.properties}") Resource defaultGitLocation) {
-		getGit().setLocation(defaultGitLocation);
 	}
 
 	/**
@@ -82,7 +70,7 @@ public class ProjectInfoProperties {
 		/**
 		 * Location of the generated git.properties file.
 		 */
-		private Resource location;
+		private Resource location = new ClassPathResource("git.properties");
 
 		public Resource getLocation() {
 			return this.location;

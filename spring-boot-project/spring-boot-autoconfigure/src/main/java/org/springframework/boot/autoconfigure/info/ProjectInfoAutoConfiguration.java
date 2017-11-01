@@ -95,8 +95,7 @@ public class ProjectInfoAutoConfiguration {
 			Environment environment = context.getEnvironment();
 			String location = environment.getProperty("spring.info.git.location");
 			if (location == null) {
-				location = environment.getProperty("spring.git.properties");
-				location = (location != null ? location : "classpath:git.properties");
+				location = "classpath:git.properties";
 			}
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("GitResource");

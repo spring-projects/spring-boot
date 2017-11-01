@@ -191,14 +191,6 @@
     "defaultValue": true
   },
   {
-    "name": "spring.git.properties",
-    "type": "java.lang.String",
-    "description": "Resource reference to a generated git info properties file.",
-    "deprecation": {
-      "replacement": "spring.info.git.location"
-    }
-  },
-  {
     "name": "endpoints.actuator.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the endpoint.",
