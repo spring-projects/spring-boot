@@ -963,10 +963,13 @@ the following:
 [[production-ready-metrics-jdbc]]
 === DataSource metrics
 Auto-configuration will enable the instrumentation of all available `DataSources` with a
-metric named `data.source`. The name can be customized using the
-`spring.metrics.jdbc.datasource-metric-name`.
+metric named `data.source`. Data source instrumentation results in gauges representing the
+currently active, maximum allowed, and minimum allowed connections in the pool. Each of
+these gauges has a name which is prefixed by `data.source` by default. The prefix can be
+be customized using the `spring.metrics.jdbc.datasource-metric-name` property.
 
-Metrics will be tagged by the name of the `DataSource` computed based on the bean name.
+Metrics will also be tagged by the name of the `DataSource` computed based on the bean
+name.
 
 
 
