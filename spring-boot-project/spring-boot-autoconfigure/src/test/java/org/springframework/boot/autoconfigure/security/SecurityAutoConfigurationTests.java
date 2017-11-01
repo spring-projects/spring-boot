@@ -208,8 +208,10 @@ public class SecurityAutoConfigurationTests {
 	public void testJpaCoexistsHappily() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		TestPropertyValues.of("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
-				"spring.datasource.initialization-mode:never").applyTo(this.context);
+		TestPropertyValues
+				.of("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
+						"spring.datasource.initialization-mode:never")
+				.applyTo(this.context);
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,

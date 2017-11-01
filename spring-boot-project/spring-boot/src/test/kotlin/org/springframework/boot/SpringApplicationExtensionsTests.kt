@@ -117,6 +117,7 @@ class SpringApplicationExtensionsTests {
 		open fun webServer(): MockServletWebServerFactory {
 			return MockServletWebServerFactory()
 		}
+
 	}
 
 }

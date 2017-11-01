@@ -153,7 +153,8 @@ public class QuartzAutoConfiguration {
 		public QuartzDataSourceInitializer quartzDataSourceInitializer(
 				DataSource dataSource, ResourceLoader resourceLoader,
 				QuartzProperties properties) {
-			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
+			return new QuartzDataSourceInitializer(dataSource, resourceLoader,
+					properties);
 		}
 
 		@Bean

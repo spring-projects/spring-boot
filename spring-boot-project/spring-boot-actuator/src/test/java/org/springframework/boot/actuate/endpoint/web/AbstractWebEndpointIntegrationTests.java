@@ -385,7 +385,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 					DefaultConversionService.getSharedInstance());
 			return new WebAnnotationEndpointDiscoverer(applicationContext,
 					parameterMapper, (id) -> new CachingConfiguration(0),
-					endpointMediaTypes(), (id) -> id);
+					endpointMediaTypes(), EndpointPathResolver.useEndpointId());
 		}
 
 		@Bean

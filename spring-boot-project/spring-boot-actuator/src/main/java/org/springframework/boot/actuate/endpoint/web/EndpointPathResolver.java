@@ -32,4 +32,12 @@ public interface EndpointPathResolver {
 	 */
 	String resolvePath(String endpointId);
 
+	/**
+	 * Returns an {@link EndpointPathResolver} that uses the endpoint ID as the path.
+	 * @return an {@link EndpointPathResolver} that uses the endpoint ID as the path
+	 */
+	static EndpointPathResolver useEndpointId() {
+		return (endpointId) -> endpointId;
+	}
+
 }

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import reactor.ipc.netty.http.server.HttpServer;
+import reactor.ipc.netty.http.server.HttpServerOptions.Builder;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -66,33 +67,30 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Set {@link NettyServerCustomizer}s that should be applied to the Netty
-	 * server builder. Calling this method will replace any existing customizers.
+	 * Set {@link NettyServerCustomizer}s that should be applied to the Netty server
+	 * builder. Calling this method will replace any existing customizers.
 	 * @param nettyServerCustomizers the customizers to set
 	 */
 	public void setNettyServerCustomizers(
 			Collection<? extends NettyServerCustomizer> nettyServerCustomizers) {
-		Assert.notNull(nettyServerCustomizers,
-				"NettyServerCustomizers must not be null");
+		Assert.notNull(nettyServerCustomizers, "NettyServerCustomizers must not be null");
 		this.nettyServerCustomizers = new ArrayList<>(nettyServerCustomizers);
 	}
-
 
 	/**
 	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
 	 * @param nettyServerCustomizer the customizers to add
 	 */
-	public void addContextCustomizers(
-			NettyServerCustomizer... nettyServerCustomizer) {
+	public void addContextCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
 		Assert.notNull(nettyServerCustomizer,
 				"NettyWebServerCustomizer must not be null");
 		this.nettyServerCustomizers.addAll(Arrays.asList(nettyServerCustomizer));
 	}
 
 	private HttpServer createHttpServer() {
-		return HttpServer.builder().options(options -> {
+		return HttpServer.builder().options((options) -> {
 			options.listenAddress(getListenAddress());
-			this.nettyServerCustomizers.forEach(customizer -> customizer.customize(options));
+			applyCustomizers(options);
 		}).build();
 	}
 
@@ -100,9 +98,12 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		if (getAddress() != null) {
 			return new InetSocketAddress(getAddress().getHostAddress(), getPort());
 		}
-		else {
-			return new InetSocketAddress(getPort());
-		}
+		return new InetSocketAddress(getPort());
+	}
+
+	private void applyCustomizers(Builder options) {
+		this.nettyServerCustomizers
+				.forEach((customizer) -> customizer.customize(options));
 	}
 
 }

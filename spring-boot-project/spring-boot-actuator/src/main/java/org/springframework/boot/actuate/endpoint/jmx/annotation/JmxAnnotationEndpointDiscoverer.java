@@ -115,8 +115,8 @@ public class JmxAnnotationEndpointDiscoverer
 		public JmxEndpointOperation createOperation(String endpointId,
 				AnnotationAttributes operationAttributes, Object target, Method method,
 				OperationType type, long timeToLive) {
-			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(
-					target, method, this.parameterMapper);
+			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(target,
+					method, this.parameterMapper);
 			String operationName = method.getName();
 			Class<?> outputType = getJmxType(method.getReturnType());
 			String description = getDescription(method,

@@ -121,14 +121,12 @@ public class JndiDataSourceAutoConfigurationTests {
 			throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
-
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
 		this.context.register(JndiDataSourceAutoConfiguration.class,
 				MBeanExporterConfiguration.class,
 				AnotherMBeanExporterConfiguration.class);
 		this.context.refresh();
-
 		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 		for (MBeanExporter exporter : this.context.getBeansOfType(MBeanExporter.class)
 				.values()) {

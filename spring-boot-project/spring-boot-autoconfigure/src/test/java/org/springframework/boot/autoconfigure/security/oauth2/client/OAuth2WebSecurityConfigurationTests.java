@@ -92,11 +92,10 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	public void configurationRegistersAuthorizedClientServiceBean() throws Exception {
-		this.contextRunner
-				.withUserConfiguration(ClientRepositoryConfiguration.class,
-						OAuth2WebSecurityConfiguration.class)
-				.run(context -> {
-					OAuth2AuthorizedClientService bean = context.getBean(OAuth2AuthorizedClientService.class);
+		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
+				OAuth2WebSecurityConfiguration.class).run(context -> {
+					OAuth2AuthorizedClientService bean = context
+							.getBean(OAuth2AuthorizedClientService.class);
 					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
 							.getField(getAuthCodeFilters(context).get(0),
 									"authorizedClientService");
@@ -110,7 +109,8 @@ public class OAuth2WebSecurityConfigurationTests {
 				.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)
 				.run(context -> {
-					OAuth2AuthorizedClientService bean = context.getBean(OAuth2AuthorizedClientService.class);
+					OAuth2AuthorizedClientService bean = context
+							.getBean(OAuth2AuthorizedClientService.class);
 					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
 							.getField(getAuthCodeFilters(context).get(0),
 									"authorizedClientService");
@@ -211,8 +211,10 @@ public class OAuth2WebSecurityConfigurationTests {
 	static class OAuth2AuthorizedClientServiceConfiguration {
 
 		@Bean
-		public OAuth2AuthorizedClientService testAuthorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
-			return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
+		public OAuth2AuthorizedClientService testAuthorizedClientService(
+				ClientRegistrationRepository clientRegistrationRepository) {
+			return new InMemoryOAuth2AuthorizedClientService(
+					clientRegistrationRepository);
 		}
 
 	}

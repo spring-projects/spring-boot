@@ -17,11 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,12 +64,13 @@ public class DataSourcePoolMetricsConfiguration {
 
 	@Autowired
 	public void bindDataSourcesToRegistry(Map<String, DataSource> dataSources) {
-		for (Map.Entry<String, DataSource> entry : dataSources.entrySet()) {
-			String beanName = entry.getKey();
-			DataSource dataSource = entry.getValue();
-			new DataSourcePoolMetrics(dataSource, this.metadataProviders, this.metricName,
-					Tags.zip("name", getDataSourceName(beanName))).bindTo(this.registry);
-		}
+		dataSources.forEach(this::bindDataSourceToRegistry);
+	}
+
+	private void bindDataSourceToRegistry(String beanName, DataSource dataSource) {
+		List<Tag> tags = Tags.zip("name", getDataSourceName(beanName));
+		new DataSourcePoolMetrics(dataSource, this.metadataProviders, this.metricName,
+				tags).bindTo(this.registry);
 	}
 
 	/**

@@ -33,8 +33,8 @@ public class QuartzDataSourceInitializer extends AbstractDataSourceInitializer {
 
 	private final QuartzProperties properties;
 
-	public QuartzDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-			QuartzProperties properties) {
+	public QuartzDataSourceInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader, QuartzProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "QuartzProperties must not be null");
 		this.properties = properties;

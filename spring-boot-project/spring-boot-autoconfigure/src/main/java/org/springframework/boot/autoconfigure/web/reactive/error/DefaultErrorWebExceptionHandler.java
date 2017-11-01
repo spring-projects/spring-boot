@@ -40,12 +40,10 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 /**
  * Basic global {@link org.springframework.web.server.WebExceptionHandler}, rendering
  * {@link ErrorAttributes}.
- *
  * <p>
  * More specific errors can be handled either using Spring WebFlux abstractions (e.g.
  * {@code @ExceptionHandler} with the annotation model) or by adding
  * {@link RouterFunction} to the chain.
- *
  * <p>
  * This implementation will render error as HTML views if the client explicitly supports
  * that media type. It attempts to resolve error views using well known conventions. Will
@@ -61,10 +59,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
  * <li>{@code '/<templates>/error/error'}</li>
  * <li>{@code '/<static>/error/error.html'}</li>
  * </ul>
- *
  * <p>
  * If none found, a default "Whitelabel Error" HTML view will be rendered.
- *
  * <p>
  * If the client doesn't support HTML, the error information will be rendered as a JSON
  * payload.
@@ -87,7 +83,6 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 
 	/**
 	 * Create a new {@code DefaultErrorWebExceptionHandler} instance.
-	 *
 	 * @param errorAttributes the error attributes
 	 * @param resourceProperties the resources configuration properties
 	 * @param errorProperties the error configuration properties
@@ -103,7 +98,6 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	@Override
 	protected RouterFunction<ServerResponse> getRoutingFunction(
 			ErrorAttributes errorAttributes) {
-
 		return RouterFunctions.route(acceptsTextHtml(), this::renderErrorView)
 				.andRoute(RequestPredicates.all(), this::renderErrorResponse);
 	}
@@ -116,11 +110,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	protected Mono<ServerResponse> renderErrorView(ServerRequest request) {
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
-
 		HttpStatus errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder response = ServerResponse.status(errorStatus)
 				.contentType(MediaType.TEXT_HTML);
-
 		return Flux
 				.just("error/" + errorStatus.toString(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")

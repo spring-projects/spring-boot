@@ -159,11 +159,9 @@ public class DefaultErrorAttributesTests {
 				Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
 		Exception ex = new WebExchangeBindException(stringParam, bindingResult);
-
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(buildServerRequest(request, ex), false);
-
 		assertThat(attributes.get("message")).asString()
 				.startsWith("Validation failed for argument at index 0 in method: "
 						+ "public int org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorAttributesTests"

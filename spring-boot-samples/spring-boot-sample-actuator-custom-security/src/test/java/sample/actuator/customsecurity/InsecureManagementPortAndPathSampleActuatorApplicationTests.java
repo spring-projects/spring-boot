@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0", "management.server.context-path=/management"})
+		"management.server.port=0", "management.server.context-path=/management" })
 @DirtiesContext
 public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 
@@ -59,17 +59,17 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testSecureActuator() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/management/application/health",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort
+						+ "/management/application/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testInsecureActuator() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/management/application/status",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort
+						+ "/management/application/status", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
@@ -77,9 +77,8 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 	@Test
 	public void testMissing() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity(
-						"http://localhost:" + this.managementPort + "/management/application/missing",
-						String.class);
+				.getForEntity("http://localhost:" + this.managementPort
+						+ "/management/application/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}

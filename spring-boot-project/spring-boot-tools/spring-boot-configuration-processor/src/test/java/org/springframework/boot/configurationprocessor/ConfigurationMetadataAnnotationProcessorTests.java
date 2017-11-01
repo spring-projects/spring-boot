@@ -708,8 +708,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	private Metadata.MetadataItemCondition webPath(String endpointId) {
 		return Metadata.withProperty("endpoints." + endpointId + ".web.path")
-				.ofType(String.class).withDefaultValue(endpointId).withDescription(String
-								.format("Path of the %s endpoint.", endpointId));
+				.ofType(String.class).withDefaultValue(endpointId)
+				.withDescription(String.format("Path of the %s endpoint.", endpointId));
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {

@@ -94,7 +94,6 @@ public class DataSourceInitializerTests {
 		given(connection.getMetaData()).willReturn(metadata);
 		DataSource dataSource = mock(DataSource.class);
 		given(dataSource.getConnection()).willReturn(connection);
-
 		DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
 				new DataSourceProperties());
 		assertThat(initializer.createSchema()).isFalse();

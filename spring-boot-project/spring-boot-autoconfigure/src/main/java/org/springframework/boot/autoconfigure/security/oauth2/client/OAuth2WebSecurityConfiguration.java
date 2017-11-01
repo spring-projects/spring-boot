@@ -40,7 +40,8 @@ class OAuth2WebSecurityConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
+	public OAuth2AuthorizedClientService authorizedClientService(
+			ClientRegistrationRepository clientRegistrationRepository) {
 		return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
 	}
 

@@ -47,7 +47,8 @@ public class MetricsAutoConfigurationTests {
 	@Test
 	public void autoConfiguredDataSourceIsInstrumented() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.metrics.use-global-registry=false")
 				.run((context) -> {
@@ -61,7 +62,8 @@ public class MetricsAutoConfigurationTests {
 	@Test
 	public void autoConfiguredDataSourceWithCustomMetricName() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.metrics.jdbc.datasource-metric-name=custom.name",
 						"spring.metrics.use-global-registry=false")
@@ -76,7 +78,8 @@ public class MetricsAutoConfigurationTests {
 	@Test
 	public void dataSourceInstrumentationCanBeDisabled() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.metrics.jdbc.instrument-datasource=false",
 						"spring.metrics.use-global-registry=false")
@@ -90,15 +93,15 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allDataSourcesCanBeInstrumented() {
-		this.contextRunner
-				.withUserConfiguration(TwoDataSourcesConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+		this.contextRunner.withUserConfiguration(TwoDataSourcesConfiguration.class)
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("metrics.use-global-registry=false")
 				.run((context) -> {
-					context.getBean("firstDataSource", DataSource.class)
-							.getConnection().getMetaData();
-					context.getBean("secondOne", DataSource.class)
-							.getConnection().getMetaData();
+					context.getBean("firstDataSource", DataSource.class).getConnection()
+							.getMetaData();
+					context.getBean("secondOne", DataSource.class).getConnection()
+							.getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("data.source.max.connections")
 							.tags("name", "first").meter()).isPresent();

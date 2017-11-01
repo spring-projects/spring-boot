@@ -111,8 +111,7 @@ public class DataSourceInitializerInvokerTests {
 	@Test
 	public void dataSourceInitializedWithMultipleScripts() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.datasource.initialization-mode:always",
+				.withPropertyValues("spring.datasource.initialization-mode:always",
 						"spring.datasource.schema:" + getRelativeLocationFor("schema.sql")
 								+ "," + getRelativeLocationFor("another.sql"),
 						"spring.datasource.data:" + getRelativeLocationFor("data.sql"))
@@ -130,12 +129,13 @@ public class DataSourceInitializerInvokerTests {
 
 	@Test
 	public void dataSourceInitializedWithExplicitSqlScriptEncoding() {
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.initialization-mode:always",
-				"spring.datasource.sqlScriptEncoding:UTF-8",
-				"spring.datasource.schema:"
-						+ getRelativeLocationFor("encoding-schema.sql"),
-				"spring.datasource.data:" + getRelativeLocationFor("encoding-data.sql"))
+		this.contextRunner
+				.withPropertyValues("spring.datasource.initialization-mode:always",
+						"spring.datasource.sqlScriptEncoding:UTF-8",
+						"spring.datasource.schema:"
+								+ getRelativeLocationFor("encoding-schema.sql"),
+						"spring.datasource.data:"
+								+ getRelativeLocationFor("encoding-data.sql"))
 				.run((context) -> {
 					DataSource dataSource = context.getBean(DataSource.class);
 					assertThat(dataSource).isInstanceOf(HikariDataSource.class);
@@ -266,8 +266,7 @@ public class DataSourceInitializerInvokerTests {
 	@Test
 	public void dataSourceInitializedWithInvalidDataResource() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.datasource.initialization-mode:always",
+				.withPropertyValues("spring.datasource.initialization-mode:always",
 						"spring.datasource.schema:"
 								+ getRelativeLocationFor("schema.sql"),
 						"spring.datasource.data:classpath:does/not/exist.sql")

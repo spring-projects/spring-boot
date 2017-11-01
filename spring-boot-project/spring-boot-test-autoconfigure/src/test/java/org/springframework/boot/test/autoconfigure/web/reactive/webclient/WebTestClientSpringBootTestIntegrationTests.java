@@ -71,12 +71,14 @@ public class WebTestClientSpringBootTestIntegrationTests {
 
 	@Configuration
 	static class TestConfiguration {
+
 		@Bean
 		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http)
 				throws Exception {
 			http.authorizeExchange().anyExchange().permitAll();
 			return http.build();
 		}
+
 	}
 
 }

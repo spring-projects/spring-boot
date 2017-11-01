@@ -25,6 +25,7 @@ import org.junit.runners.model.InitializationError;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -86,9 +87,9 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
 					mediaTypes);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
-					this.applicationContext,
-					new ConversionServiceParameterMapper(), (id) -> null,
-					endpointMediaTypes, (id) -> id);
+					this.applicationContext, new ConversionServiceParameterMapper(),
+					(id) -> null, endpointMediaTypes,
+					EndpointPathResolver.useEndpointId());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/application"),
 					discoverer.discoverEndpoints(), endpointMediaTypes,
 					new CorsConfiguration());

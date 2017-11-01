@@ -220,8 +220,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void endpointPathCustomizationIsNotApplied()
-			throws Exception {
+	public void endpointPathCustomizationIsNotApplied() throws Exception {
 		TestPropertyValues.of("endpoints.test.web.path=another/custom")
 				.applyTo(this.context);
 		this.context.register(TestConfiguration.class);

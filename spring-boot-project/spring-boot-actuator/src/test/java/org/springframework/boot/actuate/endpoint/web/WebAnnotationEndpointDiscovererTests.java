@@ -240,17 +240,18 @@ public class WebAnnotationEndpointDiscovererTests {
 	@Test
 	public void endpointPathCanBeCustomized() {
 		load((id) -> null, (id) -> "custom/" + id,
-			AdditionalOperationWebEndpointConfiguration.class, (discoverer) -> {
-				Map<String, EndpointInfo<WebEndpointOperation>> endpoints = mapEndpoints(
-						discoverer.discoverEndpoints());
-				assertThat(endpoints).containsOnlyKeys("test");
-				EndpointInfo<WebEndpointOperation> endpoint = endpoints.get("test");
-				assertThat(requestPredicates(endpoint)).has(requestPredicates(
-						path("custom/test").httpMethod(WebEndpointHttpMethod.GET).consumes()
-								.produces("application/json"),
-						path("custom/test/{id}").httpMethod(WebEndpointHttpMethod.GET).consumes()
-								.produces("application/json")));
-			});
+				AdditionalOperationWebEndpointConfiguration.class, (discoverer) -> {
+					Map<String, EndpointInfo<WebEndpointOperation>> endpoints = mapEndpoints(
+							discoverer.discoverEndpoints());
+					assertThat(endpoints).containsOnlyKeys("test");
+					EndpointInfo<WebEndpointOperation> endpoint = endpoints.get("test");
+					Condition<List<? extends OperationRequestPredicate>> expected = requestPredicates(
+							path("custom/test").httpMethod(WebEndpointHttpMethod.GET)
+									.consumes().produces("application/json"),
+							path("custom/test/{id}").httpMethod(WebEndpointHttpMethod.GET)
+									.consumes().produces("application/json"));
+					assertThat(requestPredicates(endpoint)).has(expected);
+				});
 	}
 
 	private void load(Class<?> configuration,
@@ -259,20 +260,18 @@ public class WebAnnotationEndpointDiscovererTests {
 	}
 
 	private void load(CachingConfigurationFactory cachingConfigurationFactory,
-			EndpointPathResolver endpointPathResolver,
-			Class<?> configuration, Consumer<WebAnnotationEndpointDiscoverer> consumer) {
+			EndpointPathResolver endpointPathResolver, Class<?> configuration,
+			Consumer<WebAnnotationEndpointDiscoverer> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);
 		try {
-			consumer.accept(
-					new WebAnnotationEndpointDiscoverer(context,
-							new ConversionServiceParameterMapper(
-									DefaultConversionService.getSharedInstance()),
-							cachingConfigurationFactory,
-							new EndpointMediaTypes(
-									Collections.singletonList("application/json"),
-									Collections.singletonList("application/json")),
-							endpointPathResolver));
+			consumer.accept(new WebAnnotationEndpointDiscoverer(context,
+					new ConversionServiceParameterMapper(
+							DefaultConversionService.getSharedInstance()),
+					cachingConfigurationFactory,
+					new EndpointMediaTypes(Collections.singletonList("application/json"),
+							Collections.singletonList("application/json")),
+					endpointPathResolver));
 		}
 		finally {
 			context.close();

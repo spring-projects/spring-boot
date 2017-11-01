@@ -68,12 +68,11 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @EnableConfigurationProperties(MetricsProperties.class)
 @Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
 		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
-		DataSourcePoolMetricsConfiguration.class,
-		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
-		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
-		InfluxExportConfiguration.class, JmxExportConfiguration.class,
-		PrometheusExportConfiguration.class, SimpleExportConfiguration.class,
-		StatsdExportConfiguration.class })
+		DataSourcePoolMetricsConfiguration.class, AtlasExportConfiguration.class,
+		DatadogExportConfiguration.class, GangliaExportConfiguration.class,
+		GraphiteExportConfiguration.class, InfluxExportConfiguration.class,
+		JmxExportConfiguration.class, PrometheusExportConfiguration.class,
+		SimpleExportConfiguration.class, StatsdExportConfiguration.class })
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MetricsAutoConfiguration {
 

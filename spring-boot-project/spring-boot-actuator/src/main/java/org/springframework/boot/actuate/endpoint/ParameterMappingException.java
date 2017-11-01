@@ -18,8 +18,7 @@ package org.springframework.boot.actuate.endpoint;
 
 /**
  * A {@code ParameterMappingException} is thrown when a failure occurs during
- * {@link ParameterMapper#mapParameter(Object, Class) operation parameter
- * mapping}.
+ * {@link ParameterMapper#mapParameter(Object, Class) operation parameter mapping}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

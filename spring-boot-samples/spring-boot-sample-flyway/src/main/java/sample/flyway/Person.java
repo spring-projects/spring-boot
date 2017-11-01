@@ -24,7 +24,7 @@ import javax.persistence.SequenceGenerator;
 @Entity
 public class Person {
 	@Id
-	@SequenceGenerator(name="person_generator", sequenceName="person_sequence", allocationSize = 1)
+	@SequenceGenerator(name = "person_generator", sequenceName = "person_sequence", allocationSize = 1)
 	@GeneratedValue(generator = "person_generator")
 	private Long id;
 	private String firstName;

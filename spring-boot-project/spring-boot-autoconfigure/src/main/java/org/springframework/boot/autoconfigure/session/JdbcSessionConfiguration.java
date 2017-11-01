@@ -52,7 +52,8 @@ class JdbcSessionConfiguration {
 	public JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(
 			DataSource dataSource, ResourceLoader resourceLoader,
 			JdbcSessionProperties properties) {
-		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
+		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader,
+				properties);
 	}
 
 	@Configuration

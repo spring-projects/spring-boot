@@ -80,7 +80,8 @@ public class BatchAutoConfiguration {
 	@ConditionalOnBean(DataSource.class)
 	public BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader) {
-		return new BatchDataSourceInitializer(dataSource, resourceLoader, this.properties);
+		return new BatchDataSourceInitializer(dataSource, resourceLoader,
+				this.properties);
 	}
 
 	@Bean

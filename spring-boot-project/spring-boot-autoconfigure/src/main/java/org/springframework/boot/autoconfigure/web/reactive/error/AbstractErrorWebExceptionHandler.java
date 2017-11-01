@@ -155,6 +155,7 @@ public abstract class AbstractErrorWebExceptionHandler
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -205,30 +206,34 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable throwable) {
-
 		this.errorAttributes.storeErrorInformation(throwable, exchange);
 		ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
 		return getRoutingFunction(this.errorAttributes).route(request)
 				.switchIfEmpty(Mono.error(throwable))
-				.flatMap((handler) -> handler.handle(request)).flatMap((response) -> {
-					// force content-type since writeTo won't overwrite response header
-					// values
-					exchange.getResponse().getHeaders()
-							.setContentType(response.headers().getContentType());
-					return response.writeTo(exchange, new ServerResponse.Context() {
+				.flatMap((handler) -> handler.handle(request))
+				.flatMap((response) -> write(exchange, response));
+	}
 
-						@Override
-						public List<HttpMessageWriter<?>> messageWriters() {
-							return AbstractErrorWebExceptionHandler.this.messageWriters;
-						}
+	private Mono<? extends Void> write(ServerWebExchange exchange,
+			ServerResponse response) {
+		// force content-type since writeTo won't overwrite response header values
+		exchange.getResponse().getHeaders()
+				.setContentType(response.headers().getContentType());
+		return response.writeTo(exchange, new ResponseContext());
+	}
 
-						@Override
-						public List<ViewResolver> viewResolvers() {
-							return AbstractErrorWebExceptionHandler.this.viewResolvers;
-						}
+	private class ResponseContext implements ServerResponse.Context {
 
-					});
-				});
+		@Override
+		public List<HttpMessageWriter<?>> messageWriters() {
+			return AbstractErrorWebExceptionHandler.this.messageWriters;
+		}
+
+		@Override
+		public List<ViewResolver> viewResolvers() {
+			return AbstractErrorWebExceptionHandler.this.viewResolvers;
+		}
+
 	}
 
 }

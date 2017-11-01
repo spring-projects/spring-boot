@@ -33,4 +33,5 @@ public interface NettyServerCustomizer {
 	 * @param builder the server options builder to customize
 	 */
 	void customize(HttpServerOptions.Builder builder);
+
 }

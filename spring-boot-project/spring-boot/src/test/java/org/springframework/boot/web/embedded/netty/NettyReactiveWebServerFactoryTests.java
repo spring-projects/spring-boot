@@ -66,7 +66,6 @@ public class NettyReactiveWebServerFactoryTests
 		}
 		factory.setNettyServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		this.webServer = factory.getWebServer(new EchoHandler());
-
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (NettyServerCustomizer customizer : customizers) {
 			ordered.verify(customizer).customize(any(HttpServerOptions.Builder.class));

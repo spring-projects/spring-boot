@@ -30,8 +30,8 @@ import org.reactivestreams.Publisher;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -67,8 +67,8 @@ public class WebAnnotationEndpointDiscoverer extends
 	 * {@link Endpoint endpoints} and {@link WebEndpointExtension web extensions} using
 	 * the given {@link ApplicationContext}.
 	 * @param applicationContext the application context
-	 * @param parameterMapper the {@link ParameterMapper} used to
-	 * convert arguments when an operation is invoked
+	 * @param parameterMapper the {@link ParameterMapper} used to convert arguments when
+	 * an operation is invoked
 	 * @param cachingConfigurationFactory the {@link CachingConfiguration} factory to use
 	 * @param endpointMediaTypes the media types produced and consumed by web endpoint
 	 * operations
@@ -81,8 +81,8 @@ public class WebAnnotationEndpointDiscoverer extends
 			EndpointMediaTypes endpointMediaTypes,
 			EndpointPathResolver endpointPathResolver) {
 		super(applicationContext,
-				new WebEndpointOperationFactory(parameterMapper,
-						endpointMediaTypes, endpointPathResolver),
+				new WebEndpointOperationFactory(parameterMapper, endpointMediaTypes,
+						endpointPathResolver),
 				WebEndpointOperation::getRequestPredicate, cachingConfigurationFactory);
 	}
 
@@ -145,8 +145,8 @@ public class WebAnnotationEndpointDiscoverer extends
 					determineConsumedMediaTypes(httpMethod, method),
 					determineProducedMediaTypes(
 							operationAttributes.getStringArray("produces"), method));
-			OperationInvoker invoker = new ReflectiveOperationInvoker(
-					target, method, this.parameterMapper);
+			OperationInvoker invoker = new ReflectiveOperationInvoker(target, method,
+					this.parameterMapper);
 			if (timeToLive > 0) {
 				invoker = new CachingOperationInvoker(invoker, timeToLive);
 			}

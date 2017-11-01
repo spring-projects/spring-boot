@@ -141,8 +141,8 @@ public class JobLauncherCommandLineRunner
 			throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException,
 			JobParametersNotFoundException {
-		JobParameters nextParameters = new JobParametersBuilder(jobParameters, this.jobExplorer)
-				.getNextJobParameters(job).toJobParameters();
+		JobParameters nextParameters = new JobParametersBuilder(jobParameters,
+				this.jobExplorer).getNextJobParameters(job).toJobParameters();
 		JobExecution execution = this.jobLauncher.run(job, nextParameters);
 		if (this.publisher != null) {
 			this.publisher.publishEvent(new JobExecutionEvent(execution));

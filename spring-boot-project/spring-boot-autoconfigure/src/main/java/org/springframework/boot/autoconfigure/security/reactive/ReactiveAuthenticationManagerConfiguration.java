@@ -58,12 +58,16 @@ class ReactiveAuthenticationManagerConfiguration {
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		String password = UUID.randomUUID().toString();
 		logger.info(String.format("%n%nUsing default security password: %s%n", password));
+		UserDetails userDetails = getUserDetails(password, passwordEncoder);
+		return new MapReactiveUserDetailsService(userDetails);
+	}
+
+	private UserDetails getUserDetails(String password,
+			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		String encodedPassword = passwordEncoder
 				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
 				.encode(password);
-		UserDetails user = User.withUsername("user").password(encodedPassword).roles()
-				.build();
-		return new MapReactiveUserDetailsService(user);
+		return User.withUsername("user").password(encodedPassword).roles().build();
 	}
 
 }

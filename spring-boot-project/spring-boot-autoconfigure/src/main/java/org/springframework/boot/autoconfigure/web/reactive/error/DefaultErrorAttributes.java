@@ -124,7 +124,6 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public void storeErrorInformation(Throwable error, ServerWebExchange exchange) {
 		exchange.getAttributes().putIfAbsent(ERROR_ATTRIBUTE, error);
-
 	}
 
 }

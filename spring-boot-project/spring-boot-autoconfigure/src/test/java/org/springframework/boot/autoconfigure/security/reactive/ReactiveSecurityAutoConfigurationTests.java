@@ -56,8 +56,7 @@ public class ReactiveSecurityAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 				.run((context) -> {
-					assertThat(context).getBean(WebFilterChainProxy.class)
-							.isNotNull();
+					assertThat(context).getBean(WebFilterChainProxy.class).isNotNull();
 					assertThat(context).getBean(WebFluxSecurityConfiguration.class)
 							.isNotNull();
 					assertThat(context).getBean(WebFilterChainProxy.class).isNotNull();

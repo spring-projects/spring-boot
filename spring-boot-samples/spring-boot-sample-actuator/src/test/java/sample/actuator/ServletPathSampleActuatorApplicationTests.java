@@ -49,9 +49,9 @@ public class ServletPathSampleActuatorApplicationTests {
 	@Test
 	public void testErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
-				.getForEntity("/spring/error",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate
+				.withBasicAuth("user", getPassword())
+				.getForEntity("/spring/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

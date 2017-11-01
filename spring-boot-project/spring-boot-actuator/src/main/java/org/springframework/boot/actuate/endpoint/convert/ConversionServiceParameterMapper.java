@@ -23,15 +23,14 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
 /**
- * {@link ParameterMapper} that uses a {@link ConversionService} to map parameter
- * values if necessary.
+ * {@link ParameterMapper} that uses a {@link ConversionService} to map parameter values
+ * if necessary.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ConversionServiceParameterMapper
-		implements ParameterMapper {
+public class ConversionServiceParameterMapper implements ParameterMapper {
 
 	private final ConversionService conversionService;
 
@@ -43,8 +42,7 @@ public class ConversionServiceParameterMapper
 	 * Create a new instance with the {@link ConversionService} to use.
 	 * @param conversionService the conversion service
 	 */
-	public ConversionServiceParameterMapper(
-			ConversionService conversionService) {
+	public ConversionServiceParameterMapper(ConversionService conversionService) {
 		this.conversionService = new BinderConversionService(conversionService);
 	}
 

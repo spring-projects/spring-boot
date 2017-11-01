@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.core.env.PropertySource;
@@ -33,19 +32,13 @@ import org.springframework.core.env.PropertySources;
  */
 final class FilteredPropertySources implements PropertySources {
 
-	private final Set<String> filtered;
-
 	private final PropertySources delegate;
+
+	private final Set<String> filtered;
 
 	FilteredPropertySources(PropertySources delegate, String... filtered) {
 		this.delegate = delegate;
 		this.filtered = new HashSet<>(Arrays.asList(filtered));
-	}
-
-	@Override
-	public Iterator<PropertySource<?>> iterator() {
-		return StreamSupport.stream(this.delegate.spliterator(), false)
-				.filter(this::included).collect(Collectors.toList()).iterator();
 	}
 
 	@Override
@@ -62,6 +55,12 @@ final class FilteredPropertySources implements PropertySources {
 			return this.delegate.get(name);
 		}
 		return null;
+	}
+
+	@Override
+	public Iterator<PropertySource<?>> iterator() {
+		return StreamSupport.stream(this.delegate.spliterator(), false)
+				.filter(this::included).iterator();
 	}
 
 	private boolean included(PropertySource<?> propertySource) {

@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.DefaultCachingCon
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -82,7 +83,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 				RestTemplateBuilder builder) {
 			WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext, parameterMapper, cachingConfigurationFactory,
-					endpointMediaTypes, (id) -> id);
+					endpointMediaTypes, EndpointPathResolver.useEndpointId());
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cloudfoundryapplication"),
 					endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
@@ -142,7 +143,6 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
-
 		}
 
 	}
