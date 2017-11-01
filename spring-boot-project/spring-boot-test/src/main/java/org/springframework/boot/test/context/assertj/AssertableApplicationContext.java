@@ -24,7 +24,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * An {@link ApplicationContext} that additionally supports AssertJ style assertions. Can
- * be used to decorate and existing application context or an application context that
+ * be used to decorate an existing application context or an application context that
  * failed to start.
  * <p>
  * See {@link ApplicationContextAssertProvider} for more details.

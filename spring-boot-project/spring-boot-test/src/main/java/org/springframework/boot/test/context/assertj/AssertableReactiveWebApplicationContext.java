@@ -23,7 +23,7 @@ import org.springframework.boot.web.reactive.context.ReactiveWebApplicationConte
 
 /**
  * A {@link ReactiveWebApplicationContext} that additionally supports AssertJ style
- * assertions. Can be used to decorate and existing reactive web application context or an
+ * assertions. Can be used to decorate an existing reactive web application context or an
  * application context that failed to start.
  * <p>
  * See {@link ApplicationContextAssertProvider} for more details.
