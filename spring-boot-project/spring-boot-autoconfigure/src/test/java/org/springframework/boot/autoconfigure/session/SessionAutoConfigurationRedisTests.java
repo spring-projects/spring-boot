@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.session.RedisSessionConfiguration.SpringBootRedisHttpSessionConfiguration;
 import org.springframework.boot.test.context.HideClassesClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Redis specific tests for {@link SessionAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 public class SessionAutoConfigurationRedisTests
 		extends AbstractSessionAutoConfigurationTests {
@@ -54,7 +56,7 @@ public class SessionAutoConfigurationRedisTests
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
-						RedisFlushMode.ON_SAVE));
+						RedisFlushMode.ON_SAVE, "0 * * * * *"));
 	}
 
 	@Test
@@ -66,7 +68,7 @@ public class SessionAutoConfigurationRedisTests
 								MongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
-						RedisFlushMode.ON_SAVE));
+						RedisFlushMode.ON_SAVE, "0 * * * * *"));
 	}
 
 	@Test
@@ -75,13 +77,15 @@ public class SessionAutoConfigurationRedisTests
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis",
 						"spring.session.redis.namespace=foo",
-						"spring.session.redis.flush-mode=immediate")
+						"spring.session.redis.flush-mode=immediate",
+						"spring.session.redis.cleanup-cron=0 0 12 * * *")
 				.run(validateSpringSessionUsesRedis("spring:session:foo:event:created:",
-						RedisFlushMode.IMMEDIATE));
+						RedisFlushMode.IMMEDIATE, "0 0 12 * * *"));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
-			String sessionCreatedChannelPrefix, RedisFlushMode flushMode) {
+			String sessionCreatedChannelPrefix, RedisFlushMode flushMode,
+			String cleanupCron) {
 		return (context) -> {
 			RedisOperationsSessionRepository repository = validateSessionRepository(
 					context, RedisOperationsSessionRepository.class);
@@ -89,6 +93,10 @@ public class SessionAutoConfigurationRedisTests
 					.isEqualTo(sessionCreatedChannelPrefix);
 			assertThat(new DirectFieldAccessor(repository)
 					.getPropertyValue("redisFlushMode")).isEqualTo(flushMode);
+			SpringBootRedisHttpSessionConfiguration configuration = context
+					.getBean(SpringBootRedisHttpSessionConfiguration.class);
+			assertThat(new DirectFieldAccessor(configuration)
+					.getPropertyValue("cleanupCron")).isEqualTo(cleanupCron);
 		};
 	}
 

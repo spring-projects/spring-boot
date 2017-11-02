@@ -425,6 +425,7 @@ content into your application; rather pick only the properties that you need.
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
 
 	# SPRING SESSION JDBC ({sc-spring-boot-autoconfigure}/session/JdbcSessionProperties.{sc-ext}[JdbcSessionProperties])
+	spring.session.jdbc.cleanup-cron=0 * * * * * # Cron expression for expired session cleanup job.
 	spring.session.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
@@ -433,6 +434,7 @@ content into your application; rather pick only the properties that you need.
 	spring.session.mongodb.collection-name=sessions # Collection name used to store sessions.
 
 	# SPRING SESSION REDIS ({sc-spring-boot-autoconfigure}/session/RedisSessionProperties.{sc-ext}[RedisSessionProperties])
+	spring.session.redis.cleanup-cron=0 * * * * * # Cron expression for expired session cleanup job.
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.
 	spring.session.redis.namespace= # Namespace for keys used to store sessions.
 
