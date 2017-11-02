@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafView;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
@@ -59,6 +60,7 @@ import static org.hamcrest.Matchers.containsString;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Brian Clozel
+ * @author Kazuki Shimizu
  */
 public class ThymeleafServletAutoConfigurationTests {
 
@@ -215,6 +217,18 @@ public class ThymeleafServletAutoConfigurationTests {
 		SpringResourceTemplateResolver templateResolver = this.context
 				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(templateResolver.isCacheable()).isFalse();
+	}
+
+	@Test
+	public void enableSpringElCompilerCanBeEnabled() {
+		load(BaseConfiguration.class, "spring.thymeleaf.enable-spring-el-compiler:true");
+		assertThat(this.context.getBean(SpringTemplateEngine.class).getEnableSpringELCompiler()).isTrue();
+	}
+
+	@Test
+	public void enableSpringElCompilerIsDisabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(SpringTemplateEngine.class).getEnableSpringELCompiler()).isFalse();
 	}
 
 	private void load(Class<?> config, String... envVariables) {
