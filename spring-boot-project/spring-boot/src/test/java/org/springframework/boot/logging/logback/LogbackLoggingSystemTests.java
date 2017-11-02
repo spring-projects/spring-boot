@@ -128,8 +128,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
 				.toString()).isEqualTo("10 MB");
-		assertThat(getRollingPolicy().getMaxHistory()).isEqualTo(
-				CoreConstants.UNBOUND_HISTORY);
+		assertThat(getRollingPolicy().getMaxHistory())
+				.isEqualTo(CoreConstants.UNBOUND_HISTORY);
 	}
 
 	@Test
@@ -350,8 +350,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void testMaxFileSizeProperty() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-size", "100MB");
-		LoggingInitializationContext loggingInitializationContext =
-				new LoggingInitializationContext(environment);
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
 		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
@@ -365,8 +365,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void testMaxHistoryProperty() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-history", "30");
-		LoggingInitializationContext loggingInitializationContext =
-				new LoggingInitializationContext(environment);
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
 		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);

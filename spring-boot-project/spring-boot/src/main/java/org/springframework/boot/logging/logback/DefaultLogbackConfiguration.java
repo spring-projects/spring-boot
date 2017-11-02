@@ -149,11 +149,20 @@ class DefaultLogbackConfiguration {
 
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config, String logFile) {
-		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy =
-				new SizeAndTimeBasedRollingPolicy<>();
+		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
 		rollingPolicy.setFileNamePattern(logFile + ".%d{yyyy-MM-dd}.%i.gz");
-		String maxFileSize = this.patterns.getProperty("logging.file.max-size",
-				MAX_FILE_SIZE);
+		setMaxFileSize(rollingPolicy,
+				this.patterns.getProperty("logging.file.max-size", MAX_FILE_SIZE));
+		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
+				Integer.class, CoreConstants.UNBOUND_HISTORY));
+		appender.setRollingPolicy(rollingPolicy);
+		rollingPolicy.setParent(appender);
+		config.start(rollingPolicy);
+	}
+
+	private void setMaxFileSize(
+			SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy,
+			String maxFileSize) {
 		try {
 			rollingPolicy.setMaxFileSize(FileSize.valueOf(maxFileSize));
 		}
@@ -163,12 +172,6 @@ class DefaultLogbackConfiguration {
 					SizeAndTimeBasedRollingPolicy.class, "setMaxFileSize", String.class);
 			ReflectionUtils.invokeMethod(method, rollingPolicy, maxFileSize);
 		}
-		int maxHistory = this.patterns.getProperty("logging.file.max-history",
-				Integer.class, CoreConstants.UNBOUND_HISTORY);
-		rollingPolicy.setMaxHistory(maxHistory);
-		appender.setRollingPolicy(rollingPolicy);
-		rollingPolicy.setParent(appender);
-		config.start(rollingPolicy);
 	}
 
 }

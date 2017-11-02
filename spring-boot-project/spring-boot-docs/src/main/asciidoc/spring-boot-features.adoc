@@ -1624,11 +1624,13 @@ To help with the customization, some other properties are transferred from the S
 
 |`logging.file.max-size`
 |`LOG_FILE_MAX_SIZE`
-|Maximum log file size (if LOG_FILE enabled). (Only supported with the default logback setup.)
+|Maximum log file size (if LOG_FILE enabled). (Only supported with the default logback
+ setup.)
 
 |`logging.file.max-history`
 |`LOG_FILE_MAX_HISTORY`
-|Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with the default logback setup.)
+|Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with
+ the default logback setup.)
 
 |`logging.path`
 |`LOG_PATH`
@@ -1654,7 +1656,6 @@ To help with the customization, some other properties are transferred from the S
 |The current process ID (discovered if possible and when not already defined as an OS
  environment variable).
 |===
-
 
 All the supported logging systems can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples:
