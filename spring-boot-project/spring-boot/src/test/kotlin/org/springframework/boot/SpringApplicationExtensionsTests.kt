@@ -70,42 +70,6 @@ class SpringApplicationExtensionsTests {
 		assertEquals(environment, context.environment)
 	}
 
-	@Test
-	fun `Kotlin runApplication(array of KClass) top level function`() {
-		val context = runApplication(arrayOf(ExampleConfig::class, ExampleWebConfig::class))
-		assertNotNull(context)
-	}
-
-	@Test
-	fun `Kotlin runApplication(array of KClass) top level function with a custom environment`() {
-		val environment = StandardEnvironment()
-		val context = runApplication(arrayOf(ExampleConfig::class, ExampleWebConfig::class)) {
-			setEnvironment(environment)
-		}
-		assertNotNull(context)
-		assertEquals(environment, context.environment)
-	}
-
-	@Test
-	fun `Kotlin runApplication(array of KClass, arg1, arg2) top level function`() {
-		val context = runApplication(arrayOf(ExampleConfig::class, ExampleWebConfig::class), "--debug", "spring", "boot")
-		val args = context.getBean<ApplicationArguments>()
-		assertArrayEquals(arrayOf("spring", "boot"), args.nonOptionArgs.toTypedArray())
-		assertTrue(args.containsOption("debug"))
-	}
-
-	@Test
-	fun `Kotlin runApplication(array of KClass, arg1, arg2) top level function with a custom environment`() {
-		val environment = StandardEnvironment()
-		val context = runApplication(arrayOf(ExampleConfig::class, ExampleWebConfig::class), "--debug", "spring", "boot") {
-			setEnvironment(environment)
-		}
-		val args = context.getBean<ApplicationArguments>()
-		assertArrayEquals(arrayOf("spring", "boot"), args.nonOptionArgs.toTypedArray())
-		assertTrue(args.containsOption("debug"))
-		assertEquals(environment, context.environment)
-	}
-
 
 	@Configuration
 	internal open class ExampleConfig

@@ -42,16 +42,3 @@ inline fun <reified T : Any> runApplication(vararg args: String): ConfigurableAp
  */
 inline fun <reified T : Any> runApplication(vararg args: String, init: SpringApplication.() -> Unit): ConfigurableApplicationContext =
 		SpringApplication(T::class.java).apply(init).run(*args)
-
-
-/**
- * Top level function acting as a Kotlin shortcut allowing to write
- * `runApplication(arrayOf(FooApplication::class, FooConfiguration::class), arg1, arg2) { // Optional SpringApplication customization ... }`
- * instead of instantiating `SpringApplication` class, customize it and then invoking
- * `run(arrayOf(arg1, arg2))`.`
- *
- * @author Sebastien Deleuze
- * @since 2.0.0
- */
-fun runApplication(primarySources: Array<KClass<*>>, vararg args: String, init: SpringApplication.() -> Unit = {}): ConfigurableApplicationContext =
-		SpringApplication(*primarySources.map { it.java }.toTypedArray()).apply(init).run(*args)
