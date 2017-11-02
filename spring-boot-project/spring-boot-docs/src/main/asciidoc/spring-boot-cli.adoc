@@ -166,9 +166,6 @@ The following items are used as "`grab hints`":
 |`@MessageEndpoint` `@EnableIntegrationPatterns`
 |Spring Integration.
 
-|`@EnableDeviceResolver`
-|Spring Mobile.
-
 |`@Controller` `@RestController` `@EnableWebMvc`
 |Spring MVC + Embedded Tomcat.
 

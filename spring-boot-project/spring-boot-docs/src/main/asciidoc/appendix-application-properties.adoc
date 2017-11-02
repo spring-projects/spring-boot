@@ -353,19 +353,6 @@ content into your application; rather pick only the properties that you need.
     spring.ldap.embedded.validation.enabled=true # Enable LDAP schema validation.
     spring.ldap.embedded.validation.schema= # Path to the custom schema.
 
-	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
-	spring.mobile.devicedelegatingviewresolver.enable-fallback=false # Enable support for fallback resolution.
-	spring.mobile.devicedelegatingviewresolver.enabled=false # Enable device view resolver.
-	spring.mobile.devicedelegatingviewresolver.mobile-prefix=mobile/ # Prefix that gets prepended to view names for mobile devices.
-	spring.mobile.devicedelegatingviewresolver.mobile-suffix= # Suffix that gets appended to view names for mobile devices.
-	spring.mobile.devicedelegatingviewresolver.normal-prefix= # Prefix that gets prepended to view names for normal devices.
-	spring.mobile.devicedelegatingviewresolver.normal-suffix= # Suffix that gets appended to view names for normal devices.
-	spring.mobile.devicedelegatingviewresolver.tablet-prefix=tablet/ # Prefix that gets prepended to view names for tablet devices.
-	spring.mobile.devicedelegatingviewresolver.tablet-suffix= # Suffix that gets appended to view names for tablet devices.
-
-	# SPRING MOBILE SITE PREFERENCE ({sc-spring-boot-autoconfigure}/mobile/SitePreferenceAutoConfiguration.{sc-ext}[SitePreferenceAutoConfiguration])
-	spring.mobile.sitepreference.enabled=true # Enable SitePreferenceHandler.
-
 	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
 	spring.mustache.allow-request-override= # Set whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.mustache.allow-session-override= # Set whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.

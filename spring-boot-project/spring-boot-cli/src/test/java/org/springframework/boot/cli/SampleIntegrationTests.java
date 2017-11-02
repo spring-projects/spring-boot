@@ -145,12 +145,6 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	public void deviceSample() throws Exception {
-		this.cli.run("device.groovy");
-		assertThat(this.cli.getHttpOutput()).isEqualTo("Hello Normal Device!");
-	}
-
-	@Test
 	public void caching() throws Exception {
 		assertThat(this.cli.run("caching.groovy")).contains("Hello World");
 	}
