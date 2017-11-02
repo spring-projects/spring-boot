@@ -39,14 +39,14 @@ public class SimpleExportConfigurationTests {
 	@Test
 	public void simpleMeterRegistryIsInTheCompositeWhenNoOtherRegistryIs() {
 		new ApplicationContextRunner()
-				.withPropertyValues("spring.metrics.atlas.enabled=false",
-						"spring.metrics.datadog.enabled=false",
-						"spring.metrics.ganglia.enabled=false",
-						"spring.metrics.graphite.enabled=false",
-						"spring.metrics.influx.enabled=false",
-						"spring.metrics.jmx.enabled=false",
-						"spring.metrics.prometheus.enabled=false",
-						"spring.metrics.statsd.enabled=false")
+				.withPropertyValues("spring.metrics.export.atlas.enabled=false",
+						"spring.metrics.export.datadog.enabled=false",
+						"spring.metrics.export.ganglia.enabled=false",
+						"spring.metrics.export.graphite.enabled=false",
+						"spring.metrics.export.influx.enabled=false",
+						"spring.metrics.export.jmx.enabled=false",
+						"spring.metrics.export.prometheus.enabled=false",
+						"spring.metrics.export.statsd.enabled=false")
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.run((context) -> {
 					CompositeMeterRegistry meterRegistry = context

@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.metrics.statsd")
+@ConfigurationProperties(prefix = "spring.metrics.export.statsd")
 public class StatsdProperties {
 
 	/**

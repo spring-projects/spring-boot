@@ -50,7 +50,7 @@ public class GangliaExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.ganglia.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "spring.metrics.export.ganglia.enabled", matchIfMissing = true)
 	public MetricsExporter gangliaExporter(GangliaConfig gangliaConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {
 		return () -> new GangliaMeterRegistry(gangliaConfig, nameMapper, clock);
