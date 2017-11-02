@@ -42,7 +42,7 @@ public class FlywayProperties {
 	 * use vendor-specific locations.
 	 */
 	private List<String> locations = new ArrayList<>(
-			Collections.singletonList("db/migration"));
+			Collections.singletonList("classpath:db/migration"));
 
 	/**
 	 * Check that migration scripts location exists.
