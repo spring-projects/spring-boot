@@ -103,8 +103,8 @@ exist in their own right.
 Finally, "`hints`" are additional information used to assist the user in configuring a
 given property. For example, when a developer is configuring the
 `spring.jpa.hibernate.ddl-auto` property, a tool can use the hints to offer some
-auto-completion help for the `none`, `validate`, `update`, `create`,
-and `create-drop` values.
+auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop`
+values.
 
 
 
@@ -131,7 +131,7 @@ following table:
 |`description`
 | String
 | A short description of the group that can be displayed to users. If not description is
-	available, it may be omitted. It is recommended that descriptions be short paragraphs,
+  available, it may be omitted. It is recommended that descriptions be short paragraphs,
   with the first line providing a concise summary. The last line in the description should
   end with a period (`.`).
 
@@ -163,7 +163,7 @@ in the following table:
 |`name`
 | String
 | The full name of the property. Names are in lower-case period-separated form (for
-	example, `server.servlet.path`). This attribute is mandatory.
+  example, `server.servlet.path`). This attribute is mandatory.
 
 |`type`
 | String
@@ -172,13 +172,13 @@ in the following table:
   You can use this attribute to guide the user as to the types of values that they can
   enter. For consistency, the type of a primitive is specified by using its wrapper
   counterpart (for example, `boolean` becomes `java.lang.Boolean`). Note that this class
-	may be a complex type that gets converted from a `String` as values are bound. If the
-	type is not known, it may be omitted.
+  may be a complex type that gets converted from a `String` as values are bound. If the
+  type is not known, it may be omitted.
 
 |`description`
 | String
 | A short description of the group that can be displayed to users. If no description is
-	available, it may be omitted. It is recommended that descriptions be short paragraphs,
+  available, it may be omitted. It is recommended that descriptions be short paragraphs,
   with the first line providing a concise summary. The last line in the description should
   end with a period (`.`).
 
@@ -187,19 +187,19 @@ in the following table:
 | The class name of the source that contributed this property. For example, if the
   property were from a class annotated with `@ConfigurationProperties`, this attribute
   would contain the fully qualified name of that class. If the source type is unknown, it
-	may be omitted.
+  may be omitted.
 
 |`defaultValue`
 | Object
 | The default value, which is used if the property is not specified. If the type of the
-	property is an array, it can be an array of value(s). If the default value is unknown,
-	it may be omitted.
+  property is an array, it can be an array of value(s). If the default value is unknown,
+  it may be omitted.
 
 |`deprecation`
 | Deprecation
 | Specify whether the property is deprecated. If the field is not deprecated or if that
-	information is not known, it may be omitted. The next table offers more detail about
-	the `deprecation` attribute.
+  information is not known, it may be omitted. The next table offers more detail about
+  the `deprecation` attribute.
 |===
 
 The JSON object contained in the `deprecation` attribute of each `properties` element can
@@ -219,7 +219,7 @@ contain the following attributes:
 |`reason`
 |String
 |A short description of the reason why the property was deprecated. If no reason is
-available, it may be omitted. It is recommended that descriptions be short paragraphs,
+ available, it may be omitted. It is recommended that descriptions be short paragraphs,
  with the first line providing a concise summary. The last line in the description should
  end with a period (`.`).
 
@@ -287,20 +287,20 @@ following table:
 |`name`
 | String
 | The full name of the property to which this hint refers. Names are in lower-case
-	period-separated form (such as `server.servlet.path`). If the property refers to a map
-	(such as `system.contexts`), the hint either applies to the _keys_ of the map
-	(`system.context.keys`) or the _values_ (`system.context.values`) of the map. This
-	attribute is mandatory.
+  period-separated form (such as `server.servlet.path`). If the property refers to a map
+  (such as `system.contexts`), the hint either applies to the _keys_ of the map
+  (`system.context.keys`) or the _values_ (`system.context.values`) of the map. This
+  attribute is mandatory.
 
 |`values`
 | ValueHint[]
 | A list of valid values as defined by the `ValueHint` object (described in the next
-	table). Each entry defines the value and may have a description.
+  table). Each entry defines the value and may have a description.
 
 |`providers`
 | ValueProvider[]
 | A list of providers as defined by the `ValueProvider` object (described later in this
-	document). Each entry defines the name of the provider and its parameters, if any.
+  document). Each entry defines the name of the provider and its parameters, if any.
 
 |===
 
@@ -314,12 +314,12 @@ the attributes described in the following table:
 |`value`
 | Object
 | A valid value for the element to which the hint refers. If the type of the property is
-an array, it can also be an array of value(s). This attribute is mandatory.
+  an array, it can also be an array of value(s). This attribute is mandatory.
 
 |`description`
 | String
 | A short description of the value that can be displayed to users. If no description is
-	available, it may be omitted . It is recommended that descriptions be short paragraphs,
+  available, it may be omitted . It is recommended that descriptions be short paragraphs,
   with the first line providing a concise summary. The last line in the description should
   end with a period (`.`).
 |===
@@ -416,7 +416,7 @@ supports it, this is by far the most effective approach to auto-completion.
 ==== Value Providers
 Providers are a powerful way to attach semantics to a property. In this section, we
 define the official providers that you can use for your own hints. However, your favorite
-IDE  may implement some of these or none of them. Also, it could eventually provide its
+IDE may implement some of these or none of them. Also, it could eventually provide its
 own.
 
 NOTE: As this is a new feature, IDE vendors must catch up with how it works. Adoption
@@ -436,7 +436,8 @@ The following table summarizes the list of supported providers:
  class that is specified by the `target` parameter.
 
 |`handle-as`
-|Handles the property as if it were defined by the type defined by the mandatory `target` parameter.
+|Handles the property as if it were defined by the type defined by the mandatory `target`
+ parameter.
 
 |`logger-name`
 |Auto-completes valid logger names. Typically, package and class names available in
@@ -514,8 +515,8 @@ provider supports the following parameters:
 |===
 
 
-The following metadata snippet corresponds to the standard
-`server.servlet.jsp.class-name` property that defines the `JspServlet` class name to use:
+The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name`
+property that defines the `JspServlet` class name to use:
 
 [source,json,indent=0]
 ----
@@ -549,7 +550,8 @@ on the classpath. This provider supports the following parameters:
 | **`target`**
 | `String` (`Class`)
 |_none_
-|The fully qualified name of the type to consider for the property. This parameter is mandatory.
+|The fully qualified name of the type to consider for the property. This parameter is
+ mandatory.
 |===
 
 The following types can be used:
@@ -557,19 +559,22 @@ The following types can be used:
 * Any `java.lang.Enum`: Lists the possible values for the property. (We recommend
   defining the property with the `Enum` type, as no further hint should be required for
   the IDE to auto-complete the values.)
-* `java.nio.charset.Charset`: Supports auto-completion of charset/encoding values (such as `UTF-8`)
+* `java.nio.charset.Charset`: Supports auto-completion of charset/encoding values (such as
+  `UTF-8`)
 * `java.util.Locale`: auto-completion of locales (such as `en_US`)
-* `org.springframework.util.MimeType`: Supports auto-completion of content type values (such as `text/plain`)
-* `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource abstraction to
-  refer to a file on the filesystem or on the classpath. (such as `classpath:/sample.properties`)
+* `org.springframework.util.MimeType`: Supports auto-completion of content type values
+  (such as `text/plain`)
+* `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource
+  abstraction to refer to a file on the filesystem or on the classpath. (such as
+  `classpath:/sample.properties`)
 
-TIP: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE
-about it.
+TIP: If multiple values can be provided, use a `Collection` or _Array_ type to teach the
+IDE about it.
 
 The following metadata snippet corresponds to the standard `spring.liquibase.change-log`
 property that defines the path to the changelog to use. It is actually used internally as a
-`org.springframework.core.io.Resource` but cannot be exposed as such, because we need to keep the
-original String value to pass it to the Liquibase API.
+`org.springframework.core.io.Resource` but cannot be exposed as such, because we need to
+keep the original String value to pass it to the Liquibase API.
 
 [source,json,indent=0]
 ----
@@ -692,9 +697,8 @@ that defines the name of the `MBeanServer` bean to use:
 	]}
 ----
 
-NOTE: The binder is not aware of the metadata. If you provide that hint, you
-still need to transform the bean name into an actual Bean reference using by
-the `ApplicationContext`.
+NOTE: The binder is not aware of the metadata. If you provide that hint, you still need
+to transform the bean name into an actual Bean reference using by the `ApplicationContext`.
 
 
 
@@ -761,10 +765,10 @@ is used to populate the `description` attribute.
 NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since
 they are not processed before being added to the JSON.
 
-Properties are discovered through the presence of standard getters and setters with special
-handling for collection types (that is detected even if only a getter is present). The
-annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter` lombok
-annotations.
+Properties are discovered through the presence of standard getters and setters with
+special handling for collection types (that is detected even if only a getter is present).
+The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter`
+lombok annotations.
 
 [NOTE]
 ====
@@ -818,8 +822,8 @@ Consider the following class:
 	}
 ----
 
-The preceding example produces metdata information for `server.name`, `server.host.ip`, and
-`server.host.port` properties. You can use the `@NestedConfigurationProperty`
+The preceding example produces metdata information for `server.name`, `server.host.ip`,
+and `server.host.port` properties. You can use the `@NestedConfigurationProperty`
 annotation on a field to indicate that a regular (non-inner) class should be treated as
 if it were nested.
 
