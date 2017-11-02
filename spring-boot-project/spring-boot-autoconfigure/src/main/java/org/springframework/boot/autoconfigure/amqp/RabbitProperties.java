@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Josh Thornhill
  * @author Gary Russell
+ * @author Arnaud Cogoluègnes
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -106,6 +107,11 @@ public class RabbitProperties {
 	private final Template template = new Template();
 
 	private List<Address> parsedAddresses;
+
+	/**
+	 * Enable metrics.
+	 */
+	private boolean metrics = true;
 
 	public String getHost() {
 		return this.host;
@@ -300,6 +306,14 @@ public class RabbitProperties {
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public boolean isMetrics() {
+		return metrics;
+	}
+
+	public void setMetrics(boolean metrics) {
+		this.metrics = metrics;
 	}
 
 	public static class Ssl {

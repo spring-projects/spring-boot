@@ -19,12 +19,15 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.rabbitmq.client.Channel;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
+import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
@@ -42,12 +45,15 @@ import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.We
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.boot.actuate.metrics.amqp.RabbitMetrics;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -62,6 +68,7 @@ import org.springframework.integration.support.management.IntegrationManagementC
  *
  * @since 2.0.0
  * @author Jon Schneider
+ * @author Arnaud Cogoluègnes
  */
 @Configuration
 @ConditionalOnClass(Timed.class)
@@ -73,7 +80,7 @@ import org.springframework.integration.support.management.IntegrationManagementC
 		GraphiteExportConfiguration.class, InfluxExportConfiguration.class,
 		JmxExportConfiguration.class, PrometheusExportConfiguration.class,
 		SimpleExportConfiguration.class, StatsdExportConfiguration.class })
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@AutoConfigureAfter({DataSourceAutoConfiguration.class, RabbitAutoConfiguration.class})
 public class MetricsAutoConfiguration {
 
 	@Bean
@@ -111,6 +118,19 @@ public class MetricsAutoConfiguration {
 		public SpringIntegrationMetrics springIntegrationMetrics(
 				IntegrationManagementConfigurer configurer) {
 			return new SpringIntegrationMetrics(configurer);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ RabbitTemplate.class, Channel.class })
+	@ConditionalOnBean(AbstractConnectionFactory.class)
+	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "metrics", matchIfMissing = true)
+	static class MetricsRabbitConfiguration {
+
+		@Bean
+		public RabbitMetrics rabbitMetrics(AbstractConnectionFactory connectionFactory) {
+			return new RabbitMetrics(connectionFactory.getRabbitConnectionFactory());
 		}
 
 	}
