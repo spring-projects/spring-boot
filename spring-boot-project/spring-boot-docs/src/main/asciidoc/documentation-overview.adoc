@@ -10,7 +10,7 @@ as a map for the rest of the document.
 
 
 [[boot-documentation-about]]
-== About the documentation
+== About the Documentation
 The Spring Boot reference guide is available as
 
 * {spring-boot-docs}/html[HTML]
@@ -20,46 +20,46 @@ The Spring Boot reference guide is available as
 The latest copy
 is available at {spring-boot-docs-current}.
 
-Copies of this document may be made for your own use and for
-distribution to others, provided that you do not charge any fee for such copies and
-further provided that each copy contains this Copyright Notice, whether distributed in
-print or electronically.
+Copies of this document may be made for your own use and for distribution to others,
+provided that you do not charge any fee for such copies and further provided that each
+copy contains this Copyright Notice, whether distributed in print or electronically.
 
 
 
 [[boot-documentation-getting-help]]
-== Getting help
+== Getting Help
 If you have trouble with Spring Boot, we would like to help.
 
-* Try the <<howto.adoc#howto, How-to documents>>. They provide solutions to the most common
-  questions.
-* Learn the Spring basics. Spring Boot builds on many other Spring projects. Check
-  the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
-  you are starting out with Spring, try one of the http://spring.io/guides[guides].
+* Try the <<howto.adoc#howto, How-to documents>>. They provide solutions to the most
+common questions.
+* Learn the Spring basics. Spring Boot builds on many other Spring projects. Check the
+http://spring.io[spring.io] web-site for a wealth of reference documentation. If you are
+starting out with Spring, try one of the http://spring.io/guides[guides].
 * Ask a question. We monitor http://stackoverflow.com[stackoverflow.com] for questions
-  tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`].
+tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`].
 * Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
 
-NOTE: All of Spring Boot is open source, including the documentation. If you find problems
-with the docs or if you want to improve them, please {github-code}[get involved].
+NOTE: All of Spring Boot is open source, including the documentation. If you find
+problems with the docs or if you want to improve them, please {github-code}[get
+involved].
 
 
 
 [[boot-documentation-first-steps]]
-== First steps
+== First Steps
 If you are getting started with Spring Boot or 'Spring' in general, start with
 <<getting-started.adoc#getting-started, the following topics>>:
 
 * *From scratch:*
-  <<getting-started.adoc#getting-started-introducing-spring-boot, Overview>> |
-  <<getting-started.adoc#getting-started-system-requirements, Requirements>> |
-  <<getting-started.adoc#getting-started-installing-spring-boot, Installation>>
+<<getting-started.adoc#getting-started-introducing-spring-boot, Overview>> |
+<<getting-started.adoc#getting-started-system-requirements, Requirements>> |
+<<getting-started.adoc#getting-started-installing-spring-boot, Installation>>
 * *Tutorial:*
-  <<getting-started.adoc#getting-started-first-application, Part 1>> |
-  <<getting-started.adoc#getting-started-first-application-code, Part 2>>
+<<getting-started.adoc#getting-started-first-application, Part 1>> |
+<<getting-started.adoc#getting-started-first-application-code, Part 2>>
 * *Running your example:*
-  <<getting-started.adoc#getting-started-first-application-run, Part 1>> |
-  <<getting-started.adoc#getting-started-first-application-executable-jar, Part 2>>
+<<getting-started.adoc#getting-started-first-application-run, Part 1>> |
+<<getting-started.adoc#getting-started-first-application-executable-jar, Part 2>>
 
 
 
@@ -68,56 +68,58 @@ Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, 
 you covered>>:
 
 * *Build systems:*
-  <<using-spring-boot.adoc#using-boot-maven, Maven>> |
-  <<using-spring-boot.adoc#using-boot-gradle, Gradle>> |
-  <<using-spring-boot.adoc#using-boot-ant, Ant>> |
-  <<using-spring-boot.adoc#using-boot-starter, Starters>>
+<<using-spring-boot.adoc#using-boot-maven, Maven>> |
+<<using-spring-boot.adoc#using-boot-gradle, Gradle>> |
+<<using-spring-boot.adoc#using-boot-ant, Ant>> |
+<<using-spring-boot.adoc#using-boot-starter, Starters>>
 * *Best practices:*
-  <<using-spring-boot.adoc#using-boot-structuring-your-code, Code Structure>> |
-  <<using-spring-boot.adoc#using-boot-configuration-classes, @Configuration>> |
-  <<using-spring-boot.adoc#using-boot-auto-configuration, @EnableAutoConfiguration>> |
-  <<using-spring-boot.adoc#using-boot-spring-beans-and-dependency-injection, Beans and Dependency Injection>>
+<<using-spring-boot.adoc#using-boot-structuring-your-code, Code Structure>> |
+<<using-spring-boot.adoc#using-boot-configuration-classes, @Configuration>> |
+<<using-spring-boot.adoc#using-boot-auto-configuration, @EnableAutoConfiguration>> |
+<<using-spring-boot.adoc#using-boot-spring-beans-and-dependency-injection, Beans and
+Dependency Injection>>
 * *Running your code*
-  <<using-spring-boot.adoc#using-boot-running-from-an-ide, IDE>> |
-  <<using-spring-boot.adoc#using-boot-running-as-a-packaged-application, Packaged>> |
-  <<using-spring-boot.adoc#using-boot-running-with-the-maven-plugin, Maven>> |
-  <<using-spring-boot.adoc#using-boot-running-with-the-gradle-plugin, Gradle>>
+<<using-spring-boot.adoc#using-boot-running-from-an-ide, IDE>> |
+<<using-spring-boot.adoc#using-boot-running-as-a-packaged-application, Packaged>> |
+<<using-spring-boot.adoc#using-boot-running-with-the-maven-plugin, Maven>> |
+<<using-spring-boot.adoc#using-boot-running-with-the-gradle-plugin, Gradle>>
 * *Packaging your app:*
-  <<using-spring-boot.adoc#using-boot-packaging-for-production, Production jars>>
+<<using-spring-boot.adoc#using-boot-packaging-for-production, Production jars>>
 * *Spring Boot CLI:*
 <<spring-boot-cli.adoc#cli, Using the CLI>>
 
 
 
-== Learning about Spring Boot features
+== Learning about Spring Boot Features
 Need more details about Spring Boot's core features?
 <<spring-boot-features.adoc#boot-features, The following content is for you>>:
 
 * *Core Features:*
-  <<spring-boot-features.adoc#boot-features-spring-application, SpringApplication>> |
-  <<spring-boot-features.adoc#boot-features-external-config, External Configuration>> |
-  <<spring-boot-features.adoc#boot-features-profiles, Profiles>> |
-  <<spring-boot-features.adoc#boot-features-logging, Logging>>
+<<spring-boot-features.adoc#boot-features-spring-application, SpringApplication>> |
+<<spring-boot-features.adoc#boot-features-external-config, External Configuration>> |
+<<spring-boot-features.adoc#boot-features-profiles, Profiles>> |
+<<spring-boot-features.adoc#boot-features-logging, Logging>>
 * *Web Applications:*
-  <<spring-boot-features.adoc#boot-features-spring-mvc, MVC>> |
-  <<spring-boot-features.adoc#boot-features-embedded-container, Embedded Containers>>
+<<spring-boot-features.adoc#boot-features-spring-mvc, MVC>> |
+<<spring-boot-features.adoc#boot-features-embedded-container, Embedded Containers>>
 * *Working with data:*
-  <<spring-boot-features.adoc#boot-features-sql, SQL>> |
-  <<spring-boot-features.adoc#boot-features-nosql, NO-SQL>>
+<<spring-boot-features.adoc#boot-features-sql, SQL>> |
+<<spring-boot-features.adoc#boot-features-nosql, NO-SQL>>
 * *Messaging:*
-  <<spring-boot-features.adoc#boot-features-messaging, Overview>> |
-  <<spring-boot-features.adoc#boot-features-jms, JMS>>
+<<spring-boot-features.adoc#boot-features-messaging, Overview>> |
+<<spring-boot-features.adoc#boot-features-jms, JMS>>
 * *Testing:*
-  <<spring-boot-features.adoc#boot-features-testing, Overview>> |
-  <<spring-boot-features.adoc#boot-features-testing-spring-boot-applications, Boot Applications>> |
-  <<spring-boot-features.adoc#boot-features-test-utilities, Utils>>
+<<spring-boot-features.adoc#boot-features-testing, Overview>> |
+<<spring-boot-features.adoc#boot-features-testing-spring-boot-applications, Boot
+Applications>> |
+<<spring-boot-features.adoc#boot-features-test-utilities, Utils>>
 * *Extending:*
-  <<spring-boot-features.adoc#boot-features-developing-auto-configuration, Auto-configuration>> |
-  <<spring-boot-features.adoc#boot-features-condition-annotations, @Conditions>>
+<<spring-boot-features.adoc#boot-features-developing-auto-configuration, Auto-configuration>> |
+<<spring-boot-features.adoc#boot-features-condition-annotations, @Conditions>>
 
 
 
-== Moving to production
+== Moving to Production
 When you are ready to push your Spring Boot application to production, we have
 <<production-ready-features.adoc#production-ready, some tricks>> that you might like:
 
@@ -135,7 +137,7 @@ When you are ready to push your Spring Boot application to production, we have
 
 
 
-== Advanced topics
+== Advanced Topics
 Finally, we have a few topics for more advanced users:
 
 * *Spring Boot Applications Deployment:*
@@ -145,7 +147,8 @@ Finally, we have a few topics for more advanced users:
 <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven>> |
 <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle>>
 * *Appendix:*
-<<appendix-application-properties.adoc#common-application-properties, Application Properties>> |
-<<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration classes>> |
+<<appendix-application-properties.adoc#common-application-properties, Application
+Properties>> |
+<<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration
+classes>> |
 <<appendix-executable-jar-format.adoc#executable-jar, Executable Jars>>
-
