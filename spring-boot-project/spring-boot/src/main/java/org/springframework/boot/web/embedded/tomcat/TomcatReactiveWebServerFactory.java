@@ -141,6 +141,10 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
+		TomcatConnectorCustomizer ssl = new SslConnectorCustomizer(getSsl(), getSslStoreProvider());
+		ssl.customize(connector);
+		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
+		compression.customize(connector);
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
 		}

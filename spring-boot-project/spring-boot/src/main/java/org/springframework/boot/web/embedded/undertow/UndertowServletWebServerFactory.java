@@ -19,15 +19,8 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,13 +30,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509ExtendedKeyManager;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -70,15 +56,11 @@ import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.xnio.OptionMap;
 import org.xnio.Options;
-import org.xnio.Sequence;
-import org.xnio.SslClientAuthMode;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
-import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -86,7 +68,6 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 
 /**
  * {@link ServletWebServerFactory} that can be used to create
@@ -251,7 +232,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			builder.setDirectBuffers(this.directBuffers);
 		}
 		if (getSsl() != null && getSsl().isEnabled()) {
-			configureSsl(getSsl(), port, builder);
+			SslBuilderCustomizer sslBuilderCustomizer =
+					new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider());
+			sslBuilderCustomizer.customize(builder);
 		}
 		else {
 			builder.addHttpListener(port, getListenAddress());
@@ -262,122 +245,11 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return builder;
 	}
 
-	private void configureSsl(Ssl ssl, int port, Builder builder) {
-		try {
-			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
-			sslContext.init(getKeyManagers(), getTrustManagers(), null);
-			builder.addHttpsListener(port, getListenAddress(), sslContext);
-			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
-					getSslClientAuthMode(ssl));
-			if (ssl.getEnabledProtocols() != null) {
-				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS,
-						Sequence.of(ssl.getEnabledProtocols()));
-			}
-			if (ssl.getCiphers() != null) {
-				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES,
-						Sequence.of(ssl.getCiphers()));
-			}
-		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException(ex);
-		}
-		catch (KeyManagementException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
 	private String getListenAddress() {
 		if (getAddress() == null) {
 			return "0.0.0.0";
 		}
 		return getAddress().getHostAddress();
-	}
-
-	private SslClientAuthMode getSslClientAuthMode(Ssl ssl) {
-		if (ssl.getClientAuth() == ClientAuth.NEED) {
-			return SslClientAuthMode.REQUIRED;
-		}
-		if (ssl.getClientAuth() == ClientAuth.WANT) {
-			return SslClientAuthMode.REQUESTED;
-		}
-		return SslClientAuthMode.NOT_REQUESTED;
-	}
-
-	private KeyManager[] getKeyManagers() {
-		try {
-			KeyStore keyStore = getKeyStore();
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory
-					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			Ssl ssl = getSsl();
-			char[] keyPassword = (ssl.getKeyPassword() != null
-					? ssl.getKeyPassword().toCharArray() : null);
-			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
-				keyPassword = ssl.getKeyStorePassword().toCharArray();
-			}
-			keyManagerFactory.init(keyStore, keyPassword);
-			if (ssl.getKeyAlias() != null) {
-				return getConfigurableAliasKeyManagers(ssl,
-						keyManagerFactory.getKeyManagers());
-			}
-			return keyManagerFactory.getKeyManagers();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
-	private KeyManager[] getConfigurableAliasKeyManagers(Ssl ssl,
-			KeyManager[] keyManagers) {
-		for (int i = 0; i < keyManagers.length; i++) {
-			if (keyManagers[i] instanceof X509ExtendedKeyManager) {
-				keyManagers[i] = new ConfigurableAliasKeyManager(
-						(X509ExtendedKeyManager) keyManagers[i], ssl.getKeyAlias());
-			}
-		}
-		return keyManagers;
-	}
-
-	private KeyStore getKeyStore() throws Exception {
-		if (getSslStoreProvider() != null) {
-			return getSslStoreProvider().getKeyStore();
-		}
-		Ssl ssl = getSsl();
-		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStore(),
-				ssl.getKeyStorePassword());
-	}
-
-	private TrustManager[] getTrustManagers() {
-		try {
-			KeyStore store = getTrustStore();
-			TrustManagerFactory trustManagerFactory = TrustManagerFactory
-					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			trustManagerFactory.init(store);
-			return trustManagerFactory.getTrustManagers();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
-	private KeyStore getTrustStore() throws Exception {
-		if (getSslStoreProvider() != null) {
-			return getSslStoreProvider().getTrustStore();
-		}
-		Ssl ssl = getSsl();
-		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStore(),
-				ssl.getTrustStorePassword());
-	}
-
-	private KeyStore loadKeyStore(String type, String resource, String password)
-			throws Exception {
-		type = (type == null ? "JKS" : type);
-		if (resource == null) {
-			return null;
-		}
-		KeyStore store = KeyStore.getInstance(type);
-		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password == null ? null : password.toCharArray());
-		return store;
 	}
 
 	private DeploymentManager createDeploymentManager(
@@ -726,69 +598,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		}
 	}
 
-	/**
-	 * {@link X509ExtendedKeyManager} that supports custom alias configuration.
-	 */
-	private static class ConfigurableAliasKeyManager extends X509ExtendedKeyManager {
-
-		private final X509ExtendedKeyManager keyManager;
-
-		private final String alias;
-
-		ConfigurableAliasKeyManager(X509ExtendedKeyManager keyManager, String alias) {
-			this.keyManager = keyManager;
-			this.alias = alias;
-		}
-
-		@Override
-		public String chooseEngineClientAlias(String[] strings, Principal[] principals,
-				SSLEngine sslEngine) {
-			return this.keyManager.chooseEngineClientAlias(strings, principals,
-					sslEngine);
-		}
-
-		@Override
-		public String chooseEngineServerAlias(String s, Principal[] principals,
-				SSLEngine sslEngine) {
-			if (this.alias == null) {
-				return this.keyManager.chooseEngineServerAlias(s, principals, sslEngine);
-			}
-			return this.alias;
-		}
-
-		@Override
-		public String chooseClientAlias(String[] keyType, Principal[] issuers,
-				Socket socket) {
-			return this.keyManager.chooseClientAlias(keyType, issuers, socket);
-		}
-
-		@Override
-		public String chooseServerAlias(String keyType, Principal[] issuers,
-				Socket socket) {
-			return this.keyManager.chooseServerAlias(keyType, issuers, socket);
-		}
-
-		@Override
-		public X509Certificate[] getCertificateChain(String alias) {
-			return this.keyManager.getCertificateChain(alias);
-		}
-
-		@Override
-		public String[] getClientAliases(String keyType, Principal[] issuers) {
-			return this.keyManager.getClientAliases(keyType, issuers);
-		}
-
-		@Override
-		public PrivateKey getPrivateKey(String alias) {
-			return this.keyManager.getPrivateKey(alias);
-		}
-
-		@Override
-		public String[] getServerAliases(String keyType, Principal[] issuers) {
-			return this.keyManager.getServerAliases(keyType, issuers);
-		}
-
-	}
 
 	private static final class LoaderHidingResourceManager implements ResourceManager {
 

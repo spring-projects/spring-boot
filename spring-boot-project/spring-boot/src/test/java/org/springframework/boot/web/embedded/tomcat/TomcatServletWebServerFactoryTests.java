@@ -43,14 +43,12 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.jasper.servlet.JspServlet;
-import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
-import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -263,63 +261,6 @@ public class TomcatServletWebServerFactoryTests
 		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
 				.get(tomcat.getService())[0];
 		assertThat(connector.getURIEncoding()).isEqualTo("UTF-8");
-	}
-
-	@Test
-	public void sslCiphersConfiguration() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setKeyStore("test.jks");
-		ssl.setKeyStorePassword("secret");
-		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSsl(ssl);
-
-		Tomcat tomcat = getTomcat(factory);
-		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
-				.get(tomcat.getService())[0];
-		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler()
-				.findSslHostConfigs();
-		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("ALPHA:BRAVO:CHARLIE");
-	}
-
-	@Test
-	public void sslEnabledMultipleProtocolsConfiguration() throws Exception {
-		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
-		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
-		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
-
-		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSsl(ssl);
-
-		this.webServer = factory.getWebServer(sessionServletRegistration());
-		this.webServer.start();
-		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
-		Connector connector = tomcat.getConnector();
-
-		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
-				.findSslHostConfigs()[0];
-		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
-		assertThat(sslHostConfig.getEnabledProtocols())
-				.containsExactlyInAnyOrder("TLSv1.1", "TLSv1.2");
-	}
-
-	@Test
-	public void sslEnabledProtocolsConfiguration() throws Exception {
-		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
-		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
-		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
-
-		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSsl(ssl);
-
-		this.webServer = factory.getWebServer(sessionServletRegistration());
-		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
-		this.webServer.start();
-		Connector connector = tomcat.getConnector();
-		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
-				.findSslHostConfigs()[0];
-		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
-		assertThat(sslHostConfig.getEnabledProtocols()).containsExactly("TLSv1.2");
 	}
 
 	@Test

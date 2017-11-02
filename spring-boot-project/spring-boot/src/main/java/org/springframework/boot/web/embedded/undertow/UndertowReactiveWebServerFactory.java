@@ -85,7 +85,14 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		if (this.directBuffers != null) {
 			builder.setDirectBuffers(this.directBuffers);
 		}
-		builder.addHttpListener(port, getListenAddress());
+		if (getSsl() != null && getSsl().isEnabled()) {
+			SslBuilderCustomizer sslBuilderCustomizer =
+					new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider());
+			sslBuilderCustomizer.customize(builder);
+		}
+		else {
+			builder.addHttpListener(port, getListenAddress());
+		}
 		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}

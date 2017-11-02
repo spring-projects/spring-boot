@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.reactive.server;
 
+import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,9 +26,11 @@ import org.junit.rules.TemporaryFolder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -75,7 +79,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		factory.setPort(specificPort);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		Mono<String> result = WebClient.create("http://localhost:" + specificPort).post()
+		Mono<String> result = getWebClient().build().post()
 				.uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
@@ -83,8 +87,49 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
 	}
 
-	protected WebClient getWebClient() {
-		return WebClient.create("http://localhost:" + this.webServer.getPort());
+	@Test
+	public void basicSslFromClassPath() throws Exception {
+		testBasicSslWithKeyStore("classpath:test.jks");
+	}
+
+	@Test
+	public void basicSslFromFileSystem() throws Exception {
+		testBasicSslWithKeyStore("src/test/resources/test.jks");
+	}
+
+
+	protected final void testBasicSslWithKeyStore(String keyStore) throws Exception {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+
+		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
+		WebClient client = WebClient.builder()
+				.baseUrl("https://localhost:" + this.webServer.getPort())
+				.clientConnector(connector).build();
+
+		Mono<String> result = client.post()
+				.uri("/test").contentType(MediaType.TEXT_PLAIN)
+				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.flatMap((response) -> response.bodyToMono(String.class));
+		assertThat(result.block()).isEqualTo("Hello World");
+	}
+
+	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
+		return new ReactorClientHttpConnector(options -> options
+				.sslSupport(sslContextBuilder -> {
+					sslContextBuilder
+							.sslProvider(SslProvider.JDK)
+							.trustManager(InsecureTrustManagerFactory.INSTANCE);
+				}));
+	}
+
+	protected WebClient.Builder getWebClient() {
+		return WebClient.builder().baseUrl("http://localhost:" + this.webServer.getPort());
 	}
 
 	protected static class EchoHandler implements HttpHandler {
