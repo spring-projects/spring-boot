@@ -28,7 +28,7 @@ import org.glassfish.jersey.server.model.Resource;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
@@ -98,7 +98,7 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 					mediaTypes);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext,
-					new ConversionServiceOperationParameterMapper(), (id) -> null,
+					new ConversionServiceParameterMapper(), (id) -> null,
 					endpointMediaTypes, (id) -> id);
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
 					.createEndpointResources(new EndpointMapping("/application"),

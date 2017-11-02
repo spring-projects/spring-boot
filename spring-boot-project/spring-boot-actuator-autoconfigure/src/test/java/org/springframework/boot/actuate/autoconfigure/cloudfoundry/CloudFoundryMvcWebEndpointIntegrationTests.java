@@ -24,13 +24,13 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
@@ -215,7 +215,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		public WebAnnotationEndpointDiscoverer webEndpointDiscoverer(
 				ApplicationContext applicationContext,
 				EndpointMediaTypes endpointMediaTypes) {
-			OperationParameterMapper parameterMapper = new ConversionServiceOperationParameterMapper(
+			ParameterMapper parameterMapper = new ConversionServiceParameterMapper(
 					DefaultConversionService.getSharedInstance());
 			return new WebAnnotationEndpointDiscoverer(applicationContext,
 					parameterMapper, (id) -> new CachingConfiguration(0),

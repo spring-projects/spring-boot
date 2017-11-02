@@ -17,14 +17,11 @@
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,9 +30,8 @@ import org.reactivestreams.Publisher;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.ParameterNameMapper;
 import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -71,7 +67,7 @@ public class WebAnnotationEndpointDiscoverer extends
 	 * {@link Endpoint endpoints} and {@link WebEndpointExtension web extensions} using
 	 * the given {@link ApplicationContext}.
 	 * @param applicationContext the application context
-	 * @param operationParameterMapper the {@link OperationParameterMapper} used to
+	 * @param parameterMapper the {@link ParameterMapper} used to
 	 * convert arguments when an operation is invoked
 	 * @param cachingConfigurationFactory the {@link CachingConfiguration} factory to use
 	 * @param endpointMediaTypes the media types produced and consumed by web endpoint
@@ -80,12 +76,12 @@ public class WebAnnotationEndpointDiscoverer extends
 	 * endpoint paths
 	 */
 	public WebAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-			OperationParameterMapper operationParameterMapper,
+			ParameterMapper parameterMapper,
 			CachingConfigurationFactory cachingConfigurationFactory,
 			EndpointMediaTypes endpointMediaTypes,
 			EndpointPathResolver endpointPathResolver) {
 		super(applicationContext,
-				new WebEndpointOperationFactory(operationParameterMapper,
+				new WebEndpointOperationFactory(parameterMapper,
 						endpointMediaTypes, endpointPathResolver),
 				WebEndpointOperation::getRequestPredicate, cachingConfigurationFactory);
 	}
@@ -125,15 +121,13 @@ public class WebAnnotationEndpointDiscoverer extends
 				"org.reactivestreams.Publisher",
 				WebEndpointOperationFactory.class.getClassLoader());
 
-		private final OperationParameterMapper parameterMapper;
+		private final ParameterMapper parameterMapper;
 
 		private final EndpointMediaTypes endpointMediaTypes;
 
 		private final EndpointPathResolver endpointPathResolver;
 
-		private final Function<Method, Map<String, Parameter>> parameterNameMapper = new ParameterNameMapper();
-
-		private WebEndpointOperationFactory(OperationParameterMapper parameterMapper,
+		private WebEndpointOperationFactory(ParameterMapper parameterMapper,
 				EndpointMediaTypes endpointMediaTypes,
 				EndpointPathResolver endpointPathResolver) {
 			this.parameterMapper = parameterMapper;
@@ -152,7 +146,7 @@ public class WebAnnotationEndpointDiscoverer extends
 					determineProducedMediaTypes(
 							operationAttributes.getStringArray("produces"), method));
 			OperationInvoker invoker = new ReflectiveOperationInvoker(
-					this.parameterMapper, this.parameterNameMapper, target, method);
+					target, method, this.parameterMapper);
 			if (timeToLive > 0) {
 				invoker = new CachingOperationInvoker(invoker, timeToLive);
 			}

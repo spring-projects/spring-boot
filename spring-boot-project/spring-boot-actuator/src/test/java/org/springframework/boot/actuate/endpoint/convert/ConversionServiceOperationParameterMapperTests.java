@@ -36,7 +36,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link ConversionServiceOperationParameterMapper}.
+ * Tests for {@link ConversionServiceParameterMapper}.
  *
  * @author Phillip Webb
  */
@@ -49,7 +49,7 @@ public class ConversionServiceOperationParameterMapperTests {
 	public void mapParameterShouldDelegateToConversionService() throws Exception {
 		DefaultFormattingConversionService conversionService = spy(
 				new DefaultFormattingConversionService());
-		ConversionServiceOperationParameterMapper mapper = new ConversionServiceOperationParameterMapper(
+		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper(
 				conversionService);
 		Integer mapped = mapper.mapParameter("123", Integer.class);
 		assertThat(mapped).isEqualTo(123);
@@ -62,7 +62,7 @@ public class ConversionServiceOperationParameterMapperTests {
 		ConversionService conversionService = mock(ConversionService.class);
 		RuntimeException error = new RuntimeException();
 		given(conversionService.convert(any(), any())).willThrow(error);
-		ConversionServiceOperationParameterMapper mapper = new ConversionServiceOperationParameterMapper(
+		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper(
 				conversionService);
 		try {
 			mapper.mapParameter("123", Integer.class);
@@ -77,7 +77,7 @@ public class ConversionServiceOperationParameterMapperTests {
 
 	@Test
 	public void createShouldRegisterIsoOffsetDateTimeConverter() throws Exception {
-		ConversionServiceOperationParameterMapper mapper = new ConversionServiceOperationParameterMapper();
+		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper();
 		Date mapped = mapper.mapParameter("2011-12-03T10:15:30+01:00", Date.class);
 		assertThat(mapped).isNotNull();
 	}
@@ -86,7 +86,7 @@ public class ConversionServiceOperationParameterMapperTests {
 	public void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter()
 			throws Exception {
 		ConversionService conversionService = new DefaultConversionService();
-		ConversionServiceOperationParameterMapper mapper = new ConversionServiceOperationParameterMapper(
+		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper(
 				conversionService);
 		this.thrown.expect(ParameterMappingException.class);
 		mapper.mapParameter("2011-12-03T10:15:30+01:00", Date.class);

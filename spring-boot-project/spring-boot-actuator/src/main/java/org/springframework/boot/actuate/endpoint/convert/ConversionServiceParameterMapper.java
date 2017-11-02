@@ -16,26 +16,26 @@
 
 package org.springframework.boot.actuate.endpoint.convert;
 
-import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
 /**
- * {@link OperationParameterMapper} that uses a {@link ConversionService} to map parameter
+ * {@link ParameterMapper} that uses a {@link ConversionService} to map parameter
  * values if necessary.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ConversionServiceOperationParameterMapper
-		implements OperationParameterMapper {
+public class ConversionServiceParameterMapper
+		implements ParameterMapper {
 
 	private final ConversionService conversionService;
 
-	public ConversionServiceOperationParameterMapper() {
+	public ConversionServiceParameterMapper() {
 		this(createDefaultConversionService());
 	}
 
@@ -43,7 +43,7 @@ public class ConversionServiceOperationParameterMapper
 	 * Create a new instance with the {@link ConversionService} to use.
 	 * @param conversionService the conversion service
 	 */
-	public ConversionServiceOperationParameterMapper(
+	public ConversionServiceParameterMapper(
 			ConversionService conversionService) {
 		this.conversionService = new BinderConversionService(conversionService);
 	}

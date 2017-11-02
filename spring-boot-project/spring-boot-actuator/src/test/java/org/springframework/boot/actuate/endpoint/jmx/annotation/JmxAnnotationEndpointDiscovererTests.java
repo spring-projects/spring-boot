@@ -36,7 +36,7 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperation;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperationParameterInfo;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -322,7 +322,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration)) {
 			consumer.accept(new JmxAnnotationEndpointDiscoverer(context,
-					new ConversionServiceOperationParameterMapper(
+					new ConversionServiceParameterMapper(
 							DefaultConversionService.getSharedInstance()),
 					cachingConfigurationFactory));
 		}

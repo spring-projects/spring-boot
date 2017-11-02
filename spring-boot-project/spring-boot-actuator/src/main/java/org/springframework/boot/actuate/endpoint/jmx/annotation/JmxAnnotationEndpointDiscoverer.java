@@ -23,17 +23,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.ParameterNameMapper;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -67,12 +63,12 @@ public class JmxAnnotationEndpointDiscoverer
 	 * {@link Endpoint endpoints} and {@link JmxEndpointExtension jmx extensions} using
 	 * the given {@link ApplicationContext}.
 	 * @param applicationContext the application context
-	 * @param parameterMapper the {@link OperationParameterMapper} used to convert
-	 * arguments when an operation is invoked
+	 * @param parameterMapper the {@link ParameterMapper} used to convert arguments when
+	 * an operation is invoked
 	 * @param cachingConfigurationFactory the {@link CachingConfiguration} factory to use
 	 */
 	public JmxAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-			OperationParameterMapper parameterMapper,
+			ParameterMapper parameterMapper,
 			CachingConfigurationFactory cachingConfigurationFactory) {
 		super(applicationContext, new JmxEndpointOperationFactory(parameterMapper),
 				JmxEndpointOperation::getOperationName, cachingConfigurationFactory);
@@ -109,11 +105,9 @@ public class JmxAnnotationEndpointDiscoverer
 	private static class JmxEndpointOperationFactory
 			implements EndpointOperationFactory<JmxEndpointOperation> {
 
-		private final OperationParameterMapper parameterMapper;
+		private final ParameterMapper parameterMapper;
 
-		private final Function<Method, Map<String, Parameter>> parameterNameMapper = new ParameterNameMapper();
-
-		JmxEndpointOperationFactory(OperationParameterMapper parameterMapper) {
+		JmxEndpointOperationFactory(ParameterMapper parameterMapper) {
 			this.parameterMapper = parameterMapper;
 		}
 
@@ -121,18 +115,16 @@ public class JmxAnnotationEndpointDiscoverer
 		public JmxEndpointOperation createOperation(String endpointId,
 				AnnotationAttributes operationAttributes, Object target, Method method,
 				OperationType type, long timeToLive) {
+			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(
+					target, method, this.parameterMapper);
 			String operationName = method.getName();
-			Class<?> outputType = mapParameterType(method.getReturnType());
+			Class<?> outputType = getJmxType(method.getReturnType());
 			String description = getDescription(method,
 					() -> "Invoke " + operationName + " for endpoint " + endpointId);
-			List<JmxEndpointOperationParameterInfo> parameters = getParameters(method);
-			OperationInvoker invoker = new ReflectiveOperationInvoker(
-					this.parameterMapper, this.parameterNameMapper, target, method);
-			if (timeToLive > 0) {
-				invoker = new CachingOperationInvoker(invoker, timeToLive);
-			}
-			return new JmxEndpointOperation(type, invoker, operationName, outputType,
-					description, parameters);
+			List<JmxEndpointOperationParameterInfo> parameters = getParameters(invoker);
+			return new JmxEndpointOperation(type,
+					CachingOperationInvoker.apply(invoker, timeToLive), operationName,
+					outputType, description, parameters);
 		}
 
 		private String getDescription(Method method, Supplier<String> fallback) {
@@ -145,58 +137,58 @@ public class JmxAnnotationEndpointDiscoverer
 			return fallback.get();
 		}
 
-		private List<JmxEndpointOperationParameterInfo> getParameters(Method method) {
-			Parameter[] methodParameters = method.getParameters();
-			if (methodParameters.length == 0) {
+		private List<JmxEndpointOperationParameterInfo> getParameters(
+				ReflectiveOperationInvoker invoker) {
+			if (invoker.getMethod().getParameterCount() == 0) {
 				return Collections.emptyList();
 			}
-			ManagedOperationParameter[] managedOperationParameters = jmxAttributeSource
-					.getManagedOperationParameters(method);
-			if (managedOperationParameters.length == 0) {
-				return getParametersInfo(method);
+			ManagedOperationParameter[] operationParameters = jmxAttributeSource
+					.getManagedOperationParameters(invoker.getMethod());
+			if (operationParameters.length == 0) {
+				return invoker.getParameters(this::getParameter);
 			}
-			return getParametersInfo(methodParameters, managedOperationParameters);
+			return mergeParameters(invoker.getMethod().getParameters(),
+					operationParameters);
 		}
 
-		private List<JmxEndpointOperationParameterInfo> getParametersInfo(Method method) {
-			Map<String, Parameter> methodParameters = this.parameterNameMapper
-					.apply(method);
-			List<JmxEndpointOperationParameterInfo> parameters = new ArrayList<>();
-			for (Map.Entry<String, Parameter> entry : methodParameters.entrySet()) {
-				String name = entry.getKey();
-				Class<?> type = mapParameterType(entry.getValue().getType());
-				parameters.add(new JmxEndpointOperationParameterInfo(name, type, null));
-			}
-			return parameters;
-		}
-
-		private List<JmxEndpointOperationParameterInfo> getParametersInfo(
+		private List<JmxEndpointOperationParameterInfo> mergeParameters(
 				Parameter[] methodParameters,
-				ManagedOperationParameter[] managedOperationParameters) {
+				ManagedOperationParameter[] operationParameters) {
 			List<JmxEndpointOperationParameterInfo> parameters = new ArrayList<>();
-			for (int i = 0; i < managedOperationParameters.length; i++) {
-				ManagedOperationParameter managedOperationParameter = managedOperationParameters[i];
+			for (int i = 0; i < operationParameters.length; i++) {
+				ManagedOperationParameter operationParameter = operationParameters[i];
 				Parameter methodParameter = methodParameters[i];
-				parameters.add(new JmxEndpointOperationParameterInfo(
-						managedOperationParameter.getName(),
-						mapParameterType(methodParameter.getType()),
-						managedOperationParameter.getDescription()));
+				JmxEndpointOperationParameterInfo parameter = getParameter(
+						operationParameter.getName(), methodParameter,
+						operationParameter.getDescription());
+				parameters.add(parameter);
 			}
 			return parameters;
 		}
 
-		private Class<?> mapParameterType(Class<?> parameter) {
-			if (parameter.isEnum()) {
+		private JmxEndpointOperationParameterInfo getParameter(String name,
+				Parameter methodParameter) {
+			return getParameter(name, methodParameter, null);
+		}
+
+		private JmxEndpointOperationParameterInfo getParameter(String name,
+				Parameter methodParameter, String description) {
+			return new JmxEndpointOperationParameterInfo(name,
+					getJmxType(methodParameter.getType()), description);
+		}
+
+		private Class<?> getJmxType(Class<?> type) {
+			if (type.isEnum()) {
 				return String.class;
 			}
-			if (Date.class.isAssignableFrom(parameter)) {
+			if (Date.class.isAssignableFrom(type)) {
 				return String.class;
 			}
-			if (parameter.getName().startsWith("java.")) {
-				return parameter;
+			if (type.getName().startsWith("java.")) {
+				return type;
 			}
-			if (parameter.equals(Void.TYPE)) {
-				return parameter;
+			if (type.equals(Void.TYPE)) {
+				return type;
 			}
 			return Object.class;
 		}

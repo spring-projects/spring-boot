@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.DefaultCachingConfigurationFactory;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -76,7 +76,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 		@Bean
 		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				OperationParameterMapper parameterMapper,
+				ParameterMapper parameterMapper,
 				DefaultCachingConfigurationFactory cachingConfigurationFactory,
 				EndpointMediaTypes endpointMediaTypes, Environment environment,
 				RestTemplateBuilder builder) {

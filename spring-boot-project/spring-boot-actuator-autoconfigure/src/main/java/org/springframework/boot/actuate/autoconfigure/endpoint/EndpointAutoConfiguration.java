@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
-import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
@@ -49,13 +49,13 @@ import org.springframework.core.env.Environment;
 public class EndpointAutoConfiguration {
 
 	@Bean
-	public OperationParameterMapper operationParameterMapper() {
-		return new ConversionServiceOperationParameterMapper();
+	public ParameterMapper endpointOperationParameterMapper() {
+		return new ConversionServiceParameterMapper();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(CachingConfigurationFactory.class)
-	public DefaultCachingConfigurationFactory cacheConfigurationFactory(
+	public DefaultCachingConfigurationFactory endpointCacheConfigurationFactory(
 			Environment environment) {
 		return new DefaultCachingConfigurationFactory(environment);
 	}
@@ -80,14 +80,13 @@ public class EndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public EndpointPathResolver endpointPathResolver(
-				Environment environment) {
+		public EndpointPathResolver endpointPathResolver(Environment environment) {
 			return new DefaultEndpointPathResolver(environment);
 		}
 
 		@Bean
 		public EndpointProvider<WebEndpointOperation> webEndpointProvider(
-				OperationParameterMapper parameterMapper,
+				ParameterMapper parameterMapper,
 				DefaultCachingConfigurationFactory cachingConfigurationFactory,
 				EndpointPathResolver endpointPathResolver) {
 			Environment environment = this.applicationContext.getEnvironment();

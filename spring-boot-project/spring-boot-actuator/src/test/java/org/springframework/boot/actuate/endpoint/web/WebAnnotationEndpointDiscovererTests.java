@@ -43,7 +43,7 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests.BaseConfiguration;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
@@ -266,7 +266,7 @@ public class WebAnnotationEndpointDiscovererTests {
 		try {
 			consumer.accept(
 					new WebAnnotationEndpointDiscoverer(context,
-							new ConversionServiceOperationParameterMapper(
+							new ConversionServiceParameterMapper(
 									DefaultConversionService.getSharedInstance()),
 							cachingConfigurationFactory,
 							new EndpointMediaTypes(

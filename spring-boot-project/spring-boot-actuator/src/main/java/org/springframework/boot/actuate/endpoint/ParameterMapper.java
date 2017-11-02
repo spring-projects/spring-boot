@@ -17,23 +17,22 @@
 package org.springframework.boot.actuate.endpoint;
 
 /**
- * An {@code OperationParameterMapper} is used to map parameters to the required type when
- * invoking an endpoint.
+ * Maps parameters to the required type when invoking an endpoint.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface OperationParameterMapper {
+public interface ParameterMapper {
 
 	/**
 	 * Map the specified {@code input} parameter to the given {@code parameterType}.
-	 * @param input a parameter value
-	 * @param parameterType the required type of the parameter
+	 * @param value a parameter value
+	 * @param type the required type of the parameter
 	 * @return a value suitable for that parameter
 	 * @param <T> the actual type of the parameter
 	 * @throws ParameterMappingException when a mapping failure occurs
 	 */
-	<T> T mapParameter(Object input, Class<T> parameterType);
+	<T> T mapParameter(Object value, Class<T> type);
 
 }

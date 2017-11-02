@@ -24,7 +24,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.DefaultCachingConfigurationFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
-import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanRegistrar;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperation;
@@ -58,10 +58,10 @@ public class JmxEndpointAutoConfiguration {
 
 	@Bean
 	public JmxAnnotationEndpointDiscoverer jmxEndpointDiscoverer(
-			OperationParameterMapper operationParameterMapper,
+			ParameterMapper parameterMapper,
 			DefaultCachingConfigurationFactory cachingConfigurationFactory) {
 		return new JmxAnnotationEndpointDiscoverer(this.applicationContext,
-				operationParameterMapper, cachingConfigurationFactory);
+				parameterMapper, cachingConfigurationFactory);
 	}
 
 	@ConditionalOnSingleCandidate(MBeanServer.class)
