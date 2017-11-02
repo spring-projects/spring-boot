@@ -27,6 +27,10 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggerContextListener;
+import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.hamcrest.Matcher;
@@ -48,6 +52,7 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -66,6 +71,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Ben Hale
  * @author Madhura Bhave
+ * @author Vedran Pavic
  */
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -120,15 +126,16 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(getLineWithText(output, "Hello world")).contains("INFO");
 		assertThat(file.exists()).isTrue();
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
+				.toString()).isEqualTo("10 MB");
+		assertThat(getRollingPolicy().getMaxHistory())
+				.isEqualTo(CoreConstants.UNBOUND_HISTORY);
 	}
 
 	@Test
 	public void testBasicConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		LoggerContext context = (LoggerContext) factory;
-		Logger root = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-		assertThat(root.getAppender("CONSOLE")).isNotNull();
+		assertThat(getConsoleAppender()).isNotNull();
 	}
 
 	@Test
@@ -340,6 +347,35 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void testMaxFileSizeProperty() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.max-size", "100MB");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
+				.toString()).isEqualTo("100 MB");
+	}
+
+	@Test
+	public void testMaxHistoryProperty() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.max-history", "30");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().getMaxHistory()).isEqualTo(30);
+	}
+
+	@Test
 	public void exceptionsIncludeClassPackaging() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null,
@@ -402,6 +438,24 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		verify(listener, times(2)).onReset(loggerContext);
+	}
+
+	private static Logger getRootLogger() {
+		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		LoggerContext context = (LoggerContext) factory;
+		return context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+	}
+
+	private static ConsoleAppender getConsoleAppender() {
+		return (ConsoleAppender) getRootLogger().getAppender("CONSOLE");
+	}
+
+	private static RollingFileAppender getFileAppender() {
+		return (RollingFileAppender) getRootLogger().getAppender("FILE");
+	}
+
+	private static SizeAndTimeBasedRollingPolicy getRollingPolicy() {
+		return (SizeAndTimeBasedRollingPolicy) getFileAppender().getRollingPolicy();
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {

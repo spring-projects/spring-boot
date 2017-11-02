@@ -24,9 +24,9 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
+import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
@@ -45,6 +45,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Vedran Pavic
  * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
@@ -56,6 +57,8 @@ class DefaultLogbackConfiguration {
 
 	private static final String FILE_LOG_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS} "
 			+ "${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
+
+	private static final String MAX_FILE_SIZE = "10MB";
 
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -140,34 +143,35 @@ class DefaultLogbackConfiguration {
 		config.start(encoder);
 		appender.setFile(logFile);
 		setRollingPolicy(appender, config, logFile);
-		setMaxFileSize(appender, config);
 		config.appender("FILE", appender);
 		return appender;
 	}
 
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config, String logFile) {
-		FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
-		rollingPolicy.setFileNamePattern(logFile + ".%i");
+		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
+		rollingPolicy.setFileNamePattern(logFile + ".%d{yyyy-MM-dd}.%i.gz");
+		setMaxFileSize(rollingPolicy,
+				this.patterns.getProperty("logging.file.max-size", MAX_FILE_SIZE));
+		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
+				Integer.class, CoreConstants.UNBOUND_HISTORY));
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);
 	}
 
-	private void setMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
-			LogbackConfigurator config) {
-		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
+	private void setMaxFileSize(
+			SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy,
+			String maxFileSize) {
 		try {
-			triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
+			rollingPolicy.setMaxFileSize(FileSize.valueOf(maxFileSize));
 		}
 		catch (NoSuchMethodError ex) {
 			// Logback < 1.1.8 used String configuration
-			Method method = ReflectionUtils.findMethod(SizeBasedTriggeringPolicy.class,
-					"setMaxFileSize", String.class);
-			ReflectionUtils.invokeMethod(method, triggeringPolicy, "10MB");
+			Method method = ReflectionUtils.findMethod(
+					SizeAndTimeBasedRollingPolicy.class, "setMaxFileSize", String.class);
+			ReflectionUtils.invokeMethod(method, rollingPolicy, maxFileSize);
 		}
-		appender.setTriggeringPolicy(triggeringPolicy);
-		config.start(triggeringPolicy);
 	}
 
 }
