@@ -28,7 +28,7 @@ send us a {github-code}[pull request].
 to intercept an exception on startup and turn it into a human-readable message, wrapped
 in a {dc-spring-boot}/diagnostics/FailureAnalysis.{dc-ext}[`FailureAnalysis`]. Spring
 Boot provides such an analyzer for application-context-related exceptions, JSR-303
-validations, and more. It is actually very easy to create your own.
+validations, and more. You can also create your own.
 
 `AbstractFailureAnalyzer` is a convenient extension of `FailureAnalyzer` that checks the
 presence of a specified exception type in the exception to handle. You can extend from
@@ -147,7 +147,7 @@ in the '`Spring Boot features`' section for more information.
 === Create a Non-web Application
 Not all Spring applications have to be web applications (or web services). If you want to
 execute some code in a `main` method but also bootstrap a Spring application to set up
-the infrastructure to use, you can the `SpringApplication` features of Spring
+the infrastructure to use, you can use the `SpringApplication` features of Spring
 Boot. A `SpringApplication` changes its `ApplicationContext` class, depending on whether it
 thinks it needs a web application or not. The first thing you can do to help it is to
 leave the servlet API dependencies off the classpath. If you cannot do that (for example, you
@@ -160,7 +160,7 @@ Application code that you want to run as your business logic can be implemented 
 
 
 [[howto-properties-and-configuration]]
-== Properties & Configuration
+== Properties and Configuration
 
 
 
@@ -571,7 +571,7 @@ ways. Alternatively, if you need more control and customization, you can add you
 
 
 [[howto-add-a-servlet-filter-or-listener]]
-=== Add a Servlet, Filter or Listener to an Application
+=== Add a Servlet, Filter, or Listener to an Application
 There are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other
 listeners supported by the Servlet spec to your application. You can either provide
 Spring beans for them or enable scanning for Servlet components.
@@ -1177,7 +1177,7 @@ source code for more details.
 [[howto-multipart-file-upload-configuration]]
 === Handling Multipart File Uploads
 Spring Boot embraces the Servlet 3 `javax.servlet.http.Part` API to support uploading
-files. By default, Spring Boot configures Spring MVC with a maximum file of 1MB per
+files. By default, Spring Boot configures Spring MVC with a maximum size of 1MB per
 file and a maximum of 10MB of file data in a single request. You may override these
 values, the location to which intermediate data is stored (for example, to the `/tmp`
 directory), and the threshold past which data is flushed to disk by using the properties
@@ -1374,7 +1374,7 @@ Spring Boot also provides some nice ANSI color terminal output on a console (but
 a log file) by using a custom Logback converter. See the default `base.xml` configuration
 for details.
 
-If Groovy is on the classpath you, should be able to configure Logback with
+If Groovy is on the classpath, you should be able to configure Logback with
 `logback.groovy` as well. If present, this setting is given preference.
 
 
@@ -1443,9 +1443,10 @@ jiggling with excludes. The following example shows how to set up the starters i
 
 NOTE: The Log4j starters gather together the dependencies for common logging
 requirements (such as having Tomcat use `java.util.logging` but configuring the
-output using Log4j 2). See the Actuator Log4j 2 samples for more detail and to see it in
-action.
-// TODO Link?
+output using Log4j 2). See the
+{github-code}/spring-boot-samples/spring-boot-sample-actuator-log4j2[Actuator Log4j 2]
+samples for more detail and to see it in action.
+
 
 
 [[howto-configure-log4j-for-logging-yaml-or-json-config]]
@@ -2221,7 +2222,7 @@ Actuator's security enabled). To tweak the defaults try setting properties in
 `+security.*+` (see
 {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
 for details of available settings) and the `SECURITY` section of
-"`<<common-application-properties-security,Common Ppplication Properties>>`".
+"`<<common-application-properties-security,Common Application Properties>>`".
 
 
 
@@ -2639,12 +2640,8 @@ Often, if you have an executable and a non-executable jar as build products, the
 version has additional configuration files that are not needed in a library jar.
 For example, the `application.yml` configuration file might by excluded from the non-executable JAR.
 
-The `maven-jar-plugin` exposed a `forceCreation` attribute that let you
-create the jar _again_ once the `repackage` goal has ran. Arguably, this was a bit fragile
-anyway, since it was relying on the order of plugin executions. In Maven, the executable
-jar must be the main artifact and you can add a classified jar for the library, as follows:
-// TODO Some of the original content had past tense. Has the `forceCreation` attribute
-// been deprecated? If not, I'll re-arrange the sentences to indicate that it still works.
+In Maven, the executable jar must be the main artifact and you can add a classified jar
+for the library, as follows:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -3114,7 +3111,7 @@ The following example shows how to do so in Maven:
 	</dependency>
 ----
 
-The following example shows how to do soin Gradle:
+The following example shows how to do so in Gradle:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
