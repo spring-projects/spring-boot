@@ -113,9 +113,9 @@ shown in the following example:
 	 0063                 3452        3980
 ----
 
-The preceding example shows how `A.class` can be found in `/BOOT-INF/classes` in `myapp.jar`
-at position `0063`. `B.class` from the nested jar can actually be found in `myapp.jar`
-at position `3452`, and `C.class` is at position `3980`.
+The preceding example shows how `A.class` can be found in `/BOOT-INF/classes` in
+`myapp.jar` at position `0063`. `B.class` from the nested jar can actually be found in
+`myapp.jar` at position `3452`, and `C.class` is at position `3980`.
 
 Armed with this information, we can load specific nested entries by seeking to
 the appropriate part of the outer jar. We do not need to unpack the archive, and we
@@ -140,16 +140,16 @@ is used as an executable jar's main entry point. It is the actual `Main-Class` i
 file, and it is used to setup an appropriate `URLClassLoader` and ultimately call your
 `main()` method.
 
-There are three launcher subclasses (`JarLauncher`, `WarLauncher`, and `PropertiesLauncher`).
-Their purpose is to load resources (`.class` files and so on.) from nested jar files or war
-files in directories (as opposed to those explicitly on the classpath). In the case of
-`JarLauncher` and `WarLauncher`, the nested paths are fixed. `JarLauncher` looks in
-`BOOT-INF/lib/`, and `WarLauncher` looks in `WEB-INF/lib/` and `WEB-INF/lib-provided/`.
-You can add extra jars in those locations if you want more. The `PropertiesLauncher`
-looks in `BOOT-INF/lib/` in your application archive by default, but you can add
-additional locations by setting an environment variable called `LOADER_PATH` or `loader.path`
-in `loader.properties` (which is a comma-separated list of directories, archives, or directories
-within archives).
+There are three launcher subclasses (`JarLauncher`, `WarLauncher`, and
+`PropertiesLauncher`). Their purpose is to load resources (`.class` files and so on.) from
+nested jar files or war files in directories (as opposed to those explicitly on the
+classpath). In the case of `JarLauncher` and `WarLauncher`, the nested paths are fixed.
+`JarLauncher` looks in `BOOT-INF/lib/`, and `WarLauncher` looks in `WEB-INF/lib/` and
+`WEB-INF/lib-provided/`. You can add extra jars in those locations if you want more. The
+`PropertiesLauncher` looks in `BOOT-INF/lib/` in your application archive by default, but
+you can add additional locations by setting an environment variable called `LOADER_PATH`
+or `loader.path` in `loader.properties` (which is a comma-separated list of directories,
+archives, or directories within archives).
 
 
 
@@ -206,12 +206,12 @@ properties (System properties, environment variables, manifest entries, or
 |Key |Purpose
 
 |`loader.path`
-|Comma-separated Classpath, such as `lib,${HOME}/app/lib`. Earlier entries take precedence,
- like a regular `-classpath` on the `javac` command line.
+|Comma-separated Classpath, such as `lib,${HOME}/app/lib`. Earlier entries take
+ precedence, like a regular `-classpath` on the `javac` command line.
 
 |`loader.home`
-|Used to resolve relative paths in `loader.path`. For example, given `loader.path=lib`, then
- `${loader.home}/lib` is a classpath location (along with all jar files in that
+|Used to resolve relative paths in `loader.path`. For example, given `loader.path=lib`,
+ then `${loader.home}/lib` is a classpath location (along with all jar files in that
  directory). This property is also used to locate a `loader.properties` file, as in the
  following example `file:///opt/app`
  It defaults to `${user.dir}`.
@@ -278,14 +278,14 @@ The following rules apply to working with `PropertiesLauncher`:
 	with that name exists is used.
 * `loader.home` is the directory location of an additional properties file
   (overriding the default) only when `loader.config.location` is not specified.
-* `loader.path` can contain directories (which are scanned recursively for jar and zip files),
-  archive paths, a directory within an archive that is scanned for jar files (for
+* `loader.path` can contain directories (which are scanned recursively for jar and zip
+  files), archive paths, a directory within an archive that is scanned for jar files (for
   example, `dependencies.jar!/lib`), or wildcard patterns (for the default JVM behavior).
   Archive paths can be relative to `loader.home` or anywhere in the file system with a
   `jar:file:` prefix.
 * `loader.path` (if empty) defaults to `BOOT-INF/lib` (meaning a local directory or a
-  nested one if running from an archive). Because of this, `PropertiesLauncher` behaves the
-  same as `JarLauncher` when no additional configuration is provided.
+  nested one if running from an archive). Because of this, `PropertiesLauncher` behaves
+  the same as `JarLauncher` when no additional configuration is provided.
 * `loader.path` can not be used to configure the location of `loader.properties` (the
   classpath used to search for the latter is the JVM classpath when `PropertiesLauncher`
   is launched).
@@ -325,8 +325,8 @@ consider a different logging implementation.
 
 [[executable-jar-alternatives]]
 === Alternative Single Jar Solutions
-If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the following
-alternatives:
+If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the
+following alternatives:
 
 * http://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
 * http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
