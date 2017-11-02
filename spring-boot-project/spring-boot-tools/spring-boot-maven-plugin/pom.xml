@@ -125,21 +125,52 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-invoker-plugin</artifactId>
 						<configuration>
-							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-							<settingsFile>src/it/settings.xml</settingsFile>
 							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-							<postBuildHookScript>verify</postBuildHookScript>
-							<addTestClassPath>true</addTestClassPath>
-							<skipInvocation>${skipTests}</skipInvocation>
-							<streamLogs>true</streamLogs>
 						</configuration>
 						<executions>
 							<execution>
-								<id>integration-test</id>
+								<id>prepare-integration-test</id>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>install</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>integration-test</id>
+								<goals>
 									<goal>run</goal>
 								</goals>
+								<configuration>
+									<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+									<settingsFile>src/it/settings.xml</settingsFile>
+									<postBuildHookScript>verify</postBuildHookScript>
+									<addTestClassPath>true</addTestClassPath>
+									<skipInvocation>${skipTests}</skipInvocation>
+									<streamLogs>true</streamLogs>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>cleanup-local-integration-repo</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<replaceregexp match="\$\{revision\}" replace="${project.version}"
+											flags="g" byline="true">
+											<fileset
+												dir="${project.build.directory}/local-repo/org/springframework/boot/"
+												includes="**/*.pom" />
+										</replaceregexp>
+									</target>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
