@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MetricsAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Arnaud Cogoluègnes
  */
 public class MetricsAutoConfigurationTests {
 
@@ -104,6 +106,27 @@ public class MetricsAutoConfigurationTests {
 							.tags("name", "first").meter()).isPresent();
 					assertThat(registry.find("data.source.max.connections")
 							.tags("name", "secondOne").meter()).isPresent();
+				});
+	}
+
+	@Test
+	public void rabbitmqNativeConnectionFactoryIsInstrumented() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class))
+				.run((context) -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.find("rabbitmq.connections").meter()).isPresent();
+				});
+	}
+
+	@Test
+	public void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class))
+				.withPropertyValues("spring.rabbitmq.metrics=false")
+				.run((context) -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.find("rabbitmq.connections").meter()).isNotPresent();
 				});
 	}
 
