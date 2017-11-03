@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
  * Response from the Cloud Foundry security interceptors.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class SecurityResponse {
 

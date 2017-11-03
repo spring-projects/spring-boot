@@ -23,7 +23,6 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import reactor.core.publisher.Mono;
@@ -38,27 +37,25 @@ import org.springframework.util.Base64Utils;
  *
  * @author Madhura Bhave
  */
-public class ReactiveTokenValidator {
+class ReactiveTokenValidator {
 
 	private final ReactiveCloudFoundrySecurityService securityService;
 
-	public ReactiveTokenValidator(ReactiveCloudFoundrySecurityService securityService) {
+	ReactiveTokenValidator(ReactiveCloudFoundrySecurityService securityService) {
 		this.securityService = securityService;
 	}
 
 	public Mono<Void> validate(Token token) {
-		return validateAlgorithm(token)
-				.then(validateKeyIdAndSignature(token))
-				.then(validateExpiry(token))
-				.then(validateIssuer(token))
+		return validateAlgorithm(token).then(validateKeyIdAndSignature(token))
+				.then(validateExpiry(token)).then(validateIssuer(token))
 				.then(validateAudience(token));
 	}
 
 	private Mono<Void> validateAlgorithm(Token token) {
 		String algorithm = token.getSignatureAlgorithm();
 		if (algorithm == null) {
-			return Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
-					"Signing algorithm cannot be null"));
+			return Mono.error(new CloudFoundryAuthorizationException(
+					Reason.INVALID_SIGNATURE, "Signing algorithm cannot be null"));
 		}
 		if (!algorithm.equals("RS256")) {
 			return Mono.error(new CloudFoundryAuthorizationException(
@@ -71,22 +68,14 @@ public class ReactiveTokenValidator {
 	private Mono<Void> validateKeyIdAndSignature(Token token) {
 		String keyId = token.getKeyId();
 		return this.securityService.fetchTokenKeys()
-				.filter(tokenKeys -> hasValidKeyId(keyId, tokenKeys))
-				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
-						"Key Id present in token header does not match")))
+				.filter(tokenKeys -> tokenKeys.containsKey(keyId))
+				.switchIfEmpty(Mono.error(
+						new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
+								"Key Id present in token header does not match")))
 				.filter(tokenKeys -> hasValidSignature(token, tokenKeys.get(keyId)))
-				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
-						"RSA Signature did not match content")))
+				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
+						Reason.INVALID_SIGNATURE, "RSA Signature did not match content")))
 				.then();
-	}
-
-	private boolean hasValidKeyId(String keyId, Map<String, String> tokenKeys) {
-		for (String candidate : tokenKeys.keySet()) {
-			if (keyId.equals(candidate)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private boolean hasValidSignature(Token token, String key) {
@@ -123,17 +112,17 @@ public class ReactiveTokenValidator {
 
 	private Mono<Void> validateIssuer(Token token) {
 		return this.securityService.getUaaUrl()
-				.map(uaaUrl -> String.format("%s/oauth/token", uaaUrl))
-				.filter(issuerUri -> issuerUri.equals(token.getIssuer()))
-				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_ISSUER,
-						"Token issuer does not match")))
+				.map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
+				.filter((issuerUri) -> issuerUri.equals(token.getIssuer()))
+				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
+						Reason.INVALID_ISSUER, "Token issuer does not match")))
 				.then();
 	}
 
 	private Mono<Void> validateAudience(Token token) {
 		if (!token.getScope().contains("actuator.read")) {
-			return Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_AUDIENCE,
-					"Token does not have audience actuator"));
+			return Mono.error(new CloudFoundryAuthorizationException(
+					Reason.INVALID_AUDIENCE, "Token does not have audience actuator"));
 		}
 		return Mono.empty();
 	}

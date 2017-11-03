@@ -79,6 +79,11 @@ public class LoggingSystemProperties {
 	 */
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
 
+	/**
+	 * The name of the System property that contains the log date-format pattern.
+	 */
+	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
+
 	private final Environment environment;
 
 	/**
@@ -103,6 +108,7 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, FILE_MAX_HISTORY, "file.max-history");
 		setSystemProperty(resolver, FILE_MAX_SIZE, "file.max-size");
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "pattern.level");
+		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "pattern.dateformat");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		if (logFile != null) {
 			logFile.applyToSystemProperties();

@@ -120,6 +120,9 @@ public class DefaultServletWebServerFactoryCustomizer
 		if (this.serverProperties.getCompression() != null) {
 			factory.setCompression(this.serverProperties.getCompression());
 		}
+		if (this.serverProperties.getHttp2() != null) {
+			factory.setHttp2(this.serverProperties.getHttp2());
+		}
 		factory.setServerHeader(this.serverProperties.getServerHeader());
 		if (factory instanceof TomcatServletWebServerFactory) {
 			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,

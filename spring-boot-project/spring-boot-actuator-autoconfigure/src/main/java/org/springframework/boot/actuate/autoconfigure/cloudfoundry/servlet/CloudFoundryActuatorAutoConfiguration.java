@@ -26,9 +26,11 @@ import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.endpoint.web.EndpointMapping;
@@ -43,6 +45,7 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to expose actuator endpoints for
@@ -54,6 +57,9 @@ import org.springframework.web.cors.CorsConfiguration;
 @Configuration
 @ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter(ServletManagementContextAutoConfiguration.class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnClass(DispatcherServlet.class)
+@ConditionalOnBean(DispatcherServlet.class)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class CloudFoundryActuatorAutoConfiguration {
 
@@ -82,8 +88,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 			RestTemplateBuilder restTemplateBuilder, Environment environment) {
 		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
 				restTemplateBuilder, environment);
-		TokenValidator tokenValidator = new TokenValidator(
-				cloudfoundrySecurityService);
+		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
 		return new CloudFoundrySecurityInterceptor(tokenValidator,
 				cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
@@ -91,13 +96,12 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	private CloudFoundrySecurityService getCloudFoundrySecurityService(
 			RestTemplateBuilder restTemplateBuilder, Environment environment) {
-		String cloudControllerUrl = environment
-				.getProperty("vcap.application.cf_api");
+		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty(
 				"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
 		return (cloudControllerUrl == null ? null
-				: new CloudFoundrySecurityService(restTemplateBuilder,
-						cloudControllerUrl, skipSslValidation));
+				: new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl,
+						skipSslValidation));
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

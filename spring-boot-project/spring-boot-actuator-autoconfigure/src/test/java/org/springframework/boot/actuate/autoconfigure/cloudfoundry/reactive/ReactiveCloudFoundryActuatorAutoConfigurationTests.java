@@ -80,9 +80,9 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		setupContextWithCloudEnabled();
 		this.context.refresh();
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
-		EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils.getField(handlerMapping, "endpointMapping");
-		assertThat(endpointMapping.getPath())
-				.isEqualTo("/cloudfoundryapplication");
+		EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils
+				.getField(handlerMapping, "endpointMapping");
+		assertThat(endpointMapping.getPath()).isEqualTo("/cloudfoundryapplication");
 		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
 				.getField(handlerMapping, "corsConfiguration");
 		assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
@@ -96,9 +96,10 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	public void cloudfoundryapplicationProducesActuatorMediaType() throws Exception {
 		setupContextWithCloudEnabled();
 		this.context.refresh();
-		WebTestClient webTestClient = WebTestClient.bindToApplicationContext(this.context).build();
-		webTestClient.get().uri("/cloudfoundryapplication")
-				.header("Content-Type", ActuatorMediaType.V2_JSON + ";charset=UTF-8");
+		WebTestClient webTestClient = WebTestClient.bindToApplicationContext(this.context)
+				.build();
+		webTestClient.get().uri("/cloudfoundryapplication").header("Content-Type",
+				ActuatorMediaType.V2_JSON + ";charset=UTF-8");
 	}
 
 	@Test
@@ -135,7 +136,8 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				.applyTo(this.context);
 		setupContext();
 		this.context.refresh();
-		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = this.context.getBean("cloudFoundryWebFluxEndpointHandlerMapping",
+		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = this.context.getBean(
+				"cloudFoundryWebFluxEndpointHandlerMapping",
 				CloudFoundryWebFluxEndpointHandlerMapping.class);
 		Object securityInterceptor = ReflectionTestUtils.getField(handlerMapping,
 				"securityInterceptor");
@@ -145,20 +147,26 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void cloudFoundryPathsIgnoredBySpringSecurity() throws Exception {
 		setupContextWithCloudEnabled();
 		this.context.refresh();
-		WebFilterChainProxy chainProxy = this.context
-				.getBean(WebFilterChainProxy.class);
-		List<SecurityWebFilterChain> filters = (List<SecurityWebFilterChain>) ReflectionTestUtils.getField(chainProxy, "filters");
+		WebFilterChainProxy chainProxy = this.context.getBean(WebFilterChainProxy.class);
+		List<SecurityWebFilterChain> filters = (List<SecurityWebFilterChain>) ReflectionTestUtils
+				.getField(chainProxy, "filters");
 		Boolean cfRequestMatches = filters.get(0).matches(MockServerWebExchange.from(
-				MockServerHttpRequest.get("/cloudfoundryapplication/my-path").build())).block();
-		Boolean otherRequestMatches = filters.get(0).matches(MockServerWebExchange.from(
-				MockServerHttpRequest.get("/some-other-path").build())).block();
+				MockServerHttpRequest.get("/cloudfoundryapplication/my-path").build()))
+				.block();
+		Boolean otherRequestMatches = filters.get(0)
+				.matches(MockServerWebExchange
+						.from(MockServerHttpRequest.get("/some-other-path").build()))
+				.block();
 		assertThat(cfRequestMatches).isTrue();
 		assertThat(otherRequestMatches).isFalse();
-		otherRequestMatches = filters.get(1).matches(MockServerWebExchange.from(
-				MockServerHttpRequest.get("/some-other-path").build())).block();
+		otherRequestMatches = filters.get(1)
+				.matches(MockServerWebExchange
+						.from(MockServerHttpRequest.get("/some-other-path").build()))
+				.block();
 		assertThat(otherRequestMatches).isTrue();
 	}
 
@@ -166,8 +174,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	public void cloudFoundryPlatformInactive() throws Exception {
 		setupContext();
 		this.context.refresh();
-		assertThat(
-				this.context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping"))
+		assertThat(this.context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping"))
 				.isFalse();
 	}
 
@@ -196,8 +203,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void endpointPathCustomizationIsNotApplied()
-			throws Exception {
+	public void endpointPathCustomizationIsNotApplied() throws Exception {
 		setupContextWithCloudEnabled();
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
@@ -223,10 +229,8 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				WebClientCustomizerConfig.class,
-				WebClientAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+				WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
 				ReactiveCloudFoundryActuatorAutoConfiguration.class);
 	}
 

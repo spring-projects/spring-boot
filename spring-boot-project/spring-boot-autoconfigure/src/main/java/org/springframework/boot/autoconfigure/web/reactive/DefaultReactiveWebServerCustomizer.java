@@ -55,6 +55,9 @@ public class DefaultReactiveWebServerCustomizer implements
 		if (this.serverProperties.getCompression() != null) {
 			server.setCompression(this.serverProperties.getCompression());
 		}
+		if (this.serverProperties.getHttp2() != null) {
+			server.setHttp2(this.serverProperties.getHttp2());
+		}
 	}
 
 }

@@ -440,6 +440,20 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		verify(listener, times(2)).onReset(loggerContext);
 	}
 
+	@Test
+	public void testDateformatPatternProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.dateformat",
+				"yyyy-MM-dd'T'hh:mm:ss.SSSZ");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertThat(getLineWithText(output, "Hello world"))
+				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
+	}
+
 	private static Logger getRootLogger() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		LoggerContext context = (LoggerContext) factory;

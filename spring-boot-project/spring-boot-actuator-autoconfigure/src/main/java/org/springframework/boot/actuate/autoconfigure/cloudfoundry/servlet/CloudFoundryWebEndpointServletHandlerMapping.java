@@ -93,12 +93,13 @@ class CloudFoundryWebEndpointServletHandlerMapping
 	@ResponseBody
 	private Map<String, Map<String, Link>> links(HttpServletRequest request,
 			HttpServletResponse response) {
-		SecurityResponse securityResponse = this.securityInterceptor
-				.preHandle(request, "");
+		SecurityResponse securityResponse = this.securityInterceptor.preHandle(request,
+				"");
 		if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 			sendFailureResponse(response, securityResponse);
 		}
-		AccessLevel accessLevel = (AccessLevel) request.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
+		AccessLevel accessLevel = (AccessLevel) request
+				.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
 		Map<String, Link> links = this.endpointLinksResolver.resolveLinks(getEndpoints(),
 				request.getRequestURL().toString());
 		Map<String, Link> filteredLinks = new LinkedHashMap<>();
@@ -174,8 +175,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 			}
 		}
 
-		private Object failureResponse(
-				SecurityResponse response) {
+		private Object failureResponse(SecurityResponse response) {
 			return handleResult(new WebEndpointResponse<>(response.getMessage(),
 					response.getStatus().value()));
 		}

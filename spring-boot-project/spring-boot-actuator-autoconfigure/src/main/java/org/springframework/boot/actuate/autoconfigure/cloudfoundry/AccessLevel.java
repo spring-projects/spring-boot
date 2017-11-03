@@ -24,6 +24,7 @@ import java.util.List;
  * endpoints.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public enum AccessLevel {
 

@@ -63,13 +63,11 @@ class CloudFoundrySecurityInterceptor {
 		}
 		try {
 			if (!StringUtils.hasText(this.applicationId)) {
-				throw new CloudFoundryAuthorizationException(
-						Reason.SERVICE_UNAVAILABLE,
+				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 						"Application id is not available");
 			}
 			if (this.cloudFoundrySecurityService == null) {
-				throw new CloudFoundryAuthorizationException(
-						Reason.SERVICE_UNAVAILABLE,
+				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 						"Cloud controller URL is not available");
 			}
 			if (HttpMethod.OPTIONS.matches(request.getMethod())) {
@@ -96,8 +94,7 @@ class CloudFoundrySecurityInterceptor {
 		AccessLevel accessLevel = this.cloudFoundrySecurityService
 				.getAccessLevel(token.toString(), this.applicationId);
 		if (!accessLevel.isAccessAllowed(path)) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.ACCESS_DENIED,
+			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
 					"Access denied");
 		}
 		request.setAttribute(AccessLevel.REQUEST_ATTRIBUTE, accessLevel);
@@ -108,8 +105,7 @@ class CloudFoundrySecurityInterceptor {
 		String bearerPrefix = "bearer ";
 		if (authorization == null
 				|| !authorization.toLowerCase().startsWith(bearerPrefix)) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.MISSING_AUTHORIZATION,
+			throw new CloudFoundryAuthorizationException(Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}
 		return new Token(authorization.substring(bearerPrefix.length()));

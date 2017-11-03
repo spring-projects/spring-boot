@@ -53,7 +53,8 @@ public class ConfigurationPropertiesBinderBuilder {
 	public static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-			"javax.validation.ValidatorFactory" };
+			"javax.validation.ValidatorFactory",
+			"javax.validation.bootstrap.GenericBootstrap" };
 
 	private final ApplicationContext applicationContext;
 
