@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
@@ -80,9 +81,9 @@ public class WebFluxEndpointIntegrationTests
 	}
 
 	@Override
-	protected ReactiveWebServerApplicationContext createApplicationContext(
+	protected AnnotationConfigReactiveWebServerApplicationContext createApplicationContext(
 			Class<?>... config) {
-		ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
+		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
 		context.register(config);
 		return context;
 	}

@@ -21,7 +21,7 @@ import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -57,18 +57,17 @@ public class ConditionalOnNotWebApplicationTests {
 		ctx.register(NotWebApplicationConfiguration.class);
 		ctx.setServletContext(new MockServletContext());
 		ctx.refresh();
-
 		this.context = ctx;
 		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
 	}
 
 	@Test
 	public void testNotWebApplicationWithReactiveContext() {
-		GenericReactiveWebApplicationContext ctx = new GenericReactiveWebApplicationContext();
-		ctx.register(ReactiveApplicationConfig.class,
+		AnnotationConfigReactiveWebApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
+		context.register(ReactiveApplicationConfig.class,
 				NotWebApplicationConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		context.refresh();
+		this.context = context;
 		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
 	}
 

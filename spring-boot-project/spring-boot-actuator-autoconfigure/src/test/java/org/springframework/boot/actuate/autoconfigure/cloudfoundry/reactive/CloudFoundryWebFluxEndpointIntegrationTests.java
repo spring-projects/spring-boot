@@ -40,7 +40,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -165,21 +165,17 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 						.doesNotExist().jsonPath("_links.test-part").doesNotExist());
 	}
 
-	private ReactiveWebServerApplicationContext createApplicationContext(
+	private AnnotationConfigReactiveWebServerApplicationContext createApplicationContext(
 			Class<?>... config) {
-		ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
+		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
 		context.register(config);
 		return context;
-	}
-
-	protected int getPort(ReactiveWebServerApplicationContext context) {
-		return context.getBean(CloudFoundryReactiveConfiguration.class).port;
 	}
 
 	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
 		BiConsumer<ApplicationContext, WebTestClient> consumer = (context,
 				client) -> clientConsumer.accept(client);
-		ReactiveWebServerApplicationContext context = createApplicationContext(
+		AnnotationConfigReactiveWebServerApplicationContext context = createApplicationContext(
 				configuration, CloudFoundryReactiveConfiguration.class);
 		context.refresh();
 		try {
@@ -189,6 +185,10 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 		finally {
 			context.close();
 		}
+	}
+
+	protected int getPort(AnnotationConfigReactiveWebServerApplicationContext context) {
+		return context.getBean(CloudFoundryReactiveConfiguration.class).port;
 	}
 
 	private String mockAccessToken() {

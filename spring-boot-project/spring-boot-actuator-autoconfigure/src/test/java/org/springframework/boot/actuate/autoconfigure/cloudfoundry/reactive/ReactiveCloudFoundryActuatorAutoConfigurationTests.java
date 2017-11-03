@@ -38,7 +38,7 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurat
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,11 +61,11 @@ import static org.mockito.Mockito.mock;
  */
 public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
-	private GenericReactiveWebApplicationContext context;
+	private AnnotationConfigReactiveWebApplicationContext context;
 
 	@Before
 	public void setup() {
-		this.context = new GenericReactiveWebApplicationContext();
+		this.context = new AnnotationConfigReactiveWebApplicationContext();
 	}
 
 	@After

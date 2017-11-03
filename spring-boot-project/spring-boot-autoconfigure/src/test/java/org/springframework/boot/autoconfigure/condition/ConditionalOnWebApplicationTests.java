@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -67,12 +67,12 @@ public class ConditionalOnWebApplicationTests {
 
 	@Test
 	public void testWebApplicationWithReactiveContext() {
-		GenericReactiveWebApplicationContext ctx = new GenericReactiveWebApplicationContext();
-		ctx.register(AnyWebApplicationConfiguration.class,
+		AnnotationConfigReactiveWebApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
+		context.register(AnyWebApplicationConfiguration.class,
 				ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		context.refresh();
+		this.context = context;
 		assertThat(this.context.getBeansOfType(String.class))
 				.containsExactly(entry("any", "any"), entry("reactive", "reactive"));
 	}

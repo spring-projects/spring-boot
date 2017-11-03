@@ -21,8 +21,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -47,8 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ReactiveSecurityAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner(
-			ReactiveWebServerApplicationContext::new);
+	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
 	public void enablesWebFluxSecurity() {

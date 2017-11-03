@@ -36,7 +36,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -57,7 +57,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private GenericReactiveWebApplicationContext context;
+	private AnnotationConfigReactiveWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -193,7 +193,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... envVariables) {
-		this.context = new GenericReactiveWebApplicationContext();
+		this.context = new AnnotationConfigReactiveWebApplicationContext();
 		TestPropertyValues.of(envVariables).applyTo(this.context);
 		if (config != null) {
 			this.context.register(config);

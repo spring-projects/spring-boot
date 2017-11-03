@@ -20,7 +20,7 @@ import com.samskivert.mustache.Mustache;
 import org.junit.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +38,7 @@ public class MustacheAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext webContext;
 
-	private GenericReactiveWebApplicationContext reactiveWebContext;
+	private AnnotationConfigReactiveWebApplicationContext reactiveWebContext;
 
 	@Test
 	public void registerBeansForServletApp() {
@@ -102,7 +102,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	private void loadWithReactive(Class<?> config) {
-		this.reactiveWebContext = new GenericReactiveWebApplicationContext();
+		this.reactiveWebContext = new AnnotationConfigReactiveWebApplicationContext();
 		TestPropertyValues.of("spring.mustache.prefix=classpath:/mustache-templates/")
 				.applyTo(this.reactiveWebContext);
 		if (config != null) {

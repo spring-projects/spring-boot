@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.codec.CodecCustomizer;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -72,7 +72,7 @@ import static org.mockito.Mockito.verify;
  */
 public class WebFluxAutoConfigurationTests {
 
-	private GenericReactiveWebApplicationContext context;
+	private AnnotationConfigReactiveWebApplicationContext context;
 
 	@Test
 	public void shouldNotProcessIfExistingWebReactiveConfiguration() throws Exception {
@@ -293,7 +293,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, Class<?>[] exclude, String... environment) {
-		this.context = new GenericReactiveWebApplicationContext();
+		this.context = new AnnotationConfigReactiveWebApplicationContext();
 		TestPropertyValues.of(environment).applyTo(this.context);
 		List<Class<?>> configClasses = new ArrayList<>();
 		if (config != null) {

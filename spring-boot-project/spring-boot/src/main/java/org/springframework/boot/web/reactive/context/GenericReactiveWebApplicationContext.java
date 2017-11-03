@@ -16,35 +16,46 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.io.AbstractResource;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
 
 /**
- * Subclass of {@link AnnotationConfigApplicationContext}, suitable for reactive web
- * environments.
+ * Subclass of {@link GenericApplicationContext}, suitable for reactive web environments.
  *
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class GenericReactiveWebApplicationContext
-		extends AnnotationConfigApplicationContext
+public class GenericReactiveWebApplicationContext extends GenericApplicationContext
 		implements ConfigurableReactiveWebApplicationContext {
 
 	private String namespace;
 
+	/**
+	 * Create a new {@link GenericReactiveWebApplicationContext}.
+	 * @see #registerBeanDefinition
+	 * @see #refresh
+	 */
 	public GenericReactiveWebApplicationContext() {
 		super();
 	}
 
-	public GenericReactiveWebApplicationContext(Class<?>[] annotatedClasses) {
-		super(annotatedClasses);
+	/**
+	 * Create a new {@link GenericReactiveWebApplicationContext} with the given
+	 * DefaultListableBeanFactory.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 * @see #registerBeanDefinition
+	 * @see #refresh
+	 */
+	public GenericReactiveWebApplicationContext(DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
+	}
+
+	@Override
+	protected ConfigurableEnvironment createEnvironment() {
+		return new StandardReactiveWebEnvironment();
 	}
 
 	@Override
@@ -63,43 +74,4 @@ public class GenericReactiveWebApplicationContext
 		return new FilteredReactiveWebContextResource(path);
 	}
 
-	/**
-	 * Resource implementation that replaces the
-	 * {@link org.springframework.web.context.support.ServletContextResource} in a
-	 * reactive web application.
-	 * <p>
-	 * {@link #exists()} always returns {@code false} in order to avoid exposing the whole
-	 * classpath in a non-servlet environment.
-	 */
-	class FilteredReactiveWebContextResource extends AbstractResource {
-
-		private final String path;
-
-		FilteredReactiveWebContextResource(String path) {
-			this.path = path;
-		}
-
-		@Override
-		public boolean exists() {
-			return false;
-		}
-
-		@Override
-		public Resource createRelative(String relativePath) throws IOException {
-			String pathToUse = StringUtils.applyRelativePath(this.path, relativePath);
-			return new FilteredReactiveWebContextResource(pathToUse);
-		}
-
-		@Override
-		public String getDescription() {
-			return "ReactiveWebContext resource [" + this.path + "]";
-		}
-
-		@Override
-		public InputStream getInputStream() throws IOException {
-			throw new FileNotFoundException(this.getDescription()
-					+ " cannot be opened because it does not exist");
-		}
-
-	}
 }

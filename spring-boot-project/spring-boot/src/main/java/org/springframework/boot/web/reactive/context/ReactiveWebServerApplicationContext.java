@@ -36,11 +36,6 @@ public class ReactiveWebServerApplicationContext
 	private volatile WebServer webServer;
 
 	public ReactiveWebServerApplicationContext() {
-		super();
-	}
-
-	public ReactiveWebServerApplicationContext(Class<?>... annotatedClasses) {
-		super(annotatedClasses);
 	}
 
 	@Override
