@@ -241,6 +241,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				.run((context) -> {
 					assertConverterBeanExists(context, GsonHttpMessageConverter.class,
 							"gsonHttpMessageConverter");
+					assertConverterBeanRegisteredWithHttpMessageConverters(context,
+							GsonHttpMessageConverter.class);
 					assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
 				});
 	}

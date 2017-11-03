@@ -104,7 +104,7 @@ public class DefaultLaunchScript implements LaunchScript {
 			if (properties != null && properties.containsKey(name)) {
 				Object propertyValue = properties.get(name);
 				if (FILE_PATH_KEYS.contains(name)) {
-					value = parseFilePropertyValue(properties.get(name));
+					value = parseFilePropertyValue(propertyValue);
 				}
 				else {
 					value = propertyValue.toString();

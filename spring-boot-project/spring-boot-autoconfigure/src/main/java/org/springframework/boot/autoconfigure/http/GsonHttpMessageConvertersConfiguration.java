@@ -82,7 +82,7 @@ class GsonHttpMessageConvertersConfiguration {
 		}
 
 		@ConditionalOnBean(MappingJackson2HttpMessageConverter.class)
-		static class JacksonMissing {
+		static class JacksonAvailable {
 
 		}
 

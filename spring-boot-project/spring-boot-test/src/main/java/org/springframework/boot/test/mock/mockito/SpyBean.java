@@ -41,7 +41,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * will be added. Dependencies that are known to the application context but are not beans
  * (such as those
  * {@link org.springframework.beans.factory.config.ConfigurableListableBeanFactory#registerResolvableDependency(Class, Object)
- * registered directly} ) will not be found and a spied bean will be added to the context
+ * registered directly}) will not be found and a spied bean will be added to the context
  * alongside the existing dependency.
  * <p>
  * When {@code @SpyBean} is used on a field, as well as being registered in the

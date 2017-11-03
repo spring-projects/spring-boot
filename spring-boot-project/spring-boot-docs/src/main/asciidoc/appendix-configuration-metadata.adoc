@@ -822,7 +822,7 @@ Consider the following class:
 	}
 ----
 
-The preceding example produces metdata information for `server.name`, `server.host.ip`,
+The preceding example produces metadata information for `server.name`, `server.host.ip`,
 and `server.host.port` properties. You can use the `@NestedConfigurationProperty`
 annotation on a field to indicate that a regular (non-inner) class should be treated as
 if it were nested.
