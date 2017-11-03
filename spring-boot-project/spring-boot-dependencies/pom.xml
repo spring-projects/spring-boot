@@ -26,7 +26,7 @@
 		<!-- Dependency versions -->
 		<activemq.version>5.15.2</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.58</appengine-sdk.version>
+		<appengine-sdk.version>1.9.59</appengine-sdk.version>
 		<artemis.version>2.3.0</artemis.version>
 		<aspectj.version>1.8.12</aspectj.version>
 		<assertj.version>3.8.0</assertj.version>
@@ -43,7 +43,7 @@
 		<commons-digester.version>2.1</commons-digester.version>
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
-		<commons-pool2.version>2.4.2</commons-pool2.version>
+		<commons-pool2.version>2.4.3</commons-pool2.version>
 		<couchbase-client.version>2.5.1</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<derby.version>10.14.1.0</derby.version>
@@ -53,7 +53,7 @@
 		<ehcache3.version>3.4.0</ehcache3.version>
 		<embedded-mongo.version>2.0.0</embedded-mongo.version>
 		<flyway.version>4.2.0</flyway.version>
-		<freemarker.version>2.3.26-incubating</freemarker.version>
+		<freemarker.version>2.3.27-incubating</freemarker.version>
 		<elasticsearch.version>5.5.3</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<groovy.version>2.5.0-beta-1</groovy.version>
@@ -144,8 +144,8 @@
 		<solr.version>6.6.2</solr.version>
 		<spring.version>5.0.1.RELEASE</spring.version>
 		<spring-amqp.version>2.0.0.RELEASE</spring-amqp.version>
-		<spring-cloud-connectors.version>2.0.0.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>4.0.0.M5</spring-batch.version>
+		<spring-cloud-connectors.version>2.0.0.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Kay-SR1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.24.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.0.0.RC1</spring-integration.version>
@@ -171,7 +171,7 @@
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.23</tomcat.version>
-		<undertow.version>1.4.20.Final</undertow.version>
+		<undertow.version>1.4.21.Final</undertow.version>
 		<unboundid-ldapsdk.version>4.0.1</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator.version>0.32-1</webjars-locator.version>
