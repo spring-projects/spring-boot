@@ -206,7 +206,7 @@ the `<build/>` element of your `pom.xml`:
 	</resources>
 ----
 
-You also need to incude the following element inside `<plugins/>`:
+You also need to include the following element inside `<plugins/>`:
 
 [source,xml,indent=0]
 ----
@@ -710,7 +710,7 @@ processed early (before the value is actually available).
 === Configure SSL
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties,
 typically in `application.properties` or `application.yml`. The following example shows
-setting SSL properties in `applicaiton.properties`:
+setting SSL properties in `application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1591,7 +1591,7 @@ To run an app with that `DataSource`, all you need is the connection
 information. Pool-specific settings can also be provided. Check the implementation that
 is going to be used at runtime for more details.
 
-The following example shows how to deine a JDBC data source by setting properties:
+The following example shows how to define a JDBC data source by setting properties:
 
 [source,properties,indent=0]
 ----
@@ -1947,7 +1947,7 @@ If you are configuring a component yourself, you can use an
 `EntityManagerFactoryDependsOnPostProcessor` subclass as a convenient way of setting up
 the necessary dependencies. For example, if you use Hibernate Search with
 Elasticsearch as its index manager, any `EntityManagerFactory` beans must be
-configured to depend on the `elasticsearchClient` bean, as shown in the follwing example:
+configured to depend on the `elasticsearchClient` bean, as shown in the following example:
 
 [source,java,indent=0]
 ----

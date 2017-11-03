@@ -25,7 +25,7 @@ The buildpack wraps your deployed code in whatever is needed to _start_ your app
 it might be a JDK and a call to `java`, it might be an embedded web server, or it might be
 a full-fledged application server. A buildpack is pluggable, but ideally you should be
 able to get by with as few customizations to it as possible. This reduces the footprint of
-unctionality that is not under your control. It minimizes divergence between development
+functionality that is not under your control. It minimizes divergence between development
 and production environments.
 
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs

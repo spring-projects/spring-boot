@@ -44,7 +44,7 @@ public class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 	@Test
 	public void testSpying() throws Exception {
 		MockingDetails mockingDetails = Mockito.mockingDetails(this.spy);
-		assertThat(mockingDetails.isMock()).isTrue();
+		assertThat(mockingDetails.isSpy()).isTrue();
 		assertThat(mockingDetails.getMockCreationSettings().getMockName().toString())
 				.isEqualTo("two");
 	}

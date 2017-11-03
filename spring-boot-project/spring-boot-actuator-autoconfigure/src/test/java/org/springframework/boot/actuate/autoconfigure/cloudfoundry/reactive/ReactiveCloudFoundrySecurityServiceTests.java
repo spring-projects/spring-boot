@@ -23,9 +23,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
@@ -42,9 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 public class ReactiveCloudFoundrySecurityServiceTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private static final String CLOUD_CONTROLLER = "/my-cloud-controller.com";
 

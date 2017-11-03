@@ -938,7 +938,7 @@ information:
 
 - The request's method
 - The request's URI (templated if possible).
-- The esponse's status.
+- The response's status.
 
 To customize the tags, use the `defaultTags` method on your `RouterFunctionMetrics`
 instance.
