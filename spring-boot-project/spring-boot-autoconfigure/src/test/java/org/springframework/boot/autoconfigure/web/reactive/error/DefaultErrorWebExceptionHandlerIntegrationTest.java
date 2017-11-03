@@ -28,6 +28,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
@@ -38,6 +39,7 @@ import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -52,6 +54,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Integration tests for {@link DefaultErrorWebExceptionHandler}
@@ -63,6 +68,9 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	private ConfigurableApplicationContext context;
 
 	private WebTestClient webTestClient;
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@After
 	public void closeContext() {
@@ -81,6 +89,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 				.jsonPath("path").isEqualTo(("/")).jsonPath("message")
 				.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
 				.jsonPath("trace").doesNotExist();
+		this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
+				containsString("IllegalStateException")));
 	}
 
 	@Test
@@ -101,6 +111,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 				.expectHeader().contentType(MediaType.TEXT_HTML).expectBody(String.class)
 				.returnResult().getResponseBody();
 		assertThat(body).contains("status: 500").contains("message: Expected!");
+		this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
+				containsString("IllegalStateException")));
 	}
 
 	@Test
@@ -160,6 +172,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 				.isEqualTo("400").jsonPath("error")
 				.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("exception")
 				.isEqualTo(ResponseStatusException.class.getName());
+		this.output.expect(not(containsString("ResponseStatusException")));
 	}
 
 	@Test
@@ -171,6 +184,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 				.returnResult().getResponseBody();
 		assertThat(body).contains("Whitelabel Error Page")
 				.contains("<div>Expected!</div>");
+		this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
+				containsString("IllegalStateException")));
 	}
 
 	private void load(String... arguments) {
@@ -188,10 +203,10 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ ReactiveWebServerAutoConfiguration.class,
+	@Import({ReactiveWebServerAutoConfiguration.class,
 			HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
 			ErrorWebFluxAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+			PropertyPlaceholderAutoConfiguration.class})
 	private @interface MinimalWebConfiguration {
 
 	}

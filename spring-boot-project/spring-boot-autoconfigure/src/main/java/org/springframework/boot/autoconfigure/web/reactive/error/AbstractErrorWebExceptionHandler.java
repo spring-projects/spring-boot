@@ -114,6 +114,20 @@ public abstract class AbstractErrorWebExceptionHandler
 		return this.errorAttributes.getErrorAttributes(request, includeStackTrace);
 	}
 
+	/**
+	 * Extract the original error from the current request.
+	 * @param request the source request
+	 * @return the error
+	 */
+	protected Throwable getError(ServerRequest request) {
+		return this.errorAttributes.getError(request);
+	}
+
+	/**
+	 * Check whether the trace attribute has been set on the given request.
+	 * @param request the source request
+	 * @return {@code true} if the error trace has been requested, {@code false} otherwise
+	 */
 	protected boolean isTraceEnabled(ServerRequest request) {
 		String parameter = request.queryParam("trace").orElse("false");
 		return !"false".equals(parameter.toLowerCase());

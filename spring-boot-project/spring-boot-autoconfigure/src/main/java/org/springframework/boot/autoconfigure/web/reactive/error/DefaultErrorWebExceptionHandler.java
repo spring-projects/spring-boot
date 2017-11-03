@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -72,6 +74,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 
 	private static final Map<HttpStatus.Series, String> SERIES_VIEWS;
 
+	private static final Log logger = LogFactory
+			.getLog(DefaultErrorWebExceptionHandler.class);
+
 	static {
 		Map<HttpStatus.Series, String> views = new HashMap<>();
 		views.put(HttpStatus.Series.CLIENT_ERROR, "4xx");
@@ -117,7 +122,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 				.just("error/" + errorStatus.toString(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
 				.flatMap((viewName) -> renderErrorView(viewName, response, error))
-				.switchIfEmpty(renderDefaultErrorView(response, error)).next();
+				.switchIfEmpty(renderDefaultErrorView(response, error)).next()
+				.doOnNext(resp -> logError(request, errorStatus));
 	}
 
 	/**
@@ -128,9 +134,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.ALL);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
+		HttpStatus errorStatus = getHttpStatus(error);
 		return ServerResponse.status(getHttpStatus(error))
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.body(BodyInserters.fromObject(error));
+				.body(BodyInserters.fromObject(error))
+				.doOnNext(resp -> logError(request, errorStatus));
 	}
 
 	/**
@@ -176,6 +184,20 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 			return acceptedMediaTypes.stream()
 					.anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 		};
+	}
+
+	/**
+	 * Log the original exception if handling it results in a Server Error.
+	 * @param request the source request
+	 * @param errorStatus the HTTP error status
+	 */
+	protected void logError(ServerRequest request, HttpStatus errorStatus) {
+		if (errorStatus.is5xxServerError()) {
+			Throwable error = getError(request);
+			final String message = "Failed to handle request ["
+					+ request.methodName() + " " + request.uri() + "]";
+			logger.error(message, error);
+		}
 	}
 
 }
