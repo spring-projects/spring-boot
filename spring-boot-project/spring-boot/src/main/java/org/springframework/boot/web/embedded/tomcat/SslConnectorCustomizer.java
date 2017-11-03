@@ -45,22 +45,21 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	private final SslStoreProvider sslStoreProvider;
 
 	SslConnectorCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
+		Assert.notNull(ssl, "Ssl configuration should not be null");
 		this.ssl = ssl;
 		this.sslStoreProvider = sslStoreProvider;
 	}
 
 	@Override
 	public void customize(Connector connector) {
-		if (this.ssl != null && this.ssl.isEnabled()) {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			Assert.state(handler instanceof AbstractHttp11JsseProtocol,
-					"To use SSL, the connector's protocol handler must be an "
-							+ "AbstractHttp11JsseProtocol subclass");
-			configureSsl((AbstractHttp11JsseProtocol<?>) handler,
-					this.ssl, this.sslStoreProvider);
-			connector.setScheme("https");
-			connector.setSecure(true);
-		}
+		ProtocolHandler handler = connector.getProtocolHandler();
+		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
+				"To use SSL, the connector's protocol handler must be an "
+						+ "AbstractHttp11JsseProtocol subclass");
+		configureSsl((AbstractHttp11JsseProtocol<?>) handler,
+				this.ssl, this.sslStoreProvider);
+		connector.setScheme("https");
+		connector.setSecure(true);
 	}
 
 	/**

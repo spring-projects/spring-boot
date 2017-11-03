@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -89,6 +90,9 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			SslBuilderCustomizer sslBuilderCustomizer =
 					new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider());
 			sslBuilderCustomizer.customize(builder);
+			if (getHttp2() != null) {
+				builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().getEnabled());
+			}
 		}
 		else {
 			builder.addHttpListener(port, getListenAddress());

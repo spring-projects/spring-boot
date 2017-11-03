@@ -734,6 +734,54 @@ sample project for an example.
 
 
 
+[[howto-configure-http2]]
+=== Configure HTTP/2
+You can enable HTTP/2 support in your Spring Boot application with the
+`+server.http2.enabled+` configuration property. This support depends on the
+chosen web server and the application environment, since that protocol is not
+supported out-of-the-box by JDK8.
+
+[NOTE]
+====
+Spring Boot does not support `h2c`, the cleartext version of the HTTP/2
+protocol. So you must configure <<howto-configure-ssl, configure SSL first>>.
+====
+
+Currently, only Undertow and Tomcat are supported with this configuration key.
+
+
+[[howto-configure-http2-undertow]]
+==== HTTP/2 with Undertow
+As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement
+on JDK8.
+
+
+[[howto-configure-http2-tomcat]]
+==== HTTP/2 with Tomcat
+Spring Boot ships by default with Tomcat 8.5.x; with that version,
+HTTP/2 is only supported if the `libtcnative` library and its dependencies
+are installed on the host operating system.
+
+The library folder must be made available, if not already, to the JVM library
+path; this can be done with a JVM argument such as
+`-Djava.library.path=/usr/local/opt/tomcat-native/lib`. More on this in the
+http://tomcat.apache.org/tomcat-8.5-doc/apr.html[official Tomcat
+documentation].
+
+Starting Tomcat 8.5.x without that native support will log the following error:
+
+[indent=0,subs="attributes"]
+----
+ERROR 8787 --- [           main] o.a.coyote.http11.Http11NioProtocol      : The upgrade handler [org.apache.coyote.http2.Http2Protocol] for [h2] only supports upgrade via ALPN but has been configured for the ["https-jsse-nio-8443"] connector that does not support ALPN.
+----
+
+This error is not fatal, and the application starts with HTTP/1.1 SSL
+support still.
+
+Running your application with Tomcat 9.0.x and JDK9 doesn't require any native
+library installed. To use Tomcat 9, you can override the `tomcat.version`
+build property with the version of your choice.
+
 [[howto-configure-accesslogs]]
 === Configure Access Logging
 Access logs can be configured for Tomcat, Undertow, and Jetty through their respective

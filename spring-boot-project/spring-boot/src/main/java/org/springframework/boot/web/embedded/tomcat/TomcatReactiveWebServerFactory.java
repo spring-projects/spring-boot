@@ -30,6 +30,7 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http2.Http2Protocol;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -141,8 +142,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
-		TomcatConnectorCustomizer ssl = new SslConnectorCustomizer(getSsl(), getSslStoreProvider());
-		ssl.customize(connector);
+		if (getSsl() != null && getSsl().isEnabled()) {
+			TomcatConnectorCustomizer ssl = new SslConnectorCustomizer(getSsl(), getSslStoreProvider());
+			ssl.customize(connector);
+			if (getHttp2() != null && getHttp2().getEnabled()) {
+				connector.addUpgradeProtocol(new Http2Protocol());
+			}
+		}
 		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
 		compression.customize(connector);
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {

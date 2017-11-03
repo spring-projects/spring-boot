@@ -36,6 +36,7 @@ import javax.servlet.ServletException;
 
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
+import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;
@@ -235,6 +236,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			SslBuilderCustomizer sslBuilderCustomizer =
 					new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider());
 			sslBuilderCustomizer.customize(builder);
+			if (getHttp2() != null) {
+				builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().getEnabled());
+			}
 		}
 		else {
 			builder.addHttpListener(port, getListenAddress());

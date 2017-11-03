@@ -59,6 +59,7 @@ import org.apache.catalina.webresources.AbstractResourceSet;
 import org.apache.catalina.webresources.EmptyResource;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http2.Http2Protocol;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
@@ -297,8 +298,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
 
-		TomcatConnectorCustomizer ssl = new SslConnectorCustomizer(getSsl(), getSslStoreProvider());
-		ssl.customize(connector);
+		if (getSsl() != null && getSsl().isEnabled()) {
+			TomcatConnectorCustomizer ssl = new SslConnectorCustomizer(getSsl(), getSslStoreProvider());
+			ssl.customize(connector);
+			if (getHttp2() != null && getHttp2().getEnabled()) {
+				connector.addUpgradeProtocol(new Http2Protocol());
+			}
+		}
 		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
 		compression.customize(connector);
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
