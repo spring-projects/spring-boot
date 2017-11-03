@@ -28,6 +28,7 @@ import org.springframework.core.convert.converter.Converter;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+// FIXME Andy - what is the solution to this again? See micrometer #160
 @ConfigurationPropertiesBinding
 public class StringToDurationConverter implements Converter<String, Duration> {
 

@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 /**
  * {@link ConfigurationProperties} for configuring metrics export to a
@@ -30,9 +32,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.metrics.export.simple")
 public class SimpleProperties {
 
+	/**
+	 * Enable publishing to the backend.
+	 */
 	private boolean enabled = true;
 
-	public boolean isEnabled() {
+	/**
+	 * The step size (reporting frequency) to use.
+	 */
+	private Duration step = Duration.ofSeconds(10);
+
+	public boolean getEnabled() {
 		return this.enabled;
 	}
 
@@ -40,4 +50,11 @@ public class SimpleProperties {
 		this.enabled = enabled;
 	}
 
+	public Duration getStep() {
+		return this.step;
+	}
+
+	public void setStep(Duration step) {
+		this.step = step;
+	}
 }

@@ -22,16 +22,20 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static io.micrometer.core.instrument.MockClock.clock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -42,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(WebEndpointRunners.class)
 public class MetricsEndpointWebIntegrationTests {
-
+	private static MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 	private static WebTestClient client;
 
 	private final ObjectMapper mapper = new ObjectMapper();
@@ -50,7 +54,7 @@ public class MetricsEndpointWebIntegrationTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void listNames() throws IOException {
-		String responseBody = MetricsEndpointWebIntegrationTests.client.get()
+		String responseBody = client.get()
 				.uri("/application/metrics").exchange().expectStatus().isOk()
 				.expectBody(String.class).returnResult().getResponseBody();
 		Map<String, List<String>> names = this.mapper.readValue(responseBody, Map.class);
@@ -59,14 +63,16 @@ public class MetricsEndpointWebIntegrationTests {
 
 	@Test
 	public void selectByName() throws IOException {
-		MetricsEndpointWebIntegrationTests.client.get()
+		clock(registry).add(SimpleConfig.DEFAULT_STEP);
+		client.get()
 				.uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("$.name").isEqualTo("jvm.memory.used");
 	}
 
 	@Test
 	public void selectByTag() {
-		MetricsEndpointWebIntegrationTests.client.get()
+		clock(registry).add(SimpleConfig.DEFAULT_STEP);
+		client.get()
 				.uri("/application/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space")
 				.exchange().expectStatus().isOk().expectBody().jsonPath("$.name")
 				.isEqualTo("jvm.memory.used");
@@ -77,7 +83,7 @@ public class MetricsEndpointWebIntegrationTests {
 
 		@Bean
 		public MeterRegistry registry() {
-			return new SimpleMeterRegistry();
+			return registry;
 		}
 
 		@Bean
