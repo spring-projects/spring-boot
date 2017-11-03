@@ -84,7 +84,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-			"javax.validation.ValidatorFactory" };
+			"javax.validation.ValidatorFactory",
+			"javax.validation.bootstrap.GenericBootstrap" };
 
 	private static final Log logger = LogFactory
 			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
