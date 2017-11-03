@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
-import org.springframework.boot.actuate.metrics.web.servlet.MetricsHandlerInterceptor;
+import org.springframework.boot.actuate.metrics.web.servlet.MetricsFilter;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetrics;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -30,8 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
  * Configures instrumentation of Spring Web MVC servlet-based request mappings.
@@ -61,27 +60,7 @@ public class WebMvcMetricsConfiguration {
 	}
 
 	@Bean
-	public MetricsHandlerInterceptor webMetricsInterceptor(
-			WebMvcMetrics controllerMetrics) {
-		return new MetricsHandlerInterceptor(controllerMetrics);
+	public MetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics, HandlerMappingIntrospector introspector) {
+		return new MetricsFilter(controllerMetrics, introspector);
 	}
-
-	@Configuration
-	public class MetricsServletRequestInterceptorConfiguration
-			implements WebMvcConfigurer {
-
-		private final MetricsHandlerInterceptor handlerInterceptor;
-
-		public MetricsServletRequestInterceptorConfiguration(
-				MetricsHandlerInterceptor handlerInterceptor) {
-			this.handlerInterceptor = handlerInterceptor;
-		}
-
-		@Override
-		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(this.handlerInterceptor);
-		}
-
-	}
-
 }

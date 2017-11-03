@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import java.time.Duration;
 
-import io.micrometer.core.instrument.spectator.step.StepRegistryConfig;
+import io.micrometer.core.instrument.step.StepRegistryConfig;
 
 /**
  * Base class for {@link StepRegistryProperties} to {@link StepRegistryConfig} adapters.
@@ -53,7 +53,7 @@ public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistry
 
 	@Override
 	public boolean enabled() {
-		return get(T::getEnabled, C::enabled);
+		return get(T::isEnabled, C::enabled);
 	}
 
 	@Override

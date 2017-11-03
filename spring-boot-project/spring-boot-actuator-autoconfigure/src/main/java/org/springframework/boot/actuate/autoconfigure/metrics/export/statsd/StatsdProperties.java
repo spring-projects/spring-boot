@@ -68,37 +68,7 @@ public class StatsdProperties {
 	 */
 	private Integer queueSize = Integer.MAX_VALUE;
 
-	/**
-	 * Used to create a bucket filter clamping the bucket domain of timer percentiles
-	 * histograms to some max value. This is used to limit the number of buckets shipped
-	 * to StatsD to save on storage.
-	 */
-	private Duration timerPercentilesMax = Duration.ofMinutes(2);
-
-	/**
-	 * Used to create a bucket filter clamping the bucket domain of timer percentiles
-	 * histograms to some min value. This is used to limit the number of buckets shipped
-	 * to StatsD to save on storage.
-	 */
-	private Duration timerPercentilesMin = Duration.ofMillis(10);
-
-	public Duration getTimerPercentilesMax() {
-		return this.timerPercentilesMax;
-	}
-
-	public void setTimerPercentilesMax(Duration timerPercentilesMax) {
-		this.timerPercentilesMax = timerPercentilesMax;
-	}
-
-	public Duration getTimerPercentilesMin() {
-		return this.timerPercentilesMin;
-	}
-
-	public void setTimerPercentilesMin(Duration timerPercentilesMin) {
-		this.timerPercentilesMin = timerPercentilesMin;
-	}
-
-	public Boolean getEnabled() {
+	public Boolean isEnabled() {
 		return this.enabled;
 	}
 

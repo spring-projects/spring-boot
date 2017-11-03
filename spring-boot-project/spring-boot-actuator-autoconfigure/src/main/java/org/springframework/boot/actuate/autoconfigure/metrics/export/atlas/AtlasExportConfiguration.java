@@ -21,14 +21,12 @@ import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StringToDurationConverter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Configuration for exporting metrics to Atlas.
@@ -39,7 +37,6 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ConditionalOnClass(AtlasMeterRegistry.class)
-@Import(StringToDurationConverter.class)
 @EnableConfigurationProperties(AtlasProperties.class)
 public class AtlasExportConfiguration {
 
