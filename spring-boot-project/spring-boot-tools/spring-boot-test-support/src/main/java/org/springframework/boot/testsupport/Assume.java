@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test;
+package org.springframework.boot.testsupport;
 
 import org.junit.AssumptionViolatedException;
 
-import org.springframework.boot.system.JavaVersion;
+import org.springframework.util.ClassUtils;
 
 /**
  * Provides utility methods that allow JUnit tests to {@link org.junit.Assume} certain
@@ -26,20 +26,13 @@ import org.springframework.boot.system.JavaVersion;
  * skipped.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
 public abstract class Assume {
 
-	/**
-	 * Assume that the specified {@link JavaVersion} is the one currently available.
-	 * @param version the expected Java version
-	 * @throws AssumptionViolatedException if the assumption fails
-	 */
-	public static void javaVersion(JavaVersion version) {
-		JavaVersion current = JavaVersion.getJavaVersion();
-		org.junit.Assume.assumeTrue(
-				String.format("This test should run on %s (got %s)", version, current),
-				current == version);
+	public static void javaEight() {
+		if (ClassUtils.isPresent("java.security.cert.URICertStoreParameters", null)) {
+			throw new AssumptionViolatedException("Assumed Java 8 but got Java 9");
+		}
 	}
 
 }

@@ -25,9 +25,9 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
-import org.springframework.boot.test.Assume;
 import org.springframework.boot.test.context.HideClassesClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.Assume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
@@ -48,7 +48,7 @@ public class ConditionalOnJavaTests {
 
 	@Test
 	public void doesNotMatchIfBetterVersionIsRequired() {
-		Assume.javaVersion(JavaVersion.EIGHT);
+		Assume.javaEight();
 		this.contextRunner.withUserConfiguration(Java9Required.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
@@ -93,13 +93,13 @@ public class ConditionalOnJavaTests {
 
 	@Test
 	public void java8IsDetected() throws Exception {
-		Assume.javaVersion(JavaVersion.EIGHT);
+		Assume.javaEight();
 		assertThat(getJavaVersion()).isEqualTo("1.8");
 	}
 
 	@Test
 	public void java8IsTheFallback() throws Exception {
-		Assume.javaVersion(JavaVersion.EIGHT);
+		Assume.javaEight();
 		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
 				.isEqualTo("1.8");
 	}
