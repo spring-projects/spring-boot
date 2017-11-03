@@ -39,11 +39,14 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
@@ -88,6 +91,8 @@ public class LiquibaseAutoConfiguration {
 
 		private final DataSource liquibaseDataSource;
 
+		private static final String VENDOR_PLACEHOLDER = "{vendor}";
+
 		public LiquibaseConfiguration(LiquibaseProperties properties,
 				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
@@ -99,7 +104,8 @@ public class LiquibaseAutoConfiguration {
 
 		@PostConstruct
 		public void checkChangelogExists() {
-			if (this.properties.isCheckChangeLogLocation()) {
+			if (!this.properties.getChangeLog().contains(VENDOR_PLACEHOLDER) &&
+					this.properties.isCheckChangeLogLocation()) {
 				Resource resource = this.resourceLoader
 						.getResource(this.properties.getChangeLog());
 				Assert.state(resource.exists(),
@@ -126,7 +132,7 @@ public class LiquibaseAutoConfiguration {
 		private SpringLiquibase createSpringLiquibase() {
 			DataSource liquibaseDataSource = getDataSource();
 			if (liquibaseDataSource != null) {
-				SpringLiquibase liquibase = new SpringLiquibase();
+				SpringLiquibase liquibase = new SpringBootLiquibase();
 				liquibase.setDataSource(liquibaseDataSource);
 				return liquibase;
 			}
@@ -169,11 +175,32 @@ public class LiquibaseAutoConfiguration {
 
 	}
 
+	private static class SpringBootLiquibase extends SpringLiquibase {
+
+		@Override
+		public void setChangeLog(String changelog) {
+			if (changelog.contains(LiquibaseConfiguration.VENDOR_PLACEHOLDER)) {
+				try {
+					String url = (String) JdbcUtils
+							.extractDatabaseMetaData(getDataSource(), "getURL");
+					DatabaseDriver vendor = DatabaseDriver.fromJdbcUrl(url);
+					if (vendor != DatabaseDriver.UNKNOWN) {
+						changelog = changelog.replace(LiquibaseConfiguration.VENDOR_PLACEHOLDER, vendor.getId());
+					}
+				}
+				catch (MetaDataAccessException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+			super.setChangeLog(changelog);
+		}
+	}
+
 	/**
 	 * A custom {@link SpringLiquibase} extension that closes the underlying
 	 * {@link DataSource} once the database has been migrated.
 	 */
-	private static final class DataSourceClosingSpringLiquibase extends SpringLiquibase {
+	private static final class DataSourceClosingSpringLiquibase extends SpringBootLiquibase {
 
 		@Override
 		public void afterPropertiesSet() throws LiquibaseException {
