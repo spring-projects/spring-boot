@@ -99,7 +99,7 @@
 		<johnzon-jsonb.version>1.1.4</johnzon-jsonb.version>
 		<jooq.version>3.10.1</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
-		<javax-json.version>1.1</javax-json.version>
+		<javax-json.version>1.1.2</javax-json.version>
 		<javax-jsonb.version>1.0</javax-jsonb.version>
 		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
