@@ -63,28 +63,31 @@ class ReactiveCloudFoundrySecurityInterceptor {
 		}
 		if (!StringUtils.hasText(this.applicationId)) {
 			return Mono.error(new CloudFoundryAuthorizationException(
-					Reason.SERVICE_UNAVAILABLE,
-					"Application id is not available"));
+					Reason.SERVICE_UNAVAILABLE, "Application id is not available"));
 		}
 		if (this.cloudFoundrySecurityService == null) {
 			return Mono.error(new CloudFoundryAuthorizationException(
-					Reason.SERVICE_UNAVAILABLE,
-					"Cloud controller URL is not available"));
+					Reason.SERVICE_UNAVAILABLE, "Cloud controller URL is not available"));
 		}
-		return check(exchange, endpointId)
-				.then(SUCCESS)
-				.doOnError(throwable -> logger.error(throwable.getMessage(), throwable))
+		return check(exchange, endpointId).then(SUCCESS).doOnError(this::logError)
 				.onErrorResume(this::getErrorResponse);
+	}
+
+	private void logError(Throwable ex) {
+		logger.error(ex.getMessage(), ex);
 	}
 
 	private Mono<Void> check(ServerWebExchange exchange, String path) {
 		try {
 			Token token = getToken(exchange.getRequest());
-			return this.tokenValidator.validate(token).then(this.cloudFoundrySecurityService.getAccessLevel(token.toString(), this.applicationId))
-					.filter(accessLevel -> accessLevel.isAccessAllowed(path))
-					.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
-							"Access denied")))
-					.doOnSuccess(accessLevel -> exchange.getAttributes().put("cloudFoundryAccessLevel", accessLevel))
+			return this.tokenValidator.validate(token)
+					.then(this.cloudFoundrySecurityService
+							.getAccessLevel(token.toString(), this.applicationId))
+					.filter((accessLevel) -> accessLevel.isAccessAllowed(path))
+					.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
+							Reason.ACCESS_DENIED, "Access denied")))
+					.doOnSuccess((accessLevel) -> exchange.getAttributes()
+							.put("cloudFoundryAccessLevel", accessLevel))
 					.then();
 		}
 		catch (CloudFoundryAuthorizationException ex) {
@@ -107,8 +110,7 @@ class ReactiveCloudFoundrySecurityInterceptor {
 		String bearerPrefix = "bearer ";
 		if (authorization == null
 				|| !authorization.toLowerCase().startsWith(bearerPrefix)) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.MISSING_AUTHORIZATION,
+			throw new CloudFoundryAuthorizationException(Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}
 		return new Token(authorization.substring(bearerPrefix.length()));

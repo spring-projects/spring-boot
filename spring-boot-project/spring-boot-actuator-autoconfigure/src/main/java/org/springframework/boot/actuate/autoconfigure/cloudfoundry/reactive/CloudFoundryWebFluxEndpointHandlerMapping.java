@@ -28,6 +28,7 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -58,7 +59,8 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping {
+class CloudFoundryWebFluxEndpointHandlerMapping
+		extends AbstractWebFluxEndpointHandlerMapping {
 
 	private final Method handleRead = ReflectionUtils
 			.findMethod(ReadOperationHandler.class, "handle", ServerWebExchange.class);
@@ -85,38 +87,38 @@ public class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEn
 		if (operation.isBlocking()) {
 			operationInvoker = new ElasticSchedulerOperationInvoker(operationInvoker);
 		}
-		registerMapping(createRequestMappingInfo(operation),
-				operationType == OperationType.WRITE
-						? new WriteOperationHandler(operationInvoker, operation.getId())
-						: new ReadOperationHandler(operationInvoker, operation.getId()),
-				operationType == OperationType.WRITE ? this.handleWrite
-						: this.handleRead);
+		Object handler = (operationType == OperationType.WRITE
+				? new WriteOperationHandler(operationInvoker, operation.getId())
+				: new ReadOperationHandler(operationInvoker, operation.getId()));
+		Method method = (operationType == OperationType.WRITE ? this.handleWrite
+				: this.handleRead);
+		registerMapping(createRequestMappingInfo(operation), handler, method);
 	}
 
 	@ResponseBody
 	private Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
 		ServerHttpRequest request = exchange.getRequest();
-		return this.securityInterceptor
-				.preHandle(exchange, "")
-				.map(securityResponse -> {
-					if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-						return new ResponseEntity<>(securityResponse.getStatus());
-					}
-					AccessLevel accessLevel = exchange.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-					Map<String, Link> links = this.endpointLinksResolver.resolveLinks(getEndpoints(),
-							request.getURI().toString());
-					return new ResponseEntity<>(Collections.singletonMap("_links",
-							getAccessibleLinks(accessLevel, links)), HttpStatus.OK);
-				});
+		return this.securityInterceptor.preHandle(exchange, "").map(securityResponse -> {
+			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
+				return new ResponseEntity<>(securityResponse.getStatus());
+			}
+			AccessLevel accessLevel = exchange
+					.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
+			Map<String, Link> links = this.endpointLinksResolver
+					.resolveLinks(getEndpoints(), request.getURI().toString());
+			return new ResponseEntity<>(Collections.singletonMap("_links",
+					getAccessibleLinks(accessLevel, links)), HttpStatus.OK);
+		});
 	}
 
-	private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel, Map<String, Link> links) {
+	private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel,
+			Map<String, Link> links) {
 		if (accessLevel == null) {
 			return new LinkedHashMap<>();
 		}
 		return links.entrySet().stream()
-				.filter((e) -> e.getKey().equals("self")
-						|| accessLevel.isAccessAllowed(e.getKey()))
+				.filter((entry) -> entry.getKey().equals("self")
+						|| accessLevel.isAccessAllowed(entry.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
@@ -129,7 +131,7 @@ public class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEn
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 * @param securityInterceptor the Security Interceptor
 	 */
-	public CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
+	CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
 			ReactiveCloudFoundrySecurityInterceptor securityInterceptor) {
@@ -148,31 +150,35 @@ public class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEn
 
 		private final ReactiveCloudFoundrySecurityInterceptor securityInterceptor;
 
-		AbstractOperationHandler(OperationInvoker operationInvoker, String endpointId, ReactiveCloudFoundrySecurityInterceptor securityInterceptor) {
+		AbstractOperationHandler(OperationInvoker operationInvoker, String endpointId,
+				ReactiveCloudFoundrySecurityInterceptor securityInterceptor) {
 			this.operationInvoker = operationInvoker;
 			this.endpointId = endpointId;
 			this.securityInterceptor = securityInterceptor;
 		}
 
-		@SuppressWarnings({ "unchecked" })
 		Publisher<ResponseEntity<Object>> doHandle(ServerWebExchange exchange,
 				Map<String, String> body) {
-			return this.securityInterceptor
-					.preHandle(exchange, this.endpointId)
-					.flatMap(securityResponse -> {
-						if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-							return Mono.just(new ResponseEntity<>(securityResponse.getStatus()));
-						}
-						Map<String, Object> arguments = new HashMap<>(exchange
-								.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
-						if (body != null) {
-							arguments.putAll(body);
-						}
-						exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
-								.put(name, values.size() == 1 ? values.get(0) : values));
-						return handleResult((Publisher<?>) this.operationInvoker.invoke(arguments),
-								exchange.getRequest().getMethod());
-					});
+			return this.securityInterceptor.preHandle(exchange, this.endpointId)
+					.flatMap((securityResponse) -> flatMapResponse(exchange, body,
+							securityResponse));
+		}
+
+		private Mono<? extends ResponseEntity<Object>> flatMapResponse(
+				ServerWebExchange exchange, Map<String, String> body,
+				SecurityResponse securityResponse) {
+			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
+				return Mono.just(new ResponseEntity<>(securityResponse.getStatus()));
+			}
+			Map<String, Object> arguments = new HashMap<>(exchange
+					.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
+			if (body != null) {
+				arguments.putAll(body);
+			}
+			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
+					.put(name, (values.size() == 1 ? values.get(0) : values)));
+			return handleResult((Publisher<?>) this.operationInvoker.invoke(arguments),
+					exchange.getRequest().getMethod());
 		}
 
 		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result,
@@ -203,7 +209,8 @@ public class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEn
 	final class WriteOperationHandler extends AbstractOperationHandler {
 
 		WriteOperationHandler(OperationInvoker operationInvoker, String endpointId) {
-			super(operationInvoker, endpointId, CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor);
+			super(operationInvoker, endpointId,
+					CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor);
 		}
 
 		@ResponseBody
@@ -220,7 +227,8 @@ public class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEn
 	final class ReadOperationHandler extends AbstractOperationHandler {
 
 		ReadOperationHandler(OperationInvoker operationInvoker, String endpointId) {
-			super(operationInvoker, endpointId, CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor);
+			super(operationInvoker, endpointId,
+					CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor);
 		}
 
 		@ResponseBody

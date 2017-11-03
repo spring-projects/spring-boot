@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
  * Authorization exceptions thrown to limit access to the endpoints.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class CloudFoundryAuthorizationException extends RuntimeException {
 
@@ -31,7 +32,8 @@ public class CloudFoundryAuthorizationException extends RuntimeException {
 		this(reason, message, null);
 	}
 
-	public CloudFoundryAuthorizationException(Reason reason, String message, Throwable cause) {
+	public CloudFoundryAuthorizationException(Reason reason, String message,
+			Throwable cause) {
 		super(message);
 		this.reason = reason;
 	}

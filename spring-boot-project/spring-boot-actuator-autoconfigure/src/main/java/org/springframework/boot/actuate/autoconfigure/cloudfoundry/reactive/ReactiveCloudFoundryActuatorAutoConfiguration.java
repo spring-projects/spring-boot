@@ -69,13 +69,16 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebFluxEndpointHandlerMapping(
 			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			WebClient.Builder webClientBuilder, Environment environment,
-			DefaultCachingConfigurationFactory cachingConfigurationFactory, WebEndpointProperties webEndpointProperties) {
+			DefaultCachingConfigurationFactory cachingConfigurationFactory,
+			WebEndpointProperties webEndpointProperties) {
 		WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
 				this.applicationContext, parameterMapper, cachingConfigurationFactory,
 				endpointMediaTypes, (id) -> id);
 		return new CloudFoundryWebFluxEndpointHandlerMapping(
 				new EndpointMapping("/cloudfoundryapplication"),
-				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes, getCorsConfiguration(), getSecurityInterceptor(webClientBuilder, environment));
+				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+				getCorsConfiguration(),
+				getSecurityInterceptor(webClientBuilder, environment));
 	}
 
 	private ReactiveCloudFoundrySecurityInterceptor getSecurityInterceptor(
@@ -91,11 +94,10 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 
 	private ReactiveCloudFoundrySecurityService getCloudFoundrySecurityService(
 			WebClient.Builder webClientBuilder, Environment environment) {
-		String cloudControllerUrl = environment
-				.getProperty("vcap.application.cf_api");
+		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		return (cloudControllerUrl == null ? null
 				: new ReactiveCloudFoundrySecurityService(webClientBuilder,
-				cloudControllerUrl));
+						cloudControllerUrl));
 	}
 
 	private CorsConfiguration getCorsConfiguration() {
@@ -111,30 +113,38 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(MatcherSecurityWebFilterChain.class)
 	static class IgnoredPathsSecurityConfiguration {
+
 		@Bean
-		public BeanPostProcessor webFilterChainPostProcessor() {
-			return new BeanPostProcessor() {
-				@Override
-				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-					if (bean instanceof WebFilterChainProxy) {
-						return postProcess((WebFilterChainProxy) bean);
-					}
-					return bean;
-				}
-			};
+		public WebFilterChainPostProcessor webFilterChainPostProcessor() {
+			return new WebFilterChainPostProcessor();
 		}
 
-		WebFilterChainProxy postProcess(WebFilterChainProxy existing) {
-			ServerWebExchangeMatcher cloudFoundryRequestMatcher = ServerWebExchangeMatchers.pathMatchers(
-					"/cloudfoundryapplication/**");
+	}
+
+	private static class WebFilterChainPostProcessor implements BeanPostProcessor {
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName)
+				throws BeansException {
+			if (bean instanceof WebFilterChainProxy) {
+				return postProcess((WebFilterChainProxy) bean);
+			}
+			return bean;
+		}
+
+		private WebFilterChainProxy postProcess(WebFilterChainProxy existing) {
+			ServerWebExchangeMatcher cloudFoundryRequestMatcher = ServerWebExchangeMatchers
+					.pathMatchers("/cloudfoundryapplication/**");
 			WebFilter noOpFilter = (exchange, chain) -> chain.filter(exchange);
 			MatcherSecurityWebFilterChain ignoredRequestFilterChain = new MatcherSecurityWebFilterChain(
 					cloudFoundryRequestMatcher, Collections.singletonList(noOpFilter));
 			MatcherSecurityWebFilterChain allRequestsFilterChain = new MatcherSecurityWebFilterChain(
-					ServerWebExchangeMatchers.anyExchange(), Collections.singletonList(existing));
-			return new WebFilterChainProxy(ignoredRequestFilterChain, allRequestsFilterChain);
+					ServerWebExchangeMatchers.anyExchange(),
+					Collections.singletonList(existing));
+			return new WebFilterChainProxy(ignoredRequestFilterChain,
+					allRequestsFilterChain);
 		}
+
 	}
 
 }
-

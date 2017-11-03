@@ -56,7 +56,8 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping implements InitializingBean {
+public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping
+		implements InitializingBean {
 
 	private final Method handleRead = ReflectionUtils
 			.findMethod(ReadOperationHandler.class, "handle", ServerWebExchange.class);
@@ -111,8 +112,10 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		}
 		registerMapping(createRequestMappingInfo(operation),
 				operationType == OperationType.WRITE
-						? new WebFluxEndpointHandlerMapping.WriteOperationHandler(operationInvoker)
-						: new WebFluxEndpointHandlerMapping.ReadOperationHandler(operationInvoker),
+						? new WebFluxEndpointHandlerMapping.WriteOperationHandler(
+								operationInvoker)
+						: new WebFluxEndpointHandlerMapping.ReadOperationHandler(
+								operationInvoker),
 				operationType == OperationType.WRITE ? this.handleWrite
 						: this.handleRead);
 	}
@@ -124,6 +127,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 						UriComponentsBuilder.fromUri(request.getURI()).replaceQuery(null)
 								.toUriString()));
 	}
+
 	/**
 	 * Base class for handlers for endpoint operations.
 	 */

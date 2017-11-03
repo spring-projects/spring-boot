@@ -23,7 +23,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.junit.Test;
-import org.mockito.BDDMockito;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
@@ -37,6 +36,7 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -60,6 +60,7 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -69,7 +70,8 @@ import static org.mockito.Mockito.mock;
  */
 public class CloudFoundryWebFluxEndpointIntegrationTests {
 
-	private static ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
+	private static ReactiveTokenValidator tokenValidator = mock(
+			ReactiveTokenValidator.class);
 
 	private static ReactiveCloudFoundrySecurityService securityService = mock(
 			ReactiveCloudFoundrySecurityService.class);
@@ -137,7 +139,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	public void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(
 				Reason.INVALID_TOKEN, "invalid-token");
-		BDDMockito.willThrow(exception).given(tokenValidator).validate(any());
+		willThrow(exception).given(tokenValidator).validate(any());
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication")
 						.accept(MediaType.APPLICATION_JSON)
@@ -203,8 +205,8 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 
 		@Bean
 		public ReactiveCloudFoundrySecurityInterceptor interceptor() {
-			return new ReactiveCloudFoundrySecurityInterceptor(tokenValidator, securityService,
-					"app-id");
+			return new ReactiveCloudFoundrySecurityInterceptor(tokenValidator,
+					securityService, "app-id");
 		}
 
 		@Bean
@@ -235,7 +237,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 					DefaultConversionService.getSharedInstance());
 			return new WebAnnotationEndpointDiscoverer(applicationContext,
 					parameterMapper, (id) -> new CachingConfiguration(0),
-					endpointMediaTypes, (id) -> id);
+					endpointMediaTypes, EndpointPathResolver.useEndpointId());
 		}
 
 		@Bean

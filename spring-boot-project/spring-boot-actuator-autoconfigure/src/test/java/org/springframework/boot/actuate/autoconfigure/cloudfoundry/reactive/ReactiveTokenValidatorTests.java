@@ -100,100 +100,125 @@ public class ReactiveTokenValidatorTests {
 	public void validateTokenWhenKidValidationFailsShouldThrowException()
 			throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(INVALID_KEYS));
-		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl())
+				.willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		StepVerifier.create(this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())))).consumeErrorWith(throwable -> {
-					assertThat(throwable).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
-					assertThat(((CloudFoundryAuthorizationException) throwable)
-							.getReason()).isEqualTo(Reason.INVALID_KEY_ID);
+		StepVerifier
+				.create(this.tokenValidator.validate(
+						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.consumeErrorWith((ex) -> {
+					assertThat(ex).isExactlyInstanceOf(
+							CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+							.isEqualTo(Reason.INVALID_KEY_ID);
 				}).verify();
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationSucceeds()
-			throws Exception {
+	public void validateTokenWhenKidValidationSucceeds() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl())
+				.willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		StepVerifier.create(this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())))).verifyComplete();
+		StepVerifier
+				.create(this.tokenValidator.validate(
+						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.verifyComplete();
 	}
 
 	@Test
 	public void validateTokenWhenSignatureInvalidShouldThrowException() throws Exception {
-		Map<String, String> KEYS = Collections
-				.singletonMap("valid-key", INVALID_KEY);
+		Map<String, String> KEYS = Collections.singletonMap("valid-key", INVALID_KEY);
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(KEYS));
-		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl())
+				.willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		StepVerifier.create(this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())))).consumeErrorWith(throwable -> {
-			assertThat(throwable).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
-			assertThat(((CloudFoundryAuthorizationException) throwable)
-					.getReason()).isEqualTo(Reason.INVALID_SIGNATURE);
-		}).verify();
+		StepVerifier
+				.create(this.tokenValidator.validate(
+						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.consumeErrorWith((ex) -> {
+					assertThat(ex).isExactlyInstanceOf(
+							CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+							.isEqualTo(Reason.INVALID_SIGNATURE);
+				}).verify();
 	}
 
 	@Test
 	public void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException()
 			throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl())
+				.willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"HS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		StepVerifier.create(this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())))).consumeErrorWith(throwable -> {
-			assertThat(throwable).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
-			assertThat(((CloudFoundryAuthorizationException) throwable)
-					.getReason()).isEqualTo(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM);
-		}).verify();
+		StepVerifier
+				.create(this.tokenValidator.validate(
+						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.consumeErrorWith((ex) -> {
+					assertThat(ex).isExactlyInstanceOf(
+							CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+							.isEqualTo(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM);
+				}).verify();
 	}
 
 	@Test
 	public void validateTokenWhenExpiredShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl())
+				.willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"jti\": \"0236399c350c47f3ae77e67a75e75e7d\", \"exp\": 1477509977, \"scope\": [\"actuator.read\"]}";
-		StepVerifier.create(this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())))).consumeErrorWith(throwable -> {
-			assertThat(throwable).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
-			assertThat(((CloudFoundryAuthorizationException) throwable)
-					.getReason()).isEqualTo(Reason.TOKEN_EXPIRED);
-		}).verify();
+		StepVerifier
+				.create(this.tokenValidator.validate(
+						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.consumeErrorWith((ex) -> {
+					assertThat(ex).isExactlyInstanceOf(
+							CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+							.isEqualTo(Reason.TOKEN_EXPIRED);
+				}).verify();
 	}
 
 	@Test
 	public void validateTokenWhenIssuerIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://other-uaa.com"));
+		given(this.securityService.getUaaUrl())
+				.willReturn(Mono.just("http://other-uaa.com"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\", \"scope\": [\"actuator.read\"]}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"foo.bar\"]}";
-		StepVerifier.create(this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())))).consumeErrorWith(throwable -> {
-			assertThat(throwable).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
-			assertThat(((CloudFoundryAuthorizationException) throwable)
-					.getReason()).isEqualTo(Reason.INVALID_ISSUER);
-		}).verify();
+		StepVerifier
+				.create(this.tokenValidator.validate(
+						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.consumeErrorWith((ex) -> {
+					assertThat(ex).isExactlyInstanceOf(
+							CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+							.isEqualTo(Reason.INVALID_ISSUER);
+				}).verify();
 	}
 
 	@Test
 	public void validateTokenWhenAudienceIsNotValidShouldThrowException()
 			throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl())
+				.willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"foo.bar\"]}";
-		StepVerifier.create(this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())))).consumeErrorWith(throwable -> {
-			assertThat(throwable).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
-			assertThat(((CloudFoundryAuthorizationException) throwable)
-					.getReason()).isEqualTo(Reason.INVALID_AUDIENCE);
-		}).verify();
+		StepVerifier
+				.create(this.tokenValidator.validate(
+						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.consumeErrorWith((ex) -> {
+					assertThat(ex).isExactlyInstanceOf(
+							CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+							.isEqualTo(Reason.INVALID_AUDIENCE);
+				}).verify();
 	}
 
 	private String getSignedToken(byte[] header, byte[] claims) throws Exception {

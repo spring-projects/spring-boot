@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
  * The JSON web token provided with each request that originates from Cloud Foundry.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class Token {
 
@@ -47,16 +48,14 @@ public class Token {
 		int firstPeriod = encoded.indexOf('.');
 		int lastPeriod = encoded.lastIndexOf('.');
 		if (firstPeriod <= 0 || lastPeriod <= firstPeriod) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.INVALID_TOKEN,
+			throw new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 					"JWT must have header, body and signature");
 		}
 		this.header = parseJson(encoded.substring(0, firstPeriod));
 		this.claims = parseJson(encoded.substring(firstPeriod + 1, lastPeriod));
 		this.signature = encoded.substring(lastPeriod + 1);
 		if (!StringUtils.hasLength(this.signature)) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.INVALID_TOKEN,
+			throw new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 					"Token must have non-empty crypto segment");
 		}
 	}
@@ -67,8 +66,7 @@ public class Token {
 			return JsonParserFactory.getJsonParser().parseMap(new String(bytes, UTF_8));
 		}
 		catch (RuntimeException ex) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.INVALID_TOKEN,
+			throw new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 					"Token could not be parsed", ex);
 		}
 	}
@@ -106,13 +104,11 @@ public class Token {
 	private <T> T getRequired(Map<String, Object> map, String key, Class<T> type) {
 		Object value = map.get(key);
 		if (value == null) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.INVALID_TOKEN,
+			throw new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 					"Unable to get value from key " + key);
 		}
 		if (!type.isInstance(value)) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.INVALID_TOKEN,
+			throw new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 					"Unexpected value type from key " + key + " value " + value);
 		}
 		return (T) value;

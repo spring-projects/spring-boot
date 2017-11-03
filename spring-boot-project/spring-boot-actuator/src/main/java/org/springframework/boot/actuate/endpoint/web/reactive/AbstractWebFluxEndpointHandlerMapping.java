@@ -48,8 +48,10 @@ import org.springframework.web.util.pattern.PathPatternParser;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @since 2.0.0
  */
-public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapping {
+public abstract class AbstractWebFluxEndpointHandlerMapping
+		extends RequestMappingInfoHandlerMapping {
 
 	private static final PathPatternParser pathPatternParser = new PathPatternParser();
 
@@ -103,18 +105,16 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	private void registerLinksMapping() {
-		registerMapping(
-				new RequestMappingInfo(
-						new PatternsRequestCondition(
-								pathPatternParser.parse(this.endpointMapping.getPath())),
-						new RequestMethodsRequestCondition(RequestMethod.GET), null, null,
-						null,
-						new ProducesRequestCondition(
-								this.endpointMediaTypes.getProduced()
-										.toArray(new String[this.endpointMediaTypes
-												.getProduced().size()])),
-						null),
-				this, getLinks());
+		PatternsRequestCondition patterns = new PatternsRequestCondition(
+				pathPatternParser.parse(this.endpointMapping.getPath()));
+		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
+				RequestMethod.GET);
+		ProducesRequestCondition produces = new ProducesRequestCondition(
+				this.endpointMediaTypes.getProduced().toArray(
+						new String[this.endpointMediaTypes.getProduced().size()]));
+		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null,
+				null, produces, null);
+		registerMapping(mapping, this, getLinks());
 	}
 
 	protected RequestMappingInfo createRequestMappingInfo(
@@ -193,4 +193,3 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 }
-
