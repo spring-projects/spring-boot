@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.catalina.Context;
@@ -56,7 +57,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private String protocol = DEFAULT_PROTOCOL;
 
-	private List<LifecycleListener> contextLifecycleListeners = Arrays.asList(new AprLifecycleListener());
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<LifecycleListener>(
+			Collections.singleton(new AprLifecycleListener()));
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
 
@@ -120,15 +122,11 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param context the Tomcat context
 	 */
 	protected void configureContext(Context context) {
-		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
-			context.addLifecycleListener(lifecycleListener);
-		}
-		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
-			customizer.customize(context);
-		}
+		this.contextLifecycleListeners.forEach(context::addLifecycleListener);
+		this.tomcatContextCustomizers
+				.forEach((customizer) -> customizer.customize(context));
 	}
 
-	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
 		int port = (getPort() >= 0 ? getPort() : 0);
 		connector.setPort(port);
@@ -138,18 +136,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
-
-		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
-		// prematurely...
+		// Don't bind to the socket prematurely if ApplicationContext is slow to start
 		connector.setProperty("bindOnInit", "false");
 		if (getSsl() != null && getSsl().isEnabled()) {
-			TomcatConnectorCustomizer ssl = new SslConnectorCustomizer(getSsl(), getSslStoreProvider());
-			ssl.customize(connector);
-			if (getHttp2() != null && getHttp2().getEnabled()) {
-				connector.addUpgradeProtocol(new Http2Protocol());
-			}
+			customizeSsl(connector);
 		}
-		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
+		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(
+				getCompression());
 		compression.customize(connector);
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
@@ -159,6 +152,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	private void customizeProtocol(AbstractProtocol<?> protocol) {
 		if (getAddress() != null) {
 			protocol.setAddress(getAddress());
+		}
+	}
+
+	private void customizeSsl(Connector connector) {
+		new SslConnectorCustomizer(getSsl(), getSslStoreProvider()).customize(connector);
+		if (getHttp2() != null && getHttp2().getEnabled()) {
+			connector.addUpgradeProtocol(new Http2Protocol());
 		}
 	}
 
@@ -259,7 +259,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 				"ContextLifecycleListeners must not be null");
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
 	}
-
 
 	/**
 	 * Factory method called to create the {@link TomcatWebServer}. Subclasses can

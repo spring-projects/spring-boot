@@ -56,13 +56,11 @@ public class SslConnectorCustomizerTests {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("test.jks");
 		ssl.setKeyStorePassword("secret");
-		ssl.setCiphers(new String[] {"ALPHA", "BRAVO", "CHARLIE"});
-
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
-
 		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler()
 				.findSslHostConfigs();
 		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("ALPHA:BRAVO:CHARLIE");
@@ -73,15 +71,12 @@ public class SslConnectorCustomizerTests {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
-
-		ssl.setEnabledProtocols(new String[] {"TLSv1.1", "TLSv1.2"});
-		ssl.setCiphers(new String[] {"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO"});
-
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
-
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
 				.findSslHostConfigs()[0];
 		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
@@ -94,18 +89,16 @@ public class SslConnectorCustomizerTests {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
-
-		ssl.setEnabledProtocols(new String[] {"TLSv1.2"});
-		ssl.setCiphers(new String[] {"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO"});
-
+		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
-
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
 				.findSslHostConfigs()[0];
 		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
 		assertThat(sslHostConfig.getEnabledProtocols()).containsExactly("TLSv1.2");
 	}
+
 }

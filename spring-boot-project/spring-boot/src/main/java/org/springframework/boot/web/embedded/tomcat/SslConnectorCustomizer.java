@@ -33,8 +33,7 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link TomcatConnectorCustomizer} that configures SSL support
- * on the given connector.
+ * {@link TomcatConnectorCustomizer} that configures SSL support on the given connector.
  *
  * @author Brian Clozel
  */
@@ -56,8 +55,8 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
 				"To use SSL, the connector's protocol handler must be an "
 						+ "AbstractHttp11JsseProtocol subclass");
-		configureSsl((AbstractHttp11JsseProtocol<?>) handler,
-				this.ssl, this.sslStoreProvider);
+		configureSsl((AbstractHttp11JsseProtocol<?>) handler, this.ssl,
+				this.sslStoreProvider);
 		connector.setScheme("https");
 		connector.setSecure(true);
 	}
@@ -68,8 +67,8 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	 * @param ssl the ssl details
 	 * @param sslStoreProvider the ssl store provider
 	 */
-	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol,
-			Ssl ssl, SslStoreProvider sslStoreProvider) {
+	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl,
+			SslStoreProvider sslStoreProvider) {
 		protocol.setSSLEnabled(true);
 		protocol.setSslProtocol(ssl.getProtocol());
 		configureSslClientAuth(protocol, ssl);
@@ -112,8 +111,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 				.getInstance();
 		instance.addUserFactory(
 				new SslStoreProviderUrlStreamHandlerFactory(sslStoreProvider));
-		protocol.setKeystoreFile(
-				SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+		protocol.setKeystoreFile(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
 		protocol.setTruststoreFile(
 				SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
 	}
@@ -153,4 +151,5 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 			protocol.setTruststoreProvider(ssl.getTrustStoreProvider());
 		}
 	}
+
 }

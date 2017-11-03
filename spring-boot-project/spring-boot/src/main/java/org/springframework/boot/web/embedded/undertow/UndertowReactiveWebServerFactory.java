@@ -87,12 +87,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			builder.setDirectBuffers(this.directBuffers);
 		}
 		if (getSsl() != null && getSsl().isEnabled()) {
-			SslBuilderCustomizer sslBuilderCustomizer =
-					new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider());
-			sslBuilderCustomizer.customize(builder);
-			if (getHttp2() != null) {
-				builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().getEnabled());
-			}
+			customizeSsl(builder);
 		}
 		else {
 			builder.addHttpListener(port, getListenAddress());
@@ -101,6 +96,15 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			customizer.customize(builder);
 		}
 		return builder;
+	}
+
+	private void customizeSsl(Undertow.Builder builder) {
+		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider())
+				.customize(builder);
+		if (getHttp2() != null) {
+			builder.setServerOption(UndertowOptions.ENABLE_HTTP2,
+					getHttp2().getEnabled());
+		}
 	}
 
 	private String getListenAddress() {

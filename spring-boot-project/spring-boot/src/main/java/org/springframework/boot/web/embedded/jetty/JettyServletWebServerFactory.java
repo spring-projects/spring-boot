@@ -153,9 +153,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		configureWebAppContext(context, initializers);
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
-		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(port,
-				getSsl(), getSslStoreProvider());
-		sslServerCustomizer.customize(server);
+		new SslServerCustomizer(port, getSsl(), getSslStoreProvider()).customize(server);
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
 		}
@@ -167,7 +165,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private Server createServer(InetSocketAddress address) {
 		Server server = new Server(getThreadPool());
-		server.setConnectors(new Connector[] {createConnector(address, server)});
+		server.setConnectors(new Connector[] { createConnector(address, server) });
 		return server;
 	}
 
@@ -338,7 +336,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		context.getServletHandler().addServlet(holder);
 		ServletMapping mapping = new ServletMapping();
 		mapping.setServletName("jsp");
-		mapping.setPathSpecs(new String[] {"*.jsp", "*.jspx"});
+		mapping.setPathSpecs(new String[] { "*.jsp", "*.jspx" });
 		context.getServletHandler().addServletMapping(mapping);
 	}
 

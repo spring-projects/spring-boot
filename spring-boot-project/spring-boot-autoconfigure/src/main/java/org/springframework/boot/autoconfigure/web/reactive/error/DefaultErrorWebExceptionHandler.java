@@ -193,10 +193,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 */
 	protected void logError(ServerRequest request, HttpStatus errorStatus) {
 		if (errorStatus.is5xxServerError()) {
-			Throwable error = getError(request);
-			final String message = "Failed to handle request ["
-					+ request.methodName() + " " + request.uri() + "]";
-			logger.error(message, error);
+			Throwable ex = getError(request);
+			logger.error("Failed to handle request [" + request.methodName() + " "
+					+ request.uri() + "]", ex);
 		}
 	}
 

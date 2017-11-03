@@ -36,4 +36,5 @@ public class Http2 {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
 }

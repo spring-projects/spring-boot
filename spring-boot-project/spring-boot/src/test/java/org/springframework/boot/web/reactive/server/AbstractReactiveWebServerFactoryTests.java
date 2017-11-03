@@ -79,8 +79,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		factory.setPort(specificPort);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		Mono<String> result = getWebClient().build().post()
-				.uri("/test").contentType(MediaType.TEXT_PLAIN)
+		Mono<String> result = getWebClient().build().post().uri("/test")
+				.contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block()).isEqualTo("Hello World");
@@ -97,7 +97,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		testBasicSslWithKeyStore("src/test/resources/test.jks");
 	}
 
-
 	protected final void testBasicSslWithKeyStore(String keyStore) throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		Ssl ssl = new Ssl();
@@ -106,30 +105,27 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		factory.setSsl(ssl);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-
 		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
 		WebClient client = WebClient.builder()
 				.baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(connector).build();
-
-		Mono<String> result = client.post()
-				.uri("/test").contentType(MediaType.TEXT_PLAIN)
+		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block()).isEqualTo("Hello World");
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
-		return new ReactorClientHttpConnector(options -> options
-				.sslSupport(sslContextBuilder -> {
-					sslContextBuilder
-							.sslProvider(SslProvider.JDK)
+		return new ReactorClientHttpConnector(
+				(options) -> options.sslSupport(sslContextBuilder -> {
+					sslContextBuilder.sslProvider(SslProvider.JDK)
 							.trustManager(InsecureTrustManagerFactory.INSTANCE);
 				}));
 	}
 
 	protected WebClient.Builder getWebClient() {
-		return WebClient.builder().baseUrl("http://localhost:" + this.webServer.getPort());
+		return WebClient.builder()
+				.baseUrl("http://localhost:" + this.webServer.getPort());
 	}
 
 	protected static class EchoHandler implements HttpHandler {

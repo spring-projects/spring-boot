@@ -44,8 +44,7 @@ import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.ResourceUtils;
 
 /**
- * {@link UndertowBuilderCustomizer} that configures SSL
- * on the given builder instance.
+ * {@link UndertowBuilderCustomizer} that configures SSL on the given builder instance.
  *
  * @author Brian Clozel
  */
@@ -59,8 +58,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
 	private final SslStoreProvider sslStoreProvider;
 
-	SslBuilderCustomizer(int port, InetAddress address,
-			Ssl ssl, SslStoreProvider sslStoreProvider) {
+	SslBuilderCustomizer(int port, InetAddress address, Ssl ssl,
+			SslStoreProvider sslStoreProvider) {
 		this.port = port;
 		this.address = address;
 		this.ssl = ssl;
@@ -73,7 +72,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			SSLContext sslContext = SSLContext.getInstance(this.ssl.getProtocol());
 			sslContext.init(getKeyManagers(this.ssl, this.sslStoreProvider),
 					getTrustManagers(this.ssl, this.sslStoreProvider), null);
-			builder.addHttpsListener(this.port, getListenAddress(this.address), sslContext);
+			builder.addHttpsListener(this.port, getListenAddress(this.address),
+					sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(this.ssl));
 			if (this.ssl.getEnabledProtocols() != null) {
@@ -143,7 +143,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		return keyManagers;
 	}
 
-	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
+	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider)
+			throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getKeyStore();
 		}
@@ -164,7 +165,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		}
 	}
 
-	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
+	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider)
+			throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getTrustStore();
 		}
@@ -247,4 +249,5 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		}
 
 	}
+
 }

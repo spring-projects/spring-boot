@@ -38,8 +38,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
- * {@link JettyServerCustomizer} that configures SSL on the
- * given Jetty server instance.
+ * {@link JettyServerCustomizer} that configures SSL on the given Jetty server instance.
  *
  * @author Brian Clozel
  */
@@ -88,7 +87,8 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	 * @param ssl the ssl details.
 	 * @param sslStoreProvider the ssl store provider
 	 */
-	protected void configureSsl(SslContextFactory factory, Ssl ssl, SslStoreProvider sslStoreProvider) {
+	protected void configureSsl(SslContextFactory factory, Ssl ssl,
+			SslStoreProvider sslStoreProvider) {
 		factory.setProtocol(ssl.getProtocol());
 		configureSslClientAuth(factory, ssl);
 		configureSslPasswords(factory, ssl);
@@ -172,4 +172,5 @@ class SslServerCustomizer implements JettyServerCustomizer {
 			factory.setTrustStoreProvider(ssl.getTrustStoreProvider());
 		}
 	}
+
 }

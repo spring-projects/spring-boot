@@ -111,7 +111,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<Valve> contextValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = Arrays.asList(new AprLifecycleListener());
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>(
+			Collections.singleton(new AprLifecycleListener()));
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
 
@@ -293,19 +294,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding().name());
 		}
-
-		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
-		// prematurely...
+		// Don't bind to the socket prematurely if ApplicationContext is slow to start
 		connector.setProperty("bindOnInit", "false");
-
 		if (getSsl() != null && getSsl().isEnabled()) {
-			TomcatConnectorCustomizer ssl = new SslConnectorCustomizer(getSsl(), getSslStoreProvider());
-			ssl.customize(connector);
-			if (getHttp2() != null && getHttp2().getEnabled()) {
-				connector.addUpgradeProtocol(new Http2Protocol());
-			}
+			customizeSsl(connector);
 		}
-		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
+		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(
+				getCompression());
 		compression.customize(connector);
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
@@ -315,6 +310,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void customizeProtocol(AbstractProtocol<?> protocol) {
 		if (getAddress() != null) {
 			protocol.setAddress(getAddress());
+		}
+	}
+
+	private void customizeSsl(Connector connector) {
+		new SslConnectorCustomizer(getSsl(), getSslStoreProvider()).customize(connector);
+		if (getHttp2() != null && getHttp2().getEnabled()) {
+			connector.addUpgradeProtocol(new Http2Protocol());
 		}
 	}
 

@@ -67,9 +67,8 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void defaultTomcatListeners() throws Exception {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThat(factory.getContextLifecycleListeners())
-				.hasSize(1)
-				.first().isInstanceOf(AprLifecycleListener.class);
+		assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
+				.isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test

@@ -24,13 +24,12 @@ import org.springframework.boot.web.server.Compression;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link TomcatConnectorCustomizer} that configures compression
- * support on the given Connector.
+ * {@link TomcatConnectorCustomizer} that configures compression support on the given
+ * Connector.
  *
  * @author Brian Clozel
  */
 class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
-
 
 	private final Compression compression;
 
@@ -43,18 +42,21 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 		if (this.compression != null && this.compression.getEnabled()) {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractHttp11Protocol) {
-				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
-				Compression compression = this.compression;
-				protocol.setCompression("on");
-				protocol.setCompressionMinSize(compression.getMinResponseSize());
-				protocol.setCompressibleMimeType(
-						StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
-				if (this.compression.getExcludedUserAgents() != null) {
-					protocol.setNoCompressionUserAgents(
-							StringUtils.arrayToCommaDelimitedString(
-									this.compression.getExcludedUserAgents()));
-				}
+				customize((AbstractHttp11Protocol<?>) handler);
 			}
 		}
 	}
+
+	private void customize(AbstractHttp11Protocol<?> protocol) {
+		Compression compression = this.compression;
+		protocol.setCompression("on");
+		protocol.setCompressionMinSize(compression.getMinResponseSize());
+		protocol.setCompressibleMimeType(
+				StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
+		if (this.compression.getExcludedUserAgents() != null) {
+			protocol.setNoCompressionUserAgents(StringUtils.arrayToCommaDelimitedString(
+					this.compression.getExcludedUserAgents()));
+		}
+	}
+
 }

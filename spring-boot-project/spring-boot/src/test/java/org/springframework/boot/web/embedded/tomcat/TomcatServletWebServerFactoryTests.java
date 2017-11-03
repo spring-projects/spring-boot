@@ -104,9 +104,8 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void defaultTomcatListeners() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
-		assertThat(factory.getContextLifecycleListeners())
-				.hasSize(1)
-				.first().isInstanceOf(AprLifecycleListener.class);
+		assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
+				.isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test
