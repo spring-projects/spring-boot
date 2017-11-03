@@ -105,7 +105,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		application.setMainApplicationClass(config.getTestClass());
 		application.addPrimarySources(Arrays.asList(configClasses));
 		application.getSources().addAll(Arrays.asList(configLocations));
-		ConfigurableEnvironment environment = new StandardEnvironment();
+		ConfigurableEnvironment environment = getConfigurableEnvironment();
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			setActiveProfiles(environment, config.getActiveProfiles());
 		}
@@ -146,6 +146,15 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 */
 	protected SpringApplication getSpringApplication() {
 		return new SpringApplication();
+	}
+
+
+	/**
+	 * Override this method to use custom ConfigurableEnvironment.
+	 * @return {@link org.springframework.core.env.StandardEnvironment} instance
+	 */
+	protected ConfigurableEnvironment getConfigurableEnvironment() {
+		return new StandardEnvironment();
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment,
