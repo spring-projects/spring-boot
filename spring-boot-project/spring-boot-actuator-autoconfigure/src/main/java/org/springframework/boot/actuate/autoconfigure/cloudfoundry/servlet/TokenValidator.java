@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -26,7 +26,9 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
 import org.springframework.util.Base64Utils;
 
 /**
@@ -34,13 +36,13 @@ import org.springframework.util.Base64Utils;
  *
  * @author Madhura Bhave
  */
-class TokenValidator {
+public class TokenValidator {
 
 	private final CloudFoundrySecurityService securityService;
 
 	private Map<String, String> tokenKeys;
 
-	TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
+	public TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
 		this.securityService = cloudFoundrySecurityService;
 	}
 

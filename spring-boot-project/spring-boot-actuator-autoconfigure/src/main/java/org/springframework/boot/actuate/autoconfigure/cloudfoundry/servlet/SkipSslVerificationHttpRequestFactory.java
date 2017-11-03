@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

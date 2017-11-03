@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +24,9 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -127,7 +130,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	@Test
 	public void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(
-				CloudFoundryAuthorizationException.Reason.INVALID_TOKEN, "invalid-token");
+				Reason.INVALID_TOKEN, "invalid-token");
 		willThrow(exception).given(tokenValidator).validate(any());
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication")

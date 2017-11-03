@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.ParameterMappingException;
@@ -91,12 +93,12 @@ class CloudFoundryWebEndpointServletHandlerMapping
 	@ResponseBody
 	private Map<String, Map<String, Link>> links(HttpServletRequest request,
 			HttpServletResponse response) {
-		CloudFoundrySecurityInterceptor.SecurityResponse securityResponse = this.securityInterceptor
+		SecurityResponse securityResponse = this.securityInterceptor
 				.preHandle(request, "");
 		if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 			sendFailureResponse(response, securityResponse);
 		}
-		AccessLevel accessLevel = AccessLevel.get(request);
+		AccessLevel accessLevel = (AccessLevel) request.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
 		Map<String, Link> links = this.endpointLinksResolver.resolveLinks(getEndpoints(),
 				request.getRequestURL().toString());
 		Map<String, Link> filteredLinks = new LinkedHashMap<>();
@@ -111,7 +113,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 	}
 
 	private void sendFailureResponse(HttpServletResponse response,
-			CloudFoundrySecurityInterceptor.SecurityResponse securityResponse) {
+			SecurityResponse securityResponse) {
 		try {
 			response.sendError(securityResponse.getStatus().value(),
 					securityResponse.getMessage());
@@ -151,7 +153,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 		@ResponseBody
 		public Object handle(HttpServletRequest request,
 				@RequestBody(required = false) Map<String, String> body) {
-			CloudFoundrySecurityInterceptor.SecurityResponse securityResponse = this.securityInterceptor
+			SecurityResponse securityResponse = this.securityInterceptor
 					.preHandle(request, this.endpointId);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				return failureResponse(securityResponse);
@@ -173,7 +175,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 		}
 
 		private Object failureResponse(
-				CloudFoundrySecurityInterceptor.SecurityResponse response) {
+				SecurityResponse response) {
 			return handleResult(new WebEndpointResponse<>(response.getMessage(),
 					response.getStatus().value()));
 		}

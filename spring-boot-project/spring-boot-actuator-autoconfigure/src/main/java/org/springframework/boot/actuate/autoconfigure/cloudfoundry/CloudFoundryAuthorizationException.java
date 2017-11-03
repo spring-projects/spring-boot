@@ -23,15 +23,15 @@ import org.springframework.http.HttpStatus;
  *
  * @author Madhura Bhave
  */
-class CloudFoundryAuthorizationException extends RuntimeException {
+public class CloudFoundryAuthorizationException extends RuntimeException {
 
 	private final Reason reason;
 
-	CloudFoundryAuthorizationException(Reason reason, String message) {
+	public CloudFoundryAuthorizationException(Reason reason, String message) {
 		this(reason, message, null);
 	}
 
-	CloudFoundryAuthorizationException(Reason reason, String message, Throwable cause) {
+	public CloudFoundryAuthorizationException(Reason reason, String message, Throwable cause) {
 		super(message);
 		this.reason = reason;
 	}
@@ -55,7 +55,7 @@ class CloudFoundryAuthorizationException extends RuntimeException {
 	/**
 	 * Reasons why the exception can be thrown.
 	 */
-	enum Reason {
+	public enum Reason {
 
 		ACCESS_DENIED(HttpStatus.FORBIDDEN),
 

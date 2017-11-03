@@ -26,12 +26,12 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryA
  *
  * @author Madhura Bhave
  */
-final class AuthorizationExceptionMatcher {
+public final class AuthorizationExceptionMatcher {
 
 	private AuthorizationExceptionMatcher() {
 	}
 
-	static Matcher<?> withReason(final Reason reason) {
+	public static Matcher<?> withReason(final Reason reason) {
 		return new CustomMatcher<Object>(
 				"CloudFoundryAuthorizationException with " + reason + " reason") {
 

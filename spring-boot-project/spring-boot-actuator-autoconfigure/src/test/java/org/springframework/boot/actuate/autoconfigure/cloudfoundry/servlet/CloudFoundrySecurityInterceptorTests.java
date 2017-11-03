@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -62,14 +65,14 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.request.setMethod("OPTIONS");
 		this.request.addHeader(HttpHeaders.ORIGIN, "http://example.com");
 		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "/a");
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void preHandleWhenTokenIsMissingShouldReturnFalse() throws Exception {
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "/a");
 		assertThat(response.getStatus())
 				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
@@ -78,7 +81,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	@Test
 	public void preHandleWhenTokenIsNotBearerShouldReturnFalse() throws Exception {
 		this.request.addHeader("Authorization", mockAccessToken());
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "/a");
 		assertThat(response.getStatus())
 				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
@@ -89,7 +92,7 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
 				this.securityService, null);
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "/a");
 		assertThat(response.getStatus())
 				.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());
@@ -101,7 +104,7 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null,
 				"my-app-id");
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "/a");
 		assertThat(response.getStatus())
 				.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());
@@ -113,7 +116,7 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.request.addHeader("Authorization", "bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
 				.willReturn(AccessLevel.RESTRICTED);
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "/a");
 		assertThat(response.getStatus()).isEqualTo(Reason.ACCESS_DENIED.getStatus());
 	}
@@ -124,7 +127,7 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
 				.willReturn(AccessLevel.FULL);
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "/a");
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		verify(this.tokenValidator).validate(tokenArgumentCaptor.capture());
@@ -141,7 +144,7 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
 				.willReturn(AccessLevel.RESTRICTED);
-		CloudFoundrySecurityInterceptor.SecurityResponse response = this.interceptor
+		SecurityResponse response = this.interceptor
 				.preHandle(this.request, "info");
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		verify(this.tokenValidator).validate(tokenArgumentCaptor.capture());

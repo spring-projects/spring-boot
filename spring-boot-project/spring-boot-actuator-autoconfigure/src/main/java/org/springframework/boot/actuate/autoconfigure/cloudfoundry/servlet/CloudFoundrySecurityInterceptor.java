@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
@@ -59,12 +64,12 @@ class CloudFoundrySecurityInterceptor {
 		try {
 			if (!StringUtils.hasText(this.applicationId)) {
 				throw new CloudFoundryAuthorizationException(
-						CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
+						Reason.SERVICE_UNAVAILABLE,
 						"Application id is not available");
 			}
 			if (this.cloudFoundrySecurityService == null) {
 				throw new CloudFoundryAuthorizationException(
-						CloudFoundryAuthorizationException.Reason.SERVICE_UNAVAILABLE,
+						Reason.SERVICE_UNAVAILABLE,
 						"Cloud controller URL is not available");
 			}
 			if (HttpMethod.OPTIONS.matches(request.getMethod())) {
@@ -92,10 +97,10 @@ class CloudFoundrySecurityInterceptor {
 				.getAccessLevel(token.toString(), this.applicationId);
 		if (!accessLevel.isAccessAllowed(path)) {
 			throw new CloudFoundryAuthorizationException(
-					CloudFoundryAuthorizationException.Reason.ACCESS_DENIED,
+					Reason.ACCESS_DENIED,
 					"Access denied");
 		}
-		accessLevel.put(request);
+		request.setAttribute(AccessLevel.REQUEST_ATTRIBUTE, accessLevel);
 	}
 
 	private Token getToken(HttpServletRequest request) {
@@ -104,42 +109,10 @@ class CloudFoundrySecurityInterceptor {
 		if (authorization == null
 				|| !authorization.toLowerCase().startsWith(bearerPrefix)) {
 			throw new CloudFoundryAuthorizationException(
-					CloudFoundryAuthorizationException.Reason.MISSING_AUTHORIZATION,
+					Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}
 		return new Token(authorization.substring(bearerPrefix.length()));
-	}
-
-	/**
-	 * Response from the security interceptor.
-	 */
-	static class SecurityResponse {
-
-		private final HttpStatus status;
-
-		private final String message;
-
-		SecurityResponse(HttpStatus status) {
-			this(status, null);
-		}
-
-		SecurityResponse(HttpStatus status, String message) {
-			this.status = status;
-			this.message = message;
-		}
-
-		public HttpStatus getStatus() {
-			return this.status;
-		}
-
-		public String getMessage() {
-			return this.message;
-		}
-
-		static SecurityResponse success() {
-			return new SecurityResponse(HttpStatus.OK);
-		}
-
 	}
 
 }

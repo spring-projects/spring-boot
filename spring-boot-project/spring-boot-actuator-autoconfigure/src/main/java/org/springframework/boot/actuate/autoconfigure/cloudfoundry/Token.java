@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
@@ -29,7 +30,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  */
-class Token {
+public class Token {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
@@ -41,13 +42,13 @@ class Token {
 
 	private final Map<String, Object> claims;
 
-	Token(String encoded) {
+	public Token(String encoded) {
 		this.encoded = encoded;
 		int firstPeriod = encoded.indexOf('.');
 		int lastPeriod = encoded.lastIndexOf('.');
 		if (firstPeriod <= 0 || lastPeriod <= firstPeriod) {
 			throw new CloudFoundryAuthorizationException(
-					CloudFoundryAuthorizationException.Reason.INVALID_TOKEN,
+					Reason.INVALID_TOKEN,
 					"JWT must have header, body and signature");
 		}
 		this.header = parseJson(encoded.substring(0, firstPeriod));
@@ -55,7 +56,7 @@ class Token {
 		this.signature = encoded.substring(lastPeriod + 1);
 		if (!StringUtils.hasLength(this.signature)) {
 			throw new CloudFoundryAuthorizationException(
-					CloudFoundryAuthorizationException.Reason.INVALID_TOKEN,
+					Reason.INVALID_TOKEN,
 					"Token must have non-empty crypto segment");
 		}
 	}
@@ -67,7 +68,7 @@ class Token {
 		}
 		catch (RuntimeException ex) {
 			throw new CloudFoundryAuthorizationException(
-					CloudFoundryAuthorizationException.Reason.INVALID_TOKEN,
+					Reason.INVALID_TOKEN,
 					"Token could not be parsed", ex);
 		}
 	}
@@ -106,12 +107,12 @@ class Token {
 		Object value = map.get(key);
 		if (value == null) {
 			throw new CloudFoundryAuthorizationException(
-					CloudFoundryAuthorizationException.Reason.INVALID_TOKEN,
+					Reason.INVALID_TOKEN,
 					"Unable to get value from key " + key);
 		}
 		if (!type.isInstance(value)) {
 			throw new CloudFoundryAuthorizationException(
-					CloudFoundryAuthorizationException.Reason.INVALID_TOKEN,
+					Reason.INVALID_TOKEN,
 					"Unexpected value type from key " + key + " value " + value);
 		}
 		return (T) value;
