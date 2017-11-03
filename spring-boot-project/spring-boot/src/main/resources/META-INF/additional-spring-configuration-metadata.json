@@ -94,20 +94,26 @@
     "type": "java.lang.String",
     "description": "Appender pattern for output to the console. Only supported with the default logback setup.",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-    "defaultValue": "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    "defaultValue": "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.file",
     "type": "java.lang.String",
     "description": "Appender pattern for output to the file. Only supported with the default logback setup.",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-    "defaultValue": "%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    "defaultValue": "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.level",
     "type": "java.lang.String",
     "description": "Appender pattern for log level (default %5p). Only supported with the default logback setup.",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+  },
+  {
+    "name": "logging.pattern.dateformat",
+    "type": "java.lang.String",
+    "description": "Appender pattern for log dateformat (default yyyy-MM-dd HH:mm:ss.SSS). Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.path",
