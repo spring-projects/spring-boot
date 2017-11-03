@@ -68,7 +68,7 @@ public class StatsdProperties {
 	 */
 	private Integer queueSize = Integer.MAX_VALUE;
 
-	public Boolean getEnabled() {
+	public Boolean isEnabled() {
 		return this.enabled;
 	}
 

@@ -42,7 +42,7 @@ public class SimpleProperties {
 	 */
 	private Duration step = Duration.ofSeconds(10);
 
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 

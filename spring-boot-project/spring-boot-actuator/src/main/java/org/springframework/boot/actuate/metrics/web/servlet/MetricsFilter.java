@@ -74,22 +74,20 @@ public class MetricsFilter extends OncePerRequestFilter {
 
 		if (handler != null) {
 			Object handlerObject = handler.getHandler();
-			if (handlerObject != null) {
-				this.webMvcMetrics.preHandle(request, handlerObject);
-				try {
-					filterChain.doFilter(request, response);
+			this.webMvcMetrics.preHandle(request, handlerObject);
+			try {
+                filterChain.doFilter(request, response);
 
-					// when an async operation is complete, the whole filter gets called
-					// again with isAsyncStarted = false
-					if (!request.isAsyncStarted()) {
-						this.webMvcMetrics.record(request, response, null);
-					}
-				}
-				catch (NestedServletException e) {
-					this.webMvcMetrics.record(request, response, e.getCause());
-					throw e;
-				}
-			}
+                // when an async operation is complete, the whole filter gets called
+                // again with isAsyncStarted = false
+                if (!request.isAsyncStarted()) {
+                    this.webMvcMetrics.record(request, response, null);
+                }
+            }
+            catch (NestedServletException e) {
+                this.webMvcMetrics.record(request, response, e.getCause());
+                throw e;
+            }
 		}
 		else {
 			filterChain.doFilter(request, response);

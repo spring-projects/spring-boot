@@ -67,7 +67,7 @@ public class GraphiteProperties {
 	 */
 	private GraphiteProtocol protocol = GraphiteProtocol.Pickled;
 
-	public Boolean getEnabled() {
+	public Boolean isEnabled() {
 		return this.enabled;
 	}
 

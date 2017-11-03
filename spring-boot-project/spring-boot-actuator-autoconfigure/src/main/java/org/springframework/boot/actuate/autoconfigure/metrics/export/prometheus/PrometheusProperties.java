@@ -45,7 +45,7 @@ public class PrometheusProperties {
 	 */
 	private Duration step = Duration.ofMinutes(1);
 
-	public Boolean getEnabled() {
+	public Boolean isEnabled() {
 		return this.enabled;
 	}
 

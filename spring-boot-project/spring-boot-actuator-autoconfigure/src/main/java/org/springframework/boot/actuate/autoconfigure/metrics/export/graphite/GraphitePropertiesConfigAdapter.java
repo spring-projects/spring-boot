@@ -47,7 +47,7 @@ class GraphitePropertiesConfigAdapter
 
 	@Override
 	public boolean enabled() {
-		return get(GraphiteProperties::getEnabled, GraphiteConfig::enabled);
+		return get(GraphiteProperties::isEnabled, GraphiteConfig::enabled);
 	}
 
 	@Override

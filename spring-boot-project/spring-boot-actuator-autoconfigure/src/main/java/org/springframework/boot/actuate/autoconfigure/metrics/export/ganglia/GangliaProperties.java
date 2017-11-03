@@ -77,7 +77,7 @@ public class GangliaProperties {
 	 */
 	private Integer port;
 
-	public Boolean getEnabled() {
+	public Boolean isEnabled() {
 		return this.enabled;
 	}
 

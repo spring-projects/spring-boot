@@ -50,7 +50,7 @@ public class StatsdPropertiesConfigAdapter extends
 
 	@Override
 	public boolean enabled() {
-		return get(StatsdProperties::getEnabled, StatsdConfig::enabled);
+		return get(StatsdProperties::isEnabled, StatsdConfig::enabled);
 	}
 
 	@Override
