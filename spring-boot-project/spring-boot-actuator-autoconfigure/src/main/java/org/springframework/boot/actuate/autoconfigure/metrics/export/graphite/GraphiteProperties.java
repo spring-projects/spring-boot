@@ -35,12 +35,12 @@ public class GraphiteProperties {
 	/**
 	 * Enable publishing to the backend.
 	 */
-	private Boolean enabled = true;
+	private Boolean enabled;
 
 	/**
 	 * The step size (reporting frequency) to use.
 	 */
-	private Duration step = Duration.ofMinutes(1);
+	private Duration step;
 
 	/**
 	 * The base time unit used to report rates.
@@ -65,7 +65,7 @@ public class GraphiteProperties {
 	/**
 	 * Protocol to use while shipping data to Graphite.
 	 */
-	private GraphiteProtocol protocol = GraphiteProtocol.Pickled;
+	private GraphiteProtocol protocol;
 
 	public Boolean getEnabled() {
 		return this.enabled;

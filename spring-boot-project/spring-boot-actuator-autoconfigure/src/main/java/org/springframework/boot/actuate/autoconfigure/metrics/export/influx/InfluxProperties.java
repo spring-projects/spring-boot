@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
-import java.time.Duration;
-
 import io.micrometer.influx.InfluxConsistency;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryProperties;
@@ -31,6 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.metrics.export.influx")
 public class InfluxProperties extends StepRegistryProperties {
+
 	/**
 	 * The tag that will be mapped to "host" when shipping metrics to Influx, or
 	 * {@code null} if host should be omitted on publishing.
@@ -67,20 +66,6 @@ public class InfluxProperties extends StepRegistryProperties {
 	 * Enable GZIP compression of metrics batches published to Influx.
 	 */
 	private Boolean compressed;
-
-	/**
-	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
-	 * some max value. This is used to limit the number of buckets shipped to Prometheus
-	 * to save on storage.
-	 */
-	private Duration timerPercentilesMax = Duration.ofMinutes(2);
-
-	/**
-	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
-	 * some min value. This is used to limit the number of buckets shipped to Prometheus
-	 * to save on storage.
-	 */
-	private Duration timerPercentilesMin = Duration.ofMillis(10);
 
 	public String getDb() {
 		return this.db;
@@ -138,19 +123,4 @@ public class InfluxProperties extends StepRegistryProperties {
 		this.compressed = compressed;
 	}
 
-	public Duration getTimerPercentilesMax() {
-		return this.timerPercentilesMax;
-	}
-
-	public void setTimerPercentilesMax(Duration timerPercentilesMax) {
-		this.timerPercentilesMax = timerPercentilesMax;
-	}
-
-	public Duration getTimerPercentilesMin() {
-		return this.timerPercentilesMin;
-	}
-
-	public void setTimerPercentilesMin(Duration timerPercentilesMin) {
-		this.timerPercentilesMin = timerPercentilesMin;
-	}
 }

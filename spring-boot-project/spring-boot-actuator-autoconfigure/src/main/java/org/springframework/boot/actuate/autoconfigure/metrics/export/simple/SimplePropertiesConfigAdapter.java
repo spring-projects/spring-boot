@@ -18,43 +18,36 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import java.time.Duration;
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
 
 /**
- * {@link ConfigurationProperties} for configuring metrics export to a
- * {@link SimpleMeterRegistry}.
+ * Adapter to convert {@link SimpleProperties} to a {@link SimpleConfig}.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.metrics.export.simple")
-public class SimpleProperties {
+public class SimplePropertiesConfigAdapter extends
+		PropertiesConfigAdapter<SimpleProperties, SimpleConfig> implements SimpleConfig {
+	private static final SimpleConfig DEFAULTS = (key) -> null;
 
-	/**
-	 * Enable publishing to the backend.
-	 */
-	private boolean enabled;
-
-	/**
-	 * The step size (reporting frequency) to use.
-	 */
-	private Duration step = Duration.ofSeconds(10);
-
-	public boolean getEnabled() {
-		return this.enabled;
+	public SimplePropertiesConfigAdapter(SimpleProperties properties) {
+		super(properties, DEFAULTS);
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	@Override
+	public String get(String k) {
+		return null;
 	}
 
-	public Duration getStep() {
-		return this.step;
+	@Override
+	public boolean enabled() {
+		return get(SimpleProperties::getEnabled, SimpleConfig::enabled);
 	}
 
-	public void setStep(Duration step) {
-		this.step = step;
+	@Override
+	public Duration step() {
+		return get(SimpleProperties::getStep, SimpleConfig::step);
 	}
 }

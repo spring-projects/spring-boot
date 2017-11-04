@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
-import java.time.Duration;
-
 import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -43,18 +41,10 @@ public class DatadogProperties extends StepRegistryProperties {
 	private String hostTag;
 
 	/**
-	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
-	 * some max value. This is used to limit the number of buckets shipped to Prometheus
-	 * to save on storage.
+	 * The URI to ship metrics to. If you need to publish metrics to an internal proxy
+	 * en-route to datadoghq, you can define the location of the proxy with this.
 	 */
-	private Duration timerPercentilesMax = Duration.ofMinutes(2);
-
-	/**
-	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
-	 * some min value. This is used to limit the number of buckets shipped to Prometheus
-	 * to save on storage.
-	 */
-	private Duration timerPercentilesMin = Duration.ofMillis(10);
+	private String uri;
 
 	public String getApiKey() {
 		return this.apiKey;
@@ -72,19 +62,11 @@ public class DatadogProperties extends StepRegistryProperties {
 		this.hostTag = hostKey;
 	}
 
-	public Duration getTimerPercentilesMax() {
-		return this.timerPercentilesMax;
+	public String getUri() {
+		return this.uri;
 	}
 
-	public void setTimerPercentilesMax(Duration timerPercentilesMax) {
-		this.timerPercentilesMax = timerPercentilesMax;
-	}
-
-	public Duration getTimerPercentilesMin() {
-		return this.timerPercentilesMin;
-	}
-
-	public void setTimerPercentilesMin(Duration timerPercentilesMin) {
-		this.timerPercentilesMin = timerPercentilesMin;
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 }

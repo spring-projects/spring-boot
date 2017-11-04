@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -51,6 +52,12 @@ class MeterBindersConfiguration {
 	@ConditionalOnMissingBean(UptimeMetrics.class)
 	public UptimeMetrics uptimeMetrics() {
 		return new UptimeMetrics();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ProcessorMetrics.class)
+	public ProcessorMetrics processorMetrics() {
+		return new ProcessorMetrics();
 	}
 
 }

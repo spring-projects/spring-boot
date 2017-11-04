@@ -49,15 +49,8 @@ class PrometheusPropertiesConfigAdapter
 	}
 
 	@Override
-	public Duration timerPercentilesMin() {
-		return get(PrometheusProperties::getTimerPercentilesMin,
-				PrometheusConfig::timerPercentilesMin);
-	}
-
-	@Override
-	public Duration timerPercentilesMax() {
-		return get(PrometheusProperties::getTimerPercentilesMax,
-				PrometheusConfig::timerPercentilesMax);
+	public Duration step() {
+		return get(PrometheusProperties::getStep, PrometheusConfig::step);
 	}
 
 }

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
-import java.time.Duration;
-
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxConsistency;
 
@@ -72,18 +70,6 @@ class InfluxPropertiesConfigAdapter
 	@Override
 	public boolean compressed() {
 		return get(InfluxProperties::getCompressed, InfluxConfig::compressed);
-	}
-
-	@Override
-	public Duration timerPercentilesMax() {
-		return get(InfluxProperties::getTimerPercentilesMax,
-				InfluxConfig::timerPercentilesMax);
-	}
-
-	@Override
-	public Duration timerPercentilesMin() {
-		return get(InfluxProperties::getTimerPercentilesMin,
-				InfluxConfig::timerPercentilesMin);
 	}
 
 }
