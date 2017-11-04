@@ -41,20 +41,11 @@ public class PrometheusProperties {
 	private Boolean descriptions = true;
 
 	/**
-	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
-	 * some max value. This is used to limit the number of buckets shipped to Prometheus
-	 * to save on storage.
+	 * The step size (reporting frequency) to use.
 	 */
-	private Duration timerPercentilesMax = Duration.ofMinutes(2);
+	private Duration step = Duration.ofMinutes(1);
 
-	/**
-	 * The bucket filter clamping the bucket domain of timer percentiles histograms to
-	 * some min value. This is used to limit the number of buckets shipped to Prometheus
-	 * to save on storage.
-	 */
-	private Duration timerPercentilesMin = Duration.ofMillis(10);
-
-	public Boolean getEnabled() {
+	public Boolean isEnabled() {
 		return this.enabled;
 	}
 
@@ -70,20 +61,11 @@ public class PrometheusProperties {
 		this.descriptions = descriptions;
 	}
 
-	public Duration getTimerPercentilesMax() {
-		return this.timerPercentilesMax;
+	public Duration getStep() {
+		return this.step;
 	}
 
-	public void setTimerPercentilesMax(Duration timerPercentilesMax) {
-		this.timerPercentilesMax = timerPercentilesMax;
+	public void setStep(Duration step) {
+		this.step = step;
 	}
-
-	public Duration getTimerPercentilesMin() {
-		return this.timerPercentilesMin;
-	}
-
-	public void setTimerPercentilesMin(Duration timerPercentilesMin) {
-		this.timerPercentilesMin = timerPercentilesMin;
-	}
-
 }

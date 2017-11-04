@@ -67,7 +67,7 @@ public abstract class StepRegistryProperties {
 		this.step = step;
 	}
 
-	public Boolean getEnabled() {
+	public Boolean isEnabled() {
 		return this.enabled;
 	}
 

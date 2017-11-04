@@ -73,17 +73,4 @@ class InfluxPropertiesConfigAdapter
 	public boolean compressed() {
 		return get(InfluxProperties::getCompressed, InfluxConfig::compressed);
 	}
-
-	@Override
-	public Duration timerPercentilesMax() {
-		return get(InfluxProperties::getTimerPercentilesMax,
-				InfluxConfig::timerPercentilesMax);
-	}
-
-	@Override
-	public Duration timerPercentilesMin() {
-		return get(InfluxProperties::getTimerPercentilesMin,
-				InfluxConfig::timerPercentilesMin);
-	}
-
 }

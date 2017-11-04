@@ -14,42 +14,41 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import java.time.Duration;
 
-import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
 
+
 /**
- * Adapter to convert {@link PrometheusProperties} to a {@link PrometheusConfig}.
+ * Adapter to convert {@link SimpleProperties} to a {@link SimpleConfig}.
  *
  * @author Jon Schneider
- * @author Phillip Webb
+ * @since 2.0.0
  */
-class PrometheusPropertiesConfigAdapter
-		extends PropertiesConfigAdapter<PrometheusProperties, PrometheusConfig>
-		implements PrometheusConfig {
+public class SimplePropertiesConfigAdapter extends
+		PropertiesConfigAdapter<SimpleProperties, SimpleConfig> implements SimpleConfig {
+	private static final SimpleConfig DEFAULTS = (key) -> null;
 
-	private static final PrometheusConfig DEFAULTS = (key) -> null;
-
-	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
+	public SimplePropertiesConfigAdapter(SimpleProperties properties) {
 		super(properties, DEFAULTS);
 	}
 
 	@Override
-	public String get(String key) {
+	public String get(String k) {
 		return null;
 	}
 
 	@Override
-	public boolean descriptions() {
-		return get(PrometheusProperties::getDescriptions, PrometheusConfig::descriptions);
+	public boolean enabled() {
+		return get(SimpleProperties::isEnabled, SimpleConfig::enabled);
 	}
 
 	@Override
 	public Duration step() {
-		return get(PrometheusProperties::getStep, PrometheusConfig::step);
+		return get(SimpleProperties::getStep, SimpleConfig::step);
 	}
 }

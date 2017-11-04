@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
-import java.time.Duration;
-
 import io.micrometer.datadog.DatadogConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryPropertiesConfigAdapter;
@@ -49,15 +47,7 @@ class DatadogPropertiesConfigAdapter
 	}
 
 	@Override
-	public Duration timerPercentilesMax() {
-		return get(DatadogProperties::getTimerPercentilesMax,
-				DatadogConfig::timerPercentilesMax);
+	public String uri() {
+		return get(DatadogProperties::getUri, DatadogConfig::uri);
 	}
-
-	@Override
-	public Duration timerPercentilesMin() {
-		return get(DatadogProperties::getTimerPercentilesMin,
-				DatadogConfig::timerPercentilesMin);
-	}
-
 }

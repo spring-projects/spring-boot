@@ -16,12 +16,14 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
+import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,87 +38,81 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link MetricsHandlerInterceptor} with auto-timed server requests.
- *
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
-public class MetricsHandlerInterceptorAutoTimedTests {
+public class MetricsFilterAutoTimedTests {
 
-	@Autowired
-	private MeterRegistry registry;
+    @Autowired
+    private MeterRegistry registry;
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private MockClock clock;
 
-	private MockMvc mvc;
+    @Autowired
+    private WebApplicationContext context;
 
-	@Before
-	public void setupMockMvc() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-	}
+    private MockMvc mvc;
 
-	@Test
-	public void metricsCanBeAutoTimed() throws Exception {
-		this.mvc.perform(get("/api/10")).andExpect(status().isOk());
-		assertThat(
-				this.registry.find("http.server.requests").tags("status", "200").timer())
-						.hasValueSatisfying((t) -> assertThat(t.count()).isEqualTo(1));
-	}
+    @Autowired
+    private MetricsFilter filter;
 
-	@Configuration
-	@EnableWebMvc
-	@Import(Controller.class)
-	static class TestConfiguration {
+    @Before
+    public void setupMockMvc() {
+        this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
+            .addFilters(filter)
+            .build();
+    }
+
+    @Test
+    public void metricsCanBeAutoTimed() throws Exception {
+        this.mvc.perform(get("/api/10")).andExpect(status().isOk());
+
+        clock.add(SimpleConfig.DEFAULT_STEP);
+        assertThat(this.registry.find("http.server.requests").tags("status", "200").timer())
+            .hasValueSatisfying((t) -> assertThat(t.count()).isEqualTo(1));
+    }
+
+    @Configuration
+    @EnableWebMvc
+    @Import({Controller.class})
+    static class TestConfiguration {
+        @Bean
+        MockClock clock() {
+            return new MockClock();
+        }
+
+        @Bean
+        MeterRegistry meterRegistry(Clock clock) {
+            return new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
+        }
 
 		@Bean
-		MeterRegistry meterRegistry() {
-			return new SimpleMeterRegistry();
+		public WebMvcMetrics controllerMetrics(MeterRegistry registry) {
+			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(), "http.server.requests", true,
+					false);
 		}
 
 		@Bean
-		WebMvcMetrics webMvcMetrics(MeterRegistry meterRegistry) {
-			return new WebMvcMetrics(meterRegistry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true, true);
+		public MetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics, HandlerMappingIntrospector introspector) {
+			return new MetricsFilter(controllerMetrics, introspector);
 		}
+    }
 
-		@Configuration
-		static class HandlerInterceptorConfiguration implements WebMvcConfigurer {
-
-			private final WebMvcMetrics webMvcMetrics;
-
-			HandlerInterceptorConfiguration(WebMvcMetrics webMvcMetrics) {
-				this.webMvcMetrics = webMvcMetrics;
-			}
-
-			@Override
-			public void addInterceptors(InterceptorRegistry registry) {
-				registry.addInterceptor(
-						new MetricsHandlerInterceptor(this.webMvcMetrics));
-			}
-
-		}
-
-	}
-
-	@RestController
-	@RequestMapping("/api")
-	static class Controller {
-
-		@GetMapping("/{id}")
-		public String successful(@PathVariable Long id) {
-			return id.toString();
-		}
-
-	}
-
+    @RestController
+    @RequestMapping("/api")
+    static class Controller {
+        @GetMapping("/{id}")
+        public String successful(@PathVariable Long id) {
+            return id.toString();
+        }
+    }
 }

@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.stats.hist.Histogram;
 
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpRequest;
@@ -98,13 +97,10 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private Timer.Builder getTimeBuilder(HttpRequest request,
 			ClientHttpResponse response) {
-		Timer.Builder builder = Timer.builder(this.metricName)
+		return Timer.builder(this.metricName)
 				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
-				.description("Timer of RestTemplate operation");
-		if (this.recordPercentiles) {
-			builder = builder.histogram(Histogram.percentilesTime());
-		}
-		return builder;
+				.description("Timer of RestTemplate operation")
+				.publishPercentileHistogram(this.recordPercentiles);
 	}
 
 }
