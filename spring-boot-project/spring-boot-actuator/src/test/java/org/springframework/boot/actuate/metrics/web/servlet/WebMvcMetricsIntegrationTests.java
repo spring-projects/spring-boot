@@ -36,7 +36,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -67,39 +71,37 @@ public class WebMvcMetricsIntegrationTests {
 	private MockMvc mvc;
 
 	@Autowired
-	private MetricsFilter filter;
+	private WebMvcMetricsFilter filter;
 
 	@Before
 	public void setupMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(filter)
-				.build();
+				.addFilters(this.filter).build();
 	}
 
 	@Test
 	public void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
-
-		clock.add(SimpleConfig.DEFAULT_STEP);
+		this.clock.add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.server.requests")
 				.tags("exception", "Exception1").value(Statistic.Count, 1.0).timer())
-				.isPresent();
+						.isPresent();
 	}
 
 	@Test
 	public void rethrownExceptionIsRecordedInMetricTag() throws Exception {
 		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError"))
 				.andExpect(status().is5xxServerError()));
-
-		clock.add(SimpleConfig.DEFAULT_STEP);
+		this.clock.add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.server.requests")
 				.tags("exception", "Exception2").value(Statistic.Count, 1.0).timer())
-				.isPresent();
+						.isPresent();
 	}
 
 	@Configuration
 	@EnableWebMvc
 	static class TestConfiguration {
+
 		@Bean
 		MockClock clock() {
 			return new MockClock();
@@ -112,13 +114,14 @@ public class WebMvcMetricsIntegrationTests {
 
 		@Bean
 		public WebMvcMetrics controllerMetrics(MeterRegistry registry) {
-			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(), "http.server.requests", true,
-					false);
+			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(),
+					"http.server.requests", true, false);
 		}
 
 		@Bean
-		public MetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics, HandlerMappingIntrospector introspector) {
-			return new MetricsFilter(controllerMetrics, introspector);
+		public WebMvcMetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics,
+				HandlerMappingIntrospector introspector) {
+			return new WebMvcMetricsFilter(controllerMetrics, introspector);
 		}
 
 		@RestController
@@ -142,12 +145,15 @@ public class WebMvcMetricsIntegrationTests {
 			}
 
 		}
+
 	}
 
 	static class Exception1 extends RuntimeException {
+
 	}
 
 	static class Exception2 extends RuntimeException {
+
 	}
 
 	@ControllerAdvice
@@ -167,5 +173,7 @@ public class WebMvcMetricsIntegrationTests {
 		ResponseEntity<String> rethrowError(Exception2 ex) throws Throwable {
 			throw ex;
 		}
+
 	}
+
 }

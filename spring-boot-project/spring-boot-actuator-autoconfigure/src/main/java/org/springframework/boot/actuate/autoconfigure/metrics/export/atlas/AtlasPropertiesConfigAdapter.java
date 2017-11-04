@@ -49,7 +49,7 @@ class AtlasPropertiesConfigAdapter extends
 
 	@Override
 	public boolean enabled() {
-		return get(AtlasProperties::isEnabled, AtlasConfig::enabled);
+		return get(AtlasProperties::getEnabled, AtlasConfig::enabled);
 	}
 
 	@Override

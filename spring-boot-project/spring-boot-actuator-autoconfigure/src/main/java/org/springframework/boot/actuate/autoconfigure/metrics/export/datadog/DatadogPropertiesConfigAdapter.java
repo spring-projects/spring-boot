@@ -50,4 +50,5 @@ class DatadogPropertiesConfigAdapter
 	public String uri() {
 		return get(DatadogProperties::getUri, DatadogConfig::uri);
 	}
+
 }

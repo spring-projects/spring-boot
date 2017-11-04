@@ -32,20 +32,20 @@ public class PrometheusProperties {
 	/**
 	 * Enable publishing to Prometheus.
 	 */
-	private Boolean enabled = true;
+	private Boolean enabled;
 
 	/**
 	 * Enable publishing descriptions as part of the scrape payload to Prometheus. Turn
 	 * this off to minimize the amount of data sent on each scrape.
 	 */
-	private Boolean descriptions = true;
+	private Boolean descriptions;
 
 	/**
 	 * The step size (reporting frequency) to use.
 	 */
-	private Duration step = Duration.ofMinutes(1);
+	private Duration step;
 
-	public Boolean isEnabled() {
+	public Boolean getEnabled() {
 		return this.enabled;
 	}
 
@@ -68,4 +68,5 @@ public class PrometheusProperties {
 	public void setStep(Duration step) {
 		this.step = step;
 	}
+
 }

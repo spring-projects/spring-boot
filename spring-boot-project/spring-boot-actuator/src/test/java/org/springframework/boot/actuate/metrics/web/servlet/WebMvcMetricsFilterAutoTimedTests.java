@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,70 +50,76 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
-public class MetricsFilterAutoTimedTests {
+public class WebMvcMetricsFilterAutoTimedTests {
 
-    @Autowired
-    private MeterRegistry registry;
+	@Autowired
+	private MeterRegistry registry;
 
-    @Autowired
-    private MockClock clock;
+	@Autowired
+	private MockClock clock;
 
-    @Autowired
-    private WebApplicationContext context;
+	@Autowired
+	private WebApplicationContext context;
 
-    private MockMvc mvc;
+	private MockMvc mvc;
 
-    @Autowired
-    private MetricsFilter filter;
+	@Autowired
+	private WebMvcMetricsFilter filter;
 
-    @Before
-    public void setupMockMvc() {
-        this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
-            .addFilters(filter)
-            .build();
-    }
+	@Before
+	public void setupMockMvc() {
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.addFilters(this.filter).build();
+	}
 
-    @Test
-    public void metricsCanBeAutoTimed() throws Exception {
-        this.mvc.perform(get("/api/10")).andExpect(status().isOk());
+	@Test
+	public void metricsCanBeAutoTimed() throws Exception {
+		this.mvc.perform(get("/api/10")).andExpect(status().isOk());
 
-        clock.add(SimpleConfig.DEFAULT_STEP);
-        assertThat(this.registry.find("http.server.requests").tags("status", "200").timer())
-            .hasValueSatisfying((t) -> assertThat(t.count()).isEqualTo(1));
-    }
+		this.clock.add(SimpleConfig.DEFAULT_STEP);
+		assertThat(
+				this.registry.find("http.server.requests").tags("status", "200").timer())
+						.hasValueSatisfying((t) -> assertThat(t.count()).isEqualTo(1));
+	}
 
-    @Configuration
-    @EnableWebMvc
-    @Import({Controller.class})
-    static class TestConfiguration {
-        @Bean
-        MockClock clock() {
-            return new MockClock();
-        }
+	@Configuration
+	@EnableWebMvc
+	@Import({ Controller.class })
+	static class TestConfiguration {
 
-        @Bean
-        MeterRegistry meterRegistry(Clock clock) {
-            return new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
-        }
+		@Bean
+		MockClock clock() {
+			return new MockClock();
+		}
+
+		@Bean
+		MeterRegistry meterRegistry(Clock clock) {
+			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
+		}
 
 		@Bean
 		public WebMvcMetrics controllerMetrics(MeterRegistry registry) {
-			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(), "http.server.requests", true,
-					false);
+			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(),
+					"http.server.requests", true, false);
 		}
 
 		@Bean
-		public MetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics, HandlerMappingIntrospector introspector) {
-			return new MetricsFilter(controllerMetrics, introspector);
+		public WebMvcMetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics,
+				HandlerMappingIntrospector introspector) {
+			return new WebMvcMetricsFilter(controllerMetrics, introspector);
 		}
-    }
 
-    @RestController
-    @RequestMapping("/api")
-    static class Controller {
-        @GetMapping("/{id}")
-        public String successful(@PathVariable Long id) {
-            return id.toString();
-        }
-    }
+	}
+
+	@RestController
+	@RequestMapping("/api")
+	static class Controller {
+
+		@GetMapping("/{id}")
+		public String successful(@PathVariable Long id) {
+			return id.toString();
+		}
+
+	}
+
 }

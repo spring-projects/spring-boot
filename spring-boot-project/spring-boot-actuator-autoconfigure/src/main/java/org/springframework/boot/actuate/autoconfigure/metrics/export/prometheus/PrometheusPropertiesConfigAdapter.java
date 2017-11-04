@@ -52,4 +52,5 @@ class PrometheusPropertiesConfigAdapter
 	public Duration step() {
 		return get(PrometheusProperties::getStep, PrometheusConfig::step);
 	}
+
 }

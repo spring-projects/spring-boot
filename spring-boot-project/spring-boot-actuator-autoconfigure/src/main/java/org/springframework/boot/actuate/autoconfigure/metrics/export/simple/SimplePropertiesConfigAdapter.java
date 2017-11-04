@@ -22,7 +22,6 @@ import io.micrometer.core.instrument.simple.SimpleConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
 
-
 /**
  * Adapter to convert {@link SimpleProperties} to a {@link SimpleConfig}.
  *
@@ -44,7 +43,7 @@ public class SimplePropertiesConfigAdapter extends
 
 	@Override
 	public boolean enabled() {
-		return get(SimpleProperties::isEnabled, SimpleConfig::enabled);
+		return get(SimpleProperties::getEnabled, SimpleConfig::enabled);
 	}
 
 	@Override

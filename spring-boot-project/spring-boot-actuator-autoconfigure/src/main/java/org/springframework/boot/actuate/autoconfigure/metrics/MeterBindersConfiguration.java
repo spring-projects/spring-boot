@@ -59,4 +59,5 @@ class MeterBindersConfiguration {
 	public ProcessorMetrics processorMetrics() {
 		return new ProcessorMetrics();
 	}
+
 }

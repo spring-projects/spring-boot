@@ -20,8 +20,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
-import org.springframework.boot.actuate.metrics.web.servlet.MetricsFilter;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetrics;
+import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -60,7 +60,9 @@ public class WebMvcMetricsConfiguration {
 	}
 
 	@Bean
-	public MetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics, HandlerMappingIntrospector introspector) {
-		return new MetricsFilter(controllerMetrics, introspector);
+	public WebMvcMetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics,
+			HandlerMappingIntrospector introspector) {
+		return new WebMvcMetricsFilter(controllerMetrics, introspector);
 	}
+
 }

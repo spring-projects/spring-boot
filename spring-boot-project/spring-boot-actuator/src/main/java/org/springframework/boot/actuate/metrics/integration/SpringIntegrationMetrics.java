@@ -20,12 +20,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.function.ToDoubleFunction;
+
+import io.micrometer.core.instrument.FunctionCounter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.TimeGauge;
+import io.micrometer.core.instrument.binder.MeterBinder;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.integration.support.management.*;
-
-import io.micrometer.core.instrument.*;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.integration.support.management.MessageChannelMetrics;
+import org.springframework.integration.support.management.MessageHandlerMetrics;
+import org.springframework.integration.support.management.MessageSourceMetrics;
+import org.springframework.integration.support.management.PollableChannelManagement;
 
 /**
  * A {@link MeterBinder} for Spring Integration metrics.
@@ -53,21 +63,18 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	@Override
 	public void bindTo(MeterRegistry registry) {
-		Gauge.builder("spring.integration.channelNames", this.configurer,
-				c -> c.getChannelNames().length).tags(tags)
-				.description("The number of spring integration channels")
-				.register(registry);
-
-		Gauge.builder("spring.integration.handlerNames", configurer,
-				c -> c.getHandlerNames().length).tags(this.tags)
-				.description("The number of spring integration handlers")
-				.register(registry);
-
-		Gauge.builder("spring.integration.sourceNames", configurer,
-				c -> c.getSourceNames().length).tags(this.tags)
-				.description("The number of spring integration sources")
-				.register(registry);
-
+		registerGuage(registry, this.configurer, this.tags,
+				"spring.integration.channelNames",
+				"The number of spring integration channels",
+				(configurer) -> configurer.getChannelNames().length);
+		registerGuage(registry, this.configurer, this.tags,
+				"spring.integration.handlerNames",
+				"The number of spring integration handlers",
+				(configurer) -> configurer.getHandlerNames().length);
+		registerGuage(registry, this.configurer, this.tags,
+				"spring.integration.sourceNames",
+				"The number of spring integration sources",
+				(configurer) -> configurer.getSourceNames().length);
 		this.registries.add(registry);
 	}
 
@@ -75,13 +82,10 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 		for (String source : this.configurer.getSourceNames()) {
 			MessageSourceMetrics sourceMetrics = this.configurer.getSourceMetrics(source);
 			Iterable<Tag> tagsWithSource = Tags.concat(this.tags, "source", source);
-
-			FunctionCounter
-					.builder("spring.integration.source.messages", sourceMetrics,
-							MessageSourceMetrics::getMessageCount)
-					.tags(tagsWithSource)
-					.description("The number of successful handler calls")
-					.register(registry);
+			registerFunctionCounter(registry, sourceMetrics, tagsWithSource,
+					"spring.integration.source.messages",
+					"The number of successful handler calls",
+					MessageSourceMetrics::getMessageCount);
 		}
 	}
 
@@ -89,33 +93,22 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 		for (String handler : this.configurer.getHandlerNames()) {
 			MessageHandlerMetrics handlerMetrics = this.configurer
 					.getHandlerMetrics(handler);
-
-			// TODO could use improvement to dynamically commute the handler name with its
-			// ID, which can change after creation as shown in the
-			// SpringIntegrationApplication sample.
 			Iterable<Tag> tagsWithHandler = Tags.concat(this.tags, "handler", handler);
-
-			TimeGauge
-					.builder("spring.integration.handler.duration.max", handlerMetrics,
-							TimeUnit.MILLISECONDS, MessageHandlerMetrics::getMaxDuration)
-					.tags(tagsWithHandler).description("The maximum handler duration")
-					.register(registry);
-
-			TimeGauge
-					.builder("spring.integration.handler.duration.min", handlerMetrics,
-							TimeUnit.MILLISECONDS, MessageHandlerMetrics::getMinDuration)
-					.tags(tagsWithHandler).description("The minimum handler duration")
-					.register(registry);
-
-			TimeGauge
-					.builder("spring.integration.handler.duration.mean", handlerMetrics,
-							TimeUnit.MILLISECONDS, MessageHandlerMetrics::getMeanDuration)
-					.tags(tagsWithHandler).description("The mean handler duration")
-					.register(registry);
-
-			Gauge.builder("spring.integration.handler.activeCount", handlerMetrics,
-					MessageHandlerMetrics::getActiveCount).tags(tagsWithHandler)
-					.description("The number of active handlers").register(registry);
+			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.duration.max",
+					"The maximum handler duration",
+					MessageHandlerMetrics::getMaxDuration);
+			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.duration.min",
+					"The minimum handler duration",
+					MessageHandlerMetrics::getMinDuration);
+			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.duration.mean",
+					"The mean handler duration", MessageHandlerMetrics::getMeanDuration);
+			registerGuage(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.activeCount",
+					"The number of active handlers",
+					MessageHandlerMetrics::getActiveCount);
 		}
 	}
 
@@ -124,31 +117,41 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 			MessageChannelMetrics channelMetrics = this.configurer
 					.getChannelMetrics(channel);
 			Iterable<Tag> tagsWithChannel = Tags.concat(this.tags, "channel", channel);
-
-			FunctionCounter
-					.builder("spring.integration.channel.sendErrors", channelMetrics,
-							MessageChannelMetrics::getSendErrorCount)
-					.tags(tagsWithChannel)
-					.description(
-							"The number of failed sends (either throwing an exception or rejected by the channel)")
-					.register(registry);
-
-			FunctionCounter
-					.builder("spring.integration.channel.sends", channelMetrics,
-							MessageChannelMetrics::getSendCount)
-					.tags(tagsWithChannel).description("The number of successful sends")
-					.register(registry);
-
+			registerFunctionCounter(registry, channelMetrics, tagsWithChannel,
+					"spring.integration.channel.sendErrors",
+					"The number of failed sends (either throwing an exception or rejected by the channel)",
+					MessageChannelMetrics::getSendErrorCount);
+			registerFunctionCounter(registry, channelMetrics, tagsWithChannel,
+					"spring.integration.channel.sends", "The number of successful sends",
+					MessageChannelMetrics::getSendCount);
 			if (channelMetrics instanceof PollableChannelManagement) {
-				FunctionCounter
-						.builder("spring.integration.receives",
-								(PollableChannelManagement) channelMetrics,
-								PollableChannelManagement::getReceiveCount)
-						.tags(tagsWithChannel)
-						.description("The number of messages received")
-						.register(registry);
+				registerFunctionCounter(registry,
+						(PollableChannelManagement) channelMetrics, tagsWithChannel,
+						"spring.integration.receives", "The number of messages received",
+						PollableChannelManagement::getReceiveCount);
 			}
 		}
+	}
+
+	private <T> void registerGuage(MeterRegistry registry, T object, Iterable<Tag> tags,
+			String name, String description, ToDoubleFunction<T> value) {
+		Gauge.Builder<?> builder = Gauge.builder(name, object, value);
+		builder.tags(this.tags).description(description).register(registry);
+	}
+
+	private <T> void registerTimedGauge(MeterRegistry registry, T object,
+			Iterable<Tag> tags, String name, String description,
+			ToDoubleFunction<T> value) {
+		TimeGauge.Builder<?> builder = TimeGauge.builder(name, object,
+				TimeUnit.MILLISECONDS, value);
+		builder.tags(tags).description(description).register(registry);
+	}
+
+	private <T> void registerFunctionCounter(MeterRegistry registry, T object,
+			Iterable<Tag> tags, String name, String description,
+			ToDoubleFunction<T> value) {
+		FunctionCounter.builder(name, object, value).tags(tags)
+				.description(description).register(registry);
 	}
 
 	@Override

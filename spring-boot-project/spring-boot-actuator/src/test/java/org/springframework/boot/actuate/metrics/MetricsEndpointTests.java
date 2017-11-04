@@ -28,7 +28,6 @@ import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import static io.micrometer.core.instrument.MockClock.clock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -39,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsEndpointTests {
 
-	private final MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
+	private final MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT,
+			new MockClock());
 
 	private final MetricsEndpoint endpoint = new MetricsEndpoint(this.registry);
 
@@ -77,8 +77,7 @@ public class MetricsEndpointTests {
 		this.registry.counter("cache", "result", "hit", "host", "1").increment(2);
 		this.registry.counter("cache", "result", "miss", "host", "1").increment(2);
 		this.registry.counter("cache", "result", "hit", "host", "2").increment(2);
-		clock(registry).add(SimpleConfig.DEFAULT_STEP);
-
+		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		MetricsEndpoint.MetricResponse response = this.endpoint.metric("cache",
 				Collections.emptyList());
 		assertThat(response.getName()).isEqualTo("cache");
@@ -92,8 +91,7 @@ public class MetricsEndpointTests {
 	@Test
 	public void metricWithSpaceInTagValue() {
 		this.registry.counter("counter", "key", "a space").increment(2);
-		clock(registry).add(SimpleConfig.DEFAULT_STEP);
-
+		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		MetricsEndpoint.MetricResponse response = this.endpoint.metric("counter",
 				Collections.singletonList("key:a space"));
 		assertThat(response.getName()).isEqualTo("counter");

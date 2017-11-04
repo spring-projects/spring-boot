@@ -29,13 +29,11 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static io.micrometer.core.instrument.MockClock.clock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -46,32 +44,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(WebEndpointRunners.class)
 public class MetricsEndpointWebIntegrationTests {
-	private static MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
+
+	private static MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT,
+			new MockClock());
+
 	private static WebTestClient client;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
 	public void listNames() throws IOException {
-		String responseBody = client.get()
-				.uri("/application/metrics").exchange().expectStatus().isOk()
-				.expectBody(String.class).returnResult().getResponseBody();
+		String responseBody = client.get().uri("/application/metrics").exchange()
+				.expectStatus().isOk().expectBody(String.class).returnResult()
+				.getResponseBody();
 		Map<String, List<String>> names = this.mapper.readValue(responseBody, Map.class);
 		assertThat(names.get("names")).containsOnlyOnce("jvm.memory.used");
 	}
 
 	@Test
 	public void selectByName() throws IOException {
-		clock(registry).add(SimpleConfig.DEFAULT_STEP);
-		client.get()
-				.uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
+		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
+		client.get().uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("$.name").isEqualTo("jvm.memory.used");
 	}
 
 	@Test
 	public void selectByTag() {
-		clock(registry).add(SimpleConfig.DEFAULT_STEP);
+		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		client.get()
 				.uri("/application/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space")
 				.exchange().expectStatus().isOk().expectBody().jsonPath("$.name")

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
-import java.time.Duration;
-
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxConsistency;
 
@@ -73,4 +71,5 @@ class InfluxPropertiesConfigAdapter
 	public boolean compressed() {
 		return get(InfluxProperties::getCompressed, InfluxConfig::compressed);
 	}
+
 }

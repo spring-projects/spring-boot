@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.web.servlet;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -24,20 +25,27 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.annotation.TimedSet;
+import io.micrometer.core.instrument.LongTaskTimer;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.actuate.metrics.TimedUtils;
+
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.HandlerMethod;
-
-import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.*;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 /**
  * Support class for Spring MVC metrics.
@@ -147,7 +155,7 @@ public class WebMvcMetrics {
 		Timer.Builder builder = Timer.builder(config.getName())
 				.tags(this.tagsProvider.httpRequestTags(request, response, thrown))
 				.tags(config.getExtraTags()).description("Timer of servlet request")
-				.publishPercentileHistogram(config.histogram);
+				.publishPercentileHistogram(config.isHistogram());
 		if (config.getPercentiles().length > 0) {
 			builder = builder.publishPercentiles(config.getPercentiles());
 		}
@@ -155,11 +163,10 @@ public class WebMvcMetrics {
 	}
 
 	private LongTaskTimer longTaskTimer(TimerConfig config, HttpServletRequest request,
-										Object handler) {
+			Object handler) {
 		return LongTaskTimer.builder(config.getName())
 				.tags(this.tagsProvider.httpLongRequestTags(request, handler))
-				.tags(config.getExtraTags())
-				.description("Timer of long servlet request")
+				.tags(config.getExtraTags()).description("Timer of long servlet request")
 				.register(this.registry);
 	}
 
@@ -182,6 +189,11 @@ public class WebMvcMetrics {
 		if (handler instanceof HandlerMethod) {
 			return timed((HandlerMethod) handler);
 		}
+		if ((handler == null || handler instanceof ResourceHttpRequestHandler)
+				&& this.autoTimeRequests) {
+			return Collections.singleton(
+					new TimerConfig(getServerRequestName(), this.recordAsPercentiles));
+		}
 		return Collections.emptySet();
 	}
 
@@ -198,13 +210,25 @@ public class WebMvcMetrics {
 	}
 
 	private Set<TimerConfig> getNonLongTaskAnnotationConfig(AnnotatedElement element) {
-		return TimedUtils.findTimedAnnotations(element).filter((t) -> !t.longTask())
+		return findTimedAnnotations(element).filter((t) -> !t.longTask())
 				.map(this::fromAnnotation).collect(Collectors.toSet());
 	}
 
 	private Set<TimerConfig> getLongTaskAnnotationConfig(AnnotatedElement element) {
-		return TimedUtils.findTimedAnnotations(element).filter(Timed::longTask)
+		return findTimedAnnotations(element).filter(Timed::longTask)
 				.map(this::fromAnnotation).collect(Collectors.toSet());
+	}
+
+	private Stream<Timed> findTimedAnnotations(AnnotatedElement element) {
+		Timed timed = AnnotationUtils.findAnnotation(element, Timed.class);
+		if (timed != null) {
+			return Stream.of(timed);
+		}
+		TimedSet ts = AnnotationUtils.findAnnotation(element, TimedSet.class);
+		if (ts != null) {
+			return Arrays.stream(ts.value());
+		}
+		return Stream.empty();
 	}
 
 	private TimerConfig fromAnnotation(Timed timed) {
@@ -282,4 +306,5 @@ public class WebMvcMetrics {
 		}
 
 	}
+
 }

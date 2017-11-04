@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.metrics.export.influx")
 public class InfluxProperties extends StepRegistryProperties {
+
 	/**
 	 * The tag that will be mapped to "host" when shipping metrics to Influx, or
 	 * {@code null} if host should be omitted on publishing.
@@ -121,4 +122,5 @@ public class InfluxProperties extends StepRegistryProperties {
 	public void setCompressed(Boolean compressed) {
 		this.compressed = compressed;
 	}
+
 }

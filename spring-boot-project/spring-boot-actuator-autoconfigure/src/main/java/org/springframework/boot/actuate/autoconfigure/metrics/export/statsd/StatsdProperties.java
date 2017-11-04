@@ -34,7 +34,7 @@ public class StatsdProperties {
 	/**
 	 * Enable publishing to the backend.
 	 */
-	private Boolean enabled = true;
+	private Boolean enabled;
 
 	/**
 	 * Variant of the StatsD line protocol to use.
@@ -68,7 +68,7 @@ public class StatsdProperties {
 	 */
 	private Integer queueSize = Integer.MAX_VALUE;
 
-	public Boolean isEnabled() {
+	public Boolean getEnabled() {
 		return this.enabled;
 	}
 

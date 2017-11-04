@@ -36,7 +36,7 @@ public abstract class StepRegistryProperties {
 	/**
 	 * Enable publishing to the backend.
 	 */
-	private Boolean enabled = true;
+	private Boolean enabled;
 
 	/**
 	 * The connection timeout for requests to the backend.
@@ -67,7 +67,7 @@ public abstract class StepRegistryProperties {
 		this.step = step;
 	}
 
-	public Boolean isEnabled() {
+	public Boolean getEnabled() {
 		return this.enabled;
 	}
 

@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import java.time.Duration;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties} for configuring metrics export to a
@@ -35,14 +35,14 @@ public class SimpleProperties {
 	/**
 	 * Enable publishing to the backend.
 	 */
-	private boolean enabled = true;
+	private boolean enabled;
 
 	/**
 	 * The step size (reporting frequency) to use.
 	 */
 	private Duration step = Duration.ofSeconds(10);
 
-	public boolean isEnabled() {
+	public boolean getEnabled() {
 		return this.enabled;
 	}
 

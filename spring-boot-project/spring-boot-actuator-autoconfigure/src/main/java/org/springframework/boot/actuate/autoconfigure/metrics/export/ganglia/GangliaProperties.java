@@ -35,12 +35,12 @@ public class GangliaProperties {
 	/**
 	 * Enable publishing to the backend.
 	 */
-	private Boolean enabled = true;
+	private Boolean enabled;
 
 	/**
 	 * The step size (reporting frequency) to use.
 	 */
-	private Duration step = Duration.ofMinutes(1);
+	private Duration step;
 
 	/**
 	 * The base time unit used to report rates.
@@ -77,7 +77,7 @@ public class GangliaProperties {
 	 */
 	private Integer port;
 
-	public Boolean isEnabled() {
+	public Boolean getEnabled() {
 		return this.enabled;
 	}
 

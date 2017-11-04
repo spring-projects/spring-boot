@@ -55,4 +55,5 @@ public class SimpleExportConfiguration {
 	public SimpleConfig simpleConfig(SimpleProperties simpleProperties) {
 		return new SimplePropertiesConfigAdapter(simpleProperties);
 	}
+
 }

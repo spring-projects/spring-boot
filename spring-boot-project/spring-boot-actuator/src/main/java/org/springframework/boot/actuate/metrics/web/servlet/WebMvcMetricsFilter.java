@@ -35,18 +35,23 @@ import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 import org.springframework.web.util.NestedServletException;
 
 /**
- * Intercepts incoming HTTP requests and records metrics about execution time and results.
+ * Intercepts incoming HTTP requests and records metrics about Spring MVC execution time
+ * and results.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class MetricsFilter extends OncePerRequestFilter {
-	private final WebMvcMetrics webMvcMetrics;
-	private final HandlerMappingIntrospector mappingIntrospector;
-	private final Logger logger = LoggerFactory.getLogger(MetricsFilter.class);
+public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
-	public MetricsFilter(WebMvcMetrics webMvcMetrics,
+	private static final Logger logger = LoggerFactory
+			.getLogger(WebMvcMetricsFilter.class);
+
+	private final WebMvcMetrics webMvcMetrics;
+
+	private final HandlerMappingIntrospector mappingIntrospector;
+
+	public WebMvcMetricsFilter(WebMvcMetrics webMvcMetrics,
 			HandlerMappingIntrospector mappingIntrospector) {
 		this.webMvcMetrics = webMvcMetrics;
 		this.mappingIntrospector = mappingIntrospector;
@@ -60,37 +65,44 @@ public class MetricsFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		HandlerExecutionChain handler;
+					throws ServletException, IOException {
+		HandlerExecutionChain handlerExecutionChain = getHandlerExecutionChain(request);
+		Object handler = (handlerExecutionChain == null ? null
+				: handlerExecutionChain.getHandler());
+		filterWithMetrics(request, response, filterChain, handler);
+	}
+
+	private HandlerExecutionChain getHandlerExecutionChain(HttpServletRequest request) {
 		try {
 			MatchableHandlerMapping matchableHandlerMapping = this.mappingIntrospector
 					.getMatchableHandlerMapping(request);
-			handler = matchableHandlerMapping.getHandler(request);
+			return (matchableHandlerMapping == null ? null
+					: matchableHandlerMapping.getHandler(request));
 		}
-		catch (Exception e) {
-			this.logger.debug("Unable to time request", e);
-			return;
-		}
-
-		if (handler != null) {
-			Object handlerObject = handler.getHandler();
-			this.webMvcMetrics.preHandle(request, handlerObject);
-			try {
-                filterChain.doFilter(request, response);
-
-                // when an async operation is complete, the whole filter gets called
-                // again with isAsyncStarted = false
-                if (!request.isAsyncStarted()) {
-                    this.webMvcMetrics.record(request, response, null);
-                }
-            }
-            catch (NestedServletException e) {
-                this.webMvcMetrics.record(request, response, e.getCause());
-                throw e;
-            }
-		}
-		else {
-			filterChain.doFilter(request, response);
+		catch (Exception ex) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Unable to time request", ex);
+			}
+			return null;
 		}
 	}
+
+	private void filterWithMetrics(HttpServletRequest request,
+			HttpServletResponse response, FilterChain filterChain, Object handler)
+					throws IOException, ServletException, NestedServletException {
+		this.webMvcMetrics.preHandle(request, handler);
+		try {
+			filterChain.doFilter(request, response);
+			// When an async operation is complete, the whole filter gets called again
+			// with isAsyncStarted = false
+			if (!request.isAsyncStarted()) {
+				this.webMvcMetrics.record(request, response, null);
+			}
+		}
+		catch (NestedServletException ex) {
+			this.webMvcMetrics.record(request, response, ex.getCause());
+			throw ex;
+		}
+	}
+
 }
