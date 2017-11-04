@@ -89,7 +89,9 @@ public class ApplicationPid {
 	public void write(File file) throws IOException {
 		Assert.state(this.pid != null, "No PID available");
 		createParentFolder(file);
-		assertCanWrite(file);
+		if (file.exists()) {
+			assertCanOverwrite(file);
+		}
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.append(this.pid);
 		}
@@ -102,7 +104,7 @@ public class ApplicationPid {
 		}
 	}
 
-	private void assertCanWrite(File file) throws IOException {
+	private void assertCanOverwrite(File file) throws IOException {
 		if (!file.canWrite() || !canWritePosixFile(file)) {
 			throw new FileNotFoundException(file.toString() + " (permission denied)");
 		}

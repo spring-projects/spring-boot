@@ -69,6 +69,17 @@ public class ApplicationPidTests {
 	}
 
 	@Test
+	public void writeNewPid() throws Exception {
+		// gh-10784
+		ApplicationPid pid = new ApplicationPid("123");
+		File file = this.temporaryFolder.newFile();
+		file.delete();
+		pid.write(file);
+		String actual = FileCopyUtils.copyToString(new FileReader(file));
+		assertThat(actual).isEqualTo("123");
+	}
+
+	@Test
 	public void getPidFromJvm() throws Exception {
 		assertThat(new ApplicationPid().toString()).isNotEmpty();
 	}
