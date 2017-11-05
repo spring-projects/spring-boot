@@ -41,7 +41,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			.mapOf(String.class, String.class);
 
 	MapBinder(BindContext context) {
-		super(context);
+		super(context, true);
 	}
 
 	@Override

@@ -45,7 +45,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private static final String INDEX_ZERO = "[0]";
 
 	IndexedElementsBinder(BindContext context) {
-		super(context);
+		super(context, false);
 	}
 
 	protected final void bindIndexed(ConfigurationPropertyName name, Bindable<?> target,

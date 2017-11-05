@@ -31,8 +31,15 @@ abstract class AggregateBinder<T> {
 
 	private final BindContext context;
 
-	AggregateBinder(BindContext context) {
+	private final boolean allowRecursiveBinding;
+
+	AggregateBinder(BindContext context, boolean allowRecursiveBinding) {
 		this.context = context;
+		this.allowRecursiveBinding = allowRecursiveBinding;
+	}
+
+	boolean isAllowRecursiveBinding() {
+		return this.allowRecursiveBinding;
 	}
 
 	/**
