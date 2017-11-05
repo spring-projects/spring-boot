@@ -299,7 +299,6 @@ public class Binder {
 				name.append(propertyName), propertyTarget, handler, context, true);
 		Class<?> type = target.getType().resolve();
 		if (skipIfHasBoundBean && context.hasBoundBean(type)) {
-			System.err.println(type + " " + name);
 			return null;
 		}
 		return context.withBean(type, () -> {
