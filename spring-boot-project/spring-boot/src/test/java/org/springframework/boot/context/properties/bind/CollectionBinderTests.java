@@ -351,6 +351,32 @@ public class CollectionBinderTests {
 		assertThat(result.getItemsSet()).containsExactly("a", "b", "c");
 	}
 
+	public void bindToBeanWithNestedCollectionShouldPopulateCollection()
+			throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "one");
+		source.put("foo.foos[0].value", "two");
+		source.put("foo.foos[1].value", "three");
+		this.sources.add(source);
+		Bindable<BeanWithNestedCollection> target = Bindable
+				.of(BeanWithNestedCollection.class);
+		BeanWithNestedCollection foo = this.binder.bind("foo", target).get();
+		assertThat(foo.getValue()).isNotNull();
+		assertThat(foo.getFoos().get(0).getValue()).isEqualTo("two");
+		assertThat(foo.getFoos().get(1).getValue()).isEqualTo("three");
+	}
+
+	@Test
+	public void bindToBeanWithNestedCollectionAndNonIterableSourceShouldNotFail()
+			throws Exception {
+		// gh-10702
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		this.sources.add(source.nonIterable());
+		Bindable<BeanWithNestedCollection> target = Bindable
+				.of(BeanWithNestedCollection.class);
+		this.binder.bind("foo", target);
+	}
+
 	public static class ExampleCollectionBean {
 
 		private List<String> items = new ArrayList<>();
@@ -399,6 +425,29 @@ public class CollectionBinderTests {
 			return this.items;
 		}
 
+	}
+
+	public static class BeanWithNestedCollection {
+
+		private String value;
+
+		private List<BeanWithNestedCollection> foos;
+
+		public List<BeanWithNestedCollection> getFoos() {
+			return this.foos;
+		}
+
+		public void setFoos(List<BeanWithNestedCollection> foos) {
+			this.foos = foos;
+		}
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
 	}
 
 }

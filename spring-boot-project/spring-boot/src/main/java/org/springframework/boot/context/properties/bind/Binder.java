@@ -188,13 +188,14 @@ public class Binder {
 	}
 
 	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, boolean skipIfHasBoundBean) {
+			BindHandler handler, Context context, boolean allowRecursiveBinding) {
 		context.clearConfigurationProperty();
 		try {
 			if (!handler.onStart(name, target, context)) {
 				return null;
 			}
-			Object bound = bindObject(name, target, handler, context, skipIfHasBoundBean);
+			Object bound = bindObject(name, target, handler, context,
+					allowRecursiveBinding);
 			return handleBindResult(name, target, handler, context, bound);
 		}
 		catch (Exception ex) {
@@ -232,7 +233,7 @@ public class Binder {
 	}
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, boolean skipIfHasBoundBean)
+			BindHandler handler, Context context, boolean allowRecursiveBinding)
 					throws Exception {
 		ConfigurationProperty property = findProperty(name, context);
 		if (property == null && containsNoDescendantOf(context.streamSources(), name)) {
@@ -245,7 +246,7 @@ public class Binder {
 		if (property != null) {
 			return bindProperty(name, target, handler, context, property);
 		}
-		return bindBean(name, target, handler, context, skipIfHasBoundBean);
+		return bindBean(name, target, handler, context, allowRecursiveBinding);
 	}
 
 	private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
@@ -266,7 +267,7 @@ public class Binder {
 			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
 			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context,
-					false);
+					aggregateBinder.isAllowRecursiveBinding());
 			return context.withSource(source, supplier);
 		};
 		return context.withIncreasedDepth(
@@ -290,15 +291,15 @@ public class Binder {
 	}
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
-			BindHandler handler, Context context, boolean skipIfHasBoundBean) {
+			BindHandler handler, Context context, boolean allowRecursiveBinding) {
 		if (containsNoDescendantOf(context.streamSources(), name)
 				|| isUnbindableBean(name, target, context)) {
 			return null;
 		}
 		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
-				name.append(propertyName), propertyTarget, handler, context, true);
+				name.append(propertyName), propertyTarget, handler, context, false);
 		Class<?> type = target.getType().resolve();
-		if (skipIfHasBoundBean && context.hasBoundBean(type)) {
+		if (!allowRecursiveBinding && context.hasBoundBean(type)) {
 			return null;
 		}
 		return context.withBean(type, () -> {
