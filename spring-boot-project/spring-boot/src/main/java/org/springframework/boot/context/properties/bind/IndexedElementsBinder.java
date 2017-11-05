@@ -45,7 +45,12 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private static final String INDEX_ZERO = "[0]";
 
 	IndexedElementsBinder(BindContext context) {
-		super(context, false);
+		super(context);
+	}
+
+	@Override
+	protected boolean isAllowRecursiveBinding(ConfigurationPropertySource source) {
+		return source == null || source instanceof IterableConfigurationPropertySource;
 	}
 
 	protected final void bindIndexed(ConfigurationPropertyName name, Bindable<?> target,

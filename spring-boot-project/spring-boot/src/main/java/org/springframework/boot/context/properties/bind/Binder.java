@@ -266,8 +266,10 @@ public class Binder {
 	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
+			boolean allowRecursiveBinding = aggregateBinder
+					.isAllowRecursiveBinding(source);
 			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context,
-					aggregateBinder.isAllowRecursiveBinding());
+					allowRecursiveBinding);
 			return context.withSource(source, supplier);
 		};
 		return context.withIncreasedDepth(

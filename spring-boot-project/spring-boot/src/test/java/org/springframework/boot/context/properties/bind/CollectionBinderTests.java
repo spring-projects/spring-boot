@@ -351,6 +351,7 @@ public class CollectionBinderTests {
 		assertThat(result.getItemsSet()).containsExactly("a", "b", "c");
 	}
 
+	@Test
 	public void bindToBeanWithNestedCollectionShouldPopulateCollection()
 			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
