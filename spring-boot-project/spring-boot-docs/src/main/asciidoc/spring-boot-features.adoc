@@ -2137,7 +2137,7 @@ used instead of the `ErrorAttributes` representation.
 
 
 [[boot-features-error-handling-custom-error-pages]]
-===== Custom Error Eages
+===== Custom Error Pages
 If you want to display a custom HTML error page for a given status code, you can add a
 file to an `/error` folder. Error pages can either be static HTML (that is, added under
 any of the static resource folders) or built by using templates. The name of the file
@@ -2777,7 +2777,7 @@ register a Spring bean that implements the `WebServerFactoryCustomizer` interfac
 `WebServerFactoryCustomizer` provides access to the
 `ConfigurableServletWebServerFactory`, which includes numerous customization setter
 methods. Dedicated variants exist for Tomcat, Jetty, and Undertow. The following example
-shows programatically setting the port:
+shows programmatically setting the port:
 
 [source,java,indent=0]
 ----
@@ -3070,7 +3070,7 @@ Production database connections can also be auto-configured by using a pooling
 `DataSource`. Spring Boot uses the following algorithm for choosing a specific
 implementation:
 
-. We prefer HikariCP for its performance and concurrency. If HkiariCP is available, we
+. We prefer HikariCP for its performance and concurrency. If HikariCP is available, we
   always choose it.
 . Otherwise, if the Tomcat pooling `DataSource` is available, we use it.
 . If neither HikariCP nor the Tomcat pooling datasource are available and if Commons
@@ -6173,7 +6173,7 @@ Spring Data JPA repositories. Regular `@Component` beans are not loaded into the
 
 By default, data JPA tests are transactional and roll back at the end of each test. See
 the {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section]
-in the Spring Framwork Reference Documentation for more details. If that is not what you
+in the Spring Framework Reference Documentation for more details. If that is not what you
 want, you can disable transaction management for a test or for the whole class as
 follows:
 
@@ -6438,7 +6438,7 @@ A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` c
 ==== Auto-configured Data Redis Tests
 You can use `@DataRedisTest` to test Redis applications. By default, it scans for
 `@RedisHash` classes and configures Spring Data Redis repositories. Regular `@Component`
-beans are not loaded into the `ApplicationContext`. The follwing example shows the
+beans are not loaded into the `ApplicationContext`. The following example shows the
 `@DataRedisTest` annotation in use:
 
 [source,java,indent=0]
@@ -6510,7 +6510,7 @@ following example:
 	}
 ----
 
-A list of the auto-configuration settiongs that are enabled by `@DataLdapTest` can be
+A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
