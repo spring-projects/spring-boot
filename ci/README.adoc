@@ -1,26 +1,14 @@
 == Concourse pipeline
 
-To set the pipeline first create a file in this directory called `secrets.yml`:
-
-[source,yaml]
-.secrets.yml
-----
-docker-hub-username: <user>
-docker-hub-password: <secret>
-github-username: <user>
-github-password: <secret>
-artifactory-username: <user>
-artifactory-password: <secret>
-----
-
-NOTE: The file should be ignored by git, make sure that you don't commit it!
-
-Once the file has been created, the pipeline can be deployed:
+The pipeline can be deployed using the following command:
 
 [source]
 ----
-$ fly -t spring set-pipeline -p spring-boot -c ci/pipeline.yml -l ci/parameters.yml -l ci/secrets.yml
+$ fly -t spring set-pipeline -p spring-boot -c ci/pipeline.yml -l ci/parameters.yml
 ----
+
+NOTE: This assumes that you have credhub integration configured with the appropriate
+secrets
 
 === Release
 

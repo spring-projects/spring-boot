@@ -78,6 +78,7 @@ jobs:
       build: ci-images-git-repo/ci/images/spring-boot-jdk9-ci-image
 - name: build
   serial: true
+  public: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
@@ -121,6 +122,7 @@ jobs:
           "zip.deployed": "false"
 - name: build-pull-requests
   serial: true
+  public: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
@@ -161,6 +163,7 @@ jobs:
         status: failure
 - name: jdk9-build
   serial: true
+  public: true
   plan:
   - get: spring-boot-jdk9-ci-image
   - get: git-repo
