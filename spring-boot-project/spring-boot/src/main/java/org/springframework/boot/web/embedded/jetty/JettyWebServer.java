@@ -156,7 +156,7 @@ public class JettyWebServer implements WebServer {
 				this.started = true;
 				JettyWebServer.logger
 						.info("Jetty started on port(s) " + getActualPortsDescription()
-								+ " with context path " + getContextPath());
+								+ " with context path '" + getContextPath() + "'");
 			}
 			catch (WebServerException ex) {
 				throw ex;

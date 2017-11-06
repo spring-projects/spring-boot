@@ -264,6 +264,15 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	public void contextPathIsLoggedOnStartup() {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.setContextPath("/custom");
+		this.webServer = factory.getWebServer(exampleServletRegistration());
+		this.webServer.start();
+		assertThat(this.output.toString()).containsOnlyOnce("with context path '/custom'");
+	}
+
+	@Test
 	public void contextPathMustStartWithSlash() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ContextPath must start with '/' and not end with '/'");

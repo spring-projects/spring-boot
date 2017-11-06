@@ -195,7 +195,7 @@ public class TomcatWebServer implements WebServer {
 				this.started = true;
 				TomcatWebServer.logger
 						.info("Tomcat started on port(s): " + getPortsDescription(true)
-								+ " with context path " + getContextPath());
+								+ " with context path '" + getContextPath() + "'");
 			}
 			catch (ConnectorStartFailedException ex) {
 				stopSilently();

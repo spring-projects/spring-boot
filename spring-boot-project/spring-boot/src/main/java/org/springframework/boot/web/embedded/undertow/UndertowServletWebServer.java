@@ -158,7 +158,7 @@ public class UndertowServletWebServer implements WebServer {
 				this.started = true;
 				UndertowServletWebServer.logger
 						.info("Undertow started on port(s) " + getPortsDescription()
-								+ " with context path " + this.contextPath);
+								+ " with context path '" + this.contextPath + "'");
 			}
 			catch (Exception ex) {
 				try {
