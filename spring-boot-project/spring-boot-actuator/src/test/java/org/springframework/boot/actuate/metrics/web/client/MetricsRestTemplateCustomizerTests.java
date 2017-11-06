@@ -60,7 +60,7 @@ public class MetricsRestTemplateCustomizerTests {
 		String result = restTemplate.getForObject("/test/{id}", String.class, 123);
 		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(registry.find("http.client.requests")
-				.meters()).anySatisfy(m -> assertThat(
+				.meters()).anySatisfy((m) -> assertThat(
 						StreamSupport.stream(m.getId().getTags().spliterator(), false)
 								.map(Tag::getKey)).doesNotContain("bucket"));
 		assertThat(registry.find("http.client.requests")

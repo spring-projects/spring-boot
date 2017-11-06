@@ -130,10 +130,9 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 						.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
 						.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
-				.consumeNextWith((response) -> {
-					assertThat(response.getStatus())
-							.isEqualTo(Reason.ACCESS_DENIED.getStatus());
-				}).verifyComplete();
+				.consumeNextWith((response) -> assertThat(response.getStatus())
+						.isEqualTo(Reason.ACCESS_DENIED.getStatus()))
+				.verifyComplete();
 	}
 
 	@Test

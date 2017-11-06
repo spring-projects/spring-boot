@@ -70,15 +70,15 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 	@Test
 	public void getAccessLevelWhenSpaceDeveloperShouldReturnFull() throws Exception {
 		String responseBody = "{\"read_sensitive_data\": true,\"read_basic_data\": true}";
-		prepareResponse(response -> response.setBody(responseBody)
+		prepareResponse((response) -> response.setBody(responseBody)
 				.setHeader("Content-Type", "application/json"));
 		StepVerifier
 				.create(this.securityService.getAccessLevel("my-access-token",
 						"my-app-id"))
-				.consumeNextWith(accessLevel -> assertThat(accessLevel)
+				.consumeNextWith((accessLevel) -> assertThat(accessLevel)
 						.isEqualTo(AccessLevel.FULL))
 				.expectComplete().verify();
-		expectRequest(request -> {
+		expectRequest((request) -> {
 			assertThat(request.getHeader(HttpHeaders.AUTHORIZATION))
 					.isEqualTo("bearer my-access-token");
 			assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER_PERMISSIONS);
@@ -89,15 +89,15 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 	public void getAccessLevelWhenNotSpaceDeveloperShouldReturnRestricted()
 			throws Exception {
 		String responseBody = "{\"read_sensitive_data\": false,\"read_basic_data\": true}";
-		prepareResponse(response -> response.setBody(responseBody)
+		prepareResponse((response) -> response.setBody(responseBody)
 				.setHeader("Content-Type", "application/json"));
 		StepVerifier
 				.create(this.securityService.getAccessLevel("my-access-token",
 						"my-app-id"))
-				.consumeNextWith(accessLevel -> assertThat(accessLevel)
+				.consumeNextWith((accessLevel) -> assertThat(accessLevel)
 						.isEqualTo(AccessLevel.RESTRICTED))
 				.expectComplete().verify();
-		expectRequest(request -> {
+		expectRequest((request) -> {
 			assertThat(request.getHeader(HttpHeaders.AUTHORIZATION))
 					.isEqualTo("bearer my-access-token");
 			assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER_PERMISSIONS);
@@ -106,17 +106,17 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 
 	@Test
 	public void getAccessLevelWhenTokenIsNotValidShouldThrowException() throws Exception {
-		prepareResponse(response -> response.setResponseCode(401));
+		prepareResponse((response) -> response.setResponseCode(401));
 		StepVerifier.create(
 				this.securityService.getAccessLevel("my-access-token", "my-app-id"))
-				.consumeErrorWith(throwable -> {
+				.consumeErrorWith((throwable) -> {
 					assertThat(throwable)
 							.isInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(
 							((CloudFoundryAuthorizationException) throwable).getReason())
 									.isEqualTo(Reason.INVALID_TOKEN);
 				}).verify();
-		expectRequest(request -> {
+		expectRequest((request) -> {
 			assertThat(request.getHeader(HttpHeaders.AUTHORIZATION))
 					.isEqualTo("bearer my-access-token");
 			assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER_PERMISSIONS);
@@ -125,17 +125,17 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 
 	@Test
 	public void getAccessLevelWhenForbiddenShouldThrowException() throws Exception {
-		prepareResponse(response -> response.setResponseCode(403));
+		prepareResponse((response) -> response.setResponseCode(403));
 		StepVerifier.create(
 				this.securityService.getAccessLevel("my-access-token", "my-app-id"))
-				.consumeErrorWith(throwable -> {
+				.consumeErrorWith((throwable) -> {
 					assertThat(throwable)
 							.isInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(
 							((CloudFoundryAuthorizationException) throwable).getReason())
 									.isEqualTo(Reason.ACCESS_DENIED);
 				}).verify();
-		expectRequest(request -> {
+		expectRequest((request) -> {
 			assertThat(request.getHeader(HttpHeaders.AUTHORIZATION))
 					.isEqualTo("bearer my-access-token");
 			assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER_PERMISSIONS);
@@ -145,17 +145,17 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 	@Test
 	public void getAccessLevelWhenCloudControllerIsNotReachableThrowsException()
 			throws Exception {
-		prepareResponse(response -> response.setResponseCode(500));
+		prepareResponse((response) -> response.setResponseCode(500));
 		StepVerifier.create(
 				this.securityService.getAccessLevel("my-access-token", "my-app-id"))
-				.consumeErrorWith(throwable -> {
+				.consumeErrorWith((throwable) -> {
 					assertThat(throwable)
 							.isInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(
 							((CloudFoundryAuthorizationException) throwable).getReason())
 									.isEqualTo(Reason.SERVICE_UNAVAILABLE);
 				}).verify();
-		expectRequest(request -> {
+		expectRequest((request) -> {
 			assertThat(request.getHeader(HttpHeaders.AUTHORIZATION))
 					.isEqualTo("bearer my-access-token");
 			assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER_PERMISSIONS);
@@ -173,78 +173,76 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 				+ "kqwIn7Glry9n9Suxygbf8g5AzpWcusZgDLIIZ7JTUldBb8qU2a0Dl4mvLZOn4wPo\n"
 				+ "jfj9Cw2QICsc5+Pwf21fP+hzf+1WSRHbnYv8uanRO0gZ8ekGaghM/2H6gqJbo2nI\n"
 				+ "JwIDAQAB\n-----END PUBLIC KEY-----";
-		prepareResponse(response -> {
+		prepareResponse((response) -> {
 			response.setBody("{\"token_endpoint\":\"/my-uaa.com\"}");
 			response.setHeader("Content-Type", "application/json");
 		});
 		String responseBody = "{\"keys\" : [ {\"kid\":\"test-key\",\"value\" : \""
 				+ tokenKeyValue.replace("\n", "\\n") + "\"} ]}";
-		prepareResponse(response -> {
+		prepareResponse((response) -> {
 			response.setBody(responseBody);
 			response.setHeader("Content-Type", "application/json");
 		});
 		StepVerifier.create(this.securityService.fetchTokenKeys())
-				.consumeNextWith(tokenKeys -> assertThat(tokenKeys.get("test-key"))
+				.consumeNextWith((tokenKeys) -> assertThat(tokenKeys.get("test-key"))
 						.isEqualTo(tokenKeyValue))
 				.expectComplete().verify();
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo("/my-cloud-controller.com/info"));
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo("/my-uaa.com/token_keys"));
 	}
 
 	@Test
 	public void fetchTokenKeysWhenNoKeysReturnedFromUAA() throws Exception {
-		prepareResponse(response -> {
+		prepareResponse((response) -> {
 			response.setBody("{\"token_endpoint\":\"/my-uaa.com\"}");
 			response.setHeader("Content-Type", "application/json");
 		});
 		String responseBody = "{\"keys\": []}";
-		prepareResponse(response -> {
+		prepareResponse((response) -> {
 			response.setBody(responseBody);
 			response.setHeader("Content-Type", "application/json");
 		});
 		StepVerifier.create(this.securityService.fetchTokenKeys())
-				.consumeNextWith(tokenKeys -> assertThat(tokenKeys).hasSize(0))
+				.consumeNextWith((tokenKeys) -> assertThat(tokenKeys).hasSize(0))
 				.expectComplete().verify();
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo("/my-cloud-controller.com/info"));
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo("/my-uaa.com/token_keys"));
 	}
 
 	@Test
 	public void fetchTokenKeysWhenUnsuccessfulShouldThrowException() throws Exception {
-		prepareResponse(response -> {
+		prepareResponse((response) -> {
 			response.setBody("{\"token_endpoint\":\"/my-uaa.com\"}");
 			response.setHeader("Content-Type", "application/json");
 		});
-		prepareResponse(response -> {
-			response.setResponseCode(500);
-		});
+		prepareResponse((response) -> response.setResponseCode(500));
 		StepVerifier.create(this.securityService.fetchTokenKeys())
-				.consumeErrorWith(throwable -> assertThat(
+				.consumeErrorWith((throwable) -> assertThat(
 						((CloudFoundryAuthorizationException) throwable).getReason())
 								.isEqualTo(Reason.SERVICE_UNAVAILABLE))
 				.verify();
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo("/my-cloud-controller.com/info"));
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo("/my-uaa.com/token_keys"));
 	}
 
 	@Test
 	public void getUaaUrlShouldCallCloudControllerInfoOnlyOnce() throws Exception {
-		prepareResponse(response -> {
+		prepareResponse((response) -> {
 			response.setBody("{\"token_endpoint\":\"" + UAA_URL + "\"}");
 			response.setHeader("Content-Type", "application/json");
 		});
 		StepVerifier.create(this.securityService.getUaaUrl())
-				.consumeNextWith(uaaUrl -> assertThat(uaaUrl).isEqualTo(UAA_URL))
+				.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL))
 				.expectComplete().verify();
 		// this.securityService.getUaaUrl().block(); //FIXME subscribe again to check that
 		// it isn't called again
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo(CLOUD_CONTROLLER + "/info"));
 		expectRequestCount(1);
 	}
@@ -252,16 +250,16 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 	@Test
 	public void getUaaUrlWhenCloudControllerUrlIsNotReachableShouldThrowException()
 			throws Exception {
-		prepareResponse(response -> response.setResponseCode(500));
+		prepareResponse((response) -> response.setResponseCode(500));
 		StepVerifier.create(this.securityService.getUaaUrl())
-				.consumeErrorWith(throwable -> {
+				.consumeErrorWith((throwable) -> {
 					assertThat(throwable)
 							.isInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(
 							((CloudFoundryAuthorizationException) throwable).getReason())
 									.isEqualTo(Reason.SERVICE_UNAVAILABLE);
 				}).verify();
-		expectRequest(request -> assertThat(request.getPath())
+		expectRequest((request) -> assertThat(request.getPath())
 				.isEqualTo(CLOUD_CONTROLLER + "/info"));
 	}
 

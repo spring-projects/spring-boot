@@ -98,17 +98,20 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 	@ResponseBody
 	private Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
 		ServerHttpRequest request = exchange.getRequest();
-		return this.securityInterceptor.preHandle(exchange, "").map(securityResponse -> {
-			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-				return new ResponseEntity<>(securityResponse.getStatus());
-			}
-			AccessLevel accessLevel = exchange
-					.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-			Map<String, Link> links = this.endpointLinksResolver
-					.resolveLinks(getEndpoints(), request.getURI().toString());
-			return new ResponseEntity<>(Collections.singletonMap("_links",
-					getAccessibleLinks(accessLevel, links)), HttpStatus.OK);
-		});
+		return this.securityInterceptor.preHandle(exchange, "")
+				.map((securityResponse) -> {
+					if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
+						return new ResponseEntity<>(securityResponse.getStatus());
+					}
+					AccessLevel accessLevel = exchange
+							.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
+					Map<String, Link> links = this.endpointLinksResolver
+							.resolveLinks(getEndpoints(), request.getURI().toString());
+					return new ResponseEntity<>(
+							Collections.singletonMap("_links",
+									getAccessibleLinks(accessLevel, links)),
+							HttpStatus.OK);
+				});
 	}
 
 	private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel,

@@ -93,7 +93,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	@Test
 	public void configurationRegistersAuthorizedClientServiceBean() throws Exception {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run(context -> {
+				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					OAuth2AuthorizedClientService bean = context
 							.getBean(OAuth2AuthorizedClientService.class);
 					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
@@ -108,7 +108,7 @@ public class OAuth2WebSecurityConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)
-				.run(context -> {
+				.run((context) -> {
 					OAuth2AuthorizedClientService bean = context
 							.getBean(OAuth2AuthorizedClientService.class);
 					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils

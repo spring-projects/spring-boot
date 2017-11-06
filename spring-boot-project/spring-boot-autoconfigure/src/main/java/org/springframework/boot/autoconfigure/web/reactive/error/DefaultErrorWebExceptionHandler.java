@@ -123,7 +123,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
 				.flatMap((viewName) -> renderErrorView(viewName, response, error))
 				.switchIfEmpty(renderDefaultErrorView(response, error)).next()
-				.doOnNext(resp -> logError(request, errorStatus));
+				.doOnNext((resp) -> logError(request, errorStatus));
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		return ServerResponse.status(getHttpStatus(error))
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.body(BodyInserters.fromObject(error))
-				.doOnNext(resp -> logError(request, errorStatus));
+				.doOnNext((resp) -> logError(request, errorStatus));
 	}
 
 	/**

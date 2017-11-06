@@ -460,16 +460,16 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		return context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 	}
 
-	private static ConsoleAppender getConsoleAppender() {
-		return (ConsoleAppender) getRootLogger().getAppender("CONSOLE");
+	private static ConsoleAppender<?> getConsoleAppender() {
+		return (ConsoleAppender<?>) getRootLogger().getAppender("CONSOLE");
 	}
 
-	private static RollingFileAppender getFileAppender() {
-		return (RollingFileAppender) getRootLogger().getAppender("FILE");
+	private static RollingFileAppender<?> getFileAppender() {
+		return (RollingFileAppender<?>) getRootLogger().getAppender("FILE");
 	}
 
-	private static SizeAndTimeBasedRollingPolicy getRollingPolicy() {
-		return (SizeAndTimeBasedRollingPolicy) getFileAppender().getRollingPolicy();
+	private static SizeAndTimeBasedRollingPolicy<?> getRollingPolicy() {
+		return (SizeAndTimeBasedRollingPolicy<?>) getFileAppender().getRollingPolicy();
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {
