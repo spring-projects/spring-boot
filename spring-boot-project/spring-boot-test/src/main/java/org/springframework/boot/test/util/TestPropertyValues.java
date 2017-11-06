@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -98,7 +99,7 @@ public final class TestPropertyValues {
 	 * @param type the type of {@link PropertySource} to be added. See {@link Type}
 	 */
 	public void applyTo(ConfigurableEnvironment environment, Type type) {
-		applyTo(environment, type, "test");
+		applyTo(environment, type, type.applySuffix("test"));
 	}
 
 	/**
@@ -212,21 +213,29 @@ public final class TestPropertyValues {
 		/**
 		 * Used for {@link SystemEnvironmentPropertySource}.
 		 */
-		SYSTEM(SystemEnvironmentPropertySource.class),
+		SYSTEM_ENVIRONMENT(SystemEnvironmentPropertySource.class,
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME),
 
 		/**
 		 * Used for {@link MapPropertySource}.
 		 */
-		MAP(MapPropertySource.class);
+		MAP(MapPropertySource.class, null);
 
-		private Class<? extends MapPropertySource> sourceClass;
+		private final Class<? extends MapPropertySource> sourceClass;
 
-		Type(Class<? extends MapPropertySource> sourceClass) {
+		private final String suffix;
+
+		Type(Class<? extends MapPropertySource> sourceClass, String suffix) {
 			this.sourceClass = sourceClass;
+			this.suffix = (suffix == null ? null : "-" + suffix);
 		}
 
 		public Class<? extends MapPropertySource> getSourceClass() {
 			return this.sourceClass;
+		}
+
+		protected String applySuffix(String name) {
+			return (this.suffix == null ? name : name + "-" + this.suffix);
 		}
 
 	}

@@ -27,6 +27,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 
@@ -150,10 +151,18 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	private static PropertyMapper getPropertyMapper(PropertySource<?> source) {
-		if (source instanceof SystemEnvironmentPropertySource) {
+		if (source instanceof SystemEnvironmentPropertySource
+				&& hasSystemEnvironmentName(source)) {
 			return SystemEnvironmentPropertyMapper.INSTANCE;
 		}
 		return DefaultPropertyMapper.INSTANCE;
+	}
+
+	private static boolean hasSystemEnvironmentName(PropertySource<?> source) {
+		String name = source.getName();
+		return StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(name)
+				|| name.endsWith("-"
+						+ StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 	}
 
 	private static boolean isFullEnumerable(PropertySource<?> source) {

@@ -34,11 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BackCompatibiltyBinderIntegrationTests {
 
-	// gh-10873
-
 	@Test
 	public void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore()
 			throws Exception {
+		// gh-10873
 		MockEnvironment environment = new MockEnvironment();
 		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
@@ -47,6 +46,17 @@ public class BackCompatibiltyBinderIntegrationTests {
 		ExampleCamelCaseBean result = Binder.get(environment)
 				.bind("foo", Bindable.of(ExampleCamelCaseBean.class)).get();
 		assertThat(result.getZkNodes()).isEqualTo("foo");
+	}
+
+	@Test
+	public void bindWhenUsingSystemEnvronmentToOverride() {
+		MockEnvironment environment = new MockEnvironment();
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
+				"override", Collections.singletonMap("foo.password", "test"));
+		environment.getPropertySources().addFirst(propertySource);
+		PasswordProperties result = Binder.get(environment)
+				.bind("foo", Bindable.of(PasswordProperties.class)).get();
+		assertThat(result.getPassword()).isEqualTo("test");
 	}
 
 	public static class ExampleCamelCaseBean {
@@ -63,4 +73,17 @@ public class BackCompatibiltyBinderIntegrationTests {
 
 	}
 
+	protected static class PasswordProperties {
+
+		private String password;
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+
+	}
 }

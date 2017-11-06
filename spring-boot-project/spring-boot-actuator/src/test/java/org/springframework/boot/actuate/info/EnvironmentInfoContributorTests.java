@@ -57,7 +57,7 @@ public class EnvironmentInfoContributorTests {
 	@SuppressWarnings("unchecked")
 	public void propertiesFromEnvironmentShouldBindCorrectly() throws Exception {
 		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment,
-				Type.SYSTEM);
+				Type.SYSTEM_ENVIRONMENT);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("environment", Map.class)).containsEntry("foo", "green");
 	}

@@ -66,8 +66,36 @@ public class SpringConfigurationPropertySourcesTests {
 	@Test
 	public void shouldAdaptSystemEnvironmentPropertySource() throws Exception {
 		MutablePropertySources sources = new MutablePropertySources();
-		sources.addLast(new SystemEnvironmentPropertySource("system",
+		sources.addLast(new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("SERVER_PORT", "1234")));
+		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(
+				sources).iterator();
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");
+		assertThat(iterator.next().getConfigurationProperty(name).getValue())
+				.isEqualTo("1234");
+		assertThat(iterator.hasNext()).isFalse();
+	}
+
+	@Test
+	public void shouldExtendedAdaptSystemEnvironmentPropertySource() throws Exception {
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addLast(new SystemEnvironmentPropertySource(
+				"test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				Collections.singletonMap("SERVER_PORT", "1234")));
+		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(
+				sources).iterator();
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");
+		assertThat(iterator.next().getConfigurationProperty(name).getValue())
+				.isEqualTo("1234");
+		assertThat(iterator.hasNext()).isFalse();
+	}
+
+	@Test
+	public void shouldNotAdaptSystemEnvironmentPropertyOverrideSource() throws Exception {
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addLast(new SystemEnvironmentPropertySource("override",
+				Collections.singletonMap("server.port", "1234")));
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(
 				sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");

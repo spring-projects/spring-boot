@@ -54,8 +54,10 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void applyToSystemPropertySource() throws Exception {
-		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM);
+		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
+		assertThat(this.environment.getPropertySources().contains(
+				"test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME));
 	}
 
 	@Test
@@ -70,7 +72,7 @@ public class TestPropertyValuesTests {
 			throws Exception {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
 				Type.MAP, "other");
-		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM,
+		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT,
 				"other");
 		assertThat(this.environment.getPropertySources().get("other"))
 				.isInstanceOf(SystemEnvironmentPropertySource.class);

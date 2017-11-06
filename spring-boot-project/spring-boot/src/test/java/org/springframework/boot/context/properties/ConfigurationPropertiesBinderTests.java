@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.bind.validation.BindValidatio
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -192,7 +193,8 @@ public class ConfigurationPropertiesBinderTests {
 	@Test
 	public void bindToMapWithSystemProperties() {
 		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addLast(new SystemEnvironmentPropertySource("system",
+		propertySources.addLast(new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				propertySources, null, null);
