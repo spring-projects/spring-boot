@@ -62,6 +62,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Christoph Dreis
+ * @author Kristine Jetzke
  * @since 2.0.0
  * @see UndertowServletWebServerFactory
  */
@@ -156,7 +157,8 @@ public class UndertowServletWebServer implements WebServer {
 				this.undertow.start();
 				this.started = true;
 				UndertowServletWebServer.logger
-						.info("Undertow started on port(s) " + getPortsDescription());
+						.info("Undertow started on port(s) " + getPortsDescription()
+								+ " with context path '" + this.contextPath + "'");
 			}
 			catch (Exception ex) {
 				try {
