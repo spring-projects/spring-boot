@@ -269,7 +269,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		factory.setContextPath("/custom");
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
-		assertThat(this.output.toString()).containsOnlyOnce("with context path '/custom'");
+		assertThat(this.output.toString())
+				.containsOnlyOnce("with context path '/custom'");
 	}
 
 	@Test
