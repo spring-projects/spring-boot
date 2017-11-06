@@ -23,7 +23,6 @@ import java.util.EnumSet;
 import net.minidev.json.JSONArray;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -54,7 +53,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@Ignore
 @RunWith(WebEndpointRunners.class)
 public class LoggersEndpointWebIntegrationTests {
 

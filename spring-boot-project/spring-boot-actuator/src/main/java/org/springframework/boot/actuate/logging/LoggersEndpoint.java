@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -76,7 +77,8 @@ public class LoggersEndpoint {
 	}
 
 	@WriteOperation
-	public void configureLogLevel(@Selector String name, LogLevel configuredLevel) {
+	public void configureLogLevel(@Selector String name,
+			@Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "Name must not be empty");
 		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}
