@@ -65,7 +65,8 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 		assertThat(namesFromConfiguration("host[0].name")).containsExactly("HOST_0_NAME");
 		assertThat(namesFromConfiguration("host.f00.name"))
 				.containsExactly("HOST_F00_NAME");
-		assertThat(namesFromConfiguration("foo.the-bar")).containsExactly("FOO_THEBAR");
+		assertThat(namesFromConfiguration("foo.the-bar")).containsExactly("FOO_THEBAR",
+				"FOO_THE_BAR");
 	}
 
 	@Test

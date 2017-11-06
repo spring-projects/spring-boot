@@ -18,7 +18,9 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -47,6 +49,37 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
 
 	private SystemEnvironmentPropertyMapper() {
+	}
+
+	@Override
+	public List<PropertyMapping> map(PropertySource<?> propertySource,
+			ConfigurationPropertyName configurationPropertyName) {
+		Set<String> names = new LinkedHashSet<>();
+		names.add(convertName(configurationPropertyName));
+		names.add(convertLegacyName(configurationPropertyName));
+		List<PropertyMapping> result = new ArrayList<>();
+		names.forEach((name) -> result
+				.add(new PropertyMapping(name, configurationPropertyName)));
+		if (isListShortcutPossible(configurationPropertyName)) {
+			result.addAll(mapListShortcut(propertySource, configurationPropertyName));
+		}
+		return result;
+	}
+
+	private boolean isListShortcutPossible(ConfigurationPropertyName name) {
+		return (name.isLastElementIndexed() && isNumber(name.getLastElement(Form.UNIFORM))
+				&& name.getNumberOfElements() >= 1);
+	}
+
+	private List<PropertyMapping> mapListShortcut(PropertySource<?> propertySource,
+			ConfigurationPropertyName name) {
+		String result = convertName(name, name.getNumberOfElements() - 1) + "__";
+		if (propertySource.containsProperty(result)) {
+			int index = Integer.parseInt(name.getLastElement(Form.UNIFORM));
+			return Collections.singletonList(
+					new PropertyMapping(result, name, new ElementExtractor(index)));
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -89,19 +122,6 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		return mappings;
 	}
 
-	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
-			ConfigurationPropertyName configurationPropertyName) {
-		String name = convertName(configurationPropertyName);
-		List<PropertyMapping> result = Collections
-				.singletonList(new PropertyMapping(name, configurationPropertyName));
-		if (isListShortcutPossible(configurationPropertyName)) {
-			result = new ArrayList<>(result);
-			result.addAll(mapListShortcut(propertySource, configurationPropertyName));
-		}
-		return result;
-	}
-
 	private String convertName(ConfigurationPropertyName name) {
 		return convertName(name, name.getNumberOfElements());
 	}
@@ -115,20 +135,17 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		return result.toString();
 	}
 
-	private boolean isListShortcutPossible(ConfigurationPropertyName name) {
-		return (name.isLastElementIndexed() && isNumber(name.getLastElement(Form.UNIFORM))
-				&& name.getNumberOfElements() >= 1);
+	private String convertLegacyName(ConfigurationPropertyName name) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < name.getNumberOfElements(); i++) {
+			result.append(result.length() == 0 ? "" : "_");
+			result.append(convertLegacyNameElement(name.getElement(i, Form.ORIGINAL)));
+		}
+		return result.toString();
 	}
 
-	private List<PropertyMapping> mapListShortcut(PropertySource<?> propertySource,
-			ConfigurationPropertyName name) {
-		String result = convertName(name, name.getNumberOfElements() - 1) + "__";
-		if (propertySource.containsProperty(result)) {
-			int index = Integer.parseInt(name.getLastElement(Form.UNIFORM));
-			return Collections.singletonList(
-					new PropertyMapping(result, name, new ElementExtractor(index)));
-		}
-		return Collections.emptyList();
+	private Object convertLegacyNameElement(String element) {
+		return element.replace("-", "_").toUpperCase();
 	}
 
 	private CharSequence processElementValue(CharSequence value) {
