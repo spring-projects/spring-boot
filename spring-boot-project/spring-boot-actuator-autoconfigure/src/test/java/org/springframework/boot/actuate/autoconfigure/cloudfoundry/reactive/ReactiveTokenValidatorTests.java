@@ -30,9 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
@@ -57,9 +55,6 @@ public class ReactiveTokenValidatorTests {
 	private static final byte[] DOT = ".".getBytes();
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private ReactiveCloudFoundrySecurityService securityService;
