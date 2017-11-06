@@ -194,7 +194,7 @@ public class FileSystemWatcher {
 			}
 			this.watchThread = null;
 		}
-		if (Thread.currentThread() != thread) {
+		if (thread != null && Thread.currentThread() != thread) {
 			try {
 				thread.join();
 			}
