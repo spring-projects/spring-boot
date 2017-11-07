@@ -60,6 +60,7 @@ import org.apache.catalina.webresources.EmptyResource;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.http2.Http2Protocol;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
@@ -201,7 +202,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
 		context.setUseRelativeRedirects(false);
-		SkipPatternJarScanner.apply(context, this.tldSkipPatterns);
+		configureTldSkipPatterns(context);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
 		loader.setDelegate(true);
@@ -218,6 +219,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		configureContext(context, initializersToUse);
 		host.addChild(context);
 		postProcessContext(context);
+	}
+
+	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {
+		StandardJarScanFilter filter = new StandardJarScanFilter();
+		filter.setTldSkip(StringUtils.collectionToCommaDelimitedString(this.tldSkipPatterns));
+		context.getJarScanner().setJarScanFilter(filter);
 	}
 
 	/**

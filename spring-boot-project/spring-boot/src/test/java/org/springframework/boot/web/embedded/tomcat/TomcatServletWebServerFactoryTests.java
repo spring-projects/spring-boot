@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.InitialContext;
@@ -43,6 +44,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.jasper.servlet.JspServlet;
+import org.apache.tomcat.JarScanFilter;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -383,6 +385,20 @@ public class TomcatServletWebServerFactoryTests
 				.getSessionIdGenerator();
 		assertThat(sessionIdGenerator).isInstanceOf(LazySessionIdGenerator.class);
 		assertThat(sessionIdGenerator.getJvmRoute()).isEqualTo("test");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void tldSkipPatternsShouldBeAppliedToContextJarScanner() throws Exception {
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.addTldSkipPatterns("foo.jar", "bar.jar");
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
+		Context context = (Context) tomcat.getHost().findChildren()[0];
+		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
+		Set<String> tldSkipSet = (Set<String>) ReflectionTestUtils.getField(jarScanFilter, "tldSkipSet");
+		assertThat(tldSkipSet).contains("foo.jar", "bar.jar");
 	}
 
 	@Override
