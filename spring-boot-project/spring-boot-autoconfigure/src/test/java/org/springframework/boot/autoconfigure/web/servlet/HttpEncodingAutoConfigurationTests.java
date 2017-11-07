@@ -147,7 +147,7 @@ public class HttpEncodingAutoConfigurationTests {
 		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class)
-				.getLocaleCharsetMappings().size()).isEqualTo(0);
+				.getLocaleCharsetMappings()).isEmpty();
 	}
 
 	@Test

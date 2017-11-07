@@ -52,7 +52,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Test
 	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
-		String key = "test." + UUID.randomUUID().toString();
+		String key = "test." + UUID.randomUUID();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		get().withSystemProperties(key + "=value")
 				.run((context) -> assertThat(System.getProperties()).containsEntry(key,
@@ -63,7 +63,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	@Test
 	public void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties()
 			throws Exception {
-		String key = "test." + UUID.randomUUID().toString();
+		String key = "test." + UUID.randomUUID();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		get().withSystemProperties(key + "=value")
 				.withUserConfiguration(FailingConfig.class)
@@ -74,7 +74,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	@Test
 	public void runWithSystemPropertiesShouldRestoreOriginalProperties()
 			throws Exception {
-		String key = "test." + UUID.randomUUID().toString();
+		String key = "test." + UUID.randomUUID();
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
@@ -91,7 +91,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	@Test
 	public void runWithSystemPropertiesWhenValueIsNullShouldRemoveProperty()
 			throws Exception {
-		String key = "test." + UUID.randomUUID().toString();
+		String key = "test." + UUID.randomUUID();
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");

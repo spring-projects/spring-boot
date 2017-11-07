@@ -261,7 +261,7 @@ public class FileSystemWatcherTests {
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
 		Thread.sleep(100);
-		assertThat(this.changes.size()).isEqualTo(0);
+		assertThat(this.changes).isEmpty();
 		FileCopyUtils.copy("abc".getBytes(), trigger);
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();

@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class BackCompatibiltyBinderIntegrationTests {
+public class BackCompatibilityBinderIntegrationTests {
 
 	@Test
 	public void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore()
@@ -49,7 +49,7 @@ public class BackCompatibiltyBinderIntegrationTests {
 	}
 
 	@Test
-	public void bindWhenUsingSystemEnvronmentToOverride() {
+	public void bindWhenUsingSystemEnvironmentToOverride() {
 		MockEnvironment environment = new MockEnvironment();
 		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
 				"override", Collections.singletonMap("foo.password", "test"));
