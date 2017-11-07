@@ -59,15 +59,12 @@ class RedisCacheConfiguration {
 
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-
 		RedisCacheManagerBuilder builder = RedisCacheManager
 				.builder(redisConnectionFactory).cacheDefaults(getConfiguration());
-
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
-
 		return this.customizerInvoker.customize(builder.build());
 	}
 
@@ -78,8 +75,8 @@ class RedisCacheConfiguration {
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig().entryTtl(redisProperties.getTtl());
 
-		if (redisProperties.getKeyPrefix().isPresent()) {
-			config = config.prefixKeysWith(redisProperties.getKeyPrefix().get());
+		if (redisProperties.getKeyPrefix() != null) {
+			config = config.prefixKeysWith(redisProperties.getKeyPrefix());
 		}
 
 		if (!redisProperties.isCacheNullValues()) {

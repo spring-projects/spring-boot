@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.cache;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -245,16 +244,12 @@ public class CacheProperties {
 	/**
 	 * Redis-specific cache properties. Properties set will be used as the defaults for
 	 * all Redis caches.
-	 *
-	 * @see org.springframework.data.redis.cache.RedisCacheConfiguration
 	 */
 	public static class Redis {
 
 		/**
-		 * The TTL for entries. By default, entries do not expire, a value of zero
-		 * indicates an eternal entry, and the given value will be converted to seconds..
-		 *
-		 * @see Duration#parse(CharSequence)
+		 * Specifies the TTL (ultimately converted to seconds) for keys written to Redis.
+		 * By default, entries do not expire, and a value of {@link Duration#ZERO} disables the TTL.
 		 */
 		private Duration ttl = Duration.ZERO;
 
@@ -264,7 +259,8 @@ public class CacheProperties {
 		private boolean cacheNullValues = true;
 
 		/**
-		 * The non-null Redis key prefix to use instead of the default one.
+		 * Specifies an override for the default Redis key prefix. A value of {@literal null} results
+		 * in usage of the default key prefix.
 		 */
 		private String keyPrefix;
 
@@ -291,8 +287,8 @@ public class CacheProperties {
 			return this;
 		}
 
-		public Optional<String> getKeyPrefix() {
-			return Optional.ofNullable(this.keyPrefix);
+		public String getKeyPrefix() {
+			return this.keyPrefix;
 		}
 
 		public Redis setKeyPrefix(String keyPrefix) {
