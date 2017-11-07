@@ -68,7 +68,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link WebMvcMetricsFilter}
+ * Tests for {@link WebMvcMetricsFilter}.
  *
  * @author Jon Schneider
  */

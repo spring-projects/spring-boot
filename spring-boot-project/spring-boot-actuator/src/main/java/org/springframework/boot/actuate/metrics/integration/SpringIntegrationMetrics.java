@@ -63,15 +63,15 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	@Override
 	public void bindTo(MeterRegistry registry) {
-		registerGuage(registry, this.configurer, this.tags,
+		registerGauge(registry, this.configurer, this.tags,
 				"spring.integration.channelNames",
 				"The number of spring integration channels",
 				(configurer) -> configurer.getChannelNames().length);
-		registerGuage(registry, this.configurer, this.tags,
+		registerGauge(registry, this.configurer, this.tags,
 				"spring.integration.handlerNames",
 				"The number of spring integration handlers",
 				(configurer) -> configurer.getHandlerNames().length);
-		registerGuage(registry, this.configurer, this.tags,
+		registerGauge(registry, this.configurer, this.tags,
 				"spring.integration.sourceNames",
 				"The number of spring integration sources",
 				(configurer) -> configurer.getSourceNames().length);
@@ -105,7 +105,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
 					"spring.integration.handler.duration.mean",
 					"The mean handler duration", MessageHandlerMetrics::getMeanDuration);
-			registerGuage(registry, handlerMetrics, tagsWithHandler,
+			registerGauge(registry, handlerMetrics, tagsWithHandler,
 					"spring.integration.handler.activeCount",
 					"The number of active handlers",
 					MessageHandlerMetrics::getActiveCount);
@@ -133,7 +133,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 		}
 	}
 
-	private <T> void registerGuage(MeterRegistry registry, T object, Iterable<Tag> tags,
+	private <T> void registerGauge(MeterRegistry registry, T object, Iterable<Tag> tags,
 			String name, String description, ToDoubleFunction<T> value) {
 		Gauge.Builder<?> builder = Gauge.builder(name, object, value);
 		builder.tags(this.tags).description(description).register(registry);

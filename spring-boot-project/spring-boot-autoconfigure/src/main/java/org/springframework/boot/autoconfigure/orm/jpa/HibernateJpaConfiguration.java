@@ -154,7 +154,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private boolean runningOnWebSphere() {
 		return ClassUtils.isPresent(
-				"com.ibm.websphere.jtaextensions." + "ExtendedJTATransaction",
+				"com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
 				getClass().getClassLoader());
 	}
 
@@ -175,7 +175,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 		catch (LinkageError ex) {
 			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
-			// containers (e.g. JBoss EAP 6) wraps it in the superclass LinkageError
+			// containers (e.g. JBoss EAP 6) wrap it in the superclass LinkageError
 			if (!isUsingJndi()) {
 				throw new IllegalStateException("Unable to set Hibernate JTA "
 						+ "platform, are you using the correct "
