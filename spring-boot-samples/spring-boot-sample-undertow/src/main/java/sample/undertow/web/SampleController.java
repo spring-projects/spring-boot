@@ -18,21 +18,15 @@ package sample.undertow.web;
 
 import java.util.concurrent.Callable;
 
-import sample.undertow.service.HelloWorldService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
-
 	@GetMapping("/")
 	public String helloWorld() {
-		return this.helloWorldService.getHelloMessage();
+		return "Hello World";
 	}
 
 	@GetMapping("/async")
@@ -41,12 +35,8 @@ public class SampleController {
 
 			@Override
 			public String call() throws Exception {
-				return "async: "
-						+ SampleController.this.helloWorldService.getHelloMessage();
+				return "async: Hello World";
 			}
-
 		};
-
 	}
-
 }
