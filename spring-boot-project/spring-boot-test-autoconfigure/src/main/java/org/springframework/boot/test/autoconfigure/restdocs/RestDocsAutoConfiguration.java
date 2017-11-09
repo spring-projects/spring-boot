@@ -118,7 +118,7 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(WebTestClientRestDocumentationConfigurer.class)
 		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
-				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider, // TODO: create web test client customizer
+				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {
 			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
 					.documentationConfiguration(contextProvider);
