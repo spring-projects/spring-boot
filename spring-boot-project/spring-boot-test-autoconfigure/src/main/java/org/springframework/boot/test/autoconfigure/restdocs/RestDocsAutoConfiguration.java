@@ -112,7 +112,7 @@ public class RestDocsAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(WebTestClientRestDocumentation.class)
-	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	static class RestDocsWebTestClientAutoConfiguration {
 
 		@Bean
