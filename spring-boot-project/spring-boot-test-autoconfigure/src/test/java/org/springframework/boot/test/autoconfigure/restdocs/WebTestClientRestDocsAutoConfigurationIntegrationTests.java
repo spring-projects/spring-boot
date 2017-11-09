@@ -31,7 +31,7 @@ import org.springframework.util.FileSystemUtils;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 /**
  * Integration tests for {@link RestDocsAutoConfiguration} with WebClientTest.
