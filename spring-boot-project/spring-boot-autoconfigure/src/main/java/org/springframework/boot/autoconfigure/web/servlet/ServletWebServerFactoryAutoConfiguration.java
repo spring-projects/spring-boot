@@ -21,6 +21,7 @@ import javax.servlet.ServletRequest;
 
 import io.undertow.Undertow;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.UpgradeProtocol;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -84,7 +85,7 @@ public class ServletWebServerFactoryAutoConfiguration {
 	 * Nested configuration if Tomcat is being used.
 	 */
 	@Configuration
-	@ConditionalOnClass({ Servlet.class, Tomcat.class })
+	@ConditionalOnClass({ Servlet.class, Tomcat.class, UpgradeProtocol.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedTomcat {
 
