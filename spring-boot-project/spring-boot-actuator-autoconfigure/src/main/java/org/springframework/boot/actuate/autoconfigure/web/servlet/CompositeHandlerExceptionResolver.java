@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 /**
  * Composite {@link HandlerExceptionResolver}.
@@ -60,6 +61,9 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 				this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
+		if (list.isEmpty()) {
+			list.add(new DefaultHandlerExceptionResolver());
+		}
 		return list;
 	}
 
