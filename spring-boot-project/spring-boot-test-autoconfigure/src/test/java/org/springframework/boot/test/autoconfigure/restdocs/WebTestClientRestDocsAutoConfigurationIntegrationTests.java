@@ -42,7 +42,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 @RunWith(SpringRunner.class)
 @WebFluxTest
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
-public class WebClientTestRestDocsAutoConfigurationIntegrationTests {
+public class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 
 	@Before
 	public void deleteSnippets() {
@@ -50,11 +50,11 @@ public class WebClientTestRestDocsAutoConfigurationIntegrationTests {
 	}
 
 	@Autowired
-	private WebClientTest mvc;
+	private WebTestClient webTestClient;
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
-		this.webClientTest.get().uri("/").exchange()
+		this.webTestClient.get().uri("/").exchange()
 			.expectBody().consumeWith(document("default-snippets"));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
