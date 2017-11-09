@@ -35,6 +35,8 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation;
 import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring REST Docs.
@@ -104,6 +106,28 @@ public class RestDocsAutoConfiguration {
 		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(
 				RequestSpecification configurer) {
 			return new RestDocsRestAssuredBuilderCustomizer(configurer);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(WebTestClientRestDocumentation.class)
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	static class RestDocsWebTestClientAutoConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(WebTestClientRestDocumentationConfigurer.class)
+		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
+				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider, // TODO: create web test client customizer
+				RestDocumentationContextProvider contextProvider) {
+			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
+					.documentationConfiguration(contextProvider);
+			RestDocsWebTestClientConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+					.getIfAvailable();
+			if (configurationCustomizer != null) {
+				configurationCustomizer.customize(configurer);
+			}
+			return configurer;
 		}
 
 	}
