@@ -36,11 +36,8 @@
 		<caffeine.version>2.6.0</caffeine.version>
 		<cassandra-driver.version>3.3.0</cassandra-driver.version>
 		<classmate.version>1.3.4</classmate.version>
-		<commons-beanutils.version>1.9.3</commons-beanutils.version>
-		<commons-collections.version>3.2.2</commons-collections.version>
 		<commons-codec.version>1.11</commons-codec.version>
 		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
-		<commons-digester.version>2.1</commons-digester.version>
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.4.3</commons-pool2.version>
@@ -742,36 +739,9 @@
 				<version>${hikaricp.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils</artifactId>
-				<version>${commons-beanutils.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>commons-collections</groupId>
-				<artifactId>commons-collections</artifactId>
-				<version>${commons-collections.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>${commons-codec.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-digester</groupId>
-				<artifactId>commons-digester</artifactId>
-				<version>${commons-digester.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>commons-pool</groupId>
@@ -1285,6 +1255,12 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>artemis-commons</artifactId>
 				<version>${artemis.version}</version>
+				<exclusions>
+					<exclusion>
+          				<groupId>commons-logging</groupId>
+          				<artifactId>commons-logging</artifactId>
+        				</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
