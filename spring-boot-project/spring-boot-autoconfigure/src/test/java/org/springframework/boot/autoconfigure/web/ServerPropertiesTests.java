@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.InetAddress;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -141,7 +141,7 @@ public class ServerPropertiesTests {
 	public void testCustomizeUriEncoding() throws Exception {
 		bind("server.tomcat.uri-encoding", "US-ASCII");
 		assertThat(this.properties.getTomcat().getUriEncoding())
-				.isEqualTo(Charset.forName("US-ASCII"));
+				.isEqualTo(StandardCharsets.US_ASCII);
 	}
 
 	@Test

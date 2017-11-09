@@ -16,6 +16,7 @@
 
 package sample;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import javax.servlet.http.HttpServletResponse;
@@ -67,7 +68,7 @@ public class HelloWebSecurityApplicationTests {
 	public void userAuthenticates() throws Exception {
 		this.request.addHeader("Accept", "application/json");
 		this.request.addHeader("Authorization", "Basic " + new String(
-				Base64.getEncoder().encode("user:password".getBytes("UTF-8"))));
+				Base64.getEncoder().encode("user:password".getBytes(StandardCharsets.UTF_8))));
 
 		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 

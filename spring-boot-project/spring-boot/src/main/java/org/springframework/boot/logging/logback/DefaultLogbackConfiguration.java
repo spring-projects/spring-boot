@@ -17,7 +17,7 @@
 package org.springframework.boot.logging.logback;
 
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -59,8 +59,6 @@ class DefaultLogbackConfiguration {
 			+ "${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
 
 	private static final String MAX_FILE_SIZE = "10MB";
-
-	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	private final PropertyResolver patterns;
 
@@ -125,7 +123,7 @@ class DefaultLogbackConfiguration {
 		String logPattern = this.patterns.getProperty("logging.pattern.console",
 				CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
-		encoder.setCharset(UTF8);
+		encoder.setCharset(StandardCharsets.UTF_8);
 		config.start(encoder);
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -53,8 +53,6 @@ public class RestartClassLoaderTests {
 			.getName();
 
 	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
-
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -89,7 +87,7 @@ public class RestartClassLoaderTests {
 		StreamUtils.copy(getClass().getResourceAsStream("Sample.class"), jarOutputStream);
 		jarOutputStream.closeEntry();
 		jarOutputStream.putNextEntry(new ZipEntry(PACKAGE_PATH + "/Sample.txt"));
-		StreamUtils.copy("fromchild", UTF_8, jarOutputStream);
+		StreamUtils.copy("fromchild", StandardCharsets.UTF_8, jarOutputStream);
 		jarOutputStream.closeEntry();
 		jarOutputStream.close();
 		return file;

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +71,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 		File file = File.createTempFile("SpringCLIDependency", ".groovy");
 		file.deleteOnExit();
 		try (OutputStreamWriter stream = new OutputStreamWriter(
-				new FileOutputStream(file), "UTF-8")) {
+				new FileOutputStream(file), StandardCharsets.UTF_8)) {
 			for (String artifactIdentifier : artifactIdentifiers) {
 				stream.write("@Grab('" + artifactIdentifier + "')");
 			}

@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.data.redis;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class DataRedisTestIntegrationTests {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private static final Charset CHARSET = Charset.forName("UTF-8");
+	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Test
 	public void testRepository() {
