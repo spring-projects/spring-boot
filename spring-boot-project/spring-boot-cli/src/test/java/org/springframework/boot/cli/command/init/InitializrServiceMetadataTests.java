@@ -18,7 +18,7 @@ package org.springframework.boot.cli.command.init;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +31,7 @@ import org.springframework.util.StreamUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link InitializrServiceMetadata}
+ * Tests for {@link InitializrServiceMetadata}.
  *
  * @author Stephane Nicoll
  */
@@ -94,7 +94,7 @@ public class InitializrServiceMetadataTests {
 				"metadata/service-metadata-" + version + ".json");
 		try (InputStream stream = resource.getInputStream()) {
 			return new JSONObject(
-					StreamUtils.copyToString(stream, Charset.forName("UTF-8")));
+					StreamUtils.copyToString(stream, StandardCharsets.UTF_8));
 		}
 	}
 

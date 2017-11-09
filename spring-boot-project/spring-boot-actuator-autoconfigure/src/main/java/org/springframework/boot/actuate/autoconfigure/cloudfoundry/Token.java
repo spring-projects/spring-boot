@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +32,6 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 public class Token {
-
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	private final String encoded;
 
@@ -63,7 +61,7 @@ public class Token {
 	private Map<String, Object> parseJson(String base64) {
 		try {
 			byte[] bytes = Base64Utils.decodeFromUrlSafeString(base64);
-			return JsonParserFactory.getJsonParser().parseMap(new String(bytes, UTF_8));
+			return JsonParserFactory.getJsonParser().parseMap(new String(bytes, StandardCharsets.UTF_8));
 		}
 		catch (RuntimeException ex) {
 			throw new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,

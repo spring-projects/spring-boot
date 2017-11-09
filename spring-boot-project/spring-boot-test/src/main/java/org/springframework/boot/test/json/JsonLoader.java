@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -42,7 +43,7 @@ class JsonLoader {
 
 	JsonLoader(Class<?> resourceLoadClass, Charset charset) {
 		this.resourceLoadClass = resourceLoadClass;
-		this.charset = charset == null ? Charset.forName("UTF-8") : charset;
+		this.charset = charset == null ? StandardCharsets.UTF_8 : charset;
 	}
 
 	Class<?> getResourceLoadClass() {

@@ -17,7 +17,7 @@
 package sample.jetty;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 import org.junit.Test;
@@ -69,7 +69,7 @@ public class SampleJettyApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		try (GZIPInputStream inflater = new GZIPInputStream(
 				new ByteArrayInputStream(entity.getBody()))) {
-			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
+			assertThat(StreamUtils.copyToString(inflater, StandardCharsets.UTF_8))
 					.isEqualTo("Hello World");
 		}
 	}
