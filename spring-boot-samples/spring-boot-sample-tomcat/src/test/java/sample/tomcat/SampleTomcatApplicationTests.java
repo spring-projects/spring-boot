@@ -18,6 +18,7 @@ package sample.tomcat;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.coyote.AbstractProtocol;
@@ -77,7 +78,7 @@ public class SampleTomcatApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		try (GZIPInputStream inflater = new GZIPInputStream(
 				new ByteArrayInputStream(entity.getBody()))) {
-			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
+			assertThat(StreamUtils.copyToString(inflater, StandardCharsets.UTF_8))
 					.isEqualTo("Hello World");
 		}
 	}

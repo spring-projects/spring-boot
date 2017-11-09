@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.tomcat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -248,7 +249,7 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void uriEncoding() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setUriEncoding(Charset.forName("US-ASCII"));
+		factory.setUriEncoding(StandardCharsets.US_ASCII);
 		Tomcat tomcat = getTomcat(factory);
 		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
 				.get(tomcat.getService())[0];
@@ -364,8 +365,8 @@ public class TomcatServletWebServerFactoryTests
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
 		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
-		assertThat(getCharset(Locale.ENGLISH).toString()).isEqualTo("UTF-8");
-		assertThat(getCharset(Locale.FRENCH).toString()).isEqualTo("UTF-8");
+		assertThat(getCharset(Locale.ENGLISH)).isEqualTo(StandardCharsets.UTF_8);
+		assertThat(getCharset(Locale.FRENCH)).isEqualTo(StandardCharsets.UTF_8);
 	}
 
 	@Test

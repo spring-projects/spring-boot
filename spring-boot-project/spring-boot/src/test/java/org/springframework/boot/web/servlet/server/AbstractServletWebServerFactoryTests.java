@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -911,10 +912,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void localeCharsetMappingsAreConfigured() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		Map<Locale, Charset> mappings = new HashMap<>();
-		mappings.put(Locale.GERMAN, Charset.forName("UTF-8"));
+		mappings.put(Locale.GERMAN, StandardCharsets.UTF_8);
 		factory.setLocaleCharsetMappings(mappings);
 		this.webServer = factory.getWebServer();
-		assertThat(getCharset(Locale.GERMAN).toString()).isEqualTo("UTF-8");
+		assertThat(getCharset(Locale.GERMAN)).isEqualTo(StandardCharsets.UTF_8);
 		assertThat(getCharset(Locale.ITALIAN)).isNull();
 	}
 
@@ -1063,7 +1064,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected String getResponse(String url, HttpMethod method, String... headers)
 			throws IOException, URISyntaxException {
 		try (ClientHttpResponse response = getClientResponse(url, method, headers)) {
-			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
+			return StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
 		}
 	}
 
@@ -1078,7 +1079,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 					throws IOException, URISyntaxException {
 		try (ClientHttpResponse response = getClientResponse(url, method, requestFactory,
 				headers)) {
-			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
+			return StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
 		}
 	}
 

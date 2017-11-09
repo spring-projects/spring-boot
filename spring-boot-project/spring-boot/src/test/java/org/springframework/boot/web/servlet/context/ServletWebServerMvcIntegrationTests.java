@@ -17,7 +17,7 @@
 package org.springframework.boot.web.servlet.context;
 
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.After;
 import org.junit.Test;
@@ -103,7 +103,7 @@ public class ServletWebServerMvcIntegrationTests {
 				HttpMethod.GET);
 		try (ClientHttpResponse response = request.execute()) {
 			String actual = StreamUtils.copyToString(response.getBody(),
-					Charset.forName("UTF-8"));
+					StandardCharsets.UTF_8);
 			assertThat(actual).isEqualTo("Hello World");
 		}
 	}

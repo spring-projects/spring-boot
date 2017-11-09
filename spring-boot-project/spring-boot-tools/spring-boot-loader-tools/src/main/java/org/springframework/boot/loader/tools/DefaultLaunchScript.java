@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,8 +41,6 @@ import java.util.regex.Pattern;
  * @since 1.3.0
  */
 public class DefaultLaunchScript implements LaunchScript {
-
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	private static final int BUFFER_SIZE = 4096;
 
@@ -76,7 +74,7 @@ public class DefaultLaunchScript implements LaunchScript {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			copy(inputStream, outputStream);
-			return new String(outputStream.toByteArray(), UTF_8);
+			return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
 		}
 		finally {
 			inputStream.close();
@@ -129,7 +127,7 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	@Override
 	public byte[] toByteArray() {
-		return this.content.getBytes(UTF_8);
+		return this.content.getBytes(StandardCharsets.UTF_8);
 	}
 
 }

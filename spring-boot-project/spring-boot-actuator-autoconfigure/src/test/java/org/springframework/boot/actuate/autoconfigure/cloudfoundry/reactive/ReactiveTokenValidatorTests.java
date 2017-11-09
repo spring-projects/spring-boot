@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -53,8 +53,6 @@ import static org.mockito.BDDMockito.given;
 public class ReactiveTokenValidatorTests {
 
 	private static final byte[] DOT = ".".getBytes();
-
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	@Mock
 	private ReactiveCloudFoundrySecurityService securityService;
@@ -226,7 +224,7 @@ public class ReactiveTokenValidatorTests {
 		byte[] crypto = signature.sign();
 		byte[] token = dotConcat(Base64Utils.encodeUrlSafe(header),
 				Base64Utils.encodeUrlSafe(claims), Base64Utils.encodeUrlSafe(crypto));
-		return new String(token, UTF_8);
+		return new String(token, StandardCharsets.UTF_8);
 	}
 
 	private PrivateKey getPrivateKey()
