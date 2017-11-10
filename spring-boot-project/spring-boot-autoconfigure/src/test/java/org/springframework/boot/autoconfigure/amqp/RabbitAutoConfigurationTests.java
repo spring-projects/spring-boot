@@ -104,6 +104,21 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDefaultRabbitTemplateConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					RabbitTemplate defaultRabbitTemplate = new RabbitTemplate();
+					assertThat(rabbitTemplate.getRoutingKey())
+							.isEqualTo(defaultRabbitTemplate.getRoutingKey());
+					assertThat(rabbitTemplate.getExchange())
+							.isEqualTo(defaultRabbitTemplate.getExchange());
+					assertThat(rabbitTemplate.isChannelTransacted())
+							.isEqualTo(defaultRabbitTemplate.isChannelTransacted());
+				});
+	}
+
+	@Test
 	public void testConnectionFactoryWithOverrides() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.host:remote-server",

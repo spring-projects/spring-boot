@@ -188,6 +188,9 @@ public class RabbitAutoConfiguration {
 			if (templateProperties.getReplyTimeout() != null) {
 				rabbitTemplate.setReplyTimeout(templateProperties.getReplyTimeout());
 			}
+			rabbitTemplate.setExchange(templateProperties.getExchange());
+			rabbitTemplate.setRoutingKey(templateProperties.getRoutingKey());
+			rabbitTemplate.setChannelTransacted(templateProperties.isChannelTransacted());
 			return rabbitTemplate;
 		}
 
