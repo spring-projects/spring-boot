@@ -4546,9 +4546,17 @@ This sample configuration reuses the `Cluster` that was created via auto-configu
 
 [[boot-features-caching-provider-redis]]
 ==== Redis
-If Redis is available and configured, the `RedisCacheManager` is auto-configured. It is
-also possible to create additional caches on startup by setting the
-`spring.cache.cache-names` property.
+If Redis is available and configured, a `RedisCacheManager` is auto-configured. It is
+possible to create additional caches on startup by setting the
+`spring.cache.cache-names` property and cache defaults can be configured using
+`spring.redis.cache.*` properties. For instance, the following configuration creates
+`cache1` and `cache2` caches with a _time to live_ of 10 minutes:
+
+[source,properties,indent=0]
+----
+    spring.cache.cache-names=cache1,cache2
+	spring.cache.redis.time-to-live=600000
+----
 
 [NOTE]
 ====

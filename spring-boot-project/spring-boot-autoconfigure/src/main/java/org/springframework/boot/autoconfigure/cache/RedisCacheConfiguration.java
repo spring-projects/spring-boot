@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -69,24 +70,19 @@ class RedisCacheConfiguration {
 	}
 
 	private org.springframework.data.redis.cache.RedisCacheConfiguration getConfiguration() {
-
 		Redis redisProperties = this.cacheProperties.getRedis();
-
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
-				.defaultCacheConfig().entryTtl(redisProperties.getTtl());
-
+				.defaultCacheConfig();
+		config = config.entryTtl(Duration.ofMillis(redisProperties.getTimeToLive()));
 		if (redisProperties.getKeyPrefix() != null) {
 			config = config.prefixKeysWith(redisProperties.getKeyPrefix());
 		}
-
 		if (!redisProperties.isCacheNullValues()) {
 			config = config.disableCachingNullValues();
 		}
-
 		if (!redisProperties.isUseKeyPrefix()) {
 			config = config.disableKeyPrefix();
 		}
-
 		return config;
 	}
 

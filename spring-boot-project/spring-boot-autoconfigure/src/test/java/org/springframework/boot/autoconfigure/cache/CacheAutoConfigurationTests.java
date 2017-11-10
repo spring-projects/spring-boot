@@ -282,24 +282,22 @@ public class CacheAutoConfigurationTests {
 	public void redisCacheExplicit() {
 		this.contextRunner.withUserConfiguration(RedisCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=redis",
-						"spring.cache.redis.ttl=PT15M",
+						"spring.cache.redis.time-to-live=15000",
+						"spring.cache.redis.cacheNullValues=false",
 						"spring.cache.redis.keyPrefix=foo",
-						"spring.cache.redis.useKeyPrefix=false",
-						"spring.cache.redis.cacheNullValues=false")
+						"spring.cache.redis.useKeyPrefix=false")
 				.run((context) -> {
 					RedisCacheManager cacheManager = getCacheManager(context,
 							RedisCacheManager.class);
 					assertThat(cacheManager.getCacheNames()).isEmpty();
-
 					org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration = (org.springframework.data.redis.cache.RedisCacheConfiguration) new DirectFieldAccessor(
 							cacheManager).getPropertyValue("defaultCacheConfig");
-
-					assertThat(redisCacheConfiguration.usePrefix()).isFalse();
-					assertThat(redisCacheConfiguration.getKeyPrefix()).contains("foo");
 					assertThat(redisCacheConfiguration.getTtl())
-							.isEqualTo(java.time.Duration.ofMinutes(15));
+							.isEqualTo(java.time.Duration.ofSeconds(15));
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
 							.isFalse();
+					assertThat(redisCacheConfiguration.getKeyPrefix()).contains("foo");
+					assertThat(redisCacheConfiguration.usePrefix()).isFalse();
 				});
 	}
 
@@ -321,15 +319,14 @@ public class CacheAutoConfigurationTests {
 					RedisCacheManager cacheManager = getCacheManager(context,
 							RedisCacheManager.class);
 					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-
 					org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration = (org.springframework.data.redis.cache.RedisCacheConfiguration) new DirectFieldAccessor(
 							cacheManager).getPropertyValue("defaultCacheConfig");
-					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
-					assertThat(redisCacheConfiguration.getKeyPrefix()).isEmpty();
 					assertThat(redisCacheConfiguration.getTtl())
 							.isEqualTo(java.time.Duration.ofMinutes(0));
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
 							.isTrue();
+					assertThat(redisCacheConfiguration.getKeyPrefix()).isEmpty();
+					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
 				});
 	}
 

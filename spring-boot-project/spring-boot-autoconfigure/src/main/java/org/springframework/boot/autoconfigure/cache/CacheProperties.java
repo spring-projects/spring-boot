@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -242,25 +241,22 @@ public class CacheProperties {
 	}
 
 	/**
-	 * Redis-specific cache properties. Properties set will be used as the defaults for
-	 * all Redis caches.
+	 * Redis-specific cache properties.
 	 */
 	public static class Redis {
 
 		/**
-		 * Specifies the TTL (ultimately converted to seconds) for keys written to Redis.
-		 * By default, entries do not expire, and a value of {@link Duration#ZERO} disables the TTL.
+		 * Entry expiration in milliseconds. By default the entries never expire.
 		 */
-		private Duration ttl = Duration.ZERO;
+		private long timeToLive = 0;
 
 		/**
-		 * Whether to allow caching of {@literal null} values.
+		 * Allow caching null values.
 		 */
 		private boolean cacheNullValues = true;
 
 		/**
-		 * Specifies an override for the default Redis key prefix. A value of {@literal null} results
-		 * in usage of the default key prefix.
+		 * Key prefix.
 		 */
 		private String keyPrefix;
 
@@ -269,41 +265,38 @@ public class CacheProperties {
 		 */
 		private boolean useKeyPrefix = true;
 
-		public Duration getTtl() {
-			return this.ttl;
+		public long getTimeToLive() {
+			return this.timeToLive;
 		}
 
-		public Redis setTtl(Duration ttl) {
-			this.ttl = ttl;
-			return this;
+		public void setTimeToLive(long timeToLive) {
+			this.timeToLive = timeToLive;
 		}
 
 		public boolean isCacheNullValues() {
 			return this.cacheNullValues;
 		}
 
-		public Redis setCacheNullValues(boolean cacheNullValues) {
+		public void setCacheNullValues(boolean cacheNullValues) {
 			this.cacheNullValues = cacheNullValues;
-			return this;
 		}
 
 		public String getKeyPrefix() {
 			return this.keyPrefix;
 		}
 
-		public Redis setKeyPrefix(String keyPrefix) {
+		public void setKeyPrefix(String keyPrefix) {
 			this.keyPrefix = keyPrefix;
-			return this;
 		}
 
 		public boolean isUseKeyPrefix() {
 			return this.useKeyPrefix;
 		}
 
-		public Redis setUseKeyPrefix(boolean useKeyPrefix) {
+		public void setUseKeyPrefix(boolean useKeyPrefix) {
 			this.useKeyPrefix = useKeyPrefix;
-			return this;
 		}
+
 	}
 
 }
