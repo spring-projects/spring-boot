@@ -18,6 +18,7 @@ package org.springframework.boot.configurationmetadata;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.hamcrest.CoreMatchers;
@@ -27,13 +28,13 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JsonReader}
+ * Tests for {@link JsonReader}.
  *
  * @author Stephane Nicoll
  */
 public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	private final JsonReader reader = new JsonReader();
 
