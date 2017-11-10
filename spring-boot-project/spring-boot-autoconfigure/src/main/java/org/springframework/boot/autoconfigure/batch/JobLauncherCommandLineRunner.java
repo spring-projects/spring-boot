@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.core.Ordered;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 
@@ -56,7 +57,12 @@ import org.springframework.util.StringUtils;
  * @author Jean-Pierre Bergamin
  */
 public class JobLauncherCommandLineRunner
-		implements CommandLineRunner, ApplicationEventPublisherAware {
+		implements CommandLineRunner, Ordered, ApplicationEventPublisherAware {
+
+	/**
+	 * The default order for the command line runner.
+	 */
+	public static final int DEFAULT_ORDER = 0;
 
 	private static final Log logger = LogFactory
 			.getLog(JobLauncherCommandLineRunner.class);
@@ -73,6 +79,8 @@ public class JobLauncherCommandLineRunner
 
 	private Collection<Job> jobs = Collections.emptySet();
 
+	private int order = DEFAULT_ORDER;
+
 	private ApplicationEventPublisher publisher;
 
 	public JobLauncherCommandLineRunner(JobLauncher jobLauncher,
@@ -81,8 +89,13 @@ public class JobLauncherCommandLineRunner
 		this.jobExplorer = jobExplorer;
 	}
 
-	public void setJobNames(String jobNames) {
-		this.jobNames = jobNames;
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	@Override
+	public int getOrder() {
+		return this.order;
 	}
 
 	@Override
@@ -93,6 +106,10 @@ public class JobLauncherCommandLineRunner
 	@Autowired(required = false)
 	public void setJobRegistry(JobRegistry jobRegistry) {
 		this.jobRegistry = jobRegistry;
+	}
+
+	public void setJobNames(String jobNames) {
+		this.jobNames = jobNames;
 	}
 
 	@Autowired(required = false)
