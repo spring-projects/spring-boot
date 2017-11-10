@@ -16,30 +16,33 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
-import reactor.core.publisher.Mono;
+import java.util.UUID;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Example {@link Controller} used with {@link WebFluxTest} tests.
+ * Tests for {@link WebFluxTest} to validate converters are discovered.
  *
  * @author Stephane Nicoll
  */
-@RestController
-public class ExampleController2 {
+@RunWith(SpringRunner.class)
+@WebFluxTest(controllers = ExampleController2.class)
+public class WebFluxTestConverterIntegrationTests {
 
-	@GetMapping("/two")
-	public Mono<String> two() {
-		return Mono.just("two");
-	}
+	@Autowired
+	private WebTestClient webClient;
 
-	@GetMapping("/two/{id}")
-	public Mono<String> one(@PathVariable ExampleId id) {
-		return Mono.just(id.getId() + "two");
+	@Test
+	public void shouldFindConverter() {
+		UUID id = UUID.randomUUID();
+		this.webClient.get().uri("/two/" + id).exchange().expectStatus().isOk()
+				.expectBody(String.class).isEqualTo(id + "two");
 	}
 
 }

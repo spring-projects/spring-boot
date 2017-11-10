@@ -43,8 +43,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to WebFlux tests (i.e. {@code @Controller},
- * {@code @ControllerAdvice}, {@code @JsonComponent} and {@code WebFluxConfigurer} beans
- * but not {@code @Component}, {@code @Service} or {@code @Repository} beans).
+ * {@code @ControllerAdvice}, {@code @JsonComponent}, {@code Converter}, and
+ * {@code WebFluxConfigurer} beans but not {@code @Component}, {@code @Service} or
+ * {@code @Repository} beans).
  * <p>
  * By default, tests annotated with {@code @WebFluxTest} will also auto-configure a
  * {@link WebTestClient}. For more fine-grained control of WebTestClient the

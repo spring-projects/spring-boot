@@ -16,30 +16,25 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
-import reactor.core.publisher.Mono;
+import java.util.UUID;
 
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.convert.converter.Converter;
 
 /**
- * Example {@link Controller} used with {@link WebFluxTest} tests.
+ * An example attribute that requires a {@link Converter}.
  *
  * @author Stephane Nicoll
  */
-@RestController
-public class ExampleController2 {
+public class ExampleId {
 
-	@GetMapping("/two")
-	public Mono<String> two() {
-		return Mono.just("two");
+	private final UUID id;
+
+	ExampleId(UUID id) {
+		this.id = id;
 	}
 
-	@GetMapping("/two/{id}")
-	public Mono<String> one(@PathVariable ExampleId id) {
-		return Mono.just(id.getId() + "two");
+	public UUID getId() {
+		return this.id;
 	}
 
 }

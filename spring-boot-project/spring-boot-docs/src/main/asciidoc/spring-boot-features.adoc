@@ -5998,9 +5998,9 @@ A list of the auto-configuration that is enabled by `@JsonTest` can be
 ==== Auto-configured Spring MVC Tests
 To test Spring MVC controllers are working as expected, you can use the `@WebMvcTest`
 annotation. `@WebMvcTest` auto-configures the Spring MVC infrastructure and limits
-scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Filter`,
-`WebMvcConfigurer`, and `HandlerMethodArgumentResolver`. Regular `@Component` beans
-are not scanned when using this annotation.
+scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `@Converter`,
+`Filter`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`. Regular `@Component`
+beans are not scanned when using this annotation.
 
 Often, `@WebMvcTest` is limited to a single controller and is used in combination with
 `@MockBean` to provide mock implementations for required collaborators.
@@ -6102,8 +6102,8 @@ A list of the auto-configuration settings that are enabled by `@WebMvcTest` can 
 To test that Spring WebFlux controllers are working as expected, you can use the
 `@WebFluxTest` annotation. `@WebFluxTest` auto-configures the Spring WebFlux
 infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`,
-`@JsonComponent`, and `WebFluxConfigurer`. Regular `@Component` beans are not scanned
-when the `@WebFluxTest` annotation is used.
+`@JsonComponent`, `Converter`, and `WebFluxConfigurer`. Regular `@Component` beans are
+not scanned when the `@WebFluxTest` annotation is used.
 
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the
 `@MockBean` annotation to provide mock implementations for required collaborators.

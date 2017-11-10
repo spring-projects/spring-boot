@@ -16,30 +16,23 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
+import java.util.UUID;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 /**
- * Example {@link Controller} used with {@link WebMvcTest} tests.
+ * Example {@link Converter} used with {@link WebMvcTest} tests.
  *
- * @author Phillip Webb
+ * @author Stephane Nicoll
  */
-@Controller
-public class ExampleController2 {
+@Component
+public class ExampleIdConverter implements Converter<String, ExampleId> {
 
-	@GetMapping("/two")
-	@ResponseBody
-	public String one(ExampleArgument argument) {
-		return argument + "two";
-	}
-
-	@GetMapping("/two/{id}")
-	@ResponseBody
-	public String one(@PathVariable ExampleId id) {
-		return id.getId() + "two";
+	@Override
+	public ExampleId convert(String source) {
+		return new ExampleId(UUID.fromString(source));
 	}
 
 }
