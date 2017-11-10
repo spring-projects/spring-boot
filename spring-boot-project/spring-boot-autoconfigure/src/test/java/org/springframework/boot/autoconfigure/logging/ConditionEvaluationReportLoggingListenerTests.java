@@ -44,17 +44,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link AutoConfigurationReportLoggingInitializer}.
+ * Tests for {@link ConditionEvaluationReportLoggingListener}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AutoConfigurationReportLoggingInitializerTests {
+public class ConditionEvaluationReportLoggingListenerTests {
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	private AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
+	private ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener();
 
 	@Test
 	public void logsDebugOnContextRefresh() {
@@ -120,7 +120,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	public void canBeUsedInApplicationContext() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Config.class);
-		new AutoConfigurationReportLoggingInitializer().initialize(context);
+		new ConditionEvaluationReportLoggingListener().initialize(context);
 		context.refresh();
 		assertThat(context.getBean(ConditionEvaluationReport.class)).isNotNull();
 	}
@@ -130,7 +130,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.setServletContext(new MockServletContext());
 		context.register(Config.class);
-		new AutoConfigurationReportLoggingInitializer().initialize(context);
+		new ConditionEvaluationReportLoggingListener().initialize(context);
 		context.refresh();
 		assertThat(context.getBean(ConditionEvaluationReport.class)).isNotNull();
 	}
@@ -148,7 +148,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton()
 				.getLoggerFactory();
 		Logger logger = context
-				.getLogger(AutoConfigurationReportLoggingInitializer.class);
+				.getLogger(ConditionEvaluationReportLoggingListener.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		try {

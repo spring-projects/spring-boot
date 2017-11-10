@@ -1,7 +1,7 @@
 # Initializers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer,\
-org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer
+org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\

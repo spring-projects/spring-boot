@@ -45,7 +45,7 @@ import org.springframework.core.ResolvableType;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AutoConfigurationReportLoggingInitializer
+public class ConditionEvaluationReportLoggingListener
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	private final Log logger = LogFactory.getLog(getClass());
@@ -57,7 +57,7 @@ public class AutoConfigurationReportLoggingInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		applicationContext.addApplicationListener(new AutoConfigurationReportListener());
+		applicationContext.addApplicationListener(new ConditionEvaluationReportListener());
 		if (applicationContext instanceof GenericApplicationContext) {
 			// Get the report early in case the context fails to load
 			this.report = ConditionEvaluationReport
@@ -66,7 +66,7 @@ public class AutoConfigurationReportLoggingInitializer
 	}
 
 	protected void onApplicationEvent(ApplicationEvent event) {
-		ConfigurableApplicationContext initializerApplicationContext = AutoConfigurationReportLoggingInitializer.this.applicationContext;
+		ConfigurableApplicationContext initializerApplicationContext = this.applicationContext;
 		if (event instanceof ContextRefreshedEvent) {
 			if (((ApplicationContextEvent) event)
 					.getApplicationContext() == initializerApplicationContext) {
@@ -109,7 +109,8 @@ public class AutoConfigurationReportLoggingInitializer
 		}
 	}
 
-	private class AutoConfigurationReportListener implements GenericApplicationListener {
+	private class ConditionEvaluationReportListener
+			implements GenericApplicationListener {
 
 		@Override
 		public int getOrder() {
@@ -133,7 +134,7 @@ public class AutoConfigurationReportLoggingInitializer
 
 		@Override
 		public void onApplicationEvent(ApplicationEvent event) {
-			AutoConfigurationReportLoggingInitializer.this.onApplicationEvent(event);
+			ConditionEvaluationReportLoggingListener.this.onApplicationEvent(event);
 		}
 
 	}
