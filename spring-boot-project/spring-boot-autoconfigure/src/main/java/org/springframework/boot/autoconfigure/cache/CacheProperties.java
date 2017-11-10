@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Ryon Day
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.cache")
@@ -54,6 +55,8 @@ public class CacheProperties {
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
+
+	private final Redis redis = new Redis();
 
 	public CacheType getType() {
 		return this.type;
@@ -89,6 +92,10 @@ public class CacheProperties {
 
 	public JCache getJcache() {
 		return this.jcache;
+	}
+
+	public Redis getRedis() {
+		return this.redis;
 	}
 
 	/**
@@ -229,6 +236,65 @@ public class CacheProperties {
 
 		public void setConfig(Resource config) {
 			this.config = config;
+		}
+
+	}
+
+	/**
+	 * Redis-specific cache properties.
+	 */
+	public static class Redis {
+
+		/**
+		 * Entry expiration in milliseconds. By default the entries never expire.
+		 */
+		private long timeToLive = 0;
+
+		/**
+		 * Allow caching null values.
+		 */
+		private boolean cacheNullValues = true;
+
+		/**
+		 * Key prefix.
+		 */
+		private String keyPrefix;
+
+		/**
+		 * Whether to use the key prefix when writing to Redis.
+		 */
+		private boolean useKeyPrefix = true;
+
+		public long getTimeToLive() {
+			return this.timeToLive;
+		}
+
+		public void setTimeToLive(long timeToLive) {
+			this.timeToLive = timeToLive;
+		}
+
+		public boolean isCacheNullValues() {
+			return this.cacheNullValues;
+		}
+
+		public void setCacheNullValues(boolean cacheNullValues) {
+			this.cacheNullValues = cacheNullValues;
+		}
+
+		public String getKeyPrefix() {
+			return this.keyPrefix;
+		}
+
+		public void setKeyPrefix(String keyPrefix) {
+			this.keyPrefix = keyPrefix;
+		}
+
+		public boolean isUseKeyPrefix() {
+			return this.useKeyPrefix;
+		}
+
+		public void setUseKeyPrefix(boolean useKeyPrefix) {
+			this.useKeyPrefix = useKeyPrefix;
 		}
 
 	}

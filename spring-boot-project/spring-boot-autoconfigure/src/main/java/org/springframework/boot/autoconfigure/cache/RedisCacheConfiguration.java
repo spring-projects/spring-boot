@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.cache.CacheProperties.Redis;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -36,6 +38,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  *
  * @author Stephane Nicoll
  * @author Mark Paluch
+ * @author Ryon Day
  * @since 1.3.0
  */
 @Configuration
@@ -58,12 +61,29 @@ class RedisCacheConfiguration {
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
 		RedisCacheManagerBuilder builder = RedisCacheManager
-				.builder(redisConnectionFactory);
+				.builder(redisConnectionFactory).cacheDefaults(getConfiguration());
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
 		return this.customizerInvoker.customize(builder.build());
+	}
+
+	private org.springframework.data.redis.cache.RedisCacheConfiguration getConfiguration() {
+		Redis redisProperties = this.cacheProperties.getRedis();
+		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
+				.defaultCacheConfig();
+		config = config.entryTtl(Duration.ofMillis(redisProperties.getTimeToLive()));
+		if (redisProperties.getKeyPrefix() != null) {
+			config = config.prefixKeysWith(redisProperties.getKeyPrefix());
+		}
+		if (!redisProperties.isCacheNullValues()) {
+			config = config.disableCachingNullValues();
+		}
+		if (!redisProperties.isUseKeyPrefix()) {
+			config = config.disableKeyPrefix();
+		}
+		return config;
 	}
 
 }

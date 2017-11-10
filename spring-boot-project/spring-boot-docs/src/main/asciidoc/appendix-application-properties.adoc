@@ -77,6 +77,10 @@ content into your application; rather pick only the properties that you need.
 	spring.cache.infinispan.config= # The location of the configuration file to use to initialize Infinispan.
 	spring.cache.jcache.config= # The location of the configuration file to use to initialize the cache manager.
 	spring.cache.jcache.provider= # Fully qualified name of the CachingProvider implementation to use to retrieve the JSR-107 compliant cache manager. Only needed if more than one JSR-107 implementation is available on the classpath.
+	spring.cache.redis.cache-null-values=true # Allow caching null values.
+	spring.cache.redis.key-prefix= # Key prefix.
+	spring.cache.redis.time-to-live=0 # Entry expiration in milliseconds. By default the entries never expire.
+	spring.cache.redis.use-key-prefix=true # Whether to use the key prefix when writing to Redis.
 	spring.cache.type= # Cache type, auto-detected according to the environment by default.
 
 	# SPRING CONFIG - using environment property only ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
