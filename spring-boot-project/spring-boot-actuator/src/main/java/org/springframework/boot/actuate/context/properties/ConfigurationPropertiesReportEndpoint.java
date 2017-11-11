@@ -111,7 +111,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(
 					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
 		}
-		return new ConfigurationPropertiesDescriptor(beanDescriptors,
+		return new ConfigurationPropertiesDescriptor(context.getId(), beanDescriptors,
 				describeConfigurationProperties(context.getParent(), mapper));
 	}
 
@@ -360,15 +360,22 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	public static final class ConfigurationPropertiesDescriptor {
 
+		private final String contextId;
+
 		private final Map<String, ConfigurationPropertiesBeanDescriptor> beans;
 
 		private final ConfigurationPropertiesDescriptor parent;
 
-		private ConfigurationPropertiesDescriptor(
+		private ConfigurationPropertiesDescriptor(String contextId,
 				Map<String, ConfigurationPropertiesBeanDescriptor> beans,
 				ConfigurationPropertiesDescriptor parent) {
+			this.contextId = contextId;
 			this.beans = beans;
 			this.parent = parent;
+		}
+
+		public String getContextId() {
+			return this.contextId;
 		}
 
 		public Map<String, ConfigurationPropertiesBeanDescriptor> getBeans() {
