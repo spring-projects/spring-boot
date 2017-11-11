@@ -57,7 +57,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private String protocol = DEFAULT_PROTOCOL;
 
-	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<LifecycleListener>(
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>(
 			Collections.singleton(new AprLifecycleListener()));
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();

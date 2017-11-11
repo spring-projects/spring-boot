@@ -57,7 +57,8 @@ public class ConditionEvaluationReportLoggingListener
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		applicationContext.addApplicationListener(new ConditionEvaluationReportListener());
+		applicationContext
+				.addApplicationListener(new ConditionEvaluationReportListener());
 		if (applicationContext instanceof GenericApplicationContext) {
 			// Get the report early in case the context fails to load
 			this.report = ConditionEvaluationReport

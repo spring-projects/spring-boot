@@ -31,8 +31,8 @@ import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.ResourceUtils;
 
 /**
- * {@link NettyServerCustomizer} that configures SSL for the
- * given Reactor Netty server instance.
+ * {@link NettyServerCustomizer} that configures SSL for the given Reactor Netty server
+ * instance.
  *
  * @author Brian Clozel
  */
@@ -66,7 +66,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 	}
 
-	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl, SslStoreProvider sslStoreProvider) {
+	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl,
+			SslStoreProvider sslStoreProvider) {
 		try {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
@@ -84,7 +85,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 	}
 
-	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
+	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider)
+			throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getKeyStore();
 		}
@@ -92,7 +94,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 				ssl.getKeyStorePassword());
 	}
 
-	protected TrustManagerFactory getTrustManagerFactory(Ssl ssl, SslStoreProvider sslStoreProvider) {
+	protected TrustManagerFactory getTrustManagerFactory(Ssl ssl,
+			SslStoreProvider sslStoreProvider) {
 		try {
 			KeyStore store = getTrustStore(ssl, sslStoreProvider);
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
@@ -105,7 +108,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 	}
 
-	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
+	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider)
+			throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getTrustStore();
 		}

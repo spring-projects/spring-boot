@@ -150,8 +150,8 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 	private <T> void registerFunctionCounter(MeterRegistry registry, T object,
 			Iterable<Tag> tags, String name, String description,
 			ToDoubleFunction<T> value) {
-		FunctionCounter.builder(name, object, value).tags(tags)
-				.description(description).register(registry);
+		FunctionCounter.builder(name, object, value).tags(tags).description(description)
+				.register(registry);
 	}
 
 	@Override

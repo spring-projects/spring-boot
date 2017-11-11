@@ -224,7 +224,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {
 		StandardJarScanFilter filter = new StandardJarScanFilter();
-		filter.setTldSkip(StringUtils.collectionToCommaDelimitedString(this.tldSkipPatterns));
+		filter.setTldSkip(
+				StringUtils.collectionToCommaDelimitedString(this.tldSkipPatterns));
 		context.getJarScanner().setJarScanFilter(filter);
 	}
 

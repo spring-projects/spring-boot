@@ -398,7 +398,8 @@ public class TomcatServletWebServerFactoryTests
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
-		Set<String> tldSkipSet = (Set<String>) ReflectionTestUtils.getField(jarScanFilter, "tldSkipSet");
+		Set<String> tldSkipSet = (Set<String>) ReflectionTestUtils.getField(jarScanFilter,
+				"tldSkipSet");
 		assertThat(tldSkipSet).contains("foo.jar", "bar.jar");
 	}
 

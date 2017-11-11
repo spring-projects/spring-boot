@@ -155,8 +155,8 @@ class OriginTrackedPropertiesLoader {
 		private int character;
 
 		CharacterReader(Resource resource) throws IOException {
-			this.reader = new LineNumberReader(
-					new InputStreamReader(resource.getInputStream(), StandardCharsets.ISO_8859_1));
+			this.reader = new LineNumberReader(new InputStreamReader(
+					resource.getInputStream(), StandardCharsets.ISO_8859_1));
 		}
 
 		@Override

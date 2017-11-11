@@ -203,10 +203,10 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ReactiveWebServerAutoConfiguration.class,
+	@Import({ ReactiveWebServerAutoConfiguration.class,
 			HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
 			ErrorWebFluxAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class})
+			PropertyPlaceholderAutoConfiguration.class })
 	private @interface MinimalWebConfiguration {
 
 	}

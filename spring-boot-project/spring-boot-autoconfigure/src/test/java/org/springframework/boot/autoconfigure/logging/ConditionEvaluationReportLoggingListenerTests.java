@@ -147,8 +147,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	private void withDebugLogging(Runnable runnable) {
 		LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton()
 				.getLoggerFactory();
-		Logger logger = context
-				.getLogger(ConditionEvaluationReportLoggingListener.class);
+		Logger logger = context.getLogger(ConditionEvaluationReportLoggingListener.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		try {

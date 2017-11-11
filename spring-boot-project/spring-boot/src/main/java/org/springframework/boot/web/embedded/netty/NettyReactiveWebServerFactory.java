@@ -91,7 +91,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return HttpServer.builder().options((options) -> {
 			options.listenAddress(getListenAddress());
 			if (getSsl() != null && getSsl().isEnabled()) {
-				SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getSslStoreProvider());
+				SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(
+						getSsl(), getSslStoreProvider());
 				sslServerCustomizer.customize(options);
 			}
 			applyCustomizers(options);

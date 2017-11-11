@@ -197,9 +197,8 @@ public class JettyWebServer implements WebServer {
 
 	private String getContextPath() {
 		return Arrays.stream(this.server.getHandlers())
-				.filter(ContextHandler.class::isInstance)
-				.map(handler -> ((ContextHandler) handler).getContextPath())
-				.collect(Collectors.joining(" "));
+				.filter(ContextHandler.class::isInstance).map(ContextHandler.class::cast)
+				.map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
 	}
 
 	private void handleDeferredInitialize(Handler... handlers) throws Exception {
