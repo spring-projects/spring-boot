@@ -63,6 +63,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Kristine Jetzke
  */
 public class TestRestTemplateTests {
 
@@ -79,6 +80,29 @@ public class TestRestTemplateTests {
 		// The Apache client is on the classpath so we get the fully-fledged factory
 		assertThat(new TestRestTemplate().getRestTemplate().getRequestFactory())
 				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+	}
+
+	@Test
+	public void getRootUriRootUriSetViaRestTemplateBuilder() {
+		String rootUri = "http://example.com";
+		RestTemplate delegate = new RestTemplateBuilder().rootUri(rootUri).build();
+		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
+	}
+
+	@Test
+	public void getRootUriRootUriSetViaLocalHostUriTemplateHandler() {
+		String rootUri = "http://example.com";
+		TestRestTemplate template = new TestRestTemplate();
+		LocalHostUriTemplateHandler templateHandler = mock(
+				LocalHostUriTemplateHandler.class);
+		given(templateHandler.getRootUri()).willReturn(rootUri);
+		template.setUriTemplateHandler(templateHandler);
+		assertThat(template.getRootUri()).isEqualTo(rootUri);
+	}
+
+	@Test
+	public void getRootUriRootUriNotSet() {
+		assertThat(new TestRestTemplate().getRootUri()).isEqualTo("");
 	}
 
 	@Test
