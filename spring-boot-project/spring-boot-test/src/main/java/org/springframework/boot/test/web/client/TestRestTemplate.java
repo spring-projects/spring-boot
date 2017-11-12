@@ -166,10 +166,14 @@ public class TestRestTemplate {
 		this.restTemplate.setUriTemplateHandler(handler);
 	}
 
+	/**
+	 * Returns the root URI applied by a {@link RootUriTemplateHandler} or {@code ""} if
+	 * the root URI is not available.
+	 * @return the root URI
+	 */
 	public String getRootUri() {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
-		if (RootUriTemplateHandler.class
-				.isAssignableFrom(uriTemplateHandler.getClass())) {
+		if (uriTemplateHandler instanceof RootUriTemplateHandler) {
 			return ((RootUriTemplateHandler) uriTemplateHandler).getRootUri();
 		}
 		return "";

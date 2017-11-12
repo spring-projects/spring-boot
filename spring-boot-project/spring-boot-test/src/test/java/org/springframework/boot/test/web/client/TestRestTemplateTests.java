@@ -86,7 +86,6 @@ public class TestRestTemplateTests {
 	public void getRootUriRootUriSetViaRestTemplateBuilder() {
 		String rootUri = "http://example.com";
 		RestTemplate delegate = new RestTemplateBuilder().rootUri(rootUri).build();
-
 		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
 	}
 
@@ -98,7 +97,6 @@ public class TestRestTemplateTests {
 				LocalHostUriTemplateHandler.class);
 		given(templateHandler.getRootUri()).willReturn(rootUri);
 		template.setUriTemplateHandler(templateHandler);
-
 		assertThat(template.getRootUri()).isEqualTo(rootUri);
 	}
 
