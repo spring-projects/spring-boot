@@ -43,6 +43,7 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Roman Zaynetdinov
  * @since 1.4.0
  */
 @Configuration
@@ -99,6 +100,7 @@ public class RestDocsAutoConfiguration {
 				configurationCustomizer.customize(configurer);
 			}
 			return new RequestSpecBuilder().addFilter(configurer).build();
+
 		}
 
 		@Bean
@@ -128,6 +130,13 @@ public class RestDocsAutoConfiguration {
 				configurationCustomizer.customize(configurer);
 			}
 			return configurer;
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.test.restdocs")
+		public RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(
+				WebTestClientRestDocumentationConfigurer configurer) {
+			return new RestDocsWebTestClientBuilderCustomizer(configurer);
 		}
 
 	}
