@@ -3496,6 +3496,8 @@ is now a Mongo data class rather than a JPA `@Entity`, it will work in the same 
 	}
 ----
 
+TIP: You can customize document scanning locations using the `@EntityScan` annotation.
+
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping
 technologies, refer to their http://projects.spring.io/spring-data-mongodb/[reference
 documentation].
