@@ -204,23 +204,21 @@ additional role check.
 [[production-ready-customizing-endpoints]]
 === Customizing Endpoints
 Endpoints can be customized by using Spring properties. You can change whether an
-endpoint is `enabled` and its `id`.
+endpoint is `enabled`.
 
-For example, the following `application.properties` changes the id of the `beans`
-endpoint and also enables `shutdown`:
+For example, the following `application.properties` enables the `shutdown` endpoint:
 
 [source,properties,indent=0]
 ----
-	endpoints.beans.id=springbeans
 	endpoints.shutdown.enabled=true
 ----
 
-NOTE: The prefix ‟`endpoints` + `.` + `name`” is used to uniquely identify the endpoint
+NOTE: The prefix ‟`endpoints` + `.` + `id`” is used to uniquely identify the endpoint
 that is being configured.
 
-By default, all endpoints except for `shutdown` are enabled. If you prefer to
-specifically "`opt-in`" endpoint enablement, you can use the `endpoints.default.enabled`
-property. For example, the following settings disables _all_ endpoints except for `info`:
+By default, all endpoints except for `shutdown` are enabled. If you prefer to specifically
+"`opt-in`" endpoint enablement, you can use the `endpoints.default.enabled` property. For
+example, the following settings disables _all_ endpoints except for `info`:
 
 [source,properties,indent=0]
 ----
