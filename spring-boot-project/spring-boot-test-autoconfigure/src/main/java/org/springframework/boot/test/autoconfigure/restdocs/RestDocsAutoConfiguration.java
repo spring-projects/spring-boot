@@ -100,7 +100,6 @@ public class RestDocsAutoConfiguration {
 				configurationCustomizer.customize(configurer);
 			}
 			return new RequestSpecBuilder().addFilter(configurer).build();
-
 		}
 
 		@Bean

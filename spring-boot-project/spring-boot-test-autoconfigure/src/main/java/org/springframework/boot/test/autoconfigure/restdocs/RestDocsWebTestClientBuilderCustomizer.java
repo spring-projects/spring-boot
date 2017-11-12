@@ -75,13 +75,13 @@ class RestDocsWebTestClientBuilderCustomizer implements InitializingBean, WebTes
 		if (StringUtils.hasText(this.uriScheme) && StringUtils.hasText(this.uriHost)) {
 			String baseUrl = this.uriScheme + "://" + this.uriHost;
 
-            if (this.uriPort == 80 && this.uriScheme.equals("http")) {
-                // Don't add default port
-            } else if (this.uriPort == 443 && this.uriScheme.equals("https")) {
-                // Don't add default port
-            } else if (this.uriPort != null) {
-                baseUrl += ":" + this.uriPort;
-            }
+			if (this.uriPort == 80 && this.uriScheme.equals("http")) {
+				// Don't add default port
+			} else if (this.uriPort == 443 && this.uriScheme.equals("https")) {
+				// Don't add default port
+			} else if (this.uriPort != null) {
+				baseUrl += ":" + this.uriPort;
+			}
 
 			builder.baseUrl(baseUrl);
 		}
