@@ -2461,12 +2461,12 @@ By default, Spring Boot serves static content from a directory called `/static` 
 your own `WebFluxConfigurer` and overriding the `addResourceHandlers` method.
 
 By default, resources are mapped on `+/**+`, but you can tune that by setting the
-`spring.mvc.static-path-pattern` property. For instance, relocating all resources to
+`spring.webflux.static-path-pattern` property. For instance, relocating all resources to
 `/resources/**` can be achieved as follows:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.mvc.static-path-pattern=/resources/**
+	spring.webflux.static-path-pattern=/resources/**
 ----
 
 You can also customize the static resource locations by using
