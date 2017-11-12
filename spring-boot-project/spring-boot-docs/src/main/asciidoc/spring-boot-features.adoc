@@ -1566,11 +1566,6 @@ following example shows potential logging settings in `application.properties`:
 	logging.level.org.hibernate=ERROR
 ----
 
-NOTE: By default, Spring Boot remaps Thymeleaf `INFO` messages so that they are logged at
-`DEBUG` level. This helps to reduce noise in the standard log output. See
-{sc-spring-boot}/logging/logback/LevelRemappingAppender.{sc-ext}[`LevelRemappingAppender`]
-for details of how you can apply remapping in your own configuration.
-
 
 
 [[boot-features-custom-log-configuration]]

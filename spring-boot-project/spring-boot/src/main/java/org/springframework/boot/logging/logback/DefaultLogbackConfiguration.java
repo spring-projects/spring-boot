@@ -102,10 +102,6 @@ class DefaultLogbackConfiguration {
 		config.conversionRule("clr", ColorConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
 		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
-		LevelRemappingAppender debugRemapAppender = new LevelRemappingAppender(
-				"org.springframework.boot");
-		config.start(debugRemapAppender);
-		config.appender("DEBUG_LEVEL_REMAPPER", debugRemapAppender);
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -113,8 +109,6 @@ class DefaultLogbackConfiguration {
 		config.logger("org.apache.tomcat.util.net.NioSelectorPool", Level.WARN);
 		config.logger("org.eclipse.jetty.util.component.AbstractLifeCycle", Level.ERROR);
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
-		config.logger("org.springframework.boot.actuate.endpoint.jmx", null, false,
-				debugRemapAppender);
 	}
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
