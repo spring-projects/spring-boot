@@ -3679,6 +3679,8 @@ in the following example:
 	}
 ----
 
+TIP: You can customize document scanning locations using the `@EntityScan` annotation.
+
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping
 technologies, refer to the http://projects.spring.io/spring-data-mongodb/[reference
 documentation].
