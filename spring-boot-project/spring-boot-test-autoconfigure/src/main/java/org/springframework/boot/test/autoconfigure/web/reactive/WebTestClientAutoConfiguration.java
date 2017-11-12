@@ -32,6 +32,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * Auto-configuration for {@link WebTestClient}.
  *
  * @author Stephane Nicoll
+ * @author Roman Zaynetdinov
  * @since 2.0.0
  */
 @Configuration
@@ -47,10 +48,9 @@ public class WebTestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebTestClient webTestClient(ApplicationContext applicationContext,
-		List<WebTestClientBuilderCustomizer> customizers) {
+	public WebTestClient webTestClient(List<WebTestClientBuilderCustomizer> customizers) {
 		WebTestClient.Builder builder = WebTestClient
-				.bindToApplicationContext(applicationContext).configureClient();
+				.bindToApplicationContext(this.context).configureClient();
 		for (WebTestClientBuilderCustomizer customizer : customizers) {
 			customizer.customize(builder);
 		}
