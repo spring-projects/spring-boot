@@ -2,16 +2,15 @@
 
 Spring Boot Actuator includes a number of additional features to help you monitor and
 manage your application when it's pushed to production. You can choose to manage and
-monitor your application using HTTP endpoints, with JMX or even by remote shell (SSH or
-Telnet).  Auditing, health and metrics gathering can be automatically applied to your
-application. The
+monitor your application using HTTP or JMX endpoints. Auditing, health and metrics
+gathering can be automatically applied to your application. The
 http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready[user guide]
 covers the features in more detail.
 
 == Enabling the Actuator
 The simplest way to enable the features is to add a dependency to the
-`spring-boot-starter-actuator` '`Starter`'. To add the actuator to a Maven based
-project, add the following '`Starter`' dependency:
+`spring-boot-starter-actuator` '`Starter`'. To add the actuator to a Maven-based project,
+add the following '`Starter`' dependency:
 
 [source,xml,indent=0]
 ----
@@ -23,7 +22,7 @@ project, add the following '`Starter`' dependency:
 	</dependencies>
 ----
 
-For Gradle, use the declaration:
+For Gradle, use the following declaration:
 
 [indent=0]
 ----
@@ -35,17 +34,11 @@ For Gradle, use the declaration:
 == Features
 * **Endpoints** Actuator endpoints allow you to monitor and interact with your
   application. Spring Boot includes a number of built-in endpoints and you can also add
-  your own. For example the `health` endpoint provides basic application health
-  information. Run up a basic application and look at `/health` (and see `/mappings` for
-  a list of other HTTP endpoints).
-* **Metrics** Spring Boot Actuator includes a metrics service with "`gauge`" and
-  "`counter`" support.  A "`gauge`" records a single value; and a "`counter`" records a
-  delta (an increment or decrement). Metrics for all HTTP requests are automatically
-  recorded, so if you hit the `metrics` endpoint should see a sensible response.
+  your own. For example the `status` endpoint provides basic application health
+  information. Run up a basic application and look at `/status`.
+* **Metrics** Spring Boot Actuator provides dimensional metrics by integrating with
+  https://micrometer.io[Micrometer].
 * **Audit** Spring Boot Actuator has a flexible audit framework that will publish events
   to an `AuditEventRepository`. Once Spring Security is in play it automatically publishes
   authentication events by default. This can be very useful for reporting, and also to
   implement a lock-out policy based on authentication failures.
-* **Process Monitoring** In Spring Boot Actuator you can find `ApplicationPidFileWriter`
-  which creates a file containing the application PID (by default in the application
-  directory with a file name of `application.pid`).
