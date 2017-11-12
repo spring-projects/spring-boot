@@ -16,6 +16,10 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive;
 
+import java.time.Duration;
+import java.util.Collection;
+import java.util.function.Consumer;
+
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.ApplicationContext;
@@ -24,10 +28,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
-
-import java.time.Duration;
-import java.util.Collection;
-import java.util.function.Consumer;
 
 /**
  * {@link WebTestClientBuilderCustomizer} for a typical Spring Boot application. Usually applied
