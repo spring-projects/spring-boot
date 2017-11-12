@@ -16,10 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
 
 /**
  * A customizer for a {@link WebTestClient.Builder}. Any
