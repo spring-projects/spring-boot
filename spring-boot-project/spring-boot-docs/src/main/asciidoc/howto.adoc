@@ -595,23 +595,8 @@ addition to the underlying component.
 
 [NOTE]
 ====
-If no `dispatcherType` is specified on a filter registration, it matches
-`FORWARD`,`INCLUDE`, and `REQUEST`. If async has been enabled, it also matches `ASYNC`.
-
-If you are migrating a filter that has no `dispatcher` element in `web.xml`, you
-need to specify a `dispatcherType` yourself, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean
-	public FilterRegistrationBean myFilterRegistration() {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setDispatcherTypes(DispatcherType.REQUEST);
-		....
-
-		return registration;
-	}
-----
+If no `dispatcherType` is specified on a filter registration, `REQUEST` is used. This
+aligns with the Servlet Specification's default dispatcher type.
 ====
 
 
