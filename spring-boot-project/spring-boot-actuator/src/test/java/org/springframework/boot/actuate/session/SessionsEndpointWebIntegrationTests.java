@@ -88,12 +88,6 @@ public class SessionsEndpointWebIntegrationTests {
 			return new SessionsEndpoint(repository);
 		}
 
-		@Bean
-		public SessionsWebEndpointExtension sessionsWebEndpointExtension(
-				SessionsEndpoint delegate) {
-			return new SessionsWebEndpointExtension(delegate);
-		}
-
 	}
 
 }

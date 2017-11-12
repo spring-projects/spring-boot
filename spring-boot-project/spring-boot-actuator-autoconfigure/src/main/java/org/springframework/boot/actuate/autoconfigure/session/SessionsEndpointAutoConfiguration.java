@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.session;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.session.SessionsEndpoint;
-import org.springframework.boot.actuate.session.SessionsWebEndpointExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -48,15 +47,6 @@ public class SessionsEndpointAutoConfiguration {
 	public SessionsEndpoint sessionEndpoint(
 			FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
 		return new SessionsEndpoint(sessionRepository);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	@ConditionalOnBean(SessionsEndpoint.class)
-	public SessionsWebEndpointExtension sessionsWebEndpointExtension(
-			SessionsEndpoint sessionsEndpoint) {
-		return new SessionsWebEndpointExtension(sessionsEndpoint);
 	}
 
 }
