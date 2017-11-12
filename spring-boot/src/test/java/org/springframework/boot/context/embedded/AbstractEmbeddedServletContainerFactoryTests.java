@@ -30,9 +30,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.CodeSource;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -671,6 +673,22 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ClientHttpResponse response = getClientResponse(
 				getLocalUrl("/org/springframework/boot/SpringApplication.class"));
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	public void codeSourceArchivePath() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		final CodeSource codeSource = new CodeSource(new URL("file", "", "/some/test/path/"), (Certificate[]) null);
+		final File codeSourceArchive = factory.getCodeSourceArchive(codeSource);
+		assertThat(codeSourceArchive).isEqualTo(new File("/some/test/path/"));
+	}
+
+	@Test
+	public void codeSourceArchivePathContainingSpaces() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		final CodeSource codeSource = new CodeSource(new URL("file", "", "/test/path/with%20space/"), (Certificate[]) null);
+		final File codeSourceArchive = factory.getCodeSourceArchive(codeSource);
+		assertThat(codeSourceArchive).isEqualTo(new File("/test/path/with space/"));
 	}
 
 	protected Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {

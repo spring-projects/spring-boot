@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
@@ -87,7 +88,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	private File getExplodedWarFileDocumentRoot() {
-		return getExplodedWarFileDocumentRoot(getCodeSourceArchive());
+		return getExplodedWarFileDocumentRoot(getCodeSourceArchive(getCodeSource()));
 	}
 
 	protected List<URL> getUrlsOfJarsWithMetaInfResources() {
@@ -172,7 +173,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	private File getArchiveFileDocumentRoot(String extension) {
-		File file = getCodeSourceArchive();
+		File file = getCodeSourceArchive(getCodeSource());
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + file);
 		}
@@ -193,19 +194,21 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		return null;
 	}
 
-	private File getCodeSourceArchive() {
+	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
 			URL location = (codeSource == null ? null : codeSource.getLocation());
 			if (location == null) {
 				return null;
 			}
-			String path = location.getPath();
+			String path;
 			URLConnection connection = location.openConnection();
 			if (connection instanceof JarURLConnection) {
 				path = ((JarURLConnection) connection).getJarFile().getName();
 			}
-			if (path.indexOf("!/") != -1) {
+			else {
+				path = location.toURI().getPath();
+			}
+			if (path.contains("!/")) {
 				path = path.substring(0, path.indexOf("!/"));
 			}
 			return new File(path);
@@ -213,6 +216,13 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		catch (IOException ex) {
 			return null;
 		}
+		catch (URISyntaxException e) {
+			return null;
+		}
+	}
+
+	private CodeSource getCodeSource() {
+		return getClass().getProtectionDomain().getCodeSource();
 	}
 
 	protected final File getValidSessionStoreDir() {
