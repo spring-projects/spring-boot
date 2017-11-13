@@ -489,6 +489,9 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Archive getArchive(File file) throws IOException {
+		if (!file.exists()) {
+			return null;
+		}
 		String name = file.getName().toLowerCase();
 		if (name.endsWith(".jar") || name.endsWith(".zip")) {
 			return new JarFileArchive(file);
