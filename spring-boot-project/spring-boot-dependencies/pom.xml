@@ -103,8 +103,8 @@
 		<jstl.version>1.2</jstl.version>
 		<jtds.version>1.3.1</jtds.version>
 		<junit.version>4.12</junit.version>
-		<junit-jupiter.version>5.0.1</junit-jupiter.version>
-		<junit-platform.version>1.0.1</junit-platform.version>
+		<junit-jupiter.version>5.0.2</junit-jupiter.version>
+		<junit-platform.version>1.0.2</junit-platform.version>
 		<kotlin.version>1.1.51</kotlin.version>
 		<lettuce.version>5.0.0.RELEASE</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
