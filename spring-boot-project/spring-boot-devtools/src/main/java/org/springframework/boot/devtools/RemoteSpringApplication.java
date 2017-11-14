@@ -16,6 +16,10 @@
 
 package org.springframework.boot.devtools;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
@@ -32,10 +36,6 @@ import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Application that can be used to establish a link to remotely running Spring Boot code.
