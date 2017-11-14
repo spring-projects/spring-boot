@@ -723,22 +723,10 @@ previously:
 
 [NOTE]
 ====
-Extra care is required when configuring lists as shown in the preceding example, as
-overriding does not work as you might expect. In the preceding example, when `my.servers`
-is redefined in several places, the individual elements are targeted for overriding, but
-the list itself is not targeted for overriding. To make sure that a `PropertySource` with
-higher precedence can override the list, you need to define it as a single property, as
-shown in the following example:
-
-[source,yaml,indent=0]
-----
-	 my:
-		servers: dev.bar.com,foo.bar.com
-----
-
-====
-
-
+When lists are configured in more than one place, overriding works by replacing the entire list.
+In the preceding example, when `my.servers` is redefined in several places, the entire list from
+the `PropertySource` with higher precedence will override any other configuration for that list.
+Both comma-separated lists and yaml lists can be used for completely overriding the contents of the list.
 
 [[boot-features-external-config-exposing-yaml-to-spring]]
 ==== Exposing YAML as Properties in the Spring Environment
