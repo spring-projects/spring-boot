@@ -8,14 +8,14 @@ The `auditevents` endpoint provides information about the application's audit ev
 [[audit-events-retrieving]]
 == Retrieving Audit Events
 
-To retrieve the audit events, make a `GET` request to `/application/auditevents` as shown
+To retrieve the audit events, make a `GET` request to `/application/auditevents`, as shown
 in the following curl-based example:
 
 include::{snippets}auditevents/filtered/curl-request.adoc[]
 
-The preceding example retrieves `logout` events for the principal `alice` that occurred
+The preceding example retrieves `logout` events for the principal, `alice`, that occurred
 after 09:37 on 7 November 2017 in the UTC timezone. The resulting response is similar to
-the following::
+the following:
 
 include::{snippets}auditevents/filtered/http-response.adoc[]
 
@@ -24,14 +24,14 @@ include::{snippets}auditevents/filtered/http-response.adoc[]
 [[audit-events-retrieving-query-parameters]]
 === Query Parameters
 
-The endpoint uses query parameters to limit the events that it returns. The supported
-query parameters are shown in the following table:
+The endpoint uses query parameters to limit the events that it returns. The following
+ table shows the supported query parameters:
 
 [cols="2,4"]
 include::{snippets}auditevents/filtered/request-parameters.adoc[]
 
-The `after` parameter is required. One or both of the `principal` and `type` parameters
-can also be used to further limit the results.
+The `after` parameter is required. You can also use one or both of the `principal` and
+`type` parameters to further limit the results.
 
 
 
@@ -39,7 +39,7 @@ can also be used to further limit the results.
 === Response Structure
 
 The response contains details of all of the audit events that matched the query. The
-structure of the response is described in the following table:
+following table describes the structure of the response:
 
 [cols="2,1,3"]
 include::{snippets}auditevents/after/response-fields.adoc[]

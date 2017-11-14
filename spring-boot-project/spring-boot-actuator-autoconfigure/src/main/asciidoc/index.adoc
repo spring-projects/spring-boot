@@ -15,13 +15,18 @@ This API documentation describes Spring Boot Actuators web endpoints.
 [[overview]]
 == Overview
 
+Before you proceed, you should read the following topics:
+
+* <<overview-endpoint-urls>>
+* <<overview-timestamps>>
+
 
 
 [[overview-endpoint-urls]]
 === URLs
 
 By default, all web endpoints are available beneath the path `/application` with URLs of
-the form `/application/{id}`. The `/application` base path can be configured using the
+the form `/application/{id}`. The `/application` base path can be configured by using the
 `management.endpoints.web.base-path` property, as shown in the following example:
 
 [source,properties,indent=0]

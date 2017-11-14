@@ -9,7 +9,7 @@ The `metrics` endpoint provides access to application metrics.
 == Retrieving Metric Names
 
 To retrieve the names of the available metrics, make a `GET` request to
-`/application/metrics` as shown in the following curl-based example:
+`/application/metrics`, as shown in the following curl-based example:
 
 include::{snippets}metrics/names/curl-request.adoc[]
 
@@ -22,8 +22,8 @@ include::{snippets}metrics/names/http-response.adoc[]
 [[metrics-retrieving-names-response-structure]]
 === Response Structure
 
-The response contains details of the metric names. The structure of the response is
-described in the following table:
+The response contains details of the metric names. The following table describes the
+structure of the response:
 
 [cols="3,1,2"]
 include::{snippets}metrics/names/response-fields.adoc[]
@@ -33,7 +33,7 @@ include::{snippets}metrics/names/response-fields.adoc[]
 [[metrics-retrieving-metric]]
 == Retrieving a Metric
 
-To retrieve a metric, make a `GET` request to `/application/metrics/{metric.name}` as
+To retrieve a metric, make a `GET` request to `/application/metrics/{metric.name}`, as
 shown in the following curl-based example:
 
 include::{snippets}metrics/metric/curl-request.adoc[]
@@ -49,7 +49,7 @@ include::{snippets}metrics/metric/http-response.adoc[]
 === Query Parameters
 
 The endpoint uses query parameters to <<metrics-drilling-down,drill down>> into a metric
-using its tags. The single supported query parameter is shown in the following table:
+by using its tags. The following table shows the single supported query parameter:
 
 [cols="2,4"]
 include::{snippets}metrics/metric-with-tags/request-parameters.adoc[]
@@ -59,8 +59,8 @@ include::{snippets}metrics/metric-with-tags/request-parameters.adoc[]
 [[metrics-retrieving-metric-response-structure]]
 === Response structure
 
-The response contains details of the metric. The structure of the response is described in
-the following table:
+The response contains details of the metric. The following table describes the structure
+of the response:
 
 include::{snippets}metrics/metric/response-fields.adoc[]
 
@@ -69,11 +69,11 @@ include::{snippets}metrics/metric/response-fields.adoc[]
 == Drilling Down
 
 To drill down into a metric, make a `GET` request to `/application/metrics/{metric.name}`
-using the `tag` query parameter as shown in the following curl-based example:
+using the `tag` query parameter, as shown in the following curl-based example:
 
 include::{snippets}metrics/metric-with-tags/curl-request.adoc[]
 
-The preceding example retrieves the `jvm.memory.max` metric where the `area` tag has a
+The preceding example retrieves the `jvm.memory.max` metric, where the `area` tag has a
 value of `nonheap` and the `id` attribute has a value of `Code Cache`. The resulting
 response is similar to the following:
 

@@ -9,7 +9,7 @@ The `info` endpoint provides general information about the application.
 == Retrieving the Info
 
 To retrieve the information about the application, make a `GET` request to
-`/application/info` as shown in the following curl-based example:
+`/application/info`, as shown in the following curl-based example:
 
 include::{snippets}info/curl-request.adoc[]
 
@@ -31,7 +31,7 @@ contributions.
 [[info-retrieving-response-structure-build]]
 ==== `build` Response Structure
 
-The structure of the `build` section of the response is described in the following table:
+The following table describe the structure of the `build` section of the response:
 
 [cols="2,1,3"]
 include::{snippets}info/response-fields-beneath-build.adoc[]
@@ -41,7 +41,7 @@ include::{snippets}info/response-fields-beneath-build.adoc[]
 [[info-retrieving-response-structure-git]]
 ==== `git` Response Structure
 
-The structure of the `git` section of the response is described in the following table:
+The following table describes the structure of the `git` section of the response:
 
 [cols="2,1,3"]
 include::{snippets}info/response-fields-beneath-git.adoc[]
