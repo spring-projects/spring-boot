@@ -18,19 +18,21 @@ package org.springframework.boot.context.logging;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
 
 /**
- * A {@link GenericApplicationListener} that reacts to {@link ApplicationFailedEvent failed
- * events} by logging {@link Throwable} of the event
+ * A {@link GenericApplicationListener} that reacts to {@link ApplicationFailedEvent
+ * failed events} by logging {@link Throwable} of the event.
  *
  * @author Kerim Becic
  * @since 2.0.0
  */
-public final class ExceptionLoggingApplicationListener implements GenericApplicationListener {
+public final class ExceptionLoggingApplicationListener
+		implements GenericApplicationListener {
 
 	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
