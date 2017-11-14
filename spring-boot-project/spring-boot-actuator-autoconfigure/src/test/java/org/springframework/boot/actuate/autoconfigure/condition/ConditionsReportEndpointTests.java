@@ -23,7 +23,7 @@ import javax.annotation.PostConstruct;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.condition.AutoConfigurationReportEndpoint.Report;
+import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,19 +37,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link AutoConfigurationReportEndpoint}.
+ * Tests for {@link ConditionsReportEndpoint}.
  *
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AutoConfigurationReportEndpointTests {
+public class ConditionsReportEndpointTests {
 
 	@Test
 	public void invoke() throws Exception {
 		new ApplicationContextRunner().withUserConfiguration(Config.class)
 				.run((context) -> {
-					Report report = context.getBean(AutoConfigurationReportEndpoint.class)
+					Report report = context.getBean(ConditionsReportEndpoint.class)
 							.getEvaluationReport();
 					assertThat(report.getPositiveMatches()).isEmpty();
 					assertThat(report.getNegativeMatches()).containsKey("a");
@@ -79,9 +79,9 @@ public class AutoConfigurationReportEndpointTests {
 		}
 
 		@Bean
-		public AutoConfigurationReportEndpoint endpoint(
+		public ConditionsReportEndpoint endpoint(
 				ConditionEvaluationReport report) {
-			return new AutoConfigurationReportEndpoint(report);
+			return new ConditionsReportEndpoint(report);
 		}
 
 	}

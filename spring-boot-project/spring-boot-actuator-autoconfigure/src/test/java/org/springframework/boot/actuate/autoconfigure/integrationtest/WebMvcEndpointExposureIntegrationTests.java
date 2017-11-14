@@ -64,8 +64,8 @@ public class WebMvcEndpointExposureIntegrationTests {
 	public void webEndpointsAreDisabledByDefault() {
 		this.contextRunner.run((context) -> {
 			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			assertThat(isExposed(mvc, HttpMethod.GET, "autoconfig")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isFalse();
@@ -84,8 +84,8 @@ public class WebMvcEndpointExposureIntegrationTests {
 				.withPropertyValues("endpoints.default.web.enabled=true");
 		contextRunner.run((context) -> {
 			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			assertThat(isExposed(mvc, HttpMethod.GET, "autoconfig")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isTrue();

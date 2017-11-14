@@ -47,7 +47,7 @@ public class ConditionEvaluationReportMessage {
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%n%n%n"));
 		message.append(String.format("=========================%n"));
-		message.append(String.format("AUTO-CONFIGURATION REPORT%n"));
+		message.append(String.format("CONDITIONS REPORT%n"));
 		message.append(String.format("=========================%n%n%n"));
 		message.append(String.format("Positive matches:%n"));
 		message.append(String.format("-----------------%n"));

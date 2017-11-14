@@ -71,9 +71,9 @@ The following technology-agnostic endpoints are available:
 |`auditevents`
 |Exposes audit events information for the current application.
 
-|`autoconfig`
-|Displays an auto-configuration report showing all auto-configuration candidates and the
- reason why they '`were`' or '`were not`' applied.
+|`conditions`
+|Showing the conditions that were evaluated on configuration and auto-configuration
+ classes and the reasons why they did or did not match.
 
 |`beans`
 |Displays a complete list of all the Spring beans in your application.

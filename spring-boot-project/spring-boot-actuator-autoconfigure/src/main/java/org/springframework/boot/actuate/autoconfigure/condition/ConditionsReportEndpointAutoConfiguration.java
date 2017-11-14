@@ -27,17 +27,17 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
- * {@link AutoConfigurationReportEndpoint}.
+ * {@link ConditionsReportEndpoint}.
  *
  * @author Phillip Webb
  * @since 2.0.0
  */
 @Configuration
-public class AutoConfigurationReportEndpointAutoConfiguration {
+public class ConditionsReportEndpointAutoConfiguration {
 
 	private ConfigurableApplicationContext context;
 
-	public AutoConfigurationReportEndpointAutoConfiguration(
+	public ConditionsReportEndpointAutoConfiguration(
 			ConfigurableApplicationContext context) {
 		this.context = context;
 	}
@@ -45,8 +45,8 @@ public class AutoConfigurationReportEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	@ConditionalOnEnabledEndpoint
-	public AutoConfigurationReportEndpoint autoConfigurationReportEndpoint() {
-		return new AutoConfigurationReportEndpoint(
+	public ConditionsReportEndpoint conditionsReportEndpoint() {
+		return new ConditionsReportEndpoint(
 				ConditionEvaluationReport.get(this.context.getBeanFactory()));
 	}
 

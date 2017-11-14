@@ -24,28 +24,28 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AutoConfigurationReportEndpointAutoConfiguration}.
+ * Tests for {@link ConditionsReportEndpointAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-public class AutoConfigurationReportEndpointAutoConfigurationTests {
+public class ConditionsReportEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations
-					.of(AutoConfigurationReportEndpointAutoConfiguration.class));
+					.of(ConditionsReportEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(AutoConfigurationReportEndpoint.class));
+				.hasSingleBean(ConditionsReportEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.autoconfig.enabled:false")
+		this.contextRunner.withPropertyValues("endpoints.conditions.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(AutoConfigurationReportEndpoint.class));
+						.doesNotHaveBean(ConditionsReportEndpoint.class));
 	}
 
 }

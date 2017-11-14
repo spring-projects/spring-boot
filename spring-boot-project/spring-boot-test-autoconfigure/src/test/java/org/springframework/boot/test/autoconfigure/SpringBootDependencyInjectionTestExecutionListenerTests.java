@@ -74,7 +74,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		catch (IllegalStateException ex) {
 			// Expected
 		}
-		this.out.expect(containsString("AUTO-CONFIGURATION REPORT"));
+		this.out.expect(containsString("CONDITIONS REPORT"));
 		this.out.expect(containsString("Positive matches"));
 		this.out.expect(containsString("Negative matches"));
 	}

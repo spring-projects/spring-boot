@@ -3319,7 +3319,8 @@ The line in the preceding example passes a value of `true` for the
 
 By default, the DDL execution (or validation) is deferred until the `ApplicationContext`
 has started. There is also a `spring.jpa.generate-ddl` flag, but it is not used if
-Hibernate autoconfig is active, because the `ddl-auto` settings are more fine-grained.
+Hibernate auto-configuration is active, because the `ddl-auto` settings are more
+fine-grained.
 
 
 

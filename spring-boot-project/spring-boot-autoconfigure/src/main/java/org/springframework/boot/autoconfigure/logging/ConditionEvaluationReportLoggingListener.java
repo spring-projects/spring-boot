@@ -89,7 +89,7 @@ public class ConditionEvaluationReportLoggingListener
 	public void logAutoConfigurationReport(boolean isCrashReport) {
 		if (this.report == null) {
 			if (this.applicationContext == null) {
-				this.logger.info("Unable to provide auto-configuration report "
+				this.logger.info("Unable to provide the conditions report "
 						+ "due to missing ApplicationContext");
 				return;
 			}
@@ -101,7 +101,7 @@ public class ConditionEvaluationReportLoggingListener
 					&& !this.logger.isDebugEnabled()) {
 				this.logger.info(String
 						.format("%n%nError starting ApplicationContext. To display the "
-								+ "auto-configuration report re-run your application with "
+								+ "conditions report re-run your application with "
 								+ "'debug' enabled."));
 			}
 			if (this.logger.isDebugEnabled()) {

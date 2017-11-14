@@ -47,12 +47,12 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Endpoint(id = "autoconfig")
-public class AutoConfigurationReportEndpoint {
+@Endpoint(id = "conditions")
+public class ConditionsReportEndpoint {
 
 	private final ConditionEvaluationReport conditionEvaluationReport;
 
-	public AutoConfigurationReportEndpoint(
+	public ConditionsReportEndpoint(
 			ConditionEvaluationReport conditionEvaluationReport) {
 		this.conditionEvaluationReport = conditionEvaluationReport;
 	}

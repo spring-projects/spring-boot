@@ -64,7 +64,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		context.refresh();
 		withDebugLogging(() -> this.initializer
 				.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(this.outputCapture.toString()).contains("AUTO-CONFIGURATION REPORT");
+		assertThat(this.outputCapture.toString()).contains("CONDITIONS REPORT");
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 					() -> this.initializer.onApplicationEvent(new ApplicationFailedEvent(
 							new SpringApplication(), new String[0], context, ex)));
 		}
-		assertThat(this.outputCapture.toString()).contains("AUTO-CONFIGURATION REPORT");
+		assertThat(this.outputCapture.toString()).contains("CONDITIONS REPORT");
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 					new SpringApplication(), new String[0], context, ex));
 		}
 		assertThat(this.outputCapture.toString()).contains("Error starting"
-				+ " ApplicationContext. To display the auto-configuration report re-run"
+				+ " ApplicationContext. To display the conditions report re-run"
 				+ " your application with 'debug' enabled.");
 	}
 
@@ -141,7 +141,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
 						new String[0], null, new RuntimeException("Planned")));
 		assertThat(this.outputCapture.toString())
-				.contains("Unable to provide auto-configuration report");
+				.contains("Unable to provide the conditions report");
 	}
 
 	private void withDebugLogging(Runnable runnable) {

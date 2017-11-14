@@ -54,7 +54,7 @@ public class JmxEndpointIntegrationTests {
 		this.contextRunner.run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer,
-					new String[] { "autoconfig", "beans", "configprops", "env", "health",
+					new String[] { "beans", "conditions", "configprops", "env", "health",
 							"info", "mappings", "status", "threaddump", "trace" },
 					new String[] { "shutdown" });
 		});
@@ -66,7 +66,7 @@ public class JmxEndpointIntegrationTests {
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[0],
-							new String[] { "autoconfig", "beans", "configprops", "env",
+							new String[] { "beans", "conditions", "configprops", "env",
 									"health", "mappings", "shutdown", "threaddump",
 									"trace" });
 
@@ -79,7 +79,7 @@ public class JmxEndpointIntegrationTests {
 				"endpoints.beans.jmx.enabled=true").run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans" },
-							new String[] { "autoconfig", "configprops", "env", "health",
+							new String[] { "conditions", "configprops", "env", "health",
 									"mappings", "shutdown", "threaddump", "trace" });
 				});
 	}

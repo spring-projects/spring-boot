@@ -1077,19 +1077,19 @@ content into your application; rather pick only the properties that you need.
 	endpoints.auditevents.web.enabled= # Expose the auditevents endpoint as a Web endpoint.
 	endpoints.auditevents.web.path=auditevents # Path of the auditevents endpoint.
 
-	# AUTO-CONFIGURATION REPORT ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/condition/AutoConfigurationReportEndpoint.{sc-ext}[AutoConfigurationReportEndpoint])
-	endpoints.autoconfig.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
-	endpoints.autoconfig.enabled= # Enable the autoconfig endpoint.
-	endpoints.autoconfig.jmx.enabled= # Expose the autoconfig endpoint as a JMX MBean.
-	endpoints.autoconfig.web.enabled= # Expose the autoconfig endpoint as a Web endpoint.
-	endpoints.autoconfig.web.path=autoconfig # Path of the autoconfig endpoint.
-
 	# BEANS ENDPOINT ({sc-spring-boot-actuator}/beans/BeansEndpoint.{sc-ext}[BeansEndpoint])
 	endpoints.beans.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.beans.enabled= # Enable the beans endpoint.
 	endpoints.beans.jmx.enabled= # Expose the beans endpoint as a JMX MBean.
 	endpoints.beans.web.enabled= # Expose the beans endpoint as a Web endpoint.
 	endpoints.beans.web.path=beans # Path of the beans endpoint.
+
+	# CONDITIONS REPORT ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/condition/ConditionsReportEndpoint.{sc-ext}[ConditionsReportEndpoint])
+	endpoints.conditions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	endpoints.conditions.enabled= # Enable the conditions endpoint.
+	endpoints.conditions.jmx.enabled= # Expose the conditions endpoint as a JMX MBean.
+	endpoints.conditions.web.enabled= # Expose the conditions endpoint as a Web endpoint.
+	endpoints.conditions.web.path=conditions # Path of the conditions endpoint.
 
 	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint])
 	endpoints.configprops.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
