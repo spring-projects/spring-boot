@@ -36,7 +36,8 @@ import org.springframework.data.couchbase.repository.config.ReactiveRepositoryOp
 @Configuration
 @ConditionalOnMissingBean(AbstractReactiveCouchbaseDataConfiguration.class)
 @ConditionalOnBean(CouchbaseConfigurer.class)
-class SpringBootCouchbaseReactiveDataConfiguration extends AbstractReactiveCouchbaseDataConfiguration {
+class SpringBootCouchbaseReactiveDataConfiguration
+		extends AbstractReactiveCouchbaseDataConfiguration {
 
 	private final CouchbaseDataProperties properties;
 
@@ -71,4 +72,5 @@ class SpringBootCouchbaseReactiveDataConfiguration extends AbstractReactiveCouch
 	public ReactiveRepositoryOperationsMapping reactiveRepositoryOperationsMapping(RxJavaCouchbaseTemplate reactiveCouchbaseTemplate) throws Exception {
 		return super.reactiveRepositoryOperationsMapping(reactiveCouchbaseTemplate);
 	}
+
 }

@@ -74,13 +74,15 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	public void customConfiguration() {
 		load(CustomCouchbaseConfiguration.class);
 		RxJavaCouchbaseTemplate rxJavaCouchbaseTemplate = this.context.getBean(RxJavaCouchbaseTemplate.class);
-		assertThat(rxJavaCouchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
+		assertThat(rxJavaCouchbaseTemplate.getDefaultConsistency())
+				.isEqualTo(Consistency.STRONGLY_CONSISTENT);
 	}
 
 	@Test
 	public void validatorIsPresent() {
 		load(CouchbaseTestConfigurer.class);
-		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(
+				ValidatingCouchbaseEventListener.class)).hasSize(1);
 	}
 
 	@Test
@@ -97,7 +99,8 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	@Test
 	public void customConversions() {
 		load(CustomConversionsConfig.class);
-		RxJavaCouchbaseTemplate template = this.context.getBean(RxJavaCouchbaseTemplate.class);
+		RxJavaCouchbaseTemplate template = this.context.getBean(
+				RxJavaCouchbaseTemplate.class);
 		assertThat(template.getConverter().getConversionService()
 				.canConvert(CouchbaseProperties.class, Boolean.class)).isTrue();
 	}
@@ -155,6 +158,7 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 		public Boolean convert(CouchbaseProperties value) {
 			return true;
 		}
+
 	}
 
 }

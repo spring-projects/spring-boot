@@ -45,4 +45,5 @@ import org.springframework.data.couchbase.repository.support.ReactiveCouchbaseRe
 @Import(CouchbaseReactiveRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(CouchbaseReactiveDataAutoConfiguration.class)
 public class CouchbaseReactiveRepositoriesAutoConfiguration {
+
 }
