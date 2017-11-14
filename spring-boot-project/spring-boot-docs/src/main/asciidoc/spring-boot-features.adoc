@@ -4053,9 +4053,9 @@ http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 http://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model NoSQL
 document-oriented database that is optimized for interactive applications. Spring Boot
 offers auto-configuration for Couchbase and the abstractions on top of it provided by
-https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase]. There is
-a `spring-boot-starter-data-couchbase` '`Starter`' for collecting the dependencies in a
-convenient way.
+https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase]. There are
+a `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-couchbase-reactive`
+'`Starters`' for collecting the dependencies in a convenient way.
 
 
 
