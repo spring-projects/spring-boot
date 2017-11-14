@@ -6000,6 +6000,9 @@ scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `@Convert
 `Filter`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`. Regular `@Component`
 beans are not scanned when using this annotation.
 
+TIP: If you need to register extra components such as Jackson `Module`, you can import
+additional configuration classes using `@Import` on your test.
+
 Often, `@WebMvcTest` is limited to a single controller and is used in combination with
 `@MockBean` to provide mock implementations for required collaborators.
 
@@ -6102,6 +6105,9 @@ To test that Spring WebFlux controllers are working as expected, you can use the
 infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`,
 `@JsonComponent`, `Converter`, and `WebFluxConfigurer`. Regular `@Component` beans are
 not scanned when the `@WebFluxTest` annotation is used.
+
+TIP: If you need to register extra components such as Jackson `Module`, you can import
+additional configuration classes using `@Import` on your test.
 
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the
 `@MockBean` annotation to provide mock implementations for required collaborators.
