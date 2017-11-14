@@ -31,13 +31,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AtlasProperties extends StepRegistryProperties {
 
 	/**
-	 * The URI for the Atlas backend.
+	 * URI of the Atlas server.
 	 */
 	private String uri;
 
 	/**
-	 * The TTL for meters that do not have any activity. After this period the meter will
-	 * be considered expired and will not get reported.
+	 * Time to love for meters that do not have any activity. After this period the meter
+	 * will be considered expired and will not get reported.
 	 */
 	private Duration meterTimeToLive;
 
@@ -47,22 +47,22 @@ public class AtlasProperties extends StepRegistryProperties {
 	private Boolean lwcEnabled;
 
 	/**
-	 * The frequency for refreshing config settings from the LWC service.
+	 * Frequency for refreshing config settings from the LWC service.
 	 */
 	private Duration configRefreshFrequency;
 
 	/**
-	 * The TTL for subscriptions from the LWC service.
+	 * Time to live for subscriptions from the LWC service.
 	 */
 	private Duration configTimeToLive;
 
 	/**
-	 * The URI for the Atlas LWC endpoint to retrieve current subscriptions.
+	 * URI for the Atlas LWC endpoint to retrieve current subscriptions.
 	 */
 	private String configUri;
 
 	/**
-	 * The URI for the Atlas LWC endpoint to evaluate the data for a subscription.
+	 * URI for the Atlas LWC endpoint to evaluate the data for a subscription.
 	 */
 	private String evalUri;
 

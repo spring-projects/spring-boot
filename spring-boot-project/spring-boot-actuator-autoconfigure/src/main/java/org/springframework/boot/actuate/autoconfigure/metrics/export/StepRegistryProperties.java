@@ -29,7 +29,7 @@ import java.time.Duration;
 public abstract class StepRegistryProperties {
 
 	/**
-	 * The step size (reporting frequency) to use.
+	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step = Duration.ofMinutes(1);
 
@@ -39,22 +39,22 @@ public abstract class StepRegistryProperties {
 	private Boolean enabled;
 
 	/**
-	 * The connection timeout for requests to the backend.
+	 * Connection timeout for requests to the backend.
 	 */
 	private Duration connectTimeout;
 
 	/**
-	 * The read timeout for requests to the backend.
+	 * Read timeout for requests to the backend.
 	 */
 	private Duration readTimeout;
 
 	/**
-	 * The number of threads to use with the metrics publishing scheduler.
+	 * Number of threads to use with the metrics publishing scheduler.
 	 */
 	private Integer numThreads;
 
 	/**
-	 * The number of measurements per request to use for the backend. If more measurements
+	 * Number of measurements per request to use for the backend. If more measurements
 	 * are found, then multiple requests will be made.
 	 */
 	private Integer batchSize;

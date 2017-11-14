@@ -26,28 +26,29 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for configuring StatsD metrics export.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.metrics.export.statsd")
 public class StatsdProperties {
 
 	/**
-	 * Enable publishing to the backend.
+	 * Export metrics to StatsD.
 	 */
 	private Boolean enabled;
 
 	/**
-	 * Variant of the StatsD line protocol to use.
+	 * StatsD line protocol to use.
 	 */
 	private StatsdFlavor flavor = StatsdFlavor.Datadog;
 
 	/**
-	 * Host name of the StatsD agent.
+	 * Host of the StatsD server to receive exported metrics.
 	 */
 	private String host = "localhost";
 
 	/**
-	 * UDP port of the StatsD agent.
+	 * Port of the StatsD server to receive exported metrics.
 	 */
 	private Integer port = 8125;
 
@@ -57,14 +58,13 @@ public class StatsdProperties {
 	private Integer maxPacketLength = 1400;
 
 	/**
-	 * Determines how often gauges will be polled. When a gauge is polled, its value is
-	 * recalculated. If the value has changed, it is sent to the StatsD server.
+	 * How often gauges will be polled. When a gauge is polled, its value is
+	 * recalculated and if the value has changed, it is sent to the StatsD server.
 	 */
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 
 	/**
-	 * Governs the maximum size of the queue of items waiting to be sent to a StatsD agent
-	 * over UDP.
+	 * Maximum size of the queue of items waiting to be sent to the StatsD server.
 	 */
 	private Integer queueSize = Integer.MAX_VALUE;
 

@@ -41,7 +41,7 @@ public class PrometheusProperties {
 	private Boolean descriptions;
 
 	/**
-	 * The step size (reporting frequency) to use.
+	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step;
 

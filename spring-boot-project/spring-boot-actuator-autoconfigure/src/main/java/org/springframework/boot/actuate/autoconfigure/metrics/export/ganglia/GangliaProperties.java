@@ -33,22 +33,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GangliaProperties {
 
 	/**
-	 * Enable publishing to the backend.
+	 * Enable publishing to Ganglia.
 	 */
 	private Boolean enabled;
 
 	/**
-	 * The step size (reporting frequency) to use.
+	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step;
 
 	/**
-	 * The base time unit used to report rates.
+	 * Base time unit used to report rates.
 	 */
 	private TimeUnit rateUnits;
 
 	/**
-	 * The base time unit used to report durations.
+	 * Base time unit used to report durations.
 	 */
 	private TimeUnit durationUnits;
 
@@ -58,22 +58,22 @@ public class GangliaProperties {
 	private String protocolVersion;
 
 	/**
-	 * The UDP addressing mode, either unicast or multicast.
+	 * UDP addressing mode, either unicast or multicast.
 	 */
 	private GMetric.UDPAddressingMode addressingMode;
 
 	/**
-	 * The TTL for metrics on Ganglia.
+	 * Time to live for metrics on Ganglia.
 	 */
 	private Integer timeToLive;
 
 	/**
-	 * Ganglia host used for publishing.
+	 * Host of the Ganglia server to receive exported metrics.
 	 */
 	private String host;
 
 	/**
-	 * Ganglia port used for publishing.
+	 * Port of the Ganglia server to receive exported metrics.
 	 */
 	private Integer port;
 

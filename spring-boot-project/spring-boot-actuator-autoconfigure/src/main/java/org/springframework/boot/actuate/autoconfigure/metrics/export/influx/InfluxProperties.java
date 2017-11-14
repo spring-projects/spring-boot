@@ -31,34 +31,34 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class InfluxProperties extends StepRegistryProperties {
 
 	/**
-	 * The tag that will be mapped to "host" when shipping metrics to Influx, or
-	 * {@code null} if host should be omitted on publishing.
+	 * Tag that will be mapped to "host" when shipping metrics to Influx. Can be
+	 * omitted of host should be omitted on publishing.
 	 */
 	private String db;
 
 	/**
-	 * The write consistency for each point.
+	 * Write consistency for each point.
 	 */
 	private InfluxConsistency consistency;
 
 	/**
-	 * Authenticate requests with this user. If not specified, the registry will not
-	 * attempt to present credentials to Influx.
+	 * Login user of the Influx server.
 	 */
 	private String userName;
 
 	/**
-	 * Authenticate requests with this password.
+	 * Login password of the Influx server.
 	 */
 	private String password;
 
 	/**
-	 * Influx writes to the DEFAULT retention policy if one is not specified.
+	 * Retention policy to use (Influx writes to the DEFAULT retention policy if one is
+	 * not specified).
 	 */
 	private String retentionPolicy;
 
 	/**
-	 * The URI for the Influx backend.
+	 * URI of the Influx server.
 	 */
 	private String uri;
 

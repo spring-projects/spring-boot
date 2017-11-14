@@ -33,32 +33,32 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GraphiteProperties {
 
 	/**
-	 * Enable publishing to the backend.
+	 * Enable publishing to Graphite.
 	 */
 	private Boolean enabled;
 
 	/**
-	 * The step size (reporting frequency) to use.
+	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step;
 
 	/**
-	 * The base time unit used to report rates.
+	 * Base time unit used to report rates.
 	 */
 	private TimeUnit rateUnits;
 
 	/**
-	 * The base time unit used to report durations.
+	 * Base time unit used to report durations.
 	 */
 	private TimeUnit durationUnits;
 
 	/**
-	 * Graphite host used for publishing.
+	 * Host of the Graphite server to receive exported metrics.
 	 */
 	private String host;
 
 	/**
-	 * Graphite port used for publishing.
+	 * Port of the Graphite server to receive exported metrics.
 	 */
 	private Integer port;
 

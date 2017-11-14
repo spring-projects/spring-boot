@@ -38,7 +38,7 @@ public class SimpleProperties {
 	private boolean enabled;
 
 	/**
-	 * The step size (reporting frequency) to use.
+	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step = Duration.ofSeconds(10);
 

@@ -29,20 +29,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DatadogProperties extends StepRegistryProperties {
 
 	/**
-	 * Your API key, found in your account settings at datadoghq. This property is
-	 * required.
+	 * Datadog API key.
 	 */
 	private String apiKey;
 
 	/**
-	 * The tag that will be mapped to "host" when shipping metrics to datadog, or
-	 * {@code null} if host should be omitted on publishing.
+	 * Tag that will be mapped to "host" when shipping metrics to Datadog. Can be
+	 * omitted of host should be omitted on publishing.
 	 */
 	private String hostTag;
 
 	/**
-	 * The URI to ship metrics to. If you need to publish metrics to an internal proxy
-	 * en-route to datadoghq, you can define the location of the proxy with this.
+	 * URI to ship metrics to. If you need to publish metrics to an internal proxy
+	 * en-route to Datadog, you can define the location of the proxy with this.
 	 */
 	private String uri;
 
