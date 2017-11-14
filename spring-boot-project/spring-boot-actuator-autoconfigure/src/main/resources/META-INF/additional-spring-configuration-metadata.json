@@ -1184,25 +1184,6 @@
     }
   },
   {
-    "name": "spring.metrics.export.statsd.host",
-    "type": "java.lang.String",
-    "description": "Host of a statsd server to receive exported metrics.",
-    "deprecation": {
-      "reason": "Metrics support is now using Micrometer.",
-      "level": "error"
-    }
-  },
-  {
-    "name": "spring.metrics.export.statsd.port",
-    "type": "java.lang.Integer",
-    "description": "Port of a statsd server to receive exported metrics.",
-    "defaultValue": 8125,
-    "deprecation": {
-      "reason": "Metrics support is now using Micrometer.",
-      "level": "error"
-    }
-  },
-  {
     "name": "spring.metrics.export.statsd.prefix",
     "type": "java.lang.String",
     "description": "Prefix for statsd exported metrics.",
