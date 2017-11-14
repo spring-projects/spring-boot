@@ -35,7 +35,7 @@ public final class ExceptionLoggingApplicationListener implements GenericApplica
 	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
 	private static final Log logger = LogFactory
-			.getLog(ClasspathLoggingApplicationListener.class);
+			.getLog(ExceptionLoggingApplicationListener.class);
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {

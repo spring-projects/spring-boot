@@ -16,10 +16,6 @@
 
 package org.springframework.boot.devtools;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
@@ -27,6 +23,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.context.logging.ClasspathLoggingApplicationListener;
+import org.springframework.boot.context.logging.ExceptionLoggingApplicationListener;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
 import org.springframework.boot.devtools.restart.RestartInitializer;
@@ -35,6 +32,10 @@ import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Application that can be used to establish a link to remotely running Spring Boot code.
@@ -74,6 +75,7 @@ public final class RemoteSpringApplication {
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(new ConfigFileApplicationListener());
 		listeners.add(new ClasspathLoggingApplicationListener());
+		listeners.add(new ExceptionLoggingApplicationListener());
 		listeners.add(new LoggingApplicationListener());
 		listeners.add(new RemoteUrlPropertyExtractor());
 		return listeners;
