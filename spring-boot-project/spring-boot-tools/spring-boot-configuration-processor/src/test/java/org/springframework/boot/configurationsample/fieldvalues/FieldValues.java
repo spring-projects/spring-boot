@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationsample.fieldvalues;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.util.MimeType;
@@ -41,7 +42,7 @@ public class FieldValues {
 
 	private static final Integer INTEGER_OBJ_CONST = 4;
 
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	private static final MimeType DEFAULT_MIME_TYPE = MimeType.valueOf("text/plain");
 
@@ -77,7 +78,7 @@ public class FieldValues {
 
 	private Integer integerObjectConst = INTEGER_OBJ_CONST;
 
-	private Charset charset = Charset.forName("US-ASCII");
+	private Charset charset = StandardCharsets.US_ASCII;
 
 	private Charset charsetConst = DEFAULT_CHARSET;
 
