@@ -41,6 +41,7 @@ public class SampleJettySslApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+
 	@Autowired
 	private AbstractConfigurableWebServerFactory webServerFactory;
 
@@ -55,4 +56,5 @@ public class SampleJettySslApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
+
 }

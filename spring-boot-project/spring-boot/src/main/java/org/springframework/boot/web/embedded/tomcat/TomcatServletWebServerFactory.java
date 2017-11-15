@@ -222,13 +222,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		postProcessContext(context);
 	}
 
-	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {
-		StandardJarScanFilter filter = new StandardJarScanFilter();
-		filter.setTldSkip(
-				StringUtils.collectionToCommaDelimitedString(this.tldSkipPatterns));
-		context.getJarScanner().setJarScanFilter(filter);
-	}
-
 	/**
 	 * Override Tomcat's default locale mappings to align with other servers. See
 	 * {@code org.apache.catalina.util.CharsetMapperDefault.properties}.
@@ -248,6 +241,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			context.addLocaleEncodingMappingParameter(locale.toString(),
 					charset.toString());
 		}
+	}
+
+	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {
+		StandardJarScanFilter filter = new StandardJarScanFilter();
+		filter.setTldSkip(
+				StringUtils.collectionToCommaDelimitedString(this.tldSkipPatterns));
+		context.getJarScanner().setJarScanFilter(filter);
 	}
 
 	private void addDefaultServlet(Context context) {

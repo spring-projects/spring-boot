@@ -69,7 +69,8 @@ class SpringBootCouchbaseReactiveDataConfiguration
 	@Override
 	@ConditionalOnMissingBean(name = BeanNames.REACTIVE_COUCHBASE_OPERATIONS_MAPPING)
 	@Bean(name = BeanNames.REACTIVE_COUCHBASE_OPERATIONS_MAPPING)
-	public ReactiveRepositoryOperationsMapping reactiveRepositoryOperationsMapping(RxJavaCouchbaseTemplate reactiveCouchbaseTemplate) throws Exception {
+	public ReactiveRepositoryOperationsMapping reactiveRepositoryOperationsMapping(
+			RxJavaCouchbaseTemplate reactiveCouchbaseTemplate) throws Exception {
 		return super.reactiveRepositoryOperationsMapping(reactiveCouchbaseTemplate);
 	}
 

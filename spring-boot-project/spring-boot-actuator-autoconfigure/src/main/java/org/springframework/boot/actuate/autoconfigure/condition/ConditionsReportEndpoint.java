@@ -52,8 +52,7 @@ public class ConditionsReportEndpoint {
 
 	private final ConditionEvaluationReport conditionEvaluationReport;
 
-	public ConditionsReportEndpoint(
-			ConditionEvaluationReport conditionEvaluationReport) {
+	public ConditionsReportEndpoint(ConditionEvaluationReport conditionEvaluationReport) {
 		this.conditionEvaluationReport = conditionEvaluationReport;
 	}
 

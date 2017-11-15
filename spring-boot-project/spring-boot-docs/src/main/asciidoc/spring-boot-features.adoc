@@ -728,6 +728,8 @@ In the preceding example, when `my.servers` is redefined in several places, the 
 the `PropertySource` with higher precedence will override any other configuration for that list.
 Both comma-separated lists and yaml lists can be used for completely overriding the contents of the list.
 
+
+
 [[boot-features-external-config-exposing-yaml-to-spring]]
 ==== Exposing YAML as Properties in the Spring Environment
 The `YamlPropertySourceLoader` class can be used to expose YAML as a `PropertySource` in

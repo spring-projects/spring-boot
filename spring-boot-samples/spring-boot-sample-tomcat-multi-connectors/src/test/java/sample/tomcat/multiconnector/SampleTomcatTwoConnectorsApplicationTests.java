@@ -52,10 +52,13 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 
 	@LocalServerPort
 	private int port;
+
 	@Autowired
 	private Ports ports;
+
 	@Autowired
 	private TestRestTemplate restTemplate;
+
 	@Autowired
 	private AbstractConfigurableWebServerFactory webServerFactory;
 

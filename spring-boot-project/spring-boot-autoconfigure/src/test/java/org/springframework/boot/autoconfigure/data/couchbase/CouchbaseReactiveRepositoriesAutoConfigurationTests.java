@@ -92,12 +92,10 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 			context.register(config);
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class,
-				CouchbaseDataAutoConfiguration.class,
+				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
 				CouchbaseRepositoriesAutoConfiguration.class,
 				CouchbaseReactiveDataAutoConfiguration.class,
-				CouchbaseReactiveRepositoriesAutoConfiguration.class
-		);
+				CouchbaseReactiveRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}
@@ -122,4 +120,5 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	protected static class CustomizedConfiguration {
 
 	}
+
 }

@@ -31,14 +31,14 @@ import org.springframework.data.couchbase.repository.config.ReactiveRepositoryOp
 import org.springframework.data.couchbase.repository.support.ReactiveCouchbaseRepositoryFactoryBean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Couchbase
- * Reactive Repositories.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Couchbase Reactive
+ * Repositories.
  *
  * @author Alex Derkach
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass({Bucket.class, ReactiveCouchbaseRepository.class})
+@ConditionalOnClass({ Bucket.class, ReactiveCouchbaseRepository.class })
 @ConditionalOnProperty(prefix = "spring.data.couchbase.reactive-repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean(ReactiveRepositoryOperationsMapping.class)
 @ConditionalOnMissingBean(ReactiveCouchbaseRepositoryFactoryBean.class)

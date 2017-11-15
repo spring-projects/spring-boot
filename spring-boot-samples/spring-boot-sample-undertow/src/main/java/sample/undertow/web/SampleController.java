@@ -31,13 +31,7 @@ public class SampleController {
 
 	@GetMapping("/async")
 	public Callable<String> helloWorldAsync() {
-		return new Callable<String>() {
-
-			@Override
-			public String call() throws Exception {
-				return "async: Hello World";
-			}
-		};
+		return () -> "async: Hello World";
 	}
 
 }

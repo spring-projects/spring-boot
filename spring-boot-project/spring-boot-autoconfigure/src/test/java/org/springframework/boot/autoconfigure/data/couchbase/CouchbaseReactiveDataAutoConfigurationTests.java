@@ -73,7 +73,8 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	@Test
 	public void customConfiguration() {
 		load(CustomCouchbaseConfiguration.class);
-		RxJavaCouchbaseTemplate rxJavaCouchbaseTemplate = this.context.getBean(RxJavaCouchbaseTemplate.class);
+		RxJavaCouchbaseTemplate rxJavaCouchbaseTemplate = this.context
+				.getBean(RxJavaCouchbaseTemplate.class);
 		assertThat(rxJavaCouchbaseTemplate.getDefaultConsistency())
 				.isEqualTo(Consistency.STRONGLY_CONSISTENT);
 	}
@@ -81,8 +82,8 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	@Test
 	public void validatorIsPresent() {
 		load(CouchbaseTestConfigurer.class);
-		assertThat(this.context.getBeansOfType(
-				ValidatingCouchbaseEventListener.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
+				.hasSize(1);
 	}
 
 	@Test
@@ -99,8 +100,8 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	@Test
 	public void customConversions() {
 		load(CustomConversionsConfig.class);
-		RxJavaCouchbaseTemplate template = this.context.getBean(
-				RxJavaCouchbaseTemplate.class);
+		RxJavaCouchbaseTemplate template = this.context
+				.getBean(RxJavaCouchbaseTemplate.class);
 		assertThat(template.getConverter().getConversionService()
 				.canConvert(CouchbaseProperties.class, Boolean.class)).isTrue();
 	}
@@ -113,13 +114,15 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
 				ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
-				CouchbaseDataAutoConfiguration.class, CouchbaseReactiveDataAutoConfiguration.class);
+				CouchbaseDataAutoConfiguration.class,
+				CouchbaseReactiveDataAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}
 
 	@Configuration
-	static class CustomCouchbaseConfiguration extends AbstractReactiveCouchbaseDataConfiguration {
+	static class CustomCouchbaseConfiguration
+			extends AbstractReactiveCouchbaseDataConfiguration {
 
 		@Override
 		protected CouchbaseConfigurer couchbaseConfigurer() {
