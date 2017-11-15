@@ -105,6 +105,9 @@ The following technology-agnostic endpoints are available:
 |`mappings`
 |Displays a collated list of all `@RequestMapping` paths.
 
+|`scheduledtasks`
+|Displays the scheduled tasks in your application.
+
 |`sessions`
 |Allows retrieval and deletion of user sessions from a Spring Session-backed session
  store. Not available when using Spring Session's support for reactive web applications.

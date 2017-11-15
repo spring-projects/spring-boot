@@ -1181,6 +1181,13 @@ content into your application; rather pick only the properties that you need.
 	endpoints.prometheus.web.enabled= # Expose the metrics endpoint as a Web endpoint.
 	endpoints.prometheus.web.path=prometheus # Path of the prometheus endpoint.
 
+	# SCHEDULED TASKS ENDPOINT ({sc-spring-boot-actuator}/scheduling/ScheduledTasksEndpoint.{sc-ext}[ScheduledTasksEndpoint])
+	endpoints.scheduledtasks.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	endpoints.scheduledtasks.enabled= # Enable the scheduled tasks endpoint.
+	endpoints.scheduledtasks.jmx.enabled= # Expose the scheduled tasks endpoint as a JMX MBean.
+	endpoints.scheduledtasks.web.enabled= # Expose the scheduled tasks endpoint as a Web endpoint.
+	endpoints.scheduledtasks.web.path=sessions # Path of the scheduled tasks endpoint.
+
 	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
 	endpoints.sessions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.sessions.enabled= # Enable the sessions endpoint.
