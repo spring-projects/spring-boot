@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,8 +101,8 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testCycle() throws Exception {
-		this.context.register(CycleConfig.class);
+	public void testSelfReferentialProperty() throws Exception {
+		this.context.register(SelfReferentialConfig.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "foo.name:foo");
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
@@ -114,8 +115,30 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertThat(map).isNotNull();
-		assertThat(map).hasSize(1);
-		assertThat(map.get("error")).isEqualTo("Cannot serialize 'foo'");
+		assertThat(map).containsOnlyKeys("bar", "name");
+		assertThat(map).containsEntry("name", "foo");
+		Map<String, Object> bar = (Map<String, Object>) map.get("bar");
+		assertThat(bar).containsOnlyKeys("name");
+		assertThat(bar).containsEntry("name", "123456");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testCycle() {
+		this.context.register(CycleConfig.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint report = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties
+				.get("cycle");
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("cycle");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties
+				.get("properties");
+		assertThat(map).isNotNull();
+		assertThat(map).containsOnlyKeys("error");
+		assertThat(map).containsEntry("error", "Cannot serialize 'cycle'");
 	}
 
 	@Test
@@ -149,7 +172,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
 		assertThat(nestedProperties).isNotNull();
-		System.err.println(nestedProperties);
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
@@ -190,7 +212,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
 		assertThat(nestedProperties).isNotNull();
-		System.err.println(nestedProperties);
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
@@ -223,6 +244,20 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		assertThat(list).containsExactly("abc");
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void hikariDataSourceConfigurationPropertiesBeanCanBeSerialized() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(HikariDataSourceConfig.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint endpoint = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+		Map<String, Object> properties = endpoint.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("hikariDataSource")).get("properties");
+		assertThat(nestedProperties).doesNotContainKey("error");
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Base {
@@ -248,24 +283,12 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration
 	@Import(Base.class)
-	public static class CycleConfig {
+	public static class SelfReferentialConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo")
-		public Cycle foo() {
-			return new Cycle();
-		}
-
-	}
-
-	@Configuration
-	@Import(Base.class)
-	public static class MetadataCycleConfig {
-
-		@Bean
-		@ConfigurationProperties(prefix = "bar")
-		public Cycle foo() {
-			return new Cycle();
+		public SelfReferential foo() {
+			return new SelfReferential();
 		}
 
 	}
@@ -373,11 +396,11 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	public static class Cycle extends Foo {
+	public static class SelfReferential extends Foo {
 
 		private Foo self;
 
-		public Cycle() {
+		public SelfReferential() {
 			this.self = this;
 		}
 
@@ -445,6 +468,59 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		public List<String> getList() {
 			return this.list;
+		}
+
+	}
+
+	static class Cycle {
+
+		private final Alpha alpha = new Alpha(this);
+
+		public Alpha getAlpha() {
+			return this.alpha;
+		}
+
+		static class Alpha {
+
+			private final Cycle cycle;
+
+			Alpha(Cycle cycle) {
+				this.cycle = cycle;
+			}
+
+			public Cycle getCycle() {
+				return this.cycle;
+			}
+
+		}
+
+	}
+
+	@Configuration
+	@Import(Base.class)
+	static class CycleConfig {
+
+		@Bean
+		@ConfigurationProperties(prefix = "cycle")
+		public Cycle cycle() {
+			return new Cycle();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	static class HikariDataSourceConfig {
+
+		@Bean
+		public ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint();
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "test.datasource")
+		public HikariDataSource hikariDataSource() {
+			return new HikariDataSource();
 		}
 
 	}
