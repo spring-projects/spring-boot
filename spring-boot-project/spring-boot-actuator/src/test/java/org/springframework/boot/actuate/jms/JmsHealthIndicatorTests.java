@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.jms;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.ConnectionMetaData;
@@ -27,7 +30,9 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -37,6 +42,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link JmsHealthIndicator}.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
  */
 public class JmsHealthIndicatorTests {
 
@@ -95,6 +101,27 @@ public class JmsHealthIndicatorTests {
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("provider")).isNull();
+	}
+
+	@Test public void jmsBrokerUsesInfiniteFailover() throws JMSException {
+		CountDownLatch latch = new CountDownLatch(1);
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
+		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
+		Connection connection = mock(Connection.class);
+		given(connection.getMetaData()).willReturn(connectionMetaData);
+		willAnswer(invocationOnMock -> latch.await(1, TimeUnit.SECONDS)).given(connection)
+				.start();
+		given(connectionFactory.createConnection()).willReturn(connection);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
+		Health health = indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);
+		assertThat(health.getDetails()).as("Health Details")
+				.containsExactly(entry("provider", "JMS test provider"),
+						entry("cause", "Could not connect for 100 milliseconds"));
+		verify(connection, times(1)).close();
+		verify(connection, times(1)).start();
+		latch.countDown();
 	}
 
 }
