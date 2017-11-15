@@ -24,10 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
@@ -38,6 +40,8 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
@@ -68,7 +72,7 @@ import org.springframework.util.StringUtils;
 @Endpoint(id = "configprops")
 public class ConfigurationPropertiesReportEndpoint implements ApplicationContextAware {
 
-	private static final String CGLIB_FILTER_ID = "cglibFilter";
+	private static final String CONFIGURATION_PROPERTIES_FILTER_ID = "configurationPropertiesFilter";
 
 	private final Sanitizer sanitizer = new Sanitizer();
 
@@ -167,7 +171,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		mapper.setSerializationInclusion(Include.NON_NULL);
-		applyCglibFilters(mapper);
+		applyConfigurationPropertiesFilter(mapper);
 		applySerializationModifier(mapper);
 	}
 
@@ -181,15 +185,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		mapper.setSerializerFactory(factory);
 	}
 
-	/**
-	 * Configure PropertyFilter to make sure Jackson doesn't process CGLIB generated bean
-	 * properties.
-	 * @param mapper the object mapper
-	 */
-	private void applyCglibFilters(ObjectMapper mapper) {
-		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
-		mapper.setFilterProvider(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
-				new CglibBeanPropertyFilter()));
+	private void applyConfigurationPropertiesFilter(ObjectMapper mapper) {
+		mapper.setAnnotationIntrospector(
+				new ConfigurationPropertiesAnnotationIntrospector());
+		mapper.setFilterProvider(new SimpleFilterProvider()
+				.setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
 	}
 
 	/**
@@ -268,14 +268,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * properties.
 	 */
 	@SuppressWarnings("serial")
-	private static class CglibAnnotationIntrospector
+	private static class ConfigurationPropertiesAnnotationIntrospector
 			extends JacksonAnnotationIntrospector {
 
 		@Override
 		public Object findFilterId(Annotated a) {
 			Object id = super.findFilterId(a);
 			if (id == null) {
-				id = CGLIB_FILTER_ID;
+				id = CONFIGURATION_PROPERTIES_FILTER_ID;
 			}
 			return id;
 		}
@@ -283,10 +283,20 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * {@link SimpleBeanPropertyFilter} to filter out all bean properties whose names
-	 * start with '$$'.
+	 * {@link SimpleBeanPropertyFilter} for serialization of
+	 * {@link ConfigurationProperties} beans. The filter hides:
+	 *
+	 * <ul>
+	 * <li>Properties that have a name starting with '$$'.
+	 * <li>Properties that are self-referential.
+	 * <li>Properties that throw an exception when retrieving their value.
+	 * </ul>
 	 */
-	private static class CglibBeanPropertyFilter extends SimpleBeanPropertyFilter {
+	private static class ConfigurationPropertiesPropertyFilter
+			extends SimpleBeanPropertyFilter {
+
+		private static final Log logger = LogFactory
+				.getLog(ConfigurationPropertiesPropertyFilter.class);
 
 		@Override
 		protected boolean include(BeanPropertyWriter writer) {
@@ -302,6 +312,31 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return !name.startsWith("$$");
 		}
 
+		@Override
+		public void serializeAsField(Object pojo, JsonGenerator jgen,
+				SerializerProvider provider, PropertyWriter writer) throws Exception {
+			if (writer instanceof BeanPropertyWriter) {
+				try {
+					if (pojo == ((BeanPropertyWriter) writer).get(pojo)) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("Skipping '" + writer.getFullName() + "' on '"
+									+ pojo.getClass().getName()
+									+ "' as it is self-referential");
+						}
+						return;
+					}
+				}
+				catch (Exception ex) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Skipping '" + writer.getFullName() + "' on '"
+								+ pojo.getClass().getName() + "' as an exception "
+								+ "was thrown when retrieving its value", ex);
+					}
+					return;
+				}
+			}
+			super.serializeAsField(pojo, jgen, provider, writer);
+		}
 	}
 
 	/**
