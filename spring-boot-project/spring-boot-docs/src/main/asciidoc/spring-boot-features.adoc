@@ -3493,6 +3493,9 @@ in a convenient way. By default, it uses
 https://github.com/lettuce-io/lettuce-core/[Lettuce]. That starter handles both
 traditional and reactive applications.
 
+TIP: we also provide a `spring-boot-starter-data-redis-reactive` '`Starter`' for
+consistency with the other stores with reactive support.
+
 
 
 [[boot-features-connecting-to-redis]]
