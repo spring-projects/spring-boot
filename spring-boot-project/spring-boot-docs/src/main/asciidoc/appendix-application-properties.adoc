@@ -20,7 +20,7 @@ content into your application; rather pick only the properties that you need.
 	# COMMON SPRING BOOT PROPERTIES
 	#
 	# This sample file is provided as a guideline. Do NOT copy it in its
-	# entirety to your own application.               ^^^
+	# entirety to your own application.			   ^^^
 	# ===================================================================
 
 
@@ -189,11 +189,11 @@ content into your application; rather pick only the properties that you need.
 	server.server-header= # Value to use for the Server response header (no header is sent if empty)
 	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
 	server.servlet.context-parameters.*= # Servlet context init parameters
-    server.servlet.context-path= # Context path of the application.
-    server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
+	server.servlet.context-path= # Context path of the application.
+	server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.servlet.jsp.init-parameters.*= # Init parameters used to configure the JSP servlet
 	server.servlet.jsp.registered=true # Whether or not the JSP servlet is registered
-    server.servlet.path=/ # Path of the main dispatcher servlet.
+	server.servlet.path=/ # Path of the main dispatcher servlet.
 	server.session.cookie.comment= # Comment for the session cookie.
 	server.session.cookie.domain= # Domain for the session cookie.
 	server.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
@@ -345,21 +345,21 @@ content into your application; rather pick only the properties that you need.
 	spring.jersey.servlet.load-on-startup=-1 # Load on startup priority of the Jersey servlet.
 	spring.jersey.type=servlet # Jersey integration type.
 
-    # SPRING LDAP ({sc-spring-boot-autoconfigure}/ldap/LdapProperties.{sc-ext}[LdapProperties])
-    spring.ldap.urls= # LDAP URLs of the server.
-    spring.ldap.base= # Base suffix from which all operations should originate.
-    spring.ldap.username= # Login user of the server.
-    spring.ldap.password= # Login password of the server.
-    spring.ldap.base-environment.*= # LDAP specification settings.
+	# SPRING LDAP ({sc-spring-boot-autoconfigure}/ldap/LdapProperties.{sc-ext}[LdapProperties])
+	spring.ldap.urls= # LDAP URLs of the server.
+	spring.ldap.base= # Base suffix from which all operations should originate.
+	spring.ldap.username= # Login user of the server.
+	spring.ldap.password= # Login password of the server.
+	spring.ldap.base-environment.*= # LDAP specification settings.
 
-    # EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
-    spring.ldap.embedded.base-dn= # The base DN
-    spring.ldap.embedded.credential.username= # Embedded LDAP username.
-    spring.ldap.embedded.credential.password= # Embedded LDAP password.
-    spring.ldap.embedded.ldif=classpath:schema.ldif # Schema (LDIF) script resource reference.
-    spring.ldap.embedded.port= # Embedded LDAP port.
-    spring.ldap.embedded.validation.enabled=true # Enable LDAP schema validation.
-    spring.ldap.embedded.validation.schema= # Path to the custom schema.
+	# EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
+	spring.ldap.embedded.base-dn= # The base DN
+	spring.ldap.embedded.credential.username= # Embedded LDAP username.
+	spring.ldap.embedded.credential.password= # Embedded LDAP password.
+	spring.ldap.embedded.ldif=classpath:schema.ldif # Schema (LDIF) script resource reference.
+	spring.ldap.embedded.port= # Embedded LDAP port.
+	spring.ldap.embedded.validation.enabled=true # Enable LDAP schema validation.
+	spring.ldap.embedded.validation.schema= # Path to the custom schema.
 
 	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
 	spring.mustache.allow-request-override= # Set whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
@@ -673,7 +673,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username= # Login user of the database.
 	spring.datasource.xa.data-source-class-name= # XA datasource fully qualified name.
-    spring.datasource.xa.properties= # Properties to pass to the XA data source.
+	spring.datasource.xa.properties= # Properties to pass to the XA data source.
 
 	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/elasticsearch/jest/JestProperties.{sc-ext}[JestProperties])
 	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
@@ -1022,11 +1022,11 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published in milliseconds.
 	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.direct.retry.enabled=false # Whether or not publishing retries are enabled.
-    spring.rabbitmq.listener.direct.retry.initial-interval=1000 # Interval between the first and second attempt to publish or deliver a message.
-    spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to publish or deliver a message.
-    spring.rabbitmq.listener.direct.retry.max-interval=10000 # Maximum interval between attempts.
-    spring.rabbitmq.listener.direct.retry.multiplier=1 # A multiplier to apply to the previous retry interval.
-    spring.rabbitmq.listener.direct.retry.stateless=true # Whether or not retries are stateless or stateful.
+	spring.rabbitmq.listener.direct.retry.initial-interval=1000 # Interval between the first and second attempt to publish or deliver a message.
+	spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to publish or deliver a message.
+	spring.rabbitmq.listener.direct.retry.max-interval=10000 # Maximum interval between attempts.
+	spring.rabbitmq.listener.direct.retry.multiplier=1 # A multiplier to apply to the previous retry interval.
+	spring.rabbitmq.listener.direct.retry.stateless=true # Whether or not retries are stateless or stateful.
 	spring.rabbitmq.listener.simple.acknowledge-mode= # Acknowledge mode of container.
 	spring.rabbitmq.listener.simple.auto-startup=true # Start the container automatically on startup.
 	spring.rabbitmq.listener.simple.concurrency= # Minimum number of listener invoker threads.
@@ -1246,7 +1246,7 @@ content into your application; rather pick only the properties that you need.
 
 	# CLOUDFOUNDRY
 	management.cloudfoundry.enabled=true # Enable extended Cloud Foundry actuator endpoints.
-    management.cloudfoundry.skip-ssl-validation=false # Skip SSL verification for Cloud Foundry actuator endpoint security calls.
+	management.cloudfoundry.skip-ssl-validation=false # Skip SSL verification for Cloud Foundry actuator endpoint security calls.
 
 	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
 	management.endpoints.cors.allow-credentials= # Set whether credentials are supported. When not set, credentials are not supported.
