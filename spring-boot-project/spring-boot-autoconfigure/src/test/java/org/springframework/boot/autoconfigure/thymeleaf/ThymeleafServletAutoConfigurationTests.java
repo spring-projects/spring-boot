@@ -113,6 +113,20 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideEnableSpringElCompiler() {
+		load(BaseConfiguration.class, "spring.thymeleaf.enable-spring-el-compiler:true");
+		assertThat(this.context.getBean(SpringTemplateEngine.class)
+				.getEnableSpringELCompiler()).isTrue();
+	}
+
+	@Test
+	public void enableSpringElCompilerIsDisabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(SpringTemplateEngine.class)
+				.getEnableSpringELCompiler()).isFalse();
+	}
+
+	@Test
 	public void templateLocationDoesNotExist() throws Exception {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
@@ -217,18 +231,6 @@ public class ThymeleafServletAutoConfigurationTests {
 		SpringResourceTemplateResolver templateResolver = this.context
 				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(templateResolver.isCacheable()).isFalse();
-	}
-
-	@Test
-	public void enableSpringElCompilerCanBeEnabled() {
-		load(BaseConfiguration.class, "spring.thymeleaf.enable-spring-el-compiler:true");
-		assertThat(this.context.getBean(SpringTemplateEngine.class).getEnableSpringELCompiler()).isTrue();
-	}
-
-	@Test
-	public void enableSpringElCompilerIsDisabledByDefault() {
-		load(BaseConfiguration.class);
-		assertThat(this.context.getBean(SpringTemplateEngine.class).getEnableSpringELCompiler()).isFalse();
 	}
 
 	private void load(Class<?> config, String... envVariables) {

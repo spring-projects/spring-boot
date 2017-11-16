@@ -142,6 +142,20 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideEnableSpringElCompiler() {
+		load(BaseConfiguration.class, "spring.thymeleaf.enable-spring-el-compiler:true");
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getEnableSpringELCompiler()).isTrue();
+	}
+
+	@Test
+	public void enableSpringElCompilerIsDisabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getEnableSpringELCompiler()).isFalse();
+	}
+
+	@Test
 	public void templateLocationDoesNotExist() throws Exception {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
@@ -192,18 +206,6 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
 		assertThat(ReflectionTestUtils.getField(layoutDialect, "sortingStrategy"))
 				.isInstanceOf(GroupingStrategy.class);
-	}
-
-	@Test
-	public void enableSpringElCompilerCanBeEnabled() {
-		load(BaseConfiguration.class, "spring.thymeleaf.enable-spring-el-compiler:true");
-		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class).getEnableSpringELCompiler()).isTrue();
-	}
-
-	@Test
-	public void enableSpringElCompilerIsDisabledByDefault() {
-		load(BaseConfiguration.class);
-		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class).getEnableSpringELCompiler()).isFalse();
 	}
 
 	private void load(Class<?> config, String... envVariables) {

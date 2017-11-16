@@ -150,9 +150,9 @@ public class ThymeleafAutoConfiguration {
 		@ConditionalOnMissingBean(SpringTemplateEngine.class)
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
+			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.forEach(engine::addDialect);
-			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			return engine;
 		}
 
