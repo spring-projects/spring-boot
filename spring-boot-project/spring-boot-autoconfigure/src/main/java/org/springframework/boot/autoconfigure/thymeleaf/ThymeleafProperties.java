@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,7 +35,7 @@ import org.springframework.util.MimeType;
 @ConfigurationProperties(prefix = "spring.thymeleaf")
 public class ThymeleafProperties {
 
-	private static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");
+	private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
