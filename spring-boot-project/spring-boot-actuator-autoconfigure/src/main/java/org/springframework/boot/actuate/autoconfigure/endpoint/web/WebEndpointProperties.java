@@ -34,38 +34,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class WebEndpointProperties {
 
 	/**
-	 * Whether web endpoints are enabled.
-	 */
-	private boolean enabled;
-
-	/**
-	 * The base-path for the web endpoints. Relative to `server.context-path` or
-	 * `management.server.context-path`, if `management.server.port` is different.
+	 * Base path for Web endpoints. Relative to server.context-path or
+	 * management.server.context-path if management.server.port is configured.
 	 */
 	private String basePath = "/application";
 
 	/**
-	 * The IDs of endpoints that should be exposed or '*' for all.
+	 * Endpoint IDs that should be exposed or '*' for all.
 	 */
 	private Set<String> expose = new LinkedHashSet<>();
 
 	/**
-	 * The IDs of endpoints that should be excluded.
+	 * Endpoint IDs that should be excluded.
 	 */
 	private Set<String> exclude = new LinkedHashSet<>();
 
 	/**
 	 * Mapping between endpoint IDs and the path that should expose them.
 	 */
-	private Map<String, String> pathMapping = new LinkedHashMap<>();
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+	private final Map<String, String> pathMapping = new LinkedHashMap<>();
 
 	public String getBasePath() {
 		return this.basePath;
@@ -93,10 +80,6 @@ public class WebEndpointProperties {
 
 	public Map<String, String> getPathMapping() {
 		return this.pathMapping;
-	}
-
-	public void setPathMapping(Map<String, String> pathMapping) {
-		this.pathMapping = pathMapping;
 	}
 
 }

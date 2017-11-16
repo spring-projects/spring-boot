@@ -533,7 +533,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void simpleEndpoint() throws IOException {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
 		assertThat(metadata).has(
-				Metadata.withGroup("endpoints.simple").fromSource(SimpleEndpoint.class));
+				Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(enabledFlag("simple", true));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -542,7 +542,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void disableEndpoint() throws IOException {
 		ConfigurationMetadata metadata = compile(DisabledEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.disabled")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled")
 				.fromSource(DisabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("disabled", false));
 		assertThat(metadata).has(cacheTtl("disabled"));
@@ -552,7 +552,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void enabledEndpoint() throws IOException {
 		ConfigurationMetadata metadata = compile(EnabledEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.enabled")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled")
 				.fromSource(EnabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("enabled", true));
 		assertThat(metadata).has(cacheTtl("enabled"));
@@ -562,9 +562,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void customPropertiesEndpoint() throws IOException {
 		ConfigurationMetadata metadata = compile(CustomPropertiesEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.customprops")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.customprops")
 				.fromSource(CustomPropertiesEndpoint.class));
-		assertThat(metadata).has(Metadata.withProperty("endpoints.customprops.name")
+		assertThat(metadata).has(Metadata
+				.withProperty("management.endpoint.customprops.name")
 				.ofType(String.class).withDefaultValue("test"));
 		assertThat(metadata).has(enabledFlag("customprops", true));
 		assertThat(metadata).has(cacheTtl("customprops"));
@@ -574,7 +575,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void specificEndpoint() throws IOException {
 		ConfigurationMetadata metadata = compile(SpecificEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
 				.fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
 		assertThat(metadata).has(cacheTtl("specific"));
@@ -586,7 +587,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		TestProject project = new TestProject(this.temporaryFolder,
 				IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
 				.fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(cacheTtl("incremental"));
@@ -594,7 +595,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
 				"id = \"incremental\", enableByDefault = false");
 		metadata = project.incrementalBuild(IncrementalEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
 				.fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
@@ -606,7 +607,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		TestProject project = new TestProject(this.temporaryFolder,
 				SpecificEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
 				.fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
 		assertThat(metadata).has(cacheTtl("specific"));
@@ -614,7 +615,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		project.replaceText(SpecificEndpoint.class, "enableByDefault = true",
 				"enableByDefault = false");
 		metadata = project.incrementalBuild(SpecificEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
 				.fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", false));
 		assertThat(metadata).has(cacheTtl("specific"));
@@ -623,13 +624,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
 			Boolean defaultValue) {
-		return Metadata.withEnabledFlag("endpoints." + endpointId + ".enabled")
+		return Metadata.withEnabledFlag("management.endpoint." + endpointId + ".enabled")
 				.withDefaultValue(defaultValue)
 				.withDescription(String.format("Enable the %s endpoint.", endpointId));
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
-		return Metadata.withProperty("endpoints." + endpointId + ".cache.time-to-live")
+		return Metadata
+				.withProperty("management.endpoint." + endpointId + ".cache.time-to-live")
 				.ofType(Long.class).withDefaultValue(0).withDescription(
 						"Maximum time in milliseconds that a response can be cached.");
 	}

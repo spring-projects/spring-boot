@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.Endpoint;
  * @author Stephane Nicoll
  */
 @Endpoint(id = "customprops")
-@ConfigurationProperties("endpoints.customprops")
+@ConfigurationProperties("management.endpoint.customprops")
 public class CustomPropertiesEndpoint {
 
 	private String name = "test";

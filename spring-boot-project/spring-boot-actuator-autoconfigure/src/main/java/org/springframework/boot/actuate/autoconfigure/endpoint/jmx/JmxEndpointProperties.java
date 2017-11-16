@@ -34,17 +34,12 @@ import org.springframework.util.StringUtils;
 public class JmxEndpointProperties {
 
 	/**
-	 * Whether JMX endpoints are enabled.
-	 */
-	private boolean enabled;
-
-	/**
-	 * The IDs of endpoints that should be exposed or '*' for all.
+	 * Endpoint IDs that should be exposed or '*' for all.
 	 */
 	private Set<String> expose = new LinkedHashSet<>();
 
 	/**
-	 * The IDs of endpoints that should be excluded.
+	 * Endpoint IDs that should be excluded.
 	 */
 	private Set<String> exclude = new LinkedHashSet<>();
 
@@ -69,14 +64,6 @@ public class JmxEndpointProperties {
 		if (StringUtils.hasText(defaultDomain)) {
 			this.domain = defaultDomain;
 		}
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	public Set<String> getExpose() {

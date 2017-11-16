@@ -11,11 +11,6 @@
     ]
   },
   {
-    "name": "management.endpoints.enabled-by-default",
-    "type": "java.lang.Boolean",
-    "description": "Enable or disable all endpoints by default."
-  },
-  {
     "name": "management.endpoint.env.keys-to-sanitize",
     "defaultValue": [
       "password",
@@ -35,6 +30,34 @@
       "replacement": "management.trace.filter.enabled",
       "level": "error"
     }
+  },
+  {
+    "name": "management.endpoints.enabled-by-default",
+    "type": "java.lang.Boolean",
+    "description": "Enable or disable all endpoints by default."
+  },
+  {
+    "name": "management.endpoints.jmx.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Whether JMX endpoints are enabled.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.endpoints.jmx.expose",
+    "defaultValue": "*"
+  },
+  {
+    "name": "management.endpoints.web.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Whether web endpoints are enabled.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.endpoints.web.expose",
+    "defaultValue": [
+      "info",
+      "status"
+    ]
   },
   {
     "name": "info",
@@ -1188,6 +1211,79 @@
     }
   }
 ],"hints": [
+  {
+    "name": "management.endpoints.web.path-mapping.keys",
+    "values": [
+      {
+        "value": "auditevents"
+      },
+      {
+        "value": "beans"
+      },
+      {
+        "value": "conditions"
+      },
+      {
+        "value": "configprops"
+      },
+      {
+        "value": "env"
+      },
+      {
+        "value": "flyway"
+      },
+      {
+        "value": "health"
+      },
+      {
+        "value": "heapdump"
+      },
+      {
+        "value": "info"
+      },
+      {
+        "value": "liquibase"
+      },
+      {
+        "value": "logfile"
+      },
+      {
+        "value": "loggers"
+      },
+      {
+        "value": "mappings"
+      },
+      {
+        "value": "metrics"
+      },
+      {
+        "value": "prometheus"
+      },
+      {
+        "value": "scheduledtasks"
+      },
+      {
+        "value": "sessions"
+      },
+      {
+        "value": "shutdown"
+      },
+      {
+        "value": "status"
+      },
+      {
+        "value": "threaddump"
+      },
+      {
+        "value": "trace"
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
   {
     "name": "management.endpoints.web.cors.allowed-headers",
     "values": [

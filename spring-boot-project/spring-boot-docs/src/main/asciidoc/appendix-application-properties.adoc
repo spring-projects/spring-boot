@@ -1096,20 +1096,23 @@ content into your application; rather pick only the properties that you need.
 	management.cloudfoundry.enabled=true # Enable extended Cloud Foundry actuator endpoints.
 	management.cloudfoundry.skip-ssl-validation=false # Skip SSL verification for Cloud Foundry actuator endpoint security calls.
 
-	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointExporterProperties.{sc-ext}[JmxEndpointExporterProperties])
-	management.endpoints.jmx.enabled= # Whether JMX endpoints are enabled
-	management.endpoints.jmx.expose= The IDs of endpoints to expose or '*' for all (default is 'info', 'status')
-	management.endpoints.jmx.exclude= The IDs of endpoints to exclude
+	# ENDPOINTS GENERAL CONFIGURATION
+	management.endpoints.enabled-by-default= # Enable or disable all endpoints by default.
+
+	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointProperties.{sc-ext}[JmxEndpointProperties])
+	management.endpoints.jmx.enabled=true # Whether JMX endpoints are enabled.
+	management.endpoints.jmx.expose=* # Endpoint IDs that should be exposed or '*' for all.
+	management.endpoints.jmx.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
 	management.endpoints.jmx.static-names=false # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
 	management.endpoints.jmx.unique-names=false # Ensure that ObjectNames are modified in case of conflict.
 
 	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
-	management.endpoints.web.enabled= # Whether web endpoints are enabled
-	management.endpoints.web.expose= The IDs of endpoints to expose or '*' for all (default is '*')
-	management.endpoints.web.exclude= The IDs of endpoints to exclude
+	management.endpoints.web.enabled=true # Whether web endpoints are enabled
+	management.endpoints.web.expose=info,status # Endpoint IDs that should be exposed or '*' for all.
+	management.endpoints.web.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.web.base-path=/application # Base path for Web endpoints. Relative to server.context-path or management.server.context-path if management.server.port is configured.
-	management.endpoints.web.path=mapping= Map of endpoint IDs to the path that should expose them
+	management.endpoints.web.path-mapping= # Mapping between endpoint IDs and the path that should expose them.
 
 	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
 	management.endpoints.web.cors.allow-credentials= # Set whether credentials are supported. When not set, credentials are not supported.
@@ -1146,8 +1149,8 @@ content into your application; rather pick only the properties that you need.
 	management.endpoint.flyway.enabled= # Enable the flyway endpoint.
 
 	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint])
-	endpoints.health.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
-	endpoints.health.enabled= # Enable the health endpoint.
+	management.endpoint.health.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.health.enabled= # Enable the health endpoint.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
 	management.endpoint.heapdump.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
@@ -1183,11 +1186,8 @@ content into your application; rather pick only the properties that you need.
 	management.endpoint.prometheus.enabled= # Enable the metrics endpoint.
 
 	# SCHEDULED TASKS ENDPOINT ({sc-spring-boot-actuator}/scheduling/ScheduledTasksEndpoint.{sc-ext}[ScheduledTasksEndpoint])
-	endpoints.scheduledtasks.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
-	endpoints.scheduledtasks.enabled= # Enable the scheduled tasks endpoint.
-	endpoints.scheduledtasks.jmx.enabled= # Expose the scheduled tasks endpoint as a JMX MBean.
-	endpoints.scheduledtasks.web.enabled= # Expose the scheduled tasks endpoint as a Web endpoint.
-	endpoints.scheduledtasks.web.path=sessions # Path of the scheduled tasks endpoint.
+	management.endpoint.scheduledtasks.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.scheduledtasks.enabled= # Enable the scheduled tasks endpoint.
 
 	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
 	management.endpoint.sessions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.

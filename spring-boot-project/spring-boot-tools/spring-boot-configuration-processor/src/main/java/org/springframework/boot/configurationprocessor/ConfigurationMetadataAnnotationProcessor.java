@@ -429,7 +429,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private String endpointKey(String suffix) {
-		return "endpoints." + suffix;
+		return "management.endpoint." + suffix;
 	}
 
 	private boolean isNested(Element returnType, VariableElement field,
