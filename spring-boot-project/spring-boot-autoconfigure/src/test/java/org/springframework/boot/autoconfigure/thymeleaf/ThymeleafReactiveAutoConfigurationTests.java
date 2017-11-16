@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -51,6 +52,7 @@ import static org.hamcrest.Matchers.not;
  * Tests for {@link ThymeleafAutoConfiguration} in Reactive applications.
  *
  * @author Brian Clozel
+ * @author Kazuki Shimizu
  */
 public class ThymeleafReactiveAutoConfigurationTests {
 
@@ -137,6 +139,20 @@ public class ThymeleafReactiveAutoConfigurationTests {
 				.getBean(ThymeleafReactiveViewResolver.class);
 		assertThat(views.getChunkedModeViewNames())
 				.isEqualTo(new String[] { "foo", "bar" });
+	}
+
+	@Test
+	public void overrideEnableSpringElCompiler() {
+		load(BaseConfiguration.class, "spring.thymeleaf.enable-spring-el-compiler:true");
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getEnableSpringELCompiler()).isTrue();
+	}
+
+	@Test
+	public void enableSpringElCompilerIsDisabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getEnableSpringELCompiler()).isFalse();
 	}
 
 	@Test
