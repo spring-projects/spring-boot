@@ -181,7 +181,7 @@ register an `EndpointFilter` bean.
 === Securing HTTP Endpoints
 You should take care to secure HTTP endpoints in the same way that you would any other
 sensitive URL. Spring Boot will not apply any security on your behalf, however, it does
-provide some convenient `ReqestMatchers` that can be used in combination with Spring
+provide some convenient `RequestMatcher`s that can be used in combination with Spring
 Security.
 
 A typical Spring Security configuration could look something like this:
@@ -203,7 +203,7 @@ A typical Spring Security configuration could look something like this:
 ----
 
 The above uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint, then
-ensure that thet all have the `ENDPOINT_ADMIN` role. Several other matcher methods are
+ensure that all have the `ENDPOINT_ADMIN` role. Several other matcher methods are
 also available on `EndpointRequest` (see the API documentation for details).
 
 If you deploy applications behind a firewall, you may prefer that all your actuator
@@ -221,7 +221,7 @@ endpoints can be accessed without requiring authentication. You can do so by cha
 [[production-ready-customizing-endpoints]]
 === Customizing Endpoints
 Endpoints can be customized by using Spring properties. You can change whether an
-endpoint is `enabled` and the amount of time it will cache reponses.
+endpoint is `enabled` and the amount of time it will cache responses.
 
 For example, the following `application.properties` changes the time-to-live of the
 `beans` endpoint and also enables `shutdown`:
@@ -242,7 +242,7 @@ disable _all_ endpoints except for `info`:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.enabled-by-default=flase
+	management.endpoints.enabled-by-default=false
 	management.endpoint.info.enabled=true
 ----
 
@@ -308,7 +308,7 @@ TIP: See {sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpoi
 [[production-ready-customizing-endpoints-programmatically]]
 === Adding Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with
-`@ReadOperation`, `@WriteOperation` or `@DeleteOperaion` are automatically exposed over
+`@ReadOperation`, `@WriteOperation` or `@DeleteOperation` are automatically exposed over
 JMX and, in a web application, over HTTP as well.
 
 You can also write technology specific endpoints by using `@JmxEndpoint` or

@@ -36,7 +36,7 @@ public class AtlasProperties extends StepRegistryProperties {
 	private String uri;
 
 	/**
-	 * Time to love for meters that do not have any activity. After this period the meter
+	 * Time to live for meters that do not have any activity. After this period the meter
 	 * will be considered expired and will not get reported.
 	 */
 	private Duration meterTimeToLive;

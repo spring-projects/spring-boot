@@ -174,7 +174,7 @@ public class EntityManagerFactoryBuilder {
 		 * <p>
 		 * Note that mapping resources must be relative to the classpath root, e.g.
 		 * "META-INF/mappings.xml" or "com/mycompany/repository/mappings.xml", so that
-		 * they can be loaded through {@code ClassLoader.getResource}.
+		 * they can be loaded through {@code ClassLoader.getResource()}.
 		 * @param mappingResources the mapping resources to use
 		 * @return the builder for fluent usage
 		 */

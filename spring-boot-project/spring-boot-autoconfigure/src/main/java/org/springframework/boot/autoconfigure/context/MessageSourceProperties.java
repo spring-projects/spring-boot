@@ -48,7 +48,7 @@ public class MessageSourceProperties {
 
 	/**
 	 * Set whether to fall back to the system Locale if no files for a specific Locale
-	 * have been found. if this is turned off, the only fallback will be the default file
+	 * have been found. If this is turned off, the only fallback will be the default file
 	 * (e.g. "messages.properties" for basename "messages").
 	 */
 	private boolean fallbackToSystemLocale = true;
