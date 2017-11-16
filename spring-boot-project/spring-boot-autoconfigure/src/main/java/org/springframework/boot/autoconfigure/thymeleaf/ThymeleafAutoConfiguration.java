@@ -69,6 +69,7 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
  * @author Brian Clozel
  * @author Eddú Meléndez
  * @author Daniel Fernández
+ * @author Kazuki Shimizu
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
@@ -131,13 +132,16 @@ public class ThymeleafAutoConfiguration {
 	@Configuration
 	protected static class ThymeleafDefaultConfiguration {
 
+		private final ThymeleafProperties properties;
+
 		private final Collection<ITemplateResolver> templateResolvers;
 
 		private final Collection<IDialect> dialects;
 
-		public ThymeleafDefaultConfiguration(
+		public ThymeleafDefaultConfiguration(ThymeleafProperties properties,
 				Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
+			this.properties = properties;
 			this.templateResolvers = templateResolvers;
 			this.dialects = dialectsProvider.getIfAvailable(Collections::emptyList);
 		}
@@ -148,6 +152,7 @@ public class ThymeleafAutoConfiguration {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.forEach(engine::addDialect);
+			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			return engine;
 		}
 
@@ -215,12 +220,16 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafReactiveConfiguration {
 
+		private final ThymeleafProperties properties;
+
 		private final Collection<ITemplateResolver> templateResolvers;
 
 		private final Collection<IDialect> dialects;
 
-		ThymeleafReactiveConfiguration(Collection<ITemplateResolver> templateResolvers,
+		ThymeleafReactiveConfiguration(ThymeleafProperties properties,
+				Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
+			this.properties = properties;
 			this.templateResolvers = templateResolvers;
 			this.dialects = dialectsProvider.getIfAvailable(Collections::emptyList);
 		}
@@ -231,6 +240,7 @@ public class ThymeleafAutoConfiguration {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.forEach(engine::addDialect);
+			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			return engine;
 		}
 
