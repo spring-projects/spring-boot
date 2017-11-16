@@ -39,7 +39,7 @@ import org.springframework.core.annotation.AliasFor;
  * public &#64;interface EndpointWebExtension {
  *
  *   &#64;AliasFor(annotation = EndpointExtension.class, attribute = "endpoint")
- *   Class<?> endpoint();
+ *   Class&lt;?&gt; endpoint();
  *
  * }
  * </pre>
