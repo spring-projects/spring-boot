@@ -45,7 +45,7 @@ public class HealthTests {
 	public void createWithStatus() throws Exception {
 		Health health = Health.status(Status.UP).build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().size()).isEqualTo(0);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class HealthTests {
 	public void unknown() throws Exception {
 		Health health = new Health.Builder().unknown().build();
 		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);
-		assertThat(health.getDetails().size()).isEqualTo(0);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class HealthTests {
 	public void up() throws Exception {
 		Health health = new Health.Builder().up().build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().size()).isEqualTo(0);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
@@ -130,28 +130,28 @@ public class HealthTests {
 	public void down() throws Exception {
 		Health health = Health.down().build();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().size()).isEqualTo(0);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
 	public void outOfService() throws Exception {
 		Health health = Health.outOfService().build();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
-		assertThat(health.getDetails().size()).isEqualTo(0);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
 	public void statusCode() throws Exception {
 		Health health = Health.status("UP").build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().size()).isEqualTo(0);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
 	public void status() throws Exception {
 		Health health = Health.status(Status.UP).build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().size()).isEqualTo(0);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 }

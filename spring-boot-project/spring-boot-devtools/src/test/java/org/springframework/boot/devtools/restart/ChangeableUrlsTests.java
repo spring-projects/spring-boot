@@ -54,13 +54,13 @@ public class ChangeableUrlsTests {
 	@Test
 	public void fileUrl() throws Exception {
 		URL url = this.temporaryFolder.newFile().toURI().toURL();
-		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(0);
+		assertThat(ChangeableUrls.fromUrls(url)).isEmpty();
 	}
 
 	@Test
 	public void httpUrl() throws Exception {
 		URL url = new URL("http://spring.io");
-		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(0);
+		assertThat(ChangeableUrls.fromUrls(url)).isEmpty();
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class ChangeableUrlsTests {
 				makeUrl("spring-boot-autoconfigure"), makeUrl("spring-boot-actuator"),
 				makeUrl("spring-boot-starter"),
 				makeUrl("spring-boot-starter-some-thing"));
-		assertThat(urls.size()).isEqualTo(0);
+		assertThat(urls).isEmpty();
 	}
 
 	@Test

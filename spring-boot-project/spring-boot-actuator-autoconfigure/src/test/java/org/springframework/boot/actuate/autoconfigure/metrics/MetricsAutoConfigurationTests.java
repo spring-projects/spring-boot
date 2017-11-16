@@ -134,7 +134,7 @@ public class MetricsAutoConfigurationTests {
 		}
 
 		private DataSource createDataSource() {
-			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID().toString();
+			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
 			return DataSourceBuilder.create().url(url).build();
 		}
 

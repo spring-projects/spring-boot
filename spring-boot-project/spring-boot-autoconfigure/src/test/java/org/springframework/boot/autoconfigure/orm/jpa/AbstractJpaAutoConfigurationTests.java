@@ -254,7 +254,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		}
 
 		private DataSource createRandomDataSource() {
-			String url = "jdbc:h2:mem:init-" + UUID.randomUUID().toString();
+			String url = "jdbc:h2:mem:init-" + UUID.randomUUID();
 			return DataSourceBuilder.create().url(url).build();
 		}
 
@@ -275,7 +275,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		}
 
 		private DataSource createRandomDataSource() {
-			String url = "jdbc:h2:mem:init-" + UUID.randomUUID().toString();
+			String url = "jdbc:h2:mem:init-" + UUID.randomUUID();
 			return DataSourceBuilder.create().url(url).build();
 		}
 
