@@ -38,9 +38,11 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -48,6 +50,9 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -62,13 +67,47 @@ import org.springframework.session.SessionRepository;
 @Configuration
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
-@EnableConfigurationProperties(SessionProperties.class)
+@EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class,
 		MongoReactiveAutoConfiguration.class, RedisAutoConfiguration.class,
 		RedisReactiveAutoConfiguration.class })
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
+
+	private final ServerProperties serverProperties;
+
+	public SessionAutoConfiguration(ServerProperties serverProperties) {
+		this.serverProperties = serverProperties;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ CookieSerializer.class,
+			HeaderHttpSessionIdResolver.class })
+	public DefaultCookieSerializer cookieSerializer() {
+		ServerProperties.Session.Cookie cookie = this.serverProperties.getSession()
+				.getCookie();
+		DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+		if (cookie.getName() != null) {
+			cookieSerializer.setCookieName(cookie.getName());
+		}
+		if (cookie.getDomain() != null) {
+			cookieSerializer.setDomainName(cookie.getDomain());
+		}
+		if (cookie.getPath() != null) {
+			cookieSerializer.setCookiePath(cookie.getPath());
+		}
+		if (cookie.getHttpOnly() != null) {
+			cookieSerializer.setUseHttpOnlyCookie(cookie.getHttpOnly());
+		}
+		if (cookie.getSecure() != null) {
+			cookieSerializer.setUseSecureCookie(cookie.getSecure());
+		}
+		if (cookie.getMaxAge() != null) {
+			cookieSerializer.setCookieMaxAge(cookie.getMaxAge());
+		}
+		return cookieSerializer;
+	}
 
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
