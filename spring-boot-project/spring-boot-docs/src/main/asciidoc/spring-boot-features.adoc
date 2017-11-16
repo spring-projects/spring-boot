@@ -727,6 +727,7 @@ When lists are configured in more than one place, overriding works by replacing 
 In the preceding example, when `my.servers` is redefined in several places, the entire list from
 the `PropertySource` with higher precedence will override any other configuration for that list.
 Both comma-separated lists and yaml lists can be used for completely overriding the contents of the list.
+====
 
 
 
