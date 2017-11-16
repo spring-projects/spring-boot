@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Test;
@@ -26,6 +28,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
@@ -153,12 +156,15 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testRedisConfigurationWithSentinelAndPassword() throws Exception {
-		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
 		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
-				"spring.redis.sentinel.nodes:"
-						+ StringUtils.collectionToCommaDelimitedString(sentinels));
-		assertThat(this.context.getBean(LettuceConnectionFactory.class).getPassword())
-				.isEqualTo("password");
+				"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380");
+		LettuceConnectionFactory connectionFactory = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(connectionFactory.getPassword()).isEqualTo("password");
+		Set<RedisNode> sentinels = connectionFactory.getSentinelConfiguration()
+				.getSentinels();
+		assertThat(sentinels.stream().map(Object::toString).collect(Collectors.toSet()))
+				.contains("127.0.0.1:26379", "127.0.0.1:26380");
 	}
 
 	@Test

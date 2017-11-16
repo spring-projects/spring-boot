@@ -270,4 +270,13 @@ public class ArrayBinderTests {
 		assertThat(result).isNotNull().isEmpty();
 	}
 
+	@Test
+	public void bindToArrayWhenHasSpacesShouldTrim() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "1,  2,3");
+		this.sources.add(source);
+		String[] result = this.binder.bind("foo", Bindable.of(String[].class)).get();
+		assertThat(result).containsExactly("1", "2", "3");
+	}
+
 }
