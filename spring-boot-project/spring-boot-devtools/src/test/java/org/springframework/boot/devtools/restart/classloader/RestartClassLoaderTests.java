@@ -168,7 +168,7 @@ public class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
-		assertThat(resources.size()).isEqualTo(0);
+		assertThat(resources).isEmpty();
 	}
 
 	@Test

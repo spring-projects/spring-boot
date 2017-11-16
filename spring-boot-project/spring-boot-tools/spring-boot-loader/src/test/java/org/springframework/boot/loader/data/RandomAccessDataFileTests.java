@@ -310,7 +310,7 @@ public class RandomAccessDataFileTests {
 		Field filesField = filePool.getClass().getDeclaredField("files");
 		filesField.setAccessible(true);
 		Queue<?> queue = (Queue<?>) filesField.get(filePool);
-		assertThat(queue.size()).isEqualTo(0);
+		assertThat(queue).isEmpty();
 	}
 
 	@Test

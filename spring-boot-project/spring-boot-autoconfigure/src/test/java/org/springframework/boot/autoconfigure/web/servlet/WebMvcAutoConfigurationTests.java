@@ -190,7 +190,7 @@ public class WebMvcAutoConfigurationTests {
 				.run((context) -> {
 					Map<String, List<Resource>> locations = getResourceMappingLocations(
 							context);
-					assertThat(locations.size()).isEqualTo(0);
+					assertThat(locations).isEmpty();
 				});
 	}
 

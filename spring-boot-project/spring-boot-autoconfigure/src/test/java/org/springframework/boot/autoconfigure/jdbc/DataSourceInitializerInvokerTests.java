@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link DataSourceInitializer}.
+ * Tests for {@link DataSourceInitializerInvoker}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -61,7 +61,7 @@ public class DataSourceInitializerInvokerTests {
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode=never",
 					"spring.datasource.url:jdbc:hsqldb:mem:init-"
-							+ UUID.randomUUID().toString());
+							+ UUID.randomUUID());
 
 	@Test
 	public void dataSourceInitialized() {

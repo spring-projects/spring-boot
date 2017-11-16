@@ -70,10 +70,6 @@ class SpringApplicationExtensionsTests {
 		assertEquals(environment, context.environment)
 	}
 
-
-	@Configuration
-	internal open class ExampleConfig
-
 	@Configuration
 	internal open class ExampleWebConfig {
 
