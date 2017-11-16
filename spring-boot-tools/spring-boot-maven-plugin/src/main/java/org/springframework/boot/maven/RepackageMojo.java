@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -227,16 +226,18 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private File getSourceFile() {
-		File source = this.project.getArtifact().getFile();
+		Artifact sourceArtifact = this.project.getArtifact();
+
 		if (this.classifier != null) {
-			File sourceWithClassifier = new File(source.getParent(),
-					FilenameUtils.getBaseName(source.getName()) + getClassifier() + "."
-							+ FilenameUtils.getExtension(source.getName()));
-			if (sourceWithClassifier.exists()) {
-				source = sourceWithClassifier;
+			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
+				if (this.classifier.equals(attachedArtifact.getClassifier())) {
+					sourceArtifact = attachedArtifact;
+					break;
+				}
 			}
 		}
-		return source;
+
+		return sourceArtifact.getFile();
 	}
 
 	private File getTargetFile() {
