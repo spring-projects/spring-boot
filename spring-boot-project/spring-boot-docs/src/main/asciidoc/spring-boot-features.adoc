@@ -5524,7 +5524,7 @@ Spring Boot offers several conveniences for working with the Quartz scheduler, i
 the `spring-boot-starter-quartz` '`Starter`'. If Quartz is available, a `Scheduler` is
 auto-configured (via the `SchedulerFactoryBean` abstraction).
 
-Beans of the following types are automatically picked up and associated with the the
+Beans of the following types are automatically picked up and associated with the
 `Scheduler`:
 
 * `JobDetail`: defines a particular Job. `JobDetail` instances can be built with the
@@ -6683,7 +6683,7 @@ If you <<using-boot-structuring-your-code, structure your code>> in a sensible w
 the configuration of your tests.
 
 It then becomes important not to litter the application's main class with configuration
-settings that are are specific to a particular area of its functionality.
+settings that are specific to a particular area of its functionality.
 
 Assume that you are using Spring Batch and you rely on the auto-configuration for it.
 Your could define your `@SpringBootApplication` as follows:
