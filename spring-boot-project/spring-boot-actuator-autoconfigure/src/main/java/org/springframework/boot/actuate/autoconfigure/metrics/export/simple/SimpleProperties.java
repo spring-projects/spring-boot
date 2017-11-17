@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import java.time.Duration;
 
+import io.micrometer.core.instrument.simple.CountingMode;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -42,6 +43,8 @@ public class SimpleProperties {
 	 */
 	private Duration step = Duration.ofSeconds(10);
 
+	private CountingMode mode = CountingMode.Cumulative;
+
 	public boolean getEnabled() {
 		return this.enabled;
 	}
@@ -56,5 +59,13 @@ public class SimpleProperties {
 
 	public void setStep(Duration step) {
 		this.step = step;
+	}
+
+	public CountingMode getMode() {
+		return mode;
+	}
+
+	public void setMode(CountingMode mode) {
+		this.mode = mode;
 	}
 }

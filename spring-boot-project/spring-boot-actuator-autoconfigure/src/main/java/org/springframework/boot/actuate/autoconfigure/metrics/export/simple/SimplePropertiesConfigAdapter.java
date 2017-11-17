@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import java.time.Duration;
 
+import io.micrometer.core.instrument.simple.CountingMode;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
@@ -48,5 +49,10 @@ public class SimplePropertiesConfigAdapter
 	@Override
 	public Duration step() {
 		return get(SimpleProperties::getStep, SimpleConfig.super::step);
+	}
+
+	@Override
+	public CountingMode mode() {
+		return get(SimpleProperties::getMode, SimpleConfig.super::mode);
 	}
 }
