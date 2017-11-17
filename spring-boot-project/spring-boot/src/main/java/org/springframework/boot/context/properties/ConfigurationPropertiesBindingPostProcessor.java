@@ -55,6 +55,11 @@ public class ConfigurationPropertiesBindingPostProcessor
 		implements BeanPostProcessor, BeanFactoryAware, EnvironmentAware,
 		ApplicationContextAware, InitializingBean, PriorityOrdered {
 
+	/**
+	 * The bean name of the configuration properties validator.
+	 */
+	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+
 	private static final Log logger = LogFactory
 			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
 

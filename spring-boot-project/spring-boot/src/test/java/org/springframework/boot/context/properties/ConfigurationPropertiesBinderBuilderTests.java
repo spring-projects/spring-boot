@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.mock.env.MockEnvironment;
@@ -63,7 +64,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 				.withEnvironment(this.environment)
 				.withConversionService(conversionService).build();
 		PropertyWithAddress target = new PropertyWithAddress();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getAddress()).isNotNull();
 		assertThat(target.getAddress().streetName).isEqualTo("FooStreet");
 		assertThat(target.getAddress().number).isEqualTo(42);
@@ -86,7 +87,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 		ConfigurationPropertiesBinder binder = this.builder
 				.withEnvironment(this.environment).build();
 		PropertyWithDuration target = new PropertyWithDuration();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getDuration().getSeconds()).isEqualTo(60);
 	}
 
@@ -122,7 +123,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 				.withEnvironment(this.environment).build();
 		assertThat(
 				bindWithValidationErrors(binder, new PropertyWithJSR303()).getAllErrors())
-						.hasSize(2);
+				.hasSize(2);
 	}
 
 	@Test
@@ -132,7 +133,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithJSR303 target = new PropertyWithJSR303();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getFoo()).isEqualTo("123456");
 		assertThat(target.getBar()).isEqualTo("654321");
 	}
@@ -140,7 +141,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	private ValidationErrors bindWithValidationErrors(
 			ConfigurationPropertiesBinder binder, Object target) {
 		try {
-			binder.bind(target);
+			bind(binder, target);
 			throw new AssertionError("Should have failed to bind " + target);
 		}
 		catch (ConfigurationPropertiesBindingException ex) {
@@ -148,6 +149,11 @@ public class ConfigurationPropertiesBinderBuilderTests {
 			assertThat(rootCause).isInstanceOf(BindValidationException.class);
 			return ((BindValidationException) rootCause).getValidationErrors();
 		}
+	}
+
+	private void bind(ConfigurationPropertiesBinder binder, Object target) {
+		binder.bind(target, AnnotationUtils
+				.findAnnotation(target.getClass(), ConfigurationProperties.class));
 	}
 
 	@ConfigurationProperties(prefix = "test")

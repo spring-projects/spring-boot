@@ -38,19 +38,18 @@ import org.springframework.validation.Validator;
  * {@link ApplicationContext}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-public class ConfigurationPropertiesBinderBuilder {
+class ConfigurationPropertiesBinderBuilder {
 
 	/**
 	 * The bean name of the configuration properties validator.
 	 */
-	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+	private static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME;
 
 	/**
 	 * The bean name of the configuration properties conversion service.
 	 */
-	public static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
+	private  static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory",
@@ -68,7 +67,7 @@ public class ConfigurationPropertiesBinderBuilder {
 	 * Creates an instance with the {@link ApplicationContext} to use.
 	 * @param applicationContext the application context
 	 */
-	public ConfigurationPropertiesBinderBuilder(ApplicationContext applicationContext) {
+	ConfigurationPropertiesBinderBuilder(ApplicationContext applicationContext) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		this.applicationContext = applicationContext;
 	}
