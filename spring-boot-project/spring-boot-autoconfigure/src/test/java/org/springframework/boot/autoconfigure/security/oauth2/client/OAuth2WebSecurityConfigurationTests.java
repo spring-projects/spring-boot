@@ -142,8 +142,8 @@ public class OAuth2WebSecurityConfigurationTests {
 		result = result && ObjectUtils.nullSafeEquals(reg1.getClientSecret(),
 				reg2.getClientSecret());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getScopes(), reg2.getScopes());
-		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUri(),
-				reg2.getRedirectUri());
+		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUriTemplate(),
+				reg2.getRedirectUriTemplate());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getRegistrationId(),
 				reg2.getRegistrationId());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getAuthorizationGrantType(),
@@ -191,7 +191,7 @@ public class OAuth2WebSecurityConfigurationTests {
 							org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.scope("read").clientSecret("secret")
-					.redirectUri("http://redirect-uri.com")
+					.redirectUriTemplate("http://redirect-uri.com")
 					.authorizationUri("http://authorization-uri.com")
 					.tokenUri("http://token-uri.com").userInfoUri(userInfoUri)
 					.userNameAttributeName("login");

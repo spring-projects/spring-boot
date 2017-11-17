@@ -102,7 +102,7 @@ public class OAuth2ClientProperties {
 		/**
 		 * Redirect URI. May be left blank then using a pre-defined provider.
 		 */
-		private String redirectUri;
+		private String redirectUriTemplate;
 
 		/**
 		 * Authorization scopes. May be left blank then using a pre-defined provider.
@@ -154,12 +154,12 @@ public class OAuth2ClientProperties {
 			this.authorizationGrantType = authorizationGrantType;
 		}
 
-		public String getRedirectUri() {
-			return this.redirectUri;
+		public String getRedirectUriTemplate() {
+			return this.redirectUriTemplate;
 		}
 
-		public void setRedirectUri(String redirectUri) {
-			this.redirectUri = redirectUri;
+		public void setRedirectUriTemplate(String redirectUriTemplate) {
+			this.redirectUriTemplate = redirectUriTemplate;
 		}
 
 		public Set<String> getScope() {
