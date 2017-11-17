@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import org.springframework.util.Assert;
 
 /**
- * Strategy that be be used by endpoint implementations to sanitize potentially sensitive
+ * Strategy that should be used by endpoint implementations to sanitize potentially sensitive
  * keys.
  *
  * @author Christian Dupuis
