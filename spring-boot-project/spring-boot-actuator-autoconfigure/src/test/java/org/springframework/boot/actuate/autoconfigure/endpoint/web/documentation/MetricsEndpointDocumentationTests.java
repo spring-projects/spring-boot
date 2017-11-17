@@ -75,7 +75,8 @@ public class MetricsEndpointDocumentationTests
 	public void metricWithTags() throws Exception {
 		this.mockMvc
 				.perform(get("/application/metrics/jvm.memory.max")
-						.param("tag", "area:nonheap").param("tag", "id:Code Cache"))
+						.param("tag", "area:nonheap")
+						.param("tag", "id:Compressed Class Space"))
 				.andExpect(status().isOk())
 				.andDo(document("metrics/metric-with-tags",
 						requestParameters(parameterWithName("tag").description(

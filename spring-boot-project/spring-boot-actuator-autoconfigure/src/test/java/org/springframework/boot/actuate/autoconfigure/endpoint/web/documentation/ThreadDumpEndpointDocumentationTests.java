@@ -47,69 +47,38 @@ public class ThreadDumpEndpointDocumentationTests
 						preprocessResponse(limit("threads")),
 						responseFields(
 								fieldWithPath("threads").description("JVM's threads."),
-								fieldWithPath("threads.[].threadName")
-										.description("Name of the thread."),
-								fieldWithPath("threads.[].threadId")
-										.description("ID of the thread."),
+								fieldWithPath("threads.[].blockedCount").description(
+										"Total number of times that the thread has been "
+												+ "blocked."),
 								fieldWithPath("threads.[].blockedTime").description(
 										"Time in milliseconds that the thread has spent "
 												+ "blocked. -1 if thread contention "
 												+ "monitoring is disabled."),
-								fieldWithPath("threads.[].blockedCount").description(
-										"Total number of times that the thread has been "
-												+ "blocked."),
-								fieldWithPath("threads.[].waitedTime").description(
-										"Time in milliseconds that the thread has spent "
-												+ "waiting. -1 if thread contention "
-												+ "monitoring is disabled"),
-								fieldWithPath("threads.[].waitedCount").description(
-										"Total number of times that the thread has waited"
-												+ " for notification."),
+								fieldWithPath("threads.[].daemon")
+										.description("Whether the thread is a daemon "
+												+ "thread. Only available on Java 9 or "
+												+ "later.")
+										.optional().type(JsonFieldType.BOOLEAN),
+								fieldWithPath("threads.[].inNative").description(
+										"Whether the thread is executing native code."),
 								fieldWithPath("threads.[].lockName")
 										.description(
 												"Description of the object on which the "
 														+ "thread is blocked, if any.")
 										.optional(),
-								fieldWithPath("threads.[].lockOwnerId").description(
-										"ID of the thread that owns the object on which "
-												+ "the thread is blocked. `-1` if the "
-												+ "thread is not blocked."),
-								fieldWithPath("threads.[].lockOwnerName")
-										.description(
-												"Name of the thread that owns the object "
-														+ "on which the thread is blocked.")
+								fieldWithPath("threads.[].lockInfo").description(
+										"Object for which the thread is blocked "
+												+ "waiting.")
 										.optional(),
-								fieldWithPath("threads.[].inNative").description(
-										"Whether the thread is executing native code."),
-								fieldWithPath("threads.[].suspended")
-										.description("Whether the thread is suspended."),
-								fieldWithPath("threads.[].threadState")
-										.description("State of the thread ("
-												+ describeEnumValues(Thread.State.class)
-												+ ")."),
-								fieldWithPath("threads.[].stackTrace")
-										.description("Stack trace of the thread."),
-								fieldWithPath("threads.[].stackTrace.[].methodName")
-										.description("Name of the method."),
-								fieldWithPath("threads.[].stackTrace.[].fileName")
+								fieldWithPath("threads.[].lockInfo.className")
 										.description(
-												"Name of the source file that contains "
-														+ "the execution point identified "
-														+ "by this entry, if any.")
-										.optional().type(JsonFieldType.STRING),
-								fieldWithPath("threads.[].stackTrace.[].lineNumber")
-										.description("Line number of the execution point "
-												+ "identified by this entry. Negative"
-												+ " if unknown."),
-								fieldWithPath("threads.[].stackTrace.[].className")
+												"Fully qualified class name of the lock"
+														+ " object.")
+										.optional(),
+								fieldWithPath("threads.[].lockInfo.identityHashCode")
 										.description(
-												"Name of the class that contains the "
-														+ "execution point identified "
-														+ "by this entry."),
-								fieldWithPath("threads.[].stackTrace.[].nativeMethod")
-										.description(
-												"Whether the execution point is a native "
-														+ "method."),
+												"Identity hash code of the lock object.")
+										.optional(),
 								fieldWithPath("threads.[].lockedMonitors").description(
 										"Monitors locked by this thread, if any"),
 								fieldWithPath("threads.[].lockedMonitors.[].className")
@@ -147,19 +116,77 @@ public class ThreadDumpEndpointDocumentationTests
 														"Identity hash code of the locked "
 																+ "synchronizer.")
 												.optional().type(JsonFieldType.NUMBER),
-								fieldWithPath("threads.[].lockInfo").description(
-										"Object for which the thread is blocked "
-												+ "waiting.")
+								fieldWithPath("threads.[].lockOwnerId").description(
+										"ID of the thread that owns the object on which "
+												+ "the thread is blocked. `-1` if the "
+												+ "thread is not blocked."),
+								fieldWithPath("threads.[].lockOwnerName")
+										.description("Name of the thread that owns the "
+												+ "object on which the thread is "
+												+ "blocked.")
 										.optional(),
-								fieldWithPath("threads.[].lockInfo.className")
+								fieldWithPath("threads.[].priority")
+										.description("Priority of the thread. Only "
+												+ "available on Java 9 or later.")
+										.optional().type(JsonFieldType.NUMBER),
+								fieldWithPath("threads.[].stackTrace")
+										.description("Stack trace of the thread."),
+								fieldWithPath("threads.[].stackTrace.[].classLoaderName")
+										.description("Name of the class loader of the "
+												+ "class that contains the execution "
+												+ "point identified by this entry, if "
+												+ "any. Only available on Java 9 or "
+												+ "later.")
+										.optional().type(JsonFieldType.STRING),
+								fieldWithPath("threads.[].stackTrace.[].className")
 										.description(
-												"Fully qualified class name of the lock"
-														+ " object.")
-										.optional(),
-								fieldWithPath("threads.[].lockInfo.identityHashCode")
+												"Name of the class that contains the "
+														+ "execution point identified "
+														+ "by this entry."),
+								fieldWithPath("threads.[].stackTrace.[].fileName")
+										.description("Name of the source file that "
+												+ "contains the execution point "
+												+ "identified by this entry, if any.")
+										.optional().type(JsonFieldType.STRING),
+								fieldWithPath("threads.[].stackTrace.[].lineNumber")
+										.description("Line number of the execution "
+												+ "point identified by this entry. "
+												+ "Negative if unknown."),
+								fieldWithPath("threads.[].stackTrace.[].methodName")
+										.description("Name of the method."),
+								fieldWithPath("threads.[].stackTrace.[].moduleName")
+										.description("Name of the module that contains "
+												+ "the execution point identified by "
+												+ "this entry, if any. Only available "
+												+ "on Java 9 or later.")
+										.optional().type(JsonFieldType.STRING),
+								fieldWithPath("threads.[].stackTrace.[].moduleVersion")
+										.description("Version of the module that "
+												+ "contains the execution point "
+												+ "identified by this entry, if any. "
+												+ "Only available on Java 9 or later.")
+										.optional().type(JsonFieldType.STRING),
+								fieldWithPath("threads.[].stackTrace.[].nativeMethod")
 										.description(
-												"Identity hash code of the lock object.")
-										.optional())));
+												"Whether the execution point is a native "
+														+ "method."),
+								fieldWithPath("threads.[].suspended")
+										.description("Whether the thread is suspended."),
+								fieldWithPath("threads.[].threadId")
+										.description("ID of the thread."),
+								fieldWithPath("threads.[].threadName")
+										.description("Name of the thread."),
+								fieldWithPath("threads.[].threadState")
+										.description("State of the thread ("
+												+ describeEnumValues(Thread.State.class)
+												+ ")."),
+								fieldWithPath("threads.[].waitedCount").description(
+										"Total number of times that the thread has waited"
+												+ " for notification."),
+								fieldWithPath("threads.[].waitedTime").description(
+										"Time in milliseconds that the thread has spent "
+												+ "waiting. -1 if thread contention "
+												+ "monitoring is disabled"))));
 	}
 
 	@Configuration

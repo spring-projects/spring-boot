@@ -74,7 +74,7 @@ using the `tag` query parameter, as shown in the following curl-based example:
 include::{snippets}metrics/metric-with-tags/curl-request.adoc[]
 
 The preceding example retrieves the `jvm.memory.max` metric, where the `area` tag has a
-value of `nonheap` and the `id` attribute has a value of `Code Cache`. The resulting
-response is similar to the following:
+value of `nonheap` and the `id` attribute has a value of `Compressed Class Space`. The
+resulting response is similar to the following:
 
 include::{snippets}metrics/metric-with-tags/http-response.adoc[]
