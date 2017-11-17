@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for web management endpoints.
@@ -59,7 +60,14 @@ public class WebEndpointProperties {
 	}
 
 	public void setBasePath(String basePath) {
-		this.basePath = basePath;
+		this.basePath = cleanBasePath(basePath);
+	}
+
+	private String cleanBasePath(String basePath) {
+		if (StringUtils.hasText(basePath) && basePath.endsWith("/")) {
+			return basePath.substring(0, basePath.length() - 1);
+		}
+		return basePath;
 	}
 
 	public Set<String> getExpose() {

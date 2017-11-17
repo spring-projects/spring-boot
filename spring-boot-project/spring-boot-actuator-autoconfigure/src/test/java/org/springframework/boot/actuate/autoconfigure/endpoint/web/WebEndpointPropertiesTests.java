@@ -33,4 +33,10 @@ public class WebEndpointPropertiesTests {
 		assertThat(properties.getBasePath()).isEqualTo("/application");
 	}
 
+	@Test
+	public void basePathShouldBeCleaned() throws Exception {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		properties.setBasePath("/");
+		assertThat(properties.getBasePath()).isEqualTo("");
+	}
 }
