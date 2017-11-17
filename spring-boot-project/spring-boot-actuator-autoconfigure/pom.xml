@@ -420,6 +420,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-mockmvc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -435,4 +440,157 @@
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>full</id>
+			<activation>
+				<property>
+					<name>full</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<groupId>ant</groupId>
+										<artifactId>ant</artifactId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-nodeps</artifactId>
+								<version>1.8.1</version>
+							</dependency>
+							<dependency>
+								<groupId>org.tigris.antelope</groupId>
+								<artifactId>antelopetasks</artifactId>
+								<version>3.2.10</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>set-up-maven-properties</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<exportAntProperties>true</exportAntProperties>
+									<target>
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+										<var name="version-type" value="${project.version}" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<var name="github-tag" value="v${project.version}" />
+										<propertyregex property="github-tag" override="true"
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>package-docs-zip</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<zip
+											destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
+											<zipfileset dir="${project.build.directory}/generated-docs"
+												includes="index.html" prefix="html" />
+											<mappedresources>
+												<fileset dir="${project.build.directory}/generated-docs"
+													includes="index.pdf" />
+												<globmapper from="index.pdf"
+													to="pdf/spring-boot-actuator-web-api.pdf" />
+											</mappedresources>
+										</zip>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctor-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>generate-html-documentation</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<backend>html</backend>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-pdf-documentation</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<backend>pdf</backend>
+								</configuration>
+							</execution>
+						</executions>
+						<configuration>
+							<sourceDocumentName>index.adoc</sourceDocumentName>
+							<attributes>
+								<version-type>${version-type}</version-type>
+								<version>${project.version}</version>
+								<snippets>${project.build.directory}/generated-snippets/</snippets>
+							</attributes>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>org.asciidoctor</groupId>
+								<artifactId>asciidoctorj-pdf</artifactId>
+								<version>1.5.0-alpha.11</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-zip</id>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<artifacts>
+										<artifact>
+											<file>${project.build.directory}/${project.artifactId}-${project.version}-docs.zip</file>
+											<type>zip</type>
+											<classifier>docs</classifier>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

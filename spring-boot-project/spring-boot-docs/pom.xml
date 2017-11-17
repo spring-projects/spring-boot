@@ -980,6 +980,15 @@
 											<outputDirectory>${project.build.directory}/contents/gradle-plugin</outputDirectory>
 											<excludes>META-INF/**</excludes>
 										</artifactItem>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-actuator-autoconfigure</artifactId>
+											<version>${revision}</version>
+											<classifier>docs</classifier>
+											<type>zip</type>
+											<outputDirectory>${project.build.directory}/contents/actuator-api</outputDirectory>
+											<excludes>META-INF/**</excludes>
+										</artifactItem>
 									</artifactItems>
 								</configuration>
 							</execution>
