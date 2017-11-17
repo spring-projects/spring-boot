@@ -42,6 +42,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.We
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.boot.actuate.metrics.config.EnvironmentMeterFilter;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -54,6 +55,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 
@@ -75,6 +78,11 @@ import org.springframework.integration.support.management.IntegrationManagementC
 		SimpleExportConfiguration.class, StatsdExportConfiguration.class })
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MetricsAutoConfiguration {
+	@Bean
+	@Order(0)
+	MeterRegistryConfigurer springEnvironmentMeterFilter(Environment environment) {
+		return r -> r.config().meterFilter(new EnvironmentMeterFilter(environment));
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(MeterRegistry.class)
