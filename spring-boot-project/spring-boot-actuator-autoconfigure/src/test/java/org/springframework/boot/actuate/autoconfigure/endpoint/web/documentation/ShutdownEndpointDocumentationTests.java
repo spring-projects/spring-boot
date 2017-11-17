@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -37,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-@TestPropertySource(properties = "endpoints.shutdown.enabled=true")
 public class ShutdownEndpointDocumentationTests
 		extends AbstractEndpointDocumentationTests {
 
