@@ -241,10 +241,10 @@
 								<configuration>
 									<target>
 										<replaceregexp match="\$\{revision\}" replace="${project.version}"
-													   flags="g" byline="true">
+											flags="g" byline="true">
 											<fileset
-													dir="${project.build.directory}/local-repo/org/springframework/boot/"
-													includes="**/*.pom" />
+												dir="${project.build.directory}/local-repo/org/springframework/boot/"
+												includes="**/*.pom" />
 										</replaceregexp>
 									</target>
 								</configuration>

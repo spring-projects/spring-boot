@@ -26,8 +26,7 @@ import org.springframework.core.NestedExceptionUtils;
  */
 class ConfigurationPropertiesBindingException extends RuntimeException {
 
-	ConfigurationPropertiesBindingException(String message,
-			Throwable cause) {
+	ConfigurationPropertiesBindingException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

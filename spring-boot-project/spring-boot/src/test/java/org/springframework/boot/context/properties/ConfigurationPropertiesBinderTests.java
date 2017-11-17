@@ -268,8 +268,8 @@ public class ConfigurationPropertiesBinderTests {
 	}
 
 	private void bind(ConfigurationPropertiesBinder binder, Object target) {
-		binder.bind(target, AnnotationUtils
-				.findAnnotation(target.getClass(), ConfigurationProperties.class));
+		binder.bind(target, AnnotationUtils.findAnnotation(target.getClass(),
+				ConfigurationProperties.class));
 	}
 
 	@ConfigurationProperties(value = "person", ignoreUnknownFields = false)

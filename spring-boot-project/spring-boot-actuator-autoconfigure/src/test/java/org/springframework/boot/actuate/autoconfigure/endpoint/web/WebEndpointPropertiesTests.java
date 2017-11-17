@@ -39,4 +39,5 @@ public class WebEndpointPropertiesTests {
 		properties.setBasePath("/");
 		assertThat(properties.getBasePath()).isEqualTo("");
 	}
+
 }

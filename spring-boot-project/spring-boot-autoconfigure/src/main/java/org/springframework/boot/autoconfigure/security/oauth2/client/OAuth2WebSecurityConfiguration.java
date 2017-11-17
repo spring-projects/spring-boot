@@ -46,8 +46,7 @@ class OAuth2WebSecurityConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
-	static class OAuth2WebSecurityConfigurerAdapter
-			extends WebSecurityConfigurerAdapter {
+	static class OAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

@@ -97,12 +97,11 @@ public class OAuth2WebSecurityConfigurationTests {
 	@Test
 	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent()
 			throws Exception {
-		this.contextRunner
-				.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
-						OAuth2WebSecurityConfiguration.class)
-				.run((context) -> {
+		this.contextRunner.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
+				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					assertThat(getAuthCodeFilters(context)).isEmpty();
-					assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
+					assertThat(context).getBean(OAuth2AuthorizedClientService.class)
+							.isNotNull();
 				});
 	}
 

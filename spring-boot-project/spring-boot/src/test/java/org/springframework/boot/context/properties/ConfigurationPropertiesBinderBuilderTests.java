@@ -123,7 +123,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 				.withEnvironment(this.environment).build();
 		assertThat(
 				bindWithValidationErrors(binder, new PropertyWithJSR303()).getAllErrors())
-				.hasSize(2);
+						.hasSize(2);
 	}
 
 	@Test
@@ -152,8 +152,8 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	}
 
 	private void bind(ConfigurationPropertiesBinder binder, Object target) {
-		binder.bind(target, AnnotationUtils
-				.findAnnotation(target.getClass(), ConfigurationProperties.class));
+		binder.bind(target, AnnotationUtils.findAnnotation(target.getClass(),
+				ConfigurationProperties.class));
 	}
 
 	@ConfigurationProperties(prefix = "test")

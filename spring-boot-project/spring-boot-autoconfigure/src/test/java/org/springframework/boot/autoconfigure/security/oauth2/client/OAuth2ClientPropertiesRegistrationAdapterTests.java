@@ -78,7 +78,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUriTemplate()).isEqualTo("http://example.com/redirect");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("http://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("scope");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
@@ -111,8 +112,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUriTemplate()).isEqualTo(
-				"{baseUrl}/login/oauth2/code/{registrationId}");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("{baseUrl}/login/oauth2/code/{registrationId}");
 		assertThat(adapted.getScopes()).containsExactly("openid", "profile", "email",
 				"address", "phone");
 		assertThat(adapted.getClientName()).isEqualTo("Google");
@@ -151,7 +152,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUriTemplate()).isEqualTo("http://example.com/redirect");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("http://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("scope");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
@@ -195,7 +197,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUriTemplate()).isEqualTo("{baseUrl}/login/oauth2/code/{registrationId}");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("{baseUrl}/login/oauth2/code/{registrationId}");
 		assertThat(adapted.getScopes()).containsExactly("openid", "profile", "email",
 				"address", "phone");
 		assertThat(adapted.getClientName()).isEqualTo("Google");
