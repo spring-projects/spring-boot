@@ -46,7 +46,6 @@ public class ConcurrentReferenceCachingMetadataReaderFactory
 	 * the default class loader.
 	 */
 	public ConcurrentReferenceCachingMetadataReaderFactory() {
-		super();
 	}
 
 	/**

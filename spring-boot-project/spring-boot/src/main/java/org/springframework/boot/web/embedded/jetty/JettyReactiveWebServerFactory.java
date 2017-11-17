@@ -69,7 +69,6 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * Create a new {@link JettyServletWebServerFactory} instance.
 	 */
 	public JettyReactiveWebServerFactory() {
-		super();
 	}
 
 	/**

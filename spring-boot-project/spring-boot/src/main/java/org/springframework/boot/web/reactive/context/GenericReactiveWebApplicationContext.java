@@ -39,7 +39,6 @@ public class GenericReactiveWebApplicationContext extends GenericApplicationCont
 	 * @see #refresh
 	 */
 	public GenericReactiveWebApplicationContext() {
-		super();
 	}
 
 	/**

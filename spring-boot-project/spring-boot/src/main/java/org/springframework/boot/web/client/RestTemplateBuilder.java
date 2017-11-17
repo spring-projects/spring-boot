@@ -123,7 +123,6 @@ public class RestTemplateBuilder {
 			Set<RestTemplateCustomizer> restTemplateCustomizers,
 			Set<RequestFactoryCustomizer> requestFactoryCustomizers,
 			Set<ClientHttpRequestInterceptor> interceptors) {
-		super();
 		this.detectRequestFactory = detectRequestFactory;
 		this.rootUri = rootUri;
 		this.messageConverters = messageConverters;

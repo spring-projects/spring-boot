@@ -40,7 +40,6 @@ public class Country implements Serializable {
 	}
 
 	public Country(String name) {
-		super();
 		this.name = name;
 	}
 
