@@ -266,9 +266,9 @@ public class RedisProperties {
 		private String master;
 
 		/**
-		 * Nodes as host:port pairs.
+		 * Comma-separated list of "host:port" pairs.
 		 */
-		private String[] nodes;
+		private List<String> nodes;
 
 		public String getMaster() {
 			return this.master;
@@ -278,11 +278,11 @@ public class RedisProperties {
 			this.master = master;
 		}
 
-		public String[] getNodes() {
+		public List<String> getNodes() {
 			return this.nodes;
 		}
 
-		public void setNodes(String[] nodes) {
+		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
 		}
 

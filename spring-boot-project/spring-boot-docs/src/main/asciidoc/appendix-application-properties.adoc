@@ -869,7 +869,7 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.password= # Login password of the redis server.
 	spring.redis.port=6379 # Redis server port.
 	spring.redis.sentinel.master= # Name of Redis server.
-	spring.redis.sentinel.nodes= # Comma-separated list of host:port pairs.
+	spring.redis.sentinel.nodes= # Comma-separated list of "host:port" pairs.
 	spring.redis.ssl=false # Enable SSL support.
 	spring.redis.timeout=0 # Connection timeout in milliseconds.
 
