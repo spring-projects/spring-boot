@@ -63,6 +63,8 @@ import org.springframework.util.StringUtils;
 public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		implements EndpointDiscoverer<T> {
 
+	private final Log logger = LogFactory.getLog(getClass());
+
 	private final ApplicationContext applicationContext;
 
 	private final Function<T, K> operationKeyFactory;
@@ -270,15 +272,12 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 			if (msg == null || msg.startsWith(endpointInfo.getClass().getName())) {
 				// Possibly a lambda-defined listener which we could not resolve the
 				// generic event type for
-				Log logger = LogFactory.getLog(getClass());
-				if (logger.isDebugEnabled()) {
-					logger.debug("Non-matching info type for lister: " + filter, ex);
+				if (this.logger.isDebugEnabled()) {
+					this.logger.debug("Non-matching info type for filter: " + filter, ex);
 				}
 				return false;
 			}
-			else {
-				throw ex;
-			}
+			throw ex;
 		}
 
 	}

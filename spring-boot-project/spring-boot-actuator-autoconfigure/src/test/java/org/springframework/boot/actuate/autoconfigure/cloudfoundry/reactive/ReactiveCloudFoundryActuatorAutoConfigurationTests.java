@@ -192,7 +192,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWebInclues()
+	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWebIncludes()
 			throws Exception {
 		setupContextWithCloudEnabled();
 		this.context.register(TestConfiguration.class);

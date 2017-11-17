@@ -37,7 +37,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests fopr {@link CachingOperationInvokerAdvisor}.
+ * Tests for {@link CachingOperationInvokerAdvisor}.
  *
  * @author Phillip Webb
  */

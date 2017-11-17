@@ -1258,7 +1258,7 @@ content into your application; rather pick only the properties that you need.
 	spring.metrics.export.atlas.enabled= # Enable publishing to the backend.
 	spring.metrics.export.atlas.eval-uri= # URI for the Atlas LWC endpoint to evaluate the data for a subscription.
 	spring.metrics.export.atlas.lwc-enabled= # Enable streaming to Atlas LWC.
-	spring.metrics.export.atlas.meter-time-to-live= # Time to love for meters that do not have any activity. After this period the meter will be considered expired and will not get reported.
+	spring.metrics.export.atlas.meter-time-to-live= # Time to live for meters that do not have any activity. After this period the meter will be considered expired and will not get reported.
 	spring.metrics.export.atlas.num-threads= # Number of threads to use with the metrics publishing scheduler.
 	spring.metrics.export.atlas.read-timeout= # Read timeout for requests to the backend.
 	spring.metrics.export.atlas.step=1 # Step size (i.e. reporting frequency) to use.

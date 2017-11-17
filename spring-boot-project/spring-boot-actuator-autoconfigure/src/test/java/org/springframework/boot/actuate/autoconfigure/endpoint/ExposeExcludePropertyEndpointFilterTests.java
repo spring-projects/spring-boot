@@ -133,7 +133,7 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
-	public void matchWhenDicovererDoesNotMatchShouldMatch() throws Exception {
+	public void matchWhenDiscovererDoesNotMatchShouldMatch() throws Exception {
 		this.environment.setProperty("foo.expose", "bar");
 		this.environment.setProperty("foo.exclude", "");
 		this.filter = new ExposeExcludePropertyEndpointFilter<>(
