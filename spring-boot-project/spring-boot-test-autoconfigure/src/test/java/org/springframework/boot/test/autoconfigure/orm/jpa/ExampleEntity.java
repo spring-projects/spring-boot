@@ -40,7 +40,6 @@ public class ExampleEntity {
 	}
 
 	public ExampleEntity(String name, String reference) {
-		super();
 		this.name = name;
 		this.reference = reference;
 	}

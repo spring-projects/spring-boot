@@ -44,10 +44,6 @@ public abstract class AbstractSocialAutoConfigurationTests {
 		}
 	}
 
-	public AbstractSocialAutoConfigurationTests() {
-		super();
-	}
-
 	protected void assertConnectionFrameworkBeans() {
 		assertThat(this.context.getBean(UsersConnectionRepository.class)).isNotNull();
 		assertThat(this.context.getBean(ConnectionRepository.class)).isNotNull();

@@ -45,7 +45,6 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 	ItemMetadata(ItemType itemType, String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
 			Object defaultValue, ItemDeprecation deprecation) {
-		super();
 		this.itemType = itemType;
 		this.name = buildName(prefix, name);
 		this.type = type;

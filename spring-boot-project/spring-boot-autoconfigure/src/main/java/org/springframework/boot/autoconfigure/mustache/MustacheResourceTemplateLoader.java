@@ -54,7 +54,6 @@ public class MustacheResourceTemplateLoader
 	}
 
 	public MustacheResourceTemplateLoader(String prefix, String suffix) {
-		super();
 		this.prefix = prefix;
 		this.suffix = suffix;
 	}
