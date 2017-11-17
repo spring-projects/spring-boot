@@ -2900,7 +2900,7 @@ You can register multiple OAuth2 clients and providers under the
 	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
 	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-1.scope=user
-	spring.security.oauth2.client.registration.my-client-1.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=http://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
 
@@ -2909,7 +2909,7 @@ You can register multiple OAuth2 clients and providers under the
 	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
 	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-2.scope=email
-	spring.security.oauth2.client.registration.my-client-2.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=http://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
 
@@ -2918,6 +2918,28 @@ You can register multiple OAuth2 clients and providers under the
 	spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=http://my-auth-server/userinfo
 	spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=http://my-auth-server/token_keys
 	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
+----
+
+By default, Spring Security's `OAuth2LoginAuthenticationFilter` will only process URLs matching
+`/login/oauth2/code/*`. If you want to customize the `redirect-uri-template` to use a different pattern,
+you will need to provide configuration to process that custom pattern. For example, you can add your own
+`WebSecurityConfigurerAdapter` that looks like this:
+
+[source,java,indent=0]
+----
+public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+			.authorizeRequests()
+				.anyRequest().authenticated()
+				.and()
+			.oauth2Login()
+				.redirectionEndpoint()
+					.baseUri("/custom-callback");
+	}
+}
 ----
 
 For common OAuth2 and OpenID providers such as Google, Github, Facebook, and Okta,

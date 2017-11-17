@@ -2,7 +2,7 @@
 
 == Register Github OAuth2 application
 To run the sample, you need to link:https://github.com/settings/applications/new[register an OAuth application on Github].
-While registering your application, ensure the Authorization callback URL is set to http://localhost:8080/oauth2/authorize/code/github.
+While registering your application, ensure the Authorization callback URL is set to http://localhost:8080/login/oauth2/code/github.
 After completing the registration, you will have a new OAuth Application with a Client ID and Client Secret.
 
 == Configuring application.yml

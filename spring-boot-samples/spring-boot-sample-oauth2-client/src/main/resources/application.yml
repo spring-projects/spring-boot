@@ -9,11 +9,11 @@ spring:
             client-name: Github user
             provider: github
             scope: user
-            redirect_uri: http://localhost:8080/oauth2/authorize/code/github
+            redirect-uri-template: http://localhost:8080/login/oauth2/code/github
           github-client-2:
             client-id: ${APP-CLIENT-ID}
             client-secret: ${APP-CLIENT-SECRET}
             client-name: Github email
             provider: github
             scope: user:email
-            redirect_uri: http://localhost:8080/oauth2/authorize/code/github
+            redirect-uri-template: http://localhost:8080/login/oauth2/code/github
