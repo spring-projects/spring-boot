@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass(DatadogMeterRegistry.class)
-@ConditionalOnProperty("spring.metrics.datadog.api-key")
+@ConditionalOnProperty("spring.metrics.export.datadog.api-key")
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogExportConfiguration {
 
