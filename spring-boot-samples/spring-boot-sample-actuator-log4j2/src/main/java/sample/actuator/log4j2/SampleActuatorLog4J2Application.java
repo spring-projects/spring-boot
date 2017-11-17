@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,18 @@ package sample.actuator.log4j2;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootApplication
 public class SampleActuatorLog4J2Application {
+
+	@Bean
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
+				.username("user").password("password").roles("USER").build());
+	}
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleActuatorLog4J2Application.class, args);

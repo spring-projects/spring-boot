@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-parent</artifactId>
+		<version>${revision}</version>
+		<relativePath>../spring-boot-project/spring-boot-parent</relativePath>
+	</parent>
+	<artifactId>spring-boot-tests</artifactId>
+	<packaging>pom</packaging>
+	<name>Spring Boot Tests</name>
+	<description>Spring Boot Test</description>
+	<properties>
+		<main.basedir>${basedir}/..</main.basedir>
+	</properties>
+	<modules>
+		<!-- Deployment tests are slow so don't include by default -->
+		<module>spring-boot-integration-tests</module>
+	</modules>
+	<profiles>
+		<!-- M2E profile to allow easy import into Eclipse -->
+		<profile>
+			<id>m2e</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<modules>
+				<module>spring-boot-integration-tests</module>
+				<module>spring-boot-deployment-tests</module>
+			</modules>
+		</profile>
+	</profiles>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<inherited>true</inherited>
+			</plugin>
+		</plugins>
+	</build>
+</project>

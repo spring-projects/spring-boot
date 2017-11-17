@@ -72,7 +72,7 @@ TIP: Run sample cache application using EhCache with
 
 === Hazelcast
 Both `com.hazelcast:hazelcast` and `com.hazelcast:hazelcast-spring` should be added
-to the project to enable support for Hazelcast.  Since there is a default
+to the project to enable support for Hazelcast. Since there is a default
 `hazelcast.xml` configuration file at the root of the classpath, it is used to
 automatically configure the underlying `HazelcastInstance`.
 

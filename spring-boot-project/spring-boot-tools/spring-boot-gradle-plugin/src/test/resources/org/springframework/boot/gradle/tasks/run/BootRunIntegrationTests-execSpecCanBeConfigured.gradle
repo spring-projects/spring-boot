@@ -1,0 +1,15 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+
+bootRun {
+	execSpec {
+		systemProperty 'com.example.foo', 'bar'
+	}
+}

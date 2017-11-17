@@ -21,8 +21,8 @@ import java.util.Collections;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.atmosphere.cpr.AtmosphereInitializer;
 import org.atmosphere.cpr.AtmosphereServlet;
+import org.atmosphere.cpr.ContainerInitializer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -69,12 +69,12 @@ public class SampleAtmosphereApplication {
 
 	}
 
-	private static class EmbeddedAtmosphereInitializer extends AtmosphereInitializer
+	private static class EmbeddedAtmosphereInitializer extends ContainerInitializer
 			implements ServletContextInitializer {
 
 		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
-			onStartup(Collections.<Class<?>>emptySet(), servletContext);
+			onStartup(Collections.emptySet(), servletContext);
 		}
 
 	}

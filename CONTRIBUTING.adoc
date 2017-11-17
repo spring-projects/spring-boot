@@ -105,7 +105,7 @@ some compilations for Spring Boot as we include a maven plugin and use it within
 samples. The standard build works around this restriction by launching the samples via
 the `maven-invoker-plugin` so that they are not part of the reactor. This works fine
 most of the time, however, sometimes it's useful to run a build that includes all modules
-(for example when using `maven-versions-plugin`. We use the full build on our CI servers
+(for example when using `maven-versions-plugin`). We use the full build on our CI servers
 and during the release process.
 
 Running a full build is a two phase process.
@@ -115,7 +115,7 @@ Running a full build is a two phase process.
 Preparing the build will compile and install the `spring-boot-maven-plugin` so that it
 can be referenced during the full build. It also generates a `settings.xml` file that
 enables a `snapshot`, `milestone` or `release` profiles based on the version being
-build. To prepare the build, from the root directory use:
+built. To prepare the build, from the root directory use:
 
 [indent=0]
 ----

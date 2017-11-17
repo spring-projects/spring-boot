@@ -22,6 +22,8 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootApplication
 @EnableConfigurationProperties(ServiceProperties.class)
@@ -32,12 +34,20 @@ public class SampleActuatorApplication {
 	}
 
 	@Bean
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
+				.username("user").password("password").roles("USER").build());
+	}
+
+	@Bean
 	public HealthIndicator helloHealthIndicator() {
 		return new HealthIndicator() {
+
 			@Override
 			public Health health() {
 				return Health.up().withDetail("hello", "world").build();
 			}
+
 		};
 	}
 

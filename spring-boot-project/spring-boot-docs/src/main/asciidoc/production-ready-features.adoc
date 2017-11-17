@@ -1,0 +1,1292 @@
+[[production-ready]]
+= Spring Boot Actuator: Production-ready features
+
+[partintro]
+--
+Spring Boot includes a number of additional features to help you monitor and manage your
+application when you push it to production. You can choose to manage and monitor your
+application by using HTTP endpoints or with JMX. Auditing, health, and metrics gathering
+can also be automatically applied to your application.
+--
+
+
+
+[[production-ready-enabling]]
+== Enabling Production-ready Features
+The {github-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module
+provides all of Spring Boot's production-ready features. The simplest way to enable the
+features is to add a dependency to the `spring-boot-starter-actuator` '`Starter`'.
+
+.Definition of Actuator
+****
+An actuator is a manufacturing term, referring to a mechanical device for moving or
+controlling something. Actuators can generate a large amount of motion from a small
+change.
+****
+
+To add the actuator to a Maven based project, add the following '`Starter`' dependency:
+
+[source,xml,indent=0]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+For Gradle, use the following declaration:
+
+[source,groovy,indent=0]
+----
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-actuator")
+	}
+----
+
+
+
+[[production-ready-endpoints]]
+== Endpoints
+Actuator endpoints let you monitor and interact with your application. Spring Boot
+includes a number of built-in endpoints and lets you add your own. For example, the
+`health` endpoint provides basic application health information.
+
+The way that endpoints are exposed depends on the type of technology that you choose.
+Most applications choose HTTP monitoring, where the ID of the endpoint along with a
+prefix of `/application` is mapped to a URL. For example, by default, the `health`
+endpoint is mapped to `/application/health`.
+
+The following technology-agnostic endpoints are available:
+
+[cols="2,5"]
+|===
+| ID | Description
+
+|`auditevents`
+|Exposes audit events information for the current application.
+
+|`conditions`
+|Showing the conditions that were evaluated on configuration and auto-configuration
+ classes and the reasons why they did or did not match.
+
+|`beans`
+|Displays a complete list of all the Spring beans in your application.
+
+|`configprops`
+|Displays a collated list of all `@ConfigurationProperties`.
+
+|`env`
+|Exposes properties from Spring's `ConfigurableEnvironment`.
+
+|`flyway`
+|Shows any Flyway database migrations that have been applied.
+
+|`health`
+|Shows application health information.
+
+|`info`
+|Displays arbitrary application info.
+
+|`loggers`
+|Shows and modifies the configuration of loggers in the application.
+
+|`liquibase`
+|Shows any Liquibase database migrations that have been applied.
+
+|`metrics`
+|Shows '`metrics`' information for the current application.
+
+|`mappings`
+|Displays a collated list of all `@RequestMapping` paths.
+
+|`scheduledtasks`
+|Displays the scheduled tasks in your application.
+
+|`sessions`
+|Allows retrieval and deletion of user sessions from a Spring Session-backed session
+ store. Not available when using Spring Session's support for reactive web applications.
+
+|`shutdown`
+|Lets the application be gracefully shutdown (not enabled by default).
+
+|`status`
+|Shows application status information (that is, `health` status with no additional
+ details).
+
+|`threaddump`
+|Performs a thread dump.
+
+|`trace`
+|Displays trace information (by default, the last 100 HTTP requests).
+|===
+
+If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can
+use the following additional endpoints:
+
+[cols="2,5"]
+|===
+| ID | Description
+
+|`heapdump`
+|Returns a GZip compressed `hprof` heap dump file.
+
+|`logfile`
+|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
+been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
+content.
+
+|`prometheus`
+|Exposes metrics in a format that can be scraped by a Prometheus server.
+
+|===
+
+
+
+[[production-ready-endpoints-exposing-endpoints]]
+=== Exposing Endpoints
+Since Endpoints may contain sensitive information, careful consideration should be given
+about when to expose them. Out of the box, Spring Boot will expose all enabled endpoints
+over JMX, but only the `health` and `info` endpoints over HTTP.
+
+To change the endpoints that are exposed you can use the `expose` and `exclude` property
+for the technology. For example, to only expose the `health` over JMX you would use:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.jmx.expose=health
+----
+
+The `*` character can be used to indicate all endpoints. For example, to expose everything
+over HTTP except the `env` endpoint you would use:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.expose=*
+	management.endpoints.web.exclude=env
+----
+
+NOTE: If your application is exposed publicly we strongly recommend that you also
+<<production-ready-endpoints-security, secure your endpoints>>.
+
+TIP: If you want to implement your own strategy for when endpoints are exposed you can
+register an `EndpointFilter` bean.
+
+
+
+[[production-ready-endpoints-security]]
+=== Securing HTTP Endpoints
+You should take care to secure HTTP endpoints in the same way that you would any other
+sensitive URL. Spring Boot will not apply any security on your behalf, however, it does
+provide some convenient `RequestMatcher`s that can be used in combination with Spring
+Security.
+
+A typical Spring Security configuration could look something like this:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+					.anyRequest().hasRole("ENDPOINT_ADMIN")
+					.and()
+				.httpBasic();
+		}
+
+	}
+----
+
+The above uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint, then
+ensure that all have the `ENDPOINT_ADMIN` role. Several other matcher methods are
+also available on `EndpointRequest` (see the API documentation for details).
+
+If you deploy applications behind a firewall, you may prefer that all your actuator
+endpoints can be accessed without requiring authentication. You can do so by changing the
+`management.endpoints.web.expose` property, as follows:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.expose=*
+----
+
+
+
+[[production-ready-customizing-endpoints]]
+=== Customizing Endpoints
+Endpoints can be customized by using Spring properties. You can change whether an
+endpoint is `enabled` and the amount of time it will cache responses.
+
+For example, the following `application.properties` changes the time-to-live of the
+`beans` endpoint and also enables `shutdown`:
+
+[source,properties,indent=0]
+----
+	management.endpoint.beans.cache.time-to-live=10
+	management.endpoint.shutdown.enabled=true
+----
+
+NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the
+endpoint that is being configured.
+
+By default, all endpoints except for `shutdown` are enabled. If you prefer to
+specifically "`opt-in`" endpoint enablement, you can use the
+`management.endpoints.enabled-by-default` property. For example, the following settings
+disable _all_ endpoints except for `info`:
+
+[source,properties,indent=0]
+----
+	management.endpoints.enabled-by-default=false
+	management.endpoint.info.enabled=true
+----
+
+NOTE: Disabled endpoints are removed entirely from the `ApplicationContext`. If you only
+want to change the technologies over which an endpoint is exposed you can use the `expose`
+and `exclude` properties (see <<production-ready-endpoints-exposing-endpoints>>).
+
+
+
+[[production-ready-endpoint-hypermedia]]
+=== Hypermedia for Actuator Web Endpoints
+A "`discovery page`" is added with links to all the endpoints. The "`discovery page`" is
+available on `/application` by default.
+
+When a custom management context path is configured, the "`discovery page`" automatically
+moves from `/application` to the root of the management context. For example, if the
+management context path is `/management`, then the discovery page is available from
+`/management`. When the management context path is set to `/`, the discovery page is
+disabled to prevent the possibility of a clash with other mappings.
+
+
+
+[[production-ready-endpoint-custom-mapping]]
+=== Actuator Web Endpoint Paths
+By default, endpoints are exposed over HTTP under the `/application` path using ID of the
+endpoint. For example, the `beans` endpoint is exposed under `/application/beans`. If you
+want to map endpoints to a different path you can use the
+`management.endpoints.web.path-mapping` property. You can also use
+`management.endpoints.web.base-path` if you want change the base path.
+
+Here's an example that remaps `/application/health` to `/healthcheck`:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.base-path=/
+	management.endpoints.path-mapping.health=healthcheck
+----
+
+
+
+[[production-ready-endpoint-cors]]
+=== CORS Support
+http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a http://www.w3.org/TR/cors/[W3C specification] that allows you to specify in a
+flexible way what kind of cross domain requests are authorized. If you use Spring MVC or
+Spring WebFlux, Actuator's web endpoints can be configured to support such scenarios.
+
+CORS support is disabled by default and is only enabled once the
+`management.endpoints.web.cors.allowed-origins` property has been set. The following
+configuration permits `GET` and `POST` calls from the `example.com` domain:
+
+[source,properties,indent=0]
+----
+	management.endpoints.web.cors.allowed-origins=http://example.com
+	management.endpoints.web.cors.allowed-methods=GET,POST
+----
+
+TIP: See {sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties] for a complete list of options.
+
+
+
+[[production-ready-customizing-endpoints-programmatically]]
+=== Adding Custom Endpoints
+If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with
+`@ReadOperation`, `@WriteOperation` or `@DeleteOperation` are automatically exposed over
+JMX and, in a web application, over HTTP as well.
+
+You can also write technology specific endpoints by using `@JmxEndpoint` or
+`@WebEndpoint`. These endpoints are filtered to their respective technologies. For
+example, `@WebEndpoint` will be exposed only over HTTP and not over JMX.
+
+Finally, it's possible to write technology specific extensions using
+`@EndpointWebExtension` and `@EndpointJmxExtension`. These annotations allow you to
+provide technology specific operations to augment an existing endpoint.
+
+TIP: If you add endpoints as a library feature, consider adding a configuration class
+annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
+key, `org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration`. If
+you do so and if your users ask for a separate management port or address, the endpoint
+moves to a child context with all the other web endpoints.
+
+
+
+[[production-ready-health]]
+=== Health Information
+You can use health information to check the status of your running application. It is
+often used by monitoring software to alert someone when a production system goes down.
+The default information exposed by the `health` endpoint depends on how it is accessed.
+For an unauthenticated connection in a secure application, a simple '`status`' message is
+returned. For an authenticated connection, additional details are also displayed. (See
+<<production-ready-health-access-restrictions>> for HTTP details.)
+
+Health information is collected from all
+{sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] beans
+defined in your `ApplicationContext`. Spring Boot includes a number of auto-configured
+`HealthIndicators`, and you can also write your own. By default, the final system state
+is derived by the `HealthAggregator`, which sorts the statuses from each
+`HealthIndicator` based on an ordered list of statuses. The first status in the sorted
+list is used as the overall health status. If no `HealthIndicator` returns a status that
+is known to the `HealthAggregator`, an `UNKNOWN` status is used.
+
+
+
+==== Auto-configured HealthIndicators
+The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
+
+[cols="1,4"]
+|===
+|Name |Description
+
+|{sc-spring-boot-actuator}/cassandra/CassandraHealthIndicator.{sc-ext}[`CassandraHealthIndicator`]
+|Checks that a Cassandra database is up.
+
+|{sc-spring-boot-actuator}/system/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
+|Checks for low disk space.
+
+|{sc-spring-boot-actuator}/jdbc/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
+|Checks that a connection to `DataSource` can be obtained.
+
+|{sc-spring-boot-actuator}/elasticsearch/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
+|Checks that an Elasticsearch cluster is up.
+
+|{sc-spring-boot-actuator}/jms/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
+|Checks that a JMS broker is up.
+
+|{sc-spring-boot-actuator}/mail/MailHealthIndicator.{sc-ext}[`MailHealthIndicator`]
+|Checks that a mail server is up.
+
+|{sc-spring-boot-actuator}/mongo/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
+|Checks that a Mongo database is up.
+
+|{sc-spring-boot-actuator}/amqp/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
+|Checks that a Rabbit server is up.
+
+|{sc-spring-boot-actuator}/redis/RedisHealthIndicator.{sc-ext}[`RedisHealthIndicator`]
+|Checks that a Redis server is up.
+
+|{sc-spring-boot-actuator}/solr/SolrHealthIndicator.{sc-ext}[`SolrHealthIndicator`]
+|Checks that a Solr server is up.
+|===
+
+TIP: It is possible to disable them all using the `management.health.defaults.enabled`
+property.
+
+
+==== Writing Custom HealthIndicators
+To provide custom health information, you can register Spring beans that implement the
+{sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] interface.
+You need to provide an implementation of the `health()` method and return a `Health`
+response. The `Health` response should include a status and can optionally include
+additional details to be displayed. The following code shows a sample `HealthIndicator`
+implementation:
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.actuate.health.Health;
+	import org.springframework.boot.actuate.health.HealthIndicator;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyHealthIndicator implements HealthIndicator {
+
+		@Override
+		public Health health() {
+			int errorCode = check(); // perform some specific health check
+			if (errorCode != 0) {
+				return Health.down().withDetail("Error Code", errorCode).build();
+			}
+			return Health.up().build();
+		}
+
+	}
+----
+
+NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the
+`HealthIndicator` suffix, if it exists. In the preceding example, the health information
+is available in an entry named `my`.
+
+In addition to Spring Boot's predefined
+{sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`] types, it is also possible for
+`Health` to return a custom `Status` that represents a new system state. In such cases, a
+custom implementation of the
+{sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`] interface
+also needs to be provided, or the default implementation has to be configured by using
+the `management.health.status.order` configuration property.
+
+For example, assume a new `Status` with code `FATAL` is being used in one of your
+`HealthIndicator` implementations. To configure the severity order, add the following
+to your application properties:
+
+[source,properties,indent=0]
+----
+	management.health.status.order=FATAL, DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+----
+
+The HTTP status code in the response reflects the overall health status (for example,
+`UP` maps to 200, while `OUT_OF_SERVICE` and `DOWN` map to 503). You might also want to
+register custom status mappings if you access the health endpoint over HTTP. For example,
+the following property maps `FATAL` to 503 (service unavailable):
+
+[source,properties,indent=0]
+----
+	management.health.status.http-mapping.FATAL=503
+----
+
+TIP: If you need more control, you can define your own `HealthStatusHttpMapper` bean.
+
+The following table shows the default status mappings for the built-in statuses:
+
+[cols="1,3"]
+|===
+|Status |Mapping
+
+|DOWN
+|SERVICE_UNAVAILABLE (503)
+
+|OUT_OF_SERVICE
+|SERVICE_UNAVAILABLE (503)
+
+|UP
+|No mapping by default, so http status is 200
+
+|UNKNOWN
+|No mapping by default, so http status is 200
+|===
+
+
+
+[[production-ready-application-info]]
+=== Application Information
+Application information exposes various information collected from all
+{sc-spring-boot-actuator}/info/InfoContributor.{sc-ext}[`InfoContributor`] beans defined
+in your `ApplicationContext`. Spring Boot includes a number of auto-configured
+`InfoContributors`, and you can write your own.
+
+[[production-ready-application-info-autoconfigure]]
+==== Auto-configured InfoContributors
+
+The following `InfoContributors` are auto-configured by Spring Boot, when appropriate:
+
+[cols="1,4"]
+|===
+|Name |Description
+
+|{sc-spring-boot-actuator}/info/EnvironmentInfoContributor.{sc-ext}[`EnvironmentInfoContributor`]
+|Expose any key from the `Environment` under the `info` key.
+
+|{sc-spring-boot-actuator}/info/GitInfoContributor.{sc-ext}[`GitInfoContributor`]
+|Expose git information if a `git.properties` file is available.
+
+|{sc-spring-boot-actuator}/info/BuildInfoContributor.{sc-ext}[`BuildInfoContributor`]
+|Expose build information if a `META-INF/build-info.properties` file is available.
+|===
+
+TIP: It is possible to disable them all using the `management.info.defaults.enabled`
+property.
+
+[[production-ready-application-info-env]]
+==== Custom Application Information
+You can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring
+properties. All `Environment` properties under the info key are automatically exposed.
+For example, you could add the following settings to your `application.properties` file:
+
+[source,properties,indent=0]
+----
+	info.app.encoding=UTF-8
+	info.app.java.source=1.8
+	info.app.java.target=1.8
+----
+
+[TIP]
+====
+Rather than hardcoding those values, you could also
+<<howto.adoc#howto-automatic-expansion,expand info properties at build time>>.
+
+Assuming you use Maven, you could rewrite the preceding example as follows:
+
+[source,properties,indent=0]
+----
+	info.app.encoding=@project.build.sourceEncoding@
+	info.app.java.source=@java.version@
+	info.app.java.target=@java.version@
+----
+====
+
+
+
+[[production-ready-application-info-git]]
+==== Git Commit Information
+Another useful feature of the `info` endpoint is its ability to publish information about
+the state of your `git` source code repository when the project was built. If a
+`GitProperties` bean is available, the `git.branch`, `git.commit.id` and
+`git.commit.time` properties are exposed.
+
+TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at
+the root of the classpath. See
+"<<howto.adoc#howto-git-info,Generate git information>>" for more details.
+
+If you want to display the full git information (that is, the full content of
+`git.properties`), use the `management.info.git.mode` property, as follows:
+
+[source,properties,indent=0]
+----
+	management.info.git.mode=full
+----
+
+
+
+[[production-ready-application-info-build]]
+==== Build Information
+If a `BuildProperties` bean is available, the `info` endpoint can also publish
+information about your build. This happens if a `META-INF/build-info.properties` file is
+available in the classpath.
+
+TIP: The Maven and Gradle plugins can both generate that file. See
+"<<howto.adoc#howto-build-info,Generate build information>>" for more details.
+
+
+[[production-ready-application-info-custom]]
+==== Writing Custom InfoContributors
+To provide custom application information, you can register Spring beans that implement
+the {sc-spring-boot-actuator}/info/InfoContributor.{sc-ext}[`InfoContributor`] interface.
+
+The following example contributes an `example` entry with a single value:
+
+[source,java,indent=0]
+----
+	import java.util.Collections;
+
+	import org.springframework.boot.actuate.info.Info;
+	import org.springframework.boot.actuate.info.InfoContributor;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class ExampleInfoContributor implements InfoContributor {
+
+		@Override
+		public void contribute(Info.Builder builder) {
+			builder.withDetail("example",
+					Collections.singletonMap("key", "value"));
+		}
+
+	}
+----
+
+If you reach the `info` endpoint, you should see a response that contains the following
+additional entry:
+
+[source,json,indent=0]
+----
+	{
+		"example": {
+			"key" : "value"
+		}
+	}
+----
+
+
+
+[[production-ready-monitoring]]
+== Monitoring and Management over HTTP
+If you are developing a Spring MVC application, Spring Boot Actuator auto-configures all
+enabled endpoints to be exposed over HTTP. The default convention is to use the `id` of
+the endpoint with a prefix of `/application` as the URL path. For example, `health` is
+exposed as `/application/health`.
+
+
+
+[[production-ready-customizing-management-server-context-path]]
+=== Customizing the Management Endpoint Paths
+Sometimes, it is useful to customize the prefix for the management endpoints. For
+example, your application might already use `/application` for another purpose. You can
+use the `management.endpoints.web.base-path` property to change the prefix for your
+management endpoint, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	management.endpoints.web.base-path=/manage
+----
+
+The preceding `application.properties` example changes the endpoint from
+`/application/{id}` to `/manage/{id}` (e.g. `/manage/info`).
+
+NOTE: Unless the management port has been configured to
+<<production-ready-customizing-management-server-port,expose endpoints using a different
+HTTP port>>, `management.endpoints.web.base-path` is relative to `server.context-path`.
+If `management.server.port` is configured, `management.endpoints.web.base-path` is
+relative to `management.server.servlet.context-path`.
+
+
+
+[[production-ready-customizing-management-server-port]]
+=== Customizing the Management Server Port
+Exposing management endpoints by using the default HTTP port is a sensible choice for
+cloud based deployments. If, however, your application runs inside your own data center,
+you may prefer to expose endpoints by using a different HTTP port.
+
+You can set the `management.server.port` property to change the HTTP port, as shown in
+the following example:
+
+[source,properties,indent=0]
+----
+	management.server.port=8081
+----
+
+Since your management port is often protected by a firewall and not exposed to the
+public, you might not need security on the management endpoints, even if your main
+application is secure. In that case, you should have Spring Security on the classpath,
+and you can disable management security as follows:
+
+[source,properties,indent=0]
+----
+	management.security.enabled=false
+----
+
+(If you do not have Spring Security on the classpath, there is no need to explicitly
+disable the management security in this way. Doing so might even break the application.)
+
+
+
+[[production-ready-management-specific-ssl]]
+=== Configuring Management-specific SSL
+When configured to use a custom port, the management server can also be configured with
+its own SSL by using the various `management.server.ssl.*` properties. For example, doing
+so lets a management server be available via HTTP while the main application uses HTTPS,
+as shown in the following property settings:
+
+[source,properties,indent=0]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:store.jks
+	server.ssl.key-password=secret
+	management.server.port=8080
+	management.server.ssl.enabled=false
+----
+
+Alternatively, both the main server and the management server can use SSL but with
+different key stores, as follows:
+
+[source,properties,indent=0]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:main.jks
+	server.ssl.key-password=secret
+	management.server.port=8080
+	management.server.ssl.enabled=true
+	management.server.ssl.key-store=classpath:management.jks
+	management.server.ssl.key-password=secret
+----
+
+
+
+[[production-ready-customizing-management-server-address]]
+=== Customizing the Management Server Address
+You can customize the address that the management endpoints are available on by setting
+the `management.server.address` property. Doing so can be useful if you want to listen
+only on an internal or ops-facing network or to listen only for connections from
+`localhost`.
+
+NOTE: You can only listen on a different address if the port is different from the main
+server port.
+
+The following example `application.properties` does not allow remote management
+connections:
+
+[source,properties,indent=0]
+----
+	management.server.port=8081
+	management.server.address=127.0.0.1
+----
+
+
+
+[[production-ready-disabling-http-endpoints]]
+=== Disabling HTTP Endpoints
+If you do not want to expose endpoints over HTTP, you can set the management port to
+`-1`, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	management.server.port=-1
+----
+
+
+[[production-ready-health-access-restrictions]]
+=== HTTP Health Endpoint Format and Access Restrictions
+The information exposed by the health endpoint varies, depending on whether it is
+accessed anonymously and whether the enclosing application is secure. By default, when
+accessed anonymously in a secure application, any details about the server's health are
+hidden and the endpoint indicates whether the server is up or down.
+
+The following example shows a summarized HTTP response (default for anonymous request):
+
+[source,indent=0]
+----
+	$ curl -i localhost:8080/health
+	HTTP/1.1 200
+	X-Application-Context: application
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
+	Content-Length: 15
+
+	{"status":"UP"}
+----
+
+The following example shows a summarized HTTP response for status "DOWN" (notice the 503
+status code):
+
+[source,indent=0]
+----
+	$ curl -i localhost:8080/health
+	HTTP/1.1 503
+	X-Application-Context: application
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
+	Content-Length: 17
+
+	{"status":"DOWN"}
+----
+
+The following example shows a detailed HTTP response:
+
+[source,indent=0]
+----
+	$ curl -i localhost:8080/health
+	HTTP/1.1 200 OK
+	X-Application-Context: application
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
+	Content-Length: 221
+
+	{
+	  "status" : "UP",
+	  "diskSpace" : {
+	    "status" : "UP",
+	    "total" : 63251804160,
+	    "free" : 31316164608,
+	    "threshold" : 10485760
+	  },
+	  "db" : {
+	    "status" : "UP",
+	    "database" : "H2",
+	    "hello" : 1
+	  }
+	}
+----
+
+
+
+[[production-ready-jmx]]
+== Monitoring and Management over JMX
+Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
+applications. By default, Spring Boot exposes management endpoints as JMX MBeans under
+the `org.springframework.boot` domain.
+
+
+
+[[production-ready-custom-mbean-names]]
+=== Customizing MBean Names
+The name of the MBean is usually generated from the `id` of the endpoint. For example the
+`health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
+
+If your application contains more than one Spring `ApplicationContext`, you may find that
+names clash. To solve this problem, you can set the
+`management.endpoints.jmx.unique-names` property to `true` so that MBean names are always
+unique.
+
+You can also customize the JMX domain under which endpoints are exposed. The following
+settings show an example of doing so in `application.properties`:
+
+[source,properties,indent=0]
+----
+	management.endpoints.jmx.domain=com.example.myapp
+	management.endpoints.jmx.unique-names=true
+----
+
+
+
+[[production-ready-disable-jmx-endpoints]]
+=== Disabling JMX Endpoints
+If you do not want to expose endpoints over JMX, you can set the
+`endpoints.default.jmx.enabled` property to `false`, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	endpoints.default.jmx.enabled=false
+----
+
+
+
+[[production-ready-jolokia]]
+=== Using Jolokia for JMX over HTTP
+Jolokia is a JMX-HTTP bridge that provides an alternative method of accessing JMX beans.
+To use Jolokia, include a dependency to `org.jolokia:jolokia-core`. For example, with
+Maven, you would add the following dependency:
+
+[source,xml,indent=0]
+----
+	<dependency>
+		<groupId>org.jolokia</groupId>
+		<artifactId>jolokia-core</artifactId>
+ 	</dependency>
+----
+
+Jolokia can then be accessed by using `/application/jolokia` on your management HTTP
+server.
+
+
+
+[[production-ready-customizing-jolokia]]
+==== Customizing Jolokia
+Jolokia has a number of settings that you would traditionally configure using servlet
+parameters. With Spring Boot, you can use your `application.properties`. Prefix the
+parameter with `management.jolokia.config.`, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	management.jolokia.config.debug=true
+----
+
+
+
+[[production-ready-disabling-jolokia]]
+==== Disabling Jolokia
+If you use Jolokia but do not want Spring Boot to configure it, set the
+`management.jolokia.enabled` property to `false`, as follows:
+
+[source,properties,indent=0]
+----
+	management.jolokia.enabled=false
+----
+
+
+
+[[production-ready-loggers]]
+== Loggers
+Spring Boot Actuator includes the ability to view and configure the log levels of your
+application at runtime. You can view either the entire list or an individual logger's
+configuration, which is made up of both the explicitly configured logging level as well
+as the effective logging level given to it by the logging framework.  These levels can be
+one of:
+
+* `TRACE`
+* `DEBUG`
+* `INFO`
+* `WARN`
+* `ERROR`
+* `FATAL`
+* `OFF`
+* `null`
+
+`null` indicates that there is no explicit configuration.
+
+
+
+[[production-ready-logger-configuration]]
+=== Configure a Logger
+In order to configure a given logger, you `POST` a partial entity to the resource's URI,
+as shown in the following example:
+
+[source,json,indent=0]
+----
+	{
+		"configuredLevel": "DEBUG"
+	}
+----
+
+TIP: To "reset" the specific level of the logger (and use the default configuration
+instead), you can pass a value of `null` as the `configuredLevel`.
+
+
+
+[[production-ready-metrics]]
+== Metrics
+Spring Boot Actuator provides dependency management and auto-configuration for
+https://micrometer.io[Micrometer], an application metrics facade that supports numerous
+monitoring systems:
+
+- https://github.com/Netflix/atlas[Atlas]
+- https://www.datadoghq.com[Datadog]
+- http://ganglia.sourceforge.net[Ganglia]
+- https://graphiteapp.org[Graphite]
+- https://www.influxdata.com[Influx]
+- https://prometheus.io[Prometheus]
+
+Micrometer provides a separate module for each supported monitoring system. Depending on
+one (or more) of these modules is sufficient to get started with Micrometer in your
+Spring Boot application. To learn more about Micrometer's capabilities, please refer to
+its https://micrometer.io/docs[reference documentation].
+
+
+
+[[production-ready-metrics-spring-mvc]]
+=== Spring MVC Metrics
+Auto-configuration enables the instrumentation of requests handled by Spring MVC. When
+`spring.metrics.web.server.auto-time-requests` is `true`, this instrumentation occurs for
+all requests. Alternatively, when set to `false`, you can enable instrumentation by
+adding `@Timed` to a request-handling method.
+
+By default, metrics are generated with the name, `http.server.requests`. The name can be
+customized by setting the `spring.metrics.web.server.requests-metrics-name` property.
+
+
+
+[[production-ready-metrics-spring-mvc-tags]]
+==== Spring MVC Metric Tags
+By default, Spring MVC-related metrics are tagged with the following information:
+
+- The request's method.
+- The request's URI (templated if possible).
+- The simple class name of any exception that was thrown while handling the request.
+- The response's status.
+
+To customize the tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
+
+
+[[production-ready-metrics-web-flux]]
+=== WebFlux Metrics
+Auto-configuration enables the instrumentation of all requests handled by WebFlux
+controllers. You can also use a helper class, `RouterFunctionMetrics`, to instrument
+applications that use WebFlux's functional programming model.
+
+By default, metrics are generated with the name `http.server.requests`. You can customize
+the name by setting the `spring.metrics.web.server.requests-metrics-name` property.
+
+
+
+[[production-ready-metrics-web-flux-tags]]
+==== WebFlux Metric Tags
+By default, WebFlux-related metrics for the annotation-based programming model are tagged
+with the following information:
+
+- The request's method.
+- The request's URI (templated if possible).
+- The simple class name of any exception that was thrown while handling the request.
+- The response's status.
+
+To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
+
+By default, metrics for the functional programming model are tagged with the following
+information:
+
+- The request's method
+- The request's URI (templated if possible).
+- The response's status.
+
+To customize the tags, use the `defaultTags` method on your `RouterFunctionMetrics`
+instance.
+
+
+
+[[production-ready-metrics-rest-template]]
+=== RestTemplate Metrics
+Auto-configuration customizes the auto-configured `RestTemplate` to enable the
+instrumentation of its requests. `MetricsRestTemplateCustomizer` can be used to customize
+your own `RestTemplate` instances.
+
+By default, metrics are generated with the name, `http.client.requests`. The name can be
+customized by setting the `spring.metrics.web.client.requests-metrics-name` property.
+
+
+
+[[production-ready-metrics-rest-template-tags]]
+==== RestTemplate Metric Tags
+By default, metrics generated by an instrumented `RestTemplate` are tagged with the
+following information:
+
+- The request's method.
+- The request's URI (templated if possible).
+- The response's status.
+- The request URI's host.
+
+
+
+[[production-ready-metrics-jdbc]]
+=== DataSource metrics
+Auto-configuration will enable the instrumentation of all available `DataSources` with a
+metric named `data.source`. Data source instrumentation results in gauges representing
+the currently active, maximum allowed, and minimum allowed connections in the pool. Each
+of these gauges has a name which is prefixed by `data.source` by default. The prefix can
+be customized by using the `spring.metrics.jdbc.datasource-metric-name` property.
+
+Metrics will also be tagged by the name of the `DataSource` computed based on the bean
+name.
+
+
+
+[[production-ready-metrics-integration]]
+=== Spring Integration Metrics
+Auto-configuration enables binding of a number of Spring Integration-related metrics:
+
+.General metrics
+|===
+| Metric | Description
+
+| `spring.integration.channelNames`
+| Number of Spring Integration channels
+
+| `spring.integration.handlerNames`
+| Number of Spring Integration handlers
+
+| `spring.integration.sourceNames`
+| Number of Spring Integration sources
+|===
+
+.Channel metrics
+|===
+| Metric | Description
+
+| `spring.integration.channel.receives`
+| Number of receives
+
+| `spring.integration.channel.sendErrors`
+| Number of failed sends
+
+| `spring.integration.channel.sends`
+| Number of successful sends
+|===
+
+.Handler metrics
+|===
+| Metric | Description
+
+| `spring.integration.handler.duration.max`
+| Maximum handler duration in milliseconds
+
+| `spring.integration.handler.duration.min`
+| Minimum handler duration in milliseconds
+
+| `spring.integration.handler.duration.mean`
+| Mean handler duration in milliseconds
+
+| `spring.integration.handler.activeCount`
+| Number of active handlers
+|===
+
+.Source metrics
+|===
+| Metric | Description
+
+| `spring.integration.source.messages`
+| Number of successful source calls
+|===
+
+
+
+[[production-ready-auditing]]
+== Auditing
+Once Spring Security is in play Spring Boot Actuator has a flexible audit framework that
+publishes events (by default, '`authentication success`', '`failure`' and
+'`access denied`' exceptions). This feature can be very useful for reporting and for
+implementing a lock-out policy based on authentication failures. To customize published
+security events, you can provide your own implementations of
+`AbstractAuthenticationAuditListener` and `AbstractAuthorizationAuditListener`.
+
+You can also use the audit services for your own business events. To do so, either inject
+the existing `AuditEventRepository` into your own components and use that directly or
+publish an `AuditApplicationEvent` with the Spring `ApplicationEventPublisher` (by
+implementing `ApplicationEventPublisherAware`).
+
+
+
+[[production-ready-tracing]]
+== Tracing
+Tracing is automatically enabled for all HTTP requests. You can view the `trace` endpoint
+and obtain basic information about the last 100 requests. The following listing shows
+sample output:
+
+[source,json,indent=0]
+----
+	[{
+		"timestamp": 1394343677415,
+		"info": {
+			"method": "GET",
+			"path": "/trace",
+			"headers": {
+				"request": {
+					"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+					"Connection": "keep-alive",
+					"Accept-Encoding": "gzip, deflate",
+					"User-Agent": "Mozilla/5.0 Gecko/Firefox",
+					"Accept-Language": "en-US,en;q=0.5",
+					"Cookie": "_ga=GA1.1.827067509.1390890128; ..."
+					"Authorization": "Basic ...",
+					"Host": "localhost:8080"
+				},
+				"response": {
+					"Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
+					"X-Application-Context": "application:8080",
+					"Content-Type": "application/json;charset=UTF-8",
+					"status": "200"
+				}
+			}
+		}
+	},{
+		"timestamp": 1394343684465,
+		...
+	}]
+----
+
+By default, the trace includes the following information:
+
+[cols="1,2"]
+|===
+|Name |Description
+
+|Request Headers
+|Headers from the request.
+
+|Response Headers
+|Headers from the response.
+
+|Cookies
+|`Cookie` from request headers and `Set-Cookie` from response headers.
+
+|Errors
+|The error attributes (if any).
+
+|Time Taken
+|The time taken to service the request in milliseconds.
+|===
+
+
+
+[[production-ready-custom-tracing]]
+=== Custom tracing
+If you need to trace additional events, you can inject a
+{sc-spring-boot-actuator}/trace/TraceRepository.{sc-ext}[`TraceRepository`] into your
+Spring beans. The `add` method accepts a single `Map` structure that is converted to JSON
+and logged.
+
+By default, an `InMemoryTraceRepository` that stores the last 100 events is used. If you
+need to expand the capacity, you can define your own instance of the
+`InMemoryTraceRepository` bean. You can also create your own alternative
+`TraceRepository` implementation.
+
+
+
+[[production-ready-process-monitoring]]
+== Process Monitoring
+In the `spring-boot` module, you can find two classes to create files that are often
+useful for process monitoring:
+
+* `ApplicationPidFileWriter` creates a file containing the application PID (by default,
+in the application directory with the file name, `application.pid`).
+* `EmbeddedServerPortFileWriter` creates a file (or files) containing the ports of the
+embedded server (by default, in the application directory with the file name
+`application.port`).
+
+By default, these writers are not activated, but you can enable them in one of the ways
+described in the next section.
+
+
+
+[[production-ready-process-monitoring-configuration]]
+=== Extend Configuration
+In the `META-INF/spring.factories` file, you can activate the listener(s) that writes a
+PID file, as shown in the following example:
+
+[indent=0]
+----
+	org.springframework.context.ApplicationListener=\
+	org.springframework.boot.system.ApplicationPidFileWriter,\
+	org.springframework.boot.system.EmbeddedServerPortFileWriter
+----
+
+
+
+[[production-ready-process-monitoring-programmatically]]
+=== Programmatically
+You can also activate a listener by invoking the `SpringApplication.addListeners(...)`
+method and passing the appropriate `Writer` object. This method also lets you customize
+the file name and path in the `Writer` constructor.
+
+
+
+[[production-ready-cloudfoundry]]
+== Cloud Foundry Support
+Spring Boot's actuator module includes additional support that is activated when you
+deploy to a compatible Cloud Foundry instance. The `/cloudfoundryapplication` path
+provides an alternative secured route to all `@Endpoint` beans.
+
+The extended support lets Cloud Foundry management UIs (such as the web application that
+you can use to view deployed applications) be augmented with Spring Boot actuator
+information. For example, an application status page may include full health information
+instead of the typical "`running`" or "`stopped`" status.
+
+NOTE: The `/cloudfoundryapplication` path is not directly accessible to regular users.
+In order to use the endpoint, a valid UAA token must be passed with the request.
+
+
+
+[[production-ready-cloudfoundry-disable]]
+=== Disabling Extended Cloud Foundry Actuator Support
+If you want to fully disable the `/cloudfoundryapplication` endpoints, you can add the
+following setting to your `application.properties` file:
+
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.cloudfoundry.enabled=false
+----
+
+
+
+[[production-ready-cloudfoundry-ssl]]
+=== Cloud Foundry Self-signed Certificates
+By default, the security verification for `/cloudfoundryapplication` endpoints makes SSL
+calls to various Cloud Foundry services. If your Cloud Foundry UAA or Cloud Controller
+services use self-signed certificates, you need to set the following property:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.cloudfoundry.skip-ssl-validation=true
+----
+
+
+
+[[production-ready-cloudfoundry-custom-security]]
+=== Custom Security Configuration
+If you define custom security configuration and you want extended Cloud Foundry actuator
+support, you should ensure that `/cloudfoundryapplication/**` paths are open. Without a
+direct open route, your Cloud Foundry application manager is not able to obtain endpoint
+data.
+
+For Spring Security, you typically include something like
+`mvcMatchers("/cloudfoundryapplication/**").permitAll()` in your configuration, as shown
+in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/cloudfoundry/CloudFoundryIgnorePathsExample.java[tag=security]
+----
+
+
+
+[[production-ready-whats-next]]
+== What to Read Next
+If you want to explore some of the concepts discussed in this chapter, you can take a
+look at the actuator {github-code}/spring-boot-samples[sample applications]. You also
+might want to read about graphing tools such as http://graphite.wikidot.com/[Graphite].
+
+Otherwise, you can continue on, to read about <<deployment.adoc#deployment, '`deployment
+options`'>> or jump ahead for some in-depth information about Spring Boot's
+_<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.

@@ -17,7 +17,7 @@
 package sample.jetty;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 import org.junit.Test;
@@ -32,7 +32,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StreamUtils;
 
@@ -46,7 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleJettyApplicationTests {
 
 	@Autowired
@@ -69,7 +67,7 @@ public class SampleJettyApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		try (GZIPInputStream inflater = new GZIPInputStream(
 				new ByteArrayInputStream(entity.getBody()))) {
-			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
+			assertThat(StreamUtils.copyToString(inflater, StandardCharsets.UTF_8))
 					.isEqualTo("Hello World");
 		}
 	}

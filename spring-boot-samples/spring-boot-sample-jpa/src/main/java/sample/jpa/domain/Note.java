@@ -28,7 +28,7 @@ import javax.persistence.SequenceGenerator;
 public class Note {
 
 	@Id
-	@SequenceGenerator(name="note_generator", sequenceName="note_sequence", initialValue = 5)
+	@SequenceGenerator(name = "note_generator", sequenceName = "note_sequence", initialValue = 5)
 	@GeneratedValue(generator = "note_generator")
 	private long id;
 
