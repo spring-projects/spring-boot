@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.logging;
 
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,24 +26,24 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ManagementContextConfiguration} for {@link LogFileWebEndpoint}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link LogFileWebEndpoint}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ManagementContextConfiguration
+@Configuration
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
-public class LogFileWebEndpointManagementContextConfiguration {
+public class LogFileWebEndpointAutoConfiguration {
 
 	private final LogFileWebEndpointProperties properties;
 
-	public LogFileWebEndpointManagementContextConfiguration(
-			LogFileWebEndpointProperties properties) {
+	public LogFileWebEndpointAutoConfiguration(LogFileWebEndpointProperties properties) {
 		this.properties = properties;
 	}
 

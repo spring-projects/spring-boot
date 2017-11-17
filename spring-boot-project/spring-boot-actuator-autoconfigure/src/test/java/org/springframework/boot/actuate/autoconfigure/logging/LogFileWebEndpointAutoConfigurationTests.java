@@ -33,20 +33,20 @@ import org.springframework.util.StreamUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LogFileWebEndpointManagementContextConfiguration}.
+ * Tests for {@link LogFileWebEndpointAutoConfiguration}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class LogFileWebEndpointManagementContextConfigurationTests {
+public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(
-					LogFileWebEndpointManagementContextConfiguration.class);
+					LogFileWebEndpointAutoConfiguration.class);
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {

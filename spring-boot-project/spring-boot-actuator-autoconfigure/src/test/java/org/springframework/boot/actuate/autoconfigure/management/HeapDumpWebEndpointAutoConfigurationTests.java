@@ -24,16 +24,16 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HeapDumpWebEndpointManagementContextConfiguration}.
+ * Tests for {@link HeapDumpWebEndpointAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-public class HeapDumpWebEndpointManagementContextConfigurationTests {
+public class HeapDumpWebEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withPropertyValues("management.endpoints.web.expose:*")
 			.withUserConfiguration(
-					HeapDumpWebEndpointManagementContextConfiguration.class);
+					HeapDumpWebEndpointAutoConfiguration.class);
 
 	@Test
 	public void runShouldCreateIndicator() throws Exception {
