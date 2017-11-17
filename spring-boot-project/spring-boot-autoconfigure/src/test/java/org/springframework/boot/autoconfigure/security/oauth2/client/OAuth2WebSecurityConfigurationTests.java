@@ -82,15 +82,6 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent()
-			throws Exception {
-		this.contextRunner
-				.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
-						OAuth2WebSecurityConfiguration.class)
-				.run((context) -> assertThat(getAuthCodeFilters(context)).isEmpty());
-	}
-
-	@Test
 	public void configurationRegistersAuthorizedClientServiceBean() throws Exception {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
@@ -100,6 +91,18 @@ public class OAuth2WebSecurityConfigurationTests {
 							.getField(getAuthCodeFilters(context).get(0),
 									"authorizedClientService");
 					assertThat(authorizedClientService).isEqualTo(bean);
+				});
+	}
+
+	@Test
+	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent()
+			throws Exception {
+		this.contextRunner
+				.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
+					assertThat(getAuthCodeFilters(context)).isEmpty();
+					assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
 				});
 	}
 
