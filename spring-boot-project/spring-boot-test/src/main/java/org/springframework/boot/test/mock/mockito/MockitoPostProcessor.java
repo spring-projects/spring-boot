@@ -19,6 +19,7 @@ package org.springframework.boot.test.mock.mockito;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -228,7 +229,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (StringUtils.hasLength(mockDefinition.getName())) {
 			return mockDefinition.getName();
 		}
-		Set<String> existingBeans = findCandidateBeans(beanFactory, mockDefinition);
+		Set<String> existingBeans = findCandidateBeans(beanFactory, mockDefinition,
+				beanDefinition);
 		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
@@ -253,14 +255,23 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private Set<String> findCandidateBeans(ConfigurableListableBeanFactory beanFactory,
-			MockDefinition mockDefinition) {
+			MockDefinition mockDefinition, RootBeanDefinition mockBeanDefinition) {
 		QualifierDefinition qualifier = mockDefinition.getQualifier();
 		Set<String> candidates = new TreeSet<>();
+		String primaryBeanName = null;
 		for (String candidate : getExistingBeans(beanFactory,
 				mockDefinition.getTypeToMock())) {
 			if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
 				candidates.add(candidate);
 			}
+			if (beanFactory.containsBeanDefinition(candidate) &&
+					beanFactory.getBeanDefinition(candidate).isPrimary()) {
+				primaryBeanName = candidate;
+			}
+		}
+		if (qualifier == null && primaryBeanName != null) {
+			mockBeanDefinition.setPrimary(true);
+			return Collections.singleton(primaryBeanName);
 		}
 		return candidates;
 	}

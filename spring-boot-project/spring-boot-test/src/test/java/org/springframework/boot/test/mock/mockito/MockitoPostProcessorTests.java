@@ -26,9 +26,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.FailingExampleService;
+import org.springframework.boot.test.mock.mockito.example.RealExampleService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,6 +86,46 @@ public class MockitoPostProcessorTests {
 				.isTrue();
 	}
 
+	@Test
+	public void canMockPrimaryBean() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		MockitoPostProcessor.register(context);
+		context.register(MockPrimaryBean.class);
+		context.refresh();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(MockPrimaryBean.class).mock)
+				.isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(ExampleService.class))
+				.isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("examplePrimary", ExampleService.class))
+				.isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("exampleQualified", ExampleService.class))
+				.isMock()).isFalse();
+	}
+
+	@Test
+	public void canMockQualifiedBeanWithPrimaryBeanPresent() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		MockitoPostProcessor.register(context);
+		context.register(MockQualifiedBean.class);
+		context.refresh();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(MockQualifiedBean.class).mock)
+				.isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(ExampleService.class))
+				.isMock()).isFalse();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("examplePrimary", ExampleService.class))
+				.isMock()).isFalse();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("exampleQualified", ExampleService.class))
+				.isMock()).isTrue();
+	}
+
 	@Configuration
 	@MockBean(SomeInterface.class)
 	static class MockedFactoryBean {
@@ -133,6 +175,47 @@ public class MockitoPostProcessorTests {
 		@Qualifier("test")
 		public ExampleService example3() {
 			return new FailingExampleService();
+		}
+
+	}
+
+	@Configuration
+	static class MockPrimaryBean {
+
+		@MockBean(ExampleService.class)
+		private ExampleService mock;
+
+		@Bean
+		@Qualifier("test")
+		public ExampleService exampleQualified() {
+			return new RealExampleService("qualified");
+		}
+
+		@Bean
+		@Primary
+		public ExampleService examplePrimary() {
+			return new RealExampleService("primary");
+		}
+
+	}
+
+	@Configuration
+	static class MockQualifiedBean {
+
+		@MockBean(ExampleService.class)
+		@Qualifier("test")
+		private ExampleService mock;
+
+		@Bean
+		@Qualifier("test")
+		public ExampleService exampleQualified() {
+			return new RealExampleService("qualified");
+		}
+
+		@Bean
+		@Primary
+		public ExampleService examplePrimary() {
+			return new RealExampleService("primary");
 		}
 
 	}
