@@ -43,6 +43,9 @@ public class SimpleProperties {
 	 */
 	private Duration step = Duration.ofSeconds(10);
 
+	/**
+	 * Counting mode.
+	 */
 	private CountingMode mode = CountingMode.Cumulative;
 
 	public boolean getEnabled() {
@@ -62,10 +65,11 @@ public class SimpleProperties {
 	}
 
 	public CountingMode getMode() {
-		return mode;
+		return this.mode;
 	}
 
 	public void setMode(CountingMode mode) {
 		this.mode = mode;
 	}
+
 }

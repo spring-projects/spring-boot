@@ -55,4 +55,5 @@ public class SimplePropertiesConfigAdapter
 	public CountingMode mode() {
 		return get(SimpleProperties::getMode, SimpleConfig.super::mode);
 	}
+
 }
