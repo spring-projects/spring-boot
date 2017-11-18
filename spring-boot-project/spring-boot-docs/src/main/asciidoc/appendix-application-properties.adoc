@@ -998,6 +998,7 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.producer.ssl.keystore-password= # Store password for the key store file.
 	spring.kafka.producer.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.producer.ssl.truststore-password= # Store password for the trust store file.
+	spring.kafka.producer.transaction-id-prefix= # When non empty, enables transaction support for producer.
 	spring.kafka.producer.value-serializer= # Serializer class for values.
 	spring.kafka.properties.*= # Additional properties, common to producers and consumers, used to configure the client.
 	spring.kafka.ssl.key-password= # Password of the private key in the key store file.
