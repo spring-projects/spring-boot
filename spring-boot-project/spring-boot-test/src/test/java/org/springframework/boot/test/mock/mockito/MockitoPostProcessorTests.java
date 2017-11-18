@@ -53,7 +53,7 @@ public class MockitoPostProcessorTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage(
 				"Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace "
+						+ " expected a single matching/primary bean to replace "
 						+ "but found [example1, example2]");
 		context.refresh();
 	}
@@ -66,7 +66,7 @@ public class MockitoPostProcessorTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage(
 				"Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace "
+						+ " expected a single matching/primary bean to replace "
 						+ "but found [example1, example3]");
 		context.refresh();
 	}
