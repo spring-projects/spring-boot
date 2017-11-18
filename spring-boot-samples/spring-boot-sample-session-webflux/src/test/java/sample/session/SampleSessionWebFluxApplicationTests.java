@@ -51,20 +51,16 @@ public class SampleSessionWebFluxApplicationTests {
 	public void userDefinedMappingsSecureByDefault() throws Exception {
 		WebClient webClient = this.webClientBuilder
 				.baseUrl("http://localhost:" + this.port + "/").build();
-
 		ClientResponse response = webClient.get().header("Authorization", getBasicAuth())
 				.exchange().block();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
 		ResponseCookie sessionCookie = response.cookies().getFirst("SESSION");
 		String sessionId = response.bodyToMono(String.class).block();
-
- 		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
+		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
 				.block();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.bodyToMono(String.class).block()).isEqualTo(sessionId);
-
 		Thread.sleep(1000);
-
 		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
 				.block();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
