@@ -186,6 +186,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1,
 				beanName);
 		if (registry.containsBeanDefinition(transformedBeanName)) {
+			BeanDefinition toBeRemovedBeanDefinition = registry
+					.getBeanDefinition(transformedBeanName);
+			beanDefinition.setPrimary(toBeRemovedBeanDefinition.isPrimary());
 			registry.removeBeanDefinition(transformedBeanName);
 		}
 		registry.registerBeanDefinition(transformedBeanName, beanDefinition);
