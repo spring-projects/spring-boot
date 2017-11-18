@@ -75,7 +75,7 @@ public class ReactiveSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void doesNotConfigureDefaultUserIfUserDetailsRepositoryAvailable() {
+	public void doesNotConfigureDefaultUserIfUserDetailsServiceAvailable() {
 		this.contextRunner.withUserConfiguration(UserConfig.class, TestConfig.class)
 				.withConfiguration(
 						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))

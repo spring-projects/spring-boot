@@ -6686,7 +6686,7 @@ It then becomes important not to litter the application's main class with config
 settings that are specific to a particular area of its functionality.
 
 Assume that you are using Spring Batch and you rely on the auto-configuration for it.
-Your could define your `@SpringBootApplication` as follows:
+You could define your `@SpringBootApplication` as follows:
 
 [source,java,indent=0]
 ----
@@ -6708,7 +6708,7 @@ at the same level as your application, as shown in the following example:
 ----
 
 NOTE: Depending on the complexity of your application, you may either have a single
-`ApplicationConfiguration` class for your customizations or one class per domain area when
+`@Configuration` class for your customizations or one class per domain area when
 it makes sense. The latter approach lets you enable it in one of your tests, if necessary,
 with the `@Import` annotation.
 
