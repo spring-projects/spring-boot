@@ -57,8 +57,8 @@ import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -405,12 +405,13 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void defaultApplicationContextForReactiveWeb() throws Exception {
+	public void defaultApplicationContextForReactiveWeb() {
 		SpringApplication application = new SpringApplication(
 				ExampleReactiveWebConfig.class);
 		application.setWebApplicationType(WebApplicationType.REACTIVE);
 		this.context = application.run();
-		assertThat(this.context).isInstanceOf(ReactiveWebServerApplicationContext.class);
+		assertThat(this.context).isInstanceOf(
+				AnnotationConfigReactiveWebServerApplicationContext.class);
 	}
 
 	@Test
