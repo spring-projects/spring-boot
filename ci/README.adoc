@@ -8,7 +8,7 @@ $ fly -t spring set-pipeline -p spring-boot -c ci/pipeline.yml -l ci/parameters.
 ----
 
 NOTE: This assumes that you have credhub integration configured with the appropriate
-secrets
+secrets.
 
 === Release
 

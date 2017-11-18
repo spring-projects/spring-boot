@@ -362,7 +362,7 @@ public class CollectionBinderTests {
 		Bindable<BeanWithNestedCollection> target = Bindable
 				.of(BeanWithNestedCollection.class);
 		BeanWithNestedCollection foo = this.binder.bind("foo", target).get();
-		assertThat(foo.getValue()).isNotNull();
+		assertThat(foo.getValue()).isEqualTo("one");
 		assertThat(foo.getFoos().get(0).getValue()).isEqualTo("two");
 		assertThat(foo.getFoos().get(1).getValue()).isEqualTo("three");
 	}
