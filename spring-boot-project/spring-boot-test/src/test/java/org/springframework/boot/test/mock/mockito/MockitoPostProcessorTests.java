@@ -126,6 +126,44 @@ public class MockitoPostProcessorTests {
 				.isMock()).isTrue();
 	}
 
+	@Test
+	public void canSpyPrimaryBean() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		MockitoPostProcessor.register(context);
+		context.register(SpyPrimaryBean.class);
+		context.refresh();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(MockQualifiedBean.class).mock)
+				.isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(ExampleService.class))
+				.isSpy()).isFalse();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("examplePrimary", ExampleService.class))
+				.isSpy()).isFalse();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("exampleQualified", ExampleService.class))
+				.isSpy()).isTrue();
+	}
+
+	@Configuration
+	static class SpyPrimaryBean {
+		@SpyBean(ExampleService.class)
+		private ExampleService spy;
+
+		@Bean
+		@Qualifier("test")
+		public ExampleService exampleQualified() {
+			return new RealExampleService("qualified");
+		}
+
+		@Bean
+		@Primary
+		public ExampleService examplePrimary() {
+			return new RealExampleService("primary");
+		}
+	}
+
 	@Configuration
 	@MockBean(SomeInterface.class)
 	static class MockedFactoryBean {
