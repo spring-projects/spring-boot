@@ -132,6 +132,7 @@ public class MockitoPostProcessorTests {
 		MockitoPostProcessor.register(context);
 		context.register(SpyPrimaryBean.class);
 		context.refresh();
+		// TODO why is this assert true for spies but false for mocks?
 		assertThat(Mockito.mockingDetails(
 				context.getBean(SpyPrimaryBean.class).spy)
 				.isSpy()).isTrue();
@@ -155,9 +156,11 @@ public class MockitoPostProcessorTests {
 		assertThat(Mockito.mockingDetails(
 				context.getBean(SpyQualifiedBean.class).spy)
 				.isSpy()).isTrue();
+		// TODO why is this assert true for spies but false for mocks?
 		assertThat(Mockito.mockingDetails(
 				context.getBean(ExampleService.class))
 				.isSpy()).isTrue();
+		// TODO figure out why @SpyBean appears to ignore the @Qualifier and thus the asserts fail.
 		assertThat(Mockito.mockingDetails(
 				context.getBean("examplePrimary", ExampleService.class))
 				.isSpy()).isFalse();
