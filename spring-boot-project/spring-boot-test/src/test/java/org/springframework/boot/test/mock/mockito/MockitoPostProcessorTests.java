@@ -146,22 +146,24 @@ public class MockitoPostProcessorTests {
 				.isSpy()).isFalse();
 	}
 
-	@Configuration
-	static class SpyPrimaryBean {
-		@SpyBean(ExampleService.class)
-		private ExampleService spy;
-
-		@Bean
-		@Qualifier("test")
-		public ExampleService exampleQualified() {
-			return new RealExampleService("qualified");
-		}
-
-		@Bean
-		@Primary
-		public ExampleService examplePrimary() {
-			return new RealExampleService("primary");
-		}
+	@Test
+	public void canSpyQualifiedBeanWithPrimaryBeanPresent() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		MockitoPostProcessor.register(context);
+		context.register(SpyQualifiedBean.class);
+		context.refresh();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(SpyQualifiedBean.class).spy)
+				.isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(
+				context.getBean(ExampleService.class))
+				.isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("examplePrimary", ExampleService.class))
+				.isSpy()).isFalse();
+		assertThat(Mockito.mockingDetails(
+				context.getBean("exampleQualified", ExampleService.class))
+				.isSpy()).isTrue();
 	}
 
 	@Configuration
@@ -257,6 +259,46 @@ public class MockitoPostProcessorTests {
 		}
 
 	}
+
+	@Configuration
+	static class SpyPrimaryBean {
+		@SpyBean(ExampleService.class)
+		private ExampleService spy;
+
+		@Bean
+		@Qualifier("test")
+		public ExampleService exampleQualified() {
+			return new RealExampleService("qualified");
+		}
+
+		@Bean
+		@Primary
+		public ExampleService examplePrimary() {
+			return new RealExampleService("primary");
+		}
+	}
+
+	@Configuration
+	static class SpyQualifiedBean {
+
+		@SpyBean(ExampleService.class)
+		@Qualifier("test")
+		private ExampleService spy;
+
+		@Bean
+		@Qualifier("test")
+		public ExampleService exampleQualified() {
+			return new RealExampleService("qualified");
+		}
+
+		@Bean
+		@Primary
+		public ExampleService examplePrimary() {
+			return new RealExampleService("primary");
+		}
+
+	}
+
 
 	static class TestFactoryBean implements FactoryBean<Object> {
 
