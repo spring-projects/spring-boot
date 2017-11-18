@@ -238,9 +238,9 @@ public class ThymeleafAutoConfiguration {
 		@ConditionalOnMissingBean(ISpringWebFluxTemplateEngine.class)
 		public SpringWebFluxTemplateEngine templateEngine() {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
+			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.forEach(engine::addDialect);
-			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			return engine;
 		}
 
