@@ -235,6 +235,11 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (existingBeans.size() == 1) {
 			return existingBeans.iterator().next();
 		}
+		for (String existingBean : existingBeans) {
+			if (beanFactory.getBeanDefinition(existingBean).isPrimary()) {
+				return existingBean;
+			}
+		}
 		throw new IllegalStateException(
 				"Unable to register mock bean " + mockDefinition.getTypeToMock()
 						+ " expected a single matching bean to replace but found "
