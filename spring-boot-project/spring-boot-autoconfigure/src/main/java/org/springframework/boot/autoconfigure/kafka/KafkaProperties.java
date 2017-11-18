@@ -521,7 +521,7 @@ public class KafkaProperties {
 		private Integer retries;
 
 		/**
-		 * When non empty, enables transactional support for producer.
+		 * When non empty, enables transaction support for producer.
 		 */
 		private String transactionIdPrefix;
 

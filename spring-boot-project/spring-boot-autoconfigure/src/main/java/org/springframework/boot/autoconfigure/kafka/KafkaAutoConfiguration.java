@@ -96,11 +96,12 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	public ProducerFactory<?, ?> kafkaProducerFactory() {
-		DefaultKafkaProducerFactory<Object, Object> factory = new DefaultKafkaProducerFactory<>(
+		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(
 				this.properties.buildProducerProperties());
-		KafkaProperties.Producer producer = this.properties.getProducer();
-		if (producer.getTransactionIdPrefix() != null) {
-			factory.setTransactionIdPrefix(producer.getTransactionIdPrefix());
+		String transactionIdPrefix = this.properties.getProducer()
+				.getTransactionIdPrefix();
+		if (transactionIdPrefix != null) {
+			factory.setTransactionIdPrefix(transactionIdPrefix);
 		}
 		return factory;
 	}
@@ -108,7 +109,8 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.producer.transaction-id-prefix")
 	@ConditionalOnMissingBean
-	public KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory) {
+	public KafkaTransactionManager<?, ?> kafkaTransactionManager(
+			ProducerFactory<?, ?> producerFactory) {
 		return new KafkaTransactionManager<>(producerFactory);
 	}
 

@@ -200,9 +200,8 @@ public class KafkaAutoConfigurationTests {
 					assertThat(
 							context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
 									.isEmpty();
-					assertThat(
-							context.getBeansOfType(KafkaTransactionManager.class))
-									.isEmpty();
+					assertThat(context.getBeansOfType(KafkaTransactionManager.class))
+							.isEmpty();
 					assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 					assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 				});
@@ -303,8 +302,7 @@ public class KafkaAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
 					assertThat(dfa.getPropertyValue("controlFlag")).isEqualTo(
 							AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
-					assertThat(
-							context.getBeansOfType(KafkaTransactionManager.class))
+					assertThat(context.getBeansOfType(KafkaTransactionManager.class))
 							.hasSize(1);
 					assertThat(((Map<String, String>) dfa.getPropertyValue("options")))
 							.containsExactly(entry("useKeyTab", "true"));
