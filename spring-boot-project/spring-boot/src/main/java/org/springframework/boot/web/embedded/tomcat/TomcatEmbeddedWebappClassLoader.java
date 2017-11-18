@@ -44,7 +44,6 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 	}
 
 	public TomcatEmbeddedWebappClassLoader() {
-		super();
 	}
 
 	public TomcatEmbeddedWebappClassLoader(ClassLoader parent) {

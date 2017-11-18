@@ -34,7 +34,6 @@ public final class Trace {
 	private final Map<String, Object> info;
 
 	public Trace(Date timestamp, Map<String, Object> info) {
-		super();
 		Assert.notNull(timestamp, "Timestamp must not be null");
 		Assert.notNull(info, "Info must not be null");
 		this.timestamp = timestamp;

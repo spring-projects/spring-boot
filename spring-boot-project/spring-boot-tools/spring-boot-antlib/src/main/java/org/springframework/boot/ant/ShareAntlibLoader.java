@@ -33,7 +33,6 @@ public class ShareAntlibLoader extends Task {
 	private String refid;
 
 	public ShareAntlibLoader(Project project) {
-		super();
 		setProject(project);
 	}
 

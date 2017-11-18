@@ -55,7 +55,6 @@ final class CentralDirectoryFileHeader implements FileHeader {
 
 	CentralDirectoryFileHeader(byte[] header, int headerOffset, AsciiBytes name,
 			byte[] extra, AsciiBytes comment, long localHeaderOffset) {
-		super();
 		this.header = header;
 		this.headerOffset = headerOffset;
 		this.name = name;

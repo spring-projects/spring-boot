@@ -68,7 +68,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * Create a new {@link TomcatServletWebServerFactory} instance.
 	 */
 	public TomcatReactiveWebServerFactory() {
-		super();
 	}
 
 	/**

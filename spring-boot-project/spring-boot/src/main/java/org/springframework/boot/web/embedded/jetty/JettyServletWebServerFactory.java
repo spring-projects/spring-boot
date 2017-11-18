@@ -122,7 +122,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * Create a new {@link JettyServletWebServerFactory} instance.
 	 */
 	public JettyServletWebServerFactory() {
-		super();
 	}
 
 	/**

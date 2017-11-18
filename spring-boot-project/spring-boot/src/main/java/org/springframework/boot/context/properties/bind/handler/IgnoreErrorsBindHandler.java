@@ -32,7 +32,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 public class IgnoreErrorsBindHandler extends AbstractBindHandler {
 
 	public IgnoreErrorsBindHandler() {
-		super();
 	}
 
 	public IgnoreErrorsBindHandler(BindHandler parent) {

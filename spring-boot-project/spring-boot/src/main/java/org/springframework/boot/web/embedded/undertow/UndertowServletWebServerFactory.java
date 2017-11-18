@@ -123,7 +123,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * Create a new {@link UndertowServletWebServerFactory} instance.
 	 */
 	public UndertowServletWebServerFactory() {
-		super();
 		getJsp().setRegistered(false);
 	}
 

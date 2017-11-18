@@ -136,7 +136,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * Create a new {@link TomcatServletWebServerFactory} instance.
 	 */
 	public TomcatServletWebServerFactory() {
-		super();
 	}
 
 	/**

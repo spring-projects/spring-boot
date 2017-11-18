@@ -49,7 +49,6 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	private final Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 
 	public ValidationBindHandler(Validator... validators) {
-		super();
 		this.validators = validators;
 	}
 
