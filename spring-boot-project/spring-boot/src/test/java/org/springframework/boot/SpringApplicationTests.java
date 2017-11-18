@@ -410,8 +410,8 @@ public class SpringApplicationTests {
 				ExampleReactiveWebConfig.class);
 		application.setWebApplicationType(WebApplicationType.REACTIVE);
 		this.context = application.run();
-		assertThat(this.context).isInstanceOf(
-				AnnotationConfigReactiveWebServerApplicationContext.class);
+		assertThat(this.context)
+				.isInstanceOf(AnnotationConfigReactiveWebServerApplicationContext.class);
 	}
 
 	@Test

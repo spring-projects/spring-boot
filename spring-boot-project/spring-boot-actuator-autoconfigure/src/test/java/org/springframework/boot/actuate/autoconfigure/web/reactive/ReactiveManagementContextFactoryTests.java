@@ -41,15 +41,18 @@ public class ReactiveManagementContextFactoryTests {
 	private AnnotationConfigReactiveWebServerApplicationContext parent = new AnnotationConfigReactiveWebServerApplicationContext();
 
 	@Test
-	public void createManagementContextShouldCreateChildContextWithConfigClasses() throws Exception {
+	public void createManagementContextShouldCreateChildContextWithConfigClasses()
+			throws Exception {
 		this.parent.register(ParentConfiguration.class);
 		this.parent.refresh();
-		AnnotationConfigReactiveWebServerApplicationContext childContext = (AnnotationConfigReactiveWebServerApplicationContext) this.factory.createManagementContext(this.parent,
-				TestConfiguration1.class, TestConfiguration2.class);
+		AnnotationConfigReactiveWebServerApplicationContext childContext = (AnnotationConfigReactiveWebServerApplicationContext) this.factory
+				.createManagementContext(this.parent, TestConfiguration1.class,
+						TestConfiguration2.class);
 		childContext.refresh();
 		assertThat(childContext.getBean(TestConfiguration1.class)).isNotNull();
 		assertThat(childContext.getBean(TestConfiguration2.class)).isNotNull();
-		assertThat(childContext.getBean(ReactiveWebServerAutoConfiguration.class)).isNotNull();
+		assertThat(childContext.getBean(ReactiveWebServerAutoConfiguration.class))
+				.isNotNull();
 	}
 
 	@Configuration
