@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -42,8 +45,9 @@ class ReactiveManagementContextFactory implements ManagementContextFactory {
 			ApplicationContext parent, Class<?>... configClasses) {
 		AnnotationConfigReactiveWebServerApplicationContext child = new AnnotationConfigReactiveWebServerApplicationContext();
 		child.setParent(parent);
-		child.register(configClasses);
-		child.register(ReactiveWebServerAutoConfiguration.class);
+		List<Class<?>> combinedClasses = new ArrayList<>(Arrays.asList(configClasses));
+		combinedClasses.add(ReactiveWebServerAutoConfiguration.class);
+		child.register(combinedClasses.toArray(new Class<?>[combinedClasses.size()]));
 		registerReactiveWebServerFactory(parent, child);
 		return child;
 	}
