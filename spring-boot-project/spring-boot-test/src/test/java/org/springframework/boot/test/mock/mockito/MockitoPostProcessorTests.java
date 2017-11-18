@@ -133,17 +133,17 @@ public class MockitoPostProcessorTests {
 		context.register(SpyPrimaryBean.class);
 		context.refresh();
 		assertThat(Mockito.mockingDetails(
-				context.getBean(MockQualifiedBean.class).mock)
+				context.getBean(SpyPrimaryBean.class).spy)
 				.isSpy()).isTrue();
 		assertThat(Mockito.mockingDetails(
 				context.getBean(ExampleService.class))
-				.isSpy()).isFalse();
+				.isSpy()).isTrue();
 		assertThat(Mockito.mockingDetails(
 				context.getBean("examplePrimary", ExampleService.class))
-				.isSpy()).isFalse();
+				.isSpy()).isTrue();
 		assertThat(Mockito.mockingDetails(
 				context.getBean("exampleQualified", ExampleService.class))
-				.isSpy()).isTrue();
+				.isSpy()).isFalse();
 	}
 
 	@Configuration
