@@ -72,7 +72,7 @@ public class AbstractConfigurableWebServerFactory
 	}
 
 	/**
-	 * The port that the web server server listens on.
+	 * The port that the web server listens on.
 	 * @return the port
 	 */
 	public int getPort() {
