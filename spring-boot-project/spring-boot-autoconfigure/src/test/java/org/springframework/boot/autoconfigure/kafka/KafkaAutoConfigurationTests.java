@@ -48,6 +48,7 @@ import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Gary Russell
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Nakul Mishra
  */
 public class KafkaAutoConfigurationTests {
 
@@ -198,6 +200,9 @@ public class KafkaAutoConfigurationTests {
 					assertThat(
 							context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
 									.isEmpty();
+					assertThat(
+							context.getBeansOfType(KafkaTransactionManager.class))
+									.isEmpty();
 					assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 					assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 				});
@@ -256,6 +261,7 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.listener.poll-timeout=2000",
 						"spring.kafka.listener.type=batch",
 						"spring.kafka.jaas.enabled=true",
+						"spring.kafka.producer.transaction-id-prefix=foo",
 						"spring.kafka.jaas.login-module=foo",
 						"spring.kafka.jaas.control-flag=REQUISITE",
 						"spring.kafka.jaas.options.useKeyTab=true")
@@ -297,6 +303,9 @@ public class KafkaAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
 					assertThat(dfa.getPropertyValue("controlFlag")).isEqualTo(
 							AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
+					assertThat(
+							context.getBeansOfType(KafkaTransactionManager.class))
+							.hasSize(1);
 					assertThat(((Map<String, String>) dfa.getPropertyValue("options")))
 							.containsExactly(entry("useKeyTab", "true"));
 				});

@@ -45,6 +45,7 @@ import org.springframework.util.CollectionUtils;
  * @author Gary Russell
  * @author Stephane Nicoll
  * @author Artem Bilan
+ * @author Nakul Mishra
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -520,6 +521,11 @@ public class KafkaProperties {
 		private Integer retries;
 
 		/**
+		 * When non empty, enables transactional support for producer.
+		 */
+		private String transactionIdPrefix;
+
+		/**
 		 * Additional producer-specific properties used to configure the client.
 		 */
 		private final Map<String, String> properties = new HashMap<>();
@@ -598,6 +604,14 @@ public class KafkaProperties {
 
 		public void setRetries(Integer retries) {
 			this.retries = retries;
+		}
+
+		public String getTransactionIdPrefix() {
+			return this.transactionIdPrefix;
+		}
+
+		public void setTransactionIdPrefix(String transactionIdPrefix) {
+			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
 		public Map<String, String> getProperties() {
