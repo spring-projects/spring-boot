@@ -61,6 +61,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nullable;
+
 /**
  * A {@link BeanFactoryPostProcessor} used to register and inject
  * {@link MockBean @MockBeans} with the {@link ApplicationContext}. An initial set of
@@ -181,16 +183,19 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	private void registerMock(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinitionRegistry registry, MockDefinition definition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
+
 		String beanName = getBeanName(beanFactory, registry, definition, beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
-		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1,
-				beanName);
+
 		if (registry.containsBeanDefinition(transformedBeanName)) {
 			BeanDefinition toBeRemovedBeanDefinition = registry
 					.getBeanDefinition(transformedBeanName);
 			beanDefinition.setPrimary(toBeRemovedBeanDefinition.isPrimary());
 			registry.removeBeanDefinition(transformedBeanName);
 		}
+
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1,
+				beanName);
 		registry.registerBeanDefinition(transformedBeanName, beanDefinition);
 		Object mock = createMock(definition, beanName);
 		beanFactory.registerSingleton(transformedBeanName, mock);
@@ -228,30 +233,68 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	private String getBeanName(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinitionRegistry registry, MockDefinition mockDefinition,
 			RootBeanDefinition beanDefinition) {
-		if (StringUtils.hasLength(mockDefinition.getName())) {
-			return mockDefinition.getName();
-		}
 		Set<String> existingBeans = findCandidateBeans(beanFactory, mockDefinition);
 		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
+		String beanName = findBeanName(existingBeans, registry, mockDefinition);
+		if (beanName == null) {
+			throw new IllegalStateException("Unable to register mock bean "
+					+ mockDefinition.getTypeToMock()
+					+ " expected a single matching/primary bean to replace but found "
+					+ existingBeans);
+		}
+		return beanName;
+	}
+
+	@Nullable
+	private String findBeanName(Set<String> existingBeans,
+			BeanDefinitionRegistry registry, Definition definition) {
+		if (StringUtils.hasText(definition.getName())) {
+			return definition.getName();
+		}
 		if (existingBeans.size() == 1) {
 			return existingBeans.iterator().next();
 		}
-		for (String existingBean : existingBeans) {
-			if (beanFactory.getBeanDefinition(existingBean).isPrimary()) {
-				return existingBean;
+		return determinePrimaryCandidate(registry, existingBeans, definition.getType());
+	}
+
+	@Nullable
+	private String determineBeanName(Set<String> existingBeans, SpyDefinition definition,
+									 BeanDefinitionRegistry registry) {
+		if (StringUtils.hasText(definition.getName())) {
+			return definition.getName();
+		}
+		if (existingBeans.size() == 1) {
+			return existingBeans.iterator().next();
+		}
+		return determinePrimaryCandidate(registry, existingBeans,
+				definition.getTypeToSpy());
+	}
+
+	@Nullable
+	private String determinePrimaryCandidate(BeanDefinitionRegistry registry,
+											 Set<String> existingBeanNames, ResolvableType type) {
+		String primaryBeanName = null;
+		for (String existingBeanName : existingBeanNames) {
+			BeanDefinition beanDefinition = registry.getBeanDefinition(existingBeanName);
+			if (beanDefinition.isPrimary()) {
+				if (primaryBeanName != null) {
+					throw new NoUniqueBeanDefinitionException(type.resolve(),
+							existingBeanNames.size(),
+							"more than one 'primary' bean found among candidates: "
+									+ existingBeanNames);
+				}
+				primaryBeanName = existingBeanName;
 			}
 		}
-		throw new IllegalStateException(
-				"Unable to register mock bean " + mockDefinition.getTypeToMock()
-						+ " expected a single matching/primary bean to replace but found "
-						+ existingBeans);
+		return primaryBeanName;
 	}
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
-		Set<String> existingBeans = getExistingBeans(beanFactory, definition.getTypeToSpy());
+		Set<String> existingBeans = getExistingBeans(beanFactory,
+				definition.getTypeToSpy());
 		if (ObjectUtils.isEmpty(existingBeans)) {
 			createSpy(registry, definition, field);
 		}
@@ -264,8 +307,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			Definition definition) {
 		QualifierDefinition qualifier = definition.getQualifier();
 		Set<String> candidates = new TreeSet<>();
-		for (String candidate : getExistingBeans(beanFactory,
-				definition.getType())) {
+		for (String candidate : getExistingBeans(beanFactory, definition.getType())) {
 			if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
 				candidates.add(candidate);
 			}
@@ -310,7 +352,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private void registerSpies(BeanDefinitionRegistry registry, SpyDefinition definition,
-							   Field field, Set<String> existingBeans) {
+			Field field, Set<String> existingBeans) {
 		try {
 			registerSpy(definition, field,
 					determineBeanName(existingBeans, definition, registry));
@@ -319,36 +361,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			throw new IllegalStateException(
 					"Unable to register spy bean " + definition.getTypeToSpy(), ex);
 		}
-	}
-
-	private String determineBeanName(Set<String> existingBeans, SpyDefinition definition,
-									 BeanDefinitionRegistry registry) {
-		if (StringUtils.hasText(definition.getName())) {
-			return definition.getName();
-		}
-		if (existingBeans.size() == 1) {
-			return existingBeans.iterator().next();
-		}
-		return determinePrimaryCandidate(registry, existingBeans,
-				definition.getTypeToSpy());
-	}
-
-	private String determinePrimaryCandidate(BeanDefinitionRegistry registry,
-											 Set<String> existingBeanNames, ResolvableType type) {
-		String primaryBeanName = null;
-		for (String existingBeanName : existingBeanNames) {
-			BeanDefinition beanDefinition = registry.getBeanDefinition(existingBeanName);
-			if (beanDefinition.isPrimary()) {
-				if (primaryBeanName != null) {
-					throw new NoUniqueBeanDefinitionException(type.resolve(),
-							existingBeanNames.size(),
-							"more than one 'primary' bean found among candidates: "
-									+ existingBeanNames);
-				}
-				primaryBeanName = existingBeanName;
-			}
-		}
-		return primaryBeanName;
 	}
 
 	private void registerSpy(SpyDefinition definition, Field field, String beanName) {
