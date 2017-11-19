@@ -18,15 +18,12 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
-import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -35,7 +32,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -45,23 +41,17 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueH
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.ResolvableType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-
-import javax.annotation.Nullable;
 
 /**
  * A {@link BeanFactoryPostProcessor} used to register and inject
@@ -79,8 +69,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		implements BeanClassLoaderAware, BeanFactoryAware, BeanFactoryPostProcessor,
 		Ordered {
 
-	private static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
-
 	private static final String BEAN_NAME = MockitoPostProcessor.class.getName();
 
 	private static final String CONFIGURATION_CLASS_ATTRIBUTE = Conventions
@@ -92,8 +80,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	private ClassLoader classLoader;
 
 	private BeanFactory beanFactory;
-
-	private final BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 
 	private final MockitoBeans mockitoBeans = new MockitoBeans();
 
@@ -184,7 +170,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			BeanDefinitionRegistry registry, MockDefinition definition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
 
-		String beanName = getOrGenerateBeanName(beanFactory, registry, definition,
+		String beanName = MockitoBeanNameFinder.getOrGenerateBeanName(beanFactory, registry, definition,
 				beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 
@@ -231,99 +217,13 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		return mockDefinition.createMock(name + " bean");
 	}
 
-	private String getOrGenerateBeanName(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinitionRegistry registry, Definition definition,
-			RootBeanDefinition beanDefinition) {
-		Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
-		if (existingBeans.isEmpty()) {
-			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
-		}
-		return getBeanName(registry, existingBeans, definition);
-	}
-
-	private String getBeanName(BeanDefinitionRegistry registry,
-			Set<String> existingBeanNames, Definition definition) {
-		if (StringUtils.hasText(definition.getName())) {
-			return definition.getName();
-		}
-		if (existingBeanNames.size() == 1) {
-			return existingBeanNames.iterator().next();
-		}
-		String beanName = findPrimaryBeanName(registry, existingBeanNames,
-				definition.getType());
-		if (beanName == null) {
-			throw new IllegalStateException("Unable to register bean "
-					+ definition.getType()
-					+ " expected a single matching/primary bean to replace but found "
-					+ existingBeanNames);
-		}
-		return beanName;
-	}
-
-	@Nullable
-	private String findPrimaryBeanName(BeanDefinitionRegistry registry,
-			Set<String> existingBeanNames, ResolvableType type) {
-		String primaryBeanName = null;
-		for (String existingBeanName : existingBeanNames) {
-			BeanDefinition beanDefinition = registry.getBeanDefinition(existingBeanName);
-			if (beanDefinition.isPrimary()) {
-				if (primaryBeanName != null) {
-					throw new NoUniqueBeanDefinitionException(type.resolve(),
-							existingBeanNames.size(),
-							"more than one 'primary' bean found among candidates: "
-									+ existingBeanNames);
-				}
-				primaryBeanName = existingBeanName;
-			}
-		}
-		return primaryBeanName;
-	}
-
-	private Set<String> findCandidateBeans(ConfigurableListableBeanFactory beanFactory,
-			Definition definition) {
-		QualifierDefinition qualifier = definition.getQualifier();
-		Set<String> candidates = new TreeSet<>();
-		for (String candidate : getExistingBeans(beanFactory, definition.getType())) {
-			if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
-				candidates.add(candidate);
-			}
-		}
-		return candidates;
-	}
-
-	private Set<String> getExistingBeans(ConfigurableListableBeanFactory beanFactory,
-			ResolvableType type) {
-		Set<String> beans = new LinkedHashSet<>(
-				Arrays.asList(beanFactory.getBeanNamesForType(type)));
-		String resolvedTypeName = type.resolve(Object.class).getName();
-		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class)) {
-			beanName = BeanFactoryUtils.transformedBeanName(beanName);
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			if (resolvedTypeName
-					.equals(beanDefinition.getAttribute(FACTORY_BEAN_OBJECT_TYPE))) {
-				beans.add(beanName);
-			}
-		}
-		beans.removeIf(this::isScopedTarget);
-		return beans;
-	}
-
-	private boolean isScopedTarget(String beanName) {
-		try {
-			return ScopedProxyUtils.isScopedTarget(beanName);
-		}
-		catch (Throwable ex) {
-			return false;
-		}
-	}
-
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
 							 BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
 
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
 				definition.getTypeToSpy().resolve());
 
-		String beanName = getOrGenerateBeanName(beanFactory, registry, definition,
+		String beanName = MockitoBeanNameFinder.getOrGenerateBeanName(beanFactory, registry, definition,
 				beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 
@@ -526,3 +426,5 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 }
+
+
