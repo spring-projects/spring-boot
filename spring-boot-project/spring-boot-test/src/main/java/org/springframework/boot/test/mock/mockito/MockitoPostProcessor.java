@@ -260,18 +260,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	@Nullable
-	private String determineBeanName(Set<String> existingBeans, SpyDefinition definition,
-			BeanDefinitionRegistry registry) {
-		if (StringUtils.hasText(definition.getName())) {
-			return definition.getName();
-		}
-		if (existingBeans.size() == 1) {
-			return existingBeans.iterator().next();
-		}
-		return findPrimaryBeanName(registry, existingBeans, definition.getTypeToSpy());
-	}
-
-	@Nullable
 	private String findPrimaryBeanName(BeanDefinitionRegistry registry,
 			Set<String> existingBeanNames, ResolvableType type) {
 		String primaryBeanName = null;
@@ -298,8 +286,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			createSpy(registry, definition, field);
 		}
 		else {
-			registerSpy(definition, field,
-					determineBeanName(existingBeans, definition, registry));
+			String beanName = findBeanName(registry, existingBeans, definition);
+			registerSpy(definition, field, beanName);
 		}
 	}
 
