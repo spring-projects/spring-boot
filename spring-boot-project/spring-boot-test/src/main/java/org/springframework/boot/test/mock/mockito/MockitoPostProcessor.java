@@ -281,8 +281,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
-		Set<String> existingBeans = getExistingBeans(beanFactory,
-				definition.getTypeToSpy());
+		Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
 		if (ObjectUtils.isEmpty(existingBeans)) {
 			createSpy(registry, definition, field);
 		}
