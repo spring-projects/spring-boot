@@ -261,11 +261,11 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private Set<String> findCandidateBeans(ConfigurableListableBeanFactory beanFactory,
-			MockDefinition mockDefinition) {
-		QualifierDefinition qualifier = mockDefinition.getQualifier();
+			Definition definition) {
+		QualifierDefinition qualifier = definition.getQualifier();
 		Set<String> candidates = new TreeSet<>();
 		for (String candidate : getExistingBeans(beanFactory,
-				mockDefinition.getTypeToMock())) {
+				definition.getType())) {
 			if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
 				candidates.add(candidate);
 			}
