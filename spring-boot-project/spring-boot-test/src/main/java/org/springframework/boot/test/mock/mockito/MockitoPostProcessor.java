@@ -237,7 +237,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
-		String beanName = findBeanName(existingBeans, registry, mockDefinition);
+		String beanName = findBeanName(registry, existingBeans, mockDefinition);
 		if (beanName == null) {
 			throw new IllegalStateException("Unable to register mock bean "
 					+ mockDefinition.getTypeToMock()
@@ -248,15 +248,15 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	@Nullable
-	private String findBeanName(Set<String> existingBeans,
-			BeanDefinitionRegistry registry, Definition definition) {
+	private String findBeanName(BeanDefinitionRegistry registry,
+			Set<String> existingBeanNames, Definition definition) {
 		if (StringUtils.hasText(definition.getName())) {
 			return definition.getName();
 		}
-		if (existingBeans.size() == 1) {
-			return existingBeans.iterator().next();
+		if (existingBeanNames.size() == 1) {
+			return existingBeanNames.iterator().next();
 		}
-		return determinePrimaryCandidate(registry, existingBeans, definition.getType());
+		return findPrimaryBeanName(registry, existingBeanNames, definition.getType());
 	}
 
 	@Nullable
@@ -268,13 +268,13 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (existingBeans.size() == 1) {
 			return existingBeans.iterator().next();
 		}
-		return determinePrimaryCandidate(registry, existingBeans,
+		return findPrimaryBeanName(registry, existingBeans,
 				definition.getTypeToSpy());
 	}
 
 	@Nullable
-	private String determinePrimaryCandidate(BeanDefinitionRegistry registry,
-											 Set<String> existingBeanNames, ResolvableType type) {
+	private String findPrimaryBeanName(BeanDefinitionRegistry registry,
+									   Set<String> existingBeanNames, ResolvableType type) {
 		String primaryBeanName = null;
 		for (String existingBeanName : existingBeanNames) {
 			BeanDefinition beanDefinition = registry.getBeanDefinition(existingBeanName);
