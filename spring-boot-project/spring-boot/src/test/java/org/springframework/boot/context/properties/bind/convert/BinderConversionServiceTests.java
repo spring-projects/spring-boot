@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind.convert;
 
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.time.Duration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -151,6 +152,13 @@ public class BinderConversionServiceTests {
 		Class<?> converted = this.service.convert(InputStream.class.getName(),
 				Class.class);
 		assertThat(converted).isEqualTo(InputStream.class);
+	}
+
+	@Test
+	public void conversionServiceShouldSupportStringToDuration() throws Exception {
+		this.service = new BinderConversionService(null);
+		Duration converted = this.service.convert("10s", Duration.class);
+		assertThat(converted).isEqualTo(Duration.ofSeconds(10));
 	}
 
 	enum TestEnum {
