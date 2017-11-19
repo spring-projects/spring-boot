@@ -232,13 +232,13 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private String getOrGenerateBeanName(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinitionRegistry registry, MockDefinition mockDefinition,
+			BeanDefinitionRegistry registry, Definition definition,
 			RootBeanDefinition beanDefinition) {
-		Set<String> existingBeans = findCandidateBeans(beanFactory, mockDefinition);
+		Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
 		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
-		return getBeanName(registry, existingBeans, mockDefinition);
+		return getBeanName(registry, existingBeans, definition);
 	}
 
 	private String getBeanName(BeanDefinitionRegistry registry,
@@ -319,27 +319,22 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
 							 BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
-		Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
-		if (ObjectUtils.isEmpty(existingBeans)) {
-			createSpy(registry, definition, field);
-		}
-		else {
-			String beanName = getBeanName(registry, existingBeans, definition);
-			registerSpy(definition, field, beanName);
-		}
-	}
 
-	private void createSpy(BeanDefinitionRegistry registry, SpyDefinition definition,
-			Field field) {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
 				definition.getTypeToSpy().resolve());
-		String beanName = this.beanNameGenerator.generateBeanName(beanDefinition,
-				registry);
-		registry.registerBeanDefinition(beanName, beanDefinition);
-		registerSpy(definition, field, beanName);
-	}
 
-	private void registerSpy(SpyDefinition definition, Field field, String beanName) {
+		String beanName = getOrGenerateBeanName(beanFactory, registry, definition,
+				beanDefinition);
+		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
+
+		// as spy beans need the complete original bean, we can only
+		// create the the spy bean if there's nothing to be replaced
+		// it will be created via a callback to createSpyIfNecessary from the
+		// SpyPostProcessor
+		if(!registry.containsBeanDefinition(transformedBeanName)) {
+			registry.registerBeanDefinition(beanName, beanDefinition);
+		}
+
 		this.spies.put(beanName, definition);
 		this.beanNameRegistry.put(definition, beanName);
 		if (field != null) {
