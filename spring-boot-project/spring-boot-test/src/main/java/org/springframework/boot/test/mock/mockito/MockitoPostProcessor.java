@@ -334,18 +334,18 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private String determinePrimaryCandidate(BeanDefinitionRegistry registry,
-											 Set<String> candidateBeanNames, ResolvableType type) {
+											 Set<String> existingBeanNames, ResolvableType type) {
 		String primaryBeanName = null;
-		for (String candidateBeanName : candidateBeanNames) {
-			BeanDefinition beanDefinition = registry.getBeanDefinition(candidateBeanName);
+		for (String existingBeanName : existingBeanNames) {
+			BeanDefinition beanDefinition = registry.getBeanDefinition(existingBeanName);
 			if (beanDefinition.isPrimary()) {
 				if (primaryBeanName != null) {
 					throw new NoUniqueBeanDefinitionException(type.resolve(),
-							candidateBeanNames.size(),
+							existingBeanNames.size(),
 							"more than one 'primary' bean found among candidates: "
-									+ candidateBeanNames);
+									+ existingBeanNames);
 				}
-				primaryBeanName = candidateBeanName;
+				primaryBeanName = existingBeanName;
 			}
 		}
 		return primaryBeanName;
