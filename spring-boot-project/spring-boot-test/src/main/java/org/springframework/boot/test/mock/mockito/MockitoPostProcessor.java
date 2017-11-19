@@ -298,7 +298,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			createSpy(registry, definition, field);
 		}
 		else {
-			registerSpies(registry, definition, field, existingBeans);
+			registerSpy(definition, field,
+					determineBeanName(existingBeans, definition, registry));
 		}
 	}
 
@@ -348,12 +349,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 				registry);
 		registry.registerBeanDefinition(beanName, beanDefinition);
 		registerSpy(definition, field, beanName);
-	}
-
-	private void registerSpies(BeanDefinitionRegistry registry, SpyDefinition definition,
-			Field field, Set<String> existingBeans) {
-		registerSpy(definition, field,
-				determineBeanName(existingBeans, definition, registry));
 	}
 
 	private void registerSpy(SpyDefinition definition, Field field, String beanName) {
