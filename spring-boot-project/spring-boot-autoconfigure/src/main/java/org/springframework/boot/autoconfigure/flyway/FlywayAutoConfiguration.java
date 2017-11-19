@@ -16,12 +16,13 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -117,28 +118,6 @@ public class FlywayAutoConfiguration {
 			this.flywayCallbacks = flywayCallbacks.getIfAvailable(Collections::emptyList);
 		}
 
-		@PostConstruct
-		public void checkLocationExists() {
-			if (this.properties.isCheckLocation()) {
-				Assert.state(!this.properties.getLocations().isEmpty(),
-						"Migration script locations not configured");
-				boolean exists = hasAtLeastOneLocation();
-				Assert.state(exists,
-						() -> "Cannot find migrations location in: " + this.properties
-								.getLocations()
-						+ " (please add migrations or check your Flyway configuration)");
-			}
-		}
-
-		private boolean hasAtLeastOneLocation() {
-			for (String location : this.properties.getLocations()) {
-				if (this.resourceLoader.getResource(location).exists()) {
-					return true;
-				}
-			}
-			return false;
-		}
-
 		@Bean
 		@ConfigurationProperties(prefix = "spring.flyway")
 		public Flyway flyway() {
@@ -156,8 +135,32 @@ public class FlywayAutoConfiguration {
 			}
 			flyway.setCallbacks(this.flywayCallbacks
 					.toArray(new FlywayCallback[this.flywayCallbacks.size()]));
-			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
+			String[] locations = new LocationResolver(flyway.getDataSource())
+					.resolveLocations(this.properties.getLocations());
+			checkLocationExists(locations);
+			flyway.setLocations(locations);
 			return flyway;
+		}
+
+		private void checkLocationExists(String... locations) {
+			if (this.properties.isCheckLocation()) {
+				Assert.state(locations.length != 0,
+						"Migration script locations not configured");
+				boolean exists = hasAtLeastOneLocation(locations);
+				Assert.state(exists,
+						() -> "Cannot find migrations location in: " + Arrays.asList(
+								locations)
+						+ " (please add migrations or check your Flyway configuration)");
+			}
+		}
+
+		private boolean hasAtLeastOneLocation(String... locations) {
+			for (String location : locations) {
+				if (this.resourceLoader.getResource(location).exists()) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Bean
@@ -202,27 +205,57 @@ public class FlywayAutoConfiguration {
 
 	private static class SpringBootFlyway extends Flyway {
 
-		private static final String VENDOR_PLACEHOLDER = "{vendor}";
-
 		@Override
 		public void setLocations(String... locations) {
+			super.setLocations(
+					new LocationResolver(getDataSource()).resolveLocations(locations));
+		}
+
+	}
+
+	private static class LocationResolver {
+
+		private static final String VENDOR_PLACEHOLDER = "{vendor}";
+
+		private final DataSource dataSource;
+
+		public LocationResolver(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
+
+		public String[] resolveLocations(Collection<String> locations) {
+			return resolveLocations(locations.toArray(new String[locations.size()]));
+		}
+
+		public String[] resolveLocations(String[] locations) {
 			if (usesVendorLocation(locations)) {
-				try {
-					String url = (String) JdbcUtils
-							.extractDatabaseMetaData(getDataSource(), "getURL");
-					DatabaseDriver vendor = DatabaseDriver.fromJdbcUrl(url);
-					if (vendor != DatabaseDriver.UNKNOWN) {
-						for (int i = 0; i < locations.length; i++) {
-							locations[i] = locations[i].replace(VENDOR_PLACEHOLDER,
-									vendor.getId());
-						}
-					}
-				}
-				catch (MetaDataAccessException ex) {
-					throw new IllegalStateException(ex);
-				}
+				DatabaseDriver databaseDriver = getDatabaseDriver();
+				return replaceVendorLocations(locations, databaseDriver);
 			}
-			super.setLocations(locations);
+			return locations;
+		}
+
+		private String[] replaceVendorLocations(String[] locations,
+				DatabaseDriver databaseDriver) {
+			if (databaseDriver == DatabaseDriver.UNKNOWN) {
+				return locations;
+			}
+			String vendor = databaseDriver.getId();
+			return Arrays.stream(locations)
+					.map((location) -> location.replace(VENDOR_PLACEHOLDER, vendor))
+					.toArray(String[]::new);
+		}
+
+		private DatabaseDriver getDatabaseDriver() {
+			try {
+				String url = (String) JdbcUtils.extractDatabaseMetaData(this.dataSource,
+						"getURL");
+				return DatabaseDriver.fromJdbcUrl(url);
+			}
+			catch (MetaDataAccessException ex) {
+				throw new IllegalStateException(ex);
+			}
+
 		}
 
 		private boolean usesVendorLocation(String... locations) {

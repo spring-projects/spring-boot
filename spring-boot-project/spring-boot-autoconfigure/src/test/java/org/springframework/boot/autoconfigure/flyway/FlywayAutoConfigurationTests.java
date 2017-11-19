@@ -256,6 +256,19 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void useOneLocationWithVendorDirectory() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.flyway.locations=classpath:db/vendors/{vendor}")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getLocations())
+							.containsExactly("classpath:db/vendors/h2");
+				});
+	}
+
+	@Test
 	public void callbacksAreConfiguredAndOrdered() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				CallbackConfiguration.class).run((context) -> {
