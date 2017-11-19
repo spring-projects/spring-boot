@@ -237,17 +237,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
-		String beanName = findBeanName(registry, existingBeans, mockDefinition);
-		if (beanName == null) {
-			throw new IllegalStateException("Unable to register mock bean "
-					+ mockDefinition.getTypeToMock()
-					+ " expected a single matching/primary bean to replace but found "
-					+ existingBeans);
-		}
-		return beanName;
+		return findBeanName(registry, existingBeans, mockDefinition);
 	}
 
-	@Nullable
 	private String findBeanName(BeanDefinitionRegistry registry,
 			Set<String> existingBeanNames, Definition definition) {
 		if (StringUtils.hasText(definition.getName())) {
@@ -256,7 +248,14 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (existingBeanNames.size() == 1) {
 			return existingBeanNames.iterator().next();
 		}
-		return findPrimaryBeanName(registry, existingBeanNames, definition.getType());
+		String beanName = findPrimaryBeanName(registry, existingBeanNames, definition.getType());
+		if (beanName == null) {
+			throw new IllegalStateException("Unable to register bean "
+					+ definition.getType()
+					+ " expected a single matching/primary bean to replace but found "
+					+ existingBeanNames);
+		}
+		return beanName;
 	}
 
 	@Nullable
