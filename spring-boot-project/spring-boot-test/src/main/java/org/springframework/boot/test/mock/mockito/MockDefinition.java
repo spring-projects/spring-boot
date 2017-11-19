@@ -40,8 +40,6 @@ class MockDefinition extends Definition {
 
 	private static final int MULTIPLIER = 31;
 
-	private final ResolvableType typeToMock;
-
 	private final Set<Class<?>> extraInterfaces;
 
 	private final Answers answer;
@@ -51,9 +49,7 @@ class MockDefinition extends Definition {
 	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces,
 			Answers answer, boolean serializable, MockReset reset,
 			QualifierDefinition qualifier) {
-		super(name, reset, false, qualifier);
-		Assert.notNull(typeToMock, "TypeToMock must not be null");
-		this.typeToMock = typeToMock;
+		super(name, reset, false, qualifier, typeToMock);
 		this.extraInterfaces = asClassSet(extraInterfaces);
 		this.answer = (answer != null ? answer : Answers.RETURNS_DEFAULTS);
 		this.serializable = serializable;
@@ -72,7 +68,7 @@ class MockDefinition extends Definition {
 	 * @return the type to mock; never {@code null}
 	 */
 	public ResolvableType getTypeToMock() {
-		return this.typeToMock;
+		return super.getType();
 	}
 
 	/**
@@ -102,7 +98,6 @@ class MockDefinition extends Definition {
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.typeToMock);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.extraInterfaces);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.answer);
 		result = MULTIPLIER * result + Boolean.hashCode(this.serializable);
@@ -119,7 +114,6 @@ class MockDefinition extends Definition {
 		}
 		MockDefinition other = (MockDefinition) obj;
 		boolean result = super.equals(obj);
-		result = result && ObjectUtils.nullSafeEquals(this.typeToMock, other.typeToMock);
 		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces,
 				other.extraInterfaces);
 		result = result && ObjectUtils.nullSafeEquals(this.answer, other.answer);
@@ -130,7 +124,7 @@ class MockDefinition extends Definition {
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("name", getName())
-				.append("typeToMock", this.typeToMock)
+				.append("typeToMock", super.getType())
 				.append("extraInterfaces", this.extraInterfaces)
 				.append("answer", this.answer).append("serializable", this.serializable)
 				.append("reset", getReset()).toString();
@@ -153,7 +147,7 @@ class MockDefinition extends Definition {
 		if (this.serializable) {
 			settings.serializable();
 		}
-		return (T) Mockito.mock(this.typeToMock.resolve(), settings);
+		return (T) Mockito.mock(this.getTypeToMock().resolve(), settings);
 	}
 
 }

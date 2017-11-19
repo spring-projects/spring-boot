@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -36,12 +38,16 @@ abstract class Definition {
 
 	private final QualifierDefinition qualifier;
 
+	private final ResolvableType type;
+
 	Definition(String name, MockReset reset, boolean proxyTargetAware,
-			QualifierDefinition qualifier) {
+			QualifierDefinition qualifier, ResolvableType type) {
+		Assert.notNull(type, "type must not be null");
 		this.name = name;
 		this.reset = (reset != null ? reset : MockReset.AFTER);
 		this.proxyTargetAware = proxyTargetAware;
 		this.qualifier = qualifier;
+		this.type = type;
 	}
 
 	/**
@@ -76,6 +82,14 @@ abstract class Definition {
 		return this.qualifier;
 	}
 
+	/**
+	 * Get type to mock or spy.
+	 * @return the type; never {@code null}
+	 */
+	public ResolvableType getType() {
+		return this.type;
+	}
+
 	@Override
 	public int hashCode() {
 		int result = 1;
@@ -84,6 +98,7 @@ abstract class Definition {
 		result = MULTIPLIER * result
 				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.type);
 		return result;
 	}
 
@@ -102,6 +117,7 @@ abstract class Definition {
 		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware,
 				other.proxyTargetAware);
 		result = result && ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
+		result = result && ObjectUtils.nullSafeEquals(this.type, other.type);
 		return result;
 	}
 
