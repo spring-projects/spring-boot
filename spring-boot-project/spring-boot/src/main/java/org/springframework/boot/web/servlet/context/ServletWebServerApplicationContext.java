@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -104,6 +105,21 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	private ServletConfig servletConfig;
 
 	private String namespace;
+
+	/**
+	 * Create a new {@link ServletWebServerApplicationContext}.
+	 */
+	public ServletWebServerApplicationContext() {
+	}
+
+	/**
+	 * Create a new {@link ServletWebServerApplicationContext} with the given
+	 * {@code DefaultListableBeanFactory}.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 */
+	public ServletWebServerApplicationContext(DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
+	}
 
 	/**
 	 * Register ServletContextAwareProcessor.

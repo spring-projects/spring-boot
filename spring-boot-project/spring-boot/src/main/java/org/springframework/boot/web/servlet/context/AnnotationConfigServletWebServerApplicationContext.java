@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet.context;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
@@ -63,6 +64,19 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigServletWebServerApplicationContext() {
+		this.reader = new AnnotatedBeanDefinitionReader(this);
+		this.scanner = new ClassPathBeanDefinitionScanner(this);
+	}
+
+	/**
+	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext} with the
+	 * given {@code DefaultListableBeanFactory}. The context needs to be populated through
+	 * {@link #register} calls and then manually {@linkplain #refresh refreshed}.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 */
+	public AnnotationConfigServletWebServerApplicationContext(
+			DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}

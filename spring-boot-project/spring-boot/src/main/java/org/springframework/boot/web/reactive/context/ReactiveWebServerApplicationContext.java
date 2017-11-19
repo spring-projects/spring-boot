@@ -17,6 +17,7 @@
 package org.springframework.boot.web.reactive.context;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContextException;
@@ -35,7 +36,19 @@ public class ReactiveWebServerApplicationContext
 
 	private volatile WebServer webServer;
 
+	/**
+	 * Create a new {@link ReactiveWebServerApplicationContext}.
+	 */
 	public ReactiveWebServerApplicationContext() {
+	}
+
+	/**
+	 * Create a new {@link ReactiveWebServerApplicationContext} with the given
+	 * {@code DefaultListableBeanFactory}.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 */
+	public ReactiveWebServerApplicationContext(DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
 	}
 
 	@Override
