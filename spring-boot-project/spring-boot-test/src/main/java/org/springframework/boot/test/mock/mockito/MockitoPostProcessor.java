@@ -170,8 +170,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			BeanDefinitionRegistry registry, MockDefinition definition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
 
-		String beanName = MockitoBeanNameFinder.getOrGenerateBeanName(beanFactory, registry, definition,
-				beanDefinition);
+		String beanName = MockitoBeanNameFinder.getOrGenerateBeanName(beanFactory,
+				registry, definition, beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 
 		if (registry.containsBeanDefinition(transformedBeanName)) {
@@ -218,20 +218,20 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
-							 BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
+			BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
 
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
 				definition.getTypeToSpy().resolve());
 
-		String beanName = MockitoBeanNameFinder.getOrGenerateBeanName(beanFactory, registry, definition,
-				beanDefinition);
+		String beanName = MockitoBeanNameFinder.getOrGenerateBeanName(beanFactory,
+				registry, definition, beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 
 		// as spy beans need the complete original bean, we can only
 		// create the the spy bean if there's nothing to be replaced
 		// it will be created via a callback to createSpyIfNecessary from the
 		// SpyPostProcessor
-		if(!registry.containsBeanDefinition(transformedBeanName)) {
+		if (!registry.containsBeanDefinition(transformedBeanName)) {
 			registry.registerBeanDefinition(beanName, beanDefinition);
 		}
 
@@ -426,5 +426,3 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 }
-
-
