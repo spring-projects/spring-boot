@@ -184,7 +184,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			BeanDefinitionRegistry registry, MockDefinition definition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
 
-		String beanName = getBeanName(beanFactory, registry, definition, beanDefinition);
+		String beanName = getOrGenerateBeanName(beanFactory, registry, definition, beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 
 		if (registry.containsBeanDefinition(transformedBeanName)) {
@@ -230,18 +230,18 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		return mockDefinition.createMock(name + " bean");
 	}
 
-	private String getBeanName(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinitionRegistry registry, MockDefinition mockDefinition,
-			RootBeanDefinition beanDefinition) {
+	private String getOrGenerateBeanName(ConfigurableListableBeanFactory beanFactory,
+										 BeanDefinitionRegistry registry, MockDefinition mockDefinition,
+										 RootBeanDefinition beanDefinition) {
 		Set<String> existingBeans = findCandidateBeans(beanFactory, mockDefinition);
 		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
-		return findBeanName(registry, existingBeans, mockDefinition);
+		return getBeanName(registry, existingBeans, mockDefinition);
 	}
 
-	private String findBeanName(BeanDefinitionRegistry registry,
-			Set<String> existingBeanNames, Definition definition) {
+	private String getBeanName(BeanDefinitionRegistry registry,
+							   Set<String> existingBeanNames, Definition definition) {
 		if (StringUtils.hasText(definition.getName())) {
 			return definition.getName();
 		}
@@ -285,7 +285,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			createSpy(registry, definition, field);
 		}
 		else {
-			String beanName = findBeanName(registry, existingBeans, definition);
+			String beanName = getBeanName(registry, existingBeans, definition);
 			registerSpy(definition, field, beanName);
 		}
 	}
