@@ -36,9 +36,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Encapsulates the task to find the bean name which can be mocked or spied.
- * Offers {@link MockitoBeanNameFinder#getOrGenerateBeanName} for that purpose.
- * Used by {@link MockitoPostProcessor}.
+ * Encapsulates the task to find the bean name which can be mocked or spied. Offers
+ * {@link MockitoBeanNameFinder#getOrGenerateBeanName} for that purpose. Used by
+ * {@link MockitoPostProcessor}.
  *
  * @author Andreas Neiser
  */
@@ -48,84 +48,84 @@ class MockitoBeanNameFinder {
 		// only static method calls
 	}
 
-    private static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
+	private static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
 
-    private static final BeanNameGenerator BEAN_NAME_GENERATOR = new DefaultBeanNameGenerator();
+	private static final BeanNameGenerator BEAN_NAME_GENERATOR = new DefaultBeanNameGenerator();
 
-    static String getOrGenerateBeanName(ConfigurableListableBeanFactory beanFactory,
-											   BeanDefinitionRegistry registry, Definition definition,
-											   RootBeanDefinition beanDefinition) {
-        Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
-        if (existingBeans.isEmpty()) {
-            return BEAN_NAME_GENERATOR.generateBeanName(beanDefinition, registry);
-        }
-        return getBeanName(registry, existingBeans, definition);
-    }
+	static String getOrGenerateBeanName(ConfigurableListableBeanFactory beanFactory,
+			BeanDefinitionRegistry registry, Definition definition,
+			RootBeanDefinition beanDefinition) {
+		Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
+		if (existingBeans.isEmpty()) {
+			return BEAN_NAME_GENERATOR.generateBeanName(beanDefinition, registry);
+		}
+		return getBeanName(registry, existingBeans, definition);
+	}
 
-    private static String getBeanName(BeanDefinitionRegistry registry,
-                               Set<String> existingBeanNames, Definition definition) {
-        if (StringUtils.hasText(definition.getName())) {
-            return definition.getName();
-        }
-        if (existingBeanNames.size() == 1) {
-            return existingBeanNames.iterator().next();
-        }
-        String beanName = findPrimaryBeanName(registry, existingBeanNames,
-                definition.getType());
-        if (beanName == null) {
-            throw new IllegalStateException("Unable to register bean "
-                    + definition.getType()
-                    + " expected a single matching/primary bean to replace but found "
-                    + existingBeanNames);
-        }
-        return beanName;
-    }
+	private static String getBeanName(BeanDefinitionRegistry registry,
+			Set<String> existingBeanNames, Definition definition) {
+		if (StringUtils.hasText(definition.getName())) {
+			return definition.getName();
+		}
+		if (existingBeanNames.size() == 1) {
+			return existingBeanNames.iterator().next();
+		}
+		String beanName = findPrimaryBeanName(registry, existingBeanNames,
+				definition.getType());
+		if (beanName == null) {
+			throw new IllegalStateException("Unable to register bean "
+					+ definition.getType()
+					+ " expected a single matching/primary bean to replace but found "
+					+ existingBeanNames);
+		}
+		return beanName;
+	}
 
-    @Nullable
-    private static String findPrimaryBeanName(BeanDefinitionRegistry registry,
-                                       Set<String> existingBeanNames, ResolvableType type) {
-        String primaryBeanName = null;
-        for (String existingBeanName : existingBeanNames) {
-            BeanDefinition beanDefinition = registry.getBeanDefinition(existingBeanName);
-            if (beanDefinition.isPrimary()) {
-                if (primaryBeanName != null) {
-                    throw new NoUniqueBeanDefinitionException(type.resolve(),
-                            existingBeanNames.size(),
-                            "more than one 'primary' bean found among candidates: "
-                                    + existingBeanNames);
-                }
-                primaryBeanName = existingBeanName;
-            }
-        }
-        return primaryBeanName;
-    }
+	@Nullable
+	private static String findPrimaryBeanName(BeanDefinitionRegistry registry,
+			Set<String> existingBeanNames, ResolvableType type) {
+		String primaryBeanName = null;
+		for (String existingBeanName : existingBeanNames) {
+			BeanDefinition beanDefinition = registry.getBeanDefinition(existingBeanName);
+			if (beanDefinition.isPrimary()) {
+				if (primaryBeanName != null) {
+					throw new NoUniqueBeanDefinitionException(type.resolve(),
+							existingBeanNames.size(),
+							"more than one 'primary' bean found among candidates: "
+									+ existingBeanNames);
+				}
+				primaryBeanName = existingBeanName;
+			}
+		}
+		return primaryBeanName;
+	}
 
-    private static Set<String> findCandidateBeans(ConfigurableListableBeanFactory beanFactory,
-                                           Definition definition) {
-        QualifierDefinition qualifier = definition.getQualifier();
-        Set<String> candidates = new TreeSet<>();
-        for (String candidate : getExistingBeans(beanFactory, definition.getType())) {
-            if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
-                candidates.add(candidate);
-            }
-        }
-        return candidates;
-    }
+	private static Set<String> findCandidateBeans(
+			ConfigurableListableBeanFactory beanFactory, Definition definition) {
+		QualifierDefinition qualifier = definition.getQualifier();
+		Set<String> candidates = new TreeSet<>();
+		for (String candidate : getExistingBeans(beanFactory, definition.getType())) {
+			if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
+				candidates.add(candidate);
+			}
+		}
+		return candidates;
+	}
 
-    private static Set<String> getExistingBeans(ConfigurableListableBeanFactory beanFactory,
-                                         ResolvableType type) {
-        Set<String> beans = new LinkedHashSet<>(
-                Arrays.asList(beanFactory.getBeanNamesForType(type)));
-        String resolvedTypeName = type.resolve(Object.class).getName();
-        for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class)) {
-            beanName = BeanFactoryUtils.transformedBeanName(beanName);
-            BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            if (resolvedTypeName
-                    .equals(beanDefinition.getAttribute(FACTORY_BEAN_OBJECT_TYPE))) {
-                beans.add(beanName);
-            }
-        }
-        beans.removeIf(ScopedProxyUtils::isScopedTarget);
-        return beans;
-    }
+	private static Set<String> getExistingBeans(
+			ConfigurableListableBeanFactory beanFactory, ResolvableType type) {
+		Set<String> beans = new LinkedHashSet<>(
+				Arrays.asList(beanFactory.getBeanNamesForType(type)));
+		String resolvedTypeName = type.resolve(Object.class).getName();
+		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class)) {
+			beanName = BeanFactoryUtils.transformedBeanName(beanName);
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+			if (resolvedTypeName
+					.equals(beanDefinition.getAttribute(FACTORY_BEAN_OBJECT_TYPE))) {
+				beans.add(beanName);
+			}
+		}
+		beans.removeIf(ScopedProxyUtils::isScopedTarget);
+		return beans;
+	}
 }
