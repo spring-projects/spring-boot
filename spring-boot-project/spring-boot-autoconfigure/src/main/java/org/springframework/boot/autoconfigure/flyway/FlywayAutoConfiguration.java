@@ -219,7 +219,7 @@ public class FlywayAutoConfiguration {
 
 		private final DataSource dataSource;
 
-		public LocationResolver(DataSource dataSource) {
+		LocationResolver(DataSource dataSource) {
 			this.dataSource = dataSource;
 		}
 
