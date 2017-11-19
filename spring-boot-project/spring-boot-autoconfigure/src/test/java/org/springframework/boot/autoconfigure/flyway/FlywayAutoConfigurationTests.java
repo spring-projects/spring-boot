@@ -258,11 +258,13 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void useOneLocationWithVendorDirectory() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.locations=classpath:db/vendors/{vendor}")
+				.withPropertyValues(
+						"spring.flyway.locations=classpath:db/vendors/{vendor}")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
-					assertThat(flyway.getLocations()).containsExactly("classpath:db/vendors/h2");
+					assertThat(flyway.getLocations())
+							.containsExactly("classpath:db/vendors/h2");
 				});
 	}
 
