@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -166,9 +166,9 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void explicitTypeNoSupportedDataSource() {
 		this.contextRunner
-				.withClassLoader(new HidePackagesClassLoader("org.apache.tomcat",
-						"com.zaxxer.hikari", "org.apache.commons.dbcp",
-						"org.apache.commons.dbcp2"))
+				.withClassLoader(
+						new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
+								"org.apache.commons.dbcp", "org.apache.commons.dbcp2"))
 				.withPropertyValues(
 						"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 						"spring.datasource.url:jdbc:hsqldb:mem:testdb",
@@ -227,7 +227,7 @@ public class DataSourceAutoConfigurationTests {
 
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType,
 			List<String> hiddenPackages, Consumer<T> consumer) {
-		HidePackagesClassLoader classLoader = new HidePackagesClassLoader(
+		FilteredClassLoader classLoader = new FilteredClassLoader(
 				hiddenPackages.toArray(new String[hiddenPackages.size()]));
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			DataSource bean = context.getBean(DataSource.class);

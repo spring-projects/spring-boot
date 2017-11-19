@@ -23,7 +23,7 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.RedisSessionConfiguration.SpringBootRedisHttpSessionConfiguration;
-import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -62,10 +62,9 @@ public class SessionAutoConfigurationRedisTests
 	@Test
 	public void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
-				.withClassLoader(
-						new HideClassesClassLoader(HazelcastSessionRepository.class,
-								JdbcOperationsSessionRepository.class,
-								MongoOperationsSessionRepository.class))
+				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
+						JdbcOperationsSessionRepository.class,
+						MongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
 						RedisFlushMode.ON_SAVE, "0 * * * * *"));

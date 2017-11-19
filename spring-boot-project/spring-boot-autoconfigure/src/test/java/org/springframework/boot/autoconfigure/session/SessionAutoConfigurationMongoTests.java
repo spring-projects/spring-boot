@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
-import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -57,10 +57,9 @@ public class SessionAutoConfigurationMongoTests
 	@Test
 	public void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
-				.withClassLoader(
-						new HideClassesClassLoader(HazelcastSessionRepository.class,
-								JdbcOperationsSessionRepository.class,
-								RedisOperationsSessionRepository.class))
+				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
+						JdbcOperationsSessionRepository.class,
+						RedisOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(
 						EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))

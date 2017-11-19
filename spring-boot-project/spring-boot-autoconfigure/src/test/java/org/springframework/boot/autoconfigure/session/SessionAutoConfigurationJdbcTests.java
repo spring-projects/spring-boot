@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration.SpringBootJdbcHttpSessionConfiguration;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
-import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -67,10 +67,9 @@ public class SessionAutoConfigurationJdbcTests
 	@Test
 	public void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
-				.withClassLoader(
-						new HideClassesClassLoader(HazelcastSessionRepository.class,
-								MongoOperationsSessionRepository.class,
-								RedisOperationsSessionRepository.class))
+				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
+						MongoOperationsSessionRepository.class,
+						RedisOperationsSessionRepository.class))
 				.run(this::validateDefaultConfig);
 	}
 

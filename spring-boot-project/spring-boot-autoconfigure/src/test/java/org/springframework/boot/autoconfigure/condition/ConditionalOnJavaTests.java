@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
-import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.Assume;
 import org.springframework.context.annotation.Bean;
@@ -105,7 +105,7 @@ public class ConditionalOnJavaTests {
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
-		HideClassesClassLoader classLoader = new HideClassesClassLoader(hiddenClasses);
+		FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClasses);
 		Class<?> javaVersionClass = classLoader.loadClass(JavaVersion.class.getName());
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
 				"getJavaVersion");

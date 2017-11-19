@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
-import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.fail;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -148,8 +148,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Test
 	public void runWithClassLoaderShouldSetClassLoader() throws Exception {
-		get().withClassLoader(
-				new HidePackagesClassLoader(Gson.class.getPackage().getName()))
+		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> {
 					try {
 						ClassUtils.forName(Gson.class.getName(),
