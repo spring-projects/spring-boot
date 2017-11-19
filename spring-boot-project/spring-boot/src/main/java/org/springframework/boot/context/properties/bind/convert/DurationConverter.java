@@ -20,12 +20,17 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Converter} for {@link String} to {@link Duration}. Support
@@ -33,11 +38,19 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
-class StringToDurationConverter implements Converter<String, Duration> {
+class DurationConverter implements GenericConverter {
+
+	private static final Set<ConvertiblePair> TYPES;
+
+	static {
+		Set<ConvertiblePair> types = new LinkedHashSet<>();
+		types.add(new ConvertiblePair(String.class, Duration.class));
+		TYPES = Collections.unmodifiableSet(types);
+	}
 
 	private static Pattern ISO8601 = Pattern.compile("^[\\+\\-]?P.*$");
 
-	private static Pattern SIMPLE = Pattern.compile("^([\\+\\-]?\\d+)([a-zA-Z]{1,2})$");
+	private static Pattern SIMPLE = Pattern.compile("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$");
 
 	private static final Map<String, ChronoUnit> UNITS;
 
@@ -53,15 +66,32 @@ class StringToDurationConverter implements Converter<String, Duration> {
 	}
 
 	@Override
-	public Duration convert(String source) {
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return TYPES;
+	}
+
+	@Override
+	public Object convert(Object source, TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
+		if (source == null) {
+			return null;
+		}
+		return toDuration(source.toString(),
+				targetType.getAnnotation(DurationUnit.class));
+	}
+
+	private Duration toDuration(String source, DurationUnit defaultUnit) {
 		try {
+			if (!StringUtils.hasLength(source)) {
+				return null;
+			}
 			if (ISO8601.matcher(source).matches()) {
 				return Duration.parse(source);
 			}
 			Matcher matcher = SIMPLE.matcher(source);
 			Assert.state(matcher.matches(), "'" + source + "' is not a valid duration");
 			long amount = Long.parseLong(matcher.group(1));
-			ChronoUnit unit = getUnit(matcher.group(2));
+			ChronoUnit unit = getUnit(matcher.group(2), defaultUnit);
 			return Duration.of(amount, unit);
 		}
 		catch (Exception ex) {
@@ -70,7 +100,10 @@ class StringToDurationConverter implements Converter<String, Duration> {
 		}
 	}
 
-	private ChronoUnit getUnit(String value) {
+	private ChronoUnit getUnit(String value, DurationUnit defaultUnit) {
+		if (StringUtils.isEmpty(value)) {
+			return (defaultUnit != null ? defaultUnit.value() : ChronoUnit.MILLIS);
+		}
 		ChronoUnit unit = UNITS.get(value.toLowerCase());
 		Assert.state(unit != null, "Unknown unit '" + value + "'");
 		return unit;

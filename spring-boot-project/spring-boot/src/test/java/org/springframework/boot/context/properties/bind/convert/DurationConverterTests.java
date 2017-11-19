@@ -17,24 +17,31 @@
 package org.springframework.boot.context.properties.bind.convert;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.TypeDescriptor;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link StringToDurationConverter}.
+ * Tests for {@link DurationConverter}.
  *
  * @author Phillip Webb
  */
-public class StringToDurationConverterTests {
+public class DurationConverterTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private StringToDurationConverter converter = new StringToDurationConverter();
+	private DurationConverter converter = new DurationConverter();
 
 	@Test
 	public void convertWhenIso8601ShouldReturnDuration() throws Exception {
@@ -98,14 +105,44 @@ public class StringToDurationConverterTests {
 	}
 
 	@Test
+	public void convertWhenSimpleWithoutSuffixShouldReturnDuration() throws Exception {
+		assertThat(convert("10")).isEqualTo(Duration.ofMillis(10));
+		assertThat(convert("+10")).isEqualTo(Duration.ofMillis(10));
+		assertThat(convert("-10")).isEqualTo(Duration.ofMillis(-10));
+	}
+
+	@Test
+	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration()
+			throws Exception {
+		assertThat(convert("10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
+		assertThat(convert("+10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
+		assertThat(convert("-10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(-10));
+	}
+
+	@Test
 	public void convertWhenBadFormatShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("'10foo' is not a valid duration");
 		convert("10foo");
 	}
 
+	@Test
+	public void convertWhenEmptyShouldReturnNull() throws Exception {
+		assertThat(convert("")).isNull();
+	}
+
 	private Duration convert(String source) {
-		return this.converter.convert(source);
+		return (Duration) this.converter.convert(source, TypeDescriptor.forObject(source),
+				TypeDescriptor.valueOf(Duration.class));
+	}
+
+	private Duration convert(String source, ChronoUnit defaultUnit) {
+		TypeDescriptor targetType = mock(TypeDescriptor.class);
+		DurationUnit annotation = AnnotationUtils.synthesizeAnnotation(
+				Collections.singletonMap("value", defaultUnit), DurationUnit.class, null);
+		given(targetType.getAnnotation(DurationUnit.class)).willReturn(annotation);
+		return (Duration) this.converter.convert(source, TypeDescriptor.forObject(source),
+				targetType);
 	}
 
 }
