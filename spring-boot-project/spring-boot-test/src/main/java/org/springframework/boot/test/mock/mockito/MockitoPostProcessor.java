@@ -251,7 +251,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
-		String[] existingBeans = getExistingBeans(beanFactory, definition.getTypeToSpy());
+		Set<String> existingBeans = getExistingBeans(beanFactory, definition.getTypeToSpy());
 		if (ObjectUtils.isEmpty(existingBeans)) {
 			createSpy(registry, definition, field);
 		}
@@ -273,7 +273,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		return candidates;
 	}
 
-	private String[] getExistingBeans(ConfigurableListableBeanFactory beanFactory,
+	private Set<String> getExistingBeans(ConfigurableListableBeanFactory beanFactory,
 			ResolvableType type) {
 		Set<String> beans = new LinkedHashSet<>(
 				Arrays.asList(beanFactory.getBeanNamesForType(type)));
@@ -287,7 +287,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			}
 		}
 		beans.removeIf(this::isScopedTarget);
-		return beans.toArray(new String[beans.size()]);
+		return beans;
 	}
 
 	private boolean isScopedTarget(String beanName) {
@@ -310,7 +310,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private void registerSpies(BeanDefinitionRegistry registry, SpyDefinition definition,
-			Field field, String[] existingBeans) {
+							   Field field, Set<String> existingBeans) {
 		try {
 			registerSpy(definition, field,
 					determineBeanName(existingBeans, definition, registry));
@@ -321,29 +321,29 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		}
 	}
 
-	private String determineBeanName(String[] existingBeans, SpyDefinition definition,
-			BeanDefinitionRegistry registry) {
+	private String determineBeanName(Set<String> existingBeans, SpyDefinition definition,
+									 BeanDefinitionRegistry registry) {
 		if (StringUtils.hasText(definition.getName())) {
 			return definition.getName();
 		}
-		if (existingBeans.length == 1) {
-			return existingBeans[0];
+		if (existingBeans.size() == 1) {
+			return existingBeans.iterator().next();
 		}
 		return determinePrimaryCandidate(registry, existingBeans,
 				definition.getTypeToSpy());
 	}
 
 	private String determinePrimaryCandidate(BeanDefinitionRegistry registry,
-			String[] candidateBeanNames, ResolvableType type) {
+											 Set<String> candidateBeanNames, ResolvableType type) {
 		String primaryBeanName = null;
 		for (String candidateBeanName : candidateBeanNames) {
 			BeanDefinition beanDefinition = registry.getBeanDefinition(candidateBeanName);
 			if (beanDefinition.isPrimary()) {
 				if (primaryBeanName != null) {
 					throw new NoUniqueBeanDefinitionException(type.resolve(),
-							candidateBeanNames.length,
+							candidateBeanNames.size(),
 							"more than one 'primary' bean found among candidates: "
-									+ Arrays.asList(candidateBeanNames));
+									+ candidateBeanNames);
 				}
 				primaryBeanName = candidateBeanName;
 			}
