@@ -279,18 +279,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		return primaryBeanName;
 	}
 
-	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
-		Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
-		if (ObjectUtils.isEmpty(existingBeans)) {
-			createSpy(registry, definition, field);
-		}
-		else {
-			String beanName = getBeanName(registry, existingBeans, definition);
-			registerSpy(definition, field, beanName);
-		}
-	}
-
 	private Set<String> findCandidateBeans(ConfigurableListableBeanFactory beanFactory,
 			Definition definition) {
 		QualifierDefinition qualifier = definition.getQualifier();
@@ -326,6 +314,18 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		}
 		catch (Throwable ex) {
 			return false;
+		}
+	}
+
+	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
+							 BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
+		Set<String> existingBeans = findCandidateBeans(beanFactory, definition);
+		if (ObjectUtils.isEmpty(existingBeans)) {
+			createSpy(registry, definition, field);
+		}
+		else {
+			String beanName = getBeanName(registry, existingBeans, definition);
+			registerSpy(definition, field, beanName);
 		}
 	}
 
