@@ -20,7 +20,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.example.*;
+import org.springframework.boot.test.mock.mockito.example.CustomQualifier;
+import org.springframework.boot.test.mock.mockito.example.CustomQualifierExampleService;
+import org.springframework.boot.test.mock.mockito.example.ExampleService;
+import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
+import org.springframework.boot.test.mock.mockito.example.RealExampleService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

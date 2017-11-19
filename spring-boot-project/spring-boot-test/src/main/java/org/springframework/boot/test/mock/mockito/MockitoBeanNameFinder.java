@@ -16,6 +16,13 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.annotation.Nullable;
+
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
@@ -29,12 +36,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
-
 /**
  * Encapsulates the task to find the bean name which can be mocked or spied. Offers
  * {@link MockitoBeanNameFinder#getOrGenerateBeanName} for that purpose. Used by
@@ -42,7 +43,7 @@ import java.util.TreeSet;
  *
  * @author Andreas Neiser
  */
-class MockitoBeanNameFinder {
+final class MockitoBeanNameFinder {
 
 	private MockitoBeanNameFinder() {
 		// only static method calls
