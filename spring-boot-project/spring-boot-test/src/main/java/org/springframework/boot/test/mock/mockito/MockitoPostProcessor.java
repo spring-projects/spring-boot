@@ -184,7 +184,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			BeanDefinitionRegistry registry, MockDefinition definition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
 
-		String beanName = getOrGenerateBeanName(beanFactory, registry, definition, beanDefinition);
+		String beanName = getOrGenerateBeanName(beanFactory, registry, definition,
+				beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 
 		if (registry.containsBeanDefinition(transformedBeanName)) {
@@ -226,13 +227,13 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	 * @param name the bean name
 	 * @return the mock instance
 	 */
-	protected final Object createMock(MockDefinition mockDefinition, String name) {
+	private Object createMock(MockDefinition mockDefinition, String name) {
 		return mockDefinition.createMock(name + " bean");
 	}
 
 	private String getOrGenerateBeanName(ConfigurableListableBeanFactory beanFactory,
-										 BeanDefinitionRegistry registry, MockDefinition mockDefinition,
-										 RootBeanDefinition beanDefinition) {
+			BeanDefinitionRegistry registry, MockDefinition mockDefinition,
+			RootBeanDefinition beanDefinition) {
 		Set<String> existingBeans = findCandidateBeans(beanFactory, mockDefinition);
 		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
@@ -241,14 +242,15 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private String getBeanName(BeanDefinitionRegistry registry,
-							   Set<String> existingBeanNames, Definition definition) {
+			Set<String> existingBeanNames, Definition definition) {
 		if (StringUtils.hasText(definition.getName())) {
 			return definition.getName();
 		}
 		if (existingBeanNames.size() == 1) {
 			return existingBeanNames.iterator().next();
 		}
-		String beanName = findPrimaryBeanName(registry, existingBeanNames, definition.getType());
+		String beanName = findPrimaryBeanName(registry, existingBeanNames,
+				definition.getType());
 		if (beanName == null) {
 			throw new IllegalStateException("Unable to register bean "
 					+ definition.getType()
@@ -346,8 +348,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		}
 	}
 
-	protected Object createSpyIfNecessary(Object bean, String beanName)
-			throws BeansException {
+	Object createSpyIfNecessary(Object bean, String beanName) throws BeansException {
 		SpyDefinition definition = this.spies.get(beanName);
 		if (definition != null) {
 			bean = definition.createSpy(beanName, bean);
@@ -367,7 +368,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	private void postProcessField(Object bean, Field field) {
 		RegisteredField registered = this.fieldRegistry.get(field);
 		if (registered != null && StringUtils.hasLength(registered.getBeanName())) {
-			inject(field, bean, registered.getBeanName(), registered.getDefinition());
+			inject(field, bean, registered.getBeanName());
 		}
 	}
 
@@ -375,11 +376,10 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		String beanName = this.beanNameRegistry.get(definition);
 		Assert.state(StringUtils.hasLength(beanName),
 				() -> "No bean found for definition " + definition);
-		inject(field, target, beanName, definition);
+		inject(field, target, beanName);
 	}
 
-	private void inject(Field field, Object target, String beanName,
-			Definition definition) {
+	private void inject(Field field, Object target, String beanName) {
 		try {
 			field.setAccessible(true);
 			Assert.state(ReflectionUtils.getField(field, target) == null,
