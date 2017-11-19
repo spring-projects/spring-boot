@@ -178,7 +178,7 @@ public class JpaProperties {
 		/**
 		 * Use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is
 		 * actually a shortcut for the "hibernate.id.new_generator_mappings" property.
-		 * When not specified will default to "false" for backwards compatibility.
+		 * When not specified will default to "true".
 		 */
 		private Boolean useNewIdGeneratorMappings;
 
