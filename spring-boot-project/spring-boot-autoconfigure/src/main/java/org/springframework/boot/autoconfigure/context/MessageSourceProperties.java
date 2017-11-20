@@ -48,20 +48,20 @@ public class MessageSourceProperties {
 	private Duration cacheDuration;
 
 	/**
-	 * Set whether to fall back to the system Locale if no files for a specific Locale
-	 * have been found. If this is turned off, the only fallback will be the default file
-	 * (e.g. "messages.properties" for basename "messages").
+	 * Whether to fall back to the system Locale if no files for a specific Locale have
+	 * been found. if this is turned off, the only fallback will be the default file (e.g.
+	 * "messages.properties" for basename "messages").
 	 */
 	private boolean fallbackToSystemLocale = true;
 
 	/**
-	 * Set whether to always apply the MessageFormat rules, parsing even messages without
+	 * Whether to always apply the MessageFormat rules, parsing even messages without
 	 * arguments.
 	 */
 	private boolean alwaysUseMessageFormat = false;
 
 	/**
-	 * Set whether to use the message code as default message instead of throwing a
+	 * Whether to use the message code as the default message instead of throwing a
 	 * "NoSuchMessageException". Recommended during development only.
 	 */
 	private boolean useCodeAsDefaultMessage = false;

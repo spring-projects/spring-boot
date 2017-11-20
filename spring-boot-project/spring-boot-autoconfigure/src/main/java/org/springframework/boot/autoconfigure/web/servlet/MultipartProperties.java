@@ -47,7 +47,7 @@ import org.springframework.util.StringUtils;
 public class MultipartProperties {
 
 	/**
-	 * Enable support of multipart uploads.
+	 * Whether to enable support of multipart uploads.
 	 */
 	private boolean enabled = true;
 
@@ -58,19 +58,19 @@ public class MultipartProperties {
 
 	/**
 	 * Max file size. Values can use the suffixes "MB" or "KB" to indicate megabytes or
-	 * kilobytes respectively.
+	 * kilobytes, respectively.
 	 */
 	private String maxFileSize = "1MB";
 
 	/**
 	 * Max request size. Values can use the suffixes "MB" or "KB" to indicate megabytes or
-	 * kilobytes respectively.
+	 * kilobytes, respectively.
 	 */
 	private String maxRequestSize = "10MB";
 
 	/**
-	 * Threshold after which files will be written to disk. Values can use the suffixes
-	 * "MB" or "KB" to indicate megabytes or kilobytes respectively.
+	 * Threshold after which files are written to disk. Values can use the suffixes "MB"
+	 * or "KB" to indicate megabytes or kilobytes, respectively.
 	 */
 	private String fileSizeThreshold = "0";
 

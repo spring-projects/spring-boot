@@ -63,7 +63,7 @@ public class DataSourceProperties
 	private String name = "testdb";
 
 	/**
-	 * Generate a random datasource name.
+	 * Whether to generate a random datasource name.
 	 */
 	private boolean generateUniqueName;
 
@@ -84,7 +84,7 @@ public class DataSourceProperties
 	private String url;
 
 	/**
-	 * Login user of the database.
+	 * Login username of the database.
 	 */
 	private String username;
 
@@ -105,7 +105,7 @@ public class DataSourceProperties
 	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
 
 	/**
-	 * Platform to use in the DDL or DML scripts (e.g. schema-${platform}.sql or
+	 * Platform to use in the DDL or DML scripts (such as schema-${platform}.sql or
 	 * data-${platform}.sql).
 	 */
 	private String platform = "all";
@@ -131,7 +131,7 @@ public class DataSourceProperties
 	private List<String> data;
 
 	/**
-	 * User of the database to execute DML scripts.
+	 * Username of the database to execute DML scripts.
 	 */
 	private String dataUsername;
 
@@ -141,7 +141,7 @@ public class DataSourceProperties
 	private String dataPassword;
 
 	/**
-	 * Do not stop if an error occurs while initializing the database.
+	 * Whether to stop if an error occurs while initializing the database.
 	 */
 	private boolean continueOnError = false;
 

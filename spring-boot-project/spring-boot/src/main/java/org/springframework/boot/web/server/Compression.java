@@ -26,7 +26,7 @@ package org.springframework.boot.web.server;
 public class Compression {
 
 	/**
-	 * If response compression is enabled.
+	 * Whether response compression is enabled.
 	 */
 	private boolean enabled = false;
 

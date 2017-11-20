@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JmsProperties {
 
 	/**
-	 * Specify if the default destination type is topic.
+	 * Whether the default destination type is topic.
 	 */
 	private boolean pubSubDomain = false;
 
@@ -138,7 +138,7 @@ public class JmsProperties {
 	public static class Template {
 
 		/**
-		 * Default destination to use on send/receive operations that do not have a
+		 * Default destination to use on send and receive operations that do not have a
 		 * destination parameter.
 		 */
 		private String defaultDestination;
@@ -149,24 +149,26 @@ public class JmsProperties {
 		private Duration deliveryDelay;
 
 		/**
-		 * Delivery mode. Enable QoS when set.
+		 * Delivery mode. Enables QoS (Quality of Service) when set.
 		 */
 		private DeliveryMode deliveryMode;
 
 		/**
-		 * Priority of a message when sending. Enable QoS when set.
+		 * Priority of a message when sending. Enables QoS (Quality of Service) when set.
 		 */
 		private Integer priority;
 
 		/**
-		 * Time-to-live of a message when sending. Enable QoS when set.
+		 * Time-to-live of a message when sending. Enables QoS (Quality of Service) when
+		 * set.
 		 */
 		private Duration timeToLive;
 
 		/**
-		 * Enable explicit QoS when sending a message. When enabled, the delivery mode,
-		 * priority and time-to-live properties will be used when sending a message. QoS
-		 * is automatically enabled when at least one of those settings is customized.
+		 * Whether to enable explicit QoS (Quality of Service) when sending a message.
+		 * When enabled, the delivery mode, priority and time-to-live properties will be
+		 * used when sending a message. QoS is automatically enabled when at least one of
+		 * those settings is customized.
 		 */
 		private Boolean qosEnabled;
 

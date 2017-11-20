@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class InfluxDbProperties {
 
 	/**
-	 * Url of the InfluxDB instance to connect to.
+	 * URL of the InfluxDB instance to which to connect.
 	 */
 	private String url;
 

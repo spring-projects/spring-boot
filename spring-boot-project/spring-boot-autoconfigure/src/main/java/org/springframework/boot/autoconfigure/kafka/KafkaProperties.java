@@ -60,7 +60,7 @@ public class KafkaProperties {
 			Collections.singletonList("localhost:9092"));
 
 	/**
-	 * Id to pass to the server when making requests; used for server-side logging.
+	 * ID to pass to the server when making requests. Used for server-side logging.
 	 */
 	private String clientId;
 
@@ -223,14 +223,14 @@ public class KafkaProperties {
 		private final Ssl ssl = new Ssl();
 
 		/**
-		 * Frequency that the consumer offsets are auto-committed to Kafka if
-		 * 'enable.auto.commit' true.
+		 * Frequency with which the consumer offsets are auto-committed to Kafka if
+		 * 'enable.auto.commit' is set to true.
 		 */
 		private Duration autoCommitInterval;
 
 		/**
-		 * What to do when there is no initial offset in Kafka or if the current offset
-		 * does not exist any more on the server.
+		 * What to do when there is no initial offset in Kafka or if the current offset no
+		 * longer exists on the server.
 		 */
 		private String autoOffsetReset;
 
@@ -241,29 +241,31 @@ public class KafkaProperties {
 		private List<String> bootstrapServers;
 
 		/**
-		 * Id to pass to the server when making requests; used for server-side logging.
+		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
 		private String clientId;
 
 		/**
-		 * If true the consumer's offset will be periodically committed in the background.
+		 * Whether the consumer's offset is periodically committed in the background.
 		 */
 		private Boolean enableAutoCommit;
 
 		/**
-		 * Maximum amount of time the server will block before answering the fetch request
-		 * if there isn't sufficient data to immediately satisfy the requirement given by
+		 * Maximum amount of time the server blocks before answering the fetch request if
+		 * there isn't sufficient data to immediately satisfy the requirement given by
 		 * "fetch.min.bytes".
 		 */
 		private Duration fetchMaxWait;
 
 		/**
-		 * Minimum amount of data the server should return for a fetch request in bytes.
+		 * Minimum amount of data, in bytes, the server should return for a fetch request
+		 * in bytes.
 		 */
 		private Integer fetchMinSize;
 
 		/**
-		 * Unique string that identifies the consumer group this consumer belongs to.
+		 * Unique string that identifies the consumer group to which this consumer belongs
+		 * to.
 		 */
 		private String groupId;
 
@@ -497,7 +499,7 @@ public class KafkaProperties {
 		private Long bufferMemory;
 
 		/**
-		 * Id to pass to the server when making requests; used for server-side logging.
+		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
 		private String clientId;
 
@@ -683,7 +685,7 @@ public class KafkaProperties {
 		private final Ssl ssl = new Ssl();
 
 		/**
-		 * Id to pass to the server when making requests; used for server-side logging.
+		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
 		private String clientId;
 
@@ -693,7 +695,7 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-		 * Fail fast if the broker is not available on startup.
+		 * Whether to fail fast if the broker is not available on startup.
 		 */
 		private boolean failFast;
 
@@ -755,7 +757,7 @@ public class KafkaProperties {
 	public static class Template {
 
 		/**
-		 * Default topic to which messages will be sent.
+		 * Default topic to which messages are sent.
 		 */
 		private String defaultTopic;
 
@@ -791,7 +793,7 @@ public class KafkaProperties {
 		private Type type = Type.SINGLE;
 
 		/**
-		 * Listener AckMode; see the spring-kafka documentation.
+		 * Listener AckMode. See the spring-kafka documentation.
 		 */
 		private AckMode ackMode;
 
@@ -879,7 +881,7 @@ public class KafkaProperties {
 		private Resource keystoreLocation;
 
 		/**
-		 * Store password for the key store file.
+		 * Password of the key store file.
 		 */
 		private String keystorePassword;
 
@@ -938,7 +940,7 @@ public class KafkaProperties {
 	public static class Jaas {
 
 		/**
-		 * Enable JAAS configuration.
+		 * Whether to enable JAAS configuration.
 		 */
 		private boolean enabled;
 

@@ -19,7 +19,7 @@
   {
     "name": "banner.image.location",
     "type": "org.springframework.core.io.Resource",
-    "description": "Banner image file location (jpg/png can also be used).",
+    "description": "Banner image file location (jpg or png can also be used).",
     "defaultValue": "banner.gif"
   },
   {
@@ -40,7 +40,7 @@
   {
     "name": "banner.image.invert",
     "type": "java.lang.Boolean",
-    "description": "Invert images for dark console themes.",
+    "description": "Whether images should be inverted for dark terminal themes.",
     "defaultValue": false
   },
   {
@@ -53,7 +53,7 @@
   {
     "name": "logging.config",
     "type": "java.lang.String",
-    "description": "Location of the logging configuration file.",
+    "description": "Location of the logging configuration file. For instance, 'classpath:logback.xml' for Logback.",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
@@ -66,7 +66,7 @@
   {
     "name": "logging.file",
     "type": "java.lang.String",
-    "description": "Name of the log file. Names can be an exact location or relative to the current directory.",
+    "description": "Log file name. For instance, 'myapp.log'. Names can be an exact location or relative to the current directory.",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
@@ -86,39 +86,41 @@
   {
     "name": "logging.level",
     "type": "java.util.Map<java.lang.String,java.lang.String>",
-    "description": "Log levels severity mapping. Use 'root' for the root logger.",
+    "description": "Log levels severity mapping. For instance, 'logging.level.org.springframework=DEBUG'",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.pattern.console",
     "type": "java.lang.String",
-    "description": "Appender pattern for output to the console. Only supported with the default logback setup.",
+    "description": "Appender pattern for output to the console. Supported only with the default Logback setup.",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
     "defaultValue": "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.file",
     "type": "java.lang.String",
-    "description": "Appender pattern for output to the file. Only supported with the default logback setup.",
+    "description": "Appender pattern for output to a file. Supported only with the default Logback setup.",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
     "defaultValue": "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.level",
     "type": "java.lang.String",
-    "description": "Appender pattern for log level (default %5p). Only supported with the default logback setup.",
-    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    "description": "Appender pattern for log level. Supported only with the default Logback setup.",
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+    "defaultValue": "%5p"
   },
   {
     "name": "logging.pattern.dateformat",
     "type": "java.lang.String",
-    "description": "Appender pattern for log dateformat (default yyyy-MM-dd HH:mm:ss.SSS). Only supported with the default logback setup.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "description": "Appender pattern for log dateformat. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "defaultValue": "yyyy-MM-dd HH:mm:ss.SSS"
   },
   {
     "name": "logging.path",
     "type": "java.lang.String",
-    "description": "Directory where log files are written.",
+    "description": "Location of the log file. For instance, '/var/log'",
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
@@ -149,7 +151,7 @@
     "name": "spring.beaninfo.ignore",
     "type": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
-    "description": "Skip search of BeanInfo classes.",
+    "description": "Whether to skip search of BeanInfo classes.",
     "defaultValue": true
   },
   {
@@ -194,15 +196,15 @@
   },
   {
     "name": "spring.main.sources",
-    "type": "java.util.Set<java.lang.Object>",
+    "type": "java.util.Set<java.lang.String>",
     "sourceType": "org.springframework.boot.SpringApplication",
-    "description": "Sources (class name, package name or XML resource location) to include in the ApplicationContext."
+    "description": "Sources (class names, package names, or XML resource locations) to include in the ApplicationContext."
   },
   {
     "name": "spring.main.web-application-type",
     "type": "org.springframework.boot.WebApplicationType",
     "sourceType": "org.springframework.boot.SpringApplication",
-    "description": "Flag to explicitly request a specific type of web application. Auto-detected based on the classpath if not set."
+    "description": "Flag to explicitly request a specific type of web application. If not set, auto-detected based on the classpath."
   },
   {
     "name": "spring.main.web-environment",
@@ -217,7 +219,7 @@
   {
     "name": "spring.output.ansi.enabled",
     "type": "org.springframework.boot.ansi.AnsiOutput$Enabled",
-    "description": "Configure the ANSI output.",
+    "description": "Configures the ANSI output.",
     "defaultValue": "detect"
   },
   {
@@ -229,7 +231,7 @@
   {
     "name": "spring.pid.fail-on-write-error",
     "type": "java.lang.Boolean",
-    "description": "Fail if ApplicationPidFileWriter is used but it cannot write the PID file.",
+    "description": "Fails if ApplicationPidFileWriter is used but it cannot write the PID file.",
     "sourceType": "org.springframework.boot.system.ApplicationPidFileWriter"
   },
   {
@@ -242,7 +244,7 @@
     "name": "spring.profiles.include",
     "type": "java.util.List<java.lang.String>",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
-    "description": "Unconditionally activate the specified comma separated profiles."
+    "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
   },
   {
     "name": "trace",

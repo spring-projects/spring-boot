@@ -300,7 +300,7 @@ public class CassandraProperties {
 		private Duration heartbeatInterval = Duration.ofSeconds(30);
 
 		/**
-		 * Maximum number of requests that get enqueued if no connection is available.
+		 * Maximum number of requests that get queued if no connection is available.
 		 */
 		private int maxQueueSize = 256;
 

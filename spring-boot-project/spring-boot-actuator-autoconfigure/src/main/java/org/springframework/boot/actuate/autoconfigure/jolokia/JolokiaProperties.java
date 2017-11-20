@@ -33,12 +33,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JolokiaProperties {
 
 	/**
-	 * Enable Jolokia.
+	 * Whether to enable Jolokia.
 	 */
 	private boolean enabled;
 
 	/**
-	 * Path at which Jolokia will be available.
+	 * Path at which Jolokia is available.
 	 */
 	private String path = "/jolokia";
 

@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JooqProperties {
 
 	/**
-	 * SQL dialect to use, auto-detected by default.
+	 * SQL dialect to use. Auto-detected by default.
 	 */
 	private SQLDialect sqlDialect;
 

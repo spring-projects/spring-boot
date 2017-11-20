@@ -422,7 +422,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				.add(ItemMetadata.newGroup(endpointKey(endpointId), type, type, null));
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
 				"enabled", Boolean.class.getName(), type, null,
-				String.format("Enable the %s endpoint.", endpointId),
+				String.format("Whether to enable the %s endpoint.", endpointId),
 				(enabledByDefault == null ? true : enabledByDefault), null));
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
 				"cache.time-to-live", Duration.class.getName(), type, null,

@@ -39,7 +39,7 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	public static final String DEFAULT_SUFFIX = ".ftl";
 
 	/**
-	 * Well-known FreeMarker keys which will be passed to FreeMarker's Configuration.
+	 * Well-known FreeMarker keys which are passed to FreeMarker's Configuration.
 	 */
 	private Map<String, String> settings = new HashMap<>();
 
@@ -49,8 +49,8 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
 	/**
-	 * Prefer file system access for template loading. File system access enables hot
-	 * detection of template changes.
+	 * Whether to prefer file system access for template loading. File system access
+	 * enables hot detection of template changes.
 	 */
 	private boolean preferFileSystemAccess = true;
 

@@ -63,12 +63,12 @@ public class JpaProperties {
 	private Database database;
 
 	/**
-	 * Initialize the schema on startup.
+	 * Whether to initialize the schema on startup.
 	 */
 	private boolean generateDdl = false;
 
 	/**
-	 * Enable logging of SQL statements.
+	 * Whether to enable logging of SQL statements.
 	 */
 	private boolean showSql = false;
 
@@ -170,15 +170,16 @@ public class JpaProperties {
 
 		/**
 		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
-		 * property. Default to "create-drop" when using an embedded database and no
-		 * schema manager was detected, "none" otherwise.
+		 * property. Defaults to "create-drop" when using an embedded database and no
+		 * schema manager was detected. Otherwise, defaults to "none" otherwise.
 		 */
 		private String ddlAuto;
 
 		/**
-		 * Use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is
-		 * actually a shortcut for the "hibernate.id.new_generator_mappings" property.
-		 * When not specified will default to "true".
+		 * Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and
+		 * SEQUENCE. This is actually a shortcut for the
+		 * "hibernate.id.new_generator_mappings" property. When not specified will default
+		 * to "true".
 		 */
 		private Boolean useNewIdGeneratorMappings;
 

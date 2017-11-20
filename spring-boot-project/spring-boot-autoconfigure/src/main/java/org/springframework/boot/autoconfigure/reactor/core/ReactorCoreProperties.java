@@ -36,7 +36,7 @@ public class ReactorCoreProperties {
 	public static class StacktraceMode {
 
 		/**
-		 * Set whether Reactor should collect stacktrace information at runtime.
+		 * Whether Reactor should collect stacktrace information at runtime.
 		 */
 		private boolean enabled;
 

@@ -39,7 +39,7 @@ public class JestProperties {
 			Collections.singletonList("http://localhost:9200"));
 
 	/**
-	 * Login user.
+	 * Login username.
 	 */
 	private String username;
 
@@ -49,7 +49,7 @@ public class JestProperties {
 	private String password;
 
 	/**
-	 * Enable connection requests from multiple execution threads.
+	 * Whether to enable connection requests from multiple execution threads.
 	 */
 	private boolean multiThreaded = true;
 

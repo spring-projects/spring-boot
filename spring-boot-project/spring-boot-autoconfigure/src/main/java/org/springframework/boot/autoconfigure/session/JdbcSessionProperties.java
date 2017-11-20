@@ -41,7 +41,7 @@ public class JdbcSessionProperties {
 	private String schema = DEFAULT_SCHEMA_LOCATION;
 
 	/**
-	 * Name of database table used to store sessions.
+	 * Name of the database table used to store sessions.
 	 */
 	private String tableName = DEFAULT_TABLE_NAME;
 

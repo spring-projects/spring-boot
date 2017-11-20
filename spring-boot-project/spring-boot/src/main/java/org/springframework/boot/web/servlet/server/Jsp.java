@@ -41,7 +41,7 @@ public class Jsp {
 	private Map<String, String> initParameters = new HashMap<>();
 
 	/**
-	 * Whether or not the JSP servlet should be registered with the web server.
+	 * Whether the JSP servlet is registered.
 	 */
 	private boolean registered = true;
 

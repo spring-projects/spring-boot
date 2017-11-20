@@ -46,12 +46,12 @@ public class LdapProperties {
 	private String base;
 
 	/**
-	 * Login user of the LDAP.
+	 * Login username of the server.
 	 */
 	private String username;
 
 	/**
-	 * Login password of the LDAP.
+	 * Login password of the server.
 	 */
 	private String password;
 

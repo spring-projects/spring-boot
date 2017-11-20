@@ -37,7 +37,7 @@ public class MailProperties {
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * SMTP server host.
+	 * SMTP server host. For instance, `smtp.example.com`.
 	 */
 	private String host;
 
@@ -72,12 +72,12 @@ public class MailProperties {
 	private Map<String, String> properties = new HashMap<>();
 
 	/**
-	 * Session JNDI name. When set, takes precedence to others mail settings.
+	 * Session JNDI name. When set, takes precedence over other mail settings.
 	 */
 	private String jndiName;
 
 	/**
-	 * Test that the mail server is available on startup.
+	 * Whether to test that the mail server is available on startup.
 	 */
 	private boolean testConnection;
 

@@ -43,12 +43,12 @@ public class ThymeleafProperties {
 	public static final String DEFAULT_SUFFIX = ".html";
 
 	/**
-	 * Check that the template exists before rendering it.
+	 * Whether to check that the template exists before rendering it.
 	 */
 	private boolean checkTemplate = true;
 
 	/**
-	 * Check that the templates location exists.
+	 * Whether to check that the templates location exists.
 	 */
 	private boolean checkTemplateLocation = true;
 
@@ -63,8 +63,7 @@ public class ThymeleafProperties {
 	private String suffix = DEFAULT_SUFFIX;
 
 	/**
-	 * Template mode to be applied to templates. See also
-	 * org.thymeleaf.templatemode.TemplateMode.
+	 * Template mode to be applied to templates. See also Thymleaf's TemplateMode enum.
 	 */
 	private String mode = "HTML";
 
@@ -74,7 +73,7 @@ public class ThymeleafProperties {
 	private Charset encoding = DEFAULT_ENCODING;
 
 	/**
-	 * Enable template caching.
+	 * Whether to enable template caching.
 	 */
 	private boolean cache = true;
 
@@ -102,7 +101,7 @@ public class ThymeleafProperties {
 	private boolean enableSpringElCompiler;
 
 	/**
-	 * Enable Thymeleaf view resolution for Web frameworks.
+	 * Whether to enable Thymeleaf view resolution for Web frameworks.
 	 */
 	private boolean enabled = true;
 

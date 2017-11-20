@@ -26,7 +26,7 @@ package org.springframework.boot.web.server;
 public class Ssl {
 
 	/**
-	 * Enable SSL support.
+	 * Whether to enable SSL support.
 	 */
 	private boolean enabled = true;
 

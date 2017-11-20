@@ -27,12 +27,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public abstract class SocialProperties {
 
 	/**
-	 * Application id.
+	 * Your application's OAuth App ID.
 	 */
 	private String appId;
 
 	/**
-	 * Application secret.
+	 * Your application's OAuth secret.
 	 */
 	private String appSecret;
 
