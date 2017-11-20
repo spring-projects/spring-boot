@@ -57,7 +57,8 @@ public class ReactiveSessionAutoConfigurationRedisTests
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
 						RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:",
+						RedisFlushMode.ON_SAVE));
 	}
 
 	@Test
@@ -67,7 +68,8 @@ public class ReactiveSessionAutoConfigurationRedisTests
 						ReactiveMongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
 						RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:",
+						RedisFlushMode.ON_SAVE));
 	}
 
 	@Test

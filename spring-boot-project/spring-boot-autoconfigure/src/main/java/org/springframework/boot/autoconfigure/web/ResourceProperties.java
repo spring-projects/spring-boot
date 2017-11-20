@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
@@ -48,16 +49,16 @@ public class ResourceProperties {
 	private String[] staticLocations = CLASSPATH_RESOURCE_LOCATIONS;
 
 	/**
-	 * Cache period for the resources served by the resource handler.
-	 * If a duration suffix is not specified, seconds will be used.
-	 * Can be overridden by the {@code cache-control} property.
+	 * Cache period for the resources served by the resource handler. If a duration suffix
+	 * is not specified, seconds will be used. Can be overridden by the 'cache-control'
+	 * property.
 	 */
 	@DefaultDurationUnit(ChronoUnit.SECONDS)
 	private Duration cachePeriod;
 
 	/**
-	 * Cache control HTTP headers, only allows valid directive combinations.
-	 * Overrides the {@code cache-period} property.
+	 * Cache control HTTP headers, only allows valid directive combinations. Overrides the
+	 * 'cache-period' property.
 	 */
 	private CacheControlProperties cacheControl = new CacheControlProperties();
 
@@ -145,9 +146,8 @@ public class ResourceProperties {
 		/**
 		 * Return whether the resource chain is enabled. Return {@code null} if no
 		 * specific settings are present.
-		 *
-		 * @return whether the resource chain is enabled or {@code null} if no specified settings are
-		 * present.
+		 * @return whether the resource chain is enabled or {@code null} if no specified
+		 * settings are present.
 		 */
 		public Boolean getEnabled() {
 			return getEnabled(getStrategy().getFixed().isEnabled(),
@@ -225,7 +225,7 @@ public class ResourceProperties {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths = new String[]{"/**"};
+		private String[] paths = new String[] { "/**" };
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -258,7 +258,7 @@ public class ResourceProperties {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths = new String[]{"/**"};
+		private String[] paths = new String[] { "/**" };
 
 		/**
 		 * Version string to use for the Version Strategy.
@@ -297,15 +297,15 @@ public class ResourceProperties {
 	public static class CacheControlProperties {
 
 		/**
-		 * Maximum time the response should be cached,
-		 * in seconds if no duration suffix is not specified.
+		 * Maximum time the response should be cached, in seconds if no duration suffix is
+		 * not specified.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration maxAge;
 
 		/**
-		 * Indicate that the cached response can be reused only
-		 * if re-validated with the server.
+		 * Indicate that the cached response can be reused only if re-validated with the
+		 * server.
 		 */
 		private Boolean noCache;
 
@@ -315,14 +315,14 @@ public class ResourceProperties {
 		private Boolean noStore;
 
 		/**
-		 * Indicate that once it has become stale, a cache must not use
-		 * the response without re-validating it with the server.
+		 * Indicate that once it has become stale, a cache must not use the response
+		 * without re-validating it with the server.
 		 */
 		private Boolean mustRevalidate;
 
 		/**
-		 * Indicate intermediaries (caches and others) that they should
-		 * not transform the response content.
+		 * Indicate intermediaries (caches and others) that they should not transform the
+		 * response content.
 		 */
 		private Boolean noTransform;
 
@@ -332,34 +332,34 @@ public class ResourceProperties {
 		private Boolean cachePublic;
 
 		/**
-		 * Indicate that the response message is intended for a single user
-		 * and must not be stored by a shared cache.
+		 * Indicate that the response message is intended for a single user and must not
+		 * be stored by a shared cache.
 		 */
 		private Boolean cachePrivate;
 
 		/**
-		 * Same meaning as the "must-revalidate" directive,
-		 * except that it does not apply to private caches.
+		 * Same meaning as the "must-revalidate" directive, except that it does not apply
+		 * to private caches.
 		 */
 		private Boolean proxyRevalidate;
 
 		/**
-		 * Maximum time the response can be served after it becomes stale,
-		 * in seconds if no duration suffix is not specified.
+		 * Maximum time the response can be served after it becomes stale, in seconds if
+		 * no duration suffix is not specified.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration staleWhileRevalidate;
 
 		/**
-		 * Maximum time the response may be used when errors are encountered,
-		 * in seconds if no duration suffix is not specified.
+		 * Maximum time the response may be used when errors are encountered, in seconds
+		 * if no duration suffix is not specified.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration staleIfError;
 
 		/**
-		 * Maximum time the response should be cached by shared caches,
-		 * in seconds if no duration suffix is not specified.
+		 * Maximum time the response should be cached by shared caches, in seconds if no
+		 * duration suffix is not specified.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration sMaxAge;
@@ -453,44 +453,43 @@ public class ResourceProperties {
 		}
 
 		public CacheControl toHttpCacheControl() {
-			CacheControl cc;
-			if (Boolean.TRUE.equals(this.noStore)) {
-				cc = CacheControl.noStore();
-			}
-			else if (Boolean.TRUE.equals(this.noCache)) {
-				cc = CacheControl.noCache();
-			}
-			else if (this.maxAge != null) {
-				cc = CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
-			}
-			else {
-				cc = CacheControl.empty();
-			}
-			if (Boolean.TRUE.equals(this.mustRevalidate)) {
-				cc.mustRevalidate();
-			}
-			if (Boolean.TRUE.equals(this.noTransform)) {
-				cc.noTransform();
-			}
-			if (Boolean.TRUE.equals(this.cachePublic)) {
-				cc.cachePublic();
-			}
-			if (Boolean.TRUE.equals(this.cachePrivate)) {
-				cc.cachePrivate();
-			}
-			if (Boolean.TRUE.equals(this.proxyRevalidate)) {
-				cc.proxyRevalidate();
-			}
+			CacheControl cacheControl = createCacheControl();
+			callIfTrue(this.mustRevalidate, cacheControl, CacheControl::mustRevalidate);
+			callIfTrue(this.noTransform, cacheControl, CacheControl::noTransform);
+			callIfTrue(this.cachePublic, cacheControl, CacheControl::cachePublic);
+			callIfTrue(this.cachePrivate, cacheControl, CacheControl::cachePrivate);
+			callIfTrue(this.proxyRevalidate, cacheControl, CacheControl::proxyRevalidate);
 			if (this.staleWhileRevalidate != null) {
-				cc.staleWhileRevalidate(this.staleWhileRevalidate.getSeconds(), TimeUnit.SECONDS);
+				cacheControl.staleWhileRevalidate(this.staleWhileRevalidate.getSeconds(),
+						TimeUnit.SECONDS);
 			}
 			if (this.staleIfError != null) {
-				cc.staleIfError(this.staleIfError.getSeconds(), TimeUnit.SECONDS);
+				cacheControl.staleIfError(this.staleIfError.getSeconds(),
+						TimeUnit.SECONDS);
 			}
 			if (this.sMaxAge != null) {
-				cc.sMaxAge(this.sMaxAge.getSeconds(), TimeUnit.SECONDS);
+				cacheControl.sMaxAge(this.sMaxAge.getSeconds(), TimeUnit.SECONDS);
 			}
-			return cc;
+			return cacheControl;
+		}
+
+		private CacheControl createCacheControl() {
+			if (Boolean.TRUE.equals(this.noStore)) {
+				return CacheControl.noStore();
+			}
+			if (Boolean.TRUE.equals(this.noCache)) {
+				return CacheControl.noCache();
+			}
+			if (this.maxAge != null) {
+				return CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
+			}
+			return CacheControl.empty();
+		}
+
+		private <T> void callIfTrue(Boolean property, T instance, Consumer<T> call) {
+			if (Boolean.TRUE.equals(property)) {
+				call.accept(instance);
+			}
 		}
 
 	}

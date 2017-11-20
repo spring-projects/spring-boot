@@ -810,15 +810,15 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	private void assertCachePeriod(AssertableWebApplicationContext context) {
-		Map<String, Object> handlerMap = getHandlerMap(context
-				.getBean("resourceHandlerMapping", HandlerMapping.class));
+		Map<String, Object> handlerMap = getHandlerMap(
+				context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
 		for (Object handler : handlerMap.keySet()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
-				assertThat(((ResourceHttpRequestHandler) handler)
-						.getCacheSeconds()).isEqualTo(-1);
-				assertThat(((ResourceHttpRequestHandler) handler)
-						.getCacheControl()).isEqualToComparingFieldByField(
+				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds())
+						.isEqualTo(-1);
+				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl())
+						.isEqualToComparingFieldByField(
 								CacheControl.maxAge(5, TimeUnit.SECONDS));
 			}
 		}
@@ -835,17 +835,16 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	private void assertCacheControl(AssertableWebApplicationContext context) {
-		Map<String, Object> handlerMap = getHandlerMap(context
-				.getBean("resourceHandlerMapping", HandlerMapping.class));
+		Map<String, Object> handlerMap = getHandlerMap(
+				context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
 		for (Object handler : handlerMap.keySet()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
-				assertThat(((ResourceHttpRequestHandler) handler)
-						.getCacheSeconds()).isEqualTo(-1);
-				assertThat(((ResourceHttpRequestHandler) handler)
-						.getCacheControl()).isEqualToComparingFieldByField(
-								CacheControl.maxAge(5, TimeUnit.SECONDS)
-										.proxyRevalidate());
+				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds())
+						.isEqualTo(-1);
+				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl())
+						.isEqualToComparingFieldByField(CacheControl
+								.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
 			}
 		}
 	}
@@ -895,7 +894,6 @@ public class WebMvcAutoConfigurationTests {
 		}
 		return Collections.emptyMap();
 	}
-
 
 	@Configuration
 	protected static class ViewConfig {

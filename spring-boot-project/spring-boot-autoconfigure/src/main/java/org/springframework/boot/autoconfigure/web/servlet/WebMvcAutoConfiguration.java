@@ -309,14 +309,15 @@ public class WebMvcAutoConfiguration {
 				return;
 			}
 			Duration cachePeriod = this.resourceProperties.getCachePeriod();
-			CacheControl cacheControl = this.resourceProperties.getCacheControl().toHttpCacheControl();
+			CacheControl cacheControl = this.resourceProperties.getCacheControl()
+					.toHttpCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				customizeResourceHandlerRegistration(
 						registry.addResourceHandler("/webjars/**")
 								.addResourceLocations(
 										"classpath:/META-INF/resources/webjars/")
-								.setCachePeriod(getSeconds(cachePeriod))
-								.setCacheControl(cacheControl));
+						.setCachePeriod(getSeconds(cachePeriod))
+						.setCacheControl(cacheControl));
 			}
 			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
@@ -324,8 +325,8 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler(staticPathPattern)
 								.addResourceLocations(getResourceLocations(
 										this.resourceProperties.getStaticLocations()))
-								.setCachePeriod(getSeconds(cachePeriod))
-								.setCacheControl(cacheControl));
+						.setCachePeriod(getSeconds(cachePeriod))
+						.setCacheControl(cacheControl));
 			}
 		}
 
