@@ -45,12 +45,13 @@ public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 	/**
 	 * Supplies default tags to the Web MVC server programming model.
 	 * @param request The HTTP request.
+	 * @param handler the Spring MVC handler for the request
 	 * @param response The HTTP response.
 	 * @param ex The current exception, if any
 	 * @return A set of tags added to every Spring MVC HTTP request.
 	 */
 	@Override
-	public Iterable<Tag> httpRequestTags(HttpServletRequest request,
+	public Iterable<Tag> httpRequestTags(HttpServletRequest request, Object handler,
 			HttpServletResponse response, Throwable ex) {
 		return Arrays.asList(WebMvcTags.method(request),
 				WebMvcTags.uri(request, response), WebMvcTags.exception(ex),

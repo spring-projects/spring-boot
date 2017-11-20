@@ -45,6 +45,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 /**
@@ -144,16 +145,18 @@ public class WebMvcMetrics {
 			Throwable thrown) {
 		// record Timer values
 		timed(handler).forEach((config) -> {
-			Timer.Builder builder = getTimerBuilder(request, response, thrown, config);
+			Timer.Builder builder = getTimerBuilder(request, handler, response, thrown,
+					config);
 			long amount = endTime - startTime;
 			builder.register(this.registry).record(amount, TimeUnit.NANOSECONDS);
 		});
 	}
 
-	private Timer.Builder getTimerBuilder(HttpServletRequest request,
+	private Timer.Builder getTimerBuilder(HttpServletRequest request, Object handler,
 			HttpServletResponse response, Throwable thrown, TimerConfig config) {
 		Timer.Builder builder = Timer.builder(config.getName())
-				.tags(this.tagsProvider.httpRequestTags(request, response, thrown))
+				.tags(this.tagsProvider.httpRequestTags(request, handler, response,
+						thrown))
 				.tags(config.getExtraTags()).description("Timer of servlet request")
 				.publishPercentileHistogram(config.isHistogram());
 		if (config.getPercentiles().length > 0) {
