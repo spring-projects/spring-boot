@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.web;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * An operation on a web endpoint.
@@ -63,6 +64,14 @@ public class WebOperation extends Operation {
 	 */
 	public String getId() {
 		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("type", getType())
+				.append("invoker", getInvoker()).append("blocking", isBlocking())
+				.append("requestPredicate", getRequestPredicate()).append("id", getId())
+				.toString();
 	}
 
 }

@@ -54,6 +54,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -162,6 +163,10 @@ public class WebAnnotationEndpointDiscovererTests {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage(
 					"Found multiple web operations with matching request predicates:");
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingOperationsEndpoint.class, "getAll").toString());
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingOperationsEndpoint.class, "getAgain").toString());
 			discoverer.discoverEndpoints();
 		});
 	}
@@ -183,6 +188,14 @@ public class WebAnnotationEndpointDiscovererTests {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage(
 					"Found multiple web operations with matching request predicates:");
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingSelectorsWebEndpointExtension.class, "readOne",
+							String.class, String.class)
+					.toString());
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingSelectorsWebEndpointExtension.class, "readTwo",
+							String.class, String.class)
+					.toString());
 			discoverer.discoverEndpoints();
 		});
 	}

@@ -95,7 +95,9 @@ public class JmxOperation extends Operation {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("operationName", this.operationName)
+		return new ToStringCreator(this).append("type", getType())
+				.append("invoker", getInvoker()).append("blocking", isBlocking())
+				.append("operationName", this.operationName)
 				.append("outputType", this.outputType)
 				.append("description", this.description).toString();
 	}

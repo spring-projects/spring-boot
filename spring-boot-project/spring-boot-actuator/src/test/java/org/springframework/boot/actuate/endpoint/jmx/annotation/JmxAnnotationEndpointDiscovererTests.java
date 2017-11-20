@@ -47,6 +47,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -216,6 +217,11 @@ public class JmxAnnotationEndpointDiscovererTests {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage("Found multiple JMX operations with the same name");
 			this.thrown.expectMessage("getAll");
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingOperationsEndpoint.class, "getAll").toString());
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingOperationsEndpoint.class, "getAll", String.class)
+					.toString());
 			discoverer.discoverEndpoints();
 		});
 	}
@@ -226,6 +232,13 @@ public class JmxAnnotationEndpointDiscovererTests {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage("Found multiple JMX operations with the same name");
 			this.thrown.expectMessage("getAll");
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingOperationsJmxEndpointExtension.class, "getAll")
+					.toString());
+			this.thrown.expectMessage(ReflectionUtils
+					.findMethod(ClashingOperationsJmxEndpointExtension.class, "getAll",
+							String.class)
+					.toString());
 			discoverer.discoverEndpoints();
 		});
 	}

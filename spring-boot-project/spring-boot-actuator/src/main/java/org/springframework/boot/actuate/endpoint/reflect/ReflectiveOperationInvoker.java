@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -101,6 +102,12 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 			Map<String, Object> arguments) {
 		Object resolved = arguments.get(name);
 		return this.parameterMapper.mapParameter(resolved, parameter.getType());
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("target", this.target)
+				.append("method", this.methodInfo.getMethod().toString()).toString();
 	}
 
 }
