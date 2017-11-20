@@ -81,13 +81,17 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {
-		return new WebApplicationContextRunner().withConfiguration(
-				UserConfigurations.of(WebEndpointTestApplication.class));
+		return new WebApplicationContextRunner()
+				.withConfiguration(
+						UserConfigurations.of(WebEndpointTestApplication.class))
+				.withPropertyValues("spring.metrics.export.statsd.enabled:false");
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
-		return new ReactiveWebApplicationContextRunner().withConfiguration(
-				UserConfigurations.of(WebEndpointTestApplication.class));
+		return new ReactiveWebApplicationContextRunner()
+				.withConfiguration(
+						UserConfigurations.of(WebEndpointTestApplication.class))
+				.withPropertyValues("spring.metrics.export.statsd.enabled:false");
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class,
