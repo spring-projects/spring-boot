@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -222,10 +223,10 @@ public class KafkaProperties {
 		private final Ssl ssl = new Ssl();
 
 		/**
-		 * Frequency in milliseconds that the consumer offsets are auto-committed to Kafka
-		 * if 'enable.auto.commit' true.
+		 * Frequency that the consumer offsets are auto-committed to Kafka if
+		 * 'enable.auto.commit' true.
 		 */
-		private Integer autoCommitInterval;
+		private Duration autoCommitInterval;
 
 		/**
 		 * What to do when there is no initial offset in Kafka or if the current offset
@@ -250,11 +251,11 @@ public class KafkaProperties {
 		private Boolean enableAutoCommit;
 
 		/**
-		 * Maximum amount of time in milliseconds the server will block before answering
-		 * the fetch request if there isn't sufficient data to immediately satisfy the
-		 * requirement given by "fetch.min.bytes".
+		 * Maximum amount of time the server will block before answering the fetch request
+		 * if there isn't sufficient data to immediately satisfy the requirement given by
+		 * "fetch.min.bytes".
 		 */
-		private Integer fetchMaxWait;
+		private Duration fetchMaxWait;
 
 		/**
 		 * Minimum amount of data the server should return for a fetch request in bytes.
@@ -267,9 +268,9 @@ public class KafkaProperties {
 		private String groupId;
 
 		/**
-		 * Expected time in milliseconds between heartbeats to the consumer coordinator.
+		 * Expected time between heartbeats to the consumer coordinator.
 		 */
-		private Integer heartbeatInterval;
+		private Duration heartbeatInterval;
 
 		/**
 		 * Deserializer class for keys.
@@ -295,11 +296,11 @@ public class KafkaProperties {
 			return this.ssl;
 		}
 
-		public Integer getAutoCommitInterval() {
+		public Duration getAutoCommitInterval() {
 			return this.autoCommitInterval;
 		}
 
-		public void setAutoCommitInterval(Integer autoCommitInterval) {
+		public void setAutoCommitInterval(Duration autoCommitInterval) {
 			this.autoCommitInterval = autoCommitInterval;
 		}
 
@@ -335,11 +336,11 @@ public class KafkaProperties {
 			this.enableAutoCommit = enableAutoCommit;
 		}
 
-		public Integer getFetchMaxWait() {
+		public Duration getFetchMaxWait() {
 			return this.fetchMaxWait;
 		}
 
-		public void setFetchMaxWait(Integer fetchMaxWait) {
+		public void setFetchMaxWait(Duration fetchMaxWait) {
 			this.fetchMaxWait = fetchMaxWait;
 		}
 
@@ -359,11 +360,11 @@ public class KafkaProperties {
 			this.groupId = groupId;
 		}
 
-		public Integer getHeartbeatInterval() {
+		public Duration getHeartbeatInterval() {
 			return this.heartbeatInterval;
 		}
 
-		public void setHeartbeatInterval(Integer heartbeatInterval) {
+		public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
@@ -399,7 +400,7 @@ public class KafkaProperties {
 			Map<String, Object> properties = new HashMap<>();
 			if (this.autoCommitInterval != null) {
 				properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
-						this.autoCommitInterval);
+						(int) this.autoCommitInterval.toMillis());
 			}
 			if (this.autoOffsetReset != null) {
 				properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
@@ -418,7 +419,7 @@ public class KafkaProperties {
 			}
 			if (this.fetchMaxWait != null) {
 				properties.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG,
-						this.fetchMaxWait);
+						(int) this.fetchMaxWait.toMillis());
 			}
 			if (this.fetchMinSize != null) {
 				properties.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, this.fetchMinSize);
@@ -428,7 +429,7 @@ public class KafkaProperties {
 			}
 			if (this.heartbeatInterval != null) {
 				properties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG,
-						this.heartbeatInterval);
+						(int) this.heartbeatInterval.toMillis());
 			}
 			if (this.keyDeserializer != null) {
 				properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
@@ -800,9 +801,9 @@ public class KafkaProperties {
 		private Integer concurrency;
 
 		/**
-		 * Timeout in milliseconds to use when polling the consumer.
+		 * Timeout to use when polling the consumer.
 		 */
-		private Long pollTimeout;
+		private Duration pollTimeout;
 
 		/**
 		 * Number of records between offset commits when ackMode is "COUNT" or
@@ -811,10 +812,9 @@ public class KafkaProperties {
 		private Integer ackCount;
 
 		/**
-		 * Time in milliseconds between offset commits when ackMode is "TIME" or
-		 * "COUNT_TIME".
+		 * Time between offset commits when ackMode is "TIME" or "COUNT_TIME".
 		 */
-		private Long ackTime;
+		private Duration ackTime;
 
 		public Type getType() {
 			return this.type;
@@ -840,11 +840,11 @@ public class KafkaProperties {
 			this.concurrency = concurrency;
 		}
 
-		public Long getPollTimeout() {
+		public Duration getPollTimeout() {
 			return this.pollTimeout;
 		}
 
-		public void setPollTimeout(Long pollTimeout) {
+		public void setPollTimeout(Duration pollTimeout) {
 			this.pollTimeout = pollTimeout;
 		}
 
@@ -856,11 +856,11 @@ public class KafkaProperties {
 			this.ackCount = ackCount;
 		}
 
-		public Long getAckTime() {
+		public Duration getAckTime() {
 			return this.ackTime;
 		}
 
-		public void setAckTime(Long ackTime) {
+		public void setAckTime(Duration ackTime) {
 			this.ackTime = ackTime;
 		}
 

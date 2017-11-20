@@ -107,7 +107,7 @@ public class BinderConversionService implements ConversionService {
 		service.addConverter(new StringToInetAddressConverter());
 		service.addConverter(new InetAddressToStringConverter());
 		service.addConverter(new PropertyEditorConverter());
-		service.addConverter(new StringToDurationConverter());
+		service.addConverter(new DurationConverter());
 		DateFormatterRegistrar registrar = new DateFormatterRegistrar();
 		DateFormatter formatter = new DateFormatter();
 		formatter.setIso(DateTimeFormat.ISO.DATE_TIME);

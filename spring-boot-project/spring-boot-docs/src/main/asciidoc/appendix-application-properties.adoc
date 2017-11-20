@@ -72,14 +72,14 @@ content into your application; rather pick only the properties that you need.
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
 	spring.cache.caffeine.spec= # The spec to use to create caches. Check CaffeineSpec for more details on the spec format.
-	spring.cache.couchbase.expiration=0 # Entry expiration in milliseconds. By default the entries never expire.
+	spring.cache.couchbase.expiration=0ms # Entry expiration. By default the entries never expire.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.
 	spring.cache.infinispan.config= # The location of the configuration file to use to initialize Infinispan.
 	spring.cache.jcache.config= # The location of the configuration file to use to initialize the cache manager.
 	spring.cache.jcache.provider= # Fully qualified name of the CachingProvider implementation to use to retrieve the JSR-107 compliant cache manager. Only needed if more than one JSR-107 implementation is available on the classpath.
 	spring.cache.redis.cache-null-values=true # Allow caching null values.
 	spring.cache.redis.key-prefix= # Key prefix.
-	spring.cache.redis.time-to-live=0 # Entry expiration in milliseconds. By default the entries never expire.
+	spring.cache.redis.time-to-live=0ms # Entry expiration. By default the entries never expire.
 	spring.cache.redis.use-key-prefix=true # Whether to use the key prefix when writing to Redis.
 	spring.cache.type= # Cache type, auto-detected according to the environment by default.
 
@@ -121,7 +121,7 @@ content into your application; rather pick only the properties that you need.
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/context/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
 	spring.messages.always-use-message-format=false # Set whether to always apply the MessageFormat rules, parsing even messages without arguments.
 	spring.messages.basename=messages # Comma-separated list of basenames, each following the ResourceBundle convention.
-	spring.messages.cache-seconds=-1 # Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever.
+	spring.messages.cache-duration=-1 # Loaded resource bundle files cache duration. When not set, bundles are cached forever.
 	spring.messages.encoding=UTF-8 # Message bundles encoding.
 	spring.messages.fallback-to-system-locale=true # Set whether to fall back to the system Locale if no files for a specific Locale have been found.
 	spring.messages.use-code-as-default-message=false # Set whether to use the message code as default message instead of throwing a "NoSuchMessageException". Recommended during development only.
@@ -162,7 +162,7 @@ content into your application; rather pick only the properties that you need.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
 	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript # Comma-separated list of MIME types that should be compressed.
 	server.compression.min-response-size=2048 # Minimum response size that is required for compression to be performed.
-	server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
+	server.connection-timeout= # Time that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1ms to indicate no (i.e. infinite) timeout.
 	server.display-name=application # Display name of the application.
 	server.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
 	server.error.include-exception=false # Include the "exception" attribute.
@@ -197,13 +197,13 @@ content into your application; rather pick only the properties that you need.
 	server.session.cookie.comment= # Comment for the session cookie.
 	server.session.cookie.domain= # Domain for the session cookie.
 	server.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
-	server.session.cookie.max-age= # Maximum age of the session cookie in seconds.
+	server.session.cookie.max-age= # Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used.
 	server.session.cookie.name= # Session cookie name.
 	server.session.cookie.path= # Path of the session cookie.
 	server.session.cookie.secure= # "Secure" flag for the session cookie.
 	server.session.persistent=false # Persist session data between restarts.
 	server.session.store-dir= # Directory used to store session data.
-	server.session.timeout= # Session timeout in seconds.
+	server.session.timeout= # Session timeout. If a duration suffix is not specified, seconds will be used.
 	server.session.tracking-modes= # Session tracking modes (one or more of the following: "cookie", "url", "ssl").
 	server.ssl.ciphers= # Supported SSL ciphers.
 	server.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store.
@@ -232,7 +232,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.rotate=true # Enable access log rotation.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.additional-tld-skip-patterns= # Comma-separated list of additional patterns that match jars to ignore for TLD scanning.
-	server.tomcat.background-processor-delay=30 # Delay in seconds between the invocation of backgroundProcess methods.
+	server.tomcat.background-processor-delay=30s # Delay between the invocation of backgroundProcess methods. If a duration suffix is not specified, seconds will be used.
 	server.tomcat.basedir= # Tomcat base directory. If not specified a temporary directory will be used.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -251,7 +251,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header that indicates that the incoming request uses SSL.
 	server.tomcat.redirect-context-root= # Whether requests to the context root should be redirected by appending a / to the path.
 	server.tomcat.remote-ip-header= # Name of the http header from which the remote ip is extracted. For instance `X-FORWARDED-FOR`
-	spring.tomcat.resource.cache-ttl=5000 # Time-to-live in milliseconds of the static resource cache.
+	spring.tomcat.resource.cache-ttl= # Time-to-live of the static resource cache.
 	server.tomcat.uri-encoding=UTF-8 # Character encoding to use to decode the URI.
 	server.undertow.accesslog.dir= # Undertow access log directory.
 	server.undertow.accesslog.enabled=false # Enable access log.
@@ -378,7 +378,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mustache.view-names= # White list of view names that can be resolved.
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/servlet/WebMvcProperties.{sc-ext}[WebMvcProperties])
-	spring.mvc.async.request-timeout= # Amount of time (in milliseconds) before asynchronous request handling times out.
+	spring.mvc.async.request-timeout= # Amount of time before asynchronous request handling times out.
 	spring.mvc.date-format= # Date format to use. For instance `dd/MM/yyyy`.
 	spring.mvc.dispatch-trace-request=false # Dispatch TRACE requests to the FrameworkServlet doService method.
 	spring.mvc.dispatch-options-request=true # Dispatch OPTIONS requests to the FrameworkServlet doService method.
@@ -398,7 +398,7 @@ content into your application; rather pick only the properties that you need.
 
 	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.add-mappings=true # Enable default resource handling.
-	spring.resources.cache-period= # Cache period for the resources served by the resource handler, in seconds.
+	spring.resources.cache-period= # Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.
 	spring.resources.chain.cache=true # Enable caching in the Resource chain.
 	spring.resources.chain.enabled= # Enable the Spring Resource Handling chain. Disabled by default unless at least one strategy has been enabled.
 	spring.resources.chain.gzipped=false # Enable resolution of already gzipped resources.
@@ -552,11 +552,11 @@ content into your application; rather pick only the properties that you need.
 	spring.couchbase.env.ssl.enabled= # Enable SSL support. Enabled automatically if a "keyStore" is provided unless specified otherwise.
 	spring.couchbase.env.ssl.key-store= # Path to the JVM key store that holds the certificates.
 	spring.couchbase.env.ssl.key-store-password= # Password used to access the key store.
-	spring.couchbase.env.timeouts.connect=5000 # Bucket connections timeout in milliseconds.
-	spring.couchbase.env.timeouts.key-value=2500 # Blocking operations performed on a specific key timeout in milliseconds.
-	spring.couchbase.env.timeouts.query=7500 # N1QL query operations timeout in milliseconds.
-	spring.couchbase.env.timeouts.socket-connect=1000 # Socket connect connections timeout in milliseconds.
-	spring.couchbase.env.timeouts.view=7500 # Regular and geospatial view operations timeout in milliseconds.
+	spring.couchbase.env.timeouts.connect=5000ms # Bucket connections timeout .
+	spring.couchbase.env.timeouts.key-value=2500ms # Blocking operations performed on a specific key timeout.
+	spring.couchbase.env.timeouts.query=7500ms # N1QL query operations timeout.
+	spring.couchbase.env.timeouts.socket-connect=1000ms # Socket connect connections timeout.
+	spring.couchbase.env.timeouts.view=7500ms # Regular and geospatial view operations timeout.
 
 	# DAO ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration])
 	spring.dao.exceptiontranslation.enabled=true # Enable the PersistenceExceptionTranslationPostProcessor.
@@ -564,7 +564,7 @@ content into your application; rather pick only the properties that you need.
 	# CASSANDRA ({sc-spring-boot-autoconfigure}/cassandra/CassandraProperties.{sc-ext}[CassandraProperties])
 	spring.data.cassandra.cluster-name= # Name of the Cassandra cluster.
 	spring.data.cassandra.compression=none # Compression supported by the Cassandra binary protocol.
-	spring.data.cassandra.connect-timeout-millis= # Socket option: connection time out.
+	spring.data.cassandra.connect-timeout= # Socket option: connection time out.
 	spring.data.cassandra.consistency-level= # Queries consistency level.
 	spring.data.cassandra.contact-points=localhost # Comma-separated list of cluster node addresses.
 	spring.data.cassandra.fetch-size= # Queries default fetch size.
@@ -572,12 +572,12 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
-	spring.data.cassandra.pool.heartbeat-interval=30 # Heartbeat interval (in seconds) after which a message is sent on an idle connection to make sure it's still alive.
-	spring.data.cassandra.pool.idle-timeout=120 # Idle timeout (in seconds) before an idle connection is removed.
+	spring.data.cassandra.pool.heartbeat-interval=30 # Heartbeat interval after which a message is sent on an idle connection to make sure it's still alive. If a duration suffix is not specified, seconds will be used.
+	spring.data.cassandra.pool.idle-timeout=120 # Idle timeout before an idle connection is removed. If a duration suffix is not specified, seconds will be used.
 	spring.data.cassandra.pool.max-queue-size=256 # Maximum number of requests that get enqueued if no connection is available.
-	spring.data.cassandra.pool.pool-timeout=5000 # Pool timeout (in milliseconds) when trying to acquire a connection from a host's pool.
+	spring.data.cassandra.pool.pool-timeout=5000ms # Pool timeout when trying to acquire a connection from a host's pool.
 	spring.data.cassandra.reactive-repositories.enabled=true # Enable Cassandra reactive repositories.
-	spring.data.cassandra.read-timeout-millis= # Socket option: read time out.
+	spring.data.cassandra.read-timeout= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
 	spring.data.cassandra.repositories.enabled= # Enable Cassandra repositories.
 	spring.data.cassandra.retry-policy= # Class name of the retry policy.
@@ -677,12 +677,12 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.xa.properties= # Properties to pass to the XA data source.
 
 	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/elasticsearch/jest/JestProperties.{sc-ext}[JestProperties])
-	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
+	spring.elasticsearch.jest.connection-timeout=3s # Connection timeout.
 	spring.elasticsearch.jest.multi-threaded=true # Enable connection requests from multiple execution threads.
 	spring.elasticsearch.jest.password= # Login password.
 	spring.elasticsearch.jest.proxy.host= # Proxy host the HTTP client should use.
 	spring.elasticsearch.jest.proxy.port= # Proxy port the HTTP client should use.
-	spring.elasticsearch.jest.read-timeout=3000 # Read timeout in milliseconds.
+	spring.elasticsearch.jest.read-timeout=3s # Read timeout.
 	spring.elasticsearch.jest.uris=http://localhost:9200 # Comma-separated list of the Elasticsearch instances to use.
 	spring.elasticsearch.jest.username= # Login user.
 
@@ -703,7 +703,7 @@ content into your application; rather pick only the properties that you need.
 	# JDBC ({sc-spring-boot-autoconfigure}/jdbc/JdbcProperties.{sc-ext}[JdbcProperties])
 	spring.jdbc.template.fetch-size=-1 # Number of rows that should be fetched from the database when more rows are needed.
 	spring.jdbc.template.max-rows=-1 # Maximum number of rows.
-	spring.jdbc.template.query-timeout=-1 # Query timeout in seconds.
+	spring.jdbc.template.query-timeout= # Query timeout. If a duration suffix is not specified, seconds will be used.
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.data.jpa.repositories.enabled=true # Enable JPA repositories.
@@ -754,11 +754,11 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.properties.log-base-dir= # Directory in which the log files should be stored.
 	spring.jta.atomikos.properties.log-base-name=tmlog # Transactions log file base name.
 	spring.jta.atomikos.properties.max-actives=50 # Maximum number of active transactions.
-	spring.jta.atomikos.properties.max-timeout=300000 # Maximum timeout (in milliseconds) that can be allowed for transactions.
-	spring.jta.atomikos.properties.recovery.delay=10000 # Delay between two recovery scans.
+	spring.jta.atomikos.properties.max-timeout=30m # Maximum timeout that can be allowed for transactions.
+	spring.jta.atomikos.properties.recovery.delay=10000ms # Delay between two recovery scans.
 	spring.jta.atomikos.properties.recovery.forget-orphaned-log-entries-delay=86400000 # Delay after which recovery can cleanup pending ('orphaned') log entries.
 	spring.jta.atomikos.properties.recovery.max-retries=5 # Number of retry attempts to commit the transaction before throwing an exception.
-	spring.jta.atomikos.properties.recovery.retry-interval=10000 # Delay between retry attempts.
+	spring.jta.atomikos.properties.recovery.retry-interval=10000ms # Delay between retry attempts.
 	spring.jta.atomikos.properties.serial-jta-transactions=true # Specify if sub-transactions should be joined when possible.
 	spring.jta.atomikos.properties.service= # Transaction manager implementation that should be started.
 	spring.jta.atomikos.properties.threaded-two-phase-commit=false # Use different (and concurrent) threads for two-phase commit on the participating resources.
@@ -830,12 +830,12 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Log a warning for transactions executed without a single enlisted resource.
 
 	# NARAYANA ({sc-spring-boot}/jta/narayana/NarayanaProperties.{sc-ext}[NarayanaProperties])
-	spring.jta.narayana.default-timeout=60 # Transaction timeout in seconds.
+	spring.jta.narayana.default-timeout=60s # Transaction timeout. If a duration suffix is not specified, seconds will be used.
 	spring.jta.narayana.expiry-scanners=com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner # Comma-separated list of expiry scanners.
 	spring.jta.narayana.log-dir= # Transaction object store directory.
 	spring.jta.narayana.one-phase-commit=true # Enable one phase commit optimisation.
-	spring.jta.narayana.periodic-recovery-period=120 # Interval in which periodic recovery scans are performed in seconds.
-	spring.jta.narayana.recovery-backoff-period=10 # Back off period between first and second phases of the recovery scan in seconds.
+	spring.jta.narayana.periodic-recovery-period=120s # Interval in which periodic recovery scans are performed. If a duration suffix is not specified, seconds will be used.
+	spring.jta.narayana.recovery-backoff-period=10s # Back off period between first and second phases of the recovery scan. If a duration suffix is not specified, seconds will be used.
 	spring.jta.narayana.recovery-db-pass= # Database password to be used by recovery manager.
 	spring.jta.narayana.recovery-db-user= # Database username to be used by recovery manager.
 	spring.jta.narayana.recovery-jms-pass= # JMS password to be used by recovery manager.
@@ -859,22 +859,22 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.host=localhost # Redis server host.
 	spring.redis.jedis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
 	spring.redis.jedis.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
-	spring.redis.jedis.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
+	spring.redis.jedis.pool.max-wait=-1ms # Maximum amount of time a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
 	spring.redis.jedis.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
 	spring.redis.lettuce.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
 	spring.redis.lettuce.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
-	spring.redis.lettuce.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
+	spring.redis.lettuce.pool.max-wait=-1ms # Maximum amount of time a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
 	spring.redis.lettuce.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
-	spring.redis.lettuce.shutdown-timeout=100 # Shutdown timeout in milliseconds.
+	spring.redis.lettuce.shutdown-timeout=100ms # Shutdown timeout.
 	spring.redis.password= # Login password of the redis server.
 	spring.redis.port=6379 # Redis server port.
 	spring.redis.sentinel.master= # Name of Redis server.
 	spring.redis.sentinel.nodes= # Comma-separated list of "host:port" pairs.
 	spring.redis.ssl=false # Enable SSL support.
-	spring.redis.timeout=0 # Connection timeout in milliseconds.
+	spring.redis.timeout=0 # Connection timeout.
 
 	# TRANSACTION ({sc-spring-boot-autoconfigure}/transaction/TransactionProperties.{sc-ext}[TransactionProperties])
-	spring.transaction.default-timeout= # Default transaction timeout in seconds.
+	spring.transaction.default-timeout= # Default transaction timeout. If a duration suffix is not specified, seconds will be used.
 	spring.transaction.rollback-on-commit-failure= # Perform the rollback on commit failures.
 
 
@@ -885,24 +885,24 @@ content into your application; rather pick only the properties that you need.
 
 	# ACTIVEMQ ({sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[ActiveMQProperties])
 	spring.activemq.broker-url= # URL of the ActiveMQ broker. Auto-generated by default.
-	spring.activemq.close-timeout=15000 # Time to wait, in milliseconds, before considering a close complete.
+	spring.activemq.close-timeout=15s # Time to wait before considering a close complete.
 	spring.activemq.in-memory=true # Specify if the default broker URL should be in memory. Ignored if an explicit broker has been specified.
 	spring.activemq.non-blocking-redelivery=false # Do not stop message delivery before re-delivering messages from a rolled back transaction. This implies that message order will not be preserved when this is enabled.
 	spring.activemq.password= # Login password of the broker.
-	spring.activemq.send-timeout=0 # Time to wait, in milliseconds, on Message sends for a response. Set it to 0 to indicate to wait forever.
+	spring.activemq.send-timeout=0 # Time to wait on Message sends for a response. Set it to 0 to indicate to wait forever.
 	spring.activemq.user= # Login user of the broker.
 	spring.activemq.packages.trust-all= # Trust all packages.
 	spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
 	spring.activemq.pool.block-if-full=true # Block when a connection is requested and the pool is full. Set it to false to throw a "JMSException" instead.
-	spring.activemq.pool.block-if-full-timeout=-1 # Blocking period, in milliseconds, before throwing an exception if the pool is still full.
+	spring.activemq.pool.block-if-full-timeout=-1ms # Blocking period before throwing an exception if the pool is still full.
 	spring.activemq.pool.create-connection-on-startup=true # Create a connection on startup. Can be used to warm-up the pool on startup.
 	spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created instead of a regular ConnectionFactory.
-	spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
-	spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
+	spring.activemq.pool.expiry-timeout=0ms # Connection expiration timeout.
+	spring.activemq.pool.idle-timeout=30s # Connection idle timeout.
 	spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
 	spring.activemq.pool.maximum-active-session-per-connection=500 # Maximum number of active sessions per connection.
 	spring.activemq.pool.reconnect-on-exception=true # Reset the connection when a "JMSException" occurs.
-	spring.activemq.pool.time-between-expiration-check=-1 # Time to sleep, in milliseconds, between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
+	spring.activemq.pool.time-between-expiration-check=-1ms # Time to sleep between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
 	spring.activemq.pool.use-anonymous-producers=true # Use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.
 
 	# ARTEMIS ({sc-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.{sc-ext}[ArtemisProperties])
@@ -938,12 +938,12 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.listener.max-concurrency= # Maximum number of concurrent consumers.
 	spring.jms.pub-sub-domain=false # Specify if the default destination type is topic.
 	spring.jms.template.default-destination= # Default destination to use on send/receive operations that do not have a destination parameter.
-	spring.jms.template.delivery-delay= # Delivery delay to use for send calls in milliseconds.
+	spring.jms.template.delivery-delay= # Delivery delay to use for send calls.
 	spring.jms.template.delivery-mode= # Delivery mode. Enable QoS when set.
 	spring.jms.template.priority= # Priority of a message when sending. Enable QoS when set.
 	spring.jms.template.qos-enabled= # Enable explicit QoS when sending a message.
-	spring.jms.template.receive-timeout= # Timeout to use for receive calls in milliseconds.
-	spring.jms.template.time-to-live= # Time-to-live of a message when sending in milliseconds. Enable QoS when set.
+	spring.jms.template.receive-timeout= # Timeout to use for receive calls.
+	spring.jms.template.time-to-live= # Time-to-live of a message when sending. Enable QoS when set.
 
 	# APACHE KAFKA ({sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[KafkaProperties])
 	spring.kafka.admin.client-id= # Id to pass to the server when making requests; used for server-side logging.
@@ -956,15 +956,15 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.admin.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
 	spring.kafka.client-id= # Id to pass to the server when making requests; used for server-side logging.
-	spring.kafka.consumer.auto-commit-interval= # Frequency in milliseconds that the consumer offsets are auto-committed to Kafka if 'enable.auto.commit' true.
+	spring.kafka.consumer.auto-commit-interval= # Frequency that the consumer offsets are auto-committed to Kafka if 'enable.auto.commit' true.
 	spring.kafka.consumer.auto-offset-reset= # What to do when there is no initial offset in Kafka or if the current offset does not exist any more on the server.
 	spring.kafka.consumer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
 	spring.kafka.consumer.client-id= # Id to pass to the server when making requests; used for server-side logging.
 	spring.kafka.consumer.enable-auto-commit= # If true the consumer's offset will be periodically committed in the background.
-	spring.kafka.consumer.fetch-max-wait= # Maximum amount of time in milliseconds the server will block before answering the fetch request if there isn't sufficient data to immediately satisfy the requirement given by "fetch.min.bytes".
+	spring.kafka.consumer.fetch-max-wait= # Maximum amount of time the server will block before answering the fetch request if there isn't sufficient data to immediately satisfy the requirement given by "fetch.min.bytes".
 	spring.kafka.consumer.fetch-min-size= # Minimum amount of data the server should return for a fetch request in bytes.
 	spring.kafka.consumer.group-id= # Unique string that identifies the consumer group this consumer belongs to.
-	spring.kafka.consumer.heartbeat-interval= # Expected time in milliseconds between heartbeats to the consumer coordinator.
+	spring.kafka.consumer.heartbeat-interval= # Expected time between heartbeats to the consumer coordinator.
 	spring.kafka.consumer.key-deserializer= # Deserializer class for keys.
 	spring.kafka.consumer.max-poll-records= # Maximum number of records returned in a single call to poll().
 	spring.kafka.consumer.properties.*= # Additional consumer-specific properties used to configure the client.
@@ -980,9 +980,9 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.jaas.options= # Additional JAAS options.
 	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
 	spring.kafka.listener.ack-mode= # Listener AckMode; see the spring-kafka documentation.
-	spring.kafka.listener.ack-time= # Time in milliseconds between offset commits when ackMode is "TIME" or "COUNT_TIME".
+	spring.kafka.listener.ack-time= # Time between offset commits when ackMode is "TIME" or "COUNT_TIME".
 	spring.kafka.listener.concurrency= # Number of threads to run in the listener containers.
-	spring.kafka.listener.poll-timeout= # Timeout in milliseconds to use when polling the consumer.
+	spring.kafka.listener.poll-timeout= # Timeout to use when polling the consumer.
 	spring.kafka.listener.type=single # Listener type.
 	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.
 	spring.kafka.producer.batch-size= # Number of records to batch before sending.
@@ -1010,18 +1010,18 @@ content into your application; rather pick only the properties that you need.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
-	spring.rabbitmq.cache.channel.checkout-timeout= # Number of milliseconds to wait to obtain a channel if the cache size has been reached.
+	spring.rabbitmq.cache.channel.checkout-timeout= # Duration to wait to obtain a channel if the cache size has been reached.
 	spring.rabbitmq.cache.channel.size= # Number of channels to retain in the cache.
 	spring.rabbitmq.cache.connection.mode=channel # Connection factory cache mode.
 	spring.rabbitmq.cache.connection.size= # Number of connections to cache.
-	spring.rabbitmq.connection-timeout= # Connection timeout, in milliseconds; zero for infinite.
+	spring.rabbitmq.connection-timeout= # Connection timeout; zero for infinite.
 	spring.rabbitmq.dynamic=true # Create an AmqpAdmin bean.
 	spring.rabbitmq.host=localhost # RabbitMQ host.
 	spring.rabbitmq.listener.direct.acknowledge-mode= # Acknowledge mode of container.
 	spring.rabbitmq.listener.direct.auto-startup=true # Start the container automatically on startup.
 	spring.rabbitmq.listener.direct.consumers-per-queue= # Number of consumers per queue.
 	spring.rabbitmq.listener.direct.default-requeue-rejected= # Whether rejected deliveries are requeued by default; default true.
-	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published in milliseconds.
+	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published.
 	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.direct.retry.enabled=false # Whether or not publishing retries are enabled.
 	spring.rabbitmq.listener.direct.retry.initial-interval=1000 # Interval between the first and second attempt to publish or deliver a message.
@@ -1033,7 +1033,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.simple.auto-startup=true # Start the container automatically on startup.
 	spring.rabbitmq.listener.simple.concurrency= # Minimum number of listener invoker threads.
 	spring.rabbitmq.listener.simple.default-requeue-rejected= # Whether or not to requeue delivery failures.
-	spring.rabbitmq.listener.simple.idle-event-interval= # How often idle container events should be published in milliseconds.
+	spring.rabbitmq.listener.simple.idle-event-interval= # How often idle container events should be published.
 	spring.rabbitmq.listener.simple.max-concurrency= # Maximum number of listener invoker.
 	spring.rabbitmq.listener.simple.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.simple.retry.enabled=false # Whether or not publishing retries are enabled.
@@ -1048,7 +1048,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.port=5672 # RabbitMQ port.
 	spring.rabbitmq.publisher-confirms=false # Enable publisher confirms.
 	spring.rabbitmq.publisher-returns=false # Enable publisher returns.
-	spring.rabbitmq.requested-heartbeat= # Requested heartbeat timeout, in seconds; zero for none.
+	spring.rabbitmq.requested-heartbeat= # Requested heartbeat timeout; zero for none. If a duration suffix is not specified, seconds will be used.
 	spring.rabbitmq.ssl.enabled=false # Enable SSL support.
 	spring.rabbitmq.ssl.key-store= # Path to the key store that holds the SSL certificate.
 	spring.rabbitmq.ssl.key-store-password= # Password used to access the key store.
@@ -1122,93 +1122,93 @@ content into your application; rather pick only the properties that you need.
 	management.endpoints.web.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
 	management.endpoints.web.cors.allowed-origins= # Comma-separated list of origins to allow. '*' allows all origins. When not set, CORS support is disabled.
 	management.endpoints.web.cors.exposed-headers= # Comma-separated list of headers to include in a response.
-	management.endpoints.web.cors.max-age=1800 # How long, in seconds, the response from a pre-flight request can be cached by clients.
+	management.endpoints.web.cors.max-age=1800 # How long the response from a pre-flight request can be cached by clients. If a duration suffix is not specified, seconds will be used.
 
 	# AUDIT EVENTS ENDPOINT ({sc-spring-boot-actuator}/audit/AuditEventsEndpoint.{sc-ext}[AuditEventsEndpoint])
-	management.endpoint.auditevents.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.auditevents.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.auditevents.enabled= # Enable the auditevents endpoint.
 
 	# BEANS ENDPOINT ({sc-spring-boot-actuator}/beans/BeansEndpoint.{sc-ext}[BeansEndpoint])
-	management.endpoint.beans.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.beans.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.beans.enabled= # Enable the beans endpoint.
 
 	# CONDITIONS REPORT ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/condition/ConditionsReportEndpoint.{sc-ext}[ConditionsReportEndpoint])
-	management.endpoint.conditions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.conditions.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.conditions.enabled= # Enable the conditions endpoint.
 
 	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint])
-	management.endpoint.configprops.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.configprops.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.configprops.enabled= # Enable the configprops endpoint.
 	management.endpoint.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
 	# ENVIRONMENT ENDPOINT  ({sc-spring-boot-actuator}/env/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint])
-	management.endpoint.env.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.env.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.env.enabled= # Enable the env endpoint.
 	management.endpoint.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
 	# FLYWAY ENDPOINT ({sc-spring-boot-actuator}/flyway/FlywayEndpoint.{sc-ext}[FlywayEndpoint])
-	management.endpoint.flyway.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.flyway.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.flyway.enabled= # Enable the flyway endpoint.
 
 	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint])
-	management.endpoint.health.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.health.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.health.enabled= # Enable the health endpoint.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
-	management.endpoint.heapdump.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.heapdump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.heapdump.enabled= # Enable the heapdump endpoint.
 
 	# INFO ENDPOINT ({sc-spring-boot-actuator}/info/InfoEndpoint.{sc-ext}[InfoEndpoint])
-	management.endpoint.info.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.info.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.info.enabled=true # Enable the info endpoint.
 
 	# LIQUIBASE ENDPOINT ({sc-spring-boot-actuator}/liquibase/LiquibaseEndpoint.{sc-ext}[LiquibaseEndpoint])
-	management.endpoint.liquibase.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.liquibase.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.liquibase.enabled= # Enable the liquibase endpoint.
 
 	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logging/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint])
-	management.endpoint.logfile.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.logfile.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.logfile.enabled= # Enable the logfile endpoint.
 	management.endpoint.logfile.external-file= # External Logfile to be accessed. Can be used if the logfile is written by output redirect and not by the logging system itself.
 
 	# LOGGERS ENDPOINT ({sc-spring-boot-actuator}/logging/LoggersEndpoint.{sc-ext}[LoggersEndpoint])
-	management.endpoint.loggers.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.loggers.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.loggers.enabled= # Enable the loggers endpoint.
 
 	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator-autoconfigure}/web/servlet/RequestMappingEndpoint.{sc-ext}[RequestMappingEndpoint])
-	management.endpoint.mappings.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.mappings.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.mappings.enabled= # Enable the mappings endpoint.
 
 	# METRICS ENDPOINT ({sc-spring-boot-actuator}/metrics/MetricsEndpoint.{sc-ext}[MetricsEndpoint])
-	management.endpoint.metrics.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.metrics.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.metrics.enabled= # Enable the metrics endpoint.
 
 	# PROMETHEUS ENDPOINT ({sc-spring-boot-actuator}/metrics/export/prometheus/PrometheusScrapeEndpoint.{sc-ext}[PrometheusScrapeEndpoint])
-	management.endpoint.prometheus.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.prometheus.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.prometheus.enabled= # Enable the metrics endpoint.
 
 	# SCHEDULED TASKS ENDPOINT ({sc-spring-boot-actuator}/scheduling/ScheduledTasksEndpoint.{sc-ext}[ScheduledTasksEndpoint])
-	management.endpoint.scheduledtasks.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.scheduledtasks.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.scheduledtasks.enabled= # Enable the scheduled tasks endpoint.
 
 	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
-	management.endpoint.sessions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.sessions.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.sessions.enabled= # Enable the sessions endpoint.
 
 	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/context/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
-	management.endpoint.shutdown.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.shutdown.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.shutdown.enabled=false # Enable the shutdown endpoint.
 
 	# STATUS ENDPOINT ({sc-spring-boot-actuator}/health/StatusEndpoint.{sc-ext}[StatusEndpoint])
-	management.endpoint.status.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.status.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.status.enabled=true # Enable the status endpoint.
 
 	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/management/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])
-	management.endpoint.threaddump.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.threaddump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.threaddump.enabled= # Enable the threaddump endpoint.
 
 	# TRACE ENDPOINT ({sc-spring-boot-actuator}/trace/TraceEndpoint.{sc-ext}[TraceEndpoint])
-	management.endpoint.trace.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	management.endpoint.trace.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.trace.enabled= # Enable the trace endpoint.
 
 	# HEALTH INDICATORS
@@ -1221,7 +1221,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.diskspace.threshold=0 # Minimum disk space that should be available, in bytes.
 	management.health.elasticsearch.enabled=true # Enable elasticsearch health check.
 	management.health.elasticsearch.indices= # Comma-separated index names.
-	management.health.elasticsearch.response-timeout=100 # The time, in milliseconds, to wait for a response from the cluster.
+	management.health.elasticsearch.response-timeout=100ms # The time to wait for a response from the cluster.
 	management.health.jms.enabled=true # Enable JMS health check.
 	management.health.ldap.enabled=true # Enable LDAP health check.
 	management.health.mail.enabled=true # Enable Mail health check.
@@ -1334,8 +1334,8 @@ content into your application; rather pick only the properties that you need.
 	spring.devtools.restart.additional-paths= # Additional paths to watch for changes.
 	spring.devtools.restart.enabled=true # Enable automatic restart.
 	spring.devtools.restart.exclude=META-INF/maven/**,META-INF/resources/**,resources/**,static/**,public/**,templates/**,**/*Test.class,**/*Tests.class,git.properties # Patterns that should be excluded from triggering a full restart.
-	spring.devtools.restart.poll-interval=1000 # Amount of time (in milliseconds) to wait between polling for classpath changes.
-	spring.devtools.restart.quiet-period=400 # Amount of quiet time (in milliseconds) required without any classpath changes before a restart is triggered.
+	spring.devtools.restart.poll-interval=1s # Amount of time to wait between polling for classpath changes.
+	spring.devtools.restart.quiet-period=400ms # Amount of quiet time required without any classpath changes before a restart is triggered.
 	spring.devtools.restart.trigger-file= # Name of a specific file that when changed will trigger the restart check. If not specified any classpath file change will trigger the restart.
 
 	# REMOTE DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/RemoteDevToolsProperties.{sc-ext}[RemoteDevToolsProperties])

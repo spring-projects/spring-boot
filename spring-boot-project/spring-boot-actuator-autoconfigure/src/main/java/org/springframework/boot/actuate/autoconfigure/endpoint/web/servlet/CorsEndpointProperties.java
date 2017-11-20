@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DurationUnit;
 
 /**
  * Configuration properties for MVC endpoints' CORS support.
@@ -58,10 +61,11 @@ public class CorsEndpointProperties {
 	private Boolean allowCredentials;
 
 	/**
-	 * How long, in seconds, the response from a pre-flight request can be cached by
-	 * clients.
+	 * How long the response from a pre-flight request can be cached by clients. If a
+	 * duration suffix is not specified, seconds will be used.
 	 */
-	private Long maxAge = 1800L;
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration maxAge = Duration.ofSeconds(1800);
 
 	public List<String> getAllowedOrigins() {
 		return this.allowedOrigins;
@@ -103,11 +107,11 @@ public class CorsEndpointProperties {
 		this.allowCredentials = allowCredentials;
 	}
 
-	public Long getMaxAge() {
+	public Duration getMaxAge() {
 		return this.maxAge;
 	}
 
-	public void setMaxAge(Long maxAge) {
+	public void setMaxAge(Duration maxAge) {
 		this.maxAge = maxAge;
 	}
 

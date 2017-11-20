@@ -105,7 +105,8 @@ public class RabbitAutoConfiguration {
 				factory.setVirtualHost(config.determineVirtualHost());
 			}
 			if (config.getRequestedHeartbeat() != null) {
-				factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
+				factory.setRequestedHeartbeat(
+						(int) config.getRequestedHeartbeat().getSeconds());
 			}
 			RabbitProperties.Ssl ssl = config.getSsl();
 			if (ssl.isEnabled()) {
@@ -121,7 +122,8 @@ public class RabbitAutoConfiguration {
 				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
 			}
 			if (config.getConnectionTimeout() != null) {
-				factory.setConnectionTimeout(config.getConnectionTimeout());
+				factory.setConnectionTimeout(
+						(int) config.getConnectionTimeout().toMillis());
 			}
 			factory.afterPropertiesSet();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(

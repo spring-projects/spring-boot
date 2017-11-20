@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
@@ -89,11 +92,11 @@ public class ServerProperties {
 	private int maxHttpHeaderSize = 0; // bytes
 
 	/**
-	 * Time in milliseconds that connectors will wait for another HTTP request before
-	 * closing the connection. When not set, the connector's server-specific default will
-	 * be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
+	 * Time that connectors will wait for another HTTP request before closing the
+	 * connection. When not set, the connector's server-specific default will be used. Use
+	 * a value of -1 to indicate no (i.e. infinite) timeout.
 	 */
-	private Integer connectionTimeout;
+	private Duration connectionTimeout;
 
 	private Session session = new Session();
 
@@ -162,11 +165,11 @@ public class ServerProperties {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
-	public Integer getConnectionTimeout() {
+	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setConnectionTimeout(Integer connectionTimeout) {
+	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
@@ -335,9 +338,10 @@ public class ServerProperties {
 	public static class Session {
 
 		/**
-		 * Session timeout in seconds.
+		 * Session timeout. If a duration suffix is not specified, seconds will be used.
 		 */
-		private Integer timeout;
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration timeout;
 
 		/**
 		 * Session tracking modes (one or more of the following: "cookie", "url", "ssl").
@@ -360,12 +364,12 @@ public class ServerProperties {
 			return this.cookie;
 		}
 
-		public Integer getTimeout() {
+		public Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Integer sessionTimeout) {
-			this.timeout = sessionTimeout;
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
 		}
 
 		public Set<SessionTrackingMode> getTrackingModes() {
@@ -428,9 +432,10 @@ public class ServerProperties {
 			private Boolean secure;
 
 			/**
-			 * Maximum age of the session cookie in seconds.
+			 * Maximum age of the session cookie.
 			 */
-			private Integer maxAge;
+			@DurationUnit(ChronoUnit.SECONDS)
+			private Duration maxAge;
 
 			public String getName() {
 				return this.name;
@@ -480,11 +485,11 @@ public class ServerProperties {
 				this.secure = secure;
 			}
 
-			public Integer getMaxAge() {
+			public Duration getMaxAge() {
 				return this.maxAge;
 			}
 
-			public void setMaxAge(Integer maxAge) {
+			public void setMaxAge(Duration maxAge) {
 				this.maxAge = maxAge;
 			}
 
@@ -562,29 +567,31 @@ public class ServerProperties {
 		private File basedir;
 
 		/**
-		 * Delay in seconds between the invocation of backgroundProcess methods.
+		 * Delay between the invocation of backgroundProcess methods. If a duration suffix
+		 * is not specified, seconds will be used.
 		 */
-		private int backgroundProcessorDelay = 30; // seconds
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration backgroundProcessorDelay = Duration.ofSeconds(30);
 
 		/**
 		 * Maximum amount of worker threads.
 		 */
-		private int maxThreads = 0; // Number of threads in protocol handler
+		private int maxThreads = 0;
 
 		/**
 		 * Minimum amount of worker threads.
 		 */
-		private int minSpareThreads = 0; // Minimum spare threads in protocol handler
+		private int minSpareThreads = 0;
 
 		/**
 		 * Maximum size in bytes of the HTTP post content.
 		 */
-		private int maxHttpPostSize = 0; // bytes
+		private int maxHttpPostSize = 0;
 
 		/**
 		 * Maximum size in bytes of the HTTP message header.
 		 */
-		private int maxHttpHeaderSize = 0; // bytes
+		private int maxHttpHeaderSize = 0;
 
 		/**
 		 * Whether requests to the context root should be redirected by appending a / to
@@ -650,11 +657,11 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
-		public int getBackgroundProcessorDelay() {
+		public Duration getBackgroundProcessorDelay() {
 			return this.backgroundProcessorDelay;
 		}
 
-		public void setBackgroundProcessorDelay(int backgroundProcessorDelay) {
+		public void setBackgroundProcessorDelay(Duration backgroundProcessorDelay) {
 			this.backgroundProcessorDelay = backgroundProcessorDelay;
 		}
 
@@ -903,15 +910,15 @@ public class ServerProperties {
 		public static class Resource {
 
 			/**
-			 * Time-to-live in milliseconds of the static resource cache.
+			 * Time-to-live of the static resource cache.
 			 */
-			private Long cacheTtl;
+			private Duration cacheTtl;
 
-			public Long getCacheTtl() {
+			public Duration getCacheTtl() {
 				return this.cacheTtl;
 			}
 
-			public void setCacheTtl(Long cacheTtl) {
+			public void setCacheTtl(Duration cacheTtl) {
 				this.cacheTtl = cacheTtl;
 			}
 

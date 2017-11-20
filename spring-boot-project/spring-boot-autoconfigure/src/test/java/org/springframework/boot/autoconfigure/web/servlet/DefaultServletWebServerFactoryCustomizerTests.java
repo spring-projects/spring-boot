@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
@@ -212,7 +213,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		given(servletContext.getSessionCookieConfig()).willReturn(sessionCookieConfig);
 		this.customizer.customize(factory);
 		triggerInitializers(factory, servletContext);
-		verify(factory).setSessionTimeout(123);
+		verify(factory).setSessionTimeout(Duration.ofSeconds(123));
 		verify(servletContext).setSessionTrackingModes(
 				EnumSet.of(SessionTrackingMode.COOKIE, SessionTrackingMode.URL));
 		verify(sessionCookieConfig).setName("testname");

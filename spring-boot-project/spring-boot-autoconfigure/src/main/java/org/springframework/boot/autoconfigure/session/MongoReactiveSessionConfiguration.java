@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,9 +49,9 @@ class MongoReactiveSessionConfiguration {
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
 				MongoSessionProperties mongoSessionProperties) {
-			Integer timeout = sessionProperties.getTimeout();
+			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds(timeout);
+				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setCollectionName(mongoSessionProperties.getCollectionName());
 		}

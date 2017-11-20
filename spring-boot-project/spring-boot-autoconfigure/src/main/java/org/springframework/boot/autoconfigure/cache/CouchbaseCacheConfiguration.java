@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.time.Duration;
 import java.util.List;
 
 import com.couchbase.client.java.Bucket;
@@ -59,11 +60,13 @@ public class CouchbaseCacheConfiguration {
 	@Bean
 	public CouchbaseCacheManager cacheManager() {
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
-		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(
-				CacheBuilder.newInstance(this.bucket)
-						.withExpiration(this.cacheProperties.getCouchbase()
-								.getExpirationSeconds()),
-				cacheNames.toArray(new String[cacheNames.size()]));
+		CacheBuilder builder = CacheBuilder.newInstance(this.bucket);
+		Duration expiration = this.cacheProperties.getCouchbase().getExpiration();
+		if (expiration != null) {
+			builder = builder.withExpiration((int) expiration.getSeconds());
+		}
+		String[] names = cacheNames.toArray(new String[cacheNames.size()]);
+		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(builder, names);
 		return this.customizers.customize(cacheManager);
 	}
 

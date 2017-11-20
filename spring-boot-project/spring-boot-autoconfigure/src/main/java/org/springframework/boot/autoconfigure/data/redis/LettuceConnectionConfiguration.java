@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -116,14 +115,15 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (this.properties.isSsl()) {
 			builder.useSsl();
 		}
-		if (this.properties.getTimeout() != 0) {
-			builder.commandTimeout(Duration.ofMillis(this.properties.getTimeout()));
+		if (this.properties.getTimeout() != null) {
+			builder.commandTimeout(this.properties.getTimeout());
 		}
 		if (this.properties.getLettuce() != null) {
 			RedisProperties.Lettuce lettuce = this.properties.getLettuce();
-			if (lettuce.getShutdownTimeout() >= 0) {
-				builder.shutdownTimeout(Duration
-						.ofMillis(this.properties.getLettuce().getShutdownTimeout()));
+			if (lettuce.getShutdownTimeout() != null
+					&& !lettuce.getShutdownTimeout().isZero()) {
+				builder.shutdownTimeout(
+						this.properties.getLettuce().getShutdownTimeout());
 			}
 		}
 		return builder;
@@ -159,7 +159,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			config.setMaxTotal(properties.getMaxActive());
 			config.setMaxIdle(properties.getMaxIdle());
 			config.setMinIdle(properties.getMinIdle());
-			config.setMaxWaitMillis(properties.getMaxWait());
+			if (properties.getMaxWait() != null) {
+				config.setMaxWaitMillis(properties.getMaxWait().toMillis());
+			}
 			return config;
 		}
 

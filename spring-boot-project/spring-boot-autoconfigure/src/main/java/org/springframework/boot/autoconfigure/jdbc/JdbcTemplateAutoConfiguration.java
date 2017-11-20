@@ -70,7 +70,10 @@ public class JdbcTemplateAutoConfiguration {
 			JdbcProperties.Template template = this.properties.getTemplate();
 			jdbcTemplate.setFetchSize(template.getFetchSize());
 			jdbcTemplate.setMaxRows(template.getMaxRows());
-			jdbcTemplate.setQueryTimeout(template.getQueryTimeout());
+			if (template.getQueryTimeout() != null) {
+				jdbcTemplate
+						.setQueryTimeout((int) template.getQueryTimeout().getSeconds());
+			}
 			return jdbcTemplate;
 		}
 

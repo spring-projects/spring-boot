@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DurationUnit;
 
 /**
  * Properties used to configure resource handling.
@@ -41,9 +45,11 @@ public class ResourceProperties {
 	private String[] staticLocations = CLASSPATH_RESOURCE_LOCATIONS;
 
 	/**
-	 * Cache period for the resources served by the resource handler, in seconds.
+	 * Cache period for the resources served by the resource handler. If a duration suffix
+	 * is not specified, seconds will be used.
 	 */
-	private Integer cachePeriod;
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration cachePeriod;
 
 	/**
 	 * Enable default resource handling.
@@ -69,11 +75,11 @@ public class ResourceProperties {
 		return normalized;
 	}
 
-	public Integer getCachePeriod() {
+	public Duration getCachePeriod() {
 		return this.cachePeriod;
 	}
 
-	public void setCachePeriod(Integer cachePeriod) {
+	public void setCachePeriod(Duration cachePeriod) {
 		this.cachePeriod = cachePeriod;
 	}
 

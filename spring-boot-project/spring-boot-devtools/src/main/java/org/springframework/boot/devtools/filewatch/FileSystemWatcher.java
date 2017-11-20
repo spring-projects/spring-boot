@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,9 +42,9 @@ import org.springframework.util.Assert;
  */
 public class FileSystemWatcher {
 
-	private static final long DEFAULT_POLL_INTERVAL = 1000;
+	private static final Duration DEFAULT_POLL_INTERVAL = Duration.ofMillis(1000);
 
-	private static final long DEFAULT_QUIET_PERIOD = 400;
+	private static final Duration DEFAULT_QUIET_PERIOD = Duration.ofMillis(400);
 
 	private final List<FileChangeListener> listeners = new ArrayList<>();
 
@@ -77,14 +78,17 @@ public class FileSystemWatcher {
 	 * @param quietPeriod the amount of time required after a change has been detected to
 	 * ensure that updates have completed
 	 */
-	public FileSystemWatcher(boolean daemon, long pollInterval, long quietPeriod) {
-		Assert.isTrue(pollInterval > 0, "PollInterval must be positive");
-		Assert.isTrue(quietPeriod > 0, "QuietPeriod must be positive");
-		Assert.isTrue(pollInterval > quietPeriod,
+	public FileSystemWatcher(boolean daemon, Duration pollInterval,
+			Duration quietPeriod) {
+		Assert.notNull(pollInterval, "PollInterval must not be null");
+		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
+		Assert.isTrue(pollInterval.toMillis() > 0, "PollInterval must be positive");
+		Assert.isTrue(quietPeriod.toMillis() > 0, "QuietPeriod must be positive");
+		Assert.isTrue(pollInterval.toMillis() > quietPeriod.toMillis(),
 				"PollInterval must be greater than QuietPeriod");
 		this.daemon = daemon;
-		this.pollInterval = pollInterval;
-		this.quietPeriod = quietPeriod;
+		this.pollInterval = pollInterval.toMillis();
+		this.quietPeriod = quietPeriod.toMillis();
 	}
 
 	/**

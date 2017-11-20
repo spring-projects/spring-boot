@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -204,17 +205,17 @@ public class WebMvcProperties {
 	public static class Async {
 
 		/**
-		 * Amount of time (in milliseconds) before asynchronous request handling times
-		 * out. If this value is not set, the default timeout of the underlying
-		 * implementation is used, e.g. 10 seconds on Tomcat with Servlet 3.
+		 * Amount of time before asynchronous request handling times out. If this value is
+		 * not set, the default timeout of the underlying implementation is used, e.g. 10
+		 * seconds on Tomcat with Servlet 3.
 		 */
-		private Long requestTimeout;
+		private Duration requestTimeout;
 
-		public Long getRequestTimeout() {
+		public Duration getRequestTimeout() {
 			return this.requestTimeout;
 		}
 
-		public void setRequestTimeout(Long requestTimeout) {
+		public void setRequestTimeout(Duration requestTimeout) {
 			this.requestTimeout = requestTimeout;
 		}
 

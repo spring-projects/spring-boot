@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.classpath;
 
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +105,8 @@ public class ClassPathFileSystemWatcherTests {
 
 		@Bean
 		public ClassPathFileSystemWatcher watcher() {
-			FileSystemWatcher watcher = new FileSystemWatcher(false, 100, 10);
+			FileSystemWatcher watcher = new FileSystemWatcher(false,
+					Duration.ofMillis(100), Duration.ofMillis(10));
 			URL[] urls = this.environment.getProperty("urls", URL[].class);
 			return new ClassPathFileSystemWatcher(
 					new MockFileSystemWatcherFactory(watcher), restartStrategy(), urls);

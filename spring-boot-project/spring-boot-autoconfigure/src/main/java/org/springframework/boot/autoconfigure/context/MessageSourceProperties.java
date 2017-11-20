@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.context;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 /**
  * Configuration properties for Message Source.
@@ -41,10 +42,10 @@ public class MessageSourceProperties {
 	private Charset encoding = StandardCharsets.UTF_8;
 
 	/**
-	 * Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles
+	 * Loaded resource bundle files cache expiration, in seconds. When not set, bundles
 	 * are cached forever.
 	 */
-	private int cacheSeconds = -1;
+	private Duration cacheDuration;
 
 	/**
 	 * Set whether to fall back to the system Locale if no files for a specific Locale
@@ -81,12 +82,12 @@ public class MessageSourceProperties {
 		this.encoding = encoding;
 	}
 
-	public int getCacheSeconds() {
-		return this.cacheSeconds;
+	public Duration getCacheDuration() {
+		return this.cacheDuration;
 	}
 
-	public void setCacheSeconds(int cacheSeconds) {
-		this.cacheSeconds = cacheSeconds;
+	public void setCacheDuration(Duration cacheDuration) {
+		this.cacheDuration = cacheDuration;
 	}
 
 	public boolean isFallbackToSystemLocale() {

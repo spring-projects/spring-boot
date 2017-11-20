@@ -100,7 +100,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 			factory.setDefaultRequeueRejected(configuration.getDefaultRequeueRejected());
 		}
 		if (configuration.getIdleEventInterval() != null) {
-			factory.setIdleEventInterval(configuration.getIdleEventInterval());
+			factory.setIdleEventInterval(configuration.getIdleEventInterval().toMillis());
 		}
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {

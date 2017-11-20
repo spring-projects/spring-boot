@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -145,14 +146,14 @@ public class WebFluxAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-			Integer cachePeriod = this.resourceProperties.getCachePeriod();
+			Duration cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				ResourceHandlerRegistration registration = registry
 						.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				if (cachePeriod != null) {
-					registration.setCacheControl(
-							CacheControl.maxAge(cachePeriod, TimeUnit.SECONDS));
+					registration.setCacheControl(CacheControl
+							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
 				}
 				customizeResourceHandlerRegistration(registration);
 			}
@@ -162,8 +163,8 @@ public class WebFluxAutoConfiguration {
 						.addResourceHandler(staticPathPattern).addResourceLocations(
 								this.resourceProperties.getStaticLocations());
 				if (cachePeriod != null) {
-					registration.setCacheControl(
-							CacheControl.maxAge(cachePeriod, TimeUnit.SECONDS));
+					registration.setCacheControl(CacheControl
+							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
 				}
 				customizeResourceHandlerRegistration(registration);
 			}

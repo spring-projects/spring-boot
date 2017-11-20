@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
+import java.time.Duration;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -142,9 +144,9 @@ public class JmsProperties {
 		private String defaultDestination;
 
 		/**
-		 * Delivery delay to use for send calls in milliseconds.
+		 * Delivery delay to use for send calls.
 		 */
-		private Long deliveryDelay;
+		private Duration deliveryDelay;
 
 		/**
 		 * Delivery mode. Enable QoS when set.
@@ -157,9 +159,9 @@ public class JmsProperties {
 		private Integer priority;
 
 		/**
-		 * Time-to-live of a message when sending in milliseconds. Enable QoS when set.
+		 * Time-to-live of a message when sending. Enable QoS when set.
 		 */
-		private Long timeToLive;
+		private Duration timeToLive;
 
 		/**
 		 * Enable explicit QoS when sending a message. When enabled, the delivery mode,
@@ -169,9 +171,9 @@ public class JmsProperties {
 		private Boolean qosEnabled;
 
 		/**
-		 * Timeout to use for receive calls in milliseconds.
+		 * Timeout to use for receive calls.
 		 */
-		private Long receiveTimeout;
+		private Duration receiveTimeout;
 
 		public String getDefaultDestination() {
 			return this.defaultDestination;
@@ -181,11 +183,11 @@ public class JmsProperties {
 			this.defaultDestination = defaultDestination;
 		}
 
-		public Long getDeliveryDelay() {
+		public Duration getDeliveryDelay() {
 			return this.deliveryDelay;
 		}
 
-		public void setDeliveryDelay(Long deliveryDelay) {
+		public void setDeliveryDelay(Duration deliveryDelay) {
 			this.deliveryDelay = deliveryDelay;
 		}
 
@@ -205,11 +207,11 @@ public class JmsProperties {
 			this.priority = priority;
 		}
 
-		public Long getTimeToLive() {
+		public Duration getTimeToLive() {
 			return this.timeToLive;
 		}
 
-		public void setTimeToLive(Long timeToLive) {
+		public void setTimeToLive(Duration timeToLive) {
 			this.timeToLive = timeToLive;
 		}
 
@@ -229,11 +231,11 @@ public class JmsProperties {
 			this.qosEnabled = qosEnabled;
 		}
 
-		public Long getReceiveTimeout() {
+		public Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
-		public void setReceiveTimeout(Long receiveTimeout) {
+		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 

@@ -125,17 +125,30 @@ public class CassandraAutoConfiguration {
 
 	private SocketOptions getSocketOptions() {
 		SocketOptions options = new SocketOptions();
-		options.setConnectTimeoutMillis(this.properties.getConnectTimeoutMillis());
-		options.setReadTimeoutMillis(this.properties.getReadTimeoutMillis());
+		if (this.properties.getConnectTimeout() != null) {
+			options.setConnectTimeoutMillis(
+					(int) this.properties.getConnectTimeout().toMillis());
+		}
+		if (this.properties.getReadTimeout() != null) {
+			options.setReadTimeoutMillis(
+					(int) this.properties.getReadTimeout().toMillis());
+		}
 		return options;
 	}
 
 	private PoolingOptions getPoolingOptions() {
 		CassandraProperties.Pool pool = this.properties.getPool();
 		PoolingOptions options = new PoolingOptions();
-		options.setIdleTimeoutSeconds(pool.getIdleTimeout());
-		options.setPoolTimeoutMillis(pool.getPoolTimeout());
-		options.setHeartbeatIntervalSeconds(pool.getHeartbeatInterval());
+		if (pool.getIdleTimeout() != null) {
+			options.setIdleTimeoutSeconds((int) pool.getIdleTimeout().getSeconds());
+		}
+		if (pool.getPoolTimeout() != null) {
+			options.setPoolTimeoutMillis((int) pool.getPoolTimeout().toMillis());
+		}
+		if (pool.getHeartbeatInterval() != null) {
+			options.setHeartbeatIntervalSeconds(
+					(int) pool.getHeartbeatInterval().getSeconds());
+		}
 		options.setMaxQueueSize(pool.getMaxQueueSize());
 		return options;
 	}

@@ -89,10 +89,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 			containerProperties.setAckCount(container.getAckCount());
 		}
 		if (container.getAckTime() != null) {
-			containerProperties.setAckTime(container.getAckTime());
+			containerProperties.setAckTime(container.getAckTime().toMillis());
 		}
 		if (container.getPollTimeout() != null) {
-			containerProperties.setPollTimeout(container.getPollTimeout());
+			containerProperties.setPollTimeout(container.getPollTimeout().toMillis());
 		}
 		if (container.getConcurrency() != null) {
 			listenerContainerFactory.setConcurrency(container.getConcurrency());

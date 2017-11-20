@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jta.atomikos;
 
+import java.time.Duration;
 import java.util.Properties;
 
 import org.assertj.core.data.MapEntry;
@@ -40,8 +41,8 @@ public class AtomikosPropertiesTests {
 	@Test
 	public void testProperties() {
 		this.properties.setService("service");
-		this.properties.setMaxTimeout(1L);
-		this.properties.setDefaultJtaTimeout(2L);
+		this.properties.setMaxTimeout(Duration.ofMillis(1));
+		this.properties.setDefaultJtaTimeout(Duration.ofMillis(2));
 		this.properties.setMaxActives(3);
 		this.properties.setEnableLogging(true);
 		this.properties.setTransactionManagerUniqueName("uniqueName");
@@ -52,10 +53,11 @@ public class AtomikosPropertiesTests {
 		this.properties.setLogBaseDir("logBaseDir");
 		this.properties.setCheckpointInterval(4);
 		this.properties.setThreadedTwoPhaseCommit(true);
-		this.properties.getRecovery().setForgetOrphanedLogEntriesDelay(2000);
-		this.properties.getRecovery().setDelay(3000);
+		this.properties.getRecovery()
+				.setForgetOrphanedLogEntriesDelay(Duration.ofMillis(2000));
+		this.properties.getRecovery().setDelay(Duration.ofMillis(3000));
 		this.properties.getRecovery().setMaxRetries(10);
-		this.properties.getRecovery().setRetryInterval(4000);
+		this.properties.getRecovery().setRetryInterval(Duration.ofMillis(4000));
 		assertThat(this.properties.asProperties().size()).isEqualTo(17);
 		assertProperty("com.atomikos.icatch.service", "service");
 		assertProperty("com.atomikos.icatch.max_timeout", "1");

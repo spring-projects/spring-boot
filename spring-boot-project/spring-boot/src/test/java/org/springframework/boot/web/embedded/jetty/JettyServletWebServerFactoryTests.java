@@ -17,10 +17,10 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Handler;
@@ -99,14 +99,14 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void sessionTimeout() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(10);
+		factory.setSessionTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 10);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(1, TimeUnit.MINUTES);
+		factory.setSessionTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 60);
 	}
 

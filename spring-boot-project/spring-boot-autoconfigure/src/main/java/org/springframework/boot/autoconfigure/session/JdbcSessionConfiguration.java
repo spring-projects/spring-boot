@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +65,9 @@ class JdbcSessionConfiguration {
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
 				JdbcSessionProperties jdbcSessionProperties) {
-			Integer timeout = sessionProperties.getTimeout();
+			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds(timeout);
+				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setTableName(jdbcSessionProperties.getTableName());
 			setCleanupCron(jdbcSessionProperties.getCleanupCron());

@@ -35,6 +35,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -712,7 +713,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void defaultSessionTimeout() throws Exception {
-		assertThat(getFactory().getSessionTimeout()).isEqualTo(30 * 60);
+		assertThat(getFactory().getSessionTimeout()).isEqualTo(Duration.ofMinutes(30));
 	}
 
 	@Test

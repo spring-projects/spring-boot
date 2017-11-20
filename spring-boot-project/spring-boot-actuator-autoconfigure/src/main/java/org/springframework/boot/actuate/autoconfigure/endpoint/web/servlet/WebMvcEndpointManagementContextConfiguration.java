@@ -78,7 +78,7 @@ public class WebMvcEndpointManagementContextConfiguration {
 			configuration.setExposedHeaders(properties.getExposedHeaders());
 		}
 		if (properties.getMaxAge() != null) {
-			configuration.setMaxAge(properties.getMaxAge());
+			configuration.setMaxAge(properties.getMaxAge().getSeconds());
 		}
 		if (properties.getAllowCredentials() != null) {
 			configuration.setAllowCredentials(properties.getAllowCredentials());

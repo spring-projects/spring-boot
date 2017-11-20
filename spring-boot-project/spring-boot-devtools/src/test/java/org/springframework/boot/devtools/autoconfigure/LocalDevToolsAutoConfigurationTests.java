@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,7 +121,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void resourceCachePeriodIsZero() throws Exception {
 		this.context = initializeAndRun(WebResourcesConfig.class);
 		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
-		assertThat(properties.getCachePeriod()).isEqualTo(0);
+		assertThat(properties.getCachePeriod()).isEqualTo(Duration.ZERO);
 	}
 
 	@Test

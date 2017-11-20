@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DurationUnit;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -74,9 +77,11 @@ public class RabbitProperties {
 	private String addresses;
 
 	/**
-	 * Requested heartbeat timeout, in seconds; zero for none.
+	 * Requested heartbeat timeout; zero for none. If a duration suffix is not specified,
+	 * seconds will be used.
 	 */
-	private Integer requestedHeartbeat;
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration requestedHeartbeat;
 
 	/**
 	 * Enable publisher confirms.
@@ -89,9 +94,9 @@ public class RabbitProperties {
 	private boolean publisherReturns;
 
 	/**
-	 * Connection timeout, in milliseconds; zero for infinite.
+	 * Connection timeout; zero for infinite.
 	 */
-	private Integer connectionTimeout;
+	private Duration connectionTimeout;
 
 	/**
 	 * Cache configuration.
@@ -258,11 +263,11 @@ public class RabbitProperties {
 		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
 	}
 
-	public Integer getRequestedHeartbeat() {
+	public Duration getRequestedHeartbeat() {
 		return this.requestedHeartbeat;
 	}
 
-	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
+	public void setRequestedHeartbeat(Duration requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
@@ -282,11 +287,11 @@ public class RabbitProperties {
 		this.publisherReturns = publisherReturns;
 	}
 
-	public Integer getConnectionTimeout() {
+	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setConnectionTimeout(Integer connectionTimeout) {
+	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
@@ -557,9 +562,9 @@ public class RabbitProperties {
 		private Boolean defaultRequeueRejected;
 
 		/**
-		 * How often idle container events should be published in milliseconds.
+		 * How often idle container events should be published.
 		 */
-		private Long idleEventInterval;
+		private Duration idleEventInterval;
 
 		/**
 		 * Optional properties for a retry interceptor.
@@ -598,11 +603,11 @@ public class RabbitProperties {
 			this.defaultRequeueRejected = defaultRequeueRejected;
 		}
 
-		public Long getIdleEventInterval() {
+		public Duration getIdleEventInterval() {
 			return this.idleEventInterval;
 		}
 
-		public void setIdleEventInterval(Long idleEventInterval) {
+		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
 		}
 

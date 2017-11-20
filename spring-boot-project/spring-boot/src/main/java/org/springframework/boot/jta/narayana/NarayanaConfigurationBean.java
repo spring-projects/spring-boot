@@ -52,9 +52,17 @@ public class NarayanaConfigurationBean implements InitializingBean {
 		setNodeIdentifier(this.properties.getTransactionManagerId());
 		setObjectStoreDir(this.properties.getLogDir());
 		setCommitOnePhase(this.properties.isOnePhaseCommit());
-		setDefaultTimeout(this.properties.getDefaultTimeout());
-		setPeriodicRecoveryPeriod(this.properties.getPeriodicRecoveryPeriod());
-		setRecoveryBackoffPeriod(this.properties.getRecoveryBackoffPeriod());
+		if (this.properties.getDefaultTimeout() != null) {
+			setDefaultTimeout((int) this.properties.getDefaultTimeout().getSeconds());
+		}
+		if (this.properties.getPeriodicRecoveryPeriod() != null) {
+			setPeriodicRecoveryPeriod(
+					(int) this.properties.getPeriodicRecoveryPeriod().getSeconds());
+		}
+		if (this.properties.getRecoveryBackoffPeriod() != null) {
+			setRecoveryBackoffPeriod(
+					(int) this.properties.getRecoveryBackoffPeriod().getSeconds());
+		}
 		setXaResourceOrphanFilters(this.properties.getXaResourceOrphanFilters());
 		setRecoveryModules(this.properties.getRecoveryModules());
 		setExpiryScanners(this.properties.getExpiryScanners());

@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -66,21 +67,21 @@ public class FileSystemWatcherTests {
 	public void pollIntervalMustBePositive() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PollInterval must be positive");
-		new FileSystemWatcher(true, 0, 1);
+		new FileSystemWatcher(true, Duration.ofMillis(0), Duration.ofMillis(1));
 	}
 
 	@Test
 	public void quietPeriodMustBePositive() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("QuietPeriod must be positive");
-		new FileSystemWatcher(true, 1, 0);
+		new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(0));
 	}
 
 	@Test
 	public void pollIntervalMustBeGreaterThanQuietPeriod() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PollInterval must be greater than QuietPeriod");
-		new FileSystemWatcher(true, 1, 1);
+		new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(1));
 	}
 
 	@Test
@@ -272,7 +273,8 @@ public class FileSystemWatcherTests {
 	}
 
 	private void setupWatcher(long pollingInterval, long quietPeriod) {
-		this.watcher = new FileSystemWatcher(false, pollingInterval, quietPeriod);
+		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval),
+				Duration.ofMillis(quietPeriod));
 		this.watcher.addListener(
 				(changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}

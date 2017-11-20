@@ -246,7 +246,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
 		handler.setMaxInactiveInterval(
-				getSessionTimeout() > 0 ? getSessionTimeout() : -1);
+				(getSessionTimeout() == null || getSessionTimeout().isNegative()) ? -1
+						: (int) getSessionTimeout().getSeconds());
 		if (isPersistSession()) {
 			DefaultSessionCache cache = new DefaultSessionCache(handler);
 			FileSessionDataStore store = new FileSessionDataStore();

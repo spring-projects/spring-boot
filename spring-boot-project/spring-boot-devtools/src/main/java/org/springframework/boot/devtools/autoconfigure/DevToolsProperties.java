@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +63,6 @@ public class DevToolsProperties {
 				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**,"
 				+ "**/*Test.class,**/*Tests.class,git.properties,META-INF/build-info.properties";
 
-		private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
-
-		private static final long DEFAULT_RESTART_QUIET_PERIOD = 400;
-
 		/**
 		 * Enable automatic restart.
 		 */
@@ -82,15 +79,15 @@ public class DevToolsProperties {
 		private String additionalExclude;
 
 		/**
-		 * Amount of time (in milliseconds) to wait between polling for classpath changes.
+		 * Amount of time to wait between polling for classpath changes.
 		 */
-		private long pollInterval = DEFAULT_RESTART_POLL_INTERVAL;
+		private Duration pollInterval = Duration.ofSeconds(1);
 
 		/**
-		 * Amount of quiet time (in milliseconds) required without any classpath changes
-		 * before a restart is triggered.
+		 * Amount of quiet time required without any classpath changes before a restart is
+		 * triggered.
 		 */
-		private long quietPeriod = DEFAULT_RESTART_QUIET_PERIOD;
+		private Duration quietPeriod = Duration.ofMillis(400);
 
 		/**
 		 * Name of a specific file that when changed will trigger the restart check. If
@@ -139,19 +136,19 @@ public class DevToolsProperties {
 			this.additionalExclude = additionalExclude;
 		}
 
-		public long getPollInterval() {
+		public Duration getPollInterval() {
 			return this.pollInterval;
 		}
 
-		public void setPollInterval(long pollInterval) {
+		public void setPollInterval(Duration pollInterval) {
 			this.pollInterval = pollInterval;
 		}
 
-		public long getQuietPeriod() {
+		public Duration getQuietPeriod() {
 			return this.quietPeriod;
 		}
 
-		public void setQuietPeriod(long quietPeriod) {
+		public void setQuietPeriod(Duration quietPeriod) {
 			this.quietPeriod = quietPeriod;
 		}
 

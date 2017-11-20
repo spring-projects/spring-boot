@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jta.atomikos;
 
+import java.time.Duration;
 import java.util.Properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,14 +41,14 @@ public class AtomikosProperties {
 	private String service;
 
 	/**
-	 * Maximum timeout (in milliseconds) that can be allowed for transactions.
+	 * Maximum timeout that can be allowed for transactions.
 	 */
-	private long maxTimeout = 300000;
+	private Duration maxTimeout = Duration.ofMillis(300000);
 
 	/**
 	 * Default timeout for JTA transactions.
 	 */
-	private long defaultJtaTimeout = 10000;
+	private Duration defaultJtaTimeout = Duration.ofMillis(10000);
 
 	/**
 	 * Maximum number of active transactions.
@@ -122,17 +123,16 @@ public class AtomikosProperties {
 	}
 
 	/**
-	 * Specifies the maximum timeout (in milliseconds) that can be allowed for
-	 * transactions. Defaults to {@literal 300000}. This means that calls to
-	 * UserTransaction.setTransactionTimeout() with a value higher than configured here
-	 * will be max'ed to this value.
+	 * Specifies the maximum timeout that can be allowed for transactions. Defaults to
+	 * {@literal 300000}. This means that calls to UserTransaction.setTransactionTimeout()
+	 * with a value higher than configured here will be max'ed to this value.
 	 * @param maxTimeout the max timeout
 	 */
-	public void setMaxTimeout(long maxTimeout) {
+	public void setMaxTimeout(Duration maxTimeout) {
 		this.maxTimeout = maxTimeout;
 	}
 
-	public long getMaxTimeout() {
+	public Duration getMaxTimeout() {
 		return this.maxTimeout;
 	}
 
@@ -141,11 +141,11 @@ public class AtomikosProperties {
 	 * ms).
 	 * @param defaultJtaTimeout the default JTA timeout
 	 */
-	public void setDefaultJtaTimeout(long defaultJtaTimeout) {
+	public void setDefaultJtaTimeout(Duration defaultJtaTimeout) {
 		this.defaultJtaTimeout = defaultJtaTimeout;
 	}
 
-	public long getDefaultJtaTimeout() {
+	public Duration getDefaultJtaTimeout() {
 		return this.defaultJtaTimeout;
 	}
 
@@ -332,8 +332,15 @@ public class AtomikosProperties {
 	private void set(Properties properties, String key, Object value) {
 		String id = "com.atomikos.icatch." + key;
 		if (value != null && !properties.containsKey(id)) {
-			properties.setProperty(id, value.toString());
+			properties.setProperty(id, asString(value));
 		}
+	}
+
+	private String asString(Object value) {
+		if (value instanceof Duration) {
+			return String.valueOf(((Duration) value).toMillis());
+		}
+		return value.toString();
 	}
 
 	/**
@@ -344,12 +351,12 @@ public class AtomikosProperties {
 		/**
 		 * Delay after which recovery can cleanup pending ('orphaned') log entries.
 		 */
-		private long forgetOrphanedLogEntriesDelay = 86400000;
+		private Duration forgetOrphanedLogEntriesDelay = Duration.ofMillis(86400000);
 
 		/**
 		 * Delay between two recovery scans.
 		 */
-		private long delay = 10000;
+		private Duration delay = Duration.ofMillis(10000);
 
 		/**
 		 * Number of retry attempts to commit the transaction before throwing an
@@ -360,21 +367,22 @@ public class AtomikosProperties {
 		/**
 		 * Delay between retry attempts.
 		 */
-		private long retryInterval = 10000;
+		private Duration retryInterval = Duration.ofMillis(10000);
 
-		public long getForgetOrphanedLogEntriesDelay() {
+		public Duration getForgetOrphanedLogEntriesDelay() {
 			return this.forgetOrphanedLogEntriesDelay;
 		}
 
-		public void setForgetOrphanedLogEntriesDelay(long forgetOrphanedLogEntriesDelay) {
+		public void setForgetOrphanedLogEntriesDelay(
+				Duration forgetOrphanedLogEntriesDelay) {
 			this.forgetOrphanedLogEntriesDelay = forgetOrphanedLogEntriesDelay;
 		}
 
-		public long getDelay() {
+		public Duration getDelay() {
 			return this.delay;
 		}
 
-		public void setDelay(long delay) {
+		public void setDelay(Duration delay) {
 			this.delay = delay;
 		}
 
@@ -386,11 +394,11 @@ public class AtomikosProperties {
 			this.maxRetries = maxRetries;
 		}
 
-		public long getRetryInterval() {
+		public Duration getRetryInterval() {
 			return this.retryInterval;
 		}
 
-		public void setRetryInterval(long retryInterval) {
+		public void setRetryInterval(Duration retryInterval) {
 			this.retryInterval = retryInterval;
 		}
 

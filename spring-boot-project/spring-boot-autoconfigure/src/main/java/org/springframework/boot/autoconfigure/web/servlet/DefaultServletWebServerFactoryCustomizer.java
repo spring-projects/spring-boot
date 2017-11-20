@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -195,7 +196,7 @@ public class DefaultServletWebServerFactoryCustomizer
 				config.setSecure(cookie.getSecure());
 			}
 			if (cookie.getMaxAge() != null) {
-				config.setMaxAge(cookie.getMaxAge());
+				config.setMaxAge((int) cookie.getMaxAge().getSeconds());
 			}
 		}
 
@@ -217,13 +218,14 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		public static void customizeTomcat(ServerProperties serverProperties,
 				Environment environment, TomcatServletWebServerFactory factory) {
-
 			ServerProperties.Tomcat tomcatProperties = serverProperties.getTomcat();
 			if (tomcatProperties.getBasedir() != null) {
 				factory.setBaseDirectory(tomcatProperties.getBasedir());
 			}
-			factory.setBackgroundProcessorDelay(
-					tomcatProperties.getBackgroundProcessorDelay());
+			if (tomcatProperties.getBackgroundProcessorDelay() != null) {
+				factory.setBackgroundProcessorDelay((int) tomcatProperties
+						.getBackgroundProcessorDelay().getSeconds());
+			}
 			customizeRemoteIpValve(serverProperties, environment, factory);
 			if (tomcatProperties.getMaxThreads() > 0) {
 				customizeMaxThreads(factory, tomcatProperties.getMaxThreads());
@@ -290,12 +292,12 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeConnectionTimeout(
-				TomcatServletWebServerFactory factory, final int connectionTimeout) {
+				TomcatServletWebServerFactory factory, Duration connectionTimeout) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
 					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-					protocol.setConnectionTimeout(connectionTimeout);
+					protocol.setConnectionTimeout((int) connectionTimeout.toMillis());
 				}
 			});
 		}
@@ -398,7 +400,8 @@ public class DefaultServletWebServerFactoryCustomizer
 			factory.addContextCustomizers((context) -> {
 				context.addLifecycleListener((event) -> {
 					if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
-						context.getResources().setCacheTtl(resource.getCacheTtl());
+						long ttl = resource.getCacheTtl().toMillis();
+						context.getResources().setCacheTtl(ttl);
 					}
 				});
 			});
@@ -453,9 +456,10 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeConnectionTimeout(
-				UndertowServletWebServerFactory factory, final int connectionTimeout) {
+				UndertowServletWebServerFactory factory, Duration connectionTimeout) {
 			factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
-					UndertowOptions.NO_REQUEST_TIMEOUT, connectionTimeout));
+					UndertowOptions.NO_REQUEST_TIMEOUT,
+					(int) connectionTimeout.toMillis()));
 		}
 
 		private static void customizeMaxHttpHeaderSize(
@@ -503,12 +507,13 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeConnectionTimeout(
-				JettyServletWebServerFactory factory, final int connectionTimeout) {
+				JettyServletWebServerFactory factory, Duration connectionTimeout) {
 			factory.addServerCustomizers((server) -> {
 				for (org.eclipse.jetty.server.Connector connector : server
 						.getConnectors()) {
 					if (connector instanceof AbstractConnector) {
-						((AbstractConnector) connector).setIdleTimeout(connectionTimeout);
+						((AbstractConnector) connector)
+								.setIdleTimeout(connectionTimeout.toMillis());
 					}
 				}
 			});

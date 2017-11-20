@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -207,9 +208,9 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-			Long timeout = this.mvcProperties.getAsync().getRequestTimeout();
+			Duration timeout = this.mvcProperties.getAsync().getRequestTimeout();
 			if (timeout != null) {
-				configurer.setDefaultTimeout(timeout);
+				configurer.setDefaultTimeout(timeout.toMillis());
 			}
 		}
 
@@ -305,13 +306,13 @@ public class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-			Integer cachePeriod = this.resourceProperties.getCachePeriod();
+			Duration cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				customizeResourceHandlerRegistration(
 						registry.addResourceHandler("/webjars/**")
 								.addResourceLocations(
 										"classpath:/META-INF/resources/webjars/")
-						.setCachePeriod(cachePeriod));
+						.setCachePeriod(getSeconds(cachePeriod)));
 			}
 			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
@@ -319,8 +320,12 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler(staticPathPattern)
 								.addResourceLocations(getResourceLocations(
 										this.resourceProperties.getStaticLocations()))
-						.setCachePeriod(cachePeriod));
+						.setCachePeriod(getSeconds(cachePeriod)));
 			}
+		}
+
+		private Integer getSeconds(Duration cachePeriod) {
+			return (cachePeriod == null ? null : (int) cachePeriod.getSeconds());
 		}
 
 		@Bean

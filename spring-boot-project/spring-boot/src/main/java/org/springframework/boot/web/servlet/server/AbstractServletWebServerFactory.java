@@ -19,13 +19,13 @@ package org.springframework.boot.web.servlet.server;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,16 +52,13 @@ public abstract class AbstractServletWebServerFactory
 		extends AbstractConfigurableWebServerFactory
 		implements ConfigurableServletWebServerFactory {
 
-	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
-			.toSeconds(30);
-
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private String contextPath = "";
 
 	private String displayName;
 
-	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
+	private Duration sessionTimeout = Duration.ofMinutes(30);
 
 	private boolean persistSession;
 
@@ -147,22 +144,16 @@ public abstract class AbstractServletWebServerFactory
 	}
 
 	/**
-	 * Return the session timeout in seconds.
-	 * @return the timeout in seconds
+	 * Return the session timeout or {@code null}.
+	 * @return the session timeout
 	 */
-	public int getSessionTimeout() {
+	public Duration getSessionTimeout() {
 		return this.sessionTimeout;
 	}
 
 	@Override
-	public void setSessionTimeout(int sessionTimeout) {
+	public void setSessionTimeout(Duration sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
-	}
-
-	@Override
-	public void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit) {
-		Assert.notNull(timeUnit, "TimeUnit must not be null");
-		this.sessionTimeout = (int) timeUnit.toSeconds(sessionTimeout);
 	}
 
 	public boolean isPersistSession() {

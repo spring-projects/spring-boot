@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
 
@@ -385,11 +385,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private long getSessionTimeoutInMinutes() {
-		long sessionTimeout = getSessionTimeout();
-		if (sessionTimeout > 0) {
-			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
+		Duration sessionTimeout = getSessionTimeout();
+		if (sessionTimeout == null || sessionTimeout.isNegative()
+				|| sessionTimeout.isZero()) {
+			return 0;
 		}
-		return sessionTimeout;
+		return Math.max(sessionTimeout.toMinutes(), 1);
 	}
 
 	/**

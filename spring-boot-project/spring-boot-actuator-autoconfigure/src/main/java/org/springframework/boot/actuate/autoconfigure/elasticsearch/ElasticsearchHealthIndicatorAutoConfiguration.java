@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.elasticsearch;
 
+import java.time.Duration;
 import java.util.Map;
 
 import io.searchbox.client.JestClient;
@@ -77,8 +78,10 @@ public class ElasticsearchHealthIndicatorAutoConfiguration {
 
 		@Override
 		protected ElasticsearchHealthIndicator createHealthIndicator(Client client) {
+			Duration responseTimeout = this.properties.getResponseTimeout();
 			return new ElasticsearchHealthIndicator(client,
-					this.properties.getResponseTimeout(), this.properties.getIndices());
+					responseTimeout == null ? 100 : responseTimeout.toMillis(),
+					this.properties.getIndices());
 		}
 
 	}

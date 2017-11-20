@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.time.Duration;
+
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -73,7 +75,9 @@ public class MessageSourceAutoConfiguration {
 			messageSource.setDefaultEncoding(properties.getEncoding().name());
 		}
 		messageSource.setFallbackToSystemLocale(properties.isFallbackToSystemLocale());
-		messageSource.setCacheSeconds(properties.getCacheSeconds());
+		Duration cacheDuration = properties.getCacheDuration();
+		messageSource.setCacheSeconds(
+				cacheDuration == null ? -1 : (int) cacheDuration.getSeconds());
 		messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
 		messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
 		return messageSource;

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -56,9 +58,9 @@ class RedisSessionConfiguration {
 		public void customize(SessionProperties sessionProperties,
 				RedisSessionProperties redisSessionProperties) {
 			this.sessionProperties = sessionProperties;
-			Integer timeout = this.sessionProperties.getTimeout();
+			Duration timeout = this.sessionProperties.getTimeout();
 			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds(timeout);
+				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setRedisNamespace(redisSessionProperties.getNamespace());
 			setRedisFlushMode(redisSessionProperties.getFlushMode());

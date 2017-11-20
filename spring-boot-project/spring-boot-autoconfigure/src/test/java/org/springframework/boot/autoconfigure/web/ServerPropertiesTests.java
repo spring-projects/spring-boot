@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,8 +73,9 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testConnectionTimeout() throws Exception {
-		bind("server.connection-timeout", "60000");
-		assertThat(this.properties.getConnectionTimeout()).isEqualTo(60000);
+		bind("server.connection-timeout", "60s");
+		assertThat(this.properties.getConnectionTimeout())
+				.isEqualTo(Duration.ofMillis(60000));
 	}
 
 	@Test
@@ -115,7 +117,8 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getInternalProxies())
 				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
-		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(10);
+		assertThat(tomcat.getBackgroundProcessorDelay())
+				.isEqualTo(Duration.ofSeconds(10));
 	}
 
 	@Test

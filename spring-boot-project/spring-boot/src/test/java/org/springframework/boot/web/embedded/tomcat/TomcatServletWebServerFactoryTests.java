@@ -20,11 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -187,21 +187,21 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void sessionTimeout() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(10);
+		factory.setSessionTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(1, TimeUnit.MINUTES);
+		factory.setSessionTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void noSessionTimeout() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(0);
+		factory.setSessionTimeout(null);
 		assertTimeout(factory, -1);
 	}
 
