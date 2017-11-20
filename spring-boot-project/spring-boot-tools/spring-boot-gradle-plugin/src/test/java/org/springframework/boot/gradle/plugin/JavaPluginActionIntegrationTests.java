@@ -128,9 +128,10 @@ public class JavaPluginActionIntegrationTests {
 		assertThat(result.task(":compileJava").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains(
-				"compileJava compiler args: [-parameters, -Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
-						+ this.gradleBuild.getProjectDir().getCanonicalPath()
-						+ "/src/main/resources]");
+				"compileJava compiler args: [-parameters, -Aorg.springframework.boot."
+						+ "configurationprocessor.additionalMetadataLocations="
+						+ new File(this.gradleBuild.getProjectDir(), "src/main/resources")
+								.getCanonicalPath());
 	}
 
 	@Test
