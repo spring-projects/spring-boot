@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +54,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -96,7 +99,9 @@ import org.springframework.web.servlet.resource.VersionStrategy;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
@@ -111,6 +116,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Eddú Meléndez
+ * @author Kristine Jetzke
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -797,6 +803,77 @@ public class WebMvcAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
+	@Test
+	public void cachePeriod() throws Exception {
+		this.contextRunner.withPropertyValues("spring.resources.cache-period:5")
+				.run((context) -> {
+					assertCachePeriod(context);
+				});
+	}
+
+	private void assertCachePeriod(AssertableWebApplicationContext context) {
+		Map<String, Object> handlerMap = getHandlerMap(context
+				.getBean("resourceHandlerMapping", HandlerMapping.class));
+		assertThat(handlerMap).hasSize(2);
+		for (Object handler : handlerMap.keySet()) {
+			if (handler instanceof ResourceHttpRequestHandler) {
+				assertThat(((ResourceHttpRequestHandler) handler)
+						.getCacheSeconds()).isEqualTo(-1);
+				assertThat(((ResourceHttpRequestHandler) handler)
+						.getCacheControl()).isEqualToComparingFieldByField(
+								CacheControl.maxAge(5, TimeUnit.SECONDS));
+			}
+		}
+	}
+
+	@Test
+	public void cacheControl() throws Exception {
+		this.contextRunner
+				.withPropertyValues("spring.resources.cache-control.max-age:5",
+						"spring.resources.cache-control.proxy-revalidate:true")
+				.run((context) -> {
+					assertCacheControl(context);
+				});
+	}
+
+	private void assertCacheControl(AssertableWebApplicationContext context) {
+		Map<String, Object> handlerMap = getHandlerMap(context
+				.getBean("resourceHandlerMapping", HandlerMapping.class));
+		assertThat(handlerMap).hasSize(2);
+		for (Object handler : handlerMap.keySet()) {
+			if (handler instanceof ResourceHttpRequestHandler) {
+				assertThat(((ResourceHttpRequestHandler) handler)
+						.getCacheSeconds()).isEqualTo(-1);
+				assertThat(((ResourceHttpRequestHandler) handler)
+						.getCacheControl()).isEqualToComparingFieldByField(
+								CacheControl.maxAge(5, TimeUnit.SECONDS)
+										.proxyRevalidate());
+			}
+		}
+	}
+
+	@Test
+	public void invalidCacheConfig() throws Exception {
+		assertThatThrownBy(() -> this.contextRunner
+				.withPropertyValues("spring.resources.cache-control.max-age:5",
+						"spring.resources.cache-period:6")
+				.run((context) -> getHandlerMap(
+						context.getBean("resourceHandlerMapping", HandlerMapping.class))))
+								.hasRootCauseInstanceOf(IllegalStateException.class)
+								.hasStackTraceContaining("Only one of cache-period or cache-control may be set");
+	}
+
+	@Test
+	public void invalidCacheControl() throws Exception {
+		assertThatThrownBy(() -> this.contextRunner
+				.withPropertyValues("spring.resources.cache-control.max-age:5",
+						"spring.resources.cache-control.no-cache:true")
+				.run((context) -> getHandlerMap(
+						context.getBean("resourceHandlerMapping", HandlerMapping.class))))
+								.hasRootCauseInstanceOf(IllegalStateException.class)
+								.hasStackTraceContaining("no-cache may not be set if max-age is set");
+	}
+
 	protected Map<String, List<Resource>> getFaviconMappingLocations(
 			ApplicationContext context) {
 		return getMappingLocations(
@@ -829,14 +906,20 @@ public class WebMvcAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping) {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
-		if (mapping instanceof SimpleUrlHandlerMapping) {
-			((SimpleUrlHandlerMapping) mapping).getHandlerMap().forEach((key, value) -> {
-				Object locations = ReflectionTestUtils.getField(value, "locations");
-				mappingLocations.put(key, (List<Resource>) locations);
-			});
-		}
+		getHandlerMap(mapping).forEach((key, value) -> {
+			Object locations = ReflectionTestUtils.getField(value, "locations");
+			mappingLocations.put(key, (List<Resource>) locations);
+		});
 		return mappingLocations;
 	}
+
+	protected Map<String, Object> getHandlerMap(HandlerMapping mapping) {
+		if (mapping instanceof SimpleUrlHandlerMapping) {
+			return ((SimpleUrlHandlerMapping) mapping).getHandlerMap();
+		}
+		return Collections.emptyMap();
+	}
+
 
 	@Configuration
 	protected static class ViewConfig {

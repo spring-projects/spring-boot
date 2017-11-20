@@ -72,6 +72,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -132,6 +133,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Sébastien Deleuze
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Kristine Jetzke
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -305,13 +307,13 @@ public class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-			Integer cachePeriod = this.resourceProperties.getCachePeriod();
+			CacheControl cacheControl = this.resourceProperties.createCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				customizeResourceHandlerRegistration(
 						registry.addResourceHandler("/webjars/**")
 								.addResourceLocations(
 										"classpath:/META-INF/resources/webjars/")
-						.setCachePeriod(cachePeriod));
+						.setCacheControl(cacheControl));
 			}
 			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
@@ -319,7 +321,7 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler(staticPathPattern)
 								.addResourceLocations(getResourceLocations(
 										this.resourceProperties.getStaticLocations()))
-						.setCachePeriod(cachePeriod));
+						.setCacheControl(cacheControl));
 			}
 		}
 
