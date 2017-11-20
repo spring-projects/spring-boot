@@ -78,7 +78,7 @@ public class SessionAutoConfigurationRedisTests
 						"spring.session.redis.namespace=foo",
 						"spring.session.redis.flush-mode=immediate",
 						"spring.session.redis.cleanup-cron=0 0 12 * * *")
-				.run(validateSpringSessionUsesRedis("spring:session:foo:event:created:",
+				.run(validateSpringSessionUsesRedis("foo:event:created:",
 						RedisFlushMode.IMMEDIATE, "0 0 12 * * *"));
 	}
 
