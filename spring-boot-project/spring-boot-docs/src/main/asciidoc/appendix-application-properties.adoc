@@ -431,7 +431,7 @@ content into your application; rather pick only the properties that you need.
 	# SPRING SESSION REDIS ({sc-spring-boot-autoconfigure}/session/RedisSessionProperties.{sc-ext}[RedisSessionProperties])
 	spring.session.redis.cleanup-cron=0 * * * * * # Cron expression for expired session cleanup job.
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.
-	spring.session.redis.namespace= # Namespace for keys used to store sessions.
+	spring.session.redis.namespace=spring:session # Namespace for keys used to store sessions.
 
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
 	spring.social.auto-connection-views=false # Enable the connection status view for supported providers.
