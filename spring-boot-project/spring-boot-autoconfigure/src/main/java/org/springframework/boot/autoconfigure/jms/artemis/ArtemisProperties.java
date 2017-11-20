@@ -114,17 +114,17 @@ public class ArtemisProperties {
 		private static final AtomicInteger serverIdCounter = new AtomicInteger();
 
 		/**
-		 * Server id. By default, an auto-incremented counter is used.
+		 * Server ID. By default, an auto-incremented counter is used.
 		 */
 		private int serverId = serverIdCounter.getAndIncrement();
 
 		/**
-		 * Enable embedded mode if the Artemis server APIs are available.
+		 * Whether to enable embedded mode if the Artemis server APIs are available.
 		 */
 		private boolean enabled = true;
 
 		/**
-		 * Enable persistent store.
+		 * Whether to enable persistent store.
 		 */
 		private boolean persistent;
 

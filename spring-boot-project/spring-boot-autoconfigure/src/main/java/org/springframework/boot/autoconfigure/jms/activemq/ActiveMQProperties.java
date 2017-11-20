@@ -39,8 +39,8 @@ public class ActiveMQProperties {
 	private String brokerUrl;
 
 	/**
-	 * Specify if the default broker URL should be in memory. Ignored if an explicit
-	 * broker has been specified.
+	 * Whether the default broker URL should be in memory. Ignored if an explicit broker
+	 * has been specified.
 	 */
 	private boolean inMemory = true;
 
@@ -60,14 +60,13 @@ public class ActiveMQProperties {
 	private Duration closeTimeout = Duration.ofSeconds(15);
 
 	/**
-	 * Do not stop message delivery before re-delivering messages from a rolled back
-	 * transaction. This implies that message order will not be preserved when this is
-	 * enabled.
+	 * Whether to stop message delivery before re-delivering messages from a rolled back
+	 * transaction. This implies that message order is not preserved when this is enabled.
 	 */
 	private boolean nonBlockingRedelivery = false;
 
 	/**
-	 * Time to wait on Message sends for a response. Set it to 0 to indicate to wait
+	 * Time to wait on message sends for a response. Set it to 0 to indicate to wait
 	 * forever.
 	 */
 	private Duration sendTimeout = Duration.ofMillis(0);
@@ -147,14 +146,14 @@ public class ActiveMQProperties {
 	public static class Pool {
 
 		/**
-		 * Whether a PooledConnectionFactory should be created instead of a regular
+		 * Whether a PooledConnectionFactory should be created, instead of a regular
 		 * ConnectionFactory.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Block when a connection is requested and the pool is full. Set it to false to
-		 * throw a "JMSException" instead.
+		 * Whether to block when a connection is requested and the pool is full. Set it to
+		 * false to throw a "JMSException" instead.
 		 */
 		private boolean blockIfFull = true;
 
@@ -164,7 +163,8 @@ public class ActiveMQProperties {
 		private Duration blockIfFullTimeout = Duration.ofMillis(-1);
 
 		/**
-		 * Create a connection on startup. Can be used to warm-up the pool on startup.
+		 * Whether to create a connection on startup. Can be used to warm up the pool on
+		 * startup.
 		 */
 		private boolean createConnectionOnStartup = true;
 
@@ -200,8 +200,8 @@ public class ActiveMQProperties {
 		private Duration timeBetweenExpirationCheck = Duration.ofMillis(-1);
 
 		/**
-		 * Use only one anonymous "MessageProducer" instance. Set it to false to create
-		 * one "MessageProducer" every time one is required.
+		 * Whether to use only one anonymous "MessageProducer" instance. Set it to false
+		 * to create one "MessageProducer" every time one is required.
 		 */
 		private boolean useAnonymousProducers = true;
 
@@ -299,7 +299,7 @@ public class ActiveMQProperties {
 	public static class Packages {
 
 		/**
-		 * Trust all packages.
+		 * Whether to trust all packages.
 		 */
 		private Boolean trustAll;
 

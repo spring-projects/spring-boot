@@ -38,7 +38,7 @@ public class HealthIndicatorProperties {
 
 	/**
 	 * Mapping of health statuses to HTTP status codes. By default, registered health
-	 * statuses map to sensible defaults (i.e. UP maps to 200).
+	 * statuses map to sensible defaults (for example, UP maps to 200).
 	 */
 	private final Map<String, Integer> httpMapping = new HashMap<>();
 

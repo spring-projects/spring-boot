@@ -38,7 +38,7 @@ public class JerseyProperties {
 	private Type type = Type.SERVLET;
 
 	/**
-	 * Init parameters to pass to Jersey via the servlet or filter.
+	 * Init parameters to pass to Jersey through the servlet or filter.
 	 */
 	private Map<String, String> init = new HashMap<>();
 
@@ -47,8 +47,8 @@ public class JerseyProperties {
 	private final Servlet servlet = new Servlet();
 
 	/**
-	 * Path that serves as the base URI for the application. Overrides the value of
-	 * "@ApplicationPath" if specified.
+	 * Path that serves as the base URI for the application. If specified, overrides the
+	 * value of "@ApplicationPath".
 	 */
 	private String applicationPath;
 

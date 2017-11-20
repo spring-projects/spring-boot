@@ -38,7 +38,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
 public class WebMvcProperties {
 
 	/**
-	 * Formatting strategy for message codes (PREFIX_ERROR_CODE, POSTFIX_ERROR_CODE).
+	 * Formatting strategy for message codes. For instance, `PREFIX_ERROR_CODE`.
 	 */
 	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
 
@@ -54,33 +54,35 @@ public class WebMvcProperties {
 	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
 	/**
-	 * Date format to use (e.g. dd/MM/yyyy).
+	 * Date format to use. For instance, "dd/MM/yyyy".
 	 */
 	private String dateFormat;
 
 	/**
-	 * Dispatch TRACE requests to the FrameworkServlet doService method.
+	 * Whether to dispatch TRACE requests to the FrameworkServlet doService method.
 	 */
 	private boolean dispatchTraceRequest = false;
 
 	/**
-	 * Dispatch OPTIONS requests to the FrameworkServlet doService method.
+	 * Whether to dispatch OPTIONS requests to the FrameworkServlet doService method.
 	 */
 	private boolean dispatchOptionsRequest = true;
 
 	/**
-	 * If the content of the "default" model should be ignored during redirect scenarios.
+	 * Whether the content of the "default" model should be ignored during redirect
+	 * scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
 
 	/**
-	 * If a "NoHandlerFoundException" should be thrown if no Handler was found to process
-	 * a request.
+	 * Whether a "NoHandlerFoundException" should be thrown if no Handler was found to
+	 * process a request.
 	 */
 	private boolean throwExceptionIfNoHandlerFound = false;
 
 	/**
-	 * Enable warn logging of exceptions resolved by a "HandlerExceptionResolver".
+	 * Whether to enable warn logging of exceptions resolved by a
+	 * "HandlerExceptionResolver".
 	 */
 	private boolean logResolvedException = false;
 

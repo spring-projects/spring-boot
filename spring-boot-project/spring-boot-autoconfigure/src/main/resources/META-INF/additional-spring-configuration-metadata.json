@@ -2,7 +2,7 @@
   {
     "name": "security.basic.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable basic authentication.",
+    "description": "Whether to enable basic authentication.",
     "defaultValue": true,
     "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
@@ -35,7 +35,7 @@
   {
     "name": "server.error.whitelabel.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the default error page displayed in browsers in case of a server error.",
+    "description": "Whether to enable the default error page displayed in browsers in case of a server error.",
     "defaultValue": true
   },
   {
@@ -47,13 +47,13 @@
   {
     "name": "spring.aop.proxy-target-class",
     "type": "java.lang.Boolean",
-    "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
+    "description": "Whether subclass-based (CGLIB) proxies are to be created (true), as opposed to standard Java interface-based proxies (false).",
     "defaultValue": true
   },
   {
     "name": "spring.application.admin.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable admin features for the application.",
+    "description": "Whether to enable admin features for the application.",
     "defaultValue": false
   },
   {
@@ -76,13 +76,13 @@
   {
     "name": "spring.dao.exceptiontranslation.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the PersistenceExceptionTranslationPostProcessor.",
+    "description": "Whether to enable the PersistenceExceptionTranslationPostProcessor.",
     "defaultValue": true
   },
   {
     "name": "spring.datasource.jmx-enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable JMX support (if provided by the underlying pool).",
+    "description": "Whether to enable JMX support (if provided by the underlying pool).",
     "defaultValue": false
   },
   {
@@ -96,13 +96,13 @@
   {
     "name": "spring.data.cassandra.reactive-repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Cassandra reactive repositories.",
+    "description": "Whether to enable Cassandra reactive repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.cassandra.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Cassandra repositories.",
+    "description": "Whether to enable Cassandra repositories.",
     "defaultValue": true
   },
   {
@@ -112,43 +112,43 @@
   {
     "name": "spring.data.couchbase.reactive-repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Couchbase reactive repositories.",
+    "description": "Whether to enable Couchbase reactive repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.couchbase.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Couchbase repositories.",
+    "description": "Whether to enable Couchbase repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.elasticsearch.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Elasticsearch repositories.",
+    "description": "Whether to enable Elasticsearch repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.jpa.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable JPA repositories.",
+    "description": "Whether to enable JPA repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.ldap.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable LDAP repositories.",
+    "description": "Whether to enable LDAP repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.mongodb.reactive-repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Mongo reactive repositories.",
+    "description": "Whether to enable Mongo reactive repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.mongodb.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Mongo repositories.",
+    "description": "Whether to enable Mongo repositories.",
     "defaultValue": true
   },
   {
@@ -158,13 +158,13 @@
   {
     "name": "spring.data.neo4j.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Neo4j repositories.",
+    "description": "Whether to enable Neo4j repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.redis.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Redis repositories.",
+    "description": "Whether to enable Redis repositories.",
     "defaultValue": true
   },
   {
@@ -174,7 +174,7 @@
   {
     "name": "spring.data.solr.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Solr repositories.",
+    "description": "Whether to enable Solr repositories.",
     "defaultValue": true
   },
   {
@@ -210,13 +210,13 @@
   {
     "name": "spring.http.encoding.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable http encoding support.",
+    "description": "Whether to enable http encoding support.",
     "defaultValue": true
   },
   {
     "name": "spring.http.converters.preferred-json-mapper",
     "type": "java.lang.String",
-    "description": "Preferred JSON mapper to use for HTTP message conversion, auto-detected according to the environment by default."
+    "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
   },
   {
     "name": "spring.jersey.type",
@@ -246,7 +246,7 @@
   {
     "name": "spring.jta.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable JTA support.",
+    "description": "Whether to enable JTA support.",
     "defaultValue": true
   },
   {
@@ -256,7 +256,7 @@
   },
   {
     "name": "spring.jta.bitronix.properties.asynchronous2-pc",
-    "description": "Enable asynchronously execution of two phase commit.",
+    "description": "Whether to enable asynchronously execution of two phase commit.",
     "defaultValue": false
   },
   {
@@ -289,7 +289,7 @@
   },
   {
     "name": "spring.jta.bitronix.properties.disable-jmx",
-    "description": "Enable JMX support.",
+    "description": "Whether to enable JMX support.",
     "defaultValue": false
   },
   {
@@ -298,7 +298,7 @@
   },
   {
     "name": "spring.jta.bitronix.properties.filter-log-status",
-    "description": "Enable filtering of logs so that only mandatory logs are written.",
+    "description": "Whether to enable filtering of logs so that only mandatory logs are written.",
     "defaultValue": false
   },
   {
@@ -373,13 +373,13 @@
   {
     "name": "spring.mobile.devicedelegatingviewresolver.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable device view resolver.",
+    "description": "Whether to enable device view resolver.",
     "defaultValue": false
   },
   {
     "name": "spring.mobile.sitepreference.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable SitePreferenceHandler.",
+    "description": "Whether to enable SitePreferenceHandler.",
     "defaultValue": true
   },
   {
@@ -393,13 +393,13 @@
   {
     "name": "spring.mvc.favicon.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable resolution of favicon.ico.",
+    "description": "Whether to enable resolution of favicon.ico.",
     "defaultValue": true
   },
   {
     "name": "spring.mvc.formcontent.putfilter.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Spring's HttpPutFormContentFilter.",
+    "description": "Whether to enable Spring's HttpPutFormContentFilter.",
     "defaultValue": true
   },
   {
@@ -417,7 +417,7 @@
   {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
-    "description": "Create an AmqpAdmin bean.",
+    "description": "Whether to create an AmqpAdmin bean.",
     "defaultValue": true
   },
   {
@@ -447,7 +447,7 @@
   {
     "name": "spring.social.auto-connection-views",
     "type": "java.lang.Boolean",
-    "description": "Enable the connection status view for supported providers.",
+    "description": "Whether to enable the connection status view for supported providers.",
     "defaultValue": false
   },
   {
@@ -495,7 +495,7 @@
   {
     "name": "flyway.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable flyway.",
+    "description": "Whether to enable flyway.",
     "defaultValue": true,
     "deprecation": {
       "replacement": "spring.flyway.enabled",
@@ -731,7 +731,7 @@
   {
     "name": "liquibase.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable liquibase support.",
+    "description": "Whether to enable liquibase support.",
     "defaultValue": true,
     "deprecation": {
       "replacement": "spring.liquibase.enabled",
@@ -826,7 +826,7 @@
   {
     "name": "security.enable-csrf",
     "type": "java.lang.Boolean",
-    "description": "Enable Cross Site Request Forgery support.",
+    "description": "Whether to enable Cross Site Request Forgery support.",
     "defaultValue": false,
     "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
@@ -836,7 +836,7 @@
   {
     "name": "security.headers.cache",
     "type": "java.lang.Boolean",
-    "description": "Enable cache control HTTP headers.",
+    "description": "Whether to enable cache control HTTP headers.",
     "defaultValue": true,
     "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
@@ -864,7 +864,7 @@
   {
     "name": "security.headers.content-type",
     "type": "java.lang.Boolean",
-    "description": "Enable \"X-Content-Type-Options\" header.",
+    "description": "Whether to enable \"X-Content-Type-Options\" header.",
     "defaultValue": true,
     "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
@@ -874,7 +874,7 @@
   {
     "name": "security.headers.frame",
     "type": "java.lang.Boolean",
-    "description": "Enable \"X-Frame-Options\" header.",
+    "description": "Whether to enable \"X-Frame-Options\" header.",
     "defaultValue": true,
     "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
@@ -893,7 +893,7 @@
   {
     "name": "security.headers.xss",
     "type": "java.lang.Boolean",
-    "description": "Enable cross site scripting (XSS) protection.",
+    "description": "Whether to enable cross site scripting (XSS) protection.",
     "defaultValue": true,
     "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
@@ -912,7 +912,7 @@
   {
     "name": "security.require-ssl",
     "type": "java.lang.Boolean",
-    "description": "Enable secure channel for all requests.",
+    "description": "Whether to enable secure channel for all requests.",
     "defaultValue": false,
     "deprecation": {
       "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
@@ -1083,7 +1083,7 @@
   {
     "name": "spring.http.multipart.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable support of multipart uploads.",
+    "description": "Whether to enable support of multipart uploads.",
     "defaultValue": true,
     "deprecation": {
       "replacement": "spring.servlet.multipart.enabled",

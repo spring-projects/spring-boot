@@ -47,12 +47,14 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private Ssl ssl;
 
 	/**
-	 * Network address that the management endpoints should bind to.
+	 * Network address that to which the management endpoints should bind to. Requires a
+	 * custom management.server.port.
 	 */
 	private InetAddress address;
 
 	/**
-	 * Management endpoint context-path.
+	 * Management endpoint context-path. For instance, '/actuator'. Requires a custom
+	 * management.server.port.
 	 */
 	private String contextPath = "";
 

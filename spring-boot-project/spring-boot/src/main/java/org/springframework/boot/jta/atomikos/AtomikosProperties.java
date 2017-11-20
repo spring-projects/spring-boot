@@ -56,29 +56,29 @@ public class AtomikosProperties {
 	private int maxActives = 50;
 
 	/**
-	 * Enable disk logging.
+	 * Whether to enable disk logging.
 	 */
 	private boolean enableLogging = true;
 
 	/**
-	 * Transaction manager's unique name. Defaults to the machine's IP address. If you
+	 * The transaction manager's unique name. Defaults to the machine's IP address. If you
 	 * plan to run more than one transaction manager against one database you must set
 	 * this property to a unique value.
 	 */
 	private String transactionManagerUniqueName;
 
 	/**
-	 * Specify if sub-transactions should be joined when possible.
+	 * Whether sub-transactions should be joined when possible.
 	 */
 	private boolean serialJtaTransactions = true;
 
 	/**
-	 * Specify if sub-transactions are allowed.
+	 * Specify whether sub-transactions are allowed.
 	 */
 	private boolean allowSubTransactions = true;
 
 	/**
-	 * Specify if a VM shutdown should trigger forced shutdown of the transaction core.
+	 * Whether a VM shutdown should trigger forced shutdown of the transaction core.
 	 */
 	private boolean forceShutdownOnVmExit;
 
@@ -100,8 +100,8 @@ public class AtomikosProperties {
 	private long checkpointInterval = 500;
 
 	/**
-	 * Use different (and concurrent) threads for two-phase commit on the participating
-	 * resources.
+	 * Whether to use different (and concurrent) threads for two-phase commit on the
+	 * participating resources.
 	 */
 	private boolean threadedTwoPhaseCommit;
 

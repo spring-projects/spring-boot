@@ -73,18 +73,18 @@ public class RepositoryRestProperties {
 	private MediaType defaultMediaType;
 
 	/**
-	 * Return a response body after creating an entity.
+	 * Whether to return a response body after creating an entity.
 	 */
 	private Boolean returnBodyOnCreate;
 
 	/**
-	 * Return a response body after updating an entity.
+	 * Whether to return a response body after updating an entity.
 	 */
 	private Boolean returnBodyOnUpdate;
 
 	/**
-	 * Enable enum value translation via the Spring Data REST default resource bundle.
-	 * Will use the fully qualified enum name as key.
+	 * Whether to enable enum value translation through Spring Data REST default resource
+	 * bundle. Will use the fully qualified enum name as key.
 	 */
 	private Boolean enableEnumTranslation;
 

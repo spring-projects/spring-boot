@@ -64,7 +64,7 @@ public class ServerProperties {
 	private Integer port;
 
 	/**
-	 * Network address to which the server should bind to.
+	 * Network address to which the server should bind.
 	 */
 	private InetAddress address;
 
@@ -77,24 +77,24 @@ public class ServerProperties {
 	private ErrorProperties error = new ErrorProperties();
 
 	/**
-	 * If X-Forwarded-* headers should be applied to the HttpRequest.
+	 * Whether X-Forwarded-* headers should be applied to the HttpRequest.
 	 */
 	private Boolean useForwardHeaders;
 
 	/**
-	 * Value to use for the Server response header (no header is sent if empty).
+	 * Value to use for the Server response header (if empty, no header is sent).
 	 */
 	private String serverHeader;
 
 	/**
-	 * Maximum size in bytes of the HTTP message header.
+	 * Maximum size, in bytes, of the HTTP message header.
 	 */
 	private int maxHttpHeaderSize = 0; // bytes
 
 	/**
-	 * Time that connectors will wait for another HTTP request before closing the
-	 * connection. When not set, the connector's server-specific default will be used. Use
-	 * a value of -1 to indicate no (i.e. infinite) timeout.
+	 * Time that connectors wait for another HTTP request before closing the connection.
+	 * When not set, the connector's container-specific default is used. Use a value of -1
+	 * to indicate no (that is, an infinite) timeout.
 	 */
 	private Duration connectionTimeout;
 
@@ -349,7 +349,7 @@ public class ServerProperties {
 		private Set<SessionTrackingMode> trackingModes;
 
 		/**
-		 * Persist session data between restarts.
+		 * Whether to persist session data between restarts.
 		 */
 		private boolean persistent;
 
@@ -547,7 +547,7 @@ public class ServerProperties {
 		private String protocolHeader;
 
 		/**
-		 * Value of the protocol header that indicates that the incoming request uses SSL.
+		 * Value of the protocol header indicating whether the incoming request uses SSL.
 		 */
 		private String protocolHeaderHttpsValue = "https";
 
@@ -557,39 +557,42 @@ public class ServerProperties {
 		private String portHeader = "X-Forwarded-Port";
 
 		/**
-		 * Name of the http header from which the remote ip is extracted..
+		 * Name of the HTTP header from which the remote IP is extracted. For instance,
+		 * 'X-FORWARDED-FOR'.
 		 */
 		private String remoteIpHeader;
 
 		/**
-		 * Tomcat base directory. If not specified a temporary directory will be used.
+		 * Tomcat base directory. If not specified, a temporary directory will be used.
 		 */
 		private File basedir;
 
 		/**
-		 * Delay between the invocation of backgroundProcess methods. If a duration suffix
-		 * is not specified, seconds will be used.
+		 * <<<<<<< HEAD Delay between the invocation of backgroundProcess methods. If a
+		 * duration suffix is not specified, seconds will be used. ======= Delay, in
+		 * seconds, between the invocation of backgroundProcess methods. >>>>>>> Align
+		 * edits with code
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(30);
 
 		/**
-		 * Maximum amount of worker threads.
+		 * Maximum number of worker threads.
 		 */
 		private int maxThreads = 0;
 
 		/**
-		 * Minimum amount of worker threads.
+		 * Minimum number of worker threads.
 		 */
 		private int minSpareThreads = 0;
 
 		/**
-		 * Maximum size in bytes of the HTTP post content.
+		 * Maximum size, in bytes, of the HTTP post content.
 		 */
 		private int maxHttpPostSize = 0;
 
 		/**
-		 * Maximum size in bytes of the HTTP message header.
+		 * Maximum size, in bytes, of the HTTP message header.
 		 */
 		private int maxHttpHeaderSize = 0;
 
@@ -605,7 +608,7 @@ public class ServerProperties {
 		private Charset uriEncoding;
 
 		/**
-		 * Maximum number of connections that the server will accept and process at any
+		 * Maximum number of connections that the server accepts and processes at any
 		 * given time. Once the limit has been reached, the operating system may still
 		 * accept connections based on the "acceptCount" property.
 		 */
@@ -781,8 +784,8 @@ public class ServerProperties {
 			private String pattern = "common";
 
 			/**
-			 * Directory in which log files are created. Can be relative to the tomcat
-			 * base dir or absolute.
+			 * Directory in which log files are created. Can be absolute or relative to
+			 * the Tomcat base dir.
 			 */
 			private String directory = "logs";
 
@@ -797,28 +800,29 @@ public class ServerProperties {
 			private String suffix = ".log";
 
 			/**
-			 * Enable access log rotation.
+			 * Whether to enable access log rotation.
 			 */
 			private boolean rotate = true;
 
 			/**
-			 * Defer inclusion of the date stamp in the file name until rotate time.
+			 * Whether to defer inclusion of the date stamp in the file name until rotate
+			 * time.
 			 */
 			private boolean renameOnRotate;
 
 			/**
-			 * Date format to place in log file name.
+			 * Date format to place in the log file name.
 			 */
 			private String fileDateFormat = ".yyyy-MM-dd";
 
 			/**
-			 * Set request attributes for IP address, Hostname, protocol and port used for
-			 * the request.
+			 * Set request attributes for the IP address, Hostname, protocol, and port
+			 * used for the request.
 			 */
 			private boolean requestAttributesEnabled;
 
 			/**
-			 * Buffer output such that it is only flushed periodically.
+			 * Whether to buffer output such that it is flushed only periodically.
 			 */
 			private boolean buffered = true;
 
@@ -910,7 +914,9 @@ public class ServerProperties {
 		public static class Resource {
 
 			/**
-			 * Time-to-live of the static resource cache.
+			 * <<<<<<< HEAD Time-to-live of the static resource cache. =======
+			 * Time-to-live, in milliseconds, of the static resource cache. >>>>>>> Align
+			 * edits with code
 			 */
 			private Duration cacheTtl;
 
@@ -937,7 +943,7 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Maximum size in bytes of the HTTP post or put content.
+		 * Maximum size, in bytes, of the HTTP post or put content.
 		 */
 		private int maxHttpPostSize = 0; // bytes
 
@@ -990,7 +996,7 @@ public class ServerProperties {
 			private boolean enabled = false;
 
 			/**
-			 * Log filename. If not specified, logs will be redirected to "System.err".
+			 * Log filename. If not specified, logs redirect to "System.err".
 			 */
 			private String filename;
 
@@ -1149,12 +1155,12 @@ public class ServerProperties {
 	public static class Undertow {
 
 		/**
-		 * Maximum size in bytes of the HTTP post content.
+		 * Maximum size, in bytes, of the HTTP post content.
 		 */
 		private long maxHttpPostSize = 0; // bytes
 
 		/**
-		 * Size of each buffer in bytes.
+		 * Size of each buffer, in bytes.
 		 */
 		private Integer bufferSize;
 
@@ -1169,7 +1175,7 @@ public class ServerProperties {
 		private Integer workerThreads;
 
 		/**
-		 * Allocate buffers outside the Java heap.
+		 * Whether to allocate buffers outside the Java heap.
 		 */
 		private Boolean directBuffers;
 
@@ -1238,7 +1244,7 @@ public class ServerProperties {
 		public static class Accesslog {
 
 			/**
-			 * Enable access log.
+			 * Whether to enable the access log.
 			 */
 			private Boolean enabled;
 
@@ -1263,7 +1269,7 @@ public class ServerProperties {
 			private File dir = new File("logs");
 
 			/**
-			 * Enable access log rotation.
+			 * Whether to enable access log rotation.
 			 */
 			private boolean rotate = true;
 

@@ -43,7 +43,7 @@ public class TransactionProperties implements
 	private Duration defaultTimeout;
 
 	/**
-	 * Perform the rollback on commit failures.
+	 * Whether to roll back on commit failures.
 	 */
 	private Boolean rollbackOnCommitFailure;
 

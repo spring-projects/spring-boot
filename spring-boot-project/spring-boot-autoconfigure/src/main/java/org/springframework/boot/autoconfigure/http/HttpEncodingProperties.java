@@ -42,23 +42,24 @@ public class HttpEncodingProperties {
 	private Charset charset = DEFAULT_CHARSET;
 
 	/**
-	 * Force the encoding to the configured charset on HTTP requests and responses.
+	 * Whether to force the encoding to the configured charset on HTTP requests and
+	 * responses.
 	 */
 	private Boolean force;
 
 	/**
-	 * Force the encoding to the configured charset on HTTP requests. Defaults to true
-	 * when "force" has not been specified.
+	 * Whether to force the encoding to the configured charset on HTTP requests. Defaults
+	 * to true when "force" has not been specified.
 	 */
 	private Boolean forceRequest;
 
 	/**
-	 * Force the encoding to the configured charset on HTTP responses.
+	 * Whether to force the encoding to the configured charset on HTTP responses.
 	 */
 	private Boolean forceResponse;
 
 	/**
-	 * Locale to Encoding mapping.
+	 * Locale in which to encode mapping.
 	 */
 	private Map<Locale, Charset> mapping;
 

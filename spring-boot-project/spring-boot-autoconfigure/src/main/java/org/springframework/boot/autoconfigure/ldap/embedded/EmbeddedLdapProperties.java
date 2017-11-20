@@ -40,7 +40,7 @@ public class EmbeddedLdapProperties {
 	private Credential credential = new Credential();
 
 	/**
-	 * Base DNs.
+	 * The base DN
 	 */
 	private String baseDn;
 
@@ -123,7 +123,7 @@ public class EmbeddedLdapProperties {
 	public static class Validation {
 
 		/**
-		 * Enable LDAP schema validation.
+		 * Whether to enable LDAP schema validation.
 		 */
 		private boolean enabled = true;
 

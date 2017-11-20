@@ -64,7 +64,7 @@ public class DevToolsProperties {
 				+ "**/*Test.class,**/*Tests.class,git.properties,META-INF/build-info.properties";
 
 		/**
-		 * Enable automatic restart.
+		 * Whether to enable automatic restart.
 		 */
 		private boolean enabled = true;
 
@@ -90,8 +90,8 @@ public class DevToolsProperties {
 		private Duration quietPeriod = Duration.ofMillis(400);
 
 		/**
-		 * Name of a specific file that when changed will trigger the restart check. If
-		 * not specified any classpath file change will trigger the restart.
+		 * Name of a specific file that, when changed, triggers the restart check. If not
+		 * specified, any classpath file change will trigger the restart.
 		 */
 		private String triggerFile;
 
@@ -176,7 +176,7 @@ public class DevToolsProperties {
 	public static class Livereload {
 
 		/**
-		 * Enable a livereload.com compatible server.
+		 * Whether to enable a livereload.com-compatible server.
 		 */
 		private boolean enabled = true;
 

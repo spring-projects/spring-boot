@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
 public class CacheProperties {
 
 	/**
-	 * Cache type, auto-detected according to the environment by default.
+	 * Cache type. By default, auto-detected according to the environment.
 	 */
 	private CacheType type;
 
@@ -120,8 +120,8 @@ public class CacheProperties {
 	public static class Caffeine {
 
 		/**
-		 * The spec to use to create caches. Check CaffeineSpec for more details on the
-		 * spec format.
+		 * The spec to use to create caches. See CaffeineSpec for more details on the spec
+		 * format.
 		 */
 		private String spec;
 
@@ -209,7 +209,7 @@ public class CacheProperties {
 
 		/**
 		 * Fully qualified name of the CachingProvider implementation to use to retrieve
-		 * the JSR-107 compliant cache manager. Only needed if more than one JSR-107
+		 * the JSR-107 compliant cache manager. Needed only if more than one JSR-107
 		 * implementation is available on the classpath.
 		 */
 		private String provider;

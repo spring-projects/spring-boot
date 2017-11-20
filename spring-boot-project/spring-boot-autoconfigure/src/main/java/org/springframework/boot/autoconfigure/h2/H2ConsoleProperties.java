@@ -31,12 +31,12 @@ import org.springframework.util.Assert;
 public class H2ConsoleProperties {
 
 	/**
-	 * Path at which the console will be available.
+	 * Path at which the console is available.
 	 */
 	private String path = "/h2-console";
 
 	/**
-	 * Enable the console.
+	 * Whether to enable the console.
 	 */
 	private boolean enabled = false;
 
@@ -68,12 +68,12 @@ public class H2ConsoleProperties {
 	public static class Settings {
 
 		/**
-		 * Enable trace output.
+		 * Whether to enable trace output.
 		 */
 		private boolean trace = false;
 
 		/**
-		 * Enable remote access.
+		 * Whether to enable remote access.
 		 */
 		private boolean webAllowOthers = false;
 

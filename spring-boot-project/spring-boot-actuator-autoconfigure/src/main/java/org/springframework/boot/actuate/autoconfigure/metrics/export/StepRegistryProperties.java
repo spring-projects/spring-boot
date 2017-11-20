@@ -34,17 +34,17 @@ public abstract class StepRegistryProperties {
 	private Duration step = Duration.ofMinutes(1);
 
 	/**
-	 * Enable publishing to the backend.
+	 * Whether exporting of metrics to this backend is enabled.
 	 */
 	private Boolean enabled;
 
 	/**
-	 * Connection timeout for requests to the backend.
+	 * Connection timeout for requests to this backend.
 	 */
 	private Duration connectTimeout;
 
 	/**
-	 * Read timeout for requests to the backend.
+	 * Read timeout for requests to this backend.
 	 */
 	private Duration readTimeout;
 
@@ -54,7 +54,7 @@ public abstract class StepRegistryProperties {
 	private Integer numThreads;
 
 	/**
-	 * Number of measurements per request to use for the backend. If more measurements
+	 * Number of measurements per request to use for this backend. If more measurements
 	 * are found, then multiple requests will be made.
 	 */
 	private Integer batchSize;

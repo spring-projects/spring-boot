@@ -24,7 +24,7 @@
   {
     "name": "management.endpoint.trace.filter.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the trace servlet filter.",
+    "description": "Whether to enable the trace servlet filter.",
     "defaultValue": true,
     "deprecation": {
       "replacement": "management.trace.filter.enabled",
@@ -34,7 +34,7 @@
   {
     "name": "management.endpoints.enabled-by-default",
     "type": "java.lang.Boolean",
-    "description": "Enable or disable all endpoints by default."
+    "description": "Whether to enable or disable all endpoints by default."
   },
   {
     "name": "management.endpoints.jmx.enabled",
@@ -67,121 +67,121 @@
   {
     "name": "management.cloudfoundry.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable extended Cloud Foundry actuator endpoints.",
+    "description": "Whether to enable extended Cloud Foundry actuator endpoints.",
     "defaultValue": true
   },
   {
     "name": "management.cloudfoundry.skip-ssl-validation",
     "type": "java.lang.Boolean",
-    "description": "Skip SSL verification for Cloud Foundry actuator endpoint security calls.",
+    "description": "Whether to skip SSL verification for Cloud Foundry actuator endpoint security calls.",
     "defaultValue": false
   },
   {
     "name": "management.health.cassandra.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable cassandra health check.",
+    "description": "Whether to enable cassandra health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.couchbase.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable couchbase health check.",
+    "description": "Whether to enable couchbase health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.db.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable database health check.",
+    "description": "Whether to enable database health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.defaults.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable default health indicators.",
+    "description": "Whether to enable default health indicators.",
     "defaultValue": true
   },
   {
     "name": "management.health.diskspace.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable disk space health check.",
+    "description": "Whether to enable disk space health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.elasticsearch.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable elasticsearch health check.",
+    "description": "Whether to enable elasticsearch health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.jms.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable JMS health check.",
+    "description": "Whether to enable JMS health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.ldap.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable LDAP health check.",
+    "description": "Whether to enable LDAP health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.mongo.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable MongoDB health check.",
+    "description": "Whether to enable MongoDB health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.rabbit.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable RabbitMQ health check.",
+    "description": "Whether to enable RabbitMQ health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.redis.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Redis health check.",
+    "description": "Whether to enable Redis health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.solr.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Solr health check.",
+    "description": "Whether to enable Solr health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.mail.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Mail health check.",
+    "description": "Whether to enable Mail health check.",
     "defaultValue": true
   },
   {
     "name": "management.health.neo4j.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Neo4j health check.",
+    "description": "Whether to enable Neo4j health check.",
     "defaultValue": true
   },
   {
     "name": "management.info.build.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable build info.",
+    "description": "Whether to enable build info.",
     "defaultValue": true
   },
   {
     "name": "management.info.defaults.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable default info contributors.",
+    "description": "Whether to enable default info contributors.",
     "defaultValue": true
   },
   {
     "name": "management.info.env.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable environment info.",
+    "description": "Whether to enable environment info.",
     "defaultValue": true
   },
   {
     "name": "management.info.git.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable git info.",
+    "description": "Whether to enable git info.",
     "defaultValue": true
   },
   {
@@ -191,7 +191,7 @@
   {
     "name": "management.trace.filter.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the trace servlet filter.",
+    "description": "Whether to enable the trace servlet filter.",
     "defaultValue": true
   },
   {
@@ -203,7 +203,7 @@
   {
     "name": "endpoints.actuator.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the endpoint.",
+    "description": "Whether to enable the endpoint.",
     "deprecation": {
       "reason": "The \"actuator\" endpoint is no longer available.",
       "level": "error"
@@ -384,7 +384,7 @@
   {
     "name": "endpoints.docs.curies.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the curie generation.",
+    "description": "Whether to enable the curie generation.",
     "defaultValue": false,
     "deprecation": {
       "reason": "The \"docs\" endpoint is no longer available.",
@@ -394,7 +394,7 @@
   {
     "name": "endpoints.docs.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the endpoint.",
+    "description": "Whether to enable the endpoint.",
     "deprecation": {
       "reason": "The \"docs\" endpoint is no longer available.",
       "level": "error"
@@ -421,7 +421,7 @@
   {
     "name": "endpoints.dump.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the endpoint.",
+    "description": "Whether to enable the endpoint.",
     "deprecation": {
       "replacement": "endpoints.threaddump.enabled",
       "level": "error"
@@ -457,7 +457,7 @@
   {
     "name": "endpoints.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable endpoints.",
+    "description": "Whether to enable endpoints.",
     "defaultValue": true,
     "deprecation": {
       "replacement": "endpoints.default.enabled",
@@ -576,7 +576,7 @@
   {
     "name": "endpoints.hypermedia.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable hypermedia support for endpoints.",
+    "description": "Whether to enable hypermedia support for endpoints.",
     "defaultValue": false,
     "deprecation": {
       "reason": "Hypermedia support in the Actuator is no longer available.",
@@ -622,7 +622,7 @@
   {
     "name": "endpoints.jmx.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable JMX export of all endpoints.",
+    "description": "Whether to enable JMX export of all endpoints.",
     "defaultValue": true,
     "deprecation": {
       "replacement": "endpoints.default.jmx.enabled",
@@ -641,7 +641,7 @@
   {
     "name": "endpoints.jmx.unique-names",
     "type": "java.lang.Boolean",
-    "description": "Ensure that ObjectNames are modified in case of conflict.",
+    "description": "Whether to ensure that ObjectNames are modified in case of conflict.",
     "defaultValue": false,
     "deprecation": {
       "replacement": "management.endpoints.jmx.unique-names",
@@ -651,7 +651,7 @@
   {
     "name": "endpoints.jolokia.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the endpoint.",
+    "description": "Whether to enable the endpoint.",
     "deprecation": {
       "replacement": "management.jolokia.enabled",
       "level": "error"
@@ -776,7 +776,7 @@
   {
     "name": "endpoints.metrics.filter.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable the metrics servlet filter.",
+    "description": "Whether to enable the metrics servlet filter.",
     "defaultValue": true,
     "deprecation": {
       "reason": "Metrics support is now using Micrometer.",
@@ -893,7 +893,7 @@
   {
     "name": "management.security.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable security.",
+    "description": "Whether to enable security.",
     "defaultValue": true,
     "deprecation": {
       "reason": "A global security auto-configuration is now provided. Provide your own WebSecurityConfigurer bean instead.",
@@ -1050,7 +1050,7 @@
   {
     "name": "management.shell.ssh.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable CRaSH SSH support.",
+    "description": "Whether to enable CRaSH SSH support.",
     "defaultValue": true,
     "deprecation": {
       "reason": "CRaSH support is no longer available.",
@@ -1089,7 +1089,7 @@
   {
     "name": "management.shell.telnet.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is\n available.",
+    "description": "Whether to enable CRaSH telnet support. Enabled by default if the TelnetPlugin is available.",
     "defaultValue": false,
     "deprecation": {
       "reason": "CRaSH support is no longer available.",

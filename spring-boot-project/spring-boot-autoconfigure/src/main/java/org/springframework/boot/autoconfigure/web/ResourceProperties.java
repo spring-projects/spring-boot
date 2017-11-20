@@ -63,7 +63,7 @@ public class ResourceProperties {
 	private CacheControlProperties cacheControl = new CacheControlProperties();
 
 	/**
-	 * Enable default resource handling.
+	 * Whether to enable default resource handling.
 	 */
 	private boolean addMappings = true;
 
@@ -120,24 +120,24 @@ public class ResourceProperties {
 	public static class Chain {
 
 		/**
-		 * Enable the Spring Resource Handling chain. Disabled by default unless at least
-		 * one strategy has been enabled.
+		 * Whether to enable the Spring Resource Handling chain. By default, disabled
+		 * unless at least one strategy has been enabled.
 		 */
 		private Boolean enabled;
 
 		/**
-		 * Enable caching in the Resource chain.
+		 * Whether to enable caching in the Resource chain.
 		 */
 		private boolean cache = true;
 
 		/**
-		 * Enable HTML5 application cache manifest rewriting.
+		 * Whether to enable HTML5 application cache manifest rewriting.
 		 */
 		private boolean htmlApplicationCache = false;
 
 		/**
-		 * Enable resolution of already gzipped resources. Checks for a resource name
-		 * variant with the "*.gz" extension.
+		 * Whether to enable resolution of already gzipped resources. Checks for a
+		 * resource name variant with the "*.gz" extension.
 		 */
 		private boolean gzipped = false;
 
@@ -218,12 +218,12 @@ public class ResourceProperties {
 	public static class Content {
 
 		/**
-		 * Enable the content Version Strategy.
+		 * Whether to enable the content Version Strategy.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Comma-separated list of patterns to apply to the Version Strategy.
+		 * Comma-separated list of patterns to apply to the content Version Strategy.
 		 */
 		private String[] paths = new String[] { "/**" };
 
@@ -251,17 +251,17 @@ public class ResourceProperties {
 	public static class Fixed {
 
 		/**
-		 * Enable the fixed Version Strategy.
+		 * Whether to enable the fixed Version Strategy.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Comma-separated list of patterns to apply to the Version Strategy.
+		 * Comma-separated list of patterns to apply to the fixed Version Strategy.
 		 */
 		private String[] paths = new String[] { "/**" };
 
 		/**
-		 * Version string to use for the Version Strategy.
+		 * Version string to use for the fixed Version Strategy.
 		 */
 		private String version;
 

@@ -40,12 +40,12 @@ public abstract class AbstractViewResolverProperties {
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * Enable MVC view resolution for this technology.
+	 * Whether to enable MVC view resolution for this technology.
 	 */
 	private boolean enabled = true;
 
 	/**
-	 * Enable template caching.
+	 * Whether to enable template caching.
 	 */
 	private boolean cache;
 
@@ -65,7 +65,7 @@ public abstract class AbstractViewResolverProperties {
 	private String[] viewNames;
 
 	/**
-	 * Check that the templates location exists.
+	 * Whether to check that the templates location exists.
 	 */
 	private boolean checkTemplateLocation = true;
 

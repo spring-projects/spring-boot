@@ -40,7 +40,8 @@ public class RedisProperties {
 	private int database = 0;
 
 	/**
-	 * Redis url, which will overrule host, port and password if set.
+	 * Connection URL. Overrides host, port, and password. User is ignored. Example:
+	 * redis://user:password@example.com:6379
 	 */
 	private String url;
 
@@ -60,7 +61,7 @@ public class RedisProperties {
 	private int port = 6379;
 
 	/**
-	 * Enable SSL.
+	 * Whether to enable SSL support.
 	 */
 	private boolean ssl;
 
@@ -163,8 +164,8 @@ public class RedisProperties {
 	public static class Pool {
 
 		/**
-		 * Max number of "idle" connections in the pool. Use a negative value to indicate
-		 * an unlimited number of idle connections.
+		 * Maximum number of "idle" connections in the pool. Use a negative value to
+		 * indicate an unlimited number of idle connections.
 		 */
 		private int maxIdle = 8;
 
@@ -175,8 +176,8 @@ public class RedisProperties {
 		private int minIdle = 0;
 
 		/**
-		 * Max number of connections that can be allocated by the pool at a given time.
-		 * Use a negative value for no limit.
+		 * Maximum number of connections that can be allocated by the pool at a given
+		 * time. Use a negative value for no limit.
 		 */
 		private int maxActive = 8;
 
@@ -262,7 +263,7 @@ public class RedisProperties {
 	public static class Sentinel {
 
 		/**
-		 * Name of Redis server.
+		 * Name of the Redis server.
 		 */
 		private String master;
 

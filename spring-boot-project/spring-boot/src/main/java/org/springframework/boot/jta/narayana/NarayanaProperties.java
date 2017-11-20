@@ -52,7 +52,7 @@ public class NarayanaProperties {
 	private String transactionManagerId = "1";
 
 	/**
-	 * Enable one phase commit optimization.
+	 * Whether to enable one phase commit optimization.
 	 */
 	private boolean onePhaseCommit = true;
 
@@ -77,22 +77,22 @@ public class NarayanaProperties {
 	private Duration recoveryBackoffPeriod = Duration.ofSeconds(10);
 
 	/**
-	 * Database username to be used by recovery manager.
+	 * Database username to be used by the recovery manager.
 	 */
 	private String recoveryDbUser = null;
 
 	/**
-	 * Database password to be used by recovery manager.
+	 * Database password to be used by the recovery manager.
 	 */
 	private String recoveryDbPass = null;
 
 	/**
-	 * JMS username to be used by recovery manager.
+	 * JMS username to be used by the recovery manager.
 	 */
 	private String recoveryJmsUser = null;
 
 	/**
-	 * JMS password to be used by recovery manager.
+	 * JMS password to be used by the recovery manager.
 	 */
 	private String recoveryJmsPass = null;
 

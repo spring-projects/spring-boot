@@ -56,7 +56,7 @@ public class CorsEndpointProperties {
 	private List<String> exposedHeaders = new ArrayList<>();
 
 	/**
-	 * Set whether credentials are supported. When not set, credentials are not supported.
+	 * Whether credentials are supported. When not set, credentials are not supported.
 	 */
 	private Boolean allowCredentials;
 

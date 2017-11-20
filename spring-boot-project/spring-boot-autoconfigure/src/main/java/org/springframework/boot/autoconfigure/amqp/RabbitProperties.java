@@ -84,17 +84,17 @@ public class RabbitProperties {
 	private Duration requestedHeartbeat;
 
 	/**
-	 * Enable publisher confirms.
+	 * Whether to enable publisher confirms.
 	 */
 	private boolean publisherConfirms;
 
 	/**
-	 * Enable publisher returns.
+	 * Whether to enable publisher returns.
 	 */
 	private boolean publisherReturns;
 
 	/**
-	 * Connection timeout; zero for infinite.
+	 * Connection timeout. Set it to zero to wait forever.
 	 */
 	private Duration connectionTimeout;
 
@@ -310,7 +310,7 @@ public class RabbitProperties {
 	public static class Ssl {
 
 		/**
-		 * Enable SSL support.
+		 * Whether to enable SSL support.
 		 */
 		private boolean enabled;
 
@@ -345,8 +345,7 @@ public class RabbitProperties {
 		private String trustStorePassword;
 
 		/**
-		 * SSL algorithm to use (e.g. TLSv1.1). Default is set automatically by the rabbit
-		 * client library.
+		 * SSL algorithm to use. By default, configured by the Rabbit client library.
 		 */
 		private String algorithm;
 
@@ -541,7 +540,7 @@ public class RabbitProperties {
 	public static abstract class AmqpContainer {
 
 		/**
-		 * Start the container automatically on startup.
+		 * Whether to start the container automatically on startup.
 		 */
 		private boolean autoStartup = true;
 
@@ -557,7 +556,7 @@ public class RabbitProperties {
 		private Integer prefetch;
 
 		/**
-		 * Whether rejected deliveries are requeued by default; default true.
+		 * Whether rejected deliveries are re-queued by default. Defaults to true.
 		 */
 		private Boolean defaultRequeueRejected;
 
@@ -633,8 +632,9 @@ public class RabbitProperties {
 		private Integer maxConcurrency;
 
 		/**
-		 * Number of messages to be processed in a transaction; number of messages between
-		 * acks. For best results it should be less than or equal to the prefetch count.
+		 * Number of messages to be processed in a transaction. That is, the number of
+		 * messages between acks. For best results, it should be less than or equal to the
+		 * prefetch count.
 		 */
 		private Integer transactionSize;
 
@@ -689,8 +689,7 @@ public class RabbitProperties {
 		private final Retry retry = new Retry();
 
 		/**
-		 * Enable mandatory messages. If a mandatory message cannot be routed to a queue
-		 * by the server, it will return an unroutable message with a Return method.
+		 * Whether to enable mandatory messages.
 		 */
 		private Boolean mandatory;
 
@@ -737,7 +736,7 @@ public class RabbitProperties {
 	public static class Retry {
 
 		/**
-		 * Whether or not publishing retries are enabled.
+		 * Whether to enable retries in the RabbitTemplate.
 		 */
 		private boolean enabled;
 
@@ -752,7 +751,7 @@ public class RabbitProperties {
 		private long initialInterval = 1000L;
 
 		/**
-		 * A multiplier to apply to the previous retry interval.
+		 * Multiplier to apply to the previous retry interval.
 		 */
 		private double multiplier = 1.0;
 
@@ -806,7 +805,7 @@ public class RabbitProperties {
 	public static class ListenerRetry extends Retry {
 
 		/**
-		 * Whether or not retries are stateless or stateful.
+		 * Whether retries are stateless or stateful.
 		 */
 		private boolean stateless = true;
 

@@ -46,12 +46,12 @@ public class MongoProperties {
 	public static final String DEFAULT_URI = "mongodb://localhost/test";
 
 	/**
-	 * Mongo server host. Cannot be set with uri.
+	 * Mongo server host. Cannot be set with URI.
 	 */
 	private String host;
 
 	/**
-	 * Mongo server port. Cannot be set with uri.
+	 * Mongo server port. Cannot be set with URI.
 	 */
 	private Integer port = null;
 
@@ -76,12 +76,12 @@ public class MongoProperties {
 	private String gridFsDatabase;
 
 	/**
-	 * Login user of the mongo server. Cannot be set with uri.
+	 * Login user of the mongo server. Cannot be set with URI.
 	 */
 	private String username;
 
 	/**
-	 * Login password of the mongo server. Cannot be set with uri.
+	 * Login password of the mongo server. Cannot be set with URI.
 	 */
 	private char[] password;
 

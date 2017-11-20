@@ -155,8 +155,8 @@ public class CouchbaseProperties {
 	public static class Ssl {
 
 		/**
-		 * Enable SSL support. Enabled automatically if a "keyStore" is provided unless
-		 * specified otherwise.
+		 * Whether to enable SSL support. Enabled automatically if a "keyStore" is
+		 * provided unless specified otherwise.
 		 */
 		private Boolean enabled;
 
@@ -200,7 +200,7 @@ public class CouchbaseProperties {
 	public static class Timeouts {
 
 		/**
-		 * Bucket connections timeout.
+		 * Bucket connections timeouts.
 		 */
 		private Duration connect = Duration.ofMillis(5000);
 
