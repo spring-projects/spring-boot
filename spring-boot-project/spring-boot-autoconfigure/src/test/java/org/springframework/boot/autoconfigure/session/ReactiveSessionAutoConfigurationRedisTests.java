@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class ReactiveSessionAutoConfigurationRedisTests
 		extends AbstractSessionAutoConfigurationTests {
@@ -56,7 +57,7 @@ public class ReactiveSessionAutoConfigurationRedisTests
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
 						RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis(RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
 	}
 
 	@Test
@@ -66,7 +67,7 @@ public class ReactiveSessionAutoConfigurationRedisTests
 						ReactiveMongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
 						RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis(RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
 	}
 
 	@Test
@@ -77,16 +78,18 @@ public class ReactiveSessionAutoConfigurationRedisTests
 				.withPropertyValues("spring.session.store-type=redis",
 						"spring.session.redis.namespace=foo",
 						"spring.session.redis.flush-mode=immediate")
-				.run(validateSpringSessionUsesRedis(RedisFlushMode.IMMEDIATE));
+				.run(validateSpringSessionUsesRedis("foo:", RedisFlushMode.IMMEDIATE));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(
-			RedisFlushMode flushMode) {
+			String namespace, RedisFlushMode flushMode) {
 		return (context) -> {
 			System.out.println(new ConditionEvaluationReportMessage(
 					context.getBean(ConditionEvaluationReport.class)));
 			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(
 					context, ReactiveRedisOperationsSessionRepository.class);
+			assertThat(new DirectFieldAccessor(repository).getPropertyValue("namespace"))
+					.isEqualTo(namespace);
 			assertThat(new DirectFieldAccessor(repository)
 					.getPropertyValue("redisFlushMode")).isEqualTo(flushMode);
 		};
