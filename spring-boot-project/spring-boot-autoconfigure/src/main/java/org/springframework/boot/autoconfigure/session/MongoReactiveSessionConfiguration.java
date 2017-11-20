@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.reactive.ReactiveMongoWebSessionConfiguration;
 
 /**
@@ -35,7 +36,8 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass(ReactiveMongoWebSessionConfiguration.class)
+@ConditionalOnClass({ ReactiveMongoOperations.class,
+		ReactiveMongoOperationsSessionRepository.class })
 @ConditionalOnMissingBean(ReactiveSessionRepository.class)
 @ConditionalOnBean(ReactiveMongoOperations.class)
 @Conditional(ReactiveSessionCondition.class)
