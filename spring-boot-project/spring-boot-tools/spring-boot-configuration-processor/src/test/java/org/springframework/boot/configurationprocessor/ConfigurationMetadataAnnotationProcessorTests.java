@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -532,8 +533,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void simpleEndpoint() throws IOException {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
-		assertThat(metadata).has(
-				Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple")
+				.fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(enabledFlag("simple", true));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -564,9 +565,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(CustomPropertiesEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.customprops")
 				.fromSource(CustomPropertiesEndpoint.class));
-		assertThat(metadata).has(Metadata
-				.withProperty("management.endpoint.customprops.name")
-				.ofType(String.class).withDefaultValue("test"));
+		assertThat(metadata)
+				.has(Metadata.withProperty("management.endpoint.customprops.name")
+						.ofType(String.class).withDefaultValue("test"));
 		assertThat(metadata).has(enabledFlag("customprops", true));
 		assertThat(metadata).has(cacheTtl("customprops"));
 		assertThat(metadata.getItems()).hasSize(4);
@@ -632,8 +633,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
 		return Metadata
 				.withProperty("management.endpoint." + endpointId + ".cache.time-to-live")
-				.ofType(Long.class).withDefaultValue(0).withDescription(
-						"Maximum time in milliseconds that a response can be cached.");
+				.ofType(Duration.class).withDefaultValue(0)
+				.withDescription("Maximum time that a response can be cached.");
 	}
 
 	@Test

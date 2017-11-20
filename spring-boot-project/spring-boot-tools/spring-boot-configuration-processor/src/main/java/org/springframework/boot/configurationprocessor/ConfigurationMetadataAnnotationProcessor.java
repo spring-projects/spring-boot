@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -424,8 +425,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String.format("Enable the %s endpoint.", endpointId),
 				(enabledByDefault == null ? true : enabledByDefault), null));
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
-				"cache.time-to-live", Long.class.getName(), type, null,
-				"Maximum time in milliseconds that a response can be cached.", 0, null));
+				"cache.time-to-live", Duration.class.getName(), type, null,
+				"Maximum time that a response can be cached.", 0, null));
 	}
 
 	private String endpointKey(String suffix) {

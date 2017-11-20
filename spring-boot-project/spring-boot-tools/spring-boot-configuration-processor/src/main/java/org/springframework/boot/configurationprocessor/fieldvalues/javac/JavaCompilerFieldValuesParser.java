@@ -76,7 +76,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			WRAPPER_TYPES = Collections.unmodifiableMap(types);
 		}
 
-		private static final Map<Class<?>, Object> defaultTypeValues;
+		private static final Map<Class<?>, Object> DEFAULT_TYPE_VALUES;
 
 		static {
 			Map<Class<?>, Object> values = new HashMap<>();
@@ -85,10 +85,10 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			values.put(Short.class, (short) 0);
 			values.put(Integer.class, 0);
 			values.put(Long.class, (long) 0);
-			defaultTypeValues = Collections.unmodifiableMap(values);
+			DEFAULT_TYPE_VALUES = Collections.unmodifiableMap(values);
 		}
 
-		private static final Map<String, Object> wellKnownStaticFinals;
+		private static final Map<String, Object> WELL_KNOWN_STATIC_FINALS;
 
 		static {
 			Map<String, Object> values = new HashMap<>();
@@ -98,7 +98,22 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			values.put("StandardCharsets.UTF_8", "UTF-8");
 			values.put("StandardCharsets.UTF_16", "UTF-16");
 			values.put("StandardCharsets.US_ASCII", "US-ASCII");
-			wellKnownStaticFinals = Collections.unmodifiableMap(values);
+			WELL_KNOWN_STATIC_FINALS = Collections.unmodifiableMap(values);
+		}
+
+		private static final String DURATION_OF = "Duration.of";
+
+		private static final Map<String, String> DURATION_SUFFIX;
+
+		static {
+			Map<String, String> values = new HashMap<>();
+			values.put("Nanos", "ns");
+			values.put("Millis", "ms");
+			values.put("Seconds", "s");
+			values.put("Minutes", "m");
+			values.put("Hours", "h");
+			values.put("Days", "d");
+			DURATION_SUFFIX = Collections.unmodifiableMap(values);
 		}
 
 		private final Map<String, Object> fieldValues = new HashMap<>();
@@ -119,7 +134,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		private Object getValue(VariableTree variable) throws Exception {
 			ExpressionTree initializer = variable.getInitializer();
 			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
-			Object defaultValue = defaultTypeValues.get(wrapperType);
+			Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
 			if (initializer != null) {
 				return getValue(initializer, defaultValue);
 			}
@@ -134,7 +149,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			}
 			Object factoryValue = expression.getFactoryValue();
 			if (factoryValue != null) {
-				return factoryValue;
+				return getFactoryValue(expression, factoryValue);
 			}
 			List<? extends ExpressionTree> arrayValues = expression.getArrayExpression();
 			if (arrayValues != null) {
@@ -152,9 +167,20 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				return this.staticFinals.get(expression.toString());
 			}
 			if (expression.getKind().equals("MEMBER_SELECT")) {
-				return wellKnownStaticFinals.get(expression.toString());
+				return WELL_KNOWN_STATIC_FINALS.get(expression.toString());
 			}
 			return defaultValue;
+		}
+
+		private Object getFactoryValue(ExpressionTree expression, Object factoryValue) {
+			Object instance = expression.getInstance();
+			if (instance != null && instance.toString().startsWith(DURATION_OF)) {
+				String type = instance.toString();
+				type = type.substring(DURATION_OF.length(), type.indexOf("("));
+				String suffix = DURATION_SUFFIX.get(type);
+				return (suffix == null ? null : factoryValue + suffix);
+			}
+			return factoryValue;
 		}
 
 		public Map<String, Object> getFieldValues() {
