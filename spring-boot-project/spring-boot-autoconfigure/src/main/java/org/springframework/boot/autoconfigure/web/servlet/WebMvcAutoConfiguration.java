@@ -49,6 +49,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
@@ -58,6 +59,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -133,6 +135,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Sébastien Deleuze
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Bruce Brouwer
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -329,8 +332,9 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		public WelcomePageHandlerMapping welcomePageHandlerMapping() {
-			return new WelcomePageHandlerMapping(getWelcomePage(),
+		public WelcomePageHandlerMapping welcomePageHandlerMapping(
+				ApplicationContext applicationContext) {
+			return new WelcomePageHandlerMapping(applicationContext, getWelcomePage(),
 					this.mvcProperties.getStaticPathPattern());
 		}
 
@@ -610,15 +614,30 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WelcomePageHandlerMapping.class);
 
-		private WelcomePageHandlerMapping(Optional<Resource> welcomePage,
-				String staticPathPattern) {
-			if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
-				logger.info("Adding welcome page: " + welcomePage);
-				ParameterizableViewController controller = new ParameterizableViewController();
-				controller.setViewName("forward:index.html");
-				setRootHandler(controller);
-				setOrder(0);
+		private WelcomePageHandlerMapping(ApplicationContext applicationContext,
+				Optional<Resource> welcomePage, String staticPathPattern) {
+			if (welcomeTemplateExists(applicationContext)) {
+				logger.info("Adding welcome page template: index");
+				setRootViewName("index");
 			}
+			else if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
+				logger.info("Adding welcome page: " + welcomePage);
+				setRootViewName("forward:index.html");
+			}
+		}
+
+		private boolean welcomeTemplateExists(
+				final ApplicationContext applicationContext) {
+			final TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
+					applicationContext);
+			return providers.getProvider("index", applicationContext) != null;
+		}
+
+		private void setRootViewName(final String viewName) {
+			final ParameterizableViewController controller = new ParameterizableViewController();
+			controller.setViewName(viewName);
+			setRootHandler(controller);
+			setOrder(0);
 		}
 
 		@Override

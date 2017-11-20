@@ -28,7 +28,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidatorFactory;
 
 import org.joda.time.DateTime;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -97,8 +101,13 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -111,6 +120,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Eddú Meléndez
+ * @author Bruce Brouwer
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -121,6 +131,9 @@ public class WebMvcAutoConfigurationTests {
 					HttpMessageConvertersAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class))
 			.withUserConfiguration(Config.class);
+
+	@Rule
+	public final TestRule mockTemplates = MockTemplateAvailabilityProvider.testRule();
 
 	@Test
 	public void handlerAdaptersCreated() {
@@ -598,8 +611,22 @@ public class WebMvcAutoConfigurationTests {
 								.isNull());
 	}
 
+
 	@Test
-	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() {
+	public void welcomePageMappingHandlesRequestsForTemplateThatAcceptTextHtml() {
+		MockTemplateAvailabilityProvider.mock("index");
+		this.contextRunner.withUserConfiguration(MockViewResolver.class)
+				.run((context) -> {
+					mockTemplateView(context, "template");
+					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+					mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
+							.andExpect(status().isOk())
+							.andExpect(content().string("template"));
+				});
+	}
+
+	@Test
+	public void welcomePageMappingHandlesRequestsForStaticPageThatAcceptTextHtml() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.resources.static-locations:classpath:/welcome-page/")
@@ -838,6 +865,25 @@ public class WebMvcAutoConfigurationTests {
 		return mappingLocations;
 	}
 
+	protected void mockTemplateView(ApplicationContext context, String content)
+			throws Exception {
+		ViewResolver viewResolver = context.getBean("mockViewResolver",
+				ViewResolver.class);
+		View view = mock(View.class);
+		given(viewResolver.resolveViewName(eq("index"), any())).willReturn(view);
+		given(view.getContentType()).willReturn(MediaType.TEXT_HTML_VALUE);
+		willAnswer(new Answer<Void>() {
+
+			@Override
+			public Void answer(InvocationOnMock invocation) throws Throwable {
+				HttpServletResponse response = invocation.getArgument(2);
+				response.getWriter().append(content);
+				return null;
+			}
+
+		}).given(view).render(any(), any(), any());
+	}
+
 	@Configuration
 	protected static class ViewConfig {
 
@@ -899,6 +945,18 @@ public class WebMvcAutoConfigurationTests {
 		@Bean
 		public ViewResolver viewResolver() {
 			return new MyViewResolver();
+		}
+
+	}
+
+	@Configuration
+	public static class MockViewResolver {
+
+		private final ViewResolver mockViewResolver = mock(ViewResolver.class);
+
+		@Bean
+		public ViewResolver mockViewResolver() {
+			return this.mockViewResolver;
 		}
 
 	}
