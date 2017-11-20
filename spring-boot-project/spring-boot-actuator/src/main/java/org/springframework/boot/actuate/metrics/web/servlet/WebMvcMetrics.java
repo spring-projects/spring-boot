@@ -192,7 +192,8 @@ public class WebMvcMetrics {
 		if (handler instanceof HandlerMethod) {
 			return timed((HandlerMethod) handler);
 		}
-		if ((handler == null || handler instanceof ResourceHttpRequestHandler)
+		if ((handler == null || handler instanceof ResourceHttpRequestHandler
+				|| handler instanceof ParameterizableViewController)
 				&& this.autoTimeRequests) {
 			return Collections.singleton(
 					new TimerConfig(getServerRequestName(), this.recordAsPercentiles));
