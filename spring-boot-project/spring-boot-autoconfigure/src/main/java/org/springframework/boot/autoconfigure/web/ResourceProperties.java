@@ -19,16 +19,10 @@ package org.springframework.boot.autoconfigure.web;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.context.properties.bind.convert.DurationUnit;
 import org.springframework.http.CacheControl;
-import org.springframework.util.Assert;
 
 /**
  * Properties used to configure resource handling.
@@ -45,7 +39,7 @@ public class ResourceProperties {
 
 	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
 			"classpath:/META-INF/resources/", "classpath:/resources/",
-			"classpath:/static/", "classpath:/public/"};
+			"classpath:/static/", "classpath:/public/" };
 
 	/**
 	 * Locations of static resources. Defaults to classpath:[/META-INF/resources/,
@@ -54,17 +48,18 @@ public class ResourceProperties {
 	private String[] staticLocations = CLASSPATH_RESOURCE_LOCATIONS;
 
 	/**
-	 * Cache period for the resources served by the resource handler. If a duration suffix
-	 * is not specified, seconds will be used.
+	 * Cache period for the resources served by the resource handler.
+	 * If a duration suffix is not specified, seconds will be used.
+	 * Can be overridden by the {@code cache-control} property.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration cachePeriod;
 
 	/**
-	 * Cache control headers. Either {@link #cachePeriod} or {@link #cacheControl} can be set.
+	 * Cache control HTTP headers, only allows valid directive combinations.
+	 * Overrides the {@code cache-period} property.
 	 */
-	@NestedConfigurationProperty
-	private CacheControlProperties cacheControl;
+	private CacheControlProperties cacheControl = new CacheControlProperties();
 
 	/**
 	 * Enable default resource handling.
@@ -106,7 +101,6 @@ public class ResourceProperties {
 		this.cacheControl = cacheControl;
 	}
 
-
 	public boolean isAddMappings() {
 		return this.addMappings;
 	}
@@ -117,36 +111,6 @@ public class ResourceProperties {
 
 	public Chain getChain() {
 		return this.chain;
-	}
-
-	public CacheControl createCacheControl() {
-		if (this.cachePeriod != null) {
-			return CacheControl.maxAge(this.cachePeriod.getSeconds(), TimeUnit.SECONDS);
-		}
-		if (this.cacheControl != null) {
-			return this.cacheControl.transformToHttpSpringCacheControl();
-		}
-		return null;
-	}
-
-	@PostConstruct
-	public void checkIncompatibleCacheOptions() {
-		Assert.state(this.cachePeriod == null || this.cacheControl == null,
-				"Only one of cache-period or cache-control may be set.");
-		if (this.cacheControl != null) {
-			if (this.cacheControl.getMaxAge() != null) {
-				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoCache()), "no-cache may not be set if max-age is set.");
-				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoStore()), "no-store may not be set if max-age is set.");
-			}
-			if (this.cacheControl.getNoCache() != null) {
-				Assert.state(this.cacheControl.getMaxAge() == null, "max-age may not be set if no-cache is set.");
-				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoStore()), "no-store may not be set if no-cache is set.");
-			}
-			if (this.cacheControl.getNoStore() != null) {
-				Assert.state(this.cacheControl.getMaxAge() == null, "max-age may not be set if no-store is set.");
-				Assert.state(!Boolean.TRUE.equals(this.cacheControl.getNoCache()), "no-cache may not be set if no-store is set.");
-			}
-		}
 	}
 
 	/**
@@ -328,38 +292,83 @@ public class ResourceProperties {
 	}
 
 	/**
-	 * Configuration for the Cache Control header.
+	 * Configuration for the Cache Control HTTP header.
 	 */
-
 	public static class CacheControlProperties {
 
-		private Long maxAge;
+		/**
+		 * Maximum time the response should be cached,
+		 * in seconds if no duration suffix is not specified.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration maxAge;
 
+		/**
+		 * Indicate that the cached response can be reused only
+		 * if re-validated with the server.
+		 */
 		private Boolean noCache;
 
+		/**
+		 * Indicate to not cache the response in any case.
+		 */
 		private Boolean noStore;
 
+		/**
+		 * Indicate that once it has become stale, a cache must not use
+		 * the response without re-validating it with the server.
+		 */
 		private Boolean mustRevalidate;
 
+		/**
+		 * Indicate intermediaries (caches and others) that they should
+		 * not transform the response content.
+		 */
 		private Boolean noTransform;
 
+		/**
+		 * Indicate that any cache may store the response.
+		 */
 		private Boolean cachePublic;
 
+		/**
+		 * Indicate that the response message is intended for a single user
+		 * and must not be stored by a shared cache.
+		 */
 		private Boolean cachePrivate;
 
+		/**
+		 * Same meaning as the "must-revalidate" directive,
+		 * except that it does not apply to private caches.
+		 */
 		private Boolean proxyRevalidate;
 
-		private Long staleWhileRevalidate;
+		/**
+		 * Maximum time the response can be served after it becomes stale,
+		 * in seconds if no duration suffix is not specified.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration staleWhileRevalidate;
 
-		private Long staleIfError;
+		/**
+		 * Maximum time the response may be used when errors are encountered,
+		 * in seconds if no duration suffix is not specified.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration staleIfError;
 
-		private Long sMaxAge;
+		/**
+		 * Maximum time the response should be cached by shared caches,
+		 * in seconds if no duration suffix is not specified.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration sMaxAge;
 
-		public Long getMaxAge() {
+		public Duration getMaxAge() {
 			return this.maxAge;
 		}
 
-		public void setMaxAge(Long maxAge) {
+		public void setMaxAge(Duration maxAge) {
 			this.maxAge = maxAge;
 		}
 
@@ -419,91 +428,71 @@ public class ResourceProperties {
 			this.proxyRevalidate = proxyRevalidate;
 		}
 
-		public Long getStaleWhileRevalidate() {
+		public Duration getStaleWhileRevalidate() {
 			return this.staleWhileRevalidate;
 		}
 
-		public void setStaleWhileRevalidate(Long staleWhileRevalidate) {
+		public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
 			this.staleWhileRevalidate = staleWhileRevalidate;
 		}
 
-		public Long getStaleIfError() {
+		public Duration getStaleIfError() {
 			return this.staleIfError;
 		}
 
-		public void setStaleIfError(Long staleIfError) {
+		public void setStaleIfError(Duration staleIfError) {
 			this.staleIfError = staleIfError;
 		}
 
-		public Long getsMaxAge() {
+		public Duration getsMaxAge() {
 			return this.sMaxAge;
 		}
 
-		public void setsMaxAge(Long sMaxAge) {
+		public void setsMaxAge(Duration sMaxAge) {
 			this.sMaxAge = sMaxAge;
 		}
 
-		CacheControl transformToHttpSpringCacheControl() {
-			CacheControl httpSpringCacheControl = initCacheControl();
-			httpSpringCacheControl = setFlags(httpSpringCacheControl);
-			httpSpringCacheControl = setTimes(httpSpringCacheControl);
-			return httpSpringCacheControl;
-		}
-
-		private CacheControl initCacheControl() {
-			if (this.maxAge != null) {
-				return CacheControl.maxAge(this.maxAge, TimeUnit.SECONDS);
-			}
-			if (Boolean.TRUE.equals(this.noCache)) {
-				return CacheControl.noCache();
-			}
+		public CacheControl toHttpCacheControl() {
+			CacheControl cc;
 			if (Boolean.TRUE.equals(this.noStore)) {
-				return CacheControl.noStore();
+				cc = CacheControl.noStore();
 			}
-			return CacheControl.empty();
-		}
-
-		private CacheControl setFlags(CacheControl cacheControl) {
-			cacheControl = setBoolean(this.mustRevalidate, cacheControl::mustRevalidate,
-					cacheControl);
-			cacheControl = setBoolean(this.noTransform, cacheControl::noTransform,
-					cacheControl);
-			cacheControl = setBoolean(this.cachePublic, cacheControl::cachePublic,
-					cacheControl);
-			cacheControl = setBoolean(this.cachePrivate, cacheControl::cachePrivate,
-					cacheControl);
-			cacheControl = setBoolean(this.proxyRevalidate, cacheControl::proxyRevalidate,
-					cacheControl);
-			return cacheControl;
-		}
-
-		private static CacheControl setBoolean(Boolean value,
-				Supplier<CacheControl> setter, CacheControl cacheControl) {
-			if (Boolean.TRUE.equals(value)) {
-				return setter.get();
+			else if (Boolean.TRUE.equals(this.noCache)) {
+				cc = CacheControl.noCache();
 			}
-			return cacheControl;
-		}
-
-		private CacheControl setTimes(CacheControl cacheControl) {
-			cacheControl = setLong(this.staleWhileRevalidate,
-					cacheControl::staleWhileRevalidate, cacheControl);
-			cacheControl = setLong(this.staleIfError, cacheControl::staleIfError,
-					cacheControl);
-			cacheControl = setLong(this.sMaxAge, cacheControl::sMaxAge, cacheControl);
-			return cacheControl;
-		}
-
-		private static CacheControl setLong(Long value,
-				BiFunction<Long, TimeUnit, CacheControl> setter,
-				CacheControl cacheControl) {
-			if (value != null) {
-				return setter.apply(value, TimeUnit.SECONDS);
+			else if (this.maxAge != null) {
+				cc = CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
 			}
-			return cacheControl;
+			else {
+				cc = CacheControl.empty();
+			}
+			if (Boolean.TRUE.equals(this.mustRevalidate)) {
+				cc.mustRevalidate();
+			}
+			if (Boolean.TRUE.equals(this.noTransform)) {
+				cc.noTransform();
+			}
+			if (Boolean.TRUE.equals(this.cachePublic)) {
+				cc.cachePublic();
+			}
+			if (Boolean.TRUE.equals(this.cachePrivate)) {
+				cc.cachePrivate();
+			}
+			if (Boolean.TRUE.equals(this.proxyRevalidate)) {
+				cc.proxyRevalidate();
+			}
+			if (this.staleWhileRevalidate != null) {
+				cc.staleWhileRevalidate(this.staleWhileRevalidate.getSeconds(), TimeUnit.SECONDS);
+			}
+			if (this.staleIfError != null) {
+				cc.staleIfError(this.staleIfError.getSeconds(), TimeUnit.SECONDS);
+			}
+			if (this.sMaxAge != null) {
+				cc.sMaxAge(this.sMaxAge.getSeconds(), TimeUnit.SECONDS);
+			}
+			return cc;
 		}
 
 	}
-
 
 }

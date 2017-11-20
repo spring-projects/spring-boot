@@ -99,9 +99,7 @@ import org.springframework.web.servlet.resource.VersionStrategy;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
@@ -850,28 +848,6 @@ public class WebMvcAutoConfigurationTests {
 										.proxyRevalidate());
 			}
 		}
-	}
-
-	@Test
-	public void invalidCacheConfig() throws Exception {
-		assertThatThrownBy(() -> this.contextRunner
-				.withPropertyValues("spring.resources.cache-control.max-age:5",
-						"spring.resources.cache-period:6")
-				.run((context) -> getHandlerMap(
-						context.getBean("resourceHandlerMapping", HandlerMapping.class))))
-								.hasRootCauseInstanceOf(IllegalStateException.class)
-								.hasStackTraceContaining("Only one of cache-period or cache-control may be set");
-	}
-
-	@Test
-	public void invalidCacheControl() throws Exception {
-		assertThatThrownBy(() -> this.contextRunner
-				.withPropertyValues("spring.resources.cache-control.max-age:5",
-						"spring.resources.cache-control.no-cache:true")
-				.run((context) -> getHandlerMap(
-						context.getBean("resourceHandlerMapping", HandlerMapping.class))))
-								.hasRootCauseInstanceOf(IllegalStateException.class)
-								.hasStackTraceContaining("no-cache may not be set if max-age is set");
 	}
 
 	protected Map<String, List<Resource>> getFaviconMappingLocations(

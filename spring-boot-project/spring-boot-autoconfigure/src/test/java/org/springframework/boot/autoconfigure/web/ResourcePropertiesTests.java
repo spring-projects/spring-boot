@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.time.Duration;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.web.ResourceProperties.CacheControlProperties;
 import org.springframework.boot.testsupport.assertj.Matched;
@@ -33,6 +37,9 @@ import static org.hamcrest.CoreMatchers.endsWith;
 public class ResourcePropertiesTests {
 
 	private final ResourceProperties properties = new ResourceProperties();
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void resourceChainNoCustomization() {
@@ -70,53 +77,43 @@ public class ResourcePropertiesTests {
 	}
 
 	@Test
-	public void cachePeriod() {
-		this.properties.setCachePeriod(5);
-		assertThat(this.properties.createCacheControl().getHeaderValue())
-				.isEqualTo("max-age=5");
+	public void emptyCacheControl() {
+		CacheControlProperties cacheControl = new CacheControlProperties();
+		this.properties.setCacheControl(cacheControl);
+		assertThat(this.properties.getCacheControl().toHttpCacheControl().getHeaderValue()).isNull();
 	}
 
 	@Test
 	public void cacheControlAllPropertiesSet() {
 		CacheControlProperties cacheControl = new CacheControlProperties();
+		cacheControl.setMaxAge(Duration.ofSeconds(4));
 		cacheControl.setCachePrivate(true);
 		cacheControl.setCachePublic(true);
-		cacheControl.setMaxAge(4L);
 		cacheControl.setMustRevalidate(true);
-		cacheControl.setNoCache(true);
-		cacheControl.setNoCache(true);
-		cacheControl.setNoStore(true);
 		cacheControl.setNoTransform(true);
 		cacheControl.setProxyRevalidate(true);
-		cacheControl.setsMaxAge(5L);
-		cacheControl.setStaleIfError(6L);
-		cacheControl.setStaleWhileRevalidate(7L);
+		cacheControl.setsMaxAge(Duration.ofSeconds(5));
+		cacheControl.setStaleIfError(Duration.ofSeconds(6));
+		cacheControl.setStaleWhileRevalidate(Duration.ofSeconds(7));
 		this.properties.setCacheControl(cacheControl);
-		assertThat(this.properties.createCacheControl().getHeaderValue()).isEqualTo(
-				"max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate, s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
+		assertThat(this.properties.getCacheControl().toHttpCacheControl().getHeaderValue()).isEqualTo(
+				"max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate," +
+						" s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
+	}
+
+	@Test
+	public void invalidCacheControlCombination() {
+		CacheControlProperties cacheControl = new CacheControlProperties();
+		cacheControl.setMaxAge(Duration.ofSeconds(4));
+		cacheControl.setNoStore(true);
+		this.properties.setCacheControl(cacheControl);
+		assertThat(this.properties.getCacheControl().toHttpCacheControl().getHeaderValue()).isEqualTo("no-store");
 	}
 
 	@Test
 	public void cacheControlNoPropertiesSet() {
 		this.properties.setCacheControl(new CacheControlProperties());
-		assertThat(this.properties.createCacheControl().getHeaderValue()).isNull();
-	}
-
-	@Test
-	public void cacheControlAndCachePeriodSet() {
-		CacheControlProperties cacheControl = new CacheControlProperties();
-		cacheControl.setMaxAge(12L);
-		this.properties.setCacheControl(cacheControl);
-		this.properties.setCachePeriod(6);
-		assertThat(this.properties.createCacheControl().getHeaderValue())
-				.isEqualTo("max-age=6");
-	}
-
-	@Test
-	public void cacheControlAndCachePeriodBothNotSet() {
-		this.properties.setCacheControl(null);
-		this.properties.setCachePeriod(null);
-		assertThat(this.properties.createCacheControl()).isNull();
+		assertThat(this.properties.getCacheControl().toHttpCacheControl().getHeaderValue()).isNull();
 	}
 
 }
