@@ -33,7 +33,7 @@ public class RedisSessionProperties {
 	/**
 	 * Namespace for keys used to store sessions.
 	 */
-	private String namespace = "";
+	private String namespace = "spring:session";
 
 	/**
 	 * Sessions flush mode.
