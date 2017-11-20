@@ -28,7 +28,7 @@ import com.datastax.driver.core.policies.ReconnectionPolicy;
 import com.datastax.driver.core.policies.RetryPolicy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DurationUnit;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 /**
  * Configuration properties for Cassandra.
@@ -283,7 +283,7 @@ public class CassandraProperties {
 		 * Idle timeout before an idle connection is removed. If a duration suffix is not
 		 * specified, seconds will be used.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration idleTimeout = Duration.ofSeconds(120);
 
 		/**
@@ -296,7 +296,7 @@ public class CassandraProperties {
 		 * sure it's still alive. If a duration suffix is not specified, seconds will be
 		 * used.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration heartbeatInterval = Duration.ofSeconds(30);
 
 		/**

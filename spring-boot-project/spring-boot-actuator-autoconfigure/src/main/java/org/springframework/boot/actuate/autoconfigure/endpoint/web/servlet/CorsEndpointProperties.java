@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DurationUnit;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 /**
  * Configuration properties for MVC endpoints' CORS support.
@@ -64,7 +64,7 @@ public class CorsEndpointProperties {
 	 * How long the response from a pre-flight request can be cached by clients. If a
 	 * duration suffix is not specified, seconds will be used.
 	 */
-	@DurationUnit(ChronoUnit.SECONDS)
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
 	private Duration maxAge = Duration.ofSeconds(1800);
 
 	public List<String> getAllowedOrigins() {

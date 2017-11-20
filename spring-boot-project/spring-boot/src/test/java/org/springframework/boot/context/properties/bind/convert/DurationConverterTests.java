@@ -138,9 +138,9 @@ public class DurationConverterTests {
 
 	private Duration convert(String source, ChronoUnit defaultUnit) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
-		DurationUnit annotation = AnnotationUtils.synthesizeAnnotation(
-				Collections.singletonMap("value", defaultUnit), DurationUnit.class, null);
-		given(targetType.getAnnotation(DurationUnit.class)).willReturn(annotation);
+		DefaultDurationUnit annotation = AnnotationUtils.synthesizeAnnotation(
+				Collections.singletonMap("value", defaultUnit), DefaultDurationUnit.class, null);
+		given(targetType.getAnnotation(DefaultDurationUnit.class)).willReturn(annotation);
 		return (Duration) this.converter.convert(source, TypeDescriptor.forObject(source),
 				targetType);
 	}

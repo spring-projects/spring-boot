@@ -77,10 +77,10 @@ class DurationConverter implements GenericConverter {
 			return null;
 		}
 		return toDuration(source.toString(),
-				targetType.getAnnotation(DurationUnit.class));
+				targetType.getAnnotation(DefaultDurationUnit.class));
 	}
 
-	private Duration toDuration(String source, DurationUnit defaultUnit) {
+	private Duration toDuration(String source, DefaultDurationUnit defaultUnit) {
 		try {
 			if (!StringUtils.hasLength(source)) {
 				return null;
@@ -100,7 +100,7 @@ class DurationConverter implements GenericConverter {
 		}
 	}
 
-	private ChronoUnit getUnit(String value, DurationUnit defaultUnit) {
+	private ChronoUnit getUnit(String value, DefaultDurationUnit defaultUnit) {
 		if (StringUtils.isEmpty(value)) {
 			return (defaultUnit != null ? defaultUnit.value() : ChronoUnit.MILLIS);
 		}

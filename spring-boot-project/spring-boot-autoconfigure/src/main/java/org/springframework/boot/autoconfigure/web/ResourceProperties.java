@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DurationUnit;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 import org.springframework.http.CacheControl;
 
 /**
@@ -52,7 +52,7 @@ public class ResourceProperties {
 	 * If a duration suffix is not specified, seconds will be used.
 	 * Can be overridden by the {@code cache-control} property.
 	 */
-	@DurationUnit(ChronoUnit.SECONDS)
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
 	private Duration cachePeriod;
 
 	/**
@@ -300,7 +300,7 @@ public class ResourceProperties {
 		 * Maximum time the response should be cached,
 		 * in seconds if no duration suffix is not specified.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration maxAge;
 
 		/**
@@ -347,21 +347,21 @@ public class ResourceProperties {
 		 * Maximum time the response can be served after it becomes stale,
 		 * in seconds if no duration suffix is not specified.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration staleWhileRevalidate;
 
 		/**
 		 * Maximum time the response may be used when errors are encountered,
 		 * in seconds if no duration suffix is not specified.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration staleIfError;
 
 		/**
 		 * Maximum time the response should be cached by shared caches,
 		 * in seconds if no duration suffix is not specified.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration sMaxAge;
 
 		public Duration getMaxAge() {

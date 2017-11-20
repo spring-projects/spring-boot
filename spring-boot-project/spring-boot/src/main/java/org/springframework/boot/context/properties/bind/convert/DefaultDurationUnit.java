@@ -34,7 +34,7 @@ import java.time.temporal.ChronoUnit;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DurationUnit {
+public @interface DefaultDurationUnit {
 
 	/**
 	 * The duration unit to use if one is not specified.

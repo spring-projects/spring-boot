@@ -32,7 +32,7 @@ import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.boot.context.properties.bind.convert.DurationUnit;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
@@ -340,7 +340,7 @@ public class ServerProperties {
 		/**
 		 * Session timeout. If a duration suffix is not specified, seconds will be used.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration timeout;
 
 		/**
@@ -434,7 +434,7 @@ public class ServerProperties {
 			/**
 			 * Maximum age of the session cookie.
 			 */
-			@DurationUnit(ChronoUnit.SECONDS)
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
 			private Duration maxAge;
 
 			public String getName() {
@@ -570,7 +570,7 @@ public class ServerProperties {
 		 * Delay between the invocation of backgroundProcess methods. If a duration suffix
 		 * is not specified, seconds will be used.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(30);
 
 		/**

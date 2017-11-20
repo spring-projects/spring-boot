@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DurationUnit;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 /**
  * Subset of Narayana properties which can be configured via Spring configuration. Use
@@ -59,21 +59,21 @@ public class NarayanaProperties {
 	/**
 	 * Transaction timeout. If a duration suffix is not specified, seconds will be used.
 	 */
-	@DurationUnit(ChronoUnit.SECONDS)
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
 	private Duration defaultTimeout = Duration.ofSeconds(60);
 
 	/**
 	 * Interval in which periodic recovery scans are performed. If a duration suffix is
 	 * not specified, seconds will be used.
 	 */
-	@DurationUnit(ChronoUnit.SECONDS)
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
 	private Duration periodicRecoveryPeriod = Duration.ofSeconds(120);
 
 	/**
 	 * Back off period between first and second phases of the recovery scan. If a duration
 	 * suffix is not specified, seconds will be used.
 	 */
-	@DurationUnit(ChronoUnit.SECONDS)
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
 	private Duration recoveryBackoffPeriod = Duration.ofSeconds(10);
 
 	/**
