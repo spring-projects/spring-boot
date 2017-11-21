@@ -165,6 +165,17 @@ public class ImageBannerTests {
 		}
 	}
 
+	@Test
+	public void printBannerWhenAnimatesShouldPrintAllFrames() throws Exception {
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner("animated.gif");
+		String[] lines = banner.split(NEW_LINE);
+		int frames = 138;
+		int linesPerFrame = 36;
+		assertThat(banner).contains("\r");
+		assertThat(lines.length).isEqualTo(frames * linesPerFrame - 1);
+	}
+
 	private int getBannerHeight(String banner) {
 		return banner.split(NEW_LINE).length - 3;
 	}
