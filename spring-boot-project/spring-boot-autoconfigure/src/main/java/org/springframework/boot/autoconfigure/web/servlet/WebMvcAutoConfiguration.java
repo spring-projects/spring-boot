@@ -48,6 +48,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
@@ -57,6 +58,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -130,6 +132,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Kristine Jetzke
+ * @author Bruce Brouwer
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -330,8 +333,11 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		public WelcomePageHandlerMapping welcomePageHandlerMapping() {
-			return new WelcomePageHandlerMapping(getWelcomePage(),
+		public WelcomePageHandlerMapping welcomePageHandlerMapping(
+				ApplicationContext applicationContext) {
+			return new WelcomePageHandlerMapping(
+					new TemplateAvailabilityProviders(applicationContext),
+					applicationContext, getWelcomePage(),
 					this.mvcProperties.getStaticPathPattern());
 		}
 

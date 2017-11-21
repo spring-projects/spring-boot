@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,19 +39,38 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
  * static page is preferred.
  *
  * @author Andy Wilkinson
+ * @author Bruce Brouwer
  */
 final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private static final Log logger = LogFactory.getLog(WelcomePageHandlerMapping.class);
 
-	WelcomePageHandlerMapping(Optional<Resource> welcomePage, String staticPathPattern) {
+	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
+			ApplicationContext applicationContext, Optional<Resource> welcomePage,
+			String staticPathPattern) {
 		if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
 			logger.info("Adding welcome page: " + welcomePage.get());
-			ParameterizableViewController controller = new ParameterizableViewController();
-			controller.setViewName("forward:index.html");
-			setRootHandler(controller);
-			setOrder(0);
+			setRootViewName("forward:index.html");
 		}
+		else if (welcomeTemplateExists(templateAvailabilityProviders,
+				applicationContext)) {
+			logger.info("Adding welcome page template: index");
+			setRootViewName("index");
+		}
+	}
+
+	private boolean welcomeTemplateExists(
+			TemplateAvailabilityProviders templateAvailabilityProviders,
+			ApplicationContext applicationContext) {
+		return templateAvailabilityProviders.getProvider("index",
+				applicationContext) != null;
+	}
+
+	private void setRootViewName(final String viewName) {
+		ParameterizableViewController controller = new ParameterizableViewController();
+		controller.setViewName(viewName);
+		setRootHandler(controller);
+		setOrder(0);
 	}
 
 	@Override
