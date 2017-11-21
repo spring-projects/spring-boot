@@ -134,7 +134,7 @@
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
 		<rxjava2.version>2.1.6</rxjava2.version>
 		<selenium.version>3.7.1</selenium.version>
-		<selenium-htmlunit.version>2.28</selenium-htmlunit.version>
+		<selenium-htmlunit.version>2.28.1</selenium-htmlunit.version>
 		<sendgrid.version>4.1.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
