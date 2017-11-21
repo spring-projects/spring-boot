@@ -29,7 +29,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.Servlet;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,11 +73,9 @@ import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
@@ -108,11 +105,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
-import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -607,40 +602,6 @@ public class WebMvcAutoConfiguration {
 				resolver.addContentVersionStrategy(paths);
 			}
 			return resolver;
-		}
-
-	}
-
-	static final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
-
-		private static final Log logger = LogFactory
-				.getLog(WelcomePageHandlerMapping.class);
-
-		private WelcomePageHandlerMapping(Optional<Resource> welcomePage,
-				String staticPathPattern) {
-			if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
-				logger.info("Adding welcome page: " + welcomePage);
-				ParameterizableViewController controller = new ParameterizableViewController();
-				controller.setViewName("forward:index.html");
-				setRootHandler(controller);
-				setOrder(0);
-			}
-		}
-
-		@Override
-		public Object getHandlerInternal(HttpServletRequest request) throws Exception {
-			for (MediaType mediaType : getAcceptedMediaTypes(request)) {
-				if (mediaType.includes(MediaType.TEXT_HTML)) {
-					return super.getHandlerInternal(request);
-				}
-			}
-			return null;
-		}
-
-		private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
-			String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
-			return MediaType.parseMediaTypes(
-					StringUtils.hasText(acceptHeader) ? acceptHeader : "*/*");
 		}
 
 	}

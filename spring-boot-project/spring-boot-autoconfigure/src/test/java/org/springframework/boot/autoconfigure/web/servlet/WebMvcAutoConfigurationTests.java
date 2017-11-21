@@ -39,7 +39,6 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -56,12 +55,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -101,9 +97,6 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -579,100 +572,15 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void welcomePageMappingProducesNotFoundResponseWhenThereIsNoWelcomePage() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.resources.static-locations:classpath:/no-welcome-page/")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-					MockMvcBuilders.webAppContextSetup(context).build()
-							.perform(get("/").accept(MediaType.TEXT_HTML))
-							.andExpect(status().isNotFound());
-				});
-	}
-
-	@Test
-	public void welcomePageRootHandlerIsNotRegisteredWhenStaticPathPatternIsNotSlashStarStar() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.resources.static-locations:classpath:/welcome-page/",
-						"spring.mvc.static-path-pattern:/foo/**")
-				.run((context) -> assertThat(
-						context.getBean(WelcomePageHandlerMapping.class).getRootHandler())
-								.isNull());
-	}
-
-	@Test
-	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() {
+	public void welcomePageHandlerMappingIsAutoConfigured() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.resources.static-locations:classpath:/welcome-page/")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-					mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
-							.andExpect(status().isOk())
-							.andExpect(forwardedUrl("index.html"));
-					mockMvc.perform(get("/").accept("*/*")).andExpect(status().isOk())
-							.andExpect(forwardedUrl("index.html"));
+					assertThat(context.getBean(WelcomePageHandlerMapping.class)
+							.getRootHandler()).isNotNull();
 				});
-	}
-
-	@Test
-	public void welcomePageMappingDoesNotHandleRequestsThatDoNotAcceptTextHtml() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.resources.static-locations:classpath:/welcome-page/")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-					mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-							.andExpect(status().isNotFound());
-				});
-	}
-
-	@Test
-	public void welcomePageMappingHandlesRequestsWithNoAcceptHeader() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.resources.static-locations:classpath:/welcome-page/")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-					mockMvc.perform(get("/")).andExpect(status().isOk())
-							.andExpect(forwardedUrl("index.html"));
-				});
-	}
-
-	@Test
-	public void welcomePageMappingHandlesRequestsWithEmptyAcceptHeader()
-			throws Exception {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.resources.static-locations:classpath:/welcome-page/")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-					mockMvc.perform(get("/").header(HttpHeaders.ACCEPT, ""))
-							.andExpect(status().isOk())
-							.andExpect(forwardedUrl("index.html"));
-				});
-	}
-
-	@Test
-	public void welcomePageMappingWorksWithNoTrailingSlashOnResourceLocation()
-			throws Exception {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.resources.static-locations:classpath:/welcome-page")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-					mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
-							.andExpect(status().isOk())
-							.andExpect(forwardedUrl("index.html"));
-				});
-
 	}
 
 	@Test
