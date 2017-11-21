@@ -40,7 +40,7 @@ public class EmbeddedLdapProperties {
 	private Credential credential = new Credential();
 
 	/**
-	 * The base DN
+	 * The base DN.
 	 */
 	private String baseDn;
 
