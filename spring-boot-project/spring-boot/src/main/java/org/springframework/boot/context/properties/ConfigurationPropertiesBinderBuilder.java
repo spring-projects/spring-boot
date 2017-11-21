@@ -44,12 +44,12 @@ class ConfigurationPropertiesBinderBuilder {
 	/**
 	 * The bean name of the configuration properties validator.
 	 */
-	private static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME;
+	static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME;
 
 	/**
 	 * The bean name of the configuration properties conversion service.
 	 */
-	private  static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
+	static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory",
@@ -83,7 +83,7 @@ class ConfigurationPropertiesBinderBuilder {
 	 * @param conversionService the conversion service to use or {@code null}
 	 * @return this instance
 	 */
-	public ConfigurationPropertiesBinderBuilder withConversionService(
+	ConfigurationPropertiesBinderBuilder withConversionService(
 			ConversionService conversionService) {
 		this.conversionService = conversionService;
 		return this;
@@ -98,7 +98,7 @@ class ConfigurationPropertiesBinderBuilder {
 	 * @param validator the validator to use or {@code null}
 	 * @return this instance
 	 */
-	public ConfigurationPropertiesBinderBuilder withValidator(Validator validator) {
+	ConfigurationPropertiesBinderBuilder withValidator(Validator validator) {
 		this.validator = validator;
 		return this;
 	}
@@ -109,7 +109,7 @@ class ConfigurationPropertiesBinderBuilder {
 	 * @return this instance
 	 * @see #withEnvironment(ConfigurableEnvironment)
 	 */
-	public ConfigurationPropertiesBinderBuilder withPropertySources(
+	ConfigurationPropertiesBinderBuilder withPropertySources(
 			Iterable<PropertySource<?>> propertySources) {
 		this.propertySources = propertySources;
 		return this;
@@ -122,7 +122,7 @@ class ConfigurationPropertiesBinderBuilder {
 	 * @return this instance
 	 * @see #withPropertySources(Iterable)
 	 */
-	public ConfigurationPropertiesBinderBuilder withEnvironment(
+	ConfigurationPropertiesBinderBuilder withEnvironment(
 			ConfigurableEnvironment environment) {
 		return withPropertySources(environment.getPropertySources());
 	}
@@ -132,7 +132,7 @@ class ConfigurationPropertiesBinderBuilder {
 	 * discovering the {@link ConversionService} and {@link Validator} if necessary.
 	 * @return a {@link ConfigurationPropertiesBinder}
 	 */
-	public ConfigurationPropertiesBinder build() {
+	ConfigurationPropertiesBinder build() {
 		return new ConfigurationPropertiesBinder(this.propertySources,
 				determineConversionService(), determineValidator());
 	}
