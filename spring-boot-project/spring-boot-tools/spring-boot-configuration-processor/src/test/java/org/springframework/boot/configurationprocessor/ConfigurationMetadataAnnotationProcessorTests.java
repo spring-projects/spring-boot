@@ -626,8 +626,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
 			Boolean defaultValue) {
 		return Metadata.withEnabledFlag("management.endpoint." + endpointId + ".enabled")
-				.withDefaultValue(defaultValue)
-				.withDescription(String.format("Enable the %s endpoint.", endpointId));
+				.withDefaultValue(defaultValue).withDescription(
+						String.format("Whether to enable the %s endpoint.", endpointId));
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
