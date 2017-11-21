@@ -48,13 +48,14 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext, Optional<Resource> welcomePage,
 			String staticPathPattern) {
-		if (welcomeTemplateExists(templateAvailabilityProviders, applicationContext)) {
+		if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
+			logger.info("Adding welcome page: " + welcomePage.get());
+			setRootViewName("forward:index.html");
+		}
+		else if (welcomeTemplateExists(templateAvailabilityProviders,
+				applicationContext)) {
 			logger.info("Adding welcome page template: index");
 			setRootViewName("index");
-		}
-		else if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
-			logger.info("Adding welcome page: " + welcomePage);
-			setRootViewName("forward:index.html");
 		}
 	}
 

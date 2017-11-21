@@ -16,7 +16,12 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
@@ -24,6 +29,8 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -32,10 +39,15 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.AbstractView;
+import org.springframework.web.servlet.view.InternalResourceView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -109,17 +121,55 @@ public class WelcomePageHandlerMappingTests {
 				.andExpect(status().isNotFound()));
 	}
 
+	@Test
+	public void handlesRequestForTemplateThatAcceptsTextHtml() {
+		this.contextRunner.withUserConfiguration(TemplateConfiguration.class)
+				.run((context) -> {
+					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+					mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
+							.andExpect(status().isOk())
+							.andExpect(content().string("index template"));
+				});
+	}
+
+	@Test
+	public void handlesRequestForTemplateThatAcceptsAll() {
+		this.contextRunner.withUserConfiguration(TemplateConfiguration.class)
+				.run((context) -> {
+					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+					mockMvc.perform(get("/").accept(MediaType.ALL))
+							.andExpect(status().isOk())
+							.andExpect(content().string("index template"));
+				});
+	}
+
+	@Test
+	public void prefersAStaticResourceToATemplate() {
+		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class,
+				TemplateConfiguration.class).run((context) -> {
+					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+					mockMvc.perform(get("/").accept(MediaType.ALL))
+							.andExpect(status().isOk())
+							.andExpect(forwardedUrl("index.html"));
+				});
+	}
+
 	@Configuration
 	static class HandlerMappingConfiguration {
 
 		@Bean
 		public WelcomePageHandlerMapping handlerMapping(
 				ApplicationContext applicationContext,
+				ObjectProvider<TemplateAvailabilityProviders> templateAvailabilityProviders,
 				ObjectProvider<Resource> staticIndexPage,
 				@Value("${static-path-pattern:/**}") String staticPathPattern) {
 			return new WelcomePageHandlerMapping(
+					templateAvailabilityProviders.getIfAvailable(
+							() -> new TemplateAvailabilityProviders(applicationContext)),
+					applicationContext,
 					Optional.ofNullable(staticIndexPage.getIfAvailable()),
 					staticPathPattern);
+
 		}
 
 	}
@@ -130,6 +180,45 @@ public class WelcomePageHandlerMappingTests {
 		@Bean
 		public Resource staticIndexPage() {
 			return new FileSystemResource("src/test/resources/welcome-page/index.html");
+		}
+
+	}
+
+	@Configuration
+	static class TemplateConfiguration {
+
+		@Bean
+		public TemplateAvailabilityProviders templateAvailabilityProviders() {
+			return new TestTemplateAvailabilityProviders((view, environment, classLoader,
+					resourceLoader) -> view.equals("index"));
+		}
+
+		@Bean
+		public ViewResolver viewResolver() {
+			return (name, locale) -> {
+				if (name.startsWith("forward:")) {
+					return new InternalResourceView(name.substring("forward:".length()));
+				}
+				return new AbstractView() {
+
+					@Override
+					protected void renderMergedOutputModel(Map<String, Object> model,
+							HttpServletRequest request, HttpServletResponse response)
+									throws Exception {
+						response.getWriter().print(name + " template");
+					}
+
+				};
+			};
+		}
+
+	}
+
+	private static class TestTemplateAvailabilityProviders
+			extends TemplateAvailabilityProviders {
+
+		TestTemplateAvailabilityProviders(TemplateAvailabilityProvider provider) {
+			super(Collections.singletonList(provider));
 		}
 
 	}
