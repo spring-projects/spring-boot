@@ -1,0 +1,37 @@
+= Spring Boot Spring Session Sample
+
+This sample demonstrates the Spring Session WebFlux auto-configuration support. Spring
+Session supports multiple reactive session store types, including:
+
+* `Redis`
+* `MongoDB`
+
+
+
+== Using a different session store
+Initially, the project uses MongoDB session store backed by an embedded MongoDB. You can
+try out your favorite session store as explained below.
+
+
+
+=== Redis
+Add `org.springframework.session:spring-session-data-redis` and
+`spring-boot-starter-data-redis-reactive` dependencies to the project and make sure it is
+configured properly (by default, a Redis instance with the default settings is expected
+on your local box).
+
+TIP: Run sample application using Redis session store using
+`$mvn spring-boot:run -Predis`.
+
+
+
+=== MongoDB
+Add `org.springframework.session:spring-session-data-mongodb` and
+`spring-boot-starter-data-mongodb-reactive` and
+`de.flapdoodle.embed:de.flapdoodle.embed.mongo` dependencies to the project. An embedded
+MongoDB is automatically configured.
+
+TIP: Run sample application using MongoDB session store using
+`$mvn spring-boot:run -Pmongodb`.
+
+Note that this profile is active by default.
