@@ -444,11 +444,11 @@ public class ResourceProperties {
 			this.staleIfError = staleIfError;
 		}
 
-		public Duration getsMaxAge() {
+		public Duration getSMaxAge() {
 			return this.sMaxAge;
 		}
 
-		public void setsMaxAge(Duration sMaxAge) {
+		public void setSMaxAge(Duration sMaxAge) {
 			this.sMaxAge = sMaxAge;
 		}
 

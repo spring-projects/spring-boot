@@ -95,7 +95,7 @@ public class ResourcePropertiesTests {
 		cacheControlProperties.setMustRevalidate(true);
 		cacheControlProperties.setNoTransform(true);
 		cacheControlProperties.setProxyRevalidate(true);
-		cacheControlProperties.setsMaxAge(Duration.ofSeconds(5));
+		cacheControlProperties.setSMaxAge(Duration.ofSeconds(5));
 		cacheControlProperties.setStaleIfError(Duration.ofSeconds(6));
 		cacheControlProperties.setStaleWhileRevalidate(Duration.ofSeconds(7));
 		this.properties.setCacheControl(cacheControlProperties);
