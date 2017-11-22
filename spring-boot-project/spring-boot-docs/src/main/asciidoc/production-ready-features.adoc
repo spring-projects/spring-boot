@@ -476,15 +476,19 @@ The following table shows the default status mappings for the built-in statuses:
 |No mapping by default, so http status is 200
 |===
 
-[[reactive-health-indicators]]
-==== ReactiveHealthIndicators
-For reactive applications, such as those using Spring WebFlux, ReactiveHealthIndicators provide a
-non-blocking contract for getting application health. Similar to traditional HealthIndicators,
-health information is collected from all {sc-spring-boot-actuator}/health/ReactiveHealthIndicator.{sc-ext}[`ReactiveHealthIndicator`]
-beans defined in your `ApplicationContext`. Spring Boot adds autoconfiguration for `RedisReactiveHealthIndicator`.
-Regular HealthIndicators that do not check against a reactive API are executed on the elastic scheduler.
 
-To provide custom health information from a reactive API, you can register Spring beans that implement the
+
+[[reactive-health-indicators]]
+==== Reactive Health Indicators
+For reactive applications, such as those using Spring WebFlux, ReactiveHealthIndicators
+provide a non-blocking contract for getting application health. Similar to a traditional
+`HealthIndicator`, health information is collected from all
+{sc-spring-boot-actuator}/health/ReactiveHealthIndicator.{sc-ext}[`ReactiveHealthIndicator`]
+beans defined in your `ApplicationContext`. Regular HealthIndicators that do not check
+against a reactive API are included and executed on the elastic scheduler.
+
+To provide custom health information from a reactive API, you can register Spring beans
+that implement the
 {sc-spring-boot-actuator}/health/ReactiveHealthIndicator.{sc-ext}[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
@@ -501,6 +505,11 @@ The following code shows a sample `ReactiveHealthIndicator` implementation:
 
 	}
 ----
+
+TIP: To handle the error automatically, consider extending from
+`AbstractReactiveHealthIndicator`.
+
+
 
 [[production-ready-application-info]]
 === Application Information
