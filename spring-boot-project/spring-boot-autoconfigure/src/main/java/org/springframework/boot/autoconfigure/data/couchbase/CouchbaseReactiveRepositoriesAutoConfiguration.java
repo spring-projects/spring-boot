@@ -39,7 +39,7 @@ import org.springframework.data.couchbase.repository.support.ReactiveCouchbaseRe
  */
 @Configuration
 @ConditionalOnClass({ Bucket.class, ReactiveCouchbaseRepository.class })
-@ConditionalOnProperty(prefix = "spring.data.couchbase.reactive-repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.couchbase.reactiverepositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean(ReactiveRepositoryOperationsMapping.class)
 @ConditionalOnMissingBean(ReactiveCouchbaseRepositoryFactoryBean.class)
 @Import(CouchbaseReactiveRepositoriesAutoConfigureRegistrar.class)

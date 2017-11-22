@@ -52,7 +52,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		devToolsProperties.put("spring.mustache.cache", "false");
 		devToolsProperties.put("server.session.persistent", "true");
 		devToolsProperties.put("spring.h2.console.enabled", "true");
-		devToolsProperties.put("spring.resources.cache-period", "0");
+		devToolsProperties.put("spring.resources.cache.period", "0");
 		devToolsProperties.put("spring.resources.chain.cache", "false");
 		devToolsProperties.put("spring.template.provider.cache", "false");
 		devToolsProperties.put("spring.mvc.log-resolved-exception", "true");

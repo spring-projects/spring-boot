@@ -39,7 +39,7 @@ import org.springframework.data.cassandra.repository.support.ReactiveCassandraRe
  */
 @Configuration
 @ConditionalOnClass({ ReactiveSession.class, ReactiveCassandraRepository.class })
-@ConditionalOnProperty(prefix = "spring.data.cassandra.reactive-repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.cassandra.reactiverepositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnMissingBean(ReactiveCassandraRepositoryFactoryBean.class)
 @Import(CassandraReactiveRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(CassandraReactiveDataAutoConfiguration.class)

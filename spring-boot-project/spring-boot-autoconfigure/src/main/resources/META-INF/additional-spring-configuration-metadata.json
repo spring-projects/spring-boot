@@ -94,7 +94,7 @@
     "defaultValue": "none"
   },
   {
-    "name": "spring.data.cassandra.reactive-repositories.enabled",
+    "name": "spring.data.cassandra.reactiverepositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Whether to enable Cassandra reactive repositories.",
     "defaultValue": true
@@ -110,7 +110,7 @@
     "defaultValue": "read-your-own-writes"
   },
   {
-    "name": "spring.data.couchbase.reactive-repositories.enabled",
+    "name": "spring.data.couchbase.reactiverepositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Whether to enable Couchbase reactive repositories.",
     "defaultValue": true
@@ -140,7 +140,7 @@
     "defaultValue": true
   },
   {
-    "name": "spring.data.mongodb.reactive-repositories.enabled",
+    "name": "spring.data.mongodb.reactiverepositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Whether to enable Mongo reactive repositories.",
     "defaultValue": true
@@ -1194,6 +1194,15 @@
     "defaultValue": 0,
     "deprecation": {
       "replacement": "spring.redis.jedis.pool.min-idle",
+      "level": "error"
+    }
+  },
+  {
+    "name": "spring.resources.cach-period",
+    "type": "java.lang.Integer",
+    "description": "Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.",
+    "deprecation": {
+      "replacement": "spring.resources.cach-period",
       "level": "error"
     }
   },

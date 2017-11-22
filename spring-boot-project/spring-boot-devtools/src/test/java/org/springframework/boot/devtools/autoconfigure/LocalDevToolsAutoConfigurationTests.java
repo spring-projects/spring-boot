@@ -121,7 +121,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void resourceCachePeriodIsZero() throws Exception {
 		this.context = initializeAndRun(WebResourcesConfig.class);
 		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
-		assertThat(properties.getCachePeriod()).isEqualTo(Duration.ZERO);
+		assertThat(properties.getCache().getPeriod()).isEqualTo(Duration.ZERO);
 	}
 
 	@Test

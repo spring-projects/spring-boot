@@ -398,18 +398,18 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.add-mappings=true # Whether to enable default resource handling.
-	spring.resources.cache-control.max-age= # Maximum time the response should be cached, in seconds if no duration suffix is not specified.
-	spring.resources.cache-control.no-cache= # Indicate that the cached response can be reused only if re-validated with the server.
-	spring.resources.cache-control.no-store= # Indicate to not cache the response in any case.
-	spring.resources.cache-control.must-revalidate= # Indicate that once it has become stale, a cache must not use the response without re-validating it with the server.
-	spring.resources.cache-control.no-transform= # Indicate intermediaries (caches and others) that they should not transform the response content.
-	spring.resources.cache-control.cache-public= # Indicate that any cache may store the response.
-	spring.resources.cache-control.cache-private= # Indicate that the response message is intended for a single user and must not be stored by a shared cache.
-	spring.resources.cache-control.proxy-revalidate= # Same meaning as the "must-revalidate" directive, except that it does not apply to private caches.
-	spring.resources.cache-control.stale-while-revalidate= # Maximum time the response can be served after it becomes stale, in seconds if no duration suffix is not specified.
-	spring.resources.cache-control.stale-if-error= # Maximum time the response may be used when errors are encountered, in seconds if no duration suffix is not specified.
-	spring.resources.cache-control.s-max-age= # Maximum time the response should be cached by shared caches, in seconds if no duration suffix is not specified.
-	spring.resources.cache-period= # Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.
+	spring.resources.cache.control.max-age= # Maximum time the response should be cached, in seconds if no duration suffix is not specified.
+	spring.resources.cache.control.no-cache= # Indicate that the cached response can be reused only if re-validated with the server.
+	spring.resources.cache.control.no-store= # Indicate to not cache the response in any case.
+	spring.resources.cache.control.must-revalidate= # Indicate that once it has become stale, a cache must not use the response without re-validating it with the server.
+	spring.resources.cache.control.no-transform= # Indicate intermediaries (caches and others) that they should not transform the response content.
+	spring.resources.cache.control.cache-public= # Indicate that any cache may store the response.
+	spring.resources.cache.control.cache-private= # Indicate that the response message is intended for a single user and must not be stored by a shared cache.
+	spring.resources.cache.control.proxy-revalidate= # Same meaning as the "must-revalidate" directive, except that it does not apply to private caches.
+	spring.resources.cache.control.stale-while-revalidate= # Maximum time the response can be served after it becomes stale, in seconds if no duration suffix is not specified.
+	spring.resources.cache.control.stale-if-error= # Maximum time the response may be used when errors are encountered, in seconds if no duration suffix is not specified.
+	spring.resources.cache.control.s-max-age= # Maximum time the response should be cached by shared caches, in seconds if no duration suffix is not specified.
+	spring.resources.cache.period= # Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.
 	spring.resources.chain.cache=true # Whether to enable caching in the Resource chain.
 	spring.resources.chain.enabled= # Whether to enable the Spring Resource Handling chain. By default, disabled unless at least one strategy has been enabled.
 	spring.resources.chain.gzipped=false # Whether to enable resolution of already gzipped resources.
@@ -588,7 +588,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.pool.idle-timeout=120 # Idle timeout before an idle connection is removed. If a duration suffix is not specified, seconds will be used.
 	spring.data.cassandra.pool.max-queue-size=256 # Maximum number of requests that get queued if no connection is available.
 	spring.data.cassandra.pool.pool-timeout=5000ms # Pool timeout when trying to acquire a connection from a host's pool.
-	spring.data.cassandra.reactive-repositories.enabled=true # Whether to enable Cassandra reactive repositories.
+	spring.data.cassandra.reactiverepositories.enabled=true # Whether to enable Cassandra reactive repositories.
 	spring.data.cassandra.read-timeout= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
 	spring.data.cassandra.repositories.enabled= # Enable Cassandra repositories.
@@ -601,7 +601,7 @@ content into your application. Rather, pick only the properties that you need.
 	# DATA COUCHBASE ({sc-spring-boot-autoconfigure}/data/couchbase/CouchbaseDataProperties.{sc-ext}[CouchbaseDataProperties])
 	spring.data.couchbase.auto-index=false # Automatically create views and indexes.
 	spring.data.couchbase.consistency=read-your-own-writes # Consistency to apply by default on generated queries.
-	spring.data.couchbase.reactive-repositories.enabled=true # Enable Couchbase reactive repositories.
+	spring.data.couchbase.reactiverepositories.enabled=true # Enable Couchbase reactive repositories.
 	spring.data.couchbase.repositories.enabled=true # Enable Couchbase repositories.
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/data/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
@@ -621,7 +621,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.mongodb.host=localhost # Mongo server host. Cannot be set with URI.
 	spring.data.mongodb.password= # Login password of the mongo server. Cannot be set with URI.
 	spring.data.mongodb.port=27017 # Mongo server port. Cannot be set with URI.
-	spring.data.mongodb.reactive-repositories.enabled=true # Whether to enable Mongo reactive repositories.
+	spring.data.mongodb.reactiverepositories.enabled=true # Whether to enable Mongo reactive repositories.
 	spring.data.mongodb.repositories.enabled=true # Whether to enable Mongo repositories.
 	spring.data.mongodb.uri=mongodb://localhost/test # Mongo database URI. Cannot be set with host, port and credentials.
 	spring.data.mongodb.username= # Login user of the mongo server. Cannot be set with URI.

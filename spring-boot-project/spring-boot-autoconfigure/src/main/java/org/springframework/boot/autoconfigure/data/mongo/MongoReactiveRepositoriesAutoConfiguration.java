@@ -51,7 +51,7 @@ import org.springframework.data.mongodb.repository.support.ReactiveMongoReposito
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoRepository.class })
 @ConditionalOnMissingBean({ ReactiveMongoRepositoryFactoryBean.class,
 		ReactiveMongoRepositoryConfigurationExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.mongodb.reactive-repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.mongodb.reactiverepositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(MongoReactiveRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(MongoReactiveDataAutoConfiguration.class)
 public class MongoReactiveRepositoriesAutoConfiguration {

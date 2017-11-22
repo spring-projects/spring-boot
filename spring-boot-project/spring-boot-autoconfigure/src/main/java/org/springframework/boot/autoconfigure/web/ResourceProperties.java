@@ -49,25 +49,13 @@ public class ResourceProperties {
 	private String[] staticLocations = CLASSPATH_RESOURCE_LOCATIONS;
 
 	/**
-	 * Cache period for the resources served by the resource handler. If a duration suffix
-	 * is not specified, seconds will be used. Can be overridden by the 'cache-control'
-	 * property.
-	 */
-	@DefaultDurationUnit(ChronoUnit.SECONDS)
-	private Duration cachePeriod;
-
-	/**
-	 * Cache control HTTP headers, only allows valid directive combinations. Overrides the
-	 * 'cache-period' property.
-	 */
-	private CacheControlProperties cacheControl = new CacheControlProperties();
-
-	/**
 	 * Whether to enable default resource handling.
 	 */
 	private boolean addMappings = true;
 
 	private final Chain chain = new Chain();
+
+	private final Cache cache = new Cache();
 
 	public String[] getStaticLocations() {
 		return this.staticLocations;
@@ -86,22 +74,6 @@ public class ResourceProperties {
 		return normalized;
 	}
 
-	public Duration getCachePeriod() {
-		return this.cachePeriod;
-	}
-
-	public void setCachePeriod(Duration cachePeriod) {
-		this.cachePeriod = cachePeriod;
-	}
-
-	public CacheControlProperties getCacheControl() {
-		return this.cacheControl;
-	}
-
-	public void setCacheControl(CacheControlProperties cacheControl) {
-		this.cacheControl = cacheControl;
-	}
-
 	public boolean isAddMappings() {
 		return this.addMappings;
 	}
@@ -112,6 +84,10 @@ public class ResourceProperties {
 
 	public Chain getChain() {
 		return this.chain;
+	}
+
+	public Cache getCache() {
+		return this.cache;
 	}
 
 	/**
@@ -292,204 +268,240 @@ public class ResourceProperties {
 	}
 
 	/**
-	 * Configuration for the Cache Control HTTP header.
+	 * Cache configuration.
 	 */
-	public static class CacheControlProperties {
+	public static class Cache {
 
 		/**
-		 * Maximum time the response should be cached, in seconds if no duration suffix is
-		 * not specified.
+		 * Cache period for the resources served by the resource handler. If a duration
+		 * suffix is not specified, seconds will be used. Can be overridden by the
+		 * 'spring.resources.cache.control' properties.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
-		private Duration maxAge;
+		private Duration period;
 
 		/**
-		 * Indicate that the cached response can be reused only if re-validated with the
-		 * server.
+		 * Cache control HTTP headers, only allows valid directive combinations. Overrides
+		 * the 'spring.resources.cache.period' property.
 		 */
-		private Boolean noCache;
+		private final Control control = new Control();
+
+		public Duration getPeriod() {
+			return this.period;
+		}
+
+		public void setPeriod(Duration period) {
+			this.period = period;
+		}
+
+		public Control getControl() {
+			return this.control;
+		}
 
 		/**
-		 * Indicate to not cache the response in any case.
+		 * Cache Control HTTP header configuration.
 		 */
-		private Boolean noStore;
+		public static class Control {
 
-		/**
-		 * Indicate that once it has become stale, a cache must not use the response
-		 * without re-validating it with the server.
-		 */
-		private Boolean mustRevalidate;
+			/**
+			 * Maximum time the response should be cached, in seconds if no duration
+			 * suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration maxAge;
 
-		/**
-		 * Indicate intermediaries (caches and others) that they should not transform the
-		 * response content.
-		 */
-		private Boolean noTransform;
+			/**
+			 * Indicate that the cached response can be reused only if re-validated with
+			 * the server.
+			 */
+			private Boolean noCache;
 
-		/**
-		 * Indicate that any cache may store the response.
-		 */
-		private Boolean cachePublic;
+			/**
+			 * Indicate to not cache the response in any case.
+			 */
+			private Boolean noStore;
 
-		/**
-		 * Indicate that the response message is intended for a single user and must not
-		 * be stored by a shared cache.
-		 */
-		private Boolean cachePrivate;
+			/**
+			 * Indicate that once it has become stale, a cache must not use the response
+			 * without re-validating it with the server.
+			 */
+			private Boolean mustRevalidate;
 
-		/**
-		 * Same meaning as the "must-revalidate" directive, except that it does not apply
-		 * to private caches.
-		 */
-		private Boolean proxyRevalidate;
+			/**
+			 * Indicate intermediaries (caches and others) that they should not transform
+			 * the response content.
+			 */
+			private Boolean noTransform;
 
-		/**
-		 * Maximum time the response can be served after it becomes stale, in seconds if
-		 * no duration suffix is not specified.
-		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
-		private Duration staleWhileRevalidate;
+			/**
+			 * Indicate that any cache may store the response.
+			 */
+			private Boolean cachePublic;
 
-		/**
-		 * Maximum time the response may be used when errors are encountered, in seconds
-		 * if no duration suffix is not specified.
-		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
-		private Duration staleIfError;
+			/**
+			 * Indicate that the response message is intended for a single user and must
+			 * not be stored by a shared cache.
+			 */
+			private Boolean cachePrivate;
 
-		/**
-		 * Maximum time the response should be cached by shared caches, in seconds if no
-		 * duration suffix is not specified.
-		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
-		private Duration sMaxAge;
+			/**
+			 * Same meaning as the "must-revalidate" directive, except that it does not
+			 * apply to private caches.
+			 */
+			private Boolean proxyRevalidate;
 
-		public Duration getMaxAge() {
-			return this.maxAge;
-		}
+			/**
+			 * Maximum time the response can be served after it becomes stale, in seconds
+			 * if no duration suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration staleWhileRevalidate;
 
-		public void setMaxAge(Duration maxAge) {
-			this.maxAge = maxAge;
-		}
+			/**
+			 * Maximum time the response may be used when errors are encountered, in
+			 * seconds if no duration suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration staleIfError;
 
-		public Boolean getNoCache() {
-			return this.noCache;
-		}
+			/**
+			 * Maximum time the response should be cached by shared caches, in seconds if
+			 * no duration suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration sMaxAge;
 
-		public void setNoCache(Boolean noCache) {
-			this.noCache = noCache;
-		}
-
-		public Boolean getNoStore() {
-			return this.noStore;
-		}
-
-		public void setNoStore(Boolean noStore) {
-			this.noStore = noStore;
-		}
-
-		public Boolean getMustRevalidate() {
-			return this.mustRevalidate;
-		}
-
-		public void setMustRevalidate(Boolean mustRevalidate) {
-			this.mustRevalidate = mustRevalidate;
-		}
-
-		public Boolean getNoTransform() {
-			return this.noTransform;
-		}
-
-		public void setNoTransform(Boolean noTransform) {
-			this.noTransform = noTransform;
-		}
-
-		public Boolean getCachePublic() {
-			return this.cachePublic;
-		}
-
-		public void setCachePublic(Boolean cachePublic) {
-			this.cachePublic = cachePublic;
-		}
-
-		public Boolean getCachePrivate() {
-			return this.cachePrivate;
-		}
-
-		public void setCachePrivate(Boolean cachePrivate) {
-			this.cachePrivate = cachePrivate;
-		}
-
-		public Boolean getProxyRevalidate() {
-			return this.proxyRevalidate;
-		}
-
-		public void setProxyRevalidate(Boolean proxyRevalidate) {
-			this.proxyRevalidate = proxyRevalidate;
-		}
-
-		public Duration getStaleWhileRevalidate() {
-			return this.staleWhileRevalidate;
-		}
-
-		public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
-			this.staleWhileRevalidate = staleWhileRevalidate;
-		}
-
-		public Duration getStaleIfError() {
-			return this.staleIfError;
-		}
-
-		public void setStaleIfError(Duration staleIfError) {
-			this.staleIfError = staleIfError;
-		}
-
-		public Duration getSMaxAge() {
-			return this.sMaxAge;
-		}
-
-		public void setSMaxAge(Duration sMaxAge) {
-			this.sMaxAge = sMaxAge;
-		}
-
-		public CacheControl toHttpCacheControl() {
-			CacheControl cacheControl = createCacheControl();
-			callIfTrue(this.mustRevalidate, cacheControl, CacheControl::mustRevalidate);
-			callIfTrue(this.noTransform, cacheControl, CacheControl::noTransform);
-			callIfTrue(this.cachePublic, cacheControl, CacheControl::cachePublic);
-			callIfTrue(this.cachePrivate, cacheControl, CacheControl::cachePrivate);
-			callIfTrue(this.proxyRevalidate, cacheControl, CacheControl::proxyRevalidate);
-			if (this.staleWhileRevalidate != null) {
-				cacheControl.staleWhileRevalidate(this.staleWhileRevalidate.getSeconds(),
-						TimeUnit.SECONDS);
+			public Duration getMaxAge() {
+				return this.maxAge;
 			}
-			if (this.staleIfError != null) {
-				cacheControl.staleIfError(this.staleIfError.getSeconds(),
-						TimeUnit.SECONDS);
-			}
-			if (this.sMaxAge != null) {
-				cacheControl.sMaxAge(this.sMaxAge.getSeconds(), TimeUnit.SECONDS);
-			}
-			return cacheControl;
-		}
 
-		private CacheControl createCacheControl() {
-			if (Boolean.TRUE.equals(this.noStore)) {
-				return CacheControl.noStore();
+			public void setMaxAge(Duration maxAge) {
+				this.maxAge = maxAge;
 			}
-			if (Boolean.TRUE.equals(this.noCache)) {
-				return CacheControl.noCache();
-			}
-			if (this.maxAge != null) {
-				return CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
-			}
-			return CacheControl.empty();
-		}
 
-		private <T> void callIfTrue(Boolean property, T instance, Consumer<T> call) {
-			if (Boolean.TRUE.equals(property)) {
-				call.accept(instance);
+			public Boolean getNoCache() {
+				return this.noCache;
 			}
+
+			public void setNoCache(Boolean noCache) {
+				this.noCache = noCache;
+			}
+
+			public Boolean getNoStore() {
+				return this.noStore;
+			}
+
+			public void setNoStore(Boolean noStore) {
+				this.noStore = noStore;
+			}
+
+			public Boolean getMustRevalidate() {
+				return this.mustRevalidate;
+			}
+
+			public void setMustRevalidate(Boolean mustRevalidate) {
+				this.mustRevalidate = mustRevalidate;
+			}
+
+			public Boolean getNoTransform() {
+				return this.noTransform;
+			}
+
+			public void setNoTransform(Boolean noTransform) {
+				this.noTransform = noTransform;
+			}
+
+			public Boolean getCachePublic() {
+				return this.cachePublic;
+			}
+
+			public void setCachePublic(Boolean cachePublic) {
+				this.cachePublic = cachePublic;
+			}
+
+			public Boolean getCachePrivate() {
+				return this.cachePrivate;
+			}
+
+			public void setCachePrivate(Boolean cachePrivate) {
+				this.cachePrivate = cachePrivate;
+			}
+
+			public Boolean getProxyRevalidate() {
+				return this.proxyRevalidate;
+			}
+
+			public void setProxyRevalidate(Boolean proxyRevalidate) {
+				this.proxyRevalidate = proxyRevalidate;
+			}
+
+			public Duration getStaleWhileRevalidate() {
+				return this.staleWhileRevalidate;
+			}
+
+			public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
+				this.staleWhileRevalidate = staleWhileRevalidate;
+			}
+
+			public Duration getStaleIfError() {
+				return this.staleIfError;
+			}
+
+			public void setStaleIfError(Duration staleIfError) {
+				this.staleIfError = staleIfError;
+			}
+
+			public Duration getSMaxAge() {
+				return this.sMaxAge;
+			}
+
+			public void setSMaxAge(Duration sMaxAge) {
+				this.sMaxAge = sMaxAge;
+			}
+
+			public CacheControl toHttpCacheControl() {
+				CacheControl cacheControl = createCacheControl();
+				callIfTrue(this.mustRevalidate, cacheControl,
+						CacheControl::mustRevalidate);
+				callIfTrue(this.noTransform, cacheControl, CacheControl::noTransform);
+				callIfTrue(this.cachePublic, cacheControl, CacheControl::cachePublic);
+				callIfTrue(this.cachePrivate, cacheControl, CacheControl::cachePrivate);
+				callIfTrue(this.proxyRevalidate, cacheControl,
+						CacheControl::proxyRevalidate);
+				if (this.staleWhileRevalidate != null) {
+					cacheControl.staleWhileRevalidate(
+							this.staleWhileRevalidate.getSeconds(), TimeUnit.SECONDS);
+				}
+				if (this.staleIfError != null) {
+					cacheControl.staleIfError(this.staleIfError.getSeconds(),
+							TimeUnit.SECONDS);
+				}
+				if (this.sMaxAge != null) {
+					cacheControl.sMaxAge(this.sMaxAge.getSeconds(), TimeUnit.SECONDS);
+				}
+				return cacheControl;
+			}
+
+			private CacheControl createCacheControl() {
+				if (Boolean.TRUE.equals(this.noStore)) {
+					return CacheControl.noStore();
+				}
+				if (Boolean.TRUE.equals(this.noCache)) {
+					return CacheControl.noCache();
+				}
+				if (this.maxAge != null) {
+					return CacheControl.maxAge(this.maxAge.getSeconds(),
+							TimeUnit.SECONDS);
+				}
+				return CacheControl.empty();
+			}
+
+			private <T> void callIfTrue(Boolean property, T instance, Consumer<T> call) {
+				if (Boolean.TRUE.equals(property)) {
+					call.accept(instance);
+				}
+			}
+
 		}
 
 	}
