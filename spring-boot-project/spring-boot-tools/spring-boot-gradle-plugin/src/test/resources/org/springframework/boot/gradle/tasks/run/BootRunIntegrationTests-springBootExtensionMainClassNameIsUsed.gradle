@@ -12,5 +12,5 @@ springBoot {
 }
 
 task echoMainClassName {
-	println 'Main class name = ' + bootRun.mainClassName
+	println 'Main class name = ' + bootRun.main
 }

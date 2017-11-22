@@ -8,11 +8,16 @@ To run your application without first building an archive use the `bootRun` task
 	$ ./gradlew bootRun
 ----
 
-The `bootRun` task is automatically configured to use the runtime classpath of the
-main source set. By default, the main class will be discovered by looking for a class
-with a `public static void main(String[])` method in directories on the task's
-classpath. The main class can also be configured explicitly using the task's
-`mainClassName` property:
+The `bootRun` task is an instance of
+{boot-run-javadoc}[`BootRun`] which is a `JavaExec` subclass. As such, all of the
+{gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual configuration options] for executing
+a Java process in Gradle are available to you. The task is automatically configured to use
+the runtime classpath of the main source set.
+
+By default, the main class will be configured automatically by looking for a class with a
+`public static void main(String[])` method in directories on the task's classpath.
+
+The main class can also be configured explicitly using the task's `main` property:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----
@@ -27,7 +32,7 @@ Alternatively, the main class name can be configured project-wide using the
 include::../gradle/running/spring-boot-dsl-main-class-name.gradle[tags=main-class]
 ----
 
-If the {application-plugin}[`application` plugin] has been applied its `mainClassName`
+If the {application-plugin}[`application` plugin] has been applied, its `mainClassName`
 project property can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim"]
@@ -35,15 +40,6 @@ project property can be used for the same purpose:
 include::../gradle/running/application-plugin-main-class-name.gradle[tags=main-class]
 ----
 
-Two properties, `args` and `jvmArgs`, are also provided for configuring the
-arguments and JVM arguments that are used to run the application.
-
-For more advanced configuration the `JavaExecSpec` that is used can be customized:
-
-[source,groovy,indent=0,subs="verbatim"]
-----
-include::../gradle/running/boot-run-custom-exec-spec.gradle[tags=customization]
-----
 
 
 [[running-your-application-reloading-resources]]

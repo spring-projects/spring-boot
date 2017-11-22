@@ -57,33 +57,6 @@ public class BootRunIntegrationTests {
 	}
 
 	@Test
-	public void argsCanBeConfigured() throws IOException {
-		copyApplication();
-		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
-		BuildResult result = this.gradleBuild.build("bootRun");
-		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("--com.example.foo=bar");
-	}
-
-	@Test
-	public void jvmArgsCanBeConfigured() throws IOException {
-		copyApplication();
-		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
-		BuildResult result = this.gradleBuild.build("bootRun");
-		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("-Dcom.example.foo=bar");
-	}
-
-	@Test
-	public void execSpecCanBeConfigured() throws IOException {
-		copyApplication();
-		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
-		BuildResult result = this.gradleBuild.build("bootRun");
-		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("-Dcom.example.foo=bar");
-	}
-
-	@Test
 	public void sourceResourcesCanBeUsed() throws IOException {
 		copyApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
