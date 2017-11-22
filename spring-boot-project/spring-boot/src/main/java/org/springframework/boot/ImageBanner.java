@@ -22,8 +22,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,16 +103,73 @@ public class ImageBanner implements Banner {
 		int margin = environment.getProperty("banner.image.margin", Integer.class, 2);
 		boolean invert = environment.getProperty("banner.image.invert", Boolean.class,
 				false);
-		BufferedImage image = readImage(width, height);
-		printBanner(image, margin, invert, out);
+		Frame[] frames = readFrames(width, height);
+		for (int i = 0; i < frames.length; i++) {
+			if (i > 0) {
+				resetCursor(frames[i - 1].getImage(), out);
+			}
+			printBanner(frames[i].getImage(), margin, invert, out);
+			sleep(frames[i].getDelayTime());
+		}
 	}
 
-	private BufferedImage readImage(int width, int height) throws IOException {
+	private Frame[] readFrames(int width, int height) throws IOException {
 		try (InputStream inputStream = this.image.getInputStream()) {
-			BufferedImage image = ImageIO.read(inputStream);
-			return resizeImage(image, width, height);
+			try (ImageInputStream imageStream = ImageIO
+					.createImageInputStream(inputStream)) {
+				return readFrames(width, height, imageStream);
+			}
 		}
+	}
 
+	private Frame[] readFrames(int width, int height, ImageInputStream stream)
+			throws IOException {
+		Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
+		Assert.state(readers.hasNext(), "Unable to read image banner source");
+		ImageReader reader = readers.next();
+		try {
+			ImageReadParam readParam = reader.getDefaultReadParam();
+			reader.setInput(stream);
+			int frameCount = reader.getNumImages(true);
+			Frame[] frames = new Frame[frameCount];
+			for (int i = 0; i < frameCount; i++) {
+				frames[i] = readFrame(width, height, reader, i, readParam);
+			}
+			return frames;
+		}
+		finally {
+			reader.dispose();
+		}
+	}
+
+	private Frame readFrame(int width, int height, ImageReader reader, int imageIndex,
+			ImageReadParam readParam) throws IOException {
+		BufferedImage image = reader.read(imageIndex, readParam);
+		BufferedImage resized = resizeImage(image, width, height);
+		int delayTime = getDelayTime(reader, imageIndex);
+		return new Frame(resized, delayTime);
+	}
+
+	private int getDelayTime(ImageReader reader, int imageIndex) throws IOException {
+		IIOMetadata metadata = reader.getImageMetadata(imageIndex);
+		IIOMetadataNode root = (IIOMetadataNode) metadata
+				.getAsTree(metadata.getNativeMetadataFormatName());
+		IIOMetadataNode extension = findNode(root, "GraphicControlExtension");
+		String attribute = (extension == null ? null
+				: extension.getAttribute("delayTime"));
+		return (attribute == null ? 0 : Integer.parseInt(attribute) * 10);
+	}
+
+	private static IIOMetadataNode findNode(IIOMetadataNode rootNode, String nodeName) {
+		if (rootNode == null) {
+			return null;
+		}
+		for (int i = 0; i < rootNode.getLength(); i++) {
+			if (rootNode.item(i).getNodeName().equalsIgnoreCase(nodeName)) {
+				return ((IIOMetadataNode) rootNode.item(i));
+			}
+		}
+		return null;
 	}
 
 	private BufferedImage resizeImage(BufferedImage image, int width, int height) {
@@ -122,6 +185,11 @@ public class ImageBanner implements Banner {
 		Image scaled = image.getScaledInstance(width, height, Image.SCALE_DEFAULT);
 		resized.getGraphics().drawImage(scaled, 0, 0, null);
 		return resized;
+	}
+
+	private void resetCursor(BufferedImage image, PrintStream out) {
+		int lines = image.getHeight() + 3;
+		out.print("\033[" + lines + "A\r");
 	}
 
 	private void printBanner(BufferedImage image, int margin, boolean invert,
@@ -172,6 +240,35 @@ public class ImageBanner implements Banner {
 
 	private double getLuminance(int component, boolean inverse, double weight) {
 		return (inverse ? 0xFF - component : component) * weight;
+	}
+
+	private void sleep(int delay) {
+		try {
+			Thread.sleep(delay);
+		}
+		catch (InterruptedException ex) {
+		}
+	}
+
+	private static class Frame {
+
+		private final BufferedImage image;
+
+		private final int delayTime;
+
+		Frame(BufferedImage image, int delayTime) {
+			this.image = image;
+			this.delayTime = delayTime;
+		}
+
+		public BufferedImage getImage() {
+			return this.image;
+		}
+
+		public int getDelayTime() {
+			return this.delayTime;
+		}
+
 	}
 
 }
