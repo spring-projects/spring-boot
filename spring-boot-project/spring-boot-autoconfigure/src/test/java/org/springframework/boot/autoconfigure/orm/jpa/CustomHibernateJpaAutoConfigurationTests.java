@@ -23,6 +23,10 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -63,10 +67,29 @@ public class CustomHibernateJpaAutoConfigurationTests {
 								+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
 				.run((context) -> {
 					JpaProperties bean = context.getBean(JpaProperties.class);
-					Map<String, String> hibernateProperties = bean
-							.getHibernateProperties("create-drop");
+					Map<String, Object> hibernateProperties = bean.getHibernateProperties(
+							new HibernateSettings().ddlAuto("create-drop"));
 					assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"))
 							.isNull();
+				});
+	}
+
+	@Test
+	public void namingStrategyBeansAreUsed() {
+		this.contextRunner.withUserConfiguration(NamingStrategyConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.url:jdbc:h2:mem:naming-strategy-beans")
+				.run((context) -> {
+					HibernateJpaConfiguration jpaConfiguration = context
+							.getBean(HibernateJpaConfiguration.class);
+					Map<String, Object> hibernateProperties = jpaConfiguration
+							.getVendorProperties();
+					assertThat(hibernateProperties
+							.get("hibernate.implicit_naming_strategy")).isEqualTo(
+									NamingStrategyConfiguration.implicitNamingStrategy);
+					assertThat(hibernateProperties
+							.get("hibernate.physical_naming_strategy")).isEqualTo(
+									NamingStrategyConfiguration.physicalNamingStrategy);
 				});
 	}
 
@@ -103,6 +126,25 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				// Do nothing
 			}
 			return dataSource;
+		}
+
+	}
+
+	@Configuration
+	static class NamingStrategyConfiguration {
+
+		static final ImplicitNamingStrategy implicitNamingStrategy = new ImplicitNamingStrategyJpaCompliantImpl();
+
+		static final PhysicalNamingStrategy physicalNamingStrategy = new PhysicalNamingStrategyStandardImpl();
+
+		@Bean
+		public ImplicitNamingStrategy implicitNamingStrategy() {
+			return implicitNamingStrategy;
+		}
+
+		@Bean
+		public PhysicalNamingStrategy physicalNamingStrategy() {
+			return physicalNamingStrategy;
 		}
 
 	}

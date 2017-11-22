@@ -26,6 +26,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -81,17 +83,25 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
+	private final PhysicalNamingStrategy physicalNamingStrategy;
+
+	private final ImplicitNamingStrategy implicitNamingStrategy;
+
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
-			ObjectProvider<List<SchemaManagementProvider>> providers) {
+			ObjectProvider<List<SchemaManagementProvider>> providers,
+			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
+			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
 				providers.getIfAvailable(Collections::emptyList));
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
 				metadataProviders.getIfAvailable());
+		this.physicalNamingStrategy = physicalNamingStrategy.getIfAvailable();
+		this.implicitNamingStrategy = implicitNamingStrategy.getIfAvailable();
 	}
 
 	@Override
@@ -104,7 +114,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		Map<String, Object> vendorProperties = new LinkedHashMap<>();
 		String defaultDdlMode = this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
-		vendorProperties.putAll(getProperties().getHibernateProperties(defaultDdlMode));
+		vendorProperties.putAll(getProperties()
+				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
+						.implicitNamingStrategy(this.implicitNamingStrategy)
+						.physicalNamingStrategy(this.physicalNamingStrategy)));
 		return vendorProperties;
 	}
 

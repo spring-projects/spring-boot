@@ -23,6 +23,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
@@ -143,11 +146,11 @@ public class JpaProperties {
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory.
-	 * @param defaultDdlAuto the default DDL auto (can be {@code null})
+	 * @param settings the settings to apply when determining the configuration properties
 	 * @return some Hibernate properties for configuration
 	 */
-	public Map<String, String> getHibernateProperties(String defaultDdlAuto) {
-		return this.hibernate.getAdditionalProperties(this.properties, defaultDdlAuto);
+	public Map<String, Object> getHibernateProperties(HibernateSettings settings) {
+		return this.hibernate.getAdditionalProperties(this.properties, settings);
 	}
 
 	/**
@@ -205,12 +208,14 @@ public class JpaProperties {
 			return this.naming;
 		}
 
-		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
-				String defaultDdlAuto) {
-			Map<String, String> result = new HashMap<>(existing);
+		private Map<String, Object> getAdditionalProperties(Map<String, String> existing,
+				HibernateSettings settings) {
+			Map<String, Object> result = new HashMap<>(existing);
 			applyNewIdGeneratorMappings(result);
-			getNaming().applyNamingStrategies(result);
-			String ddlAuto = determineDdlAuto(existing, defaultDdlAuto);
+			getNaming().applyNamingStrategies(result,
+					settings.getImplicitNamingStrategy(),
+					settings.getPhysicalNamingStrategy());
+			String ddlAuto = determineDdlAuto(existing, settings.getDdlAuto());
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
 				result.put("hibernate.hbm2ddl.auto", ddlAuto);
 			}
@@ -220,7 +225,7 @@ public class JpaProperties {
 			return result;
 		}
 
-		private void applyNewIdGeneratorMappings(Map<String, String> result) {
+		private void applyNewIdGeneratorMappings(Map<String, Object> result) {
 			if (this.useNewIdGeneratorMappings != null) {
 				result.put(USE_NEW_ID_GENERATOR_MAPPINGS,
 						this.useNewIdGeneratorMappings.toString());
@@ -277,15 +282,21 @@ public class JpaProperties {
 			this.physicalStrategy = physicalStrategy;
 		}
 
-		private void applyNamingStrategies(Map<String, String> properties) {
-			applyNamingStrategy(properties, "hibernate.implicit_naming_strategy",
-					this.implicitStrategy, DEFAULT_IMPLICIT_STRATEGY);
-			applyNamingStrategy(properties, "hibernate.physical_naming_strategy",
-					this.physicalStrategy, DEFAULT_PHYSICAL_STRATEGY);
+		private void applyNamingStrategies(Map<String, Object> properties,
+				ImplicitNamingStrategy implicitStrategyBean,
+				PhysicalNamingStrategy physicalStrategyBean) {
+			applyNamingStrategy(properties,
+					"hibernate.implicit_naming_strategy", implicitStrategyBean != null
+							? implicitStrategyBean : this.implicitStrategy,
+					DEFAULT_IMPLICIT_STRATEGY);
+			applyNamingStrategy(properties,
+					"hibernate.physical_naming_strategy", physicalStrategyBean != null
+							? physicalStrategyBean : this.physicalStrategy,
+					DEFAULT_PHYSICAL_STRATEGY);
 		}
 
-		private void applyNamingStrategy(Map<String, String> properties, String key,
-				String strategy, String defaultStrategy) {
+		private void applyNamingStrategy(Map<String, Object> properties, String key,
+				Object strategy, Object defaultStrategy) {
 			if (strategy != null) {
 				properties.put(key, strategy);
 			}

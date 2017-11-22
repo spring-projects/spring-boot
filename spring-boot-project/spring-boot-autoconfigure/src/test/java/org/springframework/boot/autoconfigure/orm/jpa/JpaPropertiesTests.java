@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
 import org.junit.After;
 import org.junit.Test;
@@ -61,8 +63,8 @@ public class JpaPropertiesTests {
 	@Test
 	public void noCustomNamingStrategy() throws Exception {
 		JpaProperties properties = load();
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties("none");
+		Map<String, Object> hibernateProperties = properties
+				.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
 		assertThat(hibernateProperties)
 				.doesNotContainKeys("hibernate.ejb.naming_strategy");
 		assertThat(hibernateProperties).containsEntry(
@@ -78,11 +80,46 @@ public class JpaPropertiesTests {
 		JpaProperties properties = load(
 				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
 				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties("none");
+		Map<String, Object> hibernateProperties = properties
+				.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
 		assertThat(hibernateProperties).contains(
 				entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
 				entry("hibernate.physical_naming_strategy", "com.example.Physical"));
+		assertThat(hibernateProperties)
+				.doesNotContainKeys("hibernate.ejb.naming_strategy");
+	}
+
+	@Test
+	public void namingStrategyInstancesCanBeUsed() throws Exception {
+		JpaProperties properties = load();
+		ImplicitNamingStrategy implicitStrategy = mock(ImplicitNamingStrategy.class);
+		PhysicalNamingStrategy physicalStrategy = mock(PhysicalNamingStrategy.class);
+		Map<String, Object> hibernateProperties = properties
+				.getHibernateProperties(new HibernateSettings().ddlAuto("none")
+						.implicitNamingStrategy(implicitStrategy)
+						.physicalNamingStrategy(physicalStrategy));
+		assertThat(hibernateProperties).contains(
+				entry("hibernate.implicit_naming_strategy", implicitStrategy),
+				entry("hibernate.physical_naming_strategy", physicalStrategy));
+		assertThat(hibernateProperties)
+				.doesNotContainKeys("hibernate.ejb.naming_strategy");
+	}
+
+	@Test
+	public void namingStrategyInstancesTakePrecedenceOverNamingStrategyProperties()
+			throws Exception {
+		JpaProperties properties = load(
+				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical");
+		ImplicitNamingStrategy implicitStrategy = mock(ImplicitNamingStrategy.class);
+		PhysicalNamingStrategy physicalStrategy = mock(PhysicalNamingStrategy.class);
+		Map<String, Object> hibernateProperties = properties
+				.getHibernateProperties(new HibernateSettings().ddlAuto("none")
+						.implicitNamingStrategy(implicitStrategy)
+						.physicalNamingStrategy(physicalStrategy));
+		assertThat(hibernateProperties).contains(
+				entry("hibernate.implicit_naming_strategy", implicitStrategy),
+				entry("hibernate.physical_naming_strategy", physicalStrategy));
 		assertThat(hibernateProperties)
 				.doesNotContainKeys("hibernate.ejb.naming_strategy");
 	}
@@ -92,8 +129,8 @@ public class JpaPropertiesTests {
 		JpaProperties properties = load(
 				"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
 				"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties("none");
+		Map<String, Object> hibernateProperties = properties
+				.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
 		// You can override them as we don't provide any default
 		assertThat(hibernateProperties).contains(
 				entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
@@ -105,8 +142,8 @@ public class JpaPropertiesTests {
 	@Test
 	public void useNewIdGeneratorMappingsDefault() throws Exception {
 		JpaProperties properties = load();
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties("none");
+		Map<String, Object> hibernateProperties = properties
+				.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
 		assertThat(hibernateProperties)
 				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 	}
@@ -115,8 +152,8 @@ public class JpaPropertiesTests {
 	public void useNewIdGeneratorMappingsFalse() throws Exception {
 		JpaProperties properties = load(
 				"spring.jpa.hibernate.use-new-id-generator-mappings:false");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties("none");
+		Map<String, Object> hibernateProperties = properties
+				.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
 		assertThat(hibernateProperties)
 				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
 	}
