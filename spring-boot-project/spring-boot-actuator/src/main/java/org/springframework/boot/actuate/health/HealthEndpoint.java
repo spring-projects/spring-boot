@@ -20,7 +20,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
 /**
- * {@link Endpoint} to expose application health.
+ * {@link Endpoint} to expose application health information.
  *
  * @author Dave Syer
  * @author Christian Dupuis
@@ -32,17 +32,25 @@ public class HealthEndpoint {
 
 	private final HealthIndicator healthIndicator;
 
+	private final boolean showDetails;
+
 	/**
 	 * Create a new {@link HealthEndpoint} instance.
 	 * @param healthIndicator the health indicator
+	 * @param showDetails if full details should be returned instead of just the status
 	 */
-	public HealthEndpoint(HealthIndicator healthIndicator) {
+	public HealthEndpoint(HealthIndicator healthIndicator, boolean showDetails) {
 		this.healthIndicator = healthIndicator;
+		this.showDetails = showDetails;
 	}
 
 	@ReadOperation
 	public Health health() {
-		return this.healthIndicator.health();
+		Health health = this.healthIndicator.health();
+		if (this.showDetails) {
+			return health;
+		}
+		return Health.status(health.getStatus()).build();
 	}
 
 }

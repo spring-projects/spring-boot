@@ -31,9 +31,6 @@ import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveStatusEndpointWebExtension;
-import org.springframework.boot.actuate.health.StatusEndpoint;
-import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -85,19 +82,10 @@ public class HealthWebEndpointManagementContextConfiguration {
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
 		public ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
-				HealthStatusHttpMapper healthStatusHttpMapper) {
+				HealthStatusHttpMapper healthStatusHttpMapper,
+				HealthEndpointProperties properties) {
 			return new ReactiveHealthEndpointWebExtension(this.reactiveHealthIndicator,
-					healthStatusHttpMapper);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnEnabledEndpoint
-		@ConditionalOnBean(StatusEndpoint.class)
-		public ReactiveStatusEndpointWebExtension reactiveStatusEndpointWebExtension(
-				HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new ReactiveStatusEndpointWebExtension(this.reactiveHealthIndicator,
-					healthStatusHttpMapper);
+					healthStatusHttpMapper, properties.isShowDetails());
 		}
 
 	}
@@ -113,15 +101,6 @@ public class HealthWebEndpointManagementContextConfiguration {
 		public HealthEndpointWebExtension healthEndpointWebExtension(
 				HealthEndpoint delegate, HealthStatusHttpMapper healthStatusHttpMapper) {
 			return new HealthEndpointWebExtension(delegate, healthStatusHttpMapper);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnEnabledEndpoint
-		@ConditionalOnBean(StatusEndpoint.class)
-		public StatusEndpointWebExtension statusEndpointWebExtension(
-				StatusEndpoint delegate, HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new StatusEndpointWebExtension(delegate, healthStatusHttpMapper);
 		}
 
 	}

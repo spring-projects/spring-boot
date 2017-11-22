@@ -27,9 +27,9 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.StatusEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +44,7 @@ import org.springframework.util.ClassUtils;
  * @since 2.0.0
  */
 @Configuration
+@EnableConfigurationProperties(HealthEndpointProperties.class)
 public class HealthEndpointAutoConfiguration {
 
 	private final HealthIndicator healthIndicator;
@@ -69,15 +70,8 @@ public class HealthEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public HealthEndpoint healthEndpoint() {
-		return new HealthEndpoint(this.healthIndicator);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	public StatusEndpoint statusEndpoint() {
-		return new StatusEndpoint(this.healthIndicator);
+	public HealthEndpoint healthEndpoint(HealthEndpointProperties properties) {
+		return new HealthEndpoint(this.healthIndicator, properties.isShowDetails());
 	}
 
 	private static class ReactiveHealthIndicators {

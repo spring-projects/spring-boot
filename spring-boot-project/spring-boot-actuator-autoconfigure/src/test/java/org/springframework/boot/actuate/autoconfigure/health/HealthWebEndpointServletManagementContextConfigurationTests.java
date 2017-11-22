@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
-import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -46,7 +45,6 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 	@Test
 	public void runShouldCreateExtensionBeans() throws Exception {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(StatusEndpointWebExtension.class)
 				.hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
@@ -59,34 +57,11 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void runWhenStatusEndpointIsDisabledShouldNotCreateExtensionBeans()
-			throws Exception {
-		this.contextRunner.withPropertyValues("management.endpoint.status.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(StatusEndpointWebExtension.class));
-	}
-
-	@Test
 	public void runWithCustomHealthMappingShouldMapStatusCode() throws Exception {
 		this.contextRunner
 				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.run((context) -> {
 					Object extension = context.getBean(HealthEndpointWebExtension.class);
-					HealthStatusHttpMapper mapper = (HealthStatusHttpMapper) ReflectionTestUtils
-							.getField(extension, "statusHttpMapper");
-					Map<String, Integer> statusMappings = mapper.getStatusMapping();
-					assertThat(statusMappings).containsEntry("DOWN", 503);
-					assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
-					assertThat(statusMappings).containsEntry("CUSTOM", 500);
-				});
-	}
-
-	@Test
-	public void runWithCustomStatusMappingShouldMapStatusCode() throws Exception {
-		this.contextRunner
-				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
-				.run((context) -> {
-					Object extension = context.getBean(StatusEndpointWebExtension.class);
 					HealthStatusHttpMapper mapper = (HealthStatusHttpMapper) ReflectionTestUtils
 							.getField(extension, "statusHttpMapper");
 					Map<String, Integer> statusMappings = mapper.getStatusMapping();

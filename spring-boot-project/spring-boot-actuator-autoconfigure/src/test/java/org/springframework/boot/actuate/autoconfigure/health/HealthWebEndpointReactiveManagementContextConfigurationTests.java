@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.ReactiveStatusEndpointWebExtension;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -46,7 +45,6 @@ public class HealthWebEndpointReactiveManagementContextConfigurationTests {
 	@Test
 	public void runShouldCreateExtensionBeans() throws Exception {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveStatusEndpointWebExtension.class)
 				.hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}
 
@@ -59,38 +57,12 @@ public class HealthWebEndpointReactiveManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void runWhenStatusEndpointIsDisabledShouldNotCreateExtensionBeans()
-			throws Exception {
-		this.contextRunner.withPropertyValues("management.endpoint.status.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ReactiveStatusEndpointWebExtension.class));
-	}
-
-	@Test
 	public void runWithCustomHealthMappingShouldMapStatusCode() throws Exception {
 		this.contextRunner
-				.withPropertyValues(
-						"management.health.status.http-mapping.CUSTOM=500")
+				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.run((context) -> {
 					Object extension = context
 							.getBean(ReactiveHealthEndpointWebExtension.class);
-					HealthStatusHttpMapper mapper = (HealthStatusHttpMapper) ReflectionTestUtils
-							.getField(extension, "statusHttpMapper");
-					Map<String, Integer> statusMappings = mapper.getStatusMapping();
-					assertThat(statusMappings).containsEntry("DOWN", 503);
-					assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
-					assertThat(statusMappings).containsEntry("CUSTOM", 500);
-				});
-	}
-
-	@Test
-	public void runWithCustomStatusMappingShouldMapStatusCode() throws Exception {
-		this.contextRunner
-				.withPropertyValues(
-						"management.health.status.http-mapping.CUSTOM=500")
-				.run((context) -> {
-					Object extension = context
-							.getBean(ReactiveStatusEndpointWebExtension.class);
 					HealthStatusHttpMapper mapper = (HealthStatusHttpMapper) ReflectionTestUtils
 							.getField(extension, "statusHttpMapper");
 					Map<String, Integer> statusMappings = mapper.getStatusMapping();

@@ -35,16 +35,22 @@ public class ReactiveHealthEndpointWebExtension {
 
 	private final HealthStatusHttpMapper statusHttpMapper;
 
+	private final boolean showDetails;
+
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthIndicator delegate,
-			HealthStatusHttpMapper statusHttpMapper) {
+			HealthStatusHttpMapper statusHttpMapper, boolean showDetails) {
 		this.delegate = delegate;
 		this.statusHttpMapper = statusHttpMapper;
+		this.showDetails = showDetails;
 	}
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<Health>> health() {
 		return this.delegate.health().map((health) -> {
 			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
+			if (!this.showDetails) {
+				health = Health.status(health.getStatus()).build();
+			}
 			return new WebEndpointResponse<>(health, status);
 		});
 	}

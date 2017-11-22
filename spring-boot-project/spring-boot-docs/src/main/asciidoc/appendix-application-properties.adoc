@@ -1165,6 +1165,7 @@ content into your application. Rather, pick only the properties that you need.
 	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint])
 	management.endpoint.health.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.health.enabled= # Whether to enable the health endpoint.
+	management.endpoint.health.show-details= # Whether to show full health details
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
 	management.endpoint.heapdump.cache.time-to-live=0ms # Maximum time that a response can be cached.

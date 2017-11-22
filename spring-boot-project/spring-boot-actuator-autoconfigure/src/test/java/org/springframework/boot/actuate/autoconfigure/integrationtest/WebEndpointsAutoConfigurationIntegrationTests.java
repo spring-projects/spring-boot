@@ -21,8 +21,6 @@ import org.junit.Test;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.ReactiveStatusEndpointWebExtension;
-import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
@@ -63,21 +61,9 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void statusEndpointWebExtensionIsAutoConfigured() {
-		servletWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(StatusEndpointWebExtension.class));
-	}
-
-	@Test
 	public void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner().run((context) -> assertThat(context)
 				.hasSingleBean(ReactiveHealthEndpointWebExtension.class));
-	}
-
-	@Test
-	public void statusEndpointReactiveWebExtensionIsAutoConfigured() {
-		reactiveWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveStatusEndpointWebExtension.class));
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {

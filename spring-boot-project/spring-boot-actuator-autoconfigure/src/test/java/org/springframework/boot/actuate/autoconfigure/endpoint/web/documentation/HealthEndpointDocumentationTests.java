@@ -57,7 +57,8 @@ public class HealthEndpointDocumentationTests extends AbstractEndpointDocumentat
 								fieldWithPath("status").description(
 										"Overall status of the application."),
 						fieldWithPath("details")
-								.description("Details of the health of the application."),
+								.description("Details of the health of the application "
+										+ "(only included when `management.endpoint.health.show-details` is `true`)."),
 						fieldWithPath("details.*.status").description(
 								"Status of a specific part of the application."),
 						subsectionWithPath("details.*.details").description(
@@ -73,7 +74,7 @@ public class HealthEndpointDocumentationTests extends AbstractEndpointDocumentat
 		@Bean
 		public HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpoint(new CompositeHealthIndicator(
-					new OrderedHealthAggregator(), healthIndicators));
+					new OrderedHealthAggregator(), healthIndicators), true);
 		}
 
 		@Bean

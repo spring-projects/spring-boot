@@ -48,7 +48,7 @@ public class SampleSecureWebFluxApplicationTests {
 
 	@Test
 	public void actuatorsSecureByDefault() {
-		this.webClient.get().uri("/application/status").accept(MediaType.APPLICATION_JSON)
+		this.webClient.get().uri("/application/health").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isUnauthorized();
 	}
 
@@ -61,7 +61,7 @@ public class SampleSecureWebFluxApplicationTests {
 
 	@Test
 	public void actuatorsAccessibleOnLogin() {
-		this.webClient.get().uri("/application/status").accept(MediaType.APPLICATION_JSON)
+		this.webClient.get().uri("/application/health").accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", "basic " + getBasicAuth()).exchange()
 				.expectBody(String.class).isEqualTo("{\"status\":\"UP\"}");
 	}

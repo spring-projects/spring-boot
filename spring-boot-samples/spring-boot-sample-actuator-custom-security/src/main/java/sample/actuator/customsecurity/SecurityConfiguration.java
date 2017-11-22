@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http.authorizeRequests()
-				.requestMatchers(EndpointRequest.to("status", "info")).permitAll()
+				.requestMatchers(EndpointRequest.to("health", "info")).permitAll()
 				.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole("ACTUATOR")
 				.requestMatchers(StaticResourceRequest.toCommonLocations()).permitAll()
 				.antMatchers("/foo").permitAll()

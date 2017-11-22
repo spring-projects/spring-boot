@@ -55,7 +55,7 @@ public class JmxEndpointIntegrationTests {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer,
 					new String[] { "beans", "conditions", "configprops", "env", "health",
-							"info", "mappings", "status", "threaddump", "trace" },
+							"info", "mappings", "threaddump", "trace" },
 					new String[] { "shutdown" });
 		});
 	}

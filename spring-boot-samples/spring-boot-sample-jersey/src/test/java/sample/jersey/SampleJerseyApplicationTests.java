@@ -61,7 +61,7 @@ public class SampleJerseyApplicationTests {
 	@Test
 	public void actuatorStatus() {
 		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/application/status", String.class);
+				.getForEntity("/application/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\"}");
 	}
