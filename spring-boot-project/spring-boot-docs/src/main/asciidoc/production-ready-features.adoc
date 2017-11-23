@@ -333,10 +333,10 @@ moves to a child context with all the other web endpoints.
 === Health Information
 You can use health information to check the status of your running application. It is
 often used by monitoring software to alert someone when a production system goes down.
-The default information exposed by the `health` endpoint depends on how it is accessed.
-For an unauthenticated connection in a secure application, a simple '`status`' message is
-returned. For an authenticated connection, additional details are also displayed. (See
-<<production-ready-health-access-restrictions>> for HTTP details.)
+The information exposed by the `health` endpoint depends on the
+`management.endpoint.health.show-details` property. By default, the property's value is
+`false` and a simple '`status`' message is returned. When the property's value is set to
+`true`, additional details from the individual health indicators are also displayed.
 
 Health information is collected from all
 {sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] beans
@@ -782,67 +782,6 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 [source,properties,indent=0]
 ----
 	management.server.port=-1
-----
-
-
-[[production-ready-health-access-restrictions]]
-=== HTTP Health Endpoint Format and Access Restrictions
-The information exposed by the health endpoint varies, depending on whether it is
-accessed anonymously and whether the enclosing application is secure. By default, when
-accessed anonymously in a secure application, any details about the server's health are
-hidden and the endpoint indicates whether the server is up or down.
-
-The following example shows a summarized HTTP response (default for anonymous request):
-
-[source,indent=0]
-----
-	$ curl -i localhost:8080/health
-	HTTP/1.1 200
-	X-Application-Context: application
-	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
-	Content-Length: 15
-
-	{"status":"UP"}
-----
-
-The following example shows a summarized HTTP response for status "DOWN" (notice the 503
-status code):
-
-[source,indent=0]
-----
-	$ curl -i localhost:8080/health
-	HTTP/1.1 503
-	X-Application-Context: application
-	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
-	Content-Length: 17
-
-	{"status":"DOWN"}
-----
-
-The following example shows a detailed HTTP response:
-
-[source,indent=0]
-----
-	$ curl -i localhost:8080/health
-	HTTP/1.1 200 OK
-	X-Application-Context: application
-	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
-	Content-Length: 221
-
-	{
-	  "status" : "UP",
-	  "diskSpace" : {
-	    "status" : "UP",
-	    "total" : 63251804160,
-	    "free" : 31316164608,
-	    "threshold" : 10485760
-	  },
-	  "db" : {
-	    "status" : "UP",
-	    "database" : "H2",
-	    "hello" : 1
-	  }
-	}
 ----
 
 
