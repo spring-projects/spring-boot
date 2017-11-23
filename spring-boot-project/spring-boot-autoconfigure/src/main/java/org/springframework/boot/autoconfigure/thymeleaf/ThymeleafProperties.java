@@ -234,7 +234,7 @@ public class ThymeleafProperties {
 
 		/**
 		 * Maximum size of data buffers used for writing to the response, in bytes.
-		 * Templates will execute in CHUNKED mode by default if this is set a value.
+		 * Templates will execute in CHUNKED mode by default if this is set.
 		 */
 		private int maxChunkSize;
 

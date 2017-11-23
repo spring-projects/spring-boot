@@ -471,6 +471,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.thymeleaf.excluded-view-names= # Comma-separated list of view names that should be excluded from resolution.
 	spring.thymeleaf.mode=HTML5 # Template mode to be applied to templates. See also Thymleaf's TemplateMode enum.
 	spring.thymeleaf.prefix=classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
+	spring.thymeleaf.reactive.chunked-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be the only ones executed in CHUNKED mode when a max chunk size is set.
+	spring.thymeleaf.reactive.full-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be executed in FULL mode even if a max chunk size is set.
 	spring.thymeleaf.reactive.max-chunk-size= # Maximum size of data buffers used for writing to the response, in bytes.
 	spring.thymeleaf.reactive.media-types= # Media types supported by the view technology.
 	spring.thymeleaf.servlet.content-type=text/html # Content-Type value written to HTTP responses.
