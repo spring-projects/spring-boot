@@ -183,6 +183,16 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void checkLocationsAllExistWithImplicitClasspathPrefix() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations:db/changelog,db/migration",
+				"flyway.check-location:true");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	@Test
 	public void customFlywayMigrationStrategy() throws Exception {
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
