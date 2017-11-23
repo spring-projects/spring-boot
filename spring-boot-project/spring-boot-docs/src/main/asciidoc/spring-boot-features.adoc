@@ -48,7 +48,7 @@ such as the user that launched the application.
 
 
 
-[boot-features-startup-failure]
+[[boot-features-startup-failure]]
 === Startup Failure
 If your application fails to start, registered `FailureAnalyzers` get a chance to provide
 a dedicated error message and a concrete action to fix the problem. For instance, if you
