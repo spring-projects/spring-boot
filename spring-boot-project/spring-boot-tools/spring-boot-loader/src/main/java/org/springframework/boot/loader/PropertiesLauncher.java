@@ -483,6 +483,10 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Archive getArchive(File file) throws IOException {
+		// Nested path never exists as plain jar file, which should be ignored here.
+		if (file.getPath().contains("!")) {
+			return null;
+		}
 		String name = file.getName().toLowerCase();
 		if (name.endsWith(".jar") || name.endsWith(".zip")) {
 			return new JarFileArchive(file);
