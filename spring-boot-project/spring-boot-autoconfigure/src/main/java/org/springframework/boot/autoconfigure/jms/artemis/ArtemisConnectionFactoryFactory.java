@@ -29,7 +29,7 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -49,10 +49,8 @@ class ArtemisConnectionFactoryFactory {
 
 	private final ListableBeanFactory beanFactory;
 
-	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory,
-			ArtemisProperties properties) {
-		Assert.notNull(beanFactory, "BeanFactory must not be null");
-		Assert.notNull(properties, "Properties must not be null");
+	ArtemisConnectionFactoryFactory(@NonNull ListableBeanFactory beanFactory,
+			@NonNull ArtemisProperties properties) {
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 	}

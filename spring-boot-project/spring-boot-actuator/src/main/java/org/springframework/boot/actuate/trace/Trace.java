@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.trace;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A value object representing a trace event: at a particular time with a simple (map)
@@ -33,9 +33,7 @@ public final class Trace {
 
 	private final Map<String, Object> info;
 
-	public Trace(Date timestamp, Map<String, Object> info) {
-		Assert.notNull(timestamp, "Timestamp must not be null");
-		Assert.notNull(info, "Info must not be null");
+	public Trace(@NonNull Date timestamp, @NonNull Map<String, Object> info) {
 		this.timestamp = timestamp;
 		this.info = info;
 	}

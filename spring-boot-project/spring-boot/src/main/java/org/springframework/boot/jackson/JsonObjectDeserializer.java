@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -86,8 +87,7 @@ public abstract class JsonObjectDeserializer<T>
 	 * @return the node value or {@code null}
 	 */
 	@SuppressWarnings({ "unchecked" })
-	protected final <D> D nullSafeValue(JsonNode jsonNode, Class<D> type) {
-		Assert.notNull(type, "Type must not be null");
+	protected final <D> D nullSafeValue(JsonNode jsonNode, @NonNull Class<D> type) {
 		if (jsonNode == null) {
 			return null;
 		}
@@ -127,8 +127,7 @@ public abstract class JsonObjectDeserializer<T>
 	 * @param fieldName the field name to extract
 	 * @return the {@link JsonNode}
 	 */
-	protected final JsonNode getRequiredNode(JsonNode tree, String fieldName) {
-		Assert.notNull(tree, "Tree must not be null");
+	protected final JsonNode getRequiredNode(@NonNull JsonNode tree, String fieldName) {
 		JsonNode node = tree.get(fieldName);
 		Assert.state(node != null && !(node instanceof NullNode),
 				() -> "Missing JSON field '" + fieldName + "'");

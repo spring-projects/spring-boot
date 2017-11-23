@@ -33,7 +33,7 @@ import org.assertj.core.error.BasicErrorMessageFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,9 +58,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * @param applicationContext the source application context
 	 * @param startupFailure the startup failure or {@code null}
 	 */
-	ApplicationContextAssert(C applicationContext, Throwable startupFailure) {
+	ApplicationContextAssert(@NonNull C applicationContext, Throwable startupFailure) {
 		super(applicationContext, ApplicationContextAssert.class);
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		this.startupFailure = startupFailure;
 	}
 

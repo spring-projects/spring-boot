@@ -18,7 +18,7 @@ package org.springframework.boot.logging;
 
 import java.util.Comparator;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * An implementation of {@link Comparator} for comparing {@link LoggerConfiguration}s.
@@ -34,8 +34,7 @@ class LoggerConfigurationComparator implements Comparator<LoggerConfiguration> {
 	 * Create a new {@link LoggerConfigurationComparator} instance.
 	 * @param rootLoggerName the name of the "root" logger
 	 */
-	LoggerConfigurationComparator(String rootLoggerName) {
-		Assert.notNull(rootLoggerName, "RootLoggerName must not be null");
+	LoggerConfigurationComparator(@NonNull String rootLoggerName) {
 		this.rootLoggerName = rootLoggerName;
 	}
 

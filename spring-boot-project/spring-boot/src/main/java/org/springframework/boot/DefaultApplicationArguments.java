@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.core.env.SimpleCommandLinePropertySource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Default implementation of {@link ApplicationArguments}.
@@ -37,8 +37,7 @@ public class DefaultApplicationArguments implements ApplicationArguments {
 
 	private final String[] args;
 
-	public DefaultApplicationArguments(String[] args) {
-		Assert.notNull(args, "Args must not be null");
+	public DefaultApplicationArguments(@NonNull String[] args) {
 		this.source = new Source(args);
 		this.args = args;
 	}

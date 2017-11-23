@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -107,8 +107,7 @@ public class LdapProperties {
 		return this.urls;
 	}
 
-	private int determinePort(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+	private int determinePort(@NonNull Environment environment) {
 		String localPort = environment.getProperty("local.ldap.port");
 		if (localPort != null) {
 			return Integer.valueOf(localPort);

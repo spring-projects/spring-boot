@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -51,11 +51,9 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	 * @param methodInfo the method info
 	 * @param parameterMapper the parameter mapper
 	 */
-	public ReflectiveOperationInvoker(Object target, OperationMethodInfo methodInfo,
-			ParameterMapper parameterMapper) {
-		Assert.notNull(target, "Target must not be null");
-		Assert.notNull(methodInfo, "MethodInfo must not be null");
-		Assert.notNull(parameterMapper, "ParameterMapper must not be null");
+	public ReflectiveOperationInvoker(@NonNull Object target,
+			@NonNull OperationMethodInfo methodInfo,
+			@NonNull ParameterMapper parameterMapper) {
 		ReflectionUtils.makeAccessible(methodInfo.getMethod());
 		this.target = target;
 		this.methodInfo = methodInfo;

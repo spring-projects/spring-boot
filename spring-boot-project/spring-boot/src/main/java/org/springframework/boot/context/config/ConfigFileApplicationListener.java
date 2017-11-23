@@ -57,6 +57,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -647,8 +648,7 @@ public class ConfigFileApplicationListener
 			this(name, false);
 		}
 
-		Profile(String name, boolean defaultProfile) {
-			Assert.notNull(name, "Name must not be null");
+		Profile(@NonNull String name, boolean defaultProfile) {
 			this.name = name;
 			this.defaultProfile = defaultProfile;
 		}

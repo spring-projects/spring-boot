@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.restart.classloader;
 
 import java.io.Serializable;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -53,8 +54,7 @@ public class ClassLoaderFile implements Serializable {
 	 * @param lastModified the last modified time
 	 * @param contents the file contents
 	 */
-	public ClassLoaderFile(Kind kind, long lastModified, byte[] contents) {
-		Assert.notNull(kind, "Kind must not be null");
+	public ClassLoaderFile(@NonNull Kind kind, long lastModified, byte[] contents) {
 		Assert.isTrue(kind == Kind.DELETED ? contents == null : contents != null,
 				"Contents must " + (kind == Kind.DELETED ? "" : "not ") + "be null");
 		this.kind = kind;

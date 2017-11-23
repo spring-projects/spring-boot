@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -48,11 +48,10 @@ class MockDefinition extends Definition {
 
 	private final boolean serializable;
 
-	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces,
-			Answers answer, boolean serializable, MockReset reset,
-			QualifierDefinition qualifier) {
+	MockDefinition(String name, @NonNull ResolvableType typeToMock,
+			Class<?>[] extraInterfaces, Answers answer, boolean serializable,
+			MockReset reset, QualifierDefinition qualifier) {
 		super(name, reset, false, qualifier);
-		Assert.notNull(typeToMock, "TypeToMock must not be null");
 		this.typeToMock = typeToMock;
 		this.extraInterfaces = asClassSet(extraInterfaces);
 		this.answer = (answer != null ? answer : Answers.RETURNS_DEFAULTS);

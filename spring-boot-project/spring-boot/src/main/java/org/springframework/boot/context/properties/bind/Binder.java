@@ -41,7 +41,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -105,10 +105,9 @@ public class Binder {
 	 * @param placeholdersResolver strategy to resolve any property place-holders
 	 * @param conversionService the conversion service to convert values
 	 */
-	public Binder(Iterable<ConfigurationPropertySource> sources,
+	public Binder(@NonNull Iterable<ConfigurationPropertySource> sources,
 			PlaceholdersResolver placeholdersResolver,
 			ConversionService conversionService) {
-		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null ? placeholdersResolver
 				: PlaceholdersResolver.NONE);
@@ -178,10 +177,9 @@ public class Binder {
 	 * @param <T> the bound type
 	 * @return the binding result (never {@code null})
 	 */
-	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target,
+	public <T> BindResult<T> bind(@NonNull ConfigurationPropertyName name,
+			@NonNull Bindable<T> target,
 			BindHandler handler) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(target, "Target must not be null");
 		handler = (handler != null ? handler : BindHandler.DEFAULT);
 		Context context = new Context();
 		T bound = bind(name, target, handler, context, false);

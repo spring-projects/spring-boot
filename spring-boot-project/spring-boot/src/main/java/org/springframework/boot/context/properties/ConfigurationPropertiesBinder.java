@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -50,9 +50,8 @@ class ConfigurationPropertiesBinder {
 
 	private Iterable<ConfigurationPropertySource> configurationSources;
 
-	ConfigurationPropertiesBinder(Iterable<PropertySource<?>> propertySources,
+	ConfigurationPropertiesBinder(@NonNull Iterable<PropertySource<?>> propertySources,
 			ConversionService conversionService, Validator validator) {
-		Assert.notNull(propertySources, "PropertySources must not be null");
 		this.propertySources = propertySources;
 		this.conversionService = conversionService;
 		this.validator = validator;
@@ -131,8 +130,7 @@ class ConfigurationPropertiesBinder {
 
 		private final Validator[] validators;
 
-		ChainingValidator(Validator... validators) {
-			Assert.notNull(validators, "Validators must not be null");
+		ChainingValidator(@NonNull Validator... validators) {
 			this.validators = validators;
 		}
 

@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link Endpoint} to expose arbitrary application information.
@@ -40,8 +40,7 @@ public class InfoEndpoint {
 	 * Create a new {@link InfoEndpoint} instance.
 	 * @param infoContributors the info contributors to use
 	 */
-	public InfoEndpoint(List<InfoContributor> infoContributors) {
-		Assert.notNull(infoContributors, "Info contributors must not be null");
+	public InfoEndpoint(@NonNull List<InfoContributor> infoContributors) {
 		this.infoContributors = infoContributors;
 	}
 

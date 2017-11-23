@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.core.SmartClassLoader;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Disposable {@link ClassLoader} used to support application restarting. Provides parent
@@ -74,12 +74,9 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 * @param urls the urls managed by the classloader
 	 * @param logger the logger used for messages
 	 */
-	public RestartClassLoader(ClassLoader parent, URL[] urls,
-			ClassLoaderFileRepository updatedFiles, Log logger) {
+	public RestartClassLoader(@NonNull ClassLoader parent, URL[] urls,
+			@NonNull ClassLoaderFileRepository updatedFiles, @NonNull Log logger) {
 		super(urls, parent);
-		Assert.notNull(parent, "Parent must not be null");
-		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
-		Assert.notNull(logger, "Logger must not be null");
 		this.updatedFiles = updatedFiles;
 		this.logger = logger;
 		if (logger.isDebugEnabled()) {

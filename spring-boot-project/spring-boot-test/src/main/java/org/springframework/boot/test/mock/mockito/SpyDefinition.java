@@ -23,6 +23,7 @@ import org.mockito.listeners.VerificationStartedListener;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.lang.NonNull;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -39,10 +40,9 @@ class SpyDefinition extends Definition {
 
 	private final ResolvableType typeToSpy;
 
-	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset,
+	SpyDefinition(String name, @NonNull ResolvableType typeToSpy, MockReset reset,
 			boolean proxyTargetAware, QualifierDefinition qualifier) {
 		super(name, reset, proxyTargetAware, qualifier);
-		Assert.notNull(typeToSpy, "TypeToSpy must not be null");
 		this.typeToSpy = typeToSpy;
 
 	}
@@ -84,8 +84,7 @@ class SpyDefinition extends Definition {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T createSpy(String name, Object instance) {
-		Assert.notNull(instance, "Instance must not be null");
+	public <T> T createSpy(String name, @NonNull Object instance) {
 		Assert.isInstanceOf(this.typeToSpy.resolve(), instance);
 		if (Mockito.mockingDetails(instance).isSpy()) {
 			return (T) instance;

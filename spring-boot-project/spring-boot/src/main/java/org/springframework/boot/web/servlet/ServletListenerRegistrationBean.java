@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSessionListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -88,8 +89,7 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 	 * Create a new {@link ServletListenerRegistrationBean} instance.
 	 * @param listener the listener to register
 	 */
-	public ServletListenerRegistrationBean(T listener) {
-		Assert.notNull(listener, "Listener must not be null");
+	public ServletListenerRegistrationBean(@NonNull T listener) {
 		Assert.isTrue(isSupportedType(listener), "Listener is not of a supported type");
 		this.listener = listener;
 	}
@@ -98,8 +98,7 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 	 * Set the listener that will be registered.
 	 * @param listener the listener to register
 	 */
-	public void setListener(T listener) {
-		Assert.notNull(listener, "Listener must not be null");
+	public void setListener(@NonNull T listener) {
 		Assert.isTrue(isSupportedType(listener), "Listener is not of a supported type");
 		this.listener = listener;
 	}

@@ -72,7 +72,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -216,9 +216,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param context the context to configure
 	 * @param initializers the set of initializers to apply
 	 */
-	protected final void configureWebAppContext(WebAppContext context,
+	protected final void configureWebAppContext(@NonNull WebAppContext context,
 			ServletContextInitializer... initializers) {
-		Assert.notNull(context, "Context must not be null");
 		context.setTempDirectory(getTempDirectory());
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
@@ -310,8 +309,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * Add Jetty's {@code DefaultServlet} to the given {@link WebAppContext}.
 	 * @param context the jetty {@link WebAppContext}
 	 */
-	protected final void addDefaultServlet(WebAppContext context) {
-		Assert.notNull(context, "Context must not be null");
+	protected final void addDefaultServlet(@NonNull WebAppContext context) {
 		ServletHolder holder = new ServletHolder();
 		holder.setName("default");
 		holder.setClassName("org.eclipse.jetty.servlet.DefaultServlet");
@@ -325,8 +323,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * Add Jetty's {@code JspServlet} to the given {@link WebAppContext}.
 	 * @param context the jetty {@link WebAppContext}
 	 */
-	protected final void addJspServlet(WebAppContext context) {
-		Assert.notNull(context, "Context must not be null");
+	protected final void addJspServlet(@NonNull WebAppContext context) {
 		ServletHolder holder = new ServletHolder();
 		holder.setName("jsp");
 		holder.setClassName(getJsp().getClassName());
@@ -464,8 +461,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param customizers the Jetty customizers to apply
 	 */
 	public void setServerCustomizers(
-			Collection<? extends JettyServerCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+			@NonNull Collection<? extends JettyServerCustomizer> customizers) {
 		this.jettyServerCustomizers = new ArrayList<>(customizers);
 	}
 
@@ -483,8 +479,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * before it is started.
 	 * @param customizers the customizers to add
 	 */
-	public void addServerCustomizers(JettyServerCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+	public void addServerCustomizers(@NonNull JettyServerCustomizer... customizers) {
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 
@@ -494,8 +489,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * configurations.
 	 * @param configurations the Jetty configurations to apply
 	 */
-	public void setConfigurations(Collection<? extends Configuration> configurations) {
-		Assert.notNull(configurations, "Configurations must not be null");
+	public void setConfigurations(
+			@NonNull Collection<? extends Configuration> configurations) {
 		this.configurations = new ArrayList<>(configurations);
 	}
 
@@ -513,8 +508,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * the server is started.
 	 * @param configurations the configurations to add
 	 */
-	public void addConfigurations(Configuration... configurations) {
-		Assert.notNull(configurations, "Configurations must not be null");
+	public void addConfigurations(@NonNull Configuration... configurations) {
 		this.configurations.addAll(Arrays.asList(configurations));
 	}
 

@@ -33,7 +33,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 
@@ -67,10 +67,8 @@ public class RestartServer {
 	 * local classpath
 	 * @param classLoader the application classloader
 	 */
-	public RestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
-			ClassLoader classLoader) {
-		Assert.notNull(sourceFolderUrlFilter, "SourceFolderUrlFilter must not be null");
-		Assert.notNull(classLoader, "ClassLoader must not be null");
+	public RestartServer(@NonNull SourceFolderUrlFilter sourceFolderUrlFilter,
+			@NonNull ClassLoader classLoader) {
 		this.sourceFolderUrlFilter = sourceFolderUrlFilter;
 		this.classLoader = classLoader;
 	}

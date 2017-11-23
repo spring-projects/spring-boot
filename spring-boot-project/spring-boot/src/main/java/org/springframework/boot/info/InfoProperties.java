@@ -23,7 +23,7 @@ import java.util.Properties;
 
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Base class for components exposing unstructured data with dedicated methods for well
@@ -40,8 +40,7 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * Create an instance with the specified entries.
 	 * @param entries the information to expose
 	 */
-	public InfoProperties(Properties entries) {
-		Assert.notNull(entries, "Entries must not be null");
+	public InfoProperties(@NonNull Properties entries) {
 		this.entries = copy(entries);
 	}
 

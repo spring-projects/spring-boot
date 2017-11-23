@@ -19,7 +19,7 @@ package org.springframework.boot.test.json;
 import org.assertj.core.api.AssertProvider;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Object content usually created from {@link AbstractJsonMarshalTester}. Generally used
@@ -41,8 +41,7 @@ public final class ObjectContent<T> implements AssertProvider<ObjectContentAsser
 	 * @param type the type under test (or {@code null} if not known)
 	 * @param object the actual object content
 	 */
-	public ObjectContent(ResolvableType type, T object) {
-		Assert.notNull(object, "Object must not be null");
+	public ObjectContent(ResolvableType type, @NonNull T object) {
 		this.type = type;
 		this.object = object;
 	}

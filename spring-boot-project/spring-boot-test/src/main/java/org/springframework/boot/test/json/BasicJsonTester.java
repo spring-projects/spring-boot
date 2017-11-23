@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -70,8 +71,7 @@ public class BasicJsonTester {
 	 * @param charset the charset used to load resources
 	 * @since 1.4.1
 	 */
-	public BasicJsonTester(Class<?> resourceLoadClass, Charset charset) {
-		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
+	public BasicJsonTester(@NonNull Class<?> resourceLoadClass, Charset charset) {
 		this.loader = new JsonLoader(resourceLoadClass, charset);
 	}
 

@@ -24,7 +24,7 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Base class used for {@link DataSource} initialization.
@@ -41,10 +41,8 @@ public abstract class AbstractDataSourceInitializer {
 
 	private final ResourceLoader resourceLoader;
 
-	protected AbstractDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
-		Assert.notNull(dataSource, "DataSource must not be null");
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+	protected AbstractDataSourceInitializer(@NonNull DataSource dataSource,
+			@NonNull ResourceLoader resourceLoader) {
 		this.dataSource = dataSource;
 		this.resourceLoader = resourceLoader;
 	}

@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,8 +37,7 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
 	private CouchbaseOperations couchbaseOperations;
 
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
-		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
+	public CouchbaseHealthIndicator(@NonNull CouchbaseOperations couchbaseOperations) {
 		this.couchbaseOperations = couchbaseOperations;
 	}
 

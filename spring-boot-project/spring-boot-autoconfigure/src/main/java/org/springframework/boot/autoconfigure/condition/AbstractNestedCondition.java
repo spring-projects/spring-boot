@@ -31,7 +31,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -46,8 +46,7 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 	private final ConfigurationPhase configurationPhase;
 
-	AbstractNestedCondition(ConfigurationPhase configurationPhase) {
-		Assert.notNull(configurationPhase, "ConfigurationPhase must not be null");
+	AbstractNestedCondition(@NonNull ConfigurationPhase configurationPhase) {
 		this.configurationPhase = configurationPhase;
 	}
 

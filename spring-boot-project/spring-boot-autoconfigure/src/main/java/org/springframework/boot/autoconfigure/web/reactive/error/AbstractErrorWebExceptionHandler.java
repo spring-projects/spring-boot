@@ -30,7 +30,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.HttpMessageWriter;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -63,12 +63,9 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	private List<ViewResolver> viewResolvers = Collections.emptyList();
 
-	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-			ResourceProperties resourceProperties,
-			ApplicationContext applicationContext) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
+	public AbstractErrorWebExceptionHandler(@NonNull ErrorAttributes errorAttributes,
+			@NonNull ResourceProperties resourceProperties,
+			@NonNull ApplicationContext applicationContext) {
 		this.errorAttributes = errorAttributes;
 		this.resourceProperties = resourceProperties;
 		this.applicationContext = applicationContext;
@@ -80,8 +77,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	 * Configure HTTP message writers to serialize the response body with.
 	 * @param messageWriters the {@link HttpMessageWriter}s to use
 	 */
-	public void setMessageWriters(List<HttpMessageWriter<?>> messageWriters) {
-		Assert.notNull(messageWriters, "'messageWriters' must not be null");
+	public void setMessageWriters(@NonNull List<HttpMessageWriter<?>> messageWriters) {
 		this.messageWriters = messageWriters;
 	}
 
@@ -89,8 +85,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	 * Configure HTTP message readers to deserialize the request body with.
 	 * @param messageReaders the {@link HttpMessageReader}s to use
 	 */
-	public void setMessageReaders(List<HttpMessageReader<?>> messageReaders) {
-		Assert.notNull(messageReaders, "'messageReaders' must not be null");
+	public void setMessageReaders(@NonNull List<HttpMessageReader<?>> messageReaders) {
 		this.messageReaders = messageReaders;
 	}
 

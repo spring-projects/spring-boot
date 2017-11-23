@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 import reactor.core.scheduler.Schedulers;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Adapts a {@link HealthIndicator} to a {@link ReactiveHealthIndicator} so that it can be
@@ -33,8 +33,7 @@ public class HealthIndicatorReactiveAdapter implements ReactiveHealthIndicator {
 
 	private final HealthIndicator delegate;
 
-	public HealthIndicatorReactiveAdapter(HealthIndicator delegate) {
-		Assert.notNull(delegate, "Delegate must not be null");
+	public HealthIndicatorReactiveAdapter(@NonNull HealthIndicator delegate) {
 		this.delegate = delegate;
 	}
 

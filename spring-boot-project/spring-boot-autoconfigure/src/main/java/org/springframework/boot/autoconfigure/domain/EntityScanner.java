@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -46,8 +46,7 @@ public class EntityScanner {
 	 * Create a new {@link EntityScanner} instance.
 	 * @param context the source application context
 	 */
-	public EntityScanner(ApplicationContext context) {
-		Assert.notNull(context, "Context must not be null");
+	public EntityScanner(@NonNull ApplicationContext context) {
 		this.context = context;
 	}
 

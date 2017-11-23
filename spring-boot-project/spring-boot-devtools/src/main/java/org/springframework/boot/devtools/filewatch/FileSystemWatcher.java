@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -78,10 +79,8 @@ public class FileSystemWatcher {
 	 * @param quietPeriod the amount of time required after a change has been detected to
 	 * ensure that updates have completed
 	 */
-	public FileSystemWatcher(boolean daemon, Duration pollInterval,
-			Duration quietPeriod) {
-		Assert.notNull(pollInterval, "PollInterval must not be null");
-		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
+	public FileSystemWatcher(boolean daemon, @NonNull Duration pollInterval,
+			@NonNull Duration quietPeriod) {
 		Assert.isTrue(pollInterval.toMillis() > 0, "PollInterval must be positive");
 		Assert.isTrue(quietPeriod.toMillis() > 0, "QuietPeriod must be positive");
 		Assert.isTrue(pollInterval.toMillis() > quietPeriod.toMillis(),
@@ -96,8 +95,7 @@ public class FileSystemWatcher {
 	 * {@link #start() started}.
 	 * @param fileChangeListener the listener to add
 	 */
-	public void addListener(FileChangeListener fileChangeListener) {
-		Assert.notNull(fileChangeListener, "FileChangeListener must not be null");
+	public void addListener(@NonNull FileChangeListener fileChangeListener) {
 		synchronized (this.monitor) {
 			checkNotStarted();
 			this.listeners.add(fileChangeListener);
@@ -109,8 +107,7 @@ public class FileSystemWatcher {
 	 * {@link #start() started}.
 	 * @param folders the folders to monitor
 	 */
-	public void addSourceFolders(Iterable<File> folders) {
-		Assert.notNull(folders, "Folders must not be null");
+	public void addSourceFolders(@NonNull Iterable<File> folders) {
 		synchronized (this.monitor) {
 			for (File folder : folders) {
 				addSourceFolder(folder);
@@ -123,8 +120,7 @@ public class FileSystemWatcher {
 	 * {@link #start() started}.
 	 * @param folder the folder to monitor
 	 */
-	public void addSourceFolder(File folder) {
-		Assert.notNull(folder, "Folder must not be null");
+	public void addSourceFolder(@NonNull File folder) {
 		Assert.isTrue(folder.isDirectory(),
 				"Folder '" + folder + "' must exist and must" + " be a directory");
 		synchronized (this.monitor) {

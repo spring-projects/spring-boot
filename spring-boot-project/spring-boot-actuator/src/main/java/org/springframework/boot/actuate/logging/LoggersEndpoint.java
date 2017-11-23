@@ -31,8 +31,8 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose a collection of {@link LoggerConfiguration}s.
@@ -50,8 +50,7 @@ public class LoggersEndpoint {
 	 * Create a new {@link LoggersEndpoint} instance.
 	 * @param loggingSystem the logging system to expose
 	 */
-	public LoggersEndpoint(LoggingSystem loggingSystem) {
-		Assert.notNull(loggingSystem, "LoggingSystem must not be null");
+	public LoggersEndpoint(@NonNull LoggingSystem loggingSystem) {
 		this.loggingSystem = loggingSystem;
 	}
 
@@ -69,17 +68,15 @@ public class LoggersEndpoint {
 	}
 
 	@ReadOperation
-	public LoggerLevels loggerLevels(@Selector String name) {
-		Assert.notNull(name, "Name must not be null");
+	public LoggerLevels loggerLevels(@Selector @NonNull String name) {
 		LoggerConfiguration configuration = this.loggingSystem
 				.getLoggerConfiguration(name);
 		return (configuration == null ? null : new LoggerLevels(configuration));
 	}
 
 	@WriteOperation
-	public void configureLogLevel(@Selector String name,
+	public void configureLogLevel(@Selector @NonNull String name,
 			@Nullable LogLevel configuredLevel) {
-		Assert.notNull(name, "Name must not be empty");
 		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}
 

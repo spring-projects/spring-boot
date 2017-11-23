@@ -22,7 +22,7 @@ import javax.sql.XADataSource;
 import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 
 import org.springframework.boot.jta.XADataSourceWrapper;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link XADataSourceWrapper} that uses {@link NarayanaDataSourceBean} to wrap an
@@ -42,10 +42,9 @@ public class NarayanaXADataSourceWrapper implements XADataSourceWrapper {
 	 * @param recoveryManager the underlying recovery manager
 	 * @param properties the Narayana properties
 	 */
-	public NarayanaXADataSourceWrapper(NarayanaRecoveryManagerBean recoveryManager,
-			NarayanaProperties properties) {
-		Assert.notNull(recoveryManager, "RecoveryManager must not be null");
-		Assert.notNull(properties, "Properties must not be null");
+	public NarayanaXADataSourceWrapper(
+			@NonNull NarayanaRecoveryManagerBean recoveryManager,
+			@NonNull NarayanaProperties properties) {
 		this.recoveryManager = recoveryManager;
 		this.properties = properties;
 	}

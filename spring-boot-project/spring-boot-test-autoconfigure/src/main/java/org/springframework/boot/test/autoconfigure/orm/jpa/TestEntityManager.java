@@ -20,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
 
+import org.springframework.lang.NonNull;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.util.Assert;
 
@@ -40,8 +41,7 @@ public class TestEntityManager {
 	 * {@link EntityManagerFactory}.
 	 * @param entityManagerFactory the source entity manager factory
 	 */
-	public TestEntityManager(EntityManagerFactory entityManagerFactory) {
-		Assert.notNull(entityManagerFactory, "EntityManagerFactory must not be null");
+	public TestEntityManager(@NonNull EntityManagerFactory entityManagerFactory) {
 		this.entityManagerFactory = entityManagerFactory;
 	}
 

@@ -44,7 +44,7 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -167,8 +167,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		loadConfiguration(location, logFile);
 	}
 
-	protected void loadConfiguration(String location, LogFile logFile) {
-		Assert.notNull(location, "Location must not be null");
+	protected void loadConfiguration(@NonNull String location, LogFile logFile) {
 		try {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);

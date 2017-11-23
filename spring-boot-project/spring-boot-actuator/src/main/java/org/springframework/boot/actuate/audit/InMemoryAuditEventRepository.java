@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * In-memory {@link AuditEventRepository} implementation.
@@ -61,8 +61,7 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	}
 
 	@Override
-	public void add(AuditEvent event) {
-		Assert.notNull(event, "AuditEvent must not be null");
+	public void add(@NonNull AuditEvent event) {
 		synchronized (this.monitor) {
 			this.tail = (this.tail + 1) % this.events.length;
 			this.events[this.tail] = event;

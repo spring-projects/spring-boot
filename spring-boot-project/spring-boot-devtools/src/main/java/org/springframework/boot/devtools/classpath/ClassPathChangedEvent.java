@@ -20,7 +20,7 @@ import java.util.Set;
 
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link ApplicationEvent} containing details of a classpath change.
@@ -41,10 +41,9 @@ public class ClassPathChangedEvent extends ApplicationEvent {
 	 * @param changeSet the changed files
 	 * @param restartRequired if a restart is required due to the change
 	 */
-	public ClassPathChangedEvent(Object source, Set<ChangedFiles> changeSet,
+	public ClassPathChangedEvent(Object source, @NonNull Set<ChangedFiles> changeSet,
 			boolean restartRequired) {
 		super(source);
-		Assert.notNull(changeSet, "ChangeSet must not be null");
 		this.changeSet = changeSet;
 		this.restartRequired = restartRequired;
 	}

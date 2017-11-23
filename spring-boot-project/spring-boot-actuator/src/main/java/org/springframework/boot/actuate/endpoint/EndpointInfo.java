@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -43,9 +44,9 @@ public class EndpointInfo<T extends Operation> {
 	 * @param enableByDefault if the endpoint is enabled by default
 	 * @param operations the operations of the endpoint
 	 */
-	public EndpointInfo(String id, boolean enableByDefault, Collection<T> operations) {
+	public EndpointInfo(String id, boolean enableByDefault,
+			@NonNull Collection<T> operations) {
 		Assert.hasText(id, "ID must not be empty");
-		Assert.notNull(operations, "Operations must not be null");
 		this.id = id;
 		this.enableByDefault = enableByDefault;
 		this.operations = Collections.unmodifiableCollection(operations);

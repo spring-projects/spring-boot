@@ -25,7 +25,7 @@ import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -74,8 +74,7 @@ public class EmbeddedServerPortFileWriter
 	 * Create a new {@link EmbeddedServerPortFileWriter} instance with a specified file.
 	 * @param file the file containing port
 	 */
-	public EmbeddedServerPortFileWriter(File file) {
-		Assert.notNull(file, "File must not be null");
+	public EmbeddedServerPortFileWriter(@NonNull File file) {
 		String override = SystemProperties.get(PROPERTY_VARIABLES);
 		if (override != null) {
 			this.file = new File(override);

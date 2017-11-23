@@ -24,7 +24,7 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link WebClient} will automatically prefix relative URLs with
@@ -37,8 +37,7 @@ public class LocalHostWebClient extends WebClient {
 
 	private final Environment environment;
 
-	public LocalHostWebClient(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+	public LocalHostWebClient(@NonNull Environment environment) {
 		this.environment = environment;
 	}
 

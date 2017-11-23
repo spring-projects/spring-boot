@@ -26,7 +26,7 @@ import java.util.Set;
 
 import javax.management.loading.ClassLoaderRepository;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link ClassLoaderFileRepository} that maintains a collection of
@@ -54,8 +54,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * Create a new {@link ClassLoaderFiles} instance.
 	 * @param classLoaderFiles the source classloader files.
 	 */
-	public ClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
-		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+	public ClassLoaderFiles(@NonNull ClassLoaderFiles classLoaderFiles) {
 		this.sourceFolders = new LinkedHashMap<>(classLoaderFiles.sourceFolders);
 	}
 
@@ -64,8 +63,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * instance.
 	 * @param files the files to add
 	 */
-	public void addAll(ClassLoaderFiles files) {
-		Assert.notNull(files, "Files must not be null");
+	public void addAll(@NonNull ClassLoaderFiles files) {
 		for (SourceFolder folder : files.getSourceFolders()) {
 			for (Map.Entry<String, ClassLoaderFile> entry : folder.getFilesEntrySet()) {
 				addFile(folder.getName(), entry.getKey(), entry.getValue());
@@ -88,10 +86,8 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * @param name the name of the file
 	 * @param file the file to add
 	 */
-	public void addFile(String sourceFolder, String name, ClassLoaderFile file) {
-		Assert.notNull(sourceFolder, "SourceFolder must not be null");
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(file, "File must not be null");
+	public void addFile(@NonNull String sourceFolder, @NonNull String name,
+			@NonNull ClassLoaderFile file) {
 		removeAll(name);
 		getOrCreateSourceFolder(sourceFolder).add(name, file);
 	}

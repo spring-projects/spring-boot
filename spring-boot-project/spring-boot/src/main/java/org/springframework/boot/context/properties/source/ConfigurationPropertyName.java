@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -220,8 +221,7 @@ public final class ConfigurationPropertyName
 	 * @param name the name to check
 	 * @return {@code true} if this name is an ancestor
 	 */
-	public boolean isParentOf(ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+	public boolean isParentOf(@NonNull ConfigurationPropertyName name) {
 		if (this.getNumberOfElements() != name.getNumberOfElements() - 1) {
 			return false;
 		}
@@ -234,8 +234,7 @@ public final class ConfigurationPropertyName
 	 * @param name the name to check
 	 * @return {@code true} if this name is an ancestor
 	 */
-	public boolean isAncestorOf(ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+	public boolean isAncestorOf(@NonNull ConfigurationPropertyName name) {
 		if (this.getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
@@ -441,8 +440,7 @@ public final class ConfigurationPropertyName
 	 * @return a {@link ConfigurationPropertyName} instance
 	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
 	 */
-	public static ConfigurationPropertyName of(CharSequence name) {
-		Assert.notNull(name, "Name must not be null");
+	public static ConfigurationPropertyName of(@NonNull CharSequence name) {
 		if (name.length() >= 1
 				&& (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
 			throw new InvalidConfigurationPropertyNameException(name,
@@ -489,10 +487,8 @@ public final class ConfigurationPropertyName
 	 * @param elementValueProcessor a function to process element values
 	 * @return a {@link ConfigurationPropertyName}
 	 */
-	static ConfigurationPropertyName adapt(CharSequence name, char separator,
-			Function<CharSequence, CharSequence> elementValueProcessor) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(elementValueProcessor, "ElementValueProcessor must not be null");
+	static ConfigurationPropertyName adapt(@NonNull CharSequence name, char separator,
+			@NonNull Function<CharSequence, CharSequence> elementValueProcessor) {
 		if (name.length() == 0) {
 			return EMPTY;
 		}

@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.regex.Pattern;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Strategy that should be used by endpoint implementations to sanitize potentially
@@ -50,8 +50,7 @@ public class Sanitizer {
 	 * with or regular expressions.
 	 * @param keysToSanitize the keys to sanitize
 	 */
-	public void setKeysToSanitize(String... keysToSanitize) {
-		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
+	public void setKeysToSanitize(@NonNull String... keysToSanitize) {
 		this.keysToSanitize = new Pattern[keysToSanitize.length];
 		for (int i = 0; i < keysToSanitize.length; i++) {
 			this.keysToSanitize[i] = getPattern(keysToSanitize[i]);

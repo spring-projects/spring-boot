@@ -32,7 +32,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatus.Series;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
@@ -79,21 +79,17 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	 * @param applicationContext the source application context
 	 * @param resourceProperties resource properties
 	 */
-	public DefaultErrorViewResolver(ApplicationContext applicationContext,
-			ResourceProperties resourceProperties) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
+	public DefaultErrorViewResolver(@NonNull ApplicationContext applicationContext,
+			@NonNull ResourceProperties resourceProperties) {
 		this.applicationContext = applicationContext;
 		this.resourceProperties = resourceProperties;
 		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(
 				applicationContext);
 	}
 
-	DefaultErrorViewResolver(ApplicationContext applicationContext,
-			ResourceProperties resourceProperties,
+	DefaultErrorViewResolver(@NonNull ApplicationContext applicationContext,
+			@NonNull ResourceProperties resourceProperties,
 			TemplateAvailabilityProviders templateAvailabilityProviders) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
 		this.applicationContext = applicationContext;
 		this.resourceProperties = resourceProperties;
 		this.templateAvailabilityProviders = templateAvailabilityProviders;

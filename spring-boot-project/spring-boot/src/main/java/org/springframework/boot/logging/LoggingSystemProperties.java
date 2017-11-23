@@ -21,7 +21,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Utility to set system properties that can later be used by log configuration files.
@@ -90,8 +90,7 @@ public class LoggingSystemProperties {
 	 * Create a new {@link LoggingSystemProperties} instance.
 	 * @param environment the source environment
 	 */
-	public LoggingSystemProperties(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+	public LoggingSystemProperties(@NonNull Environment environment) {
 		this.environment = environment;
 	}
 

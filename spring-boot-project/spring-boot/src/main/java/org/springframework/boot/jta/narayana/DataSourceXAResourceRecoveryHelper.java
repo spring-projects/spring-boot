@@ -28,6 +28,7 @@ import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -69,9 +70,8 @@ public class DataSourceXAResourceRecoveryHelper
 	 * @param user the database user or {@code null}
 	 * @param password the database password or {@code null}
 	 */
-	public DataSourceXAResourceRecoveryHelper(XADataSource xaDataSource, String user,
-			String password) {
-		Assert.notNull(xaDataSource, "XADataSource must not be null");
+	public DataSourceXAResourceRecoveryHelper(@NonNull XADataSource xaDataSource,
+			String user, String password) {
 		this.xaDataSource = xaDataSource;
 		this.user = user;
 		this.password = password;

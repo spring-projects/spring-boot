@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.springframework.boot.devtools.remote.server.Handler;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Adapts a {@link HttpTunnelServer} to a {@link Handler}.
@@ -37,8 +37,7 @@ public class HttpTunnelServerHandler implements Handler {
 	 * Create a new {@link HttpTunnelServerHandler} instance.
 	 * @param server the server to adapt
 	 */
-	public HttpTunnelServerHandler(HttpTunnelServer server) {
-		Assert.notNull(server, "Server must not be null");
+	public HttpTunnelServerHandler(@NonNull HttpTunnelServer server) {
 		this.server = server;
 	}
 

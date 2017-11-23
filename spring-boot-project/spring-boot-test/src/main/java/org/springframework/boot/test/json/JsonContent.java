@@ -19,7 +19,7 @@ package org.springframework.boot.test.json;
 import org.assertj.core.api.AssertProvider;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * JSON content created usually from a JSON tester. Generally used only to
@@ -44,9 +44,8 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * @param type the type under test (or {@code null} if not known)
 	 * @param json the actual JSON content
 	 */
-	public JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json) {
-		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
-		Assert.notNull(json, "JSON must not be null");
+	public JsonContent(@NonNull Class<?> resourceLoadClass, ResolvableType type,
+			@NonNull String json) {
 		this.resourceLoadClass = resourceLoadClass;
 		this.type = type;
 		this.json = json;

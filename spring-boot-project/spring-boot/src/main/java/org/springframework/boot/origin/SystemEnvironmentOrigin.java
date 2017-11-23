@@ -16,6 +16,7 @@
 
 package org.springframework.boot.origin;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -30,8 +31,7 @@ public class SystemEnvironmentOrigin implements Origin {
 
 	private final String property;
 
-	public SystemEnvironmentOrigin(String property) {
-		Assert.notNull(property, "Property name must not be null");
+	public SystemEnvironmentOrigin(@NonNull String property) {
 		Assert.hasText(property, "Property name must not be empty");
 		this.property = property;
 	}

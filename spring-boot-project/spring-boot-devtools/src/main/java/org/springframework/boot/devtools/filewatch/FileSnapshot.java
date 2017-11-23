@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -35,8 +36,7 @@ class FileSnapshot {
 
 	private final long lastModified;
 
-	FileSnapshot(File file) {
-		Assert.notNull(file, "File must not be null");
+	FileSnapshot(@NonNull File file) {
 		Assert.isTrue(file.isFile() || !file.exists(), "File must not be a folder");
 		this.file = file;
 		this.exists = file.exists();

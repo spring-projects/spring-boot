@@ -21,8 +21,8 @@ import javax.transaction.UserTransaction;
 
 import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
 
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.util.Assert;
 
 /**
  * Generic Hibernate {@link AbstractJtaPlatform} implementation that simply resolves the
@@ -39,8 +39,7 @@ public class SpringJtaPlatform extends AbstractJtaPlatform {
 
 	private final JtaTransactionManager transactionManager;
 
-	public SpringJtaPlatform(JtaTransactionManager transactionManager) {
-		Assert.notNull(transactionManager, "TransactionManager must not be null");
+	public SpringJtaPlatform(@NonNull JtaTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 

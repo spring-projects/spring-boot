@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -106,9 +106,8 @@ public final class ConditionMessage {
 	 * @see #andCondition(String, Object...)
 	 * @see #forCondition(Class, Object...)
 	 */
-	public Builder andCondition(Class<? extends Annotation> condition,
+	public Builder andCondition(@NonNull Class<? extends Annotation> condition,
 			Object... details) {
-		Assert.notNull(condition, "Condition must not be null");
 		return andCondition("@" + ClassUtils.getShortName(condition), details);
 	}
 
@@ -121,8 +120,7 @@ public final class ConditionMessage {
 	 * @see #andCondition(Class, Object...)
 	 * @see #forCondition(String, Object...)
 	 */
-	public Builder andCondition(String condition, Object... details) {
-		Assert.notNull(condition, "Condition must not be null");
+	public Builder andCondition(@NonNull String condition, Object... details) {
 		String detail = StringUtils.arrayToDelimitedString(details, " ");
 		if (StringUtils.hasLength(detail)) {
 			return new Builder(condition + " " + detail);
@@ -381,8 +379,7 @@ public final class ConditionMessage {
 		 * @param items the source of the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
 		 */
-		public ConditionMessage items(Style style, Collection<?> items) {
-			Assert.notNull(style, "Style must not be null");
+		public ConditionMessage items(@NonNull Style style, Collection<?> items) {
 			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
 			if ((this.condition == null || items.size() <= 1)

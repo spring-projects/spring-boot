@@ -20,7 +20,7 @@ import org.flywaydb.core.Flyway;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link InitializingBean} used to trigger {@link Flyway} migration via the
@@ -50,9 +50,8 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 	 * @param flyway the flyway instance
 	 * @param migrationStrategy the migration strategy or {@code null}
 	 */
-	public FlywayMigrationInitializer(Flyway flyway,
+	public FlywayMigrationInitializer(@NonNull Flyway flyway,
 			FlywayMigrationStrategy migrationStrategy) {
-		Assert.notNull(flyway, "Flyway must not be null");
 		this.flyway = flyway;
 		this.migrationStrategy = migrationStrategy;
 	}

@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import java.util.function.Function;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Base class for properties to config adapters.
@@ -39,9 +39,7 @@ public class PropertiesConfigAdapter<T, C> {
 	 * @param properties the source properties
 	 * @param defaults a config implementation providing default values
 	 */
-	public PropertiesConfigAdapter(T properties, C defaults) {
-		Assert.notNull(properties, "Properties must not be null");
-		Assert.notNull(defaults, "Defaults must not be null");
+	public PropertiesConfigAdapter(@NonNull T properties, @NonNull C defaults) {
 		this.properties = properties;
 		this.defaults = defaults;
 	}

@@ -25,7 +25,7 @@ import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Encapsulates a {@link FileSystemWatcher} to watch the local classpath folders for
@@ -53,11 +53,9 @@ public class ClassPathFileSystemWatcher
 	 * @param restartStrategy the classpath restart strategy
 	 * @param urls the URLs to watch
 	 */
-	public ClassPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
-			ClassPathRestartStrategy restartStrategy, URL[] urls) {
-		Assert.notNull(fileSystemWatcherFactory,
-				"FileSystemWatcherFactory must not be null");
-		Assert.notNull(urls, "Urls must not be null");
+	public ClassPathFileSystemWatcher(
+			@NonNull FileSystemWatcherFactory fileSystemWatcherFactory,
+			ClassPathRestartStrategy restartStrategy, @NonNull URL[] urls) {
 		this.fileSystemWatcher = fileSystemWatcherFactory.getFileSystemWatcher();
 		this.restartStrategy = restartStrategy;
 		this.fileSystemWatcher.addSourceFolders(new ClassPathFolders(urls));

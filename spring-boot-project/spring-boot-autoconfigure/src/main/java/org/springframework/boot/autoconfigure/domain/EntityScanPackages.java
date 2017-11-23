@@ -33,6 +33,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -94,9 +95,8 @@ public class EntityScanPackages {
 	 * @param registry the source registry
 	 * @param packageNames the package names to register
 	 */
-	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(packageNames, "PackageNames must not be null");
+	public static void register(@NonNull BeanDefinitionRegistry registry,
+			@NonNull String... packageNames) {
 		register(registry, Arrays.asList(packageNames));
 	}
 
@@ -105,10 +105,8 @@ public class EntityScanPackages {
 	 * @param registry the source registry
 	 * @param packageNames the package names to register
 	 */
-	public static void register(BeanDefinitionRegistry registry,
-			Collection<String> packageNames) {
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(packageNames, "PackageNames must not be null");
+	public static void register(@NonNull BeanDefinitionRegistry registry,
+			@NonNull Collection<String> packageNames) {
 		if (registry.containsBeanDefinition(BEAN)) {
 			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
 			ConstructorArgumentValues constructorArguments = beanDefinition

@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -107,8 +107,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		return this.contextPath;
 	}
 
-	public void setContextPath(String contextPath) {
-		Assert.notNull(contextPath, "ContextPath must not be null");
+	public void setContextPath(@NonNull String contextPath) {
 		this.contextPath = cleanContextPath(contextPath);
 	}
 

@@ -28,10 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.security.ApplicationContextRequestMatcher;
+import org.springframework.lang.NonNull;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.Assert;
 
 /**
  * Factory that can be used to create a {@link RequestMatcher} for static resources in
@@ -80,8 +80,7 @@ public final class StaticResourceRequest {
 	 * @param locations the locations to include
 	 * @return the configured {@link RequestMatcher}
 	 */
-	public static StaticResourceRequestMatcher to(Set<Location> locations) {
-		Assert.notNull(locations, "Locations must not be null");
+	public static StaticResourceRequestMatcher to(@NonNull Set<Location> locations) {
 		return new StaticResourceRequestMatcher(new LinkedHashSet<>(locations));
 	}
 
@@ -156,8 +155,7 @@ public final class StaticResourceRequest {
 		 * @param locations the locations to exclude
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
-		public StaticResourceRequestMatcher excluding(Set<Location> locations) {
-			Assert.notNull(locations, "Locations must not be null");
+		public StaticResourceRequestMatcher excluding(@NonNull Set<Location> locations) {
 			Set<Location> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
 			return new StaticResourceRequestMatcher(subset);

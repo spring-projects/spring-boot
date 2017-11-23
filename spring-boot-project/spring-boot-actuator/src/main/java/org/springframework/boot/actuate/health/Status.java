@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -77,9 +77,7 @@ public final class Status {
 	 * @param code the status code
 	 * @param description a description of the status
 	 */
-	public Status(String code, String description) {
-		Assert.notNull(code, "Code must not be null");
-		Assert.notNull(description, "Description must not be null");
+	public Status(@NonNull String code, @NonNull String description) {
 		this.code = code;
 		this.description = description;
 	}

@@ -34,7 +34,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -74,11 +74,9 @@ public final class ConditionEvaluationReport {
 	 * @param condition the condition evaluated
 	 * @param outcome the condition outcome
 	 */
-	public void recordConditionEvaluation(String source, Condition condition,
-			ConditionOutcome outcome) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(condition, "Condition must not be null");
-		Assert.notNull(outcome, "Outcome must not be null");
+	public void recordConditionEvaluation(@NonNull String source,
+			@NonNull Condition condition,
+			@NonNull ConditionOutcome outcome) {
 		this.unconditionalClasses.remove(source);
 		if (!this.outcomes.containsKey(source)) {
 			this.outcomes.put(source, new ConditionAndOutcomes());
@@ -91,8 +89,7 @@ public final class ConditionEvaluationReport {
 	 * Records the names of the classes that have been excluded from condition evaluation.
 	 * @param exclusions the names of the excluded classes
 	 */
-	public void recordExclusions(Collection<String> exclusions) {
-		Assert.notNull(exclusions, "exclusions must not be null");
+	public void recordExclusions(@NonNull Collection<String> exclusions) {
 		this.exclusions = new ArrayList<>(exclusions);
 	}
 
@@ -101,8 +98,7 @@ public final class ConditionEvaluationReport {
 	 * @param evaluationCandidates the names of the classes whose conditions will be
 	 * evaluated
 	 */
-	public void recordEvaluationCandidates(List<String> evaluationCandidates) {
-		Assert.notNull(evaluationCandidates, "evaluationCandidates must not be null");
+	public void recordEvaluationCandidates(@NonNull List<String> evaluationCandidates) {
 		this.unconditionalClasses = new HashSet<>(evaluationCandidates);
 	}
 

@@ -19,7 +19,7 @@ package org.springframework.boot.web.servlet;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Filter}s in a Servlet 3.0+
@@ -62,10 +62,9 @@ public class FilterRegistrationBean<T extends Filter>
 	 * @param filter the filter to register
 	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
 	 */
-	public FilterRegistrationBean(T filter,
+	public FilterRegistrationBean(@NonNull T filter,
 			ServletRegistrationBean<?>... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
-		Assert.notNull(filter, "Filter must not be null");
 		this.filter = filter;
 	}
 
@@ -78,8 +77,7 @@ public class FilterRegistrationBean<T extends Filter>
 	 * Set the filter to be registered.
 	 * @param filter the filter
 	 */
-	public void setFilter(T filter) {
-		Assert.notNull(filter, "Filter must not be null");
+	public void setFilter(@NonNull T filter) {
 		this.filter = filter;
 	}
 

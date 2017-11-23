@@ -22,7 +22,7 @@ import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Bean to set up Narayana recovery manager.
@@ -34,8 +34,8 @@ public class NarayanaRecoveryManagerBean implements InitializingBean, Disposable
 
 	private final RecoveryManagerService recoveryManagerService;
 
-	public NarayanaRecoveryManagerBean(RecoveryManagerService recoveryManagerService) {
-		Assert.notNull(recoveryManagerService, "RecoveryManagerService must not be null");
+	public NarayanaRecoveryManagerBean(
+			@NonNull RecoveryManagerService recoveryManagerService) {
 		this.recoveryManagerService = recoveryManagerService;
 	}
 

@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -53,10 +54,8 @@ public class ExposeExcludePropertyEndpointFilter<T extends Operation>
 	private final Set<String> exposeDefaults;
 
 	public ExposeExcludePropertyEndpointFilter(
-			Class<? extends EndpointDiscoverer<T>> discovererType,
-			Environment environment, String prefix, String... exposeDefaults) {
-		Assert.notNull(discovererType, "Discoverer Type must not be null");
-		Assert.notNull(environment, "Environment must not be null");
+			@NonNull Class<? extends EndpointDiscoverer<T>> discovererType,
+			@NonNull Environment environment, String prefix, String... exposeDefaults) {
 		Assert.hasText(prefix, "Prefix must not be empty");
 		Binder binder = Binder.get(environment);
 		this.discovererType = discovererType;
@@ -66,10 +65,9 @@ public class ExposeExcludePropertyEndpointFilter<T extends Operation>
 	}
 
 	public ExposeExcludePropertyEndpointFilter(
-			Class<? extends EndpointDiscoverer<T>> discovererType,
+			@NonNull Class<? extends EndpointDiscoverer<T>> discovererType,
 			Collection<String> expose, Collection<String> exclude,
 			String... exposeDefaults) {
-		Assert.notNull(discovererType, "Discoverer Type must not be null");
 		this.discovererType = discovererType;
 		this.expose = asSet(expose);
 		this.exclude = asSet(exclude);

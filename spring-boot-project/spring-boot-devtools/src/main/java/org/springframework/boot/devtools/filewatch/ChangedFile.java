@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -42,10 +43,8 @@ public final class ChangedFile {
 	 * @param file the file
 	 * @param type the type of change
 	 */
-	public ChangedFile(File sourceFolder, File file, Type type) {
-		Assert.notNull(sourceFolder, "SourceFolder must not be null");
-		Assert.notNull(file, "File must not be null");
-		Assert.notNull(type, "Type must not be null");
+	public ChangedFile(@NonNull File sourceFolder, @NonNull File file,
+			@NonNull Type type) {
 		this.sourceFolder = sourceFolder;
 		this.file = file;
 		this.type = type;

@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
@@ -35,8 +35,7 @@ public class MongoHealthIndicator extends AbstractHealthIndicator {
 
 	private final MongoTemplate mongoTemplate;
 
-	public MongoHealthIndicator(MongoTemplate mongoTemplate) {
-		Assert.notNull(mongoTemplate, "MongoTemplate must not be null");
+	public MongoHealthIndicator(@NonNull MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 

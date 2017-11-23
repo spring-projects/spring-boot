@@ -25,6 +25,7 @@
 		<aether.version>1.0.2.v20150114</aether.version>
 		<maven.version>3.1.1</maven.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
+		<traute.version>1.0.10</traute.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -263,6 +264,12 @@
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>tech.harmonysoft</groupId>
+			<artifactId>traute-javac</artifactId>
+			<version>${traute.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -558,6 +565,11 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<parameters>true</parameters>
+					<compilerArgs>
+						<arg>-Xplugin:Traute</arg>
+						<arg>-Atraute.exception.parameter=IllegalArgumentException</arg>
+						<arg>-Atraute.failure.text.parameter=$${capitalize(PARAMETER_NAME)} must not be null</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>

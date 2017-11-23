@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.function.Predicate;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A filtered {@link ConfigurationPropertySource}.
@@ -32,10 +32,8 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 
 	private final Predicate<ConfigurationPropertyName> filter;
 
-	FilteredConfigurationPropertiesSource(ConfigurationPropertySource source,
-			Predicate<ConfigurationPropertyName> filter) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(filter, "Filter must not be null");
+	FilteredConfigurationPropertiesSource(@NonNull ConfigurationPropertySource source,
+			@NonNull Predicate<ConfigurationPropertyName> filter) {
 		this.source = source;
 		this.filter = filter;
 	}

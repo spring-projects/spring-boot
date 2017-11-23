@@ -52,7 +52,7 @@ import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -155,9 +155,8 @@ public class MongoDataAutoConfiguration {
 
 		private final MongoProperties properties;
 
-		GridFsMongoDbFactory(MongoDbFactory mongoDbFactory, MongoProperties properties) {
-			Assert.notNull(mongoDbFactory, "MongoDbFactory must not be null");
-			Assert.notNull(properties, "Properties must not be null");
+		GridFsMongoDbFactory(@NonNull MongoDbFactory mongoDbFactory,
+				@NonNull MongoProperties properties) {
 			this.mongoDbFactory = mongoDbFactory;
 			this.properties = properties;
 		}

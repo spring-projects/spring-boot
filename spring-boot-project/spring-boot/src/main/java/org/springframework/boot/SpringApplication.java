@@ -67,6 +67,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -258,9 +259,9 @@ public class SpringApplication {
 	 * @see #setSources(Set)
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+	public SpringApplication(ResourceLoader resourceLoader,
+			@NonNull Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
-		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = deduceWebApplicationType();
 		setInitializers((Collection) getSpringFactoriesInstances(
@@ -961,8 +962,7 @@ public class SpringApplication {
 	 * @param webApplicationType the web application type
 	 * @since 2.0.0
 	 */
-	public void setWebApplicationType(WebApplicationType webApplicationType) {
-		Assert.notNull(webApplicationType, "WebApplicationType must not be null");
+	public void setWebApplicationType(@NonNull WebApplicationType webApplicationType) {
 		this.webApplicationType = webApplicationType;
 	}
 
@@ -1108,8 +1108,7 @@ public class SpringApplication {
 	 * @see #SpringApplication(Class...)
 	 * @see #getAllSources()
 	 */
-	public void setSources(Set<String> sources) {
-		Assert.notNull(sources, "Sources must not be null");
+	public void setSources(@NonNull Set<String> sources) {
 		this.sources = new LinkedHashSet<>(sources);
 	}
 
@@ -1135,8 +1134,7 @@ public class SpringApplication {
 	 * Sets the {@link ResourceLoader} that should be used when loading resources.
 	 * @param resourceLoader the resource loader
 	 */
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+	public void setResourceLoader(@NonNull ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
@@ -1272,9 +1270,8 @@ public class SpringApplication {
 	 * @param exitCodeGenerators exist code generators
 	 * @return the outcome (0 if successful)
 	 */
-	public static int exit(ApplicationContext context,
+	public static int exit(@NonNull ApplicationContext context,
 			ExitCodeGenerator... exitCodeGenerators) {
-		Assert.notNull(context, "Context must not be null");
 		int exitCode = 0;
 		try {
 			try {

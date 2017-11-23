@@ -36,6 +36,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -109,10 +110,8 @@ public final class TestPropertyValues {
 	 * @param type the type of {@link PropertySource} to be added. See {@link Type}
 	 * @param name the name for the property source
 	 */
-	public void applyTo(ConfigurableEnvironment environment, Type type, String name) {
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(type, "Property source type must not be null");
-		Assert.notNull(name, "Property source name must not be null");
+	public void applyTo(@NonNull ConfigurableEnvironment environment,
+			@NonNull Type type, @NonNull String name) {
 		MutablePropertySources sources = environment.getPropertySources();
 		addToSources(sources, type, name);
 		ConfigurationPropertySources.attach(environment);
@@ -310,8 +309,7 @@ public final class TestPropertyValues {
 			this.previous.forEach(this::setOrClear);
 		}
 
-		private String setOrClear(String name, String value) {
-			Assert.notNull(name, "Name must not be null");
+		private String setOrClear(@NonNull String name, String value) {
 			if (StringUtils.isEmpty(value)) {
 				return (String) System.getProperties().remove(name);
 			}

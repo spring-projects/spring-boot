@@ -27,7 +27,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Collection of {@link TemplateAvailabilityProvider} beans that can be used to check
@@ -83,8 +83,7 @@ public class TemplateAvailabilityProviders {
 	 * Create a new {@link TemplateAvailabilityProviders} instance.
 	 * @param classLoader the source class loader
 	 */
-	public TemplateAvailabilityProviders(ClassLoader classLoader) {
-		Assert.notNull(classLoader, "ClassLoader must not be null");
+	public TemplateAvailabilityProviders(@NonNull ClassLoader classLoader) {
 		this.providers = SpringFactoriesLoader
 				.loadFactories(TemplateAvailabilityProvider.class, classLoader);
 	}
@@ -94,8 +93,7 @@ public class TemplateAvailabilityProviders {
 	 * @param providers the underlying providers
 	 */
 	protected TemplateAvailabilityProviders(
-			Collection<? extends TemplateAvailabilityProvider> providers) {
-		Assert.notNull(providers, "Providers must not be null");
+			@NonNull Collection<? extends TemplateAvailabilityProvider> providers) {
 		this.providers = new ArrayList<>(providers);
 	}
 
@@ -114,8 +112,7 @@ public class TemplateAvailabilityProviders {
 	 * @return a {@link TemplateAvailabilityProvider} or null
 	 */
 	public TemplateAvailabilityProvider getProvider(String view,
-			ApplicationContext applicationContext) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
+			@NonNull ApplicationContext applicationContext) {
 		return getProvider(view, applicationContext.getEnvironment(),
 				applicationContext.getClassLoader(), applicationContext);
 	}
@@ -128,12 +125,10 @@ public class TemplateAvailabilityProviders {
 	 * @param resourceLoader the resource loader
 	 * @return a {@link TemplateAvailabilityProvider} or null
 	 */
-	public TemplateAvailabilityProvider getProvider(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
-		Assert.notNull(view, "View must not be null");
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(classLoader, "ClassLoader must not be null");
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+	public TemplateAvailabilityProvider getProvider(@NonNull String view,
+			@NonNull Environment environment,
+			@NonNull ClassLoader classLoader,
+			@NonNull ResourceLoader resourceLoader) {
 		Boolean useCache = environment.getProperty("spring.template.provider.cache",
 				Boolean.class, true);
 		if (!useCache) {

@@ -49,7 +49,7 @@ public class JsonContentTests {
 	@Test
 	public void createWhenJsonIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("JSON must not be null");
+		this.thrown.expectMessage("Json must not be null");
 		new JsonContent<ExampleObject>(getClass(), TYPE, null);
 	}
 

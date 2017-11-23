@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -120,8 +120,7 @@ public abstract class AbstractServletWebServerFactory
 		this.contextPath = contextPath;
 	}
 
-	private void checkContextPath(String contextPath) {
-		Assert.notNull(contextPath, "ContextPath must not be null");
+	private void checkContextPath(@NonNull String contextPath) {
 		if (!contextPath.isEmpty()) {
 			if ("/".equals(contextPath)) {
 				throw new IllegalArgumentException(
@@ -215,14 +214,13 @@ public abstract class AbstractServletWebServerFactory
 	}
 
 	@Override
-	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
-		Assert.notNull(initializers, "Initializers must not be null");
+	public void setInitializers(
+			@NonNull List<? extends ServletContextInitializer> initializers) {
 		this.initializers = new ArrayList<>(initializers);
 	}
 
 	@Override
-	public void addInitializers(ServletContextInitializer... initializers) {
-		Assert.notNull(initializers, "Initializers must not be null");
+	public void addInitializers(@NonNull ServletContextInitializer... initializers) {
 		this.initializers.addAll(Arrays.asList(initializers));
 	}
 
@@ -244,8 +242,8 @@ public abstract class AbstractServletWebServerFactory
 	}
 
 	@Override
-	public void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings) {
-		Assert.notNull(localeCharsetMappings, "localeCharsetMappings must not be null");
+	public void setLocaleCharsetMappings(
+			@NonNull Map<Locale, Charset> localeCharsetMappings) {
 		this.localeCharsetMappings = localeCharsetMappings;
 	}
 

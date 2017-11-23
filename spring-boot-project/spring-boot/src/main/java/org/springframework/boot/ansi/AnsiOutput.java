@@ -16,7 +16,7 @@
 
 package org.springframework.boot.ansi;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Generates ANSI encoded output, automatically attempting to detect if the terminal
@@ -47,8 +47,7 @@ public abstract class AnsiOutput {
 	 * Sets if ANSI output is enabled.
 	 * @param enabled if ANSI is enabled, disabled or detected
 	 */
-	public static void setEnabled(Enabled enabled) {
-		Assert.notNull(enabled, "Enabled must not be null");
+	public static void setEnabled(@NonNull Enabled enabled) {
 		AnsiOutput.enabled = enabled;
 	}
 

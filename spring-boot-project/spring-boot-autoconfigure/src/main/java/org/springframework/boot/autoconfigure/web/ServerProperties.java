@@ -37,7 +37,7 @@ import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -263,8 +263,7 @@ public class ServerProperties {
 			return this.path;
 		}
 
-		public void setPath(String path) {
-			Assert.notNull(path, "Path must not be null");
+		public void setPath(@NonNull String path) {
 			this.path = path;
 		}
 

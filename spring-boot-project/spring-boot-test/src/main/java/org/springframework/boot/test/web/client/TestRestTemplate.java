@@ -49,7 +49,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
@@ -120,9 +120,8 @@ public class TestRestTemplate {
 		this(restTemplate, null, null);
 	}
 
-	public TestRestTemplate(RestTemplate restTemplate, String username, String password,
-			HttpClientOption... httpClientOptions) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
+	public TestRestTemplate(@NonNull RestTemplate restTemplate, String username,
+			String password, HttpClientOption... httpClientOptions) {
 		this.httpClientOptions = httpClientOptions;
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
 			restTemplate.setRequestFactory(
@@ -134,8 +133,7 @@ public class TestRestTemplate {
 	}
 
 	private static RestTemplate buildRestTemplate(
-			RestTemplateBuilder restTemplateBuilder) {
-		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
+			@NonNull RestTemplateBuilder restTemplateBuilder) {
 		return restTemplateBuilder.build();
 	}
 

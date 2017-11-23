@@ -68,6 +68,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -153,8 +154,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to set
 	 */
 	public void setBuilderCustomizers(
-			Collection<? extends UndertowBuilderCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+			@NonNull Collection<? extends UndertowBuilderCustomizer> customizers) {
 		this.builderCustomizers = new ArrayList<>(customizers);
 	}
 
@@ -172,8 +172,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * Undertow {@link Builder}.
 	 * @param customizers the customizers to add
 	 */
-	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+	public void addBuilderCustomizers(@NonNull UndertowBuilderCustomizer... customizers) {
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
 	}
 
@@ -184,8 +183,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to set
 	 */
 	public void setDeploymentInfoCustomizers(
-			Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+			@NonNull Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
 		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
 	}
 
@@ -204,8 +202,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to add
 	 */
 	public void addDeploymentInfoCustomizers(
-			UndertowDeploymentInfoCustomizer... customizers) {
-		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
+			@NonNull UndertowDeploymentInfoCustomizer... customizers) {
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
 

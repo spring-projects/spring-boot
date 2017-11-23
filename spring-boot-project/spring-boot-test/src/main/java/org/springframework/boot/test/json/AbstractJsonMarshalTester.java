@@ -35,6 +35,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -84,9 +85,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * resources
 	 * @param type the type under test
 	 */
-	public AbstractJsonMarshalTester(Class<?> resourceLoadClass, ResolvableType type) {
-		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
-		Assert.notNull(type, "Type must not be null");
+	public AbstractJsonMarshalTester(@NonNull Class<?> resourceLoadClass,
+			@NonNull ResolvableType type) {
 		initialize(resourceLoadClass, type);
 	}
 
@@ -125,9 +125,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link JsonContent}
 	 * @throws IOException on write error
 	 */
-	public JsonContent<T> write(T value) throws IOException {
+	public JsonContent<T> write(@NonNull T value) throws IOException {
 		verify();
-		Assert.notNull(value, "Value must not be null");
 		String json = writeObject(value, this.type);
 		return new JsonContent<>(this.resourceLoadClass, this.type, json);
 	}
@@ -149,9 +148,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link ObjectContent}
 	 * @throws IOException on parse error
 	 */
-	public ObjectContent<T> parse(byte[] jsonBytes) throws IOException {
+	public ObjectContent<T> parse(@NonNull byte[] jsonBytes) throws IOException {
 		verify();
-		Assert.notNull(jsonBytes, "JsonBytes must not be null");
 		return read(new ByteArrayResource(jsonBytes));
 	}
 
@@ -172,9 +170,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link ObjectContent}
 	 * @throws IOException on parse error
 	 */
-	public ObjectContent<T> parse(String jsonString) throws IOException {
+	public ObjectContent<T> parse(@NonNull String jsonString) throws IOException {
 		verify();
-		Assert.notNull(jsonString, "JsonString must not be null");
 		return read(new StringReader(jsonString));
 	}
 
@@ -197,9 +194,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link ObjectContent}
 	 * @throws IOException on read error
 	 */
-	public ObjectContent<T> read(String resourcePath) throws IOException {
+	public ObjectContent<T> read(@NonNull String resourcePath) throws IOException {
 		verify();
-		Assert.notNull(resourcePath, "ResourcePath must not be null");
 		return read(new ClassPathResource(resourcePath, this.resourceLoadClass));
 	}
 
@@ -220,9 +216,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link ObjectContent}
 	 * @throws IOException on read error
 	 */
-	public ObjectContent<T> read(File file) throws IOException {
+	public ObjectContent<T> read(@NonNull File file) throws IOException {
 		verify();
-		Assert.notNull(file, "File must not be null");
 		return read(new FileSystemResource(file));
 	}
 
@@ -243,9 +238,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link ObjectContent}
 	 * @throws IOException on read error
 	 */
-	public ObjectContent<T> read(InputStream inputStream) throws IOException {
+	public ObjectContent<T> read(@NonNull InputStream inputStream) throws IOException {
 		verify();
-		Assert.notNull(inputStream, "InputStream must not be null");
 		return read(new InputStreamResource(inputStream));
 	}
 
@@ -266,9 +260,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link ObjectContent}
 	 * @throws IOException on read error
 	 */
-	public ObjectContent<T> read(Resource resource) throws IOException {
+	public ObjectContent<T> read(@NonNull Resource resource) throws IOException {
 		verify();
-		Assert.notNull(resource, "Resource must not be null");
 		InputStream inputStream = resource.getInputStream();
 		T object = readObject(inputStream, this.type);
 		closeQuietly(inputStream);
@@ -292,9 +285,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @return the {@link ObjectContent}
 	 * @throws IOException on read error
 	 */
-	public ObjectContent<T> read(Reader reader) throws IOException {
+	public ObjectContent<T> read(@NonNull Reader reader) throws IOException {
 		verify();
-		Assert.notNull(reader, "Reader must not be null");
 		T object = readObject(reader, this.type);
 		closeQuietly(reader);
 		return new ObjectContent<>(this.type, object);
@@ -360,21 +352,17 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 		@SuppressWarnings("rawtypes")
 		protected FieldInitializer(
-				Class<? extends AbstractJsonMarshalTester> testerClass) {
-			Assert.notNull(testerClass, "TesterClass must not be null");
+				@NonNull Class<? extends AbstractJsonMarshalTester> testerClass) {
 			this.testerClass = testerClass;
 		}
 
-		public void initFields(final Object testInstance, final M marshaller) {
-			Assert.notNull(testInstance, "TestInstance must not be null");
-			Assert.notNull(marshaller, "Marshaller must not be null");
+		public void initFields(@NonNull final Object testInstance,
+				@NonNull final M marshaller) {
 			initFields(testInstance, () -> marshaller);
 		}
 
-		public void initFields(final Object testInstance,
-				final ObjectFactory<M> marshaller) {
-			Assert.notNull(testInstance, "TestInstance must not be null");
-			Assert.notNull(marshaller, "Marshaller must not be null");
+		public void initFields(@NonNull final Object testInstance,
+				@NonNull final ObjectFactory<M> marshaller) {
 			ReflectionUtils.doWithFields(testInstance.getClass(),
 					(field) -> doWithField(field, testInstance, marshaller));
 		}

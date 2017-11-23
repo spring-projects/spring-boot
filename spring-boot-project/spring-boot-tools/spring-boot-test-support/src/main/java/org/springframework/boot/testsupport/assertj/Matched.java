@@ -20,7 +20,7 @@ import org.assertj.core.api.Condition;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Adapter class allowing a Hamcrest {@link Matcher} to be used as an AssertJ
@@ -33,8 +33,7 @@ public final class Matched<T> extends Condition<T> {
 
 	private final Matcher<? extends T> matcher;
 
-	private Matched(Matcher<? extends T> matcher) {
-		Assert.notNull(matcher, "Matcher must not be null");
+	private Matched(@NonNull Matcher<? extends T> matcher) {
 		this.matcher = matcher;
 	}
 

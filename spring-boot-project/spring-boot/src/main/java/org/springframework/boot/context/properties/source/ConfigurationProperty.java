@@ -20,7 +20,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.style.ToStringCreator;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -41,10 +41,8 @@ public final class ConfigurationProperty
 
 	private final Origin origin;
 
-	public ConfigurationProperty(ConfigurationPropertyName name, Object value,
-			Origin origin) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(value, "Value must not be null");
+	public ConfigurationProperty(@NonNull ConfigurationPropertyName name,
+			@NonNull Object value, Origin origin) {
 		this.name = name;
 		this.value = value;
 		this.origin = origin;

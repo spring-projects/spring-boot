@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.livereload;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -39,14 +40,12 @@ class Frame {
 	 * payload.
 	 * @param payload the text payload
 	 */
-	Frame(String payload) {
-		Assert.notNull(payload, "Payload must not be null");
+	Frame(@NonNull String payload) {
 		this.type = Type.TEXT;
 		this.payload = payload.getBytes();
 	}
 
-	Frame(Type type) {
-		Assert.notNull(type, "Type must not be null");
+	Frame(@NonNull Type type) {
 		this.type = type;
 		this.payload = NO_BYTES;
 	}

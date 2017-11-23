@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Default {@link HealthAggregator} implementation that aggregates {@link Health}
@@ -60,8 +60,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 	 * Set the ordering of the status.
 	 * @param statusOrder an ordered list of the status codes
 	 */
-	public void setStatusOrder(List<String> statusOrder) {
-		Assert.notNull(statusOrder, "StatusOrder must not be null");
+	public void setStatusOrder(@NonNull List<String> statusOrder) {
 		this.statusOrder = statusOrder;
 	}
 

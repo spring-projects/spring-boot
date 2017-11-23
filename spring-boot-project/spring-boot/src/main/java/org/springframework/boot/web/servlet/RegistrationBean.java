@@ -23,6 +23,7 @@ import javax.servlet.Registration;
 
 import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -96,8 +97,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 * @see #getInitParameters
 	 * @see #addInitParameter
 	 */
-	public void setInitParameters(Map<String, String> initParameters) {
-		Assert.notNull(initParameters, "InitParameters must not be null");
+	public void setInitParameters(@NonNull Map<String, String> initParameters) {
 		this.initParameters = new LinkedHashMap<>(initParameters);
 	}
 
@@ -114,8 +114,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 * @param name the init-parameter name
 	 * @param value the init-parameter value
 	 */
-	public void addInitParameter(String name, String value) {
-		Assert.notNull(name, "Name must not be null");
+	public void addInitParameter(@NonNull String name, String value) {
 		this.initParameters.put(name, value);
 	}
 

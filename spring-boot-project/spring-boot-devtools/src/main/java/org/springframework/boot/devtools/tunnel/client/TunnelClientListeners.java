@@ -20,7 +20,7 @@ import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A collection of {@link TunnelClientListener}.
@@ -31,13 +31,11 @@ class TunnelClientListeners {
 
 	private final List<TunnelClientListener> listeners = new CopyOnWriteArrayList<>();
 
-	public void addListener(TunnelClientListener listener) {
-		Assert.notNull(listener, "Listener must not be null");
+	public void addListener(@NonNull TunnelClientListener listener) {
 		this.listeners.add(listener);
 	}
 
-	public void removeListener(TunnelClientListener listener) {
-		Assert.notNull(listener, "Listener must not be null");
+	public void removeListener(@NonNull TunnelClientListener listener) {
 		this.listeners.remove(listener);
 	}
 

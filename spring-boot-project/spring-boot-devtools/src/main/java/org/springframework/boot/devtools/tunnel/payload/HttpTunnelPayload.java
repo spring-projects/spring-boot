@@ -30,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -58,9 +59,8 @@ public class HttpTunnelPayload {
 	 * @param sequence the sequence number of the payload
 	 * @param data the payload data
 	 */
-	public HttpTunnelPayload(long sequence, ByteBuffer data) {
+	public HttpTunnelPayload(long sequence, @NonNull ByteBuffer data) {
 		Assert.isTrue(sequence > 0, "Sequence must be positive");
-		Assert.notNull(data, "Data must not be null");
 		this.sequence = sequence;
 		this.data = data;
 	}
@@ -78,8 +78,7 @@ public class HttpTunnelPayload {
 	 * @param message the message to assign this payload to
 	 * @throws IOException in case of I/O errors
 	 */
-	public void assignTo(HttpOutputMessage message) throws IOException {
-		Assert.notNull(message, "Message must not be null");
+	public void assignTo(@NonNull HttpOutputMessage message) throws IOException {
 		HttpHeaders headers = message.getHeaders();
 		headers.setContentLength(this.data.remaining());
 		headers.add(SEQ_HEADER, Long.toString(getSequence()));
@@ -96,8 +95,7 @@ public class HttpTunnelPayload {
 	 * @param channel the channel to write to
 	 * @throws IOException in case of I/O errors
 	 */
-	public void writeTo(WritableByteChannel channel) throws IOException {
-		Assert.notNull(channel, "Channel must not be null");
+	public void writeTo(@NonNull WritableByteChannel channel) throws IOException {
 		while (this.data.hasRemaining()) {
 			channel.write(this.data);
 		}

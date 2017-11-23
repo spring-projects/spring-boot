@@ -25,7 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link ReactiveHealthIndicator} that returns health indications from all registered
@@ -51,10 +51,8 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 		this(healthAggregator, new LinkedHashMap<>());
 	}
 
-	public CompositeReactiveHealthIndicator(HealthAggregator healthAggregator,
-			Map<String, ReactiveHealthIndicator> indicators) {
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(indicators, "Indicators must not be null");
+	public CompositeReactiveHealthIndicator(@NonNull HealthAggregator healthAggregator,
+			@NonNull Map<String, ReactiveHealthIndicator> indicators) {
 		this.indicators = new LinkedHashMap<>(indicators);
 		this.healthAggregator = healthAggregator;
 		this.timeoutCompose = (mono) -> this.timeout != null ? mono.timeout(

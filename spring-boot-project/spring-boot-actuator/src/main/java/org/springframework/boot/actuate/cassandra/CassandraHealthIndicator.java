@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.data.cassandra.core.CassandraOperations;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
@@ -41,8 +41,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 	 * Create a new {@link CassandraHealthIndicator} instance.
 	 * @param cassandraOperations the Cassandra operations
 	 */
-	public CassandraHealthIndicator(CassandraOperations cassandraOperations) {
-		Assert.notNull(cassandraOperations, "CassandraOperations must not be null");
+	public CassandraHealthIndicator(@NonNull CassandraOperations cassandraOperations) {
 		this.cassandraOperations = cassandraOperations;
 	}
 

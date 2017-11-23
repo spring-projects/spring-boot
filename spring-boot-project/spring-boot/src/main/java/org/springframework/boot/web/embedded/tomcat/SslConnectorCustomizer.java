@@ -28,6 +28,7 @@ import org.apache.tomcat.util.net.SSLHostConfig;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -43,8 +44,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 
 	private final SslStoreProvider sslStoreProvider;
 
-	SslConnectorCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
-		Assert.notNull(ssl, "Ssl configuration should not be null");
+	SslConnectorCustomizer(@NonNull Ssl ssl, SslStoreProvider sslStoreProvider) {
 		this.ssl = ssl;
 		this.sslStoreProvider = sslStoreProvider;
 	}

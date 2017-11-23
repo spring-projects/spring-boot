@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * An {@link ConfigurationPropertySource} backed by a {@link Map} and using standard name
@@ -63,8 +63,7 @@ public class MapConfigurationPropertySource
 	 * Add all entries from the specified map.
 	 * @param map the source map
 	 */
-	public void putAll(Map<?, ?> map) {
-		Assert.notNull(map, "Map must not be null");
+	public void putAll(@NonNull Map<?, ?> map) {
 		assertNotReadOnlySystemAttributesMap(map);
 		map.forEach(this::put);
 	}

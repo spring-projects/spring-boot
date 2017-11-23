@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -56,12 +56,9 @@ public class CompositeReactiveHealthIndicatorFactory {
 	 * {@code reactiveHealthIndicators}.
 	 */
 	public CompositeReactiveHealthIndicator createReactiveHealthIndicator(
-			HealthAggregator healthAggregator,
-			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
+			@NonNull HealthAggregator healthAggregator,
+			@NonNull Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(reactiveHealthIndicators,
-				"ReactiveHealthIndicators must not be null");
 		CompositeReactiveHealthIndicator healthIndicator = new CompositeReactiveHealthIndicator(
 				healthAggregator);
 		merge(reactiveHealthIndicators, healthIndicators)

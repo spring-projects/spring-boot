@@ -53,6 +53,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -129,11 +130,8 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @see #initialize(String[])
 	 */
-	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
-		Assert.notNull(thread, "Thread must not be null");
-		Assert.notNull(args, "Args must not be null");
-		Assert.notNull(initializer, "Initializer must not be null");
+	protected Restarter(@NonNull Thread thread, @NonNull String[] args,
+			boolean forceReferenceCleanup, @NonNull RestartInitializer initializer) {
 		this.logger.debug("Creating new Restarter for thread " + thread);
 		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
@@ -207,8 +205,7 @@ public class Restarter {
 	 * Add additional URLs to be includes in the next restart.
 	 * @param urls the urls to add
 	 */
-	public void addUrls(Collection<URL> urls) {
-		Assert.notNull(urls, "Urls must not be null");
+	public void addUrls(@NonNull Collection<URL> urls) {
 		this.urls.addAll(urls);
 	}
 
@@ -216,8 +213,7 @@ public class Restarter {
 	 * Add additional {@link ClassLoaderFiles} to be included in the next restart.
 	 * @param classLoaderFiles the files to add
 	 */
-	public void addClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
-		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+	public void addClassLoaderFiles(@NonNull ClassLoaderFiles classLoaderFiles) {
 		this.classLoaderFiles.addAll(classLoaderFiles);
 	}
 

@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.origin.Origin;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
@@ -47,11 +47,9 @@ public class ValidationErrors implements Iterable<ObjectError> {
 
 	private final List<ObjectError> errors;
 
-	ValidationErrors(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, List<ObjectError> errors) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(boundProperties, "BoundProperties must not be null");
-		Assert.notNull(errors, "Errors must not be null");
+	ValidationErrors(@NonNull ConfigurationPropertyName name,
+			@NonNull Set<ConfigurationProperty> boundProperties,
+			@NonNull List<ObjectError> errors) {
 		this.name = name;
 		this.boundProperties = Collections.unmodifiableSet(boundProperties);
 		this.errors = convertErrors(name, boundProperties, errors);

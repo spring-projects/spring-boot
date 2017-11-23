@@ -25,7 +25,7 @@ import com.hazelcast.client.config.XmlClientConfigBuilder;
 import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -51,8 +51,7 @@ public class HazelcastClientFactory {
 	 * Create a {@link HazelcastClientFactory} for the specified configuration.
 	 * @param clientConfig the configuration
 	 */
-	public HazelcastClientFactory(ClientConfig clientConfig) {
-		Assert.notNull(clientConfig, "ClientConfig must not be null");
+	public HazelcastClientFactory(@NonNull ClientConfig clientConfig) {
 		this.clientConfig = clientConfig;
 	}
 

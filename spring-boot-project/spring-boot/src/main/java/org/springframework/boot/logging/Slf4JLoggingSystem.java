@@ -18,7 +18,7 @@ package org.springframework.boot.logging;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -48,8 +48,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext,
-			String location, LogFile logFile) {
-		Assert.notNull(location, "Location must not be null");
+			@NonNull String location, LogFile logFile) {
 		if (initializationContext != null) {
 			applySystemProperties(initializationContext.getEnvironment(), logFile);
 		}

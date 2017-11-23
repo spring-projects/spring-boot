@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * AssertJ based JSON tester backed by Gson. Usually instantiated via
@@ -61,8 +61,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * Create a new uninitialized {@link GsonTester} instance.
 	 * @param gson the Gson instance
 	 */
-	protected GsonTester(Gson gson) {
-		Assert.notNull(gson, "Gson must not be null");
+	protected GsonTester(@NonNull Gson gson) {
 		this.gson = gson;
 	}
 
@@ -73,9 +72,9 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @param gson the Gson instance
 	 * @see #initFields(Object, Gson)
 	 */
-	public GsonTester(Class<?> resourceLoadClass, ResolvableType type, Gson gson) {
+	public GsonTester(Class<?> resourceLoadClass, ResolvableType type,
+			@NonNull Gson gson) {
 		super(resourceLoadClass, type);
-		Assert.notNull(gson, "Gson must not be null");
 		this.gson = gson;
 	}
 

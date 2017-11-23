@@ -29,7 +29,7 @@ import javax.sql.XADataSource;
 import com.arjuna.ats.internal.jdbc.ConnectionManager;
 import com.arjuna.ats.jdbc.TransactionalDriver;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -47,8 +47,7 @@ public class NarayanaDataSourceBean implements DataSource {
 	 * Create a new {@link NarayanaDataSourceBean} instance.
 	 * @param xaDataSource the XA DataSource
 	 */
-	public NarayanaDataSourceBean(XADataSource xaDataSource) {
-		Assert.notNull(xaDataSource, "XADataSource must not be null");
+	public NarayanaDataSourceBean(@NonNull XADataSource xaDataSource) {
 		this.xaDataSource = xaDataSource;
 	}
 

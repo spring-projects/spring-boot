@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link Endpoint} to expose audit events.
@@ -34,8 +34,7 @@ public class AuditEventsEndpoint {
 
 	private final AuditEventRepository auditEventRepository;
 
-	public AuditEventsEndpoint(AuditEventRepository auditEventRepository) {
-		Assert.notNull(auditEventRepository, "AuditEventRepository must not be null");
+	public AuditEventsEndpoint(@NonNull AuditEventRepository auditEventRepository) {
 		this.auditEventRepository = auditEventRepository;
 	}
 

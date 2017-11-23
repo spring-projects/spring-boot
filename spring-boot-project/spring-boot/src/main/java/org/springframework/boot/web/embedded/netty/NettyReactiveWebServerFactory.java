@@ -30,7 +30,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link NettyWebServer}s.
@@ -72,8 +72,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * @param nettyServerCustomizers the customizers to set
 	 */
 	public void setNettyServerCustomizers(
-			Collection<? extends NettyServerCustomizer> nettyServerCustomizers) {
-		Assert.notNull(nettyServerCustomizers, "NettyServerCustomizers must not be null");
+			@NonNull Collection<? extends NettyServerCustomizer> nettyServerCustomizers) {
 		this.nettyServerCustomizers = new ArrayList<>(nettyServerCustomizers);
 	}
 
@@ -81,9 +80,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
 	 * @param nettyServerCustomizer the customizers to add
 	 */
-	public void addContextCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
-		Assert.notNull(nettyServerCustomizer,
-				"NettyWebServerCustomizer must not be null");
+	public void addContextCustomizers(
+			@NonNull NettyServerCustomizer... nettyServerCustomizer) {
 		this.nettyServerCustomizers.addAll(Arrays.asList(nettyServerCustomizer));
 	}
 

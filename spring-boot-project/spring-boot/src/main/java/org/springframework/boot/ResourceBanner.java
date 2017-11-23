@@ -35,6 +35,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -51,8 +52,7 @@ public class ResourceBanner implements Banner {
 
 	private Resource resource;
 
-	public ResourceBanner(Resource resource) {
-		Assert.notNull(resource, "Resource must not be null");
+	public ResourceBanner(@NonNull Resource resource) {
 		Assert.isTrue(resource.exists(), "Resource must exist");
 		this.resource = resource;
 	}

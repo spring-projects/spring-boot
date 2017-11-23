@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Default {@link EndpointPathProvider} implementation.
@@ -50,8 +50,7 @@ public class DefaultEndpointPathProvider implements EndpointPathProvider {
 	}
 
 	@Override
-	public String getPath(String id) {
-		Assert.notNull(id, "ID must not be null");
+	public String getPath(@NonNull String id) {
 		return getEndpoints().filter((info) -> id.equals(info.getId())).findFirst()
 				.map(this::getPath).orElse(null);
 	}

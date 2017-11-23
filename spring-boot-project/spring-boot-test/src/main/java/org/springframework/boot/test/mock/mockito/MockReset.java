@@ -25,7 +25,7 @@ import org.mockito.listeners.InvocationListener;
 import org.mockito.listeners.MethodInvocationReport;
 import org.mockito.mock.MockCreationSettings;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Reset strategy used on a mock bean. Usually applied to a mock via the
@@ -87,8 +87,7 @@ public enum MockReset {
 	 * @param settings the settings
 	 * @return the configured settings
 	 */
-	public static MockSettings apply(MockReset reset, MockSettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+	public static MockSettings apply(MockReset reset, @NonNull MockSettings settings) {
 		if (reset != null && reset != NONE) {
 			settings.invocationListeners(new ResetInvocationListener(reset));
 		}

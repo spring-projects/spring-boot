@@ -26,7 +26,7 @@ import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisConnectionUtils;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
@@ -44,8 +44,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 
 	private final RedisConnectionFactory redisConnectionFactory;
 
-	public RedisHealthIndicator(RedisConnectionFactory connectionFactory) {
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+	public RedisHealthIndicator(@NonNull RedisConnectionFactory connectionFactory) {
 		this.redisConnectionFactory = connectionFactory;
 	}
 

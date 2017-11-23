@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties.Packages;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,9 +44,8 @@ class ActiveMQConnectionFactoryFactory {
 
 	private final List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers;
 
-	ActiveMQConnectionFactoryFactory(ActiveMQProperties properties,
+	ActiveMQConnectionFactoryFactory(@NonNull ActiveMQProperties properties,
 			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
-		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
 		this.factoryCustomizers = (factoryCustomizers != null ? factoryCustomizers
 				: Collections.emptyList());

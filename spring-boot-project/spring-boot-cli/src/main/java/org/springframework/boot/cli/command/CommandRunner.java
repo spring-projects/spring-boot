@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -70,8 +70,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * Add the specified commands.
 	 * @param commands the commands to add
 	 */
-	public void addCommands(Iterable<Command> commands) {
-		Assert.notNull(commands, "Commands must not be null");
+	public void addCommands(@NonNull Iterable<Command> commands) {
 		for (Command command : commands) {
 			addCommand(command);
 		}
@@ -81,8 +80,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * Add the specified command.
 	 * @param command the command to add.
 	 */
-	public void addCommand(Command command) {
-		Assert.notNull(command, "Command must not be null");
+	public void addCommand(@NonNull Command command) {
 		this.commands.add(command);
 	}
 
@@ -93,8 +91,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param commandClasses the classes of option commands.
 	 * @see #isOptionCommand(Command)
 	 */
-	public void setOptionCommands(Class<?>... commandClasses) {
-		Assert.notNull(commandClasses, "CommandClasses must not be null");
+	public void setOptionCommands(@NonNull Class<?>... commandClasses) {
 		this.optionCommandClasses = commandClasses;
 	}
 
@@ -103,8 +100,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * the available commands list).
 	 * @param commandClasses the classes of hidden commands
 	 */
-	public void setHiddenCommands(Class<?>... commandClasses) {
-		Assert.notNull(commandClasses, "CommandClasses must not be null");
+	public void setHiddenCommands(@NonNull Class<?>... commandClasses) {
 		this.hiddenCommandClasses = commandClasses;
 	}
 
