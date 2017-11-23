@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.time.Duration;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Cache;
 import org.springframework.boot.testsupport.assertj.Matched;
@@ -38,9 +36,6 @@ import static org.hamcrest.CoreMatchers.endsWith;
 public class ResourcePropertiesTests {
 
 	private final ResourceProperties properties = new ResourceProperties();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void resourceChainNoCustomization() {
