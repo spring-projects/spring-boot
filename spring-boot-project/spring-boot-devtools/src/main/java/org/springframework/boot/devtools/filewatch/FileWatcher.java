@@ -18,11 +18,10 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 
 /**
- * Allows to watch for changes in source directories
- * 
+ * Allows to watch for changes in source directories.
+ *
  * @author Damian Suchodolski
  *
  */
@@ -57,7 +56,6 @@ public interface FileWatcher {
 
 	/**
 	 * Start monitoring the source folder for changes.
-	 * @throws IOException
 	 */
 	void start();
 
@@ -65,5 +63,4 @@ public interface FileWatcher {
 	 * Stop monitoring the source folders.
 	 */
 	void stop();
-
 }

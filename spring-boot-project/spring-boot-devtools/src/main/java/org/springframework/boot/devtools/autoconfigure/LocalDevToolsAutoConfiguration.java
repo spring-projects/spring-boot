@@ -162,7 +162,7 @@ public class LocalDevToolsAutoConfiguration {
 			initWatcher(restartProperties, watcher);
 			return watcher;
 		}
-		
+
 		private void initWatcher(Restart restartProperties, FileSystemWatcher watcher) {
 			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {
