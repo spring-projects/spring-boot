@@ -273,6 +273,23 @@ public class EnvironmentEndpointTests {
 		assertPropertySourceEntryDescriptor(sources.get("test"), null, null);
 	}
 
+	@Test
+	public void multipleSourcesWithSameProperty() {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		environment.getPropertySources()
+				.addFirst(singleKeyPropertySource("one", "a", "alpha"));
+		environment.getPropertySources()
+				.addFirst(singleKeyPropertySource("two", "a", "apple"));
+		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment)
+				.environment(null);
+		Map<String, PropertySourceDescriptor> sources = propertySources(descriptor);
+		assertThat(sources.keySet()).containsExactly("two", "one");
+		assertThat(sources.get("one").getProperties().get("a").getValue())
+				.isEqualTo("alpha");
+		assertThat(sources.get("two").getProperties().get("a").getValue())
+				.isEqualTo("apple");
+	}
+
 	private static ConfigurableEnvironment emptyEnvironment() {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources()
