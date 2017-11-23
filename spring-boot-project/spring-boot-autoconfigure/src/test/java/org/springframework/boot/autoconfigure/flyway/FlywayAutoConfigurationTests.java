@@ -192,6 +192,13 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void checkLocationsAllExistWithImplicitClasspathPrefix() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
 	public void customFlywayMigrationStrategy() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				MockFlywayMigrationStrategy.class).run((context) -> {
