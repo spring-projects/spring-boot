@@ -214,6 +214,15 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
+	public void testUserSpecifiedNestedJarPath() throws Exception {
+		System.setProperty("loader.path", "nested-jars/app.jar!/foo.jar");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		List<Archive> archives = launcher.getClassPathArchives();
+		assertThat(archives).hasSize(1).areExactly(1, endingWith("foo.jar!/"));
+	}
+
+	@Test
 	public void testUserSpecifiedDirectoryContainingJarFileWithNestedArchives()
 			throws Exception {
 		System.setProperty("loader.path", "nested-jars");
