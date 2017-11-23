@@ -1140,9 +1140,99 @@
     {
       "name": "spring.messages.cache-seconds",
       "type": "java.lang.Integer",
-      "description": "Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever",
+      "description": "Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever.",
       "deprecation": {
         "replacement": "spring.messages.cache-duration",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable device view resolver.",
+      "defaultValue": false,
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.enable-fallback",
+      "type": "java.lang.Boolean",
+      "description": "Enable support for fallback resolution.",
+      "defaultValue": false,
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.mobile-prefix",
+      "type": "java.lang.String",
+      "description": "Prefix that gets prepended to view names for mobile devices.",
+      "defaultValue": "mobile/",
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.mobile-suffix",
+      "type": "java.lang.String",
+      "description": "Suffix that gets appended to view names for mobile devices.",
+      "defaultValue": "",
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.normal-prefix",
+      "type": "java.lang.String",
+      "description": "Prefix that gets prepended to view names for normal devices.",
+      "defaultValue": "",
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.normal-suffix",
+      "type": "java.lang.String",
+      "description": "Suffix that gets appended to view names for normal devices.",
+      "defaultValue": "",
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.tablet-prefix",
+      "type": "java.lang.String",
+      "description": "Prefix that gets prepended to view names for tablet devices.",
+      "defaultValue": "tablet/",
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.devicedelegatingviewresolver.tablet-suffix",
+      "type": "java.lang.String",
+      "description": "Suffix that gets appended to view names for tablet devices.",
+      "defaultValue": "",
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mobile.sitepreference.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable SitePreferenceHandler.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Spring Mobile support is no longer available.",
         "level": "error"
       }
     },
@@ -1219,6 +1309,16 @@
       "description": "Create the required session tables on startup if necessary. Enabled\n automatically if the default table name is set or a custom schema is\n configured.",
       "deprecation": {
         "replacement": "spring.session.jdbc.initialize-schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.session.mongo.collection-name",
+      "type": "java.lang.String",
+      "description": "Collection name used to store sessions.",
+      "defaultValue": "sessions",
+      "deprecation": {
+        "replacement": "spring.session.mongodb.collection-name",
         "level": "error"
       }
     },
