@@ -183,7 +183,7 @@ register an `EndpointFilter` bean.
 === Securing HTTP Endpoints
 You should take care to secure HTTP endpoints in the same way that you would any other
 sensitive URL. Spring Boot will not apply any security on your behalf, however, it does
-provide some convenient `RequestMatcher`s that can be used in combination with Spring
+provide some convenient ``RequestMatcher``s that can be used in combination with Spring
 Security.
 
 A typical Spring Security configuration could look something like this:

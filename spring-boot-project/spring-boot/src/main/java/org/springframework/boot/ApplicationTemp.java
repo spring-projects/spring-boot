@@ -90,7 +90,7 @@ public class ApplicationTemp {
 		String property = System.getProperty("java.io.tmpdir");
 		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
 		File file = new File(property);
-		Assert.state(file.exists(), () -> "Temp directory" + file + " does not exist");
+		Assert.state(file.exists(), () -> "Temp directory " + file + " does not exist");
 		Assert.state(file.isDirectory(),
 				() -> "Temp location " + file + " is not a directory");
 		return file;

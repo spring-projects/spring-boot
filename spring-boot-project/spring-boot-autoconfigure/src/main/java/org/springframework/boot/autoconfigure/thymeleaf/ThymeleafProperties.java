@@ -63,7 +63,7 @@ public class ThymeleafProperties {
 	private String suffix = DEFAULT_SUFFIX;
 
 	/**
-	 * Template mode to be applied to templates. See also Thymleaf's TemplateMode enum.
+	 * Template mode to be applied to templates. See also Thymeleaf's TemplateMode enum.
 	 */
 	private String mode = "HTML";
 

@@ -175,8 +175,7 @@ public class ReactiveMongoClientFactoryTests {
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
 		MongoClientSettings settings = client.getSettings();
 		ClusterSettings clusterSettings = settings.getClusterSettings();
-		List<ServerAddress> allAddresses = clusterSettings.getHosts();
-		return allAddresses;
+		return clusterSettings.getHosts();
 	}
 
 	private List<MongoCredential> extractMongoCredentials(MongoClient client) {
