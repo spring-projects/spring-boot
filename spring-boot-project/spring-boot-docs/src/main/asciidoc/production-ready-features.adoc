@@ -226,11 +226,11 @@ Endpoints can be customized by using Spring properties. You can change whether a
 endpoint is `enabled` and the amount of time it will cache responses.
 
 For example, the following `application.properties` changes the time-to-live of the
-`beans` endpoint and also enables `shutdown`:
+`beans` endpoint to 10 seconds and also enables `shutdown`:
 
 [source,properties,indent=0]
 ----
-	management.endpoint.beans.cache.time-to-live=10
+	management.endpoint.beans.cache.time-to-live=10s
 	management.endpoint.shutdown.enabled=true
 ----
 
