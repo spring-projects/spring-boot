@@ -64,10 +64,16 @@ public class DevToolsProperties {
 				+ "**/*Test.class,**/*Tests.class,git.properties,META-INF/build-info.properties";
 
 		/**
-		 * Whether to enable automatic restart.
+		 * Enable automatic restart.
 		 */
 		private boolean enabled = true;
+		
 
+		/**
+		 * Use asynchronous java.nio API instead of monitoring in intervals.
+		 */
+		private boolean nio = false;
+		
 		/**
 		 * Patterns that should be excluded from triggering a full restart.
 		 */
@@ -90,8 +96,8 @@ public class DevToolsProperties {
 		private Duration quietPeriod = Duration.ofMillis(400);
 
 		/**
-		 * Name of a specific file that, when changed, triggers the restart check. If not
-		 * specified, any classpath file change will trigger the restart.
+		 * Name of a specific file that when changed will trigger the restart check. If
+		 * not specified any classpath file change will trigger the restart.
 		 */
 		private String triggerFile;
 
@@ -106,6 +112,14 @@ public class DevToolsProperties {
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
+		}
+
+		public boolean isNio() {
+			return nio;
+		}
+
+		public void setNio(boolean nio) {
+			this.nio = nio;
 		}
 
 		public String[] getAllExclude() {
@@ -176,7 +190,7 @@ public class DevToolsProperties {
 	public static class Livereload {
 
 		/**
-		 * Whether to enable a livereload.com-compatible server.
+		 * Enable a livereload.com compatible server.
 		 */
 		private boolean enabled = true;
 

@@ -30,6 +30,7 @@ import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
+import org.springframework.boot.devtools.filewatch.FileSystemNIOWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
@@ -136,7 +137,21 @@ public class LocalDevToolsAutoConfiguration {
 
 		@Bean
 		public FileSystemWatcherFactory fileSystemWatcherFactory() {
-			return this::newFileSystemWatcher;
+			if (this.properties.getRestart().isNio()) {
+				return this::newFileSystemNIOWatcher;
+			}
+			else {
+				return this::newFileSystemWatcher;
+			}
+		}
+
+		private FileSystemWatcher newFileSystemNIOWatcher() {
+			Restart restartProperties = this.properties.getRestart();
+			FileSystemWatcher watcher = new FileSystemNIOWatcher(
+					restartProperties.getPollInterval(),
+					restartProperties.getQuietPeriod());
+			initWatcher(restartProperties, watcher);
+			return watcher;
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {
@@ -144,6 +159,11 @@ public class LocalDevToolsAutoConfiguration {
 			FileSystemWatcher watcher = new FileSystemWatcher(true,
 					restartProperties.getPollInterval(),
 					restartProperties.getQuietPeriod());
+			initWatcher(restartProperties, watcher);
+			return watcher;
+		}
+		
+		private void initWatcher(Restart restartProperties, FileSystemWatcher watcher) {
 			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {
 				watcher.setTriggerFilter(new TriggerFileFilter(triggerFile));
@@ -152,7 +172,6 @@ public class LocalDevToolsAutoConfiguration {
 			for (File path : additionalPaths) {
 				watcher.addSourceFolder(path.getAbsoluteFile());
 			}
-			return watcher;
 		}
 
 	}
