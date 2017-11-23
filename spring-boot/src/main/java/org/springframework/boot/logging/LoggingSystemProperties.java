@@ -53,10 +53,10 @@ class LoggingSystemProperties {
 				.ignoringUnresolvableNestedPlaceholders(this.environment, "logging.");
 		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
 				"exception-conversion-word");
+		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");
 		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
 		setSystemProperty(propertyResolver, LOG_LEVEL_PATTERN, "pattern.level");
-		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
