@@ -279,6 +279,26 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		assertThat(foo.get("bar")).isEqualTo("baz");
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void multipleSourcesWithSameProperty() {
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources propertySources = this.context.getEnvironment()
+				.getPropertySources();
+		propertySources.addFirst(new MapPropertySource("one",
+				Collections.<String, Object>singletonMap("a", "alpha")));
+		propertySources.addFirst(new MapPropertySource("two",
+				Collections.<String, Object>singletonMap("a", "apple")));
+		this.context.register(Config.class);
+		this.context.refresh();
+		EnvironmentEndpoint report = getEndpointBean();
+		Map<String, Object> env = report.invoke();
+		Map<String, Object> sourceOne = (Map<String, Object>) env.get("one");
+		assertThat(sourceOne).containsEntry("a", "alpha");
+		Map<String, Object> sourceTwo = (Map<String, Object>) env.get("two");
+		assertThat(sourceTwo).containsEntry("a", "apple");
+	}
+
 	private void clearSystemProperties(String... properties) {
 		for (String property : properties) {
 			System.clearProperty(property);
