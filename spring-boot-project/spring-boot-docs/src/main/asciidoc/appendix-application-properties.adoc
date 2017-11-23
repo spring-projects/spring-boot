@@ -1212,10 +1212,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.shutdown.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.shutdown.enabled=false # Whether to enable the shutdown endpoint.
 
-	# STATUS ENDPOINT ({sc-spring-boot-actuator}/health/StatusEndpoint.{sc-ext}[StatusEndpoint])
-	management.endpoint.status.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.status.enabled=true # Whether to enable the status endpoint.
-
 	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/management/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])
 	management.endpoint.threaddump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.threaddump.enabled= # Whether to enable the threaddump endpoint.
