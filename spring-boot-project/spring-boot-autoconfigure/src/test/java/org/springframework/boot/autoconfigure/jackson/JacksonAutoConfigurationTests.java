@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
@@ -42,6 +43,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import com.fasterxml.jackson.datatype.joda.cfg.FormatConfig;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -446,6 +448,18 @@ public class JacksonAutoConfigurationTests {
 	public void customParameterNamesModuleCanBeConfigured() {
 		assertParameterNamesModuleCreatorBinding(Mode.DELEGATING,
 				ParameterNamesModuleConfig.class, JacksonAutoConfiguration.class);
+	}
+
+	@Test
+	public void writeDatesAsTimestampsDefault() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
+		String expected = FormatConfig.DEFAULT_DATETIME_PRINTER.rawFormatter()
+				.withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")))
+				.print(dateTime);
+		assertThat(mapper.writeValueAsString(dateTime)).isEqualTo("\"" + expected + "\"");
 	}
 
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode,
