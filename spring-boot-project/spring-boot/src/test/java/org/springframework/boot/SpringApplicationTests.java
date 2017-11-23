@@ -784,7 +784,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class,
 				ListenerConfig.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
-		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
+		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
@@ -797,7 +797,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class,
 				ListenerConfig.class, Multicaster.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
-		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
+		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);

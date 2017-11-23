@@ -136,8 +136,7 @@ public class MongoClientFactoryTests {
 		Cluster cluster = (Cluster) ReflectionTestUtils.getField(client, "cluster");
 		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils
 				.getField(cluster, "settings");
-		List<ServerAddress> allAddresses = clusterSettings.getHosts();
-		return allAddresses;
+		return clusterSettings.getHosts();
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,

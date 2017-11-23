@@ -469,7 +469,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.thymeleaf.enable-spring-el-compiler=false # Enable the SpringEL compiler in SpringEL expressions.
 	spring.thymeleaf.encoding=UTF-8 # Template files encoding.
 	spring.thymeleaf.excluded-view-names= # Comma-separated list of view names that should be excluded from resolution.
-	spring.thymeleaf.mode=HTML5 # Template mode to be applied to templates. See also Thymleaf's TemplateMode enum.
+	spring.thymeleaf.mode=HTML5 # Template mode to be applied to templates. See also Thymeleaf's TemplateMode enum.
 	spring.thymeleaf.prefix=classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
 	spring.thymeleaf.reactive.chunked-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be the only ones executed in CHUNKED mode when a max chunk size is set.
 	spring.thymeleaf.reactive.full-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be executed in FULL mode even if a max chunk size is set.
