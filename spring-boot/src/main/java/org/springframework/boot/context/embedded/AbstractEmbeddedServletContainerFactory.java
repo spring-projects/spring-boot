@@ -19,7 +19,6 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
@@ -88,7 +87,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	private File getExplodedWarFileDocumentRoot() {
-		return getExplodedWarFileDocumentRoot(getCodeSourceArchive(getCodeSource()));
+		return getExplodedWarFileDocumentRoot(getCodeSourceArchive());
 	}
 
 	protected List<URL> getUrlsOfJarsWithMetaInfResources() {
@@ -173,7 +172,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	private File getArchiveFileDocumentRoot(String extension) {
-		File file = getCodeSourceArchive(getCodeSource());
+		File file = getCodeSourceArchive();
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + file);
 		}
@@ -192,6 +191,10 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			}
 		}
 		return null;
+	}
+
+	private File getCodeSourceArchive() {
+		return getCodeSourceArchive(getClass().getProtectionDomain().getCodeSource());
 	}
 
 	File getCodeSourceArchive(CodeSource codeSource) {
@@ -213,16 +216,9 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			}
 			return new File(path);
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			return null;
 		}
-		catch (URISyntaxException e) {
-			return null;
-		}
-	}
-
-	private CodeSource getCodeSource() {
-		return getClass().getProtectionDomain().getCodeSource();
 	}
 
 	protected final File getValidSessionStoreDir() {

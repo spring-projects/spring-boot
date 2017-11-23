@@ -678,16 +678,18 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void codeSourceArchivePath() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		final CodeSource codeSource = new CodeSource(new URL("file", "", "/some/test/path/"), (Certificate[]) null);
-		final File codeSourceArchive = factory.getCodeSourceArchive(codeSource);
+		CodeSource codeSource = new CodeSource(new URL("file", "", "/some/test/path/"),
+				(Certificate[]) null);
+		File codeSourceArchive = factory.getCodeSourceArchive(codeSource);
 		assertThat(codeSourceArchive).isEqualTo(new File("/some/test/path/"));
 	}
 
 	@Test
 	public void codeSourceArchivePathContainingSpaces() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		final CodeSource codeSource = new CodeSource(new URL("file", "", "/test/path/with%20space/"), (Certificate[]) null);
-		final File codeSourceArchive = factory.getCodeSourceArchive(codeSource);
+		CodeSource codeSource = new CodeSource(
+				new URL("file", "", "/test/path/with%20space/"), (Certificate[]) null);
+		File codeSourceArchive = factory.getCodeSourceArchive(codeSource);
 		assertThat(codeSourceArchive).isEqualTo(new File("/test/path/with space/"));
 	}
 
