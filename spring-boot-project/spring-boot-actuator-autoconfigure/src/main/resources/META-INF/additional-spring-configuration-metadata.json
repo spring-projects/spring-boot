@@ -423,7 +423,7 @@
     "type": "java.lang.Boolean",
     "description": "Whether to enable the endpoint.",
     "deprecation": {
-      "replacement": "endpoints.threaddump.enabled",
+      "replacement": "management.endpoint.threaddump.enabled",
       "level": "error"
     }
   },
@@ -460,7 +460,7 @@
     "description": "Whether to enable endpoints.",
     "defaultValue": true,
     "deprecation": {
-      "replacement": "endpoints.default.enabled",
+      "replacement": "management.endpoints.enabled-by-default",
       "level": "error"
     }
   },
@@ -551,7 +551,7 @@
     "description": "Time to live for cached result, in milliseconds.",
     "defaultValue": 1000,
     "deprecation": {
-      "replacement": "endpoints.health.cache.time-to-live",
+      "replacement": "management.endpoint.health.cache.time-to-live",
       "level": "error"
     }
   },
@@ -625,7 +625,7 @@
     "description": "Whether to enable JMX export of all endpoints.",
     "defaultValue": true,
     "deprecation": {
-      "replacement": "endpoints.default.jmx.enabled",
+      "replacement": "management.endpoints.jmx.enabled",
       "level": "error"
     }
   },
