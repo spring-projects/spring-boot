@@ -30,6 +30,7 @@ import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.LifeCycle;
 import ch.qos.logback.core.spi.PropertyContainer;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -42,8 +43,7 @@ class LogbackConfigurator {
 
 	private LoggerContext context;
 
-	LogbackConfigurator(LoggerContext context) {
-		Assert.notNull(context, "Context must not be null");
+	LogbackConfigurator(@NonNull LoggerContext context) {
 		this.context = context;
 	}
 
@@ -57,9 +57,8 @@ class LogbackConfigurator {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void conversionRule(String conversionWord,
-			Class<? extends Converter> converterClass) {
+			@NonNull Class<? extends Converter> converterClass) {
 		Assert.hasLength(conversionWord, "Conversion word must not be empty");
-		Assert.notNull(converterClass, "Converter class must not be null");
 		Map<String, String> registry = (Map<String, String>) this.context
 				.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
 		if (registry == null) {

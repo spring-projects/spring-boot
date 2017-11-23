@@ -45,6 +45,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
@@ -74,9 +75,9 @@ public class ClassPathChangeUploader
 
 	private final ClientHttpRequestFactory requestFactory;
 
-	public ClassPathChangeUploader(String url, ClientHttpRequestFactory requestFactory) {
+	public ClassPathChangeUploader(String url,
+			@NonNull ClientHttpRequestFactory requestFactory) {
 		Assert.hasLength(url, "URL must not be empty");
-		Assert.notNull(requestFactory, "RequestFactory must not be null");
 		try {
 			this.uri = new URL(url).toURI();
 		}

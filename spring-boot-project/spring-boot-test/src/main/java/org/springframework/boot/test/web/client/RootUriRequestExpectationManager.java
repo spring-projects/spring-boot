@@ -25,6 +25,7 @@ import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
+import org.springframework.lang.NonNull;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -33,7 +34,6 @@ import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.test.web.client.ResponseActions;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
@@ -59,10 +59,8 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 
 	private final RequestExpectationManager expectationManager;
 
-	public RootUriRequestExpectationManager(String rootUri,
-			RequestExpectationManager expectationManager) {
-		Assert.notNull(rootUri, "RootUri must not be null");
-		Assert.notNull(expectationManager, "ExpectationManager must not be null");
+	public RootUriRequestExpectationManager(@NonNull String rootUri,
+			@NonNull RequestExpectationManager expectationManager) {
 		this.rootUri = rootUri;
 		this.expectationManager = expectationManager;
 	}
@@ -152,9 +150,9 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	 * @param expectationManager the source {@link RequestExpectationManager}
 	 * @return a {@link RequestExpectationManager} to be bound to the template
 	 */
-	public static RequestExpectationManager forRestTemplate(RestTemplate restTemplate,
+	public static RequestExpectationManager forRestTemplate(
+			@NonNull RestTemplate restTemplate,
 			RequestExpectationManager expectationManager) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
 		if (templateHandler instanceof RootUriTemplateHandler) {
 			return new RootUriRequestExpectationManager(

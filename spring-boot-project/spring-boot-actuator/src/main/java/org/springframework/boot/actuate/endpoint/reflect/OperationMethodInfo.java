@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -46,11 +47,9 @@ public final class OperationMethodInfo {
 
 	private final ParameterNameDiscoverer parameterNameDiscoverer = DEFAULT_PARAMETER_NAME_DISCOVERER;
 
-	public OperationMethodInfo(Method method, OperationType operationType,
-			AnnotationAttributes annotationAttributes) {
-		Assert.notNull(method, "Method must not be null");
-		Assert.notNull(operationType, "Operation Type must not be null");
-		Assert.notNull(annotationAttributes, "Annotation Attributes must not be null");
+	public OperationMethodInfo(@NonNull Method method,
+			@NonNull OperationType operationType,
+			@NonNull AnnotationAttributes annotationAttributes) {
 		this.method = method;
 		this.operationType = operationType;
 		this.annotationAttributes = annotationAttributes;

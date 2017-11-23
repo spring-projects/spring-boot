@@ -41,6 +41,7 @@ import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -67,8 +68,7 @@ public class ImageBanner implements Banner {
 
 	private final Resource image;
 
-	public ImageBanner(Resource image) {
-		Assert.notNull(image, "Image must not be null");
+	public ImageBanner(@NonNull Resource image) {
 		Assert.isTrue(image.exists(), "Image must exist");
 		this.image = image;
 	}

@@ -26,6 +26,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -47,8 +48,7 @@ public class HttpRestartServer {
 	 * @param sourceFolderUrlFilter the source filter used to link remote folder to the
 	 * local classpath
 	 */
-	public HttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
-		Assert.notNull(sourceFolderUrlFilter, "SourceFolderUrlFilter must not be null");
+	public HttpRestartServer(@NonNull SourceFolderUrlFilter sourceFolderUrlFilter) {
 		this.server = new RestartServer(sourceFolderUrlFilter);
 	}
 
@@ -56,8 +56,7 @@ public class HttpRestartServer {
 	 * Create a new {@link HttpRestartServer} instance.
 	 * @param restartServer the underlying restart server
 	 */
-	public HttpRestartServer(RestartServer restartServer) {
-		Assert.notNull(restartServer, "RestartServer must not be null");
+	public HttpRestartServer(@NonNull RestartServer restartServer) {
 		this.server = restartServer;
 	}
 

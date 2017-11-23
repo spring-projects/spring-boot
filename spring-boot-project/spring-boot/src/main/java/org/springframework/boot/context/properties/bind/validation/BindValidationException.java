@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.bind.validation;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Error thrown when validation fails during a bind operation.
@@ -31,8 +31,7 @@ public class BindValidationException extends RuntimeException {
 
 	private final ValidationErrors validationErrors;
 
-	BindValidationException(ValidationErrors validationErrors) {
-		Assert.notNull(validationErrors, "ValidationErrors must not be null");
+	BindValidationException(@NonNull ValidationErrors validationErrors) {
 		this.validationErrors = validationErrors;
 	}
 

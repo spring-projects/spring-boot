@@ -22,7 +22,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -71,8 +71,7 @@ public final class BindResult<T> {
 	 * been bound.
 	 * @param consumer block to execute if a value has been bound
 	 */
-	public void ifBound(Consumer<? super T> consumer) {
-		Assert.notNull(consumer, "Consumer must not be null");
+	public void ifBound(@NonNull Consumer<? super T> consumer) {
 		if (this.value != null) {
 			consumer.accept(this.value);
 		}
@@ -87,8 +86,7 @@ public final class BindResult<T> {
 	 * @return an {@code BindResult} describing the result of applying a mapping function
 	 * to the value of this {@code BindResult}.
 	 */
-	public <U> BindResult<U> map(Function<? super T, ? extends U> mapper) {
-		Assert.notNull(mapper, "Mapper must not be null");
+	public <U> BindResult<U> map(@NonNull Function<? super T, ? extends U> mapper) {
 		return of(this.value == null ? null : mapper.apply(this.value));
 	}
 
@@ -119,8 +117,7 @@ public final class BindResult<T> {
 	 * @param type the type to create if no value was bound
 	 * @return the value, if bound, otherwise a new instance of {@code type}
 	 */
-	public T orElseCreate(Class<? extends T> type) {
-		Assert.notNull(type, "Type must not be null");
+	public T orElseCreate(@NonNull Class<? extends T> type) {
 		return (this.value != null ? this.value : BeanUtils.instantiateClass(type));
 	}
 

@@ -22,9 +22,9 @@ import javax.naming.directory.DirContext;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.lang.NonNull;
 import org.springframework.ldap.core.ContextExecutor;
 import org.springframework.ldap.core.LdapOperations;
-import org.springframework.util.Assert;
 
 /**
  * {@link HealthIndicator} for configured LDAP server(s).
@@ -39,8 +39,7 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 
 	private final LdapOperations ldapOperations;
 
-	public LdapHealthIndicator(LdapOperations ldapOperations) {
-		Assert.notNull(ldapOperations, "LdapOperations must not be null");
+	public LdapHealthIndicator(@NonNull LdapOperations ldapOperations) {
 		this.ldapOperations = ldapOperations;
 	}
 

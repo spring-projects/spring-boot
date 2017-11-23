@@ -33,7 +33,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -92,8 +92,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		loadConfiguration(location, logFile);
 	}
 
-	protected void loadConfiguration(String location, LogFile logFile) {
-		Assert.notNull(location, "Location must not be null");
+	protected void loadConfiguration(@NonNull String location, LogFile logFile) {
 		try {
 			String configuration = FileCopyUtils.copyToString(
 					new InputStreamReader(ResourceUtils.getURL(location).openStream()));

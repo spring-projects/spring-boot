@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -43,8 +44,7 @@ public class WebServicesProperties {
 		return this.path;
 	}
 
-	public void setPath(String path) {
-		Assert.notNull(path, "Path must not be null");
+	public void setPath(@NonNull String path) {
 		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
 				"Path must start with / or be empty");
 		this.path = path;

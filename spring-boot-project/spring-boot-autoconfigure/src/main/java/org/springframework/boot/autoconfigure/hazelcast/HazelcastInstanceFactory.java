@@ -25,7 +25,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -45,8 +45,7 @@ public class HazelcastInstanceFactory {
 	 * @param configLocation the location of the configuration file
 	 * @throws IOException if the configuration location could not be read
 	 */
-	public HazelcastInstanceFactory(Resource configLocation) throws IOException {
-		Assert.notNull(configLocation, "ConfigLocation must not be null");
+	public HazelcastInstanceFactory(@NonNull Resource configLocation) throws IOException {
 		this.config = getConfig(configLocation);
 	}
 
@@ -54,8 +53,7 @@ public class HazelcastInstanceFactory {
 	 * Create a {@link HazelcastInstanceFactory} for the specified configuration.
 	 * @param config the configuration
 	 */
-	public HazelcastInstanceFactory(Config config) {
-		Assert.notNull(config, "Config must not be null");
+	public HazelcastInstanceFactory(@NonNull Config config) {
 		this.config = config;
 	}
 

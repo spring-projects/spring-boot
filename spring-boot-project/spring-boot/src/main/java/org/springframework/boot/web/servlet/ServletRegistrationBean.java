@@ -31,6 +31,7 @@ import javax.servlet.ServletRegistration.Dynamic;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -91,10 +92,8 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	 * @param alwaysMapUrl if omitted URL mappings should be replaced with '/*'
 	 * @param urlMappings the URLs being mapped
 	 */
-	public ServletRegistrationBean(T servlet, boolean alwaysMapUrl,
-			String... urlMappings) {
-		Assert.notNull(servlet, "Servlet must not be null");
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+	public ServletRegistrationBean(@NonNull T servlet, boolean alwaysMapUrl,
+			@NonNull String... urlMappings) {
 		this.servlet = servlet;
 		this.alwaysMapUrl = alwaysMapUrl;
 		this.urlMappings.addAll(Arrays.asList(urlMappings));
@@ -112,8 +111,7 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	 * Sets the servlet to be registered.
 	 * @param servlet the servlet
 	 */
-	public void setServlet(T servlet) {
-		Assert.notNull(servlet, "Servlet must not be null");
+	public void setServlet(@NonNull T servlet) {
 		this.servlet = servlet;
 	}
 
@@ -123,8 +121,7 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	 * @param urlMappings the mappings to set
 	 * @see #addUrlMappings(String...)
 	 */
-	public void setUrlMappings(Collection<String> urlMappings) {
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+	public void setUrlMappings(@NonNull Collection<String> urlMappings) {
 		this.urlMappings = new LinkedHashSet<>(urlMappings);
 	}
 
@@ -141,8 +138,7 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	 * @param urlMappings the mappings to add
 	 * @see #setUrlMappings(Collection)
 	 */
-	public void addUrlMappings(String... urlMappings) {
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+	public void addUrlMappings(@NonNull String... urlMappings) {
 		this.urlMappings.addAll(Arrays.asList(urlMappings));
 	}
 

@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.Assert;
 
 /**
  * A set of {@link Configuration @Configuration} classes that can be registered in
@@ -59,8 +59,7 @@ public abstract class Configurations {
 
 	private final Set<Class<?>> classes;
 
-	protected Configurations(Collection<Class<?>> classes) {
-		Assert.notNull(classes, "Classes must not be null");
+	protected Configurations(@NonNull Collection<Class<?>> classes) {
 		Collection<Class<?>> sorted = sort(classes);
 		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(sorted));
 	}

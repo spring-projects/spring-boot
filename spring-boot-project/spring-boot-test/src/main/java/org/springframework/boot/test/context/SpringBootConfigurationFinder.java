@@ -25,6 +25,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -47,13 +48,11 @@ final class SpringBootConfigurationFinder {
 		this.scanner.setResourcePattern("*.class");
 	}
 
-	public Class<?> findFromClass(Class<?> source) {
-		Assert.notNull(source, "Source must not be null");
+	public Class<?> findFromClass(@NonNull Class<?> source) {
 		return findFromPackage(ClassUtils.getPackageName(source));
 	}
 
-	public Class<?> findFromPackage(String source) {
-		Assert.notNull(source, "Source must not be null");
+	public Class<?> findFromPackage(@NonNull String source) {
 		Class<?> configuration = cache.get(source);
 		if (configuration == null) {
 			configuration = scanPackage(source);

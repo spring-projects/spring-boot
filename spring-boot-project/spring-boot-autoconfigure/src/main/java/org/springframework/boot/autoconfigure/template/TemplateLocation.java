@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Contains a location that templates can be loaded from.
@@ -33,8 +33,7 @@ public class TemplateLocation {
 
 	private final String path;
 
-	public TemplateLocation(String path) {
-		Assert.notNull(path, "Path must not be null");
+	public TemplateLocation(@NonNull String path) {
 		this.path = path;
 	}
 
@@ -44,8 +43,7 @@ public class TemplateLocation {
 	 * @param resolver the resolver used to test if the location exists
 	 * @return {@code true} if the location exists.
 	 */
-	public boolean exists(ResourcePatternResolver resolver) {
-		Assert.notNull(resolver, "Resolver must not be null");
+	public boolean exists(@NonNull ResourcePatternResolver resolver) {
 		if (resolver.getResource(this.path).exists()) {
 			return true;
 		}

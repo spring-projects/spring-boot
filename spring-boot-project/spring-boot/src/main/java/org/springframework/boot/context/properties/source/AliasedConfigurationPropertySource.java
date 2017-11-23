@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A {@link ConfigurationPropertySource} supporting name aliases.
@@ -30,18 +30,15 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 
 	private final ConfigurationPropertyNameAliases aliases;
 
-	AliasedConfigurationPropertySource(ConfigurationPropertySource source,
-			ConfigurationPropertyNameAliases aliases) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(aliases, "Aliases must not be null");
+	AliasedConfigurationPropertySource(@NonNull ConfigurationPropertySource source,
+			@NonNull ConfigurationPropertyNameAliases aliases) {
 		this.source = source;
 		this.aliases = aliases;
 	}
 
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
-			ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+			@NonNull ConfigurationPropertyName name) {
 		ConfigurationProperty result = getSource().getConfigurationProperty(name);
 		if (result == null) {
 			ConfigurationPropertyName aliasedName = getAliases().getNameForAlias(name);
@@ -52,8 +49,7 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 
 	@Override
 	public ConfigurationPropertyState containsDescendantOf(
-			ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+			@NonNull ConfigurationPropertyName name) {
 		ConfigurationPropertyState result = this.source.containsDescendantOf(name);
 		if (result != ConfigurationPropertyState.ABSENT) {
 			return result;

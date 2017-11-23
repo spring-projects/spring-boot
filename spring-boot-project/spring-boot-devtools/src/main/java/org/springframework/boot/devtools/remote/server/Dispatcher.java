@@ -25,7 +25,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Dispatcher used to route incoming remote server requests to a {@link Handler}. Similar
@@ -42,9 +42,8 @@ public class Dispatcher {
 
 	private final List<HandlerMapper> mappers;
 
-	public Dispatcher(AccessManager accessManager, Collection<HandlerMapper> mappers) {
-		Assert.notNull(accessManager, "AccessManager must not be null");
-		Assert.notNull(mappers, "Mappers must not be null");
+	public Dispatcher(@NonNull AccessManager accessManager,
+			@NonNull Collection<HandlerMapper> mappers) {
 		this.accessManager = accessManager;
 		this.mappers = new ArrayList<>(mappers);
 		AnnotationAwareOrderComparator.sort(this.mappers);

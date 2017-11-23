@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.function.Predicate;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * The state of content from a {@link ConfigurationPropertySource}.
@@ -55,10 +55,8 @@ public enum ConfigurationPropertyState {
 	 * @return {@link #PRESENT} if the iterable contains a matching item, otherwise
 	 * {@link #ABSENT}.
 	 */
-	static <T> ConfigurationPropertyState search(Iterable<T> source,
-			Predicate<T> predicate) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(predicate, "Predicate must not be null");
+	static <T> ConfigurationPropertyState search(@NonNull Iterable<T> source,
+			@NonNull Predicate<T> predicate) {
 		for (T item : source) {
 			if (predicate.test(item)) {
 				return PRESENT;

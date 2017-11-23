@@ -22,7 +22,7 @@ import java.util.Map;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Configuration properties to configure {@link SpringLiquibase}.
@@ -98,8 +98,7 @@ public class LiquibaseProperties {
 		return this.changeLog;
 	}
 
-	public void setChangeLog(String changeLog) {
-		Assert.notNull(changeLog, "ChangeLog must not be null");
+	public void setChangeLog(@NonNull String changeLog) {
 		this.changeLog = changeLog;
 	}
 

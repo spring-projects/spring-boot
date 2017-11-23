@@ -20,6 +20,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.SystemPropertyUtils;
@@ -75,8 +76,7 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 		return null;
 	}
 
-	private static PropertySources getSources(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+	private static PropertySources getSources(@NonNull Environment environment) {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment,
 				"Environment must be a ConfigurableEnvironment");
 		return ((ConfigurableEnvironment) environment).getPropertySources();

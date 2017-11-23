@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -59,10 +60,8 @@ class DelayedLiveReloadTrigger implements Runnable {
 
 	private long timeout = TIMEOUT;
 
-	DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer,
-			ClientHttpRequestFactory requestFactory, String url) {
-		Assert.notNull(liveReloadServer, "LiveReloadServer must not be null");
-		Assert.notNull(requestFactory, "RequestFactory must not be null");
+	DelayedLiveReloadTrigger(@NonNull OptionalLiveReloadServer liveReloadServer,
+			@NonNull ClientHttpRequestFactory requestFactory, String url) {
 		Assert.hasLength(url, "URL must not be empty");
 		this.liveReloadServer = liveReloadServer;
 		this.requestFactory = requestFactory;

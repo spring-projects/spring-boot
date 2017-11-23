@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -39,8 +39,7 @@ public class ManagementErrorEndpoint {
 
 	private final ErrorAttributes errorAttributes;
 
-	public ManagementErrorEndpoint(ErrorAttributes errorAttributes) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
+	public ManagementErrorEndpoint(@NonNull ErrorAttributes errorAttributes) {
 		this.errorAttributes = errorAttributes;
 	}
 

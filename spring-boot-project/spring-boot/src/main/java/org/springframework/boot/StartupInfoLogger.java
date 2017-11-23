@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 import org.apache.commons.logging.Log;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
@@ -42,8 +42,7 @@ class StartupInfoLogger {
 		this.sourceClass = sourceClass;
 	}
 
-	public void logStarting(Log log) {
-		Assert.notNull(log, "Log must not be null");
+	public void logStarting(@NonNull Log log) {
 		if (log.isInfoEnabled()) {
 			log.info(getStartupMessage());
 		}

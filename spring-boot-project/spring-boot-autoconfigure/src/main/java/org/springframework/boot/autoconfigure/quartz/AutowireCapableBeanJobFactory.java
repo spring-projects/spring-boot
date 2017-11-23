@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.quartz;
 import org.quartz.spi.TriggerFiredBundle;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
-import org.springframework.util.Assert;
 
 /**
  * Subclass of {@link SpringBeanJobFactory} that supports auto-wiring job beans.
@@ -33,8 +33,7 @@ class AutowireCapableBeanJobFactory extends SpringBeanJobFactory {
 
 	private final AutowireCapableBeanFactory beanFactory;
 
-	AutowireCapableBeanJobFactory(AutowireCapableBeanFactory beanFactory) {
-		Assert.notNull(beanFactory, "Bean factory must not be null");
+	AutowireCapableBeanJobFactory(@NonNull AutowireCapableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 

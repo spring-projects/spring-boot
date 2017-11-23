@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.lang.NonNull;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -47,8 +47,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 
 	private Object contextLock = new Object();
 
-	public ApplicationContextRequestMatcher(Class<? extends C> contextClass) {
-		Assert.notNull(contextClass, "Context class must not be null");
+	public ApplicationContextRequestMatcher(@NonNull Class<? extends C> contextClass) {
 		this.contextClass = contextClass;
 	}
 

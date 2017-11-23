@@ -43,6 +43,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -83,15 +84,12 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 	 * @param invokerAdvisors advisors used to add additional invoker advise
 	 * @param filters filters that must match for an endpoint to be exposed
 	 */
-	protected AnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-			OperationFactory<T> operationFactory, Function<T, K> operationKeyFactory,
-			ParameterMapper parameterMapper,
+	protected AnnotationEndpointDiscoverer(@NonNull ApplicationContext applicationContext,
+			@NonNull OperationFactory<T> operationFactory,
+			@NonNull Function<T, K> operationKeyFactory,
+			@NonNull ParameterMapper parameterMapper,
 			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
 			Collection<? extends EndpointFilter<T>> filters) {
-		Assert.notNull(applicationContext, "Application Context must not be null");
-		Assert.notNull(operationFactory, "Operation Factory must not be null");
-		Assert.notNull(operationKeyFactory, "Operation Key Factory must not be null");
-		Assert.notNull(parameterMapper, "Parameter Mapper must not be null");
 		this.applicationContext = applicationContext;
 		this.operationKeyFactory = operationKeyFactory;
 		this.operationsFactory = new OperationsFactory<>(operationFactory,
@@ -313,8 +311,8 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 
 		private final Map<OperationKey, List<T>> operations;
 
-		private DiscoveredEndpoint(Class<?> type, EndpointInfo<T> info, boolean exposed) {
-			Assert.notNull(info, "Info must not be null");
+		private DiscoveredEndpoint(@NonNull Class<?> type, EndpointInfo<T> info,
+				boolean exposed) {
 			this.info = info;
 			this.exposed = exposed;
 			this.operations = indexEndpointOperations(type, info);
@@ -326,9 +324,8 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 					indexOperations(info.getId(), endpointType, info.getOperations()));
 		}
 
-		private DiscoveredEndpoint(EndpointInfo<T> info, boolean exposed,
+		private DiscoveredEndpoint(@NonNull EndpointInfo<T> info, boolean exposed,
 				Map<OperationKey, List<T>> operations) {
-			Assert.notNull(info, "Info must not be null");
 			this.info = info;
 			this.exposed = exposed;
 			this.operations = operations;

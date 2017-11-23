@@ -23,7 +23,7 @@ import javax.json.bind.Jsonb;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * AssertJ based JSON tester backed by Jsonb. Usually instantiated via
@@ -61,8 +61,7 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 	 * Create a new uninitialized {@link JsonbTester} instance.
 	 * @param jsonb the Jsonb instance
 	 */
-	protected JsonbTester(Jsonb jsonb) {
-		Assert.notNull(jsonb, "Jsonb must not be null");
+	protected JsonbTester(@NonNull Jsonb jsonb) {
 		this.jsonb = jsonb;
 	}
 
@@ -73,9 +72,9 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @param jsonb the Jsonb instance
 	 * @see #initFields(Object, Jsonb)
 	 */
-	public JsonbTester(Class<?> resourceLoadClass, ResolvableType type, Jsonb jsonb) {
+	public JsonbTester(Class<?> resourceLoadClass, ResolvableType type,
+			@NonNull Jsonb jsonb) {
 		super(resourceLoadClass, type);
-		Assert.notNull(jsonb, "Jsonb must not be null");
 		this.jsonb = jsonb;
 	}
 

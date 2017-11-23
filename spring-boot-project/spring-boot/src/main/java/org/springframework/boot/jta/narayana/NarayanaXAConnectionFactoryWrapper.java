@@ -26,7 +26,7 @@ import org.jboss.narayana.jta.jms.JmsXAResourceRecoveryHelper;
 import org.jboss.narayana.jta.jms.TransactionHelperImpl;
 
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link XAConnectionFactoryWrapper} that uses {@link ConnectionFactoryProxy} to wrap an
@@ -49,11 +49,10 @@ public class NarayanaXAConnectionFactoryWrapper implements XAConnectionFactoryWr
 	 * @param recoveryManager the underlying recovery manager
 	 * @param properties the Narayana properties
 	 */
-	public NarayanaXAConnectionFactoryWrapper(TransactionManager transactionManager,
-			NarayanaRecoveryManagerBean recoveryManager, NarayanaProperties properties) {
-		Assert.notNull(transactionManager, "TransactionManager must not be null");
-		Assert.notNull(recoveryManager, "RecoveryManager must not be null");
-		Assert.notNull(properties, "Properties must not be null");
+	public NarayanaXAConnectionFactoryWrapper(
+			@NonNull TransactionManager transactionManager,
+			@NonNull NarayanaRecoveryManagerBean recoveryManager,
+			@NonNull NarayanaProperties properties) {
 		this.transactionManager = transactionManager;
 		this.recoveryManager = recoveryManager;
 		this.properties = properties;

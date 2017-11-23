@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Maintains a collection of {@link ExitCodeGenerator} instances and allows the final exit
@@ -36,41 +36,34 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 
 	private List<ExitCodeGenerator> generators = new ArrayList<>();
 
-	public void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
-		Assert.notNull(exception, "Exception must not be null");
-		Assert.notNull(mappers, "Mappers must not be null");
+	public void addAll(@NonNull Throwable exception,
+			@NonNull ExitCodeExceptionMapper... mappers) {
 		addAll(exception, Arrays.asList(mappers));
 	}
 
-	public void addAll(Throwable exception,
-			Iterable<? extends ExitCodeExceptionMapper> mappers) {
-		Assert.notNull(exception, "Exception must not be null");
-		Assert.notNull(mappers, "Mappers must not be null");
+	public void addAll(@NonNull Throwable exception,
+			@NonNull Iterable<? extends ExitCodeExceptionMapper> mappers) {
 		for (ExitCodeExceptionMapper mapper : mappers) {
 			add(exception, mapper);
 		}
 	}
 
-	public void add(Throwable exception, ExitCodeExceptionMapper mapper) {
-		Assert.notNull(exception, "Exception must not be null");
-		Assert.notNull(mapper, "Mapper must not be null");
+	public void add(@NonNull Throwable exception,
+			@NonNull ExitCodeExceptionMapper mapper) {
 		add(new MappedExitCodeGenerator(exception, mapper));
 	}
 
-	public void addAll(ExitCodeGenerator... generators) {
-		Assert.notNull(generators, "Generators must not be null");
+	public void addAll(@NonNull ExitCodeGenerator... generators) {
 		addAll(Arrays.asList(generators));
 	}
 
-	public void addAll(Iterable<? extends ExitCodeGenerator> generators) {
-		Assert.notNull(generators, "Generators must not be null");
+	public void addAll(@NonNull Iterable<? extends ExitCodeGenerator> generators) {
 		for (ExitCodeGenerator generator : generators) {
 			add(generator);
 		}
 	}
 
-	public void add(ExitCodeGenerator generator) {
-		Assert.notNull(generator, "Generator must not be null");
+	public void add(@NonNull ExitCodeGenerator generator) {
 		this.generators.add(generator);
 	}
 

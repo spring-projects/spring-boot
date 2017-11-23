@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryA
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -49,10 +49,8 @@ class ReactiveCloudFoundrySecurityService {
 
 	private Mono<String> uaaUrl;
 
-	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder,
-			String cloudControllerUrl) {
-		Assert.notNull(webClientBuilder, "Webclient must not be null");
-		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
+	ReactiveCloudFoundrySecurityService(@NonNull WebClient.Builder webClientBuilder,
+			@NonNull String cloudControllerUrl) {
 		this.webClient = webClientBuilder.build();
 		this.cloudControllerUrl = cloudControllerUrl;
 	}

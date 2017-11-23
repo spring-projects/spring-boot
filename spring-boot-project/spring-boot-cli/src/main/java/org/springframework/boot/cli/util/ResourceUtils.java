@@ -30,7 +30,7 @@ import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -151,8 +151,7 @@ public abstract class ResourceUtils {
 		}
 
 		@Override
-		public Resource getResource(String location) {
-			Assert.notNull(location, "Location must not be null");
+		public Resource getResource(@NonNull String location) {
 			if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 				return new ClassPathResource(
 						location.substring(CLASSPATH_URL_PREFIX.length()),

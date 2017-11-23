@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Carries information about the health of a component or subsystem.
@@ -60,8 +60,7 @@ public final class Health {
 	 * Create a new {@link Health} instance with the specified status and details.
 	 * @param builder the Builder to use
 	 */
-	private Health(Builder builder) {
-		Assert.notNull(builder, "Builder must not be null");
+	private Health(@NonNull Builder builder) {
 		this.status = builder.status;
 		this.details = Collections.unmodifiableMap(builder.details);
 	}
@@ -187,8 +186,7 @@ public final class Health {
 		 * Create new Builder instance, setting status to given {@code status}.
 		 * @param status the {@link Status} to use
 		 */
-		public Builder(Status status) {
-			Assert.notNull(status, "Status must not be null");
+		public Builder(@NonNull Status status) {
 			this.status = status;
 			this.details = new LinkedHashMap<>();
 		}
@@ -199,9 +197,7 @@ public final class Health {
 		 * @param status the {@link Status} to use
 		 * @param details the details {@link Map} to use
 		 */
-		public Builder(Status status, Map<String, ?> details) {
-			Assert.notNull(status, "Status must not be null");
-			Assert.notNull(details, "Details must not be null");
+		public Builder(@NonNull Status status, @NonNull Map<String, ?> details) {
 			this.status = status;
 			this.details = new LinkedHashMap<>(details);
 		}
@@ -211,8 +207,7 @@ public final class Health {
 		 * @param ex the exception
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withException(Throwable ex) {
-			Assert.notNull(ex, "Exception must not be null");
+		public Builder withException(@NonNull Throwable ex) {
 			return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
 		}
 
@@ -222,9 +217,7 @@ public final class Health {
 		 * @param value the detail value
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withDetail(String key, Object value) {
-			Assert.notNull(key, "Key must not be null");
-			Assert.notNull(value, "Value must not be null");
+		public Builder withDetail(@NonNull String key, @NonNull Object value) {
 			this.details.put(key, value);
 			return this;
 		}

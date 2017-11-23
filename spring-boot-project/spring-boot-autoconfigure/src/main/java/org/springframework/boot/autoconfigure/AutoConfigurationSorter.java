@@ -29,6 +29,7 @@ import java.util.Set;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -44,9 +45,8 @@ class AutoConfigurationSorter {
 
 	private final AutoConfigurationMetadata autoConfigurationMetadata;
 
-	AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory,
+	AutoConfigurationSorter(@NonNull MetadataReaderFactory metadataReaderFactory,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
-		Assert.notNull(metadataReaderFactory, "MetadataReaderFactory must not be null");
 		this.metadataReaderFactory = metadataReaderFactory;
 		this.autoConfigurationMetadata = autoConfigurationMetadata;
 	}

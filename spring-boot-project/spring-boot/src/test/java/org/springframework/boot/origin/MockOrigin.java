@@ -16,7 +16,7 @@
 
 package org.springframework.boot.origin;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Mock {@link Origin} implementation used for testing.
@@ -27,8 +27,7 @@ public final class MockOrigin implements Origin {
 
 	private final String value;
 
-	private MockOrigin(String value) {
-		Assert.notNull(value, "Value must not be null");
+	private MockOrigin(@NonNull String value) {
 		this.value = value;
 	}
 

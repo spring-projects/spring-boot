@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.lang.NonNull;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
@@ -66,8 +67,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	public MockServerRestTemplateCustomizer(
-			Class<? extends RequestExpectationManager> expectationManager) {
-		Assert.notNull(expectationManager, "ExpectationManager must not be null");
+			@NonNull Class<? extends RequestExpectationManager> expectationManager) {
 		this.expectationManager = expectationManager;
 	}
 

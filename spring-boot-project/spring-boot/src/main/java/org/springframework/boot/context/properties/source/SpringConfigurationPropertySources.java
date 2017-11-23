@@ -27,7 +27,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySource.StubPropertySource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -45,8 +45,7 @@ class SpringConfigurationPropertySources
 
 	private volatile List<ConfigurationPropertySource> adaptedSources;
 
-	SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
-		Assert.notNull(sources, "Sources must not be null");
+	SpringConfigurationPropertySources(@NonNull Iterable<PropertySource<?>> sources) {
 		this.sources = sources;
 	}
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.origin;
 
 import org.springframework.core.env.PropertySource;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -36,8 +37,8 @@ public class PropertySourceOrigin implements Origin {
 	 * @param propertySource the property source
 	 * @param propertyName the name from the property source
 	 */
-	public PropertySourceOrigin(PropertySource<?> propertySource, String propertyName) {
-		Assert.notNull(propertySource, "PropertySource must not be null");
+	public PropertySourceOrigin(
+			@NonNull PropertySource<?> propertySource, String propertyName) {
 		Assert.hasLength(propertyName, "PropertyName must not be empty");
 		this.propertySource = propertySource;
 		this.propertyName = propertyName;

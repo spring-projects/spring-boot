@@ -29,7 +29,7 @@ import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Class to load {@code .properties} files into a map of {@code String} ->
@@ -48,8 +48,7 @@ class OriginTrackedPropertiesLoader {
 	 * Create a new {@link OriginTrackedPropertiesLoader} instance.
 	 * @param resource the resource of the {@code .properties} data
 	 */
-	OriginTrackedPropertiesLoader(Resource resource) {
-		Assert.notNull(resource, "Resource must not be null");
+	OriginTrackedPropertiesLoader(@NonNull Resource resource) {
 		this.resource = resource;
 	}
 

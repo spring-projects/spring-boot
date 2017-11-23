@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -156,8 +157,7 @@ public final class Bindable<T> {
 	 * @see #withExistingValue(Object)
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Bindable<T> ofInstance(T instance) {
-		Assert.notNull(instance, "Instance must not be null");
+	public static <T> Bindable<T> ofInstance(@NonNull T instance) {
 		Class<T> type = (Class<T>) instance.getClass();
 		return of(type).withExistingValue(instance);
 	}
@@ -169,8 +169,7 @@ public final class Bindable<T> {
 	 * @return a {@link Bindable} instance
 	 * @see #of(ResolvableType)
 	 */
-	public static <T> Bindable<T> of(Class<T> type) {
-		Assert.notNull(type, "Type must not be null");
+	public static <T> Bindable<T> of(@NonNull Class<T> type) {
 		return of(ResolvableType.forClass(type));
 	}
 
@@ -213,8 +212,7 @@ public final class Bindable<T> {
 	 * @return a {@link Bindable} instance
 	 * @see #of(Class)
 	 */
-	public static <T> Bindable<T> of(ResolvableType type) {
-		Assert.notNull(type, "Type must not be null");
+	public static <T> Bindable<T> of(@NonNull ResolvableType type) {
 		ResolvableType boxedType = box(type);
 		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS);
 	}

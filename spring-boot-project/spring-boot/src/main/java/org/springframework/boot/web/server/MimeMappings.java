@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Simple server-independent abstraction for mime mappings. Roughly equivalent to the
@@ -241,8 +241,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @param mappings the source mappings with extension as the key and mime-type as the
 	 * value
 	 */
-	public MimeMappings(Map<String, String> mappings) {
-		Assert.notNull(mappings, "Mappings must not be null");
+	public MimeMappings(@NonNull Map<String, String> mappings) {
 		this.map = new LinkedHashMap<>();
 		for (Map.Entry<String, String> entry : mappings.entrySet()) {
 			add(entry.getKey(), entry.getValue());
@@ -254,8 +253,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @param mappings source mappings
 	 * @param mutable if the new object should be mutable.
 	 */
-	private MimeMappings(MimeMappings mappings, boolean mutable) {
-		Assert.notNull(mappings, "Mappings must not be null");
+	private MimeMappings(@NonNull MimeMappings mappings, boolean mutable) {
 		this.map = (mutable ? new LinkedHashMap<>(mappings.map)
 				: Collections.unmodifiableMap(mappings.map));
 	}
@@ -343,9 +341,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		private final String mimeType;
 
-		public Mapping(String extension, String mimeType) {
-			Assert.notNull(extension, "Extension must not be null");
-			Assert.notNull(mimeType, "MimeType must not be null");
+		public Mapping(@NonNull String extension, @NonNull String mimeType) {
 			this.extension = extension;
 			this.mimeType = mimeType;
 		}

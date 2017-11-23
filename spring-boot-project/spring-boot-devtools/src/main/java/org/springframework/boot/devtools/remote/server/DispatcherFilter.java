@@ -31,7 +31,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Servlet filter providing integration with the remote server {@link Dispatcher}.
@@ -44,8 +44,7 @@ public class DispatcherFilter implements Filter {
 
 	private final Dispatcher dispatcher;
 
-	public DispatcherFilter(Dispatcher dispatcher) {
-		Assert.notNull(dispatcher, "Dispatcher must not be null");
+	public DispatcherFilter(@NonNull Dispatcher dispatcher) {
 		this.dispatcher = dispatcher;
 	}
 

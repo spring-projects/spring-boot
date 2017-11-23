@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.health;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link HealthIndicator} that returns health indications from all registered delegates.
@@ -49,10 +49,8 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param indicators a map of {@link HealthIndicator}s with the key being used as an
 	 * indicator name.
 	 */
-	public CompositeHealthIndicator(HealthAggregator healthAggregator,
-			Map<String, HealthIndicator> indicators) {
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(indicators, "Indicators must not be null");
+	public CompositeHealthIndicator(@NonNull HealthAggregator healthAggregator,
+			@NonNull Map<String, HealthIndicator> indicators) {
 		this.indicators = new LinkedHashMap<>(indicators);
 		this.healthAggregator = healthAggregator;
 	}

@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link Endpoint} to expose {@link Trace} information.
@@ -37,8 +37,7 @@ public class TraceEndpoint {
 	 * Create a new {@link TraceEndpoint} instance.
 	 * @param repository the trace repository
 	 */
-	public TraceEndpoint(TraceRepository repository) {
-		Assert.notNull(repository, "Repository must not be null");
+	public TraceEndpoint(@NonNull TraceRepository repository) {
 		this.repository = repository;
 	}
 

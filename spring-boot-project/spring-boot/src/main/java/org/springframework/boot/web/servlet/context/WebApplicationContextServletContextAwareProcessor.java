@@ -19,7 +19,7 @@ package org.springframework.boot.web.servlet.context;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.ServletContextAwareProcessor;
 
@@ -37,8 +37,7 @@ public class WebApplicationContextServletContextAwareProcessor
 	private final ConfigurableWebApplicationContext webApplicationContext;
 
 	public WebApplicationContextServletContextAwareProcessor(
-			ConfigurableWebApplicationContext webApplicationContext) {
-		Assert.notNull(webApplicationContext, "WebApplicationContext must not be null");
+			@NonNull ConfigurableWebApplicationContext webApplicationContext) {
 		this.webApplicationContext = webApplicationContext;
 	}
 

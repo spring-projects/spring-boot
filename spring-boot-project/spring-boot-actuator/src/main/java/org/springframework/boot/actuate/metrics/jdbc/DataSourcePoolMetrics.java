@@ -29,7 +29,7 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
@@ -56,11 +56,9 @@ public class DataSourcePoolMetrics implements MeterBinder {
 				name, tags);
 	}
 
-	public DataSourcePoolMetrics(DataSource dataSource,
-			DataSourcePoolMetadataProvider metadataProvider, String name,
+	public DataSourcePoolMetrics(@NonNull DataSource dataSource,
+			@NonNull DataSourcePoolMetadataProvider metadataProvider, String name,
 			Iterable<Tag> tags) {
-		Assert.notNull(dataSource, "DataSource must not be null");
-		Assert.notNull(metadataProvider, "MetadataProvider must not be null");
 		this.dataSource = dataSource;
 		this.metadataProvider = new CachingDataSourcePoolMetadataProvider(dataSource,
 				metadataProvider);

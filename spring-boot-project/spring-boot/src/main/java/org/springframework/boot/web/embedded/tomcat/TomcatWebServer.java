@@ -38,7 +38,7 @@ import org.apache.naming.ContextBindings;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link WebServer} that can be used to control a Tomcat web server. Usually this class
@@ -77,8 +77,7 @@ public class TomcatWebServer implements WebServer {
 	 * @param tomcat the underlying Tomcat server
 	 * @param autoStart if the server should be started
 	 */
-	public TomcatWebServer(Tomcat tomcat, boolean autoStart) {
-		Assert.notNull(tomcat, "Tomcat Server must not be null");
+	public TomcatWebServer(@NonNull Tomcat tomcat, boolean autoStart) {
 		this.tomcat = tomcat;
 		this.autoStart = autoStart;
 		initialize();

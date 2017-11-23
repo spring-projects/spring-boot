@@ -17,7 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Abstract base class for {@link BindHandler} implementations.
@@ -41,8 +41,7 @@ public abstract class AbstractBindHandler implements BindHandler {
 	 * Create a new binding handler instance with a specific parent.
 	 * @param parent the parent handler
 	 */
-	public AbstractBindHandler(BindHandler parent) {
-		Assert.notNull(parent, "Parent must not be null");
+	public AbstractBindHandler(@NonNull BindHandler parent) {
 		this.parent = parent;
 	}
 

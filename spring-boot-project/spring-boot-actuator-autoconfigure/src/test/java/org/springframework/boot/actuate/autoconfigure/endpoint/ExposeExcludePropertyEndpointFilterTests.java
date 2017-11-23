@@ -58,7 +58,7 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	@Test
 	public void createWhenDiscovererTypeIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Discoverer Type must not be null");
+		this.thrown.expectMessage("DiscovererType must not be null");
 		new ExposeExcludePropertyEndpointFilter<>(null, this.environment, "foo");
 	}
 

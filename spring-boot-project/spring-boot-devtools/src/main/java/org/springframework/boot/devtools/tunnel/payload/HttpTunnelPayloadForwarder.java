@@ -21,6 +21,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -46,8 +47,7 @@ public class HttpTunnelPayloadForwarder {
 	 * Create a new {@link HttpTunnelPayloadForwarder} instance.
 	 * @param targetChannel the target channel
 	 */
-	public HttpTunnelPayloadForwarder(WritableByteChannel targetChannel) {
-		Assert.notNull(targetChannel, "TargetChannel must not be null");
+	public HttpTunnelPayloadForwarder(@NonNull WritableByteChannel targetChannel) {
 		this.targetChannel = targetChannel;
 	}
 

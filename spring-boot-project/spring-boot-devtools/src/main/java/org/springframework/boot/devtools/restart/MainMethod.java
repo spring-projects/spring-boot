@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.restart;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * The "main" method located from a running thread.
@@ -34,8 +34,7 @@ class MainMethod {
 		this(Thread.currentThread());
 	}
 
-	MainMethod(Thread thread) {
-		Assert.notNull(thread, "Thread must not be null");
+	MainMethod(@NonNull Thread thread) {
 		this.method = getMainMethod(thread);
 	}
 

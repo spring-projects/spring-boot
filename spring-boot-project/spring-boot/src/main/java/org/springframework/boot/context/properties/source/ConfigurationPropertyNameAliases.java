@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -49,18 +49,14 @@ public final class ConfigurationPropertyNameAliases {
 		addAliases(name, aliases);
 	}
 
-	public void addAliases(String name, String... aliases) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(aliases, "Aliases must not be null");
+	public void addAliases(@NonNull String name, @NonNull String... aliases) {
 		addAliases(ConfigurationPropertyName.of(name),
 				Arrays.stream(aliases).map(ConfigurationPropertyName::of)
 						.toArray(ConfigurationPropertyName[]::new));
 	}
 
-	public void addAliases(ConfigurationPropertyName name,
-			ConfigurationPropertyName... aliases) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(aliases, "Aliases must not be null");
+	public void addAliases(@NonNull ConfigurationPropertyName name,
+			@NonNull ConfigurationPropertyName... aliases) {
 		this.aliases.addAll(name, Arrays.asList(aliases));
 	}
 

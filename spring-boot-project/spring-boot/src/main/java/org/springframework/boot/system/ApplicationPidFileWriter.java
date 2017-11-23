@@ -34,7 +34,7 @@ import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * An {@link ApplicationListener} that saves application PID into file. This application
@@ -113,8 +113,7 @@ public class ApplicationPidFileWriter
 	 * Create a new {@link ApplicationPidFileWriter} instance with a specified file.
 	 * @param file the file containing pid
 	 */
-	public ApplicationPidFileWriter(File file) {
-		Assert.notNull(file, "File must not be null");
+	public ApplicationPidFileWriter(@NonNull File file) {
 		this.file = file;
 	}
 
@@ -127,8 +126,7 @@ public class ApplicationPidFileWriter
 	 * @param triggerEventType the trigger event type
 	 */
 	public void setTriggerEventType(
-			Class<? extends SpringApplicationEvent> triggerEventType) {
-		Assert.notNull(triggerEventType, "Trigger event type must not be null");
+			@NonNull Class<? extends SpringApplicationEvent> triggerEventType) {
 		this.triggerEventType = triggerEventType;
 	}
 

@@ -28,7 +28,7 @@ import java.nio.channels.SocketChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Socket based {@link TargetServerConnection}.
@@ -47,8 +47,7 @@ public class SocketTargetServerConnection implements TargetServerConnection {
 	 * Create a new {@link SocketTargetServerConnection}.
 	 * @param portProvider the port provider
 	 */
-	public SocketTargetServerConnection(PortProvider portProvider) {
-		Assert.notNull(portProvider, "PortProvider must not be null");
+	public SocketTargetServerConnection(@NonNull PortProvider portProvider) {
 		this.portProvider = portProvider;
 	}
 

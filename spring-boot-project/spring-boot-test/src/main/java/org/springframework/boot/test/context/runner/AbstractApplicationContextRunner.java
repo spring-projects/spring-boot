@@ -33,6 +33,7 @@ import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -126,14 +127,11 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @param parent the parent
 	 * @param configurations the configuration
 	 */
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
+	protected AbstractApplicationContextRunner(@NonNull Supplier<C> contextFactory,
+			@NonNull TestPropertyValues environmentProperties,
+			@NonNull TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
-			List<Configurations> configurations) {
-		Assert.notNull(contextFactory, "ContextFactory must not be null");
-		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
-		Assert.notNull(systemProperties, "SystemProperties must not be null");
-		Assert.notNull(configurations, "Configurations must not be null");
+			@NonNull List<Configurations> configurations) {
 		this.contextFactory = contextFactory;
 		this.environmentProperties = environmentProperties;
 		this.systemProperties = systemProperties;
@@ -213,8 +211,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @param configurations the configurations to add
 	 * @return a new instance with the updated configuration
 	 */
-	public SELF withConfiguration(Configurations configurations) {
-		Assert.notNull(configurations, "Configurations must not be null");
+	public SELF withConfiguration(@NonNull Configurations configurations) {
 		return newInstance(this.contextFactory, this.environmentProperties,
 				this.systemProperties, this.classLoader, this.parent,
 				add(this.configurations, configurations));

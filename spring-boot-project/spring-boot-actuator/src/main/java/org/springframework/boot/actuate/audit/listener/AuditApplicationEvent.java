@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Spring {@link ApplicationEvent} to encapsulate {@link AuditEvent}s.
@@ -76,9 +76,8 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	 * {@link AuditEvent}.
 	 * @param auditEvent the source of this event
 	 */
-	public AuditApplicationEvent(AuditEvent auditEvent) {
+	public AuditApplicationEvent(@NonNull AuditEvent auditEvent) {
 		super(auditEvent);
-		Assert.notNull(auditEvent, "AuditEvent must not be null");
 		this.auditEvent = auditEvent;
 	}
 

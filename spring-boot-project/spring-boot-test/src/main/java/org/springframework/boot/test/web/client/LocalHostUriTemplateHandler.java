@@ -18,7 +18,7 @@ package org.springframework.boot.test.web.client;
 
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
@@ -57,10 +57,9 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * @param scheme the scheme of the root uri
 	 * @since 1.4.1
 	 */
-	public LocalHostUriTemplateHandler(Environment environment, String scheme) {
+	public LocalHostUriTemplateHandler(@NonNull Environment environment,
+			@NonNull String scheme) {
 		super(new DefaultUriBuilderFactory());
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
 	}

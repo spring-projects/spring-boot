@@ -19,7 +19,7 @@ package org.springframework.boot.cli.compiler.dependencies;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A single dependency.
@@ -54,12 +54,8 @@ public final class Dependency {
 	 * @param version the version
 	 * @param exclusions the exclusions
 	 */
-	public Dependency(String groupId, String artifactId, String version,
-			List<Exclusion> exclusions) {
-		Assert.notNull(groupId, "GroupId must not be null");
-		Assert.notNull(artifactId, "ArtifactId must not be null");
-		Assert.notNull(version, "Version must not be null");
-		Assert.notNull(exclusions, "Exclusions must not be null");
+	public Dependency(@NonNull String groupId, @NonNull String artifactId,
+			@NonNull String version, @NonNull List<Exclusion> exclusions) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
@@ -143,9 +139,7 @@ public final class Dependency {
 
 		private final String artifactId;
 
-		Exclusion(String groupId, String artifactId) {
-			Assert.notNull(groupId, "GroupId must not be null");
-			Assert.notNull(groupId, "ArtifactId must not be null");
+		Exclusion(@NonNull String groupId, @NonNull String artifactId) {
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 		}

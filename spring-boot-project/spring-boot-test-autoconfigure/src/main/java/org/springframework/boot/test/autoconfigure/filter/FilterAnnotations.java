@@ -34,6 +34,7 @@ import org.springframework.core.type.filter.AspectJTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -48,8 +49,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 
 	private final List<TypeFilter> filters;
 
-	public FilterAnnotations(ClassLoader classLoader, Filter[] filters) {
-		Assert.notNull(filters, "Filters must not be null");
+	public FilterAnnotations(ClassLoader classLoader, @NonNull Filter[] filters) {
 		this.classLoader = classLoader;
 		this.filters = createTypeFilters(filters);
 	}

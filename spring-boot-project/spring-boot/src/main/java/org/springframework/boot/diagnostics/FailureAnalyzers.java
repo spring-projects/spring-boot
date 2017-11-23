@@ -29,7 +29,7 @@ import org.springframework.boot.SpringBootExceptionReporter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -54,12 +54,11 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 
 	private final List<FailureAnalyzer> analyzers;
 
-	FailureAnalyzers(ConfigurableApplicationContext context) {
+	FailureAnalyzers(@NonNull ConfigurableApplicationContext context) {
 		this(context, null);
 	}
 
-	FailureAnalyzers(ConfigurableApplicationContext context, ClassLoader classLoader) {
-		Assert.notNull(context, "Context must not be null");
+	FailureAnalyzers(@NonNull ConfigurableApplicationContext context, ClassLoader classLoader) {
 		this.classLoader = (classLoader == null ? context.getClassLoader() : classLoader);
 		this.analyzers = loadFailureAnalyzers(this.classLoader);
 		prepareFailureAnalyzers(this.analyzers, context);

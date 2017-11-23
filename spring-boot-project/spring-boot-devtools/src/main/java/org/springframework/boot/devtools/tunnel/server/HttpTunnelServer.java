@@ -35,6 +35,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpAsyncRequestControl;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -129,8 +130,7 @@ public class HttpTunnelServer {
 	 * Creates a new {@link HttpTunnelServer} instance.
 	 * @param serverConnection the connection to the target server
 	 */
-	public HttpTunnelServer(TargetServerConnection serverConnection) {
-		Assert.notNull(serverConnection, "ServerConnection must not be null");
+	public HttpTunnelServer(@NonNull TargetServerConnection serverConnection) {
 		this.serverConnection = serverConnection;
 	}
 
@@ -221,8 +221,7 @@ public class HttpTunnelServer {
 
 		private long lastHttpRequestTime;
 
-		public ServerThread(ByteChannel targetServer) {
-			Assert.notNull(targetServer, "TargetServer must not be null");
+		public ServerThread(@NonNull ByteChannel targetServer) {
 			this.targetServer = targetServer;
 			this.httpConnections = new ArrayDeque<>(2);
 			this.payloadForwarder = new HttpTunnelPayloadForwarder(targetServer);
@@ -460,8 +459,7 @@ public class HttpTunnelServer {
 		 * @param status the status to send
 		 * @throws IOException in case of I/O errors
 		 */
-		public void respond(HttpStatus status) throws IOException {
-			Assert.notNull(status, "Status must not be null");
+		public void respond(@NonNull HttpStatus status) throws IOException {
 			this.response.setStatusCode(status);
 			complete();
 		}
@@ -471,8 +469,7 @@ public class HttpTunnelServer {
 		 * @param payload the payload to send
 		 * @throws IOException in case of I/O errors
 		 */
-		public void respond(HttpTunnelPayload payload) throws IOException {
-			Assert.notNull(payload, "Payload must not be null");
+		public void respond(@NonNull HttpTunnelPayload payload) throws IOException {
 			this.response.setStatusCode(HttpStatus.OK);
 			payload.assignTo(this.response);
 			complete();

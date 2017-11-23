@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -56,9 +57,8 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	private ServerThread serverThread;
 
-	public TunnelClient(int listenPort, TunnelConnection tunnelConnection) {
+	public TunnelClient(int listenPort, @NonNull TunnelConnection tunnelConnection) {
 		Assert.isTrue(listenPort >= 0, "ListenPort must be greater than or equal to 0");
-		Assert.notNull(tunnelConnection, "TunnelConnection must not be null");
 		this.listenPort = listenPort;
 		this.tunnelConnection = tunnelConnection;
 	}

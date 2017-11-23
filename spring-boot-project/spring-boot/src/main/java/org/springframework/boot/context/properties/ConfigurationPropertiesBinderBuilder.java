@@ -29,7 +29,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 
@@ -67,8 +67,8 @@ class ConfigurationPropertiesBinderBuilder {
 	 * Creates an instance with the {@link ApplicationContext} to use.
 	 * @param applicationContext the application context
 	 */
-	ConfigurationPropertiesBinderBuilder(ApplicationContext applicationContext) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
+	ConfigurationPropertiesBinderBuilder(
+			@NonNull ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 

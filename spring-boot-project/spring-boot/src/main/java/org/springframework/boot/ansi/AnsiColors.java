@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Utility for working with {@link AnsiColor} in the context of {@link Color AWT Colors}.
@@ -93,12 +93,11 @@ public final class AnsiColors {
 
 		private final double b;
 
-		LabColor(Integer rgb) {
-			this(rgb == null ? (Color) null : new Color(rgb));
+		LabColor(@NonNull Integer rgb) {
+			this(new Color(rgb));
 		}
 
-		LabColor(Color color) {
-			Assert.notNull(color, "Color must not be null");
+		LabColor(@NonNull Color color) {
 			float[] lab = fromXyz(color.getColorComponents(XYZ_COLOR_SPACE, null));
 			this.l = lab[0];
 			this.a = lab[1];

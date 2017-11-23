@@ -16,7 +16,7 @@
 
 package org.springframework.boot.logging;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -39,10 +39,8 @@ public final class LoggerConfiguration {
 	 * @param configuredLevel the configured level of the logger
 	 * @param effectiveLevel the effective level of the logger
 	 */
-	public LoggerConfiguration(String name, LogLevel configuredLevel,
-			LogLevel effectiveLevel) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(effectiveLevel, "EffectiveLevel must not be null");
+	public LoggerConfiguration(@NonNull String name, LogLevel configuredLevel,
+			@NonNull LogLevel effectiveLevel) {
 		this.name = name;
 		this.configuredLevel = configuredLevel;
 		this.effectiveLevel = effectiveLevel;

@@ -40,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -77,10 +78,10 @@ public class HttpTunnelConnection implements TunnelConnection {
 	 * @param requestFactory the HTTP request factory
 	 * @param executor the executor used to handle connections
 	 */
-	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory,
+	protected HttpTunnelConnection(String url,
+			@NonNull ClientHttpRequestFactory requestFactory,
 			Executor executor) {
 		Assert.hasLength(url, "URL must not be empty");
-		Assert.notNull(requestFactory, "RequestFactory must not be null");
 		try {
 			this.uri = new URL(url).toURI();
 		}

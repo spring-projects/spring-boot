@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Abstract base class for {@link ConfigurableWebServerFactory} implementations.
@@ -107,14 +107,12 @@ public class AbstractConfigurableWebServerFactory
 	}
 
 	@Override
-	public void setErrorPages(Set<? extends ErrorPage> errorPages) {
-		Assert.notNull(errorPages, "ErrorPages must not be null");
+	public void setErrorPages(@NonNull Set<? extends ErrorPage> errorPages) {
 		this.errorPages = new LinkedHashSet<>(errorPages);
 	}
 
 	@Override
-	public void addErrorPages(ErrorPage... errorPages) {
-		Assert.notNull(errorPages, "ErrorPages must not be null");
+	public void addErrorPages(@NonNull ErrorPage... errorPages) {
 		this.errorPages.addAll(Arrays.asList(errorPages));
 	}
 

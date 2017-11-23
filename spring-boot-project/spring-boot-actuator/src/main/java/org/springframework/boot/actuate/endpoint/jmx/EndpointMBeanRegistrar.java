@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jmx.JmxException;
 import org.springframework.jmx.export.MBeanExportException;
 import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * JMX Registrar for {@link EndpointMBean}.
@@ -51,10 +51,8 @@ public class EndpointMBeanRegistrar {
 	 * @param mBeanServer the mbean exporter
 	 * @param objectNameFactory the {@link ObjectName} factory
 	 */
-	public EndpointMBeanRegistrar(MBeanServer mBeanServer,
-			EndpointObjectNameFactory objectNameFactory) {
-		Assert.notNull(mBeanServer, "MBeanServer must not be null");
-		Assert.notNull(objectNameFactory, "ObjectNameFactory must not be null");
+	public EndpointMBeanRegistrar(@NonNull MBeanServer mBeanServer,
+			@NonNull EndpointObjectNameFactory objectNameFactory) {
 		this.mBeanServer = mBeanServer;
 		this.objectNameFactory = objectNameFactory;
 	}
@@ -64,8 +62,7 @@ public class EndpointMBeanRegistrar {
 	 * @param endpoint the endpoint to register
 	 * @return the {@link ObjectName} used to register the {@code endpoint}
 	 */
-	public ObjectName registerEndpointMBean(EndpointMBean endpoint) {
-		Assert.notNull(endpoint, "Endpoint must not be null");
+	public ObjectName registerEndpointMBean(@NonNull EndpointMBean endpoint) {
 		try {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Registering endpoint with id '" + endpoint.getEndpointId()

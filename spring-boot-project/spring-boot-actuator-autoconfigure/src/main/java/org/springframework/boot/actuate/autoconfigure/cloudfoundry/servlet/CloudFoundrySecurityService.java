@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryA
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -47,10 +47,8 @@ class CloudFoundrySecurityService {
 
 	private String uaaUrl;
 
-	CloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
-			String cloudControllerUrl, boolean skipSslValidation) {
-		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
-		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
+	CloudFoundrySecurityService(@NonNull RestTemplateBuilder restTemplateBuilder,
+			@NonNull String cloudControllerUrl, boolean skipSslValidation) {
 		if (skipSslValidation) {
 			restTemplateBuilder = restTemplateBuilder
 					.requestFactory(SkipSslVerificationHttpRequestFactory.class);

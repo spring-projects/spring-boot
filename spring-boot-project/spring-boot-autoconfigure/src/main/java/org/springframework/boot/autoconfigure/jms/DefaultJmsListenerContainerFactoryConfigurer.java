@@ -21,8 +21,8 @@ import javax.jms.ConnectionFactory;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.util.Assert;
 
 /**
  * Configure {@link DefaultJmsListenerContainerFactory} with sensible defaults.
@@ -81,10 +81,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * @param factory the {@link DefaultJmsListenerContainerFactory} instance to configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
-	public void configure(DefaultJmsListenerContainerFactory factory,
-			ConnectionFactory connectionFactory) {
-		Assert.notNull(factory, "Factory must not be null");
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+	public void configure(@NonNull DefaultJmsListenerContainerFactory factory,
+			@NonNull ConnectionFactory connectionFactory) {
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
 		if (this.transactionManager != null) {

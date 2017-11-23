@@ -66,7 +66,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
 import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Embedded Mongo.
@@ -254,9 +254,8 @@ public class EmbeddedMongoAutoConfiguration {
 
 		private final Set<Feature> features;
 
-		private ToStringFriendlyFeatureAwareVersion(String version,
+		private ToStringFriendlyFeatureAwareVersion(@NonNull String version,
 				Set<Feature> features) {
-			Assert.notNull(version, "version must not be null");
 			this.version = version;
 			this.features = (features == null ? Collections.emptySet() : features);
 		}

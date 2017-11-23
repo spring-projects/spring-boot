@@ -20,7 +20,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for the
@@ -33,8 +33,7 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 
 	private final RabbitTemplate rabbitTemplate;
 
-	public RabbitHealthIndicator(RabbitTemplate rabbitTemplate) {
-		Assert.notNull(rabbitTemplate, "RabbitTemplate must not be null");
+	public RabbitHealthIndicator(@NonNull RabbitTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
 	}
 

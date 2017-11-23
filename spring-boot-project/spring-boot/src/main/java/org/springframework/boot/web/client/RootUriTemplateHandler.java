@@ -19,7 +19,7 @@ package org.springframework.boot.web.client;
 import java.net.URI;
 import java.util.Map;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -55,9 +55,8 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	 * @param rootUri the root URI to be used to prefix relative URLs
 	 * @param handler the delegate handler
 	 */
-	public RootUriTemplateHandler(String rootUri, UriTemplateHandler handler) {
-		Assert.notNull(rootUri, "RootUri must not be null");
-		Assert.notNull(handler, "Handler must not be null");
+	public RootUriTemplateHandler(@NonNull String rootUri,
+			@NonNull UriTemplateHandler handler) {
 		this.rootUri = rootUri;
 		this.handler = handler;
 	}
@@ -89,9 +88,8 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	 * @param rootUri the root URI
 	 * @return the added {@link RootUriTemplateHandler}.
 	 */
-	public static RootUriTemplateHandler addTo(RestTemplate restTemplate,
+	public static RootUriTemplateHandler addTo(@NonNull RestTemplate restTemplate,
 			String rootUri) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		RootUriTemplateHandler handler = new RootUriTemplateHandler(rootUri,
 				restTemplate.getUriTemplateHandler());
 		restTemplate.setUriTemplateHandler(handler);

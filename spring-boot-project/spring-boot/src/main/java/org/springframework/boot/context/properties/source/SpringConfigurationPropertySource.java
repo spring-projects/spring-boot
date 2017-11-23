@@ -29,7 +29,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link ConfigurationPropertySource} backed by a non-enumerable Spring
@@ -71,11 +71,9 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * @param containsDescendantOf function used to implement
 	 * {@link #containsDescendantOf(ConfigurationPropertyName)} (may be {@code null})
 	 */
-	SpringConfigurationPropertySource(PropertySource<?> propertySource,
-			PropertyMapper mapper,
+	SpringConfigurationPropertySource(@NonNull PropertySource<?> propertySource,
+			@NonNull PropertyMapper mapper,
 			Function<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOf) {
-		Assert.notNull(propertySource, "PropertySource must not be null");
-		Assert.notNull(mapper, "Mapper must not be null");
 		this.propertySource = propertySource;
 		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
 		this.containsDescendantOf = (containsDescendantOf != null ? containsDescendantOf
@@ -139,8 +137,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * @return a {@link SpringConfigurationPropertySource} or
 	 * {@link SpringIterableConfigurationPropertySource} instance
 	 */
-	public static SpringConfigurationPropertySource from(PropertySource<?> source) {
-		Assert.notNull(source, "Source must not be null");
+	public static SpringConfigurationPropertySource from(
+			@NonNull PropertySource<?> source) {
 		PropertyMapper mapper = getPropertyMapper(source);
 		if (isFullEnumerable(source)) {
 			return new SpringIterableConfigurationPropertySource(

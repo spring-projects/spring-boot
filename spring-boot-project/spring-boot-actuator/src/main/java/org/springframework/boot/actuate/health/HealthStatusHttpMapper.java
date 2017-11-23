@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Map a {@link Status} to an HTTP status code.
@@ -50,8 +50,7 @@ public class HealthStatusHttpMapper {
 	 * Set specific status mappings.
 	 * @param statusMapping a map of health status code to HTTP status code
 	 */
-	public void setStatusMapping(Map<String, Integer> statusMapping) {
-		Assert.notNull(statusMapping, "StatusMapping must not be null");
+	public void setStatusMapping(@NonNull Map<String, Integer> statusMapping) {
 		this.statusMapping = new HashMap<>(statusMapping);
 	}
 
@@ -59,8 +58,7 @@ public class HealthStatusHttpMapper {
 	 * Add specific status mappings to the existing set.
 	 * @param statusMapping a map of health status code to HTTP status code
 	 */
-	public void addStatusMapping(Map<String, Integer> statusMapping) {
-		Assert.notNull(statusMapping, "StatusMapping must not be null");
+	public void addStatusMapping(@NonNull Map<String, Integer> statusMapping) {
 		this.statusMapping.putAll(statusMapping);
 	}
 
@@ -69,9 +67,7 @@ public class HealthStatusHttpMapper {
 	 * @param status the status to map
 	 * @param httpStatus the http status
 	 */
-	public void addStatusMapping(Status status, Integer httpStatus) {
-		Assert.notNull(status, "Status must not be null");
-		Assert.notNull(httpStatus, "HttpStatus must not be null");
+	public void addStatusMapping(@NonNull Status status, @NonNull Integer httpStatus) {
 		addStatusMapping(status.getCode(), httpStatus);
 	}
 
@@ -80,9 +76,8 @@ public class HealthStatusHttpMapper {
 	 * @param statusCode the status code to map
 	 * @param httpStatus the http status
 	 */
-	public void addStatusMapping(String statusCode, Integer httpStatus) {
-		Assert.notNull(statusCode, "StatusCode must not be null");
-		Assert.notNull(httpStatus, "HttpStatus must not be null");
+	public void addStatusMapping(@NonNull String statusCode,
+			@NonNull Integer httpStatus) {
 		this.statusMapping.put(statusCode, httpStatus);
 	}
 

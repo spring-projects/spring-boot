@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link SpringBootCondition} used to check if the Hazelcast configuration is available.
@@ -37,10 +37,9 @@ public abstract class HazelcastConfigResourceCondition extends ResourceCondition
 
 	private final String configSystemProperty;
 
-	protected HazelcastConfigResourceCondition(String configSystemProperty,
+	protected HazelcastConfigResourceCondition(@NonNull String configSystemProperty,
 			String... resourceLocations) {
 		super("Hazelcast", "spring.hazelcast.config", resourceLocations);
-		Assert.notNull(configSystemProperty, "ConfigSystemProperty must not be null");
 		this.configSystemProperty = configSystemProperty;
 	}
 

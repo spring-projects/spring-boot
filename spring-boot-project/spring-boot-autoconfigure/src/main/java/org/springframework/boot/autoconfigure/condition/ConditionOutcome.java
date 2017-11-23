@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -46,8 +46,7 @@ public class ConditionOutcome {
 	 * @param match if the condition is a match
 	 * @param message the condition message
 	 */
-	public ConditionOutcome(boolean match, ConditionMessage message) {
-		Assert.notNull(message, "ConditionMessage must not be null");
+	public ConditionOutcome(boolean match, @NonNull ConditionMessage message) {
 		this.match = match;
 		this.message = message;
 	}

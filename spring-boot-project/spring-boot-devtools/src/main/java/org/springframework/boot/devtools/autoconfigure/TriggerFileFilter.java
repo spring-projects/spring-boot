@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.autoconfigure;
 import java.io.File;
 import java.io.FileFilter;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link FileFilter} that accepts only a specific "trigger" file.
@@ -31,8 +31,7 @@ public class TriggerFileFilter implements FileFilter {
 
 	private final String name;
 
-	public TriggerFileFilter(String name) {
-		Assert.notNull(name, "Name must not be null");
+	public TriggerFileFilter(@NonNull String name) {
 		this.name = name;
 	}
 

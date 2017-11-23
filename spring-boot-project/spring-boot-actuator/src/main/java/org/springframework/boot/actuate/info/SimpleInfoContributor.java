@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.info;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A simple {@link InfoContributor} that exposes a single detail.
@@ -30,8 +30,7 @@ public class SimpleInfoContributor implements InfoContributor {
 
 	private final Object detail;
 
-	public SimpleInfoContributor(String prefix, Object detail) {
-		Assert.notNull(prefix, "Prefix must not be null");
+	public SimpleInfoContributor(@NonNull String prefix, Object detail) {
 		this.prefix = prefix;
 		this.detail = detail;
 	}

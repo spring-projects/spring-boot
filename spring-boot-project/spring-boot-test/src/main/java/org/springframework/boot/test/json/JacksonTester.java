@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * AssertJ based JSON tester backed by Jackson. Usually instantiated via
@@ -68,8 +68,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * Create a new {@link JacksonTester} instance.
 	 * @param objectMapper the Jackson object mapper
 	 */
-	protected JacksonTester(ObjectMapper objectMapper) {
-		Assert.notNull(objectMapper, "ObjectMapper must not be null");
+	protected JacksonTester(@NonNull ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
 
@@ -85,9 +84,8 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	}
 
 	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type,
-			ObjectMapper objectMapper, Class<?> view) {
+			@NonNull ObjectMapper objectMapper, Class<?> view) {
 		super(resourceLoadClass, type);
-		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.objectMapper = objectMapper;
 		this.view = view;
 	}

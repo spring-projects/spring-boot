@@ -35,6 +35,7 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -78,9 +79,8 @@ public class JettyWebServer implements WebServer {
 	 * @param server the underlying Jetty server
 	 * @param autoStart if auto-starting the server
 	 */
-	public JettyWebServer(Server server, boolean autoStart) {
+	public JettyWebServer(@NonNull Server server, boolean autoStart) {
 		this.autoStart = autoStart;
-		Assert.notNull(server, "Jetty Server must not be null");
 		this.server = server;
 		initialize();
 	}

@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.endpoint.web;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Media types that are, by default, produced and consumed by an endpoint.
@@ -40,9 +40,8 @@ public class EndpointMediaTypes {
 	 * be {@code null}.
 	 * @param consumed the default media types that are consumed by an endpoint. Must not
 	 */
-	public EndpointMediaTypes(List<String> produced, List<String> consumed) {
-		Assert.notNull(produced, () -> "Produced must not be null");
-		Assert.notNull(consumed, () -> "Consumed must not be null");
+	public EndpointMediaTypes(@NonNull List<String> produced,
+			@NonNull List<String> consumed) {
 		this.produced = Collections.unmodifiableList(produced);
 		this.consumed = Collections.unmodifiableList(consumed);
 	}

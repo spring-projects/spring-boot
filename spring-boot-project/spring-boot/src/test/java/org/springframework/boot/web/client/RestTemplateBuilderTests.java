@@ -205,7 +205,7 @@ public class RestTemplateBuilderTests {
 	public void interceptorsWhenInterceptorsAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("interceptors must not be null");
+		this.thrown.expectMessage("Interceptors must not be null");
 		this.builder.interceptors((ClientHttpRequestInterceptor[]) null);
 	}
 
@@ -213,7 +213,7 @@ public class RestTemplateBuilderTests {
 	public void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("interceptors must not be null");
+		this.thrown.expectMessage("Interceptors must not be null");
 		this.builder.interceptors((Set<ClientHttpRequestInterceptor>) null);
 	}
 
@@ -235,7 +235,7 @@ public class RestTemplateBuilderTests {
 	public void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("interceptors must not be null");
+		this.thrown.expectMessage("Interceptors must not be null");
 		this.builder.additionalInterceptors((ClientHttpRequestInterceptor[]) null);
 	}
 
@@ -243,7 +243,7 @@ public class RestTemplateBuilderTests {
 	public void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("interceptors must not be null");
+		this.thrown.expectMessage("Interceptors must not be null");
 		this.builder.additionalInterceptors((Set<ClientHttpRequestInterceptor>) null);
 	}
 
@@ -386,7 +386,7 @@ public class RestTemplateBuilderTests {
 	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("RestTemplateCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.additionalCustomizers((Set<RestTemplateCustomizer>) null);
 	}
 

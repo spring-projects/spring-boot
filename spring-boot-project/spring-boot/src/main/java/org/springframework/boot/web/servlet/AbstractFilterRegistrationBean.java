@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -68,9 +69,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
 	 */
 	AbstractFilterRegistrationBean(
-			ServletRegistrationBean<?>... servletRegistrationBeans) {
-		Assert.notNull(servletRegistrationBeans,
-				"ServletRegistrationBeans must not be null");
+			@NonNull ServletRegistrationBean<?>... servletRegistrationBeans) {
 		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
 	}
 
@@ -78,10 +77,8 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	 * Set {@link ServletRegistrationBean}s that the filter will be registered against.
 	 * @param servletRegistrationBeans the Servlet registration beans
 	 */
-	public void setServletRegistrationBeans(
+	public void setServletRegistrationBeans(@NonNull
 			Collection<? extends ServletRegistrationBean<?>> servletRegistrationBeans) {
-		Assert.notNull(servletRegistrationBeans,
-				"ServletRegistrationBeans must not be null");
 		this.servletRegistrationBeans = new LinkedHashSet<>(servletRegistrationBeans);
 	}
 
@@ -102,9 +99,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	 * @see #setServletRegistrationBeans
 	 */
 	public void addServletRegistrationBeans(
-			ServletRegistrationBean<?>... servletRegistrationBeans) {
-		Assert.notNull(servletRegistrationBeans,
-				"ServletRegistrationBeans must not be null");
+			@NonNull ServletRegistrationBean<?>... servletRegistrationBeans) {
 		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
 	}
 
@@ -115,8 +110,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	 * @see #setServletRegistrationBeans
 	 * @see #setUrlPatterns
 	 */
-	public void setServletNames(Collection<String> servletNames) {
-		Assert.notNull(servletNames, "ServletNames must not be null");
+	public void setServletNames(@NonNull Collection<String> servletNames) {
 		this.servletNames = new LinkedHashSet<>(servletNames);
 	}
 
@@ -133,8 +127,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	 * Add servlet names for the filter.
 	 * @param servletNames the servlet names to add
 	 */
-	public void addServletNames(String... servletNames) {
-		Assert.notNull(servletNames, "ServletNames must not be null");
+	public void addServletNames(@NonNull String... servletNames) {
 		this.servletNames.addAll(Arrays.asList(servletNames));
 	}
 
@@ -145,8 +138,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	 * @see #setServletRegistrationBeans
 	 * @see #setServletNames
 	 */
-	public void setUrlPatterns(Collection<String> urlPatterns) {
-		Assert.notNull(urlPatterns, "UrlPatterns must not be null");
+	public void setUrlPatterns(@NonNull Collection<String> urlPatterns) {
 		this.urlPatterns = new LinkedHashSet<>(urlPatterns);
 	}
 
@@ -163,8 +155,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	 * Add URL patterns that the filter will be registered against.
 	 * @param urlPatterns the URL patterns
 	 */
-	public void addUrlPatterns(String... urlPatterns) {
-		Assert.notNull(urlPatterns, "UrlPatterns must not be null");
+	public void addUrlPatterns(@NonNull String... urlPatterns) {
 		Collections.addAll(this.urlPatterns, urlPatterns);
 	}
 

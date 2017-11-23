@@ -40,8 +40,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -74,9 +74,8 @@ class BeanDefinitionLoader {
 	 * @param registry the bean definition registry that will contain the loaded beans
 	 * @param sources the bean sources
 	 */
-	BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notEmpty(sources, "Sources must not be empty");
+	BeanDefinitionLoader(@NonNull BeanDefinitionRegistry registry,
+			@NonNull Object... sources) {
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
@@ -129,8 +128,7 @@ class BeanDefinitionLoader {
 		return count;
 	}
 
-	private int load(Object source) {
-		Assert.notNull(source, "Source must not be null");
+	private int load(@NonNull Object source) {
 		if (source instanceof Class<?>) {
 			return load((Class<?>) source);
 		}

@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link Handler} that responds with a specific {@link HttpStatus}.
@@ -45,8 +45,7 @@ public class HttpStatusHandler implements Handler {
 	 * specified status.
 	 * @param status the status
 	 */
-	public HttpStatusHandler(HttpStatus status) {
-		Assert.notNull(status, "Status must not be null");
+	public HttpStatusHandler(@NonNull HttpStatus status) {
 		this.status = status;
 	}
 

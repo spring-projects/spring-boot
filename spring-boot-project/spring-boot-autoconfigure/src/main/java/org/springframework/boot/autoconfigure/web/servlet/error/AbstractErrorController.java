@@ -27,8 +27,8 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.Assert;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,9 +51,8 @@ public abstract class AbstractErrorController implements ErrorController {
 		this(errorAttributes, null);
 	}
 
-	public AbstractErrorController(ErrorAttributes errorAttributes,
+	public AbstractErrorController(@NonNull ErrorAttributes errorAttributes,
 			List<ErrorViewResolver> errorViewResolvers) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
 		this.errorAttributes = errorAttributes;
 		this.errorViewResolvers = sortErrorViewResolvers(errorViewResolvers);
 	}

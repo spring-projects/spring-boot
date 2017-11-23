@@ -35,6 +35,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.lang.NonNull;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.result.PrintingResultHandler;
@@ -66,8 +67,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	 * Create a new {@link SpringBootMockMvcBuilderCustomizer} instance.
 	 * @param context the source application context
 	 */
-	public SpringBootMockMvcBuilderCustomizer(WebApplicationContext context) {
-		Assert.notNull(context, "Context must not be null");
+	public SpringBootMockMvcBuilderCustomizer(@NonNull WebApplicationContext context) {
 		this.context = context;
 	}
 

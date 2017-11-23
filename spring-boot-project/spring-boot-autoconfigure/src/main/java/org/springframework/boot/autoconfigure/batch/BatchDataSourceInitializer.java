@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
@@ -34,9 +34,9 @@ public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 	private final BatchProperties properties;
 
 	public BatchDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, BatchProperties properties) {
+			ResourceLoader resourceLoader,
+			@NonNull BatchProperties properties) {
 		super(dataSource, resourceLoader);
-		Assert.notNull(properties, "BatchProperties must not be null");
 		this.properties = properties;
 	}
 

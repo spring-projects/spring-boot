@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -50,8 +51,7 @@ class FolderSnapshot {
 	 * Create a new {@link FolderSnapshot} for the given folder.
 	 * @param folder the source folder
 	 */
-	FolderSnapshot(File folder) {
-		Assert.notNull(folder, "Folder must not be null");
+	FolderSnapshot(@NonNull File folder) {
 		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
 		this.folder = folder;
 		this.time = new Date();
@@ -74,9 +74,8 @@ class FolderSnapshot {
 		}
 	}
 
-	public ChangedFiles getChangedFiles(FolderSnapshot snapshot,
+	public ChangedFiles getChangedFiles(@NonNull FolderSnapshot snapshot,
 			FileFilter triggerFilter) {
-		Assert.notNull(snapshot, "Snapshot must not be null");
 		File folder = this.folder;
 		Assert.isTrue(snapshot.folder.equals(folder),
 				"Snapshot source folder must be '" + folder + "'");

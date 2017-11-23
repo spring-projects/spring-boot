@@ -24,7 +24,7 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ListenerRetry;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
@@ -80,11 +80,9 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 */
 	public abstract void configure(T factory, ConnectionFactory connectionFactory);
 
-	protected void configure(T factory, ConnectionFactory connectionFactory,
-			RabbitProperties.AmqpContainer configuration) {
-		Assert.notNull(factory, "Factory must not be null");
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
-		Assert.notNull(configuration, "Configuration must not be null");
+	protected void configure(@NonNull T factory,
+			@NonNull ConnectionFactory connectionFactory,
+			@NonNull RabbitProperties.AmqpContainer configuration) {
 		factory.setConnectionFactory(connectionFactory);
 		if (this.messageConverter != null) {
 			factory.setMessageConverter(this.messageConverter);

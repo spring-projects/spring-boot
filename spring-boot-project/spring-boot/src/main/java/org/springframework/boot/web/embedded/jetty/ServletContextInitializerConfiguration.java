@@ -24,7 +24,7 @@ import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * Jetty {@link Configuration} that calls {@link ServletContextInitializer}s.
@@ -43,8 +43,7 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 	 * @since 1.2.1
 	 */
 	public ServletContextInitializerConfiguration(
-			ServletContextInitializer... initializers) {
-		Assert.notNull(initializers, "Initializers must not be null");
+			@NonNull ServletContextInitializer... initializers) {
 		this.initializers = initializers;
 	}
 

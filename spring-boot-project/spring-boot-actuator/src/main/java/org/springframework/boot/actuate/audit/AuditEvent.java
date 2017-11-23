@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * A value object representing an audit event: at a particular time, a particular user or
@@ -82,11 +82,8 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data The event data
 	 */
-	public AuditEvent(Date timestamp, String principal, String type,
-			Map<String, Object> data) {
-		Assert.notNull(timestamp, "Timestamp must not be null");
-		Assert.notNull(principal, "Principal must not be null");
-		Assert.notNull(type, "Type must not be null");
+	public AuditEvent(@NonNull Date timestamp, @NonNull String principal,
+			@NonNull String type, Map<String, Object> data) {
 		this.timestamp = timestamp;
 		this.principal = principal;
 		this.type = type;

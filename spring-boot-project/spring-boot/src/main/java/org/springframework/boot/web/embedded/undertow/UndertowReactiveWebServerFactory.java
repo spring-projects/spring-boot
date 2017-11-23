@@ -29,7 +29,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link UndertowWebServer}s.
@@ -137,8 +137,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * @param customizers the customizers to set
 	 */
 	public void setBuilderCustomizers(
-			Collection<? extends UndertowBuilderCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+			@NonNull Collection<? extends UndertowBuilderCustomizer> customizers) {
 		this.builderCustomizers = new ArrayList<>(customizers);
 	}
 
@@ -156,8 +155,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * Undertow {@link io.undertow.Undertow.Builder Builder}.
 	 * @param customizers the customizers to add
 	 */
-	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+	public void addBuilderCustomizers(@NonNull UndertowBuilderCustomizer... customizers) {
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
 	}
 

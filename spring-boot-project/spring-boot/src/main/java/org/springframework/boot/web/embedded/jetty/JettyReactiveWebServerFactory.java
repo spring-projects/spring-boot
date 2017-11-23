@@ -38,7 +38,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
-import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link JettyWebServer}s.
@@ -150,8 +150,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * @param customizers the Jetty customizers to apply
 	 */
 	public void setServerCustomizers(
-			Collection<? extends JettyServerCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+			@NonNull Collection<? extends JettyServerCustomizer> customizers) {
 		this.jettyServerCustomizers = new ArrayList<>(customizers);
 	}
 
@@ -169,8 +168,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * before it is started.
 	 * @param customizers the customizers to add
 	 */
-	public void addServerCustomizers(JettyServerCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+	public void addServerCustomizers(@NonNull JettyServerCustomizer... customizers) {
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 
