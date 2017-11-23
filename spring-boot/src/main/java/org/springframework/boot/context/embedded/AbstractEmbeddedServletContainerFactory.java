@@ -194,23 +194,29 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	private File getCodeSourceArchive() {
+		return getCodeSourceArchive(getClass().getProtectionDomain().getCodeSource());
+	}
+
+	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
 			URL location = (codeSource == null ? null : codeSource.getLocation());
 			if (location == null) {
 				return null;
 			}
-			String path = location.getPath();
+			String path;
 			URLConnection connection = location.openConnection();
 			if (connection instanceof JarURLConnection) {
 				path = ((JarURLConnection) connection).getJarFile().getName();
 			}
-			if (path.indexOf("!/") != -1) {
+			else {
+				path = location.toURI().getPath();
+			}
+			if (path.contains("!/")) {
 				path = path.substring(0, path.indexOf("!/"));
 			}
 			return new File(path);
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			return null;
 		}
 	}
