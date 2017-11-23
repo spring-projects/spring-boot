@@ -109,6 +109,7 @@ public class Neo4jHealthIndicatorTests {
 		Health health = this.neo4jHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Map<String, Object> details = health.getDetails();
+		Assert.assertEquals(2, details.size());
 		int nodeCountFromDetails = (int) details.get("nodes");
 		Assert.assertEquals(nodeCount, nodeCountFromDetails);
 		int relationshipCountFromDetails = (int) details.get("relationships");
