@@ -561,15 +561,6 @@
       }
     },
     {
-      "name": "endpoints.flyway.path",
-      "type": "java.lang.String",
-      "description": "Endpoint URL path.",
-      "deprecation": {
-        "replacement": "management.endpoints.web.path-mapping.flyway",
-        "level": "error"
-      }
-    },
-    {
       "name": "endpoints.flyway.sensitive",
       "type": "java.lang.Boolean",
       "description": "Mark if the endpoint exposes sensitive information.",
@@ -784,15 +775,6 @@
       "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
       "deprecation": {
         "reason": "Endpoint identifier is no longer customizable.",
-        "level": "error"
-      }
-    },
-    {
-      "name": "endpoints.liquibase.path",
-      "type": "java.lang.String",
-      "description": "Endpoint URL path.",
-      "deprecation": {
-        "replacement": "management.endpoints.web.path-mapping.liquibase",
         "level": "error"
       }
     },
