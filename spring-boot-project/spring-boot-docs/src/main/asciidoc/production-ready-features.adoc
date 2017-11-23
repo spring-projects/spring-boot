@@ -377,6 +377,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/mongo/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
 |Checks that a Mongo database is up.
 
+|{sc-spring-boot-actuator}/neo4j/Neo4jHealthIndicator.{sc-ext}[`Neo4jHealthIndicator`]
+|Checks that a Neo4j server is up.
+
 |{sc-spring-boot-actuator}/amqp/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
 |Checks that a Rabbit server is up.
 
