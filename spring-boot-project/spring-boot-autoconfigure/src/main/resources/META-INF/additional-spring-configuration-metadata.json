@@ -1198,11 +1198,11 @@
     }
   },
   {
-    "name": "spring.resources.cach-period",
+    "name": "spring.resources.cache-period",
     "type": "java.lang.Integer",
     "description": "Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.",
     "deprecation": {
-      "replacement": "spring.resources.cach-period",
+      "replacement": "spring.resources.cache.period",
       "level": "error"
     }
   },
