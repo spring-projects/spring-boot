@@ -510,6 +510,23 @@ TIP: To handle the error automatically, consider extending from
 
 
 
+==== Auto-configured ReactiveHealthIndicators
+The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
+appropriate:
+
+[cols="1,4"]
+|===
+|Name |Description
+
+|{sc-spring-boot-actuator}/redis/RedisReactiveHealthIndicator.{sc-ext}[`RedisReactiveHealthIndicator`]
+|Checks that a Redis server is up.
+|===
+
+TIP: Those reactive indicators replace the regular ones if necessary. Also, any
+`HealthIndicator` that is not handled explicitly is wrapped automatically.
+
+
+
 [[production-ready-application-info]]
 === Application Information
 Application information exposes various information collected from all
