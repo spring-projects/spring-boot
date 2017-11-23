@@ -16,11 +16,6 @@
 
 package org.springframework.boot.devtools.filewatch;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -52,13 +47,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.boot.devtools.remote.client.ClassPathChangeUploader;
 import org.springframework.util.Assert;
 
 /**
  * Starts a thread to monitor source directories using java.nio package.
- * 
+ *
  * @author Damian Suchodolski
  *
  */
@@ -128,7 +124,7 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 		Assert.isTrue(folder.isDirectory(),
 				"Folder '" + folder + "' must exist and must" + " be a directory");
 		logger.debug("new source folder " + folder);
-		registeredFolders.add(folder.toPath());
+		this.registeredFolders.add(folder.toPath());
 	}
 
 	@Override
@@ -151,7 +147,8 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 	}
 
 	private boolean acceptChangedFile(Path dir) {
-		boolean accept = (triggerFilter == null || !triggerFilter.accept(dir.toFile()));
+		boolean accept = (this.triggerFilter == null
+				|| !this.triggerFilter.accept(dir.toFile()));
 		if (!accept) {
 			logger.debug("Skip file : " + dir);
 		}
@@ -163,15 +160,15 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 	}
 
 	private synchronized void registerWatch(Path dir) {
-
 		logger.debug("Registering a path " + dir);
-		if (!watchPathKeyMap.containsKey(dir)) {
-			// Need to refresh key?
+		if (!this.watchPathKeyMap.containsKey(dir)) {
 			try {
-				WatchKey watchKey = dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE,
-						ENTRY_MODIFY);
-				watchPathKeyMap.put(dir, watchKey);
-				watchKeyPathMap.put(watchKey, dir);
+				WatchKey watchKey = dir.register(this.watchService,
+						java.nio.file.StandardWatchEventKinds.ENTRY_CREATE,
+						java.nio.file.StandardWatchEventKinds.ENTRY_DELETE,
+						java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY);
+				this.watchPathKeyMap.put(dir, watchKey);
+				this.watchKeyPathMap.put(watchKey, dir);
 			}
 			catch (IOException e) {
 			}
@@ -188,35 +185,35 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 	@Override
 	public void start() {
 		logger.debug("Starting watchThread ...");
-		synchronized (closeMonitor) {
-			watchThread = new Thread(new Runnable() {
+		synchronized (this.closeMonitor) {
+			this.watchThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					running.set(true);
+					FileSystemNIOWatcher.this.running.set(true);
 					watchLoop();
 				}
 			}, "FileSystemListener");
-			watchThread.start();
+			this.watchThread.start();
 		}
 	}
 
 	public boolean isAlive() {
-		if (watchThread == null) {
+		if (this.watchThread == null) {
 			return false;
 		}
-		return watchThread.isAlive();
+		return this.watchThread.isAlive();
 	}
 
 	@Override
 	public void stop() {
 
 		logger.debug("Closing watcher ...");
-		synchronized (closeMonitor) {
-			if (watchThread != null) {
+		synchronized (this.closeMonitor) {
+			if (this.watchThread != null) {
 				try {
-					running.set(false);
-					watchService.close();
-					watchThread.interrupt();
+					this.running.set(false);
+					this.watchService.close();
+					this.watchThread.interrupt();
 				}
 				catch (IOException e) {
 					logger.debug("Problem clising watchThread", e);
@@ -227,7 +224,7 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 	}
 
 	private synchronized void unregisterInvalidPaths() {
-		Set<Path> paths = new HashSet<Path>(watchPathKeyMap.keySet());
+		Set<Path> paths = new HashSet<Path>(this.watchPathKeyMap.keySet());
 		Set<Path> invalidPaths = new HashSet<Path>();
 
 		for (Path path : paths) {
@@ -244,18 +241,18 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 	}
 
 	private synchronized void unregisterWatch(Path dir) {
-		WatchKey watchKey = watchPathKeyMap.get(dir);
-
+		WatchKey watchKey = this.watchPathKeyMap.get(dir);
 		if (watchKey != null) {
 			watchKey.cancel();
-			watchPathKeyMap.remove(dir);
+			this.watchPathKeyMap.remove(dir);
 		}
 	}
 
 	/**
-	 * Register directories to watch recursively
-	 * @param path
-	 * @throws IOException
+	 * Register directories to watch recursively.
+	 *
+	 * @param path Path to examine
+	 * @throws IOException exception
 	 */
 	private synchronized void walkTreeAndSetWatches(Path path) throws IOException {
 
@@ -278,13 +275,13 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 
 	private void watchLoop() {
 		try {
-			watchService = FileSystems.getDefault().newWatchService();
+			this.watchService = FileSystems.getDefault().newWatchService();
 		}
 		catch (IOException e) {
 			logger.error("IO exception", e);
 		}
 
-		for (Path path : registeredFolders) {
+		for (Path path : this.registeredFolders) {
 			try {
 				logger.debug("Initialize watched folder set");
 				walkTreeAndSetWatches(path);
@@ -303,14 +300,14 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 			}
 		}
 
-		while (running.get()) {
+		while (this.running.get()) {
 			try {
 				logger.debug("WatchThread waiting...");
-				WatchKey watchKey = watchService.take();
+				WatchKey watchKey = this.watchService.take();
 				List<WatchEvent<?>> pollEvents = watchKey.pollEvents();
 
-				synchronized (closeMonitor) {
-					if (running.get()) {
+				synchronized (this.closeMonitor) {
+					if (this.running.get()) {
 
 						for (WatchEvent<?> event : pollEvents) {
 
@@ -320,11 +317,11 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 
 								Kind<?> kind = event.kind();
 
-								if (kind == OVERFLOW) {
+								if (kind == java.nio.file.StandardWatchEventKinds.OVERFLOW) {
 									continue;
 								}
 
-								Path watchPath = watchKeyPathMap.get(watchKey);
+								Path watchPath = this.watchKeyPathMap.get(watchKey);
 
 								if (watchPath == null) {
 									logger.debug("watch key is null " + watchKey);
@@ -344,33 +341,17 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 
 								boolean isDirectory = file.isDirectory();
 
-								if (timer != null) {
-									timer.cancel();
-									timer = null;
+								if (this.timer != null) {
+									this.timer.cancel();
+									this.timer = null;
 								}
 
-								timer = new Timer("WatchTimer");
-								timer.schedule(new TimerTask() {
+								this.timer = new Timer("WatchTimer");
+								this.timer.schedule(new TimerTask() {
 									@Override
 									public void run() {
-
-										if (kind == ENTRY_CREATE) {
-											if (isDirectory) {
-												if (isRecursiveEnabled()) {
-													try {
-														walkTreeAndSetWatches(path);
-													}
-													catch (IOException e) {
-														logger.warn(
-																"Can't register new folder",
-																e);
-													}
-												}
-											}
-										}
-
+										registerNewDirectories(kind, path, isDirectory);
 										Type type = assignEventType(kind);
-
 										// too many objects?
 										Set<ChangedFile> changes = new LinkedHashSet<>();
 										ChangedFiles changedFiles = new ChangedFiles(
@@ -378,8 +359,10 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 										Set<ChangedFiles> changedFilesSet = new HashSet<ChangedFiles>();
 										changedFilesSet.add(changedFiles);
 
-										logger.debug("Changed file : " + eventPath + ", "
-												+ watchPath + ", " + file);
+										if (logger.isDebugEnabled()) {
+											logger.debug("Changed file : " + eventPath
+													+ ", " + watchPath + ", " + file);
+										}
 										ChangedFile changedFile = new ChangedFile(
 												watchPath.toFile(), file, type);
 										changes.add(changedFile);
@@ -389,22 +372,41 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 
 										boolean valid = watchKey.reset();
 										if (!valid) {
-											watchKeyPathMap.remove(watchKey);
+											FileSystemNIOWatcher.this.watchKeyPathMap
+													.remove(watchKey);
 										}
 
 										unregisterInvalidPaths();
 
 									}
 
+									private void registerNewDirectories(Kind<?> kind,
+											Path path, boolean isDirectory) {
+										if (kind == java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
+												&& isDirectory && isRecursiveEnabled()) {
+
+											try {
+												walkTreeAndSetWatches(path);
+											}
+											catch (IOException e) {
+												logger.warn("Can't register new folder",
+														e);
+											}
+										}
+									}
+
 									private Type assignEventType(Kind<?> kind) {
 										Type type = null;
-										if (kind.equals(ENTRY_MODIFY)) {
+										if (kind.equals(
+												java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY)) {
 											type = Type.MODIFY;
 										}
-										else if (kind.equals(ENTRY_DELETE)) {
+										else if (kind.equals(
+												java.nio.file.StandardWatchEventKinds.ENTRY_DELETE)) {
 											type = Type.DELETE;
 										}
-										else if (kind.equals(ENTRY_CREATE)) {
+										else if (kind.equals(
+												java.nio.file.StandardWatchEventKinds.ENTRY_CREATE)) {
 											type = Type.ADD;
 										}
 										else {
@@ -414,7 +416,7 @@ public class FileSystemNIOWatcher extends FileSystemWatcher implements FileWatch
 										return type;
 									}
 
-								}, pollIntervalMs);
+								}, this.pollIntervalMs);
 							}
 
 						}

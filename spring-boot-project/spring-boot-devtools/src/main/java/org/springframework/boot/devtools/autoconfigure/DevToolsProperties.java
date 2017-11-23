@@ -67,13 +67,12 @@ public class DevToolsProperties {
 		 * Enable automatic restart.
 		 */
 		private boolean enabled = true;
-		
 
 		/**
 		 * Use asynchronous java.nio API instead of monitoring in intervals.
 		 */
 		private boolean nio = false;
-		
+
 		/**
 		 * Patterns that should be excluded from triggering a full restart.
 		 */
@@ -115,7 +114,7 @@ public class DevToolsProperties {
 		}
 
 		public boolean isNio() {
-			return nio;
+			return this.nio;
 		}
 
 		public void setNio(boolean nio) {
