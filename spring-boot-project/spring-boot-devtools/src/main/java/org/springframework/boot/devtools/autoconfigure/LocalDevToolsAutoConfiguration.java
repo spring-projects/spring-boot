@@ -98,6 +98,7 @@ public class LocalDevToolsAutoConfiguration {
 	/**
 	 * Local Restart Configuration.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
 	static class RestartConfiguration {
 
