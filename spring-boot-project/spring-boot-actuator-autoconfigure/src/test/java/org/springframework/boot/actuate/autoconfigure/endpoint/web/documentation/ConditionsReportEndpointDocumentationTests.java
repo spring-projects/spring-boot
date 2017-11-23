@@ -70,7 +70,7 @@ public class ConditionsReportEndpointDocumentationTests
 
 	@Test
 	public void conditions() throws Exception {
-		this.mockMvc.perform(get("/application/conditions")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/conditions")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("conditions",
 						preprocessResponse(limit("positiveMatches"),
 								limit("negativeMatches")),

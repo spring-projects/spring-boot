@@ -48,7 +48,7 @@ public class LiquibaseEndpointDocumentationTests
 
 	@Test
 	public void liquibase() throws Exception {
-		this.mockMvc.perform(get("/application/liquibase")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/liquibase")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("liquibase",
 						responseFields(fieldWithPath("*.changeSets").description(
 								"Change sets made by the Liquibase beans, keyed by "

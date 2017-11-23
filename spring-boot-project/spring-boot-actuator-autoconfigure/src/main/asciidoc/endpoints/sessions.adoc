@@ -9,7 +9,7 @@ are managed by Spring Session.
 [[sessions-retrieving]]
 == Retrieving Sessions
 
-To retrieve the sessions, make a `GET` request to `/application/sessions`, as shown in the
+To retrieve the sessions, make a `GET` request to `/actuator/sessions`, as shown in the
 following curl-based example:
 
 include::{snippets}sessions/username/curl-request.adoc[]
@@ -48,7 +48,7 @@ include::{snippets}sessions/username/response-fields.adoc[]
 [[sessions-retrieving-id]]
 == Retrieving a Single Session
 
-To retrieve a single session, make a `GET` request to `/application/sessions/{id}`, as
+To retrieve a single session, make a `GET` request to `/actuator/sessions/{id}`, as
 shown in the following curl-based example:
 
 include::{snippets}sessions/id/curl-request.adoc[]
@@ -75,7 +75,7 @@ include::{snippets}sessions/id/response-fields.adoc[]
 [[sessions-deleting]]
 == Deleting a Session
 
-To delete a session, make a `DELETE` request to `/application/sessions/{id}`, as shown in
+To delete a session, make a `DELETE` request to `/actuator/sessions/{id}`, as shown in
 the following curl-based example:
 
 include::{snippets}sessions/delete/curl-request.adoc[]

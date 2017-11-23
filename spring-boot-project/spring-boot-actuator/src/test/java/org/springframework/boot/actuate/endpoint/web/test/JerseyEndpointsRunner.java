@@ -101,7 +101,7 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 					this.applicationContext, new ConversionServiceParameterMapper(),
 					endpointMediaTypes, EndpointPathResolver.useEndpointId(), null, null);
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
-					.createEndpointResources(new EndpointMapping("/application"),
+					.createEndpointResources(new EndpointMapping("/actuator"),
 							discoverer.discoverEndpoints(), endpointMediaTypes);
 			config.registerResources(new HashSet<>(resources));
 		}

@@ -138,7 +138,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 
 	private boolean isExposed(MockMvc mockMvc, HttpMethod method, String path)
 			throws Exception {
-		path = "/application/" + path;
+		path = "/actuator/" + path;
 		MvcResult mvcResult = mockMvc.perform(request(method, path)).andReturn();
 		int status = mvcResult.getResponse().getStatus();
 		if (status == HttpStatus.OK.value()) {

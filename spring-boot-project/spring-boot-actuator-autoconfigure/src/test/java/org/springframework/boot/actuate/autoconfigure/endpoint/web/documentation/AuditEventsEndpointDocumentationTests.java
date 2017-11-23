@@ -60,8 +60,7 @@ public class AuditEventsEndpointDocumentationTests
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any())).willReturn(
 				Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
-		this.mockMvc
-				.perform(get("/application/auditevents").param("after", queryTimestamp))
+		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/after", responseFields(
 						fieldWithPath("events").description("An array of audit events."),
@@ -81,7 +80,7 @@ public class AuditEventsEndpointDocumentationTests
 		given(this.repository.find("alice", date, "logout")).willReturn(
 				Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		this.mockMvc
-				.perform(get("/application/auditevents").param("principal", "alice")
+				.perform(get("/actuator/auditevents").param("principal", "alice")
 						.param("after", queryTimestamp).param("type", "logout"))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/filtered",

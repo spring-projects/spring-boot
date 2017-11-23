@@ -8,7 +8,7 @@ The `shutdown` endpoint is used to shut down the application.
 [[shutdown-shutting-down]]
 == Shutting Down the Application
 
-To shut down the application, make a `POST` request to `/application/shutdown`, as shown
+To shut down the application, make a `POST` request to `/actuator/shutdown`, as shown
 in the following curl-based example:
 
 include::{snippets}shutdown/curl-request.adoc[]

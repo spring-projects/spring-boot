@@ -9,7 +9,7 @@ of their levels.
 [[loggers-all]]
 == Retrieving All Loggers
 
-To retrieve the application's loggers, make a `GET` request to `/application/loggers`, as
+To retrieve the application's loggers, make a `GET` request to `/actuator/loggers`, as
 shown in the following curl-based example:
 
 include::{snippets}loggers/all/curl-request.adoc[]
@@ -34,7 +34,7 @@ include::{snippets}loggers/all/response-fields.adoc[]
 [[loggers-single]]
 == Retrieving a Single Logger
 
-To retrieve a single logger, make a `GET` request to `/application/loggers/{logger.name}`,
+To retrieve a single logger, make a `GET` request to `/actuator/loggers/{logger.name}`,
 as shown in the following curl-based example:
 
 include::{snippets}loggers/single/curl-request.adoc[]
@@ -61,7 +61,7 @@ include::{snippets}loggers/single/response-fields.adoc[]
 == Setting a Log Level
 
 To set the level of a logger, make a `POST` request to
-`/application/loggers/{logger.name}` with a JSON body that specifies the configured level
+`/actuator/loggers/{logger.name}` with a JSON body that specifies the configured level
 for the logger, as shown in the following curl-based example:
 
 include::{snippets}loggers/set/curl-request.adoc[]
@@ -85,7 +85,7 @@ include::{snippets}loggers/set/request-fields.adoc[]
 == Clearing a Log Level
 
 To clear the level of a logger, make a `POST` request to
-`/application/loggers/{logger.name}` with a JSON body containing an empty object, as shown
+`/actuator/loggers/{logger.name}` with a JSON body containing an empty object, as shown
 in the following curl-based example:
 
 include::{snippets}loggers/clear/curl-request.adoc[]

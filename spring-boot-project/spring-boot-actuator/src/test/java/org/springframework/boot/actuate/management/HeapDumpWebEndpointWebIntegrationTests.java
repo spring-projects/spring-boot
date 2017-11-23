@@ -61,13 +61,13 @@ public class HeapDumpWebEndpointWebIntegrationTests {
 	public void invokeWhenNotAvailableShouldReturnServiceUnavailableStatus()
 			throws Exception {
 		this.endpoint.setAvailable(false);
-		client.get().uri("/application/heapdump").exchange().expectStatus()
+		client.get().uri("/actuator/heapdump").exchange().expectStatus()
 				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	@Test
 	public void getRequestShouldReturnHeapDumpInResponseBody() throws Exception {
-		client.get().uri("/application/heapdump").exchange().expectStatus().isOk()
+		client.get().uri("/actuator/heapdump").exchange().expectStatus().isOk()
 				.expectHeader().contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.expectBody(String.class).isEqualTo("HEAPDUMP");
 		assertHeapDumpFileIsDeleted();

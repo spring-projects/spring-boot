@@ -61,7 +61,7 @@ public class ShutdownSampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.postForEntity("/application/shutdown", null, Map.class);
+				.postForEntity("/actuator/shutdown", null, Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

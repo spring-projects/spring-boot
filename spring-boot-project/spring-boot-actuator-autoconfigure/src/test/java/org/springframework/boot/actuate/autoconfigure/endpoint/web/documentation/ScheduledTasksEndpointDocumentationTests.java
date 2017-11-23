@@ -48,8 +48,7 @@ public class ScheduledTasksEndpointDocumentationTests
 
 	@Test
 	public void scheduledTasks() throws Exception {
-		this.mockMvc.perform(get("/application/scheduledtasks"))
-				.andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/scheduledtasks")).andExpect(status().isOk())
 				.andDo(document("scheduled-tasks",
 						preprocessResponse(replacePattern(
 								Pattern.compile(

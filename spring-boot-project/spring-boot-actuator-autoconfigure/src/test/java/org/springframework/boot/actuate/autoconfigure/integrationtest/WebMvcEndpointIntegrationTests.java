@@ -70,7 +70,7 @@ public class WebMvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/application/beans").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/actuator/beans").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnauthorized());
 	}
 

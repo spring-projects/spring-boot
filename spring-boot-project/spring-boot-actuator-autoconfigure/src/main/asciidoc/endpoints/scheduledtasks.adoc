@@ -9,7 +9,7 @@ tasks.
 [[scheduled-tasks-retrieving]]
 == Retrieving the Scheduled Tasks
 
-To retrieve the scheduled tasks, make a `GET` request to `/application/scheduledtasks`,
+To retrieve the scheduled tasks, make a `GET` request to `/actuator/scheduledtasks`,
 as shown in the following curl-based example:
 
 include::{snippets}scheduled-tasks/curl-request.adoc[]

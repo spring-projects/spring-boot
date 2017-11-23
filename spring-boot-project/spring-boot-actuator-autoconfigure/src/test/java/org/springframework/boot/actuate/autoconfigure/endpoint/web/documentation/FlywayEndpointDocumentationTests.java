@@ -50,7 +50,7 @@ public class FlywayEndpointDocumentationTests extends AbstractEndpointDocumentat
 
 	@Test
 	public void flyway() throws Exception {
-		this.mockMvc.perform(get("/application/flyway")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/flyway")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("flyway",
 						responseFields(fieldWithPath("*.migrations").description(
 								"Migrations performed by the Flyway instance, keyed by"

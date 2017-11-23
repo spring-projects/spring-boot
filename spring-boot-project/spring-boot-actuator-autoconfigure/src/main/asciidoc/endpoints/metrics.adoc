@@ -9,7 +9,7 @@ The `metrics` endpoint provides access to application metrics.
 == Retrieving Metric Names
 
 To retrieve the names of the available metrics, make a `GET` request to
-`/application/metrics`, as shown in the following curl-based example:
+`/actuator/metrics`, as shown in the following curl-based example:
 
 include::{snippets}metrics/names/curl-request.adoc[]
 
@@ -33,7 +33,7 @@ include::{snippets}metrics/names/response-fields.adoc[]
 [[metrics-retrieving-metric]]
 == Retrieving a Metric
 
-To retrieve a metric, make a `GET` request to `/application/metrics/{metric.name}`, as
+To retrieve a metric, make a `GET` request to `/actuator/metrics/{metric.name}`, as
 shown in the following curl-based example:
 
 include::{snippets}metrics/metric/curl-request.adoc[]
@@ -68,7 +68,7 @@ include::{snippets}metrics/metric/response-fields.adoc[]
 [[metrics-drilling-down]]
 == Drilling Down
 
-To drill down into a metric, make a `GET` request to `/application/metrics/{metric.name}`
+To drill down into a metric, make a `GET` request to `/actuator/metrics/{metric.name}`
 using the `tag` query parameter, as shown in the following curl-based example:
 
 include::{snippets}metrics/metric-with-tags/curl-request.adoc[]

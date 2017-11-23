@@ -55,7 +55,7 @@ public class MetricsEndpointWebIntegrationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void listNames() throws IOException {
-		String responseBody = client.get().uri("/application/metrics").exchange()
+		String responseBody = client.get().uri("/actuator/metrics").exchange()
 				.expectStatus().isOk().expectBody(String.class).returnResult()
 				.getResponseBody();
 		Map<String, List<String>> names = this.mapper.readValue(responseBody, Map.class);
@@ -65,7 +65,7 @@ public class MetricsEndpointWebIntegrationTests {
 	@Test
 	public void selectByName() throws IOException {
 		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
-		client.get().uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
+		client.get().uri("/actuator/metrics/jvm.memory.used").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("$.name").isEqualTo("jvm.memory.used");
 	}
 
@@ -73,7 +73,7 @@ public class MetricsEndpointWebIntegrationTests {
 	public void selectByTag() {
 		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		client.get()
-				.uri("/application/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space")
+				.uri("/actuator/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space")
 				.exchange().expectStatus().isOk().expectBody().jsonPath("$.name")
 				.isEqualTo("jvm.memory.used");
 	}

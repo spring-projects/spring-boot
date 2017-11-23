@@ -92,7 +92,7 @@ public class SessionsEndpointDocumentationTests
 		given(this.sessionRepository.findByIndexNameAndIndexValue(
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "alice"))
 						.willReturn(sessions);
-		this.mockMvc.perform(get("/application/sessions").param("username", "alice"))
+		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice"))
 				.andExpect(status().isOk())
 				.andDo(document("sessions/username",
 						responseFields(fieldWithPath("sessions")
@@ -109,14 +109,14 @@ public class SessionsEndpointDocumentationTests
 		sessions.put(sessionTwo.getId(), sessionTwo);
 		sessions.put(sessionThree.getId(), sessionThree);
 		given(this.sessionRepository.findById(sessionTwo.getId())).willReturn(sessionTwo);
-		this.mockMvc.perform(get("/application/sessions/{id}", sessionTwo.getId()))
+		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId()))
 				.andExpect(status().isOk())
 				.andDo(document("sessions/id", responseFields(sessionFields)));
 	}
 
 	@Test
 	public void deleteASession() throws Exception {
-		this.mockMvc.perform(delete("/application/sessions/{id}", sessionTwo.getId()))
+		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId()))
 				.andExpect(status().isNoContent()).andDo(document("sessions/delete"));
 		verify(this.sessionRepository).deleteById(sessionTwo.getId());
 	}

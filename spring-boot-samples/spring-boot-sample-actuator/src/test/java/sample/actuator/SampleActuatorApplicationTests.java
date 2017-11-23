@@ -94,7 +94,7 @@ public class SampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/metrics", Map.class);
+				.getForEntity("/actuator/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
 		assertThat(body).containsKey("names");
@@ -107,7 +107,7 @@ public class SampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/env", Map.class);
+				.getForEntity("/actuator/env", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -118,7 +118,7 @@ public class SampleActuatorApplicationTests {
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/health", String.class);
+				.getForEntity("/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 		assertThat(entity.getBody()).doesNotContain("\"hello\":\"1\"");
@@ -128,7 +128,7 @@ public class SampleActuatorApplicationTests {
 	public void testInfo() throws Exception {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/info", String.class);
+				.getForEntity("/actuator/info", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody())
 				.contains("\"artifact\":\"spring-boot-sample-actuator\"");
@@ -169,7 +169,7 @@ public class SampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/trace", Map.class);
+				.getForEntity("/actuator/trace", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
 		Map<String, Object> trace = ((List<Map<String, Object>>) body.get("traces"))
@@ -183,11 +183,11 @@ public class SampleActuatorApplicationTests {
 	@SuppressWarnings("unchecked")
 	public void traceWithParameterMap() throws Exception {
 		this.restTemplate.withBasicAuth("user", getPassword())
-				.getForEntity("/application/health?param1=value1", String.class);
+				.getForEntity("/actuator/health?param1=value1", String.class);
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/trace", Map.class);
+				.getForEntity("/actuator/trace", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
 		Map<String, Object> trace = ((List<Map<String, Object>>) body.get("traces"))
@@ -215,7 +215,7 @@ public class SampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/beans", Map.class);
+				.getForEntity("/actuator/beans", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).containsOnlyKeys("beans", "parent", "contextId");
 		assertThat(((String) entity.getBody().get("contextId")))
@@ -228,7 +228,7 @@ public class SampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
-				.getForEntity("/application/configprops", Map.class);
+				.getForEntity("/actuator/configprops", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
 		assertThat((Map<String, Object>) body.get("beans"))

@@ -71,7 +71,7 @@ public class EnvironmentEndpointDocumentationTests
 
 	@Test
 	public void env() throws Exception {
-		this.mockMvc.perform(get("/application/env")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/env")).andExpect(status().isOk())
 				.andDo(document("env/all",
 						preprocessResponse(replacePattern(
 								Pattern.compile(
@@ -91,7 +91,7 @@ public class EnvironmentEndpointDocumentationTests
 
 	@Test
 	public void singlePropertyFromEnv() throws Exception {
-		this.mockMvc.perform(get("/application/env/com.example.cache.max-size"))
+		this.mockMvc.perform(get("/actuator/env/com.example.cache.max-size"))
 				.andExpect(status().isOk())
 				.andDo(document("env/single",
 						preprocessResponse(replacePattern(

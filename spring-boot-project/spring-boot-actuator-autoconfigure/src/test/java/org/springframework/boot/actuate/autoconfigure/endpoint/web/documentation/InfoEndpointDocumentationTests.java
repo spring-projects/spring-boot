@@ -48,7 +48,7 @@ public class InfoEndpointDocumentationTests extends AbstractEndpointDocumentatio
 
 	@Test
 	public void info() throws Exception {
-		this.mockMvc.perform(get("/application/info")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/info")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("info",
 						responseFields(beneathPath("git"),
 								fieldWithPath("branch")

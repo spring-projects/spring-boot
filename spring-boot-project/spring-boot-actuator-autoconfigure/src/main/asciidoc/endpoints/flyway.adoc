@@ -8,7 +8,7 @@ The `flyway` endpoint provides information about database migrations performed b
 [[flyway-retrieving]]
 == Retrieving the Migrations
 
-To retrieve the migrations, make a `GET` request to `/application/flyway`, as shown in the
+To retrieve the migrations, make a `GET` request to `/actuator/flyway`, as shown in the
 following curl-based example:
 
 include::{snippets}flyway/curl-request.adoc[]

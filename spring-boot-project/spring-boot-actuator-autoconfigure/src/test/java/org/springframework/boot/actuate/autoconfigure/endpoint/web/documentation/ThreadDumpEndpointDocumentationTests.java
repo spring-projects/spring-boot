@@ -42,7 +42,7 @@ public class ThreadDumpEndpointDocumentationTests
 
 	@Test
 	public void threadDump() throws Exception {
-		this.mockMvc.perform(get("/application/threaddump")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/threaddump")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("threaddump",
 						preprocessResponse(limit("threads")),
 						responseFields(

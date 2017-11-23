@@ -72,8 +72,8 @@ public class SampleActuatorCustomSecurityApplicationTests {
 
 	@Test
 	public void insecureActuator() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/application/health", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/health",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
@@ -81,7 +81,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 	@Test
 	public void secureActuator() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/application/env",
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/env",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}

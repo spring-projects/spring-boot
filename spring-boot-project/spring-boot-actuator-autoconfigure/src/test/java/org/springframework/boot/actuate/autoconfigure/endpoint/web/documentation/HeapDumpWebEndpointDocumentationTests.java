@@ -44,7 +44,7 @@ public class HeapDumpWebEndpointDocumentationTests
 
 	@Test
 	public void heapDump() throws Exception {
-		this.mockMvc.perform(get("/application/heapdump")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/heapdump")).andExpect(status().isOk())
 				.andDo(document("heapdump",
 						new CurlRequestSnippet(CliDocumentation.multiLineFormat()) {
 

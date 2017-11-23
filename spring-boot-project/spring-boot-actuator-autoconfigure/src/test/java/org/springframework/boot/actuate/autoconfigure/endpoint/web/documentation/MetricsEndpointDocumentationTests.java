@@ -44,14 +44,14 @@ public class MetricsEndpointDocumentationTests
 
 	@Test
 	public void metricNames() throws Exception {
-		this.mockMvc.perform(get("/application/metrics")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/metrics")).andExpect(status().isOk())
 				.andDo(document("metrics/names", responseFields(fieldWithPath("names")
 						.description("Names of the known metrics."))));
 	}
 
 	@Test
 	public void metric() throws Exception {
-		this.mockMvc.perform(get("/application/metrics/jvm.memory.max"))
+		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max"))
 				.andExpect(status().isOk())
 				.andDo(document("metrics/metric",
 						responseFields(
@@ -74,7 +74,7 @@ public class MetricsEndpointDocumentationTests
 	@Test
 	public void metricWithTags() throws Exception {
 		this.mockMvc
-				.perform(get("/application/metrics/jvm.memory.max")
+				.perform(get("/actuator/metrics/jvm.memory.max")
 						.param("tag", "area:nonheap")
 						.param("tag", "id:Compressed Class Space"))
 				.andExpect(status().isOk())

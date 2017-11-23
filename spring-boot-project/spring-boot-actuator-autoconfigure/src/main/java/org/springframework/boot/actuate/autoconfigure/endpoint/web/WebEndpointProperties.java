@@ -38,7 +38,7 @@ public class WebEndpointProperties {
 	 * Base path for Web endpoints. Relative to server.context-path or
 	 * management.server.context-path if management.server.port is configured.
 	 */
-	private String basePath = "/application";
+	private String basePath = "/actuator";
 
 	/**
 	 * Endpoint IDs that should be exposed or '*' for all.

@@ -53,7 +53,7 @@ public class JolokiaManagementContextConfigurationTests {
 					ServletRegistrationBean<?> registrationBean = context
 							.getBean(ServletRegistrationBean.class);
 					assertThat(registrationBean.getUrlMappings())
-							.contains("/application/jolokia/*");
+							.contains("/actuator/jolokia/*");
 					assertThat(registrationBean.getInitParameters()).isEmpty();
 				});
 	}
@@ -69,7 +69,7 @@ public class JolokiaManagementContextConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("management.jolokia.enabled=true",
 						"management.jolokia.path=/lokia")
-				.run(isDefinedOnPath("/application/lokia/*"));
+				.run(isDefinedOnPath("/actuator/lokia/*"));
 	}
 
 	@Test

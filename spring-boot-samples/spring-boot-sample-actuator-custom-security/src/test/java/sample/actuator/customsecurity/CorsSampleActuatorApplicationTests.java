@@ -65,15 +65,14 @@ public class CorsSampleActuatorApplicationTests {
 
 	@Test
 	public void endpointShouldReturnUnauthorized() throws Exception {
-		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/application/env",
+		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void preflightRequestToEndpointShouldReturnOk() throws Exception {
-		RequestEntity<?> healthRequest = RequestEntity
-				.options(new URI("/application/env"))
+		RequestEntity<?> healthRequest = RequestEntity.options(new URI("/actuator/env"))
 				.header("Origin", "http://localhost:8080")
 				.header("Access-Control-Request-Method", "GET").build();
 		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest,
@@ -84,7 +83,7 @@ public class CorsSampleActuatorApplicationTests {
 	@Test
 	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden()
 			throws Exception {
-		RequestEntity<?> entity = RequestEntity.options(new URI("/application/env"))
+		RequestEntity<?> entity = RequestEntity.options(new URI("/actuator/env"))
 				.header("Origin", "http://localhost:9095")
 				.header("Access-Control-Request-Method", "GET").build();
 		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity,

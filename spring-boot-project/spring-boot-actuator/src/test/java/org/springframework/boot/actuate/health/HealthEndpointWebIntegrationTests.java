@@ -43,17 +43,16 @@ public class HealthEndpointWebIntegrationTests {
 
 	@Test
 	public void whenHealthIsUp200ResponseIsReturned() throws Exception {
-		client.get().uri("/application/health").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("status").isEqualTo("UP")
-				.jsonPath("details.alpha.status").isEqualTo("UP")
-				.jsonPath("details.bravo.status").isEqualTo("UP");
+		client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
+				.jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
+				.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP");
 	}
 
 	@Test
 	public void whenHealthIsDown503ResponseIsReturned() throws Exception {
 		context.getBean("alphaHealthIndicator", TestHealthIndicator.class)
 				.setHealth(Health.down().build());
-		client.get().uri("/application/health").exchange().expectStatus()
+		client.get().uri("/actuator/health").exchange().expectStatus()
 				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
 				.isEqualTo("DOWN").jsonPath("details.alpha.status").isEqualTo("DOWN")
 				.jsonPath("details.bravo.status").isEqualTo("UP");

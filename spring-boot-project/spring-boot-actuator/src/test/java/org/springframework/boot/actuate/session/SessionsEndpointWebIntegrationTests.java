@@ -52,7 +52,7 @@ public class SessionsEndpointWebIntegrationTests {
 
 	@Test
 	public void sessionsForUsernameWithoutUsernameParam() throws Exception {
-		client.get().uri((builder) -> builder.path("/application/sessions").build())
+		client.get().uri((builder) -> builder.path("/actuator/sessions").build())
 				.exchange().expectStatus().isBadRequest();
 	}
 
@@ -62,7 +62,7 @@ public class SessionsEndpointWebIntegrationTests {
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
 						.willReturn(Collections.emptyMap());
 		client.get()
-				.uri((builder) -> builder.path("/application/sessions")
+				.uri((builder) -> builder.path("/actuator/sessions")
 						.queryParam("username", "user").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("sessions")
 				.isEmpty();
@@ -74,7 +74,7 @@ public class SessionsEndpointWebIntegrationTests {
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
 						.willReturn(Collections.singletonMap(session.getId(), session));
 		client.get()
-				.uri((builder) -> builder.path("/application/sessions")
+				.uri((builder) -> builder.path("/actuator/sessions")
 						.queryParam("username", "user").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("sessions.[*].id")
 				.isEqualTo(new JSONArray().appendElement(session.getId()));

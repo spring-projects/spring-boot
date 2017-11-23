@@ -10,7 +10,7 @@ The `configprops` endpoint provides information about the application's
 == Retrieving the `@ConfigurationProperties` Bean
 
 To retrieve the `@ConfigurationProperties` beans, make a `GET` request to
-`/application/configprops`, as shown in the following curl-based example:
+`/actuator/configprops`, as shown in the following curl-based example:
 
 include::{snippets}configprops/curl-request.adoc[]
 

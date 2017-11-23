@@ -8,7 +8,7 @@ The `logfile` endpoint provides access to the contents of the application's log 
 [[logfile-retrieving]]
 == Retrieving the Log File
 
-To retrieve the log file, make a `GET` request to `/application/logfile`, as shown in the
+To retrieve the log file, make a `GET` request to `/actuator/logfile`, as shown in the
 following curl-based example:
 
 include::{snippets}logfile/entire/curl-request.adoc[]
@@ -24,7 +24,7 @@ include::{snippets}logfile/entire/http-response.adoc[]
 
 NOTE: Retrieving part of the log file is not supported when using Jersey.
 
-To retrieve part of the log file, make a `GET` request to `/application/logfile` by using
+To retrieve part of the log file, make a `GET` request to `/actuator/logfile` by using
 the `Range` header, as shown in the following curl-based example:
 
 include::{snippets}logfile/range/curl-request.adoc[]

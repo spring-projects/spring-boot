@@ -9,7 +9,7 @@ The `info` endpoint provides general information about the application.
 == Retrieving the Info
 
 To retrieve the information about the application, make a `GET` request to
-`/application/info`, as shown in the following curl-based example:
+`/actuator/info`, as shown in the following curl-based example:
 
 include::{snippets}info/curl-request.adoc[]
 

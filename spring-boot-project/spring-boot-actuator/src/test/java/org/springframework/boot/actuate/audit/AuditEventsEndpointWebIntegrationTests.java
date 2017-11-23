@@ -43,14 +43,14 @@ public class AuditEventsEndpointWebIntegrationTests {
 
 	@Test
 	public void eventsWithoutParams() throws Exception {
-		client.get().uri((builder) -> builder.path("/application/auditevents").build())
+		client.get().uri((builder) -> builder.path("/actuator/auditevents").build())
 				.exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
 	public void eventsWithDateAfter() throws Exception {
 		client.get()
-				.uri((builder) -> builder.path("/application/auditevents")
+				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("events")
 				.isEmpty();
@@ -59,7 +59,7 @@ public class AuditEventsEndpointWebIntegrationTests {
 	@Test
 	public void eventsWithPrincipalAndDateAfter() throws Exception {
 		client.get()
-				.uri((builder) -> builder.path("/application/auditevents")
+				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T10:00:00%2B00:00")
 						.queryParam("principal", "user").build())
 				.exchange().expectStatus().isOk().expectBody()
@@ -70,7 +70,7 @@ public class AuditEventsEndpointWebIntegrationTests {
 	@Test
 	public void eventsWithPrincipalDateAfterAndType() throws Exception {
 		client.get()
-				.uri((builder) -> builder.path("/application/auditevents")
+				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T10:00:00%2B00:00")
 						.queryParam("principal", "admin").queryParam("type", "logout")
 						.build())

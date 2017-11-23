@@ -8,7 +8,7 @@ The `auditevents` endpoint provides information about the application's audit ev
 [[audit-events-retrieving]]
 == Retrieving Audit Events
 
-To retrieve the audit events, make a `GET` request to `/application/auditevents`, as shown
+To retrieve the audit events, make a `GET` request to `/actuator/auditevents`, as shown
 in the following curl-based example:
 
 include::{snippets}auditevents/filtered/curl-request.adoc[]

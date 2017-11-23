@@ -105,7 +105,7 @@ public class SampleMethodSecurityApplicationTests {
 	public void testManagementProtected() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/application/beans",
+		ResponseEntity<String> entity = this.restTemplate.exchange("/actuator/beans",
 				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
@@ -117,7 +117,7 @@ public class SampleMethodSecurityApplicationTests {
 		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);
 		try {
 			ResponseEntity<String> entity = this.restTemplate
-					.getForEntity("/application/beans", String.class);
+					.getForEntity("/actuator/beans", String.class);
 			assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		}
 		finally {

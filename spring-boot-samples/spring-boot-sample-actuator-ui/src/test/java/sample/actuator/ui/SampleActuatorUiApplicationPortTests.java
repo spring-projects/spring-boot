@@ -59,7 +59,7 @@ public class SampleActuatorUiApplicationPortTests {
 	public void testMetrics() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/application/metrics",
+				"http://localhost:" + this.managementPort + "/actuator/metrics",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
@@ -68,7 +68,7 @@ public class SampleActuatorUiApplicationPortTests {
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword()).getForEntity(
-						"http://localhost:" + this.managementPort + "/application/health",
+						"http://localhost:" + this.managementPort + "/actuator/health",
 						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");

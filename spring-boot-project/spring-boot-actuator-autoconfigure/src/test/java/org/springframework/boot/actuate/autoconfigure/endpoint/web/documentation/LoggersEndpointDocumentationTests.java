@@ -67,7 +67,7 @@ public class LoggersEndpointDocumentationTests
 		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Arrays.asList(
 				new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
 				new LoggerConfiguration("com.example", LogLevel.DEBUG, LogLevel.DEBUG)));
-		this.mockMvc.perform(get("/application/loggers")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/loggers")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("loggers/all",
 						responseFields(
 								fieldWithPath("levels").description(
@@ -80,7 +80,7 @@ public class LoggersEndpointDocumentationTests
 	public void logger() throws Exception {
 		given(this.loggingSystem.getLoggerConfiguration("com.example")).willReturn(
 				new LoggerConfiguration("com.example", LogLevel.INFO, LogLevel.INFO));
-		this.mockMvc.perform(get("/application/loggers/com.example"))
+		this.mockMvc.perform(get("/actuator/loggers/com.example"))
 				.andExpect(status().isOk()).andDo(MockMvcRestDocumentation
 						.document("loggers/single", responseFields(levelFields)));
 	}
@@ -88,7 +88,7 @@ public class LoggersEndpointDocumentationTests
 	@Test
 	public void setLogLevel() throws Exception {
 		this.mockMvc
-				.perform(post("/application/loggers/com.example")
+				.perform(post("/actuator/loggers/com.example")
 						.content("{\"configuredLevel\":\"debug\"}")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent())
@@ -104,7 +104,7 @@ public class LoggersEndpointDocumentationTests
 	@Test
 	public void clearLogLevel() throws Exception {
 		this.mockMvc
-				.perform(post("/application/loggers/com.example").content("{}")
+				.perform(post("/actuator/loggers/com.example").content("{}")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("loggers/clear"));

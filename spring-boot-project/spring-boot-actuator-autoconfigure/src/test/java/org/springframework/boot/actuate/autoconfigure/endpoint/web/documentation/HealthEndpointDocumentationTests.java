@@ -51,7 +51,7 @@ public class HealthEndpointDocumentationTests extends AbstractEndpointDocumentat
 
 	@Test
 	public void health() throws Exception {
-		this.mockMvc.perform(get("/application/health")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk())
 				.andDo(document("health",
 						responseFields(
 								fieldWithPath("status").description(

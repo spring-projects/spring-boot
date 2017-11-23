@@ -102,12 +102,11 @@ public class RequestMappingEndpointTests {
 		this.endpoint.setApplicationContext(context);
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
-		assertThat(result.keySet())
-				.filteredOn((key) -> key.contains("[/application/test]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator/test]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("bean", "method"));
-		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/application]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("bean", "method"));
@@ -120,12 +119,11 @@ public class RequestMappingEndpointTests {
 		this.endpoint.setMethodMappings(Collections.singletonList(mapping));
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
-		assertThat(result.keySet())
-				.filteredOn((key) -> key.contains("[/application/test]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator/test]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("method"));
-		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/application]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("method"));
@@ -138,7 +136,7 @@ public class RequestMappingEndpointTests {
 		WebOperation operation = new WebOperation(OperationType.READ,
 				(arguments) -> "Invoked", true, requestPredicate, "test");
 		WebMvcEndpointHandlerMapping mapping = new WebMvcEndpointHandlerMapping(
-				new EndpointMapping("application"),
+				new EndpointMapping("actuator"),
 				Collections.singleton(new EndpointInfo<>("test", true,
 						Collections.singleton(operation))),
 				new EndpointMediaTypes(Arrays.asList("application/vnd.test+json"),

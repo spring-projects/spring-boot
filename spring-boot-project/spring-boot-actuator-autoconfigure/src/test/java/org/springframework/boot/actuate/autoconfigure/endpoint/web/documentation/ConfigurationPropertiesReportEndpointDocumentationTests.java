@@ -43,7 +43,7 @@ public class ConfigurationPropertiesReportEndpointDocumentationTests
 
 	@Test
 	public void configProps() throws Exception {
-		this.mockMvc.perform(get("/application/configprops")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/configprops")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("configprops",
 						preprocessResponse(limit("beans")),
 						responseFields(

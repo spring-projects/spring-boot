@@ -30,7 +30,7 @@ public class WebEndpointPropertiesTests {
 	@Test
 	public void defaultBasePathShouldBeApplication() throws Exception {
 		WebEndpointProperties properties = new WebEndpointProperties();
-		assertThat(properties.getBasePath()).isEqualTo("/application");
+		assertThat(properties.getBasePath()).isEqualTo("/actuator");
 	}
 
 	@Test

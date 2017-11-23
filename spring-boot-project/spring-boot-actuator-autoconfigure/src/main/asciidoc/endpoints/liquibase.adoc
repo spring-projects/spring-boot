@@ -9,7 +9,7 @@ Liquibase.
 [[liquibase-retrieving]]
 == Retrieving the Changes
 
-To retrieve the changes, make a `GET` request to `/application/liquibase`, as shown in the
+To retrieve the changes, make a `GET` request to `/actuator/liquibase`, as shown in the
 following curl-based example:
 
 include::{snippets}liquibase/curl-request.adoc[]

@@ -9,7 +9,7 @@ configuration and auto-configuration classes.
 [[conditions-retrieving]]
 == Retrieving the Report
 
-To retrieve the report, make a `GET` request to `/application/conditions`, as shown in
+To retrieve the report, make a `GET` request to `/actuator/conditions`, as shown in
 the following curl-based example:
 
 include::{snippets}conditions/curl-request.adoc[]

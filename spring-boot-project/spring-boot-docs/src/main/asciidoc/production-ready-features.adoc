@@ -55,8 +55,8 @@ includes a number of built-in endpoints and lets you add your own. For example, 
 
 The way that endpoints are exposed depends on the type of technology that you choose.
 Most applications choose HTTP monitoring, where the ID of the endpoint along with a
-prefix of `/application` is mapped to a URL. For example, by default, the `health`
-endpoint is mapped to `/application/health`.
+prefix of `/actuator` is mapped to a URL. For example, by default, the `health`
+endpoint is mapped to `/actuator/health`.
 
 The following technology-agnostic endpoints are available:
 
@@ -257,10 +257,10 @@ and `exclude` properties (see <<production-ready-endpoints-exposing-endpoints>>)
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for Actuator Web Endpoints
 A "`discovery page`" is added with links to all the endpoints. The "`discovery page`" is
-available on `/application` by default.
+available on `/actuator` by default.
 
 When a custom management context path is configured, the "`discovery page`" automatically
-moves from `/application` to the root of the management context. For example, if the
+moves from `/actuator` to the root of the management context. For example, if the
 management context path is `/management`, then the discovery page is available from
 `/management`. When the management context path is set to `/`, the discovery page is
 disabled to prevent the possibility of a clash with other mappings.
@@ -269,13 +269,13 @@ disabled to prevent the possibility of a clash with other mappings.
 
 [[production-ready-endpoint-custom-mapping]]
 === Actuator Web Endpoint Paths
-By default, endpoints are exposed over HTTP under the `/application` path using ID of the
-endpoint. For example, the `beans` endpoint is exposed under `/application/beans`. If you
+By default, endpoints are exposed over HTTP under the `/actuator` path using ID of the
+endpoint. For example, the `beans` endpoint is exposed under `/actuator/beans`. If you
 want to map endpoints to a different path you can use the
 `management.endpoints.web.path-mapping` property. You can also use
 `management.endpoints.web.base-path` if you want change the base path.
 
-Here's an example that remaps `/application/health` to `/healthcheck`:
+Here's an example that remaps `/actuator/health` to `/healthcheck`:
 
 .application.properties
 [source,properties,indent=0]
@@ -642,15 +642,15 @@ additional entry:
 == Monitoring and Management over HTTP
 If you are developing a Spring MVC application, Spring Boot Actuator auto-configures all
 enabled endpoints to be exposed over HTTP. The default convention is to use the `id` of
-the endpoint with a prefix of `/application` as the URL path. For example, `health` is
-exposed as `/application/health`.
+the endpoint with a prefix of `/actuator` as the URL path. For example, `health` is
+exposed as `/actuator/health`.
 
 
 
 [[production-ready-customizing-management-server-context-path]]
 === Customizing the Management Endpoint Paths
 Sometimes, it is useful to customize the prefix for the management endpoints. For
-example, your application might already use `/application` for another purpose. You can
+example, your application might already use `/actuator` for another purpose. You can
 use the `management.endpoints.web.base-path` property to change the prefix for your
 management endpoint, as shown in the following example:
 
@@ -660,7 +660,7 @@ management endpoint, as shown in the following example:
 ----
 
 The preceding `application.properties` example changes the endpoint from
-`/application/{id}` to `/manage/{id}` (e.g. `/manage/info`).
+`/actuator/{id}` to `/manage/{id}` (e.g. `/manage/info`).
 
 NOTE: Unless the management port has been configured to
 <<production-ready-customizing-management-server-port,expose endpoints using a different
@@ -882,7 +882,7 @@ Maven, you would add the following dependency:
  	</dependency>
 ----
 
-Jolokia can then be accessed by using `/application/jolokia` on your management HTTP
+Jolokia can then be accessed by using `/actuator/jolokia` on your management HTTP
 server.
 
 

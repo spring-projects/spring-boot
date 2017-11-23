@@ -69,7 +69,7 @@ public class BeansEndpointDocumentationTests extends AbstractEndpointDocumentati
 										.description("Beans in the parent application "
 												+ "context, if any.")
 										.type(JsonFieldType.OBJECT).optional());
-		this.mockMvc.perform(get("/application/beans")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/beans")).andExpect(status().isOk())
 				.andDo(document("beans",
 						preprocessResponse(limit("beans", this::isIndependentBean)),
 						responseFields));

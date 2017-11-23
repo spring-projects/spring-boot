@@ -70,7 +70,7 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	@Test
 	public void jolokiaIsExposed() {
 		ResponseEntity<String> response = this.restTemplate
-				.getForEntity("/application/jolokia", String.class);
+				.getForEntity("/actuator/jolokia", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat(response.getBody()).contains("\"agent\"");
 		assertThat(response.getBody()).contains("\"request\":{\"type\"");
@@ -79,7 +79,7 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	@Test
 	public void search() {
 		ResponseEntity<String> response = this.restTemplate
-				.getForEntity("/application/jolokia/search/java.lang:*", String.class);
+				.getForEntity("/actuator/jolokia/search/java.lang:*", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat(response.getBody()).contains("GarbageCollector");
 	}
@@ -87,7 +87,7 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	@Test
 	public void read() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity(
-				"/application/jolokia/read/java.lang:type=Memory", String.class);
+				"/actuator/jolokia/read/java.lang:type=Memory", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat(response.getBody()).contains("NonHeapMemoryUsage");
 	}
@@ -95,7 +95,7 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	@Test
 	public void list() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity(
-				"/application/jolokia/list/java.lang/type=Memory/attr", String.class);
+				"/actuator/jolokia/list/java.lang/type=Memory/attr", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat(response.getBody()).contains("NonHeapMemoryUsage");
 	}

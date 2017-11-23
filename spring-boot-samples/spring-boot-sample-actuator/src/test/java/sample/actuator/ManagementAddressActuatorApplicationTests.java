@@ -61,8 +61,7 @@ public class ManagementAddressActuatorApplicationTests {
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword()).getForEntity("http://localhost:"
-						+ this.managementPort + "/admin/application/health",
-						String.class);
+						+ this.managementPort + "/admin/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

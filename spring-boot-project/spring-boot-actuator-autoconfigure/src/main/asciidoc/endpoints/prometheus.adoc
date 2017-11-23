@@ -9,7 +9,7 @@ required for scraping by a Prometheus server.
 [[prometheus-retrieving]]
 == Retrieving the Metrics
 
-To retrieve the metrics, make a `GET` request to `/application/prometheus`, as shown in
+To retrieve the metrics, make a `GET` request to `/actuator/prometheus`, as shown in
 the following curl-based example:
 
 include::{snippets}prometheus/curl-request.adoc[]

@@ -8,7 +8,7 @@ The `threaddump` endpoint provides a thread dump from the application's JVM.
 [[threaddump-retrieving]]
 == Retrieving the Thread Dump
 
-To retrieve the thread dump, make a `GET` request to `/application/threaddump`, as shown
+To retrieve the thread dump, make a `GET` request to `/actuator/threaddump`, as shown
 in the following curl-based example:
 
 include::{snippets}threaddump/curl-request.adoc[]

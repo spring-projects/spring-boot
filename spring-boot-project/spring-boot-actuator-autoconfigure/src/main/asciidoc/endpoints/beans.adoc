@@ -8,7 +8,7 @@ The `beans` endpoint provides information about the application's beans.
 [[beans-retrieving]]
 == Retrieving the Beans
 
-To retrieve the beans, make a `GET` request to `/application/beans`, as shown in the
+To retrieve the beans, make a `GET` request to `/actuator/beans`, as shown in the
 following curl-based example:
 
 include::{snippets}beans/curl-request.adoc[]

@@ -1247,7 +1247,7 @@ validation sample] that shows how to set things up.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
 `@ConfigurationProperties` beans. Point your web browser to
-`/application/configprops` or use the equivalent JMX endpoint. See the
+`/actuator/configprops` or use the equivalent JMX endpoint. See the
 "<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>"
 section for details.
 

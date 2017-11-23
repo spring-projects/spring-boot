@@ -8,7 +8,7 @@ The `health` endpoint provides detailed information about the health of the appl
 [[health-retrieving]]
 == Retrieving the Health
 
-To retrieve the health of the application, make a `GET` request to `/application/health`,
+To retrieve the health of the application, make a `GET` request to `/actuator/health`,
 as shown in the following curl-based example:
 
 include::{snippets}health/curl-request.adoc[]

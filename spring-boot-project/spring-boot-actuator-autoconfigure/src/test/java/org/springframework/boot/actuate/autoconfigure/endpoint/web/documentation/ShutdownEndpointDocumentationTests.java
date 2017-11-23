@@ -43,7 +43,7 @@ public class ShutdownEndpointDocumentationTests
 
 	@Test
 	public void shutdown() throws Exception {
-		this.mockMvc.perform(post("/application/shutdown")).andExpect(status().isOk())
+		this.mockMvc.perform(post("/actuator/shutdown")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("shutdown",
 						responseFields(fieldWithPath("message").description(
 								"Message describing the result of the request."))));

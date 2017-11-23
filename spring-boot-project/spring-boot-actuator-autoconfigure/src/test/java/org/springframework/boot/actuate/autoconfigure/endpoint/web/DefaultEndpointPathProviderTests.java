@@ -56,9 +56,8 @@ public class DefaultEndpointPathProviderTests {
 	@Test
 	public void getPathsWhenHasContextPathShouldReturnAllPathsWithContext()
 			throws Exception {
-		DefaultEndpointPathProvider provider = createProvider("/application");
-		assertThat(provider.getPaths()).containsOnly("/application/foo",
-				"/application/bar");
+		DefaultEndpointPathProvider provider = createProvider("/actuator");
+		assertThat(provider.getPaths()).containsOnly("/actuator/foo", "/actuator/bar");
 	}
 
 	@Test
@@ -75,8 +74,8 @@ public class DefaultEndpointPathProviderTests {
 
 	@Test
 	public void getPathWhenHasContextPathReturnPath() throws Exception {
-		DefaultEndpointPathProvider provider = createProvider("/application");
-		assertThat(provider.getPath("foo")).isEqualTo("/application/foo");
+		DefaultEndpointPathProvider provider = createProvider("/actuator");
+		assertThat(provider.getPath("foo")).isEqualTo("/actuator/foo");
 	}
 
 	private DefaultEndpointPathProvider createProvider(String contextPath) {

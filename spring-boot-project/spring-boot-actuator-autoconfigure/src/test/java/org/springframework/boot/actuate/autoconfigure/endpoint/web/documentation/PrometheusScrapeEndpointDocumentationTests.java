@@ -42,7 +42,7 @@ public class PrometheusScrapeEndpointDocumentationTests
 
 	@Test
 	public void prometheus() throws Exception {
-		this.mockMvc.perform(get("/application/prometheus")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk())
 				.andDo(document("prometheus"));
 	}
 
