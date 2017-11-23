@@ -230,6 +230,17 @@ public final class Health {
 		}
 
 		/**
+		 * Record details using the given {@link Map}.
+		 * @param details The details as a {@link Map}
+		 * @return this {@link Builder} instance
+		 */
+		public Builder withDetails(Map<String, Object> details) {
+			Assert.notNull(details, "Details must not be null");
+			this.details = details;
+			return this;
+		}
+
+		/**
 		 * Set status to {@link Status#UNKNOWN} status.
 		 * @return this {@link Builder} instance
 		 */
