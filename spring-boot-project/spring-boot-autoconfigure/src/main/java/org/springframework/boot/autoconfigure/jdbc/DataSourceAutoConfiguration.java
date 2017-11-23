@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -37,8 +36,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -154,43 +151,6 @@ public class DataSourceAutoConfiguration {
 						.noMatch(message.didNotFind("embedded database").atAll());
 			}
 			return ConditionOutcome.match(message.found("embedded database").items(type));
-		}
-
-	}
-
-	/**
-	 * {@link Condition} to detect when a {@link DataSource} is available (either because
-	 * the user provided one or because one will be auto-configured).
-	 */
-	@Order(Ordered.LOWEST_PRECEDENCE - 10)
-	static class DataSourceAvailableCondition extends SpringBootCondition {
-
-		private final SpringBootCondition pooledCondition = new PooledDataSourceCondition();
-
-		private final SpringBootCondition embeddedCondition = new EmbeddedDatabaseCondition();
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("DataSourceAvailable");
-			if (hasBean(context, DataSource.class)
-					|| hasBean(context, XADataSource.class)) {
-				return ConditionOutcome
-						.match(message.foundExactly("existing data source bean"));
-			}
-			if (anyMatches(context, metadata, this.pooledCondition,
-					this.embeddedCondition)) {
-				return ConditionOutcome.match(message
-						.foundExactly("existing auto-configured data source bean"));
-			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("any existing data source bean").atAll());
-		}
-
-		private boolean hasBean(ConditionContext context, Class<?> type) {
-			return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					context.getBeanFactory(), type, true, false).length > 0;
 		}
 
 	}
