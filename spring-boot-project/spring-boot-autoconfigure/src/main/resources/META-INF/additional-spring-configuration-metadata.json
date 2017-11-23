@@ -372,18 +372,6 @@
       "defaultValue": "single"
     },
     {
-      "name": "spring.mobile.devicedelegatingviewresolver.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable device view resolver.",
-      "defaultValue": false
-    },
-    {
-      "name": "spring.mobile.sitepreference.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable SitePreferenceHandler.",
-      "defaultValue": true
-    },
-    {
       "name": "spring.mustache.prefix",
       "defaultValue": "classpath:/templates/"
     },
