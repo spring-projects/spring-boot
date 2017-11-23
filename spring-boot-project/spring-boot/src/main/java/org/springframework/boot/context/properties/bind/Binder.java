@@ -38,6 +38,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
@@ -244,7 +245,18 @@ public class Binder {
 			return bindAggregate(name, target, handler, context, aggregateBinder);
 		}
 		if (property != null) {
-			return bindProperty(name, target, handler, context, property);
+			try {
+				return bindProperty(name, target, handler, context, property);
+			}
+			catch (ConverterNotFoundException ex) {
+				// We might still be able to bind it as a bean
+				Object bean = bindBean(name, target, handler, context,
+						allowRecursiveBinding);
+				if (bean != null) {
+					return bean;
+				}
+				throw ex;
+			}
 		}
 		return bindBean(name, target, handler, context, allowRecursiveBinding);
 	}

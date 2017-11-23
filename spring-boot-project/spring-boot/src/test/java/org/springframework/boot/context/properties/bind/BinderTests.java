@@ -191,6 +191,18 @@ public class BinderTests {
 	}
 
 	@Test
+	public void bindToJavaBeanWhenHasPropertyWithSameNameShouldStillBind()
+			throws Exception {
+		// gh-10945
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "boom");
+		source.put("foo.value", "bar");
+		this.sources.add(source);
+		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class)).get();
+		assertThat(result.getValue()).isEqualTo("bar");
+	}
+
+	@Test
 	public void bindToJavaBeanShouldTriggerOnSuccess() throws Exception {
 		this.sources
 				.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
