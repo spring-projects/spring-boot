@@ -132,7 +132,7 @@ Maven or Gradle would but without requiring you to use a build tool.
 
 Spring Boot extends this technique further and tries to deduce which libraries to "`grab`"
 based on your code. For example, since the `WebApplication` code shown previously uses
-`@RestController` annotations, Spring Boot grabs"`Tomcat`" and "`Spring MVC`".
+`@RestController` annotations, Spring Boot grabs "Tomcat" and "Spring MVC".
 
 The following items are used as "`grab hints`":
 
@@ -254,7 +254,7 @@ line:
 
 [source,java,indent=0]
 ----
-`@DependencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
+@DependencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')
 ----
 
 

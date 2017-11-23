@@ -22,8 +22,8 @@ import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.core.env.Environment;
 
 /**
- * Default {@link EndpointPathResolver} implementation that use the {@link Environment} to
- * determine if an endpoint has a custom path.
+ * Default {@link EndpointPathResolver} implementation that uses the {@link Environment}
+ * to determine if an endpoint has a custom path.
  *
  * @author Stephane Nicoll
  */
