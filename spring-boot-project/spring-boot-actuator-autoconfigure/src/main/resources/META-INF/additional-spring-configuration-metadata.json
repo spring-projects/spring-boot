@@ -46,6 +46,7 @@
     {
       "name": "management.endpoints.web.expose",
       "defaultValue": [
+        "health",
         "info"
       ]
     },
