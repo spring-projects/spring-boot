@@ -46,8 +46,7 @@
     {
       "name": "management.endpoints.web.expose",
       "defaultValue": [
-        "info",
-        "status"
+        "info"
       ]
     },
     {
@@ -231,7 +230,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.auditevents",
+        "replacement": "management.endpoints.web.path-mapping.auditevents",
         "level": "error"
       }
     },
@@ -266,7 +265,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.conditions",
+        "replacement": "management.endpoints.web.path-mapping.conditions",
         "level": "error"
       }
     },
@@ -302,7 +301,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.beans",
+        "replacement": "management.endpoints.web.path-mapping.beans",
         "level": "error"
       }
     },
@@ -347,7 +346,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.configprops",
+        "replacement": "management.endpoints.web.path-mapping.configprops",
         "level": "error"
       }
     },
@@ -475,7 +474,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.dump",
+        "replacement": "management.endpoints.web.path-mapping.dump",
         "level": "error"
       }
     },
@@ -530,7 +529,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.env",
+        "replacement": "management.endpoints.web.path-mapping.env",
         "level": "error"
       }
     },
@@ -601,7 +600,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.health",
+        "replacement": "management.endpoints.web.path-mapping.health",
         "level": "error"
       }
     },
@@ -637,7 +636,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.heapdump",
+        "replacement": "management.endpoints.web.path-mapping.heapdump",
         "level": "error"
       }
     },
@@ -682,7 +681,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.info",
+        "replacement": "management.endpoints.web.path-mapping.info",
         "level": "error"
       }
     },
@@ -810,7 +809,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.logfile",
+        "replacement": "management.endpoints.web.path-mapping.logfile",
         "level": "error"
       }
     },
@@ -846,7 +845,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.loggers",
+        "replacement": "management.endpoints.web.path-mapping.loggers",
         "level": "error"
       }
     },
@@ -882,7 +881,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.mappings",
+        "replacement": "management.endpoints.web.path-mapping.mappings",
         "level": "error"
       }
     },
@@ -944,7 +943,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.metrics",
+        "replacement": "management.endpoints.web.path-mapping.metrics",
         "level": "error"
       }
     },
@@ -989,7 +988,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.shutdown",
+        "replacement": "management.endpoints.web.path-mapping.shutdown",
         "level": "error"
       }
     },
@@ -1035,7 +1034,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web. path -mapping.trace",
+        "replacement": "management.endpoints.web.path-mapping.trace",
         "level": "error"
       }
     },
@@ -1591,9 +1590,6 @@
         },
         {
           "value": "shutdown"
-        },
-        {
-          "value": "status"
         },
         {
           "value": "threaddump"
