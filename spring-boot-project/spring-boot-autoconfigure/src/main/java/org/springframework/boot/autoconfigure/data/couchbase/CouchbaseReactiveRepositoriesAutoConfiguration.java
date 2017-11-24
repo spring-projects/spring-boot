@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import com.couchbase.client.java.Bucket;
+import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,7 +39,7 @@ import org.springframework.data.couchbase.repository.support.ReactiveCouchbaseRe
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass({ Bucket.class, ReactiveCouchbaseRepository.class })
+@ConditionalOnClass({ Bucket.class, ReactiveCouchbaseRepository.class, Flux.class })
 @ConditionalOnProperty(prefix = "spring.data.couchbase.reactiverepositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean(ReactiveRepositoryOperationsMapping.class)
 @ConditionalOnMissingBean(ReactiveCouchbaseRepositoryFactoryBean.class)
