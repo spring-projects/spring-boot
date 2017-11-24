@@ -64,7 +64,8 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		context.refresh();
 		withDebugLogging(() -> this.initializer
 				.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(this.outputCapture.toString()).contains("CONDITIONS REPORT");
+		assertThat(this.outputCapture.toString())
+				.contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
@@ -81,7 +82,8 @@ public class ConditionEvaluationReportLoggingListenerTests {
 					() -> this.initializer.onApplicationEvent(new ApplicationFailedEvent(
 							new SpringApplication(), new String[0], context, ex)));
 		}
-		assertThat(this.outputCapture.toString()).contains("CONDITIONS REPORT");
+		assertThat(this.outputCapture.toString())
+				.contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
