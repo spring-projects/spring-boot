@@ -29,9 +29,8 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * Reactive Repositories.
  *
  * @author Alex Derkach
- * @since 2.0.0
  */
-public class CouchbaseReactiveRepositoriesAutoConfigureRegistrar
+class CouchbaseReactiveRepositoriesRegistrar
 		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
