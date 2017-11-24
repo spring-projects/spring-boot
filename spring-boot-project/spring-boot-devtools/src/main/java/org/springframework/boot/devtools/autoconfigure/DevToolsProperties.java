@@ -100,6 +100,11 @@ public class DevToolsProperties {
 		 */
 		private List<File> additionalPaths = new ArrayList<>();
 
+		/**
+		 * Whether to log the condition evaluation delta upon restart.
+		 */
+		private boolean logConditionEvaluationDelta = true;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -166,6 +171,14 @@ public class DevToolsProperties {
 
 		public void setAdditionalPaths(List<File> additionalPaths) {
 			this.additionalPaths = additionalPaths;
+		}
+
+		public boolean isLogConditionEvaluationDelta() {
+			return this.logConditionEvaluationDelta;
+		}
+
+		public void setLogConditionEvaluationDelta(boolean logConditionEvaluationDelta) {
+			this.logConditionEvaluationDelta = logConditionEvaluationDelta;
 		}
 
 	}

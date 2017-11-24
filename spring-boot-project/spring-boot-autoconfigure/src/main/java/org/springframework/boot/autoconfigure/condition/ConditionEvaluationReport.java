@@ -188,6 +188,27 @@ public final class ConditionEvaluationReport {
 		}
 	}
 
+	public ConditionEvaluationReport getDelta(ConditionEvaluationReport previousReport) {
+		ConditionEvaluationReport delta = new ConditionEvaluationReport();
+		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
+			ConditionAndOutcomes previous = previousReport.outcomes.get(entry.getKey());
+			if (previous == null
+					|| previous.isFullMatch() != entry.getValue().isFullMatch()) {
+				entry.getValue()
+						.forEach((conditionAndOutcome) -> delta.recordConditionEvaluation(
+								entry.getKey(), conditionAndOutcome.getCondition(),
+								conditionAndOutcome.getOutcome()));
+			}
+		}
+		List<String> newExclusions = new ArrayList<>(this.exclusions);
+		newExclusions.removeAll(previousReport.getExclusions());
+		delta.recordExclusions(newExclusions);
+		List<String> newUnconditionalClasses = new ArrayList<>(this.unconditionalClasses);
+		newUnconditionalClasses.removeAll(previousReport.unconditionalClasses);
+		delta.unconditionalClasses.addAll(newUnconditionalClasses);
+		return delta;
+	}
+
 	/**
 	 * Provides access to a number of {@link ConditionAndOutcome} items.
 	 */

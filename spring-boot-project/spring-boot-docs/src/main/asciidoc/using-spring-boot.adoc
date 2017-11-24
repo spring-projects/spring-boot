@@ -813,6 +813,18 @@ http://zeroturnaround.com/software/jrebel/[JRebel] from ZeroTurnaround. These wo
 rewriting classes as they are loaded to make them more amenable to reloading.
 ****
 
+[[using-boot-devtools-restart-logging-condition-delta]]
+==== Logging changes in condition evaluation
+By default, each time your application restarts, a report showing the condition evaluation
+delta is logged. The report shows the changes to your application's auto-configuration as
+you make changes such as adding or removing beans and setting configuration properties.
+
+To disable the logging of the report, set the following property:
+
+[indent=0]
+----
+	spring.devtools.restart.log-condition-evaluation-delta=false
+----
 
 
 [[using-boot-devtools-restart-exclude]]

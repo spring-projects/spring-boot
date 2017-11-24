@@ -140,6 +140,12 @@ public class LocalDevToolsAutoConfiguration {
 			return this::newFileSystemWatcher;
 		}
 
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta", matchIfMissing = true)
+		public ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
+			return new ConditionEvaluationDeltaLoggingListener();
+		}
+
 		private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
 			FileSystemWatcher watcher = new FileSystemWatcher(true,
