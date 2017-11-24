@@ -29,11 +29,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @since 2.0.0
  */
 public class SimplePropertiesConfigAdapter extends
-		PropertiesConfigAdapter<SimpleProperties, SimpleConfig> implements SimpleConfig {
-	private static final SimpleConfig DEFAULTS = (key) -> null;
+		PropertiesConfigAdapter<SimpleProperties> implements SimpleConfig {
 
 	public SimplePropertiesConfigAdapter(SimpleProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
@@ -43,11 +42,11 @@ public class SimplePropertiesConfigAdapter extends
 
 	@Override
 	public boolean enabled() {
-		return get(SimpleProperties::getEnabled, SimpleConfig::enabled);
+		return get(SimpleProperties::getEnabled, SimpleConfig.super::enabled);
 	}
 
 	@Override
 	public Duration step() {
-		return get(SimpleProperties::getStep, SimpleConfig::step);
+		return get(SimpleProperties::getStep, SimpleConfig.super::step);
 	}
 }

@@ -30,12 +30,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @since 2.0.0
  */
 public class StatsdPropertiesConfigAdapter extends
-		PropertiesConfigAdapter<StatsdProperties, StatsdConfig> implements StatsdConfig {
-
-	private static final StatsdConfig DEFAULTS = (key) -> null;
+		PropertiesConfigAdapter<StatsdProperties> implements StatsdConfig {
 
 	public StatsdPropertiesConfigAdapter(StatsdProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
@@ -45,37 +43,37 @@ public class StatsdPropertiesConfigAdapter extends
 
 	@Override
 	public StatsdFlavor flavor() {
-		return get(StatsdProperties::getFlavor, StatsdConfig::flavor);
+		return get(StatsdProperties::getFlavor, StatsdConfig.super::flavor);
 	}
 
 	@Override
 	public boolean enabled() {
-		return get(StatsdProperties::getEnabled, StatsdConfig::enabled);
+		return get(StatsdProperties::getEnabled, StatsdConfig.super::enabled);
 	}
 
 	@Override
 	public String host() {
-		return get(StatsdProperties::getHost, StatsdConfig::host);
+		return get(StatsdProperties::getHost, StatsdConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return get(StatsdProperties::getPort, StatsdConfig::port);
+		return get(StatsdProperties::getPort, StatsdConfig.super::port);
 	}
 
 	@Override
 	public int maxPacketLength() {
-		return get(StatsdProperties::getMaxPacketLength, StatsdConfig::maxPacketLength);
+		return get(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
 	}
 
 	@Override
 	public Duration pollingFrequency() {
-		return get(StatsdProperties::getPollingFrequency, StatsdConfig::pollingFrequency);
+		return get(StatsdProperties::getPollingFrequency, StatsdConfig.super::pollingFrequency);
 	}
 
 	@Override
 	public int queueSize() {
-		return get(StatsdProperties::getQueueSize, StatsdConfig::queueSize);
+		return get(StatsdProperties::getQueueSize, StatsdConfig.super::queueSize);
 	}
 
 }
