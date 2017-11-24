@@ -29,12 +29,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Phillip Webb
  */
 class AtlasPropertiesConfigAdapter extends
-		PropertiesConfigAdapter<AtlasProperties, AtlasConfig> implements AtlasConfig {
-
-	private static final AtlasConfig DEFAULTS = (k) -> null;
+		PropertiesConfigAdapter<AtlasProperties> implements AtlasConfig {
 
 	AtlasPropertiesConfigAdapter(AtlasProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
@@ -44,68 +42,68 @@ class AtlasPropertiesConfigAdapter extends
 
 	@Override
 	public Duration step() {
-		return get(AtlasProperties::getStep, AtlasConfig::step);
+		return get(AtlasProperties::getStep, AtlasConfig.super::step);
 	}
 
 	@Override
 	public boolean enabled() {
-		return get(AtlasProperties::getEnabled, AtlasConfig::enabled);
+		return get(AtlasProperties::getEnabled, AtlasConfig.super::enabled);
 	}
 
 	@Override
 	public Duration connectTimeout() {
-		return get(AtlasProperties::getConnectTimeout, AtlasConfig::connectTimeout);
+		return get(AtlasProperties::getConnectTimeout, AtlasConfig.super::connectTimeout);
 	}
 
 	@Override
 	public Duration readTimeout() {
-		return get(AtlasProperties::getReadTimeout, AtlasConfig::readTimeout);
+		return get(AtlasProperties::getReadTimeout, AtlasConfig.super::readTimeout);
 	}
 
 	@Override
 	public int numThreads() {
-		return get(AtlasProperties::getNumThreads, AtlasConfig::numThreads);
+		return get(AtlasProperties::getNumThreads, AtlasConfig.super::numThreads);
 	}
 
 	@Override
 	public int batchSize() {
-		return get(AtlasProperties::getBatchSize, AtlasConfig::batchSize);
+		return get(AtlasProperties::getBatchSize, AtlasConfig.super::batchSize);
 	}
 
 	@Override
 	public String uri() {
-		return get(AtlasProperties::getUri, AtlasConfig::uri);
+		return get(AtlasProperties::getUri, AtlasConfig.super::uri);
 	}
 
 	@Override
 	public Duration meterTTL() {
-		return get(AtlasProperties::getMeterTimeToLive, AtlasConfig::meterTTL);
+		return get(AtlasProperties::getMeterTimeToLive, AtlasConfig.super::meterTTL);
 	}
 
 	@Override
 	public boolean lwcEnabled() {
-		return get(AtlasProperties::getLwcEnabled, AtlasConfig::lwcEnabled);
+		return get(AtlasProperties::getLwcEnabled, AtlasConfig.super::lwcEnabled);
 	}
 
 	@Override
 	public Duration configRefreshFrequency() {
 		return get(AtlasProperties::getConfigRefreshFrequency,
-				AtlasConfig::configRefreshFrequency);
+				AtlasConfig.super::configRefreshFrequency);
 	}
 
 	@Override
 	public Duration configTTL() {
-		return get(AtlasProperties::getConfigTimeToLive, AtlasConfig::configTTL);
+		return get(AtlasProperties::getConfigTimeToLive, AtlasConfig.super::configTTL);
 	}
 
 	@Override
 	public String configUri() {
-		return get(AtlasProperties::getConfigUri, AtlasConfig::configUri);
+		return get(AtlasProperties::getConfigUri, AtlasConfig.super::configUri);
 	}
 
 	@Override
 	public String evalUri() {
-		return get(AtlasProperties::getEvalUri, AtlasConfig::evalUri);
+		return get(AtlasProperties::getEvalUri, AtlasConfig.super::evalUri);
 	}
 
 }
