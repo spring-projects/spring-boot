@@ -60,17 +60,20 @@ class GangliaPropertiesConfigAdapter
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
+		return get(GangliaProperties::getDurationUnits,
+				GangliaConfig.super::durationUnits);
 	}
 
 	@Override
 	public String protocolVersion() {
-		return get(GangliaProperties::getProtocolVersion, GangliaConfig.super::protocolVersion);
+		return get(GangliaProperties::getProtocolVersion,
+				GangliaConfig.super::protocolVersion);
 	}
 
 	@Override
 	public GMetric.UDPAddressingMode addressingMode() {
-		return get(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
+		return get(GangliaProperties::getAddressingMode,
+				GangliaConfig.super::addressingMode);
 	}
 
 	@Override

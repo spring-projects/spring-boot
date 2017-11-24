@@ -57,7 +57,8 @@ class InfluxPropertiesConfigAdapter
 
 	@Override
 	public String retentionPolicy() {
-		return get(InfluxProperties::getRetentionPolicy, InfluxConfig.super::retentionPolicy);
+		return get(InfluxProperties::getRetentionPolicy,
+				InfluxConfig.super::retentionPolicy);
 	}
 
 	@Override

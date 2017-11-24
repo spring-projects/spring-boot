@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
  *
  * @param <T> The properties type
  * @author Phillip Webb
+ * @author Nikolay Rybak
  * @since 2.0.0
  */
 public class PropertiesConfigAdapter<T> {

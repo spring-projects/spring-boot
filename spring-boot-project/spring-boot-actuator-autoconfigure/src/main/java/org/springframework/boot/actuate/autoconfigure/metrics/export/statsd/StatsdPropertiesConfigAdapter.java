@@ -63,12 +63,14 @@ public class StatsdPropertiesConfigAdapter extends
 
 	@Override
 	public int maxPacketLength() {
-		return get(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
+		return get(StatsdProperties::getMaxPacketLength,
+				StatsdConfig.super::maxPacketLength);
 	}
 
 	@Override
 	public Duration pollingFrequency() {
-		return get(StatsdProperties::getPollingFrequency, StatsdConfig.super::pollingFrequency);
+		return get(StatsdProperties::getPollingFrequency,
+				StatsdConfig.super::pollingFrequency);
 	}
 
 	@Override

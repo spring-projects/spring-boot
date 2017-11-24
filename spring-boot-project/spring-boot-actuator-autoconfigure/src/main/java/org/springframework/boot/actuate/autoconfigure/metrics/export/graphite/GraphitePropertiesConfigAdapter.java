@@ -60,7 +60,8 @@ class GraphitePropertiesConfigAdapter
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GraphiteProperties::getDurationUnits, GraphiteConfig.super::durationUnits);
+		return get(GraphiteProperties::getDurationUnits,
+				GraphiteConfig.super::durationUnits);
 	}
 
 	@Override

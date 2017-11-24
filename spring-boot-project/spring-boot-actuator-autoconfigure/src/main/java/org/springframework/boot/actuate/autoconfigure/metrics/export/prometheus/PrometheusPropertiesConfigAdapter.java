@@ -43,7 +43,8 @@ class PrometheusPropertiesConfigAdapter
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusProperties::getDescriptions, PrometheusConfig.super::descriptions);
+		return get(PrometheusProperties::getDescriptions,
+				PrometheusConfig.super::descriptions);
 	}
 
 	@Override
