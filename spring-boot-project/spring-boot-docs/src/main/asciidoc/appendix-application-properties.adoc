@@ -1346,6 +1346,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.devtools.restart.additional-paths= # Additional paths to watch for changes.
 	spring.devtools.restart.enabled=true # Enable automatic restart.
 	spring.devtools.restart.exclude=META-INF/maven/**,META-INF/resources/**,resources/**,static/**,public/**,templates/**,**/*Test.class,**/*Tests.class,git.properties # Patterns that should be excluded from triggering a full restart.
+	spring.devtools.restart.log-condition-evaluation-delta=true # Whether to log the condition evaluation delta upon restart.
 	spring.devtools.restart.poll-interval=1s # Amount of time to wait between polling for classpath changes.
 	spring.devtools.restart.quiet-period=400ms # Amount of quiet time required without any classpath changes before a restart is triggered.
 	spring.devtools.restart.trigger-file= # Name of a specific file that, when changed, triggers the restart check. If not specified, any classpath file change triggers the restart.
