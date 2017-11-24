@@ -27,28 +27,26 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistr
  * @author Phillip Webb
  */
 class DatadogPropertiesConfigAdapter
-		extends StepRegistryPropertiesConfigAdapter<DatadogProperties, DatadogConfig>
+		extends StepRegistryPropertiesConfigAdapter<DatadogProperties>
 		implements DatadogConfig {
 
-	private static final DatadogConfig DEFAULTS = (k) -> null;
-
 	DatadogPropertiesConfigAdapter(DatadogProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
 	public String apiKey() {
-		return get(DatadogProperties::getApiKey, DatadogConfig::apiKey);
+		return get(DatadogProperties::getApiKey, DatadogConfig.super::apiKey);
 	}
 
 	@Override
 	public String hostTag() {
-		return get(DatadogProperties::getHostTag, DatadogConfig::hostTag);
+		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}
 
 	@Override
 	public String uri() {
-		return get(DatadogProperties::getUri, DatadogConfig::uri);
+		return get(DatadogProperties::getUri, DatadogConfig.super::uri);
 	}
 
 }

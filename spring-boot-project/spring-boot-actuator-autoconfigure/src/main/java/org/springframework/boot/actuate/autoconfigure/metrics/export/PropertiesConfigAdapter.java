@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.springframework.util.Assert;
 
@@ -24,38 +25,32 @@ import org.springframework.util.Assert;
  * Base class for properties to config adapters.
  *
  * @param <T> The properties type
- * @param <C> The config type
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class PropertiesConfigAdapter<T, C> {
+public class PropertiesConfigAdapter<T> {
 
 	private T properties;
-
-	private C defaults;
 
 	/**
 	 * Create a new {@link PropertiesConfigAdapter} instance.
 	 * @param properties the source properties
-	 * @param defaults a config implementation providing default values
 	 */
-	public PropertiesConfigAdapter(T properties, C defaults) {
+	public PropertiesConfigAdapter(T properties) {
 		Assert.notNull(properties, "Properties must not be null");
-		Assert.notNull(defaults, "Defaults must not be null");
 		this.properties = properties;
-		this.defaults = defaults;
 	}
 
 	/**
 	 * Get the value from the properties or use a fallback from the {@code defaults}.
 	 * @param getter the getter for the properties
-	 * @param fallback the fallback method from the {@code defaults}
+	 * @param fallback the fallback method, usually super interface method reference
 	 * @param <V> the value type
 	 * @return the property or fallback value
 	 */
-	protected final <V> V get(Function<T, V> getter, Function<C, V> fallback) {
+	protected final <V> V get(Function<T, V> getter, Supplier<V> fallback) {
 		V value = getter.apply(this.properties);
-		return (value != null ? value : fallback.apply(this.defaults));
+		return (value != null ? value : fallback.get());
 	}
 
 }
