@@ -161,6 +161,16 @@ public class ReactiveMongoClientFactoryTests {
 		verify(customizer).customize(any(MongoClientSettings.Builder.class));
 	}
 
+	@Test
+	public void customizerIsInvokedForEmbeddedMongo() {
+		MongoProperties properties = new MongoProperties();
+		this.environment.setProperty("local.mongo.port", "27017");
+		MongoClientSettingsBuilderCustomizer customizer = mock(
+				MongoClientSettingsBuilderCustomizer.class);
+		createMongoClient(properties, this.environment, customizer);
+		verify(customizer).customize(any(MongoClientSettings.Builder.class));
+	}
+
 	private MongoClient createMongoClient(MongoProperties properties) {
 		return createMongoClient(properties, this.environment);
 	}

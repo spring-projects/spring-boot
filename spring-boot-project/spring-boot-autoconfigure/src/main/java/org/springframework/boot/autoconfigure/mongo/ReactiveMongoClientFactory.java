@@ -92,6 +92,7 @@ public class ReactiveMongoClientFactory {
 		ClusterSettings clusterSettings = ClusterSettings.builder()
 				.hosts(Collections.singletonList(new ServerAddress(host, port))).build();
 		builder.clusterSettings(clusterSettings);
+		customize(builder);
 		return MongoClients.create(builder.build());
 	}
 
