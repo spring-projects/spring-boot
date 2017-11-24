@@ -1101,7 +1101,7 @@ For example, consider the following `@ConfigurationProperties` class:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix="person")
+	@ConfigurationProperties(prefix="acme.my-project.person")
 	public class OwnerProperties {
 
 		private String firstName;
@@ -1124,22 +1124,22 @@ In the preceding example, the following properties names can all be used:
 |===
 | Property | Note
 
-|`person.firstName`
+|`acme.my-project.person.firstName`
 |Standard camel case syntax.
 
-|`person.first-name`
+|`acme.my-project.person.first-name`
 |Kebab case, which is recommended for use in `.properties` and `.yml` files.
 
-|`person.first_name`
+|`acme.my-project.person.first_name`
 |Underscore notation, which is an alternative format for use in `.properties` and `.yml`
 files.
 
-|`PERSON_FIRSTNAME`
+|`ACME_MYPROJECT_PERSON_FIRSTNAME`
 |Upper case format, which is recommended when using a system environment variables.
 |===
 
-NOTE: The `prefix` value for the annotation must be in kebab case (lowercase and
-separated by `-`, such as `kebab-case`).
+NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase and
+separated by `-`, i.e. `acme.my-project.person`).
 
 .relaxed binding rules per property source
 [cols="2,4,4"]
