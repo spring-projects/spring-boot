@@ -28,48 +28,47 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistr
  * @author Phillip Webb
  */
 class InfluxPropertiesConfigAdapter
-		extends StepRegistryPropertiesConfigAdapter<InfluxProperties, InfluxConfig>
+		extends StepRegistryPropertiesConfigAdapter<InfluxProperties>
 		implements InfluxConfig {
 
-	private static final InfluxConfig DEFAULTS = (k) -> null;
-
 	InfluxPropertiesConfigAdapter(InfluxProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
 	public String db() {
-		return get(InfluxProperties::getDb, InfluxConfig::db);
+		return get(InfluxProperties::getDb, InfluxConfig.super::db);
 	}
 
 	@Override
 	public InfluxConsistency consistency() {
-		return get(InfluxProperties::getConsistency, InfluxConfig::consistency);
+		return get(InfluxProperties::getConsistency, InfluxConfig.super::consistency);
 	}
 
 	@Override
 	public String userName() {
-		return get(InfluxProperties::getUserName, InfluxConfig::userName);
+		return get(InfluxProperties::getUserName, InfluxConfig.super::userName);
 	}
 
 	@Override
 	public String password() {
-		return get(InfluxProperties::getPassword, InfluxConfig::password);
+		return get(InfluxProperties::getPassword, InfluxConfig.super::password);
 	}
 
 	@Override
 	public String retentionPolicy() {
-		return get(InfluxProperties::getRetentionPolicy, InfluxConfig::retentionPolicy);
+		return get(InfluxProperties::getRetentionPolicy,
+				InfluxConfig.super::retentionPolicy);
 	}
 
 	@Override
 	public String uri() {
-		return get(InfluxProperties::getUri, InfluxConfig::uri);
+		return get(InfluxProperties::getUri, InfluxConfig.super::uri);
 	}
 
 	@Override
 	public boolean compressed() {
-		return get(InfluxProperties::getCompressed, InfluxConfig::compressed);
+		return get(InfluxProperties::getCompressed, InfluxConfig.super::compressed);
 	}
 
 }

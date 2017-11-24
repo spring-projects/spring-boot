@@ -24,16 +24,15 @@ import io.micrometer.core.instrument.step.StepRegistryConfig;
  * Base class for {@link StepRegistryProperties} to {@link StepRegistryConfig} adapters.
  *
  * @param <T> The properties type
- * @param <C> The config type
  * @author Jon Schneider
  * @author Phillip Webb
  * @since 2.0.0
  */
-public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistryProperties, C extends StepRegistryConfig>
-		extends PropertiesConfigAdapter<T, C> implements StepRegistryConfig {
+public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistryProperties>
+		extends PropertiesConfigAdapter<T> implements StepRegistryConfig {
 
-	public StepRegistryPropertiesConfigAdapter(T properties, C defaults) {
-		super(properties, defaults);
+	public StepRegistryPropertiesConfigAdapter(T properties) {
+		super(properties);
 	}
 
 	@Override
@@ -48,32 +47,32 @@ public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistry
 
 	@Override
 	public Duration step() {
-		return get(T::getStep, C::step);
+		return get(T::getStep, StepRegistryConfig.super::step);
 	}
 
 	@Override
 	public boolean enabled() {
-		return get(T::getEnabled, C::enabled);
+		return get(T::getEnabled, StepRegistryConfig.super::enabled);
 	}
 
 	@Override
 	public Duration connectTimeout() {
-		return get(T::getConnectTimeout, C::connectTimeout);
+		return get(T::getConnectTimeout, StepRegistryConfig.super::connectTimeout);
 	}
 
 	@Override
 	public Duration readTimeout() {
-		return get(T::getReadTimeout, C::readTimeout);
+		return get(T::getReadTimeout, StepRegistryConfig.super::readTimeout);
 	}
 
 	@Override
 	public int numThreads() {
-		return get(T::getNumThreads, C::numThreads);
+		return get(T::getNumThreads, StepRegistryConfig.super::numThreads);
 	}
 
 	@Override
 	public int batchSize() {
-		return get(T::getBatchSize, C::batchSize);
+		return get(T::getBatchSize, StepRegistryConfig.super::batchSize);
 	}
 
 }
