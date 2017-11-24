@@ -32,7 +32,7 @@ import java.net.URI
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.getForObject(url: String, vararg uriVariables: Any): T? =
+inline fun <reified T : Any> TestRestTemplate.getForObject(url: String, vararg uriVariables: Any): T? =
 		getForObject(url, T::class.java, *uriVariables)
 
 /**
@@ -43,7 +43,7 @@ inline fun <reified T: Any> TestRestTemplate.getForObject(url: String, vararg ur
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.getForObject(url: String, uriVariables: Map<String, Any?>): T? =
+inline fun <reified T : Any> TestRestTemplate.getForObject(url: String, uriVariables: Map<String, Any?>): T? =
 		getForObject(url, T::class.java, uriVariables)
 
 /**
@@ -54,7 +54,7 @@ inline fun <reified T: Any> TestRestTemplate.getForObject(url: String, uriVariab
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.getForObject(url: URI): T? =
+inline fun <reified T : Any> TestRestTemplate.getForObject(url: URI): T? =
 		getForObject(url, T::class.java)
 
 /**
@@ -65,7 +65,7 @@ inline fun <reified T: Any> TestRestTemplate.getForObject(url: URI): T? =
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.getForEntity(url: URI): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.getForEntity(url: URI): ResponseEntity<T> =
 		getForEntity(url, T::class.java)
 
 /**
@@ -76,7 +76,7 @@ inline fun <reified T: Any> TestRestTemplate.getForEntity(url: URI): ResponseEnt
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.getForEntity(url: String, vararg uriVariables: Any): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String, vararg uriVariables: Any): ResponseEntity<T> =
 		getForEntity(url, T::class.java, *uriVariables)
 
 /**
@@ -87,7 +87,7 @@ inline fun <reified T: Any> TestRestTemplate.getForEntity(url: String, vararg ur
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.getForEntity(url: String, uriVariables: Map<String, *>): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String, uriVariables: Map<String, *>): ResponseEntity<T> =
 		getForEntity(url, T::class.java, uriVariables)
 
 /**
@@ -98,7 +98,7 @@ inline fun <reified T: Any> TestRestTemplate.getForEntity(url: String, uriVariab
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.patchForObject(url: String, request: Any, vararg uriVariables: Any): T? =
+inline fun <reified T : Any> TestRestTemplate.patchForObject(url: String, request: Any, vararg uriVariables: Any): T? =
 		patchForObject(url, request, T::class.java, *uriVariables)
 
 /**
@@ -109,7 +109,7 @@ inline fun <reified T: Any> TestRestTemplate.patchForObject(url: String, request
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.patchForObject(url: String, request: Any, uriVariables: Map<String, *>): T? =
+inline fun <reified T : Any> TestRestTemplate.patchForObject(url: String, request: Any, uriVariables: Map<String, *>): T? =
 		patchForObject(url, request, T::class.java, uriVariables)
 
 /**
@@ -120,7 +120,7 @@ inline fun <reified T: Any> TestRestTemplate.patchForObject(url: String, request
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.patchForObject(url: URI, request: Any): T? =
+inline fun <reified T : Any> TestRestTemplate.patchForObject(url: URI, request: Any): T? =
 		patchForObject(url, request, T::class.java)
 
 /**
@@ -131,7 +131,7 @@ inline fun <reified T: Any> TestRestTemplate.patchForObject(url: URI, request: A
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.postForObject(url: String, request: Any, vararg uriVariables: Any): T? =
+inline fun <reified T : Any> TestRestTemplate.postForObject(url: String, request: Any, vararg uriVariables: Any): T? =
 		postForObject(url, request, T::class.java, *uriVariables)
 
 /**
@@ -142,7 +142,7 @@ inline fun <reified T: Any> TestRestTemplate.postForObject(url: String, request:
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.postForObject(url: String, request: Any, uriVariables: Map<String, *>): T? =
+inline fun <reified T : Any> TestRestTemplate.postForObject(url: String, request: Any, uriVariables: Map<String, *>): T? =
 		postForObject(url, request, T::class.java, uriVariables)
 
 /**
@@ -153,7 +153,7 @@ inline fun <reified T: Any> TestRestTemplate.postForObject(url: String, request:
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.postForObject(url: URI, request: Any): T? =
+inline fun <reified T : Any> TestRestTemplate.postForObject(url: URI, request: Any): T? =
 		postForObject(url, request, T::class.java)
 
 /**
@@ -164,7 +164,7 @@ inline fun <reified T: Any> TestRestTemplate.postForObject(url: URI, request: An
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.postForEntity(url: String, request: Any, vararg uriVariables: Any): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.postForEntity(url: String, request: Any, vararg uriVariables: Any): ResponseEntity<T> =
 		postForEntity(url, request, T::class.java, *uriVariables)
 
 /**
@@ -175,7 +175,7 @@ inline fun <reified T: Any> TestRestTemplate.postForEntity(url: String, request:
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.postForEntity(url: String, request: Any, uriVariables: Map<String, *>): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.postForEntity(url: String, request: Any, uriVariables: Map<String, *>): ResponseEntity<T> =
 		postForEntity(url, request, T::class.java, uriVariables)
 
 /**
@@ -186,7 +186,7 @@ inline fun <reified T: Any> TestRestTemplate.postForEntity(url: String, request:
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.postForEntity(url: URI, request: Any): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.postForEntity(url: URI, request: Any): ResponseEntity<T> =
 		postForEntity(url, request, T::class.java)
 
 /**
@@ -197,7 +197,7 @@ inline fun <reified T: Any> TestRestTemplate.postForEntity(url: URI, request: An
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.exchange(url: String, method: HttpMethod, requestEntity: HttpEntity<*>, vararg uriVariables: Any): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.exchange(url: String, method: HttpMethod, requestEntity: HttpEntity<*>, vararg uriVariables: Any): ResponseEntity<T> =
 		exchange(url, method, requestEntity, object : ParameterizedTypeReference<T>() {}, *uriVariables)
 
 /**
@@ -208,7 +208,7 @@ inline fun <reified T: Any> TestRestTemplate.exchange(url: String, method: HttpM
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.exchange(url: String, method: HttpMethod, requestEntity: HttpEntity<*>, uriVariables: Map<String, *>): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.exchange(url: String, method: HttpMethod, requestEntity: HttpEntity<*>, uriVariables: Map<String, *>): ResponseEntity<T> =
 		exchange(url, method, requestEntity, object : ParameterizedTypeReference<T>() {}, uriVariables)
 
 /**
@@ -219,7 +219,7 @@ inline fun <reified T: Any> TestRestTemplate.exchange(url: String, method: HttpM
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.exchange(url: URI, method: HttpMethod, requestEntity: HttpEntity<*>): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.exchange(url: URI, method: HttpMethod, requestEntity: HttpEntity<*>): ResponseEntity<T> =
 		exchange(url, method, requestEntity, object : ParameterizedTypeReference<T>() {})
 
 /**
@@ -230,5 +230,5 @@ inline fun <reified T: Any> TestRestTemplate.exchange(url: URI, method: HttpMeth
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T: Any> TestRestTemplate.exchange(requestEntity: RequestEntity<*>): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.exchange(requestEntity: RequestEntity<*>): ResponseEntity<T> =
 		exchange(requestEntity, object : ParameterizedTypeReference<T>() {})

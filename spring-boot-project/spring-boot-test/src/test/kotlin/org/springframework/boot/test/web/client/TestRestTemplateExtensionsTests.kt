@@ -22,7 +22,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Answers
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -183,7 +184,8 @@ class TestRestTemplateExtensionsTests {
 		val var1 = "var1"
 		val var2 = "var2"
 		template.exchange<List<Foo>>(url, method, entity, var1, var2)
-		verify(template, times(1)).exchange(url, method, entity, object : ParameterizedTypeReference<List<Foo>>() {}, var1, var2)
+		verify(template, times(1)).exchange(url, method, entity,
+				object : ParameterizedTypeReference<List<Foo>>() {}, var1, var2)
 	}
 
 	@Test
@@ -193,7 +195,8 @@ class TestRestTemplateExtensionsTests {
 		val entity = mock<HttpEntity<Foo>>()
 		val vars = mapOf(Pair("key1", "value1"), Pair("key2", "value2"))
 		template.exchange<List<Foo>>(url, method, entity, vars)
-		verify(template, times(1)).exchange(url, method, entity, object : ParameterizedTypeReference<List<Foo>>() {}, vars)
+		verify(template, times(1)).exchange(url, method, entity,
+				object : ParameterizedTypeReference<List<Foo>>() {}, vars)
 	}
 
 	@Test
@@ -202,26 +205,32 @@ class TestRestTemplateExtensionsTests {
 		val method = HttpMethod.GET
 		val entity = mock<HttpEntity<Foo>>()
 		template.exchange<List<Foo>>(url, method, entity)
-		verify(template, times(1)).exchange(url, method, entity, object : ParameterizedTypeReference<List<Foo>>() {})
+		verify(template, times(1)).exchange(url, method, entity,
+				object : ParameterizedTypeReference<List<Foo>>() {})
 	}
 
 	@Test
 	fun `exchange with reified type parameters, String, HttpEntity`() {
 		val entity = mock<RequestEntity<Foo>>()
 		template.exchange<List<Foo>>(entity)
-		verify(template, times(1)).exchange(entity, object : ParameterizedTypeReference<List<Foo>>() {})
+		verify(template, times(1)).exchange(entity,
+				object : ParameterizedTypeReference<List<Foo>>() {})
 	}
 
 	@Test
 	fun `RestOperations are available`() {
-		val extensions = Class.forName("org.springframework.boot.test.web.client.TestRestTemplateExtensionsKt")
+		val extensions = Class.forName(
+				"org.springframework.boot.test.web.client.TestRestTemplateExtensionsKt")
 		ReflectionUtils.doWithMethods(RestOperations::class.java) { method ->
 			arrayOf(ParameterizedTypeReference::class, Class::class).forEach { kClass ->
 				if (method.parameterTypes.contains(kClass.java)) {
-					val parameters = mutableListOf<Class<*>>(TestRestTemplate::class.java).apply { addAll(method.parameterTypes.filter { it !=  kClass.java }) }
-					val f = extensions.getDeclaredMethod(method.name, *parameters.toTypedArray()).kotlinFunction!!
+					val parameters = mutableListOf<Class<*>>(TestRestTemplate::class.java)
+							.apply { addAll(method.parameterTypes.filter { it != kClass.java }) }
+					val f = extensions.getDeclaredMethod(method.name,
+							*parameters.toTypedArray()).kotlinFunction!!
 					Assert.assertEquals(1, f.typeParameters.size)
-					Assert.assertEquals(listOf(Any::class.createType()), f.typeParameters[0].upperBounds)
+					Assert.assertEquals(listOf(Any::class.createType()),
+							f.typeParameters[0].upperBounds)
 				}
 			}
 		}
