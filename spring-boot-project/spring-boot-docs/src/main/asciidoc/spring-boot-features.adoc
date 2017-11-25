@@ -6722,6 +6722,35 @@ A list of the auto-configuration settings that are enabled by `@DataRedisTest` c
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-couchbase-test]]
+==== Auto-configured Data Couchbase Tests
+You can use `@DataCouchbaseTest` to test Couchbase applications (without N1QL). By default, it scans for
+`@Document` classes and configures Spring Data Couchbase repositories. Regular `@Component`
+beans are not loaded into the `ApplicationContext`. The following example shows the
+`@DataCouchbaseTest` annotation in use:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataCouchbaseTest
+	public class ExampleDataCouchbaseTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+A list of the auto-configuration settings that are enabled by `@DataCouchbaseTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-ldap-test]]
 ==== Auto-configured Data LDAP Tests

@@ -569,7 +569,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.liquibase.user= # Login user of the database to migrate.
 
 	# COUCHBASE ({sc-spring-boot-autoconfigure}/couchbase/CouchbaseProperties.{sc-ext}[CouchbaseProperties])
-	spring.couchbase.bootstrap-hosts= # Couchbase nodes (host or IP address) to bootstrap from.
+	spring.couchbase.bootstrap-hosts=localhost # Couchbase nodes (host or IP address) to bootstrap from.
+	spring.couchbase.bootstrap-http-direct-port=8091 # Couchbase web administration port.
+	spring.couchbase.bootstrap-carrier-direct-port=11210 # Couchbase internal/external bucket port.
 	spring.couchbase.bucket.name=default # Name of the bucket to connect to.
 	spring.couchbase.bucket.password=  # Password of the bucket.
 	spring.couchbase.env.endpoints.key-value=1 # Number of sockets per node against the Key/value service.

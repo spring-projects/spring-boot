@@ -43,6 +43,7 @@
 		<commons-pool2.version>2.5.0</commons-pool2.version>
 		<couchbase-client.version>2.5.4</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
+		<couchbase-mock.version>1.5.12</couchbase-mock.version>
 		<derby.version>10.14.1.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<dropwizard-metrics.version>3.2.6</dropwizard-metrics.version>
@@ -737,6 +738,11 @@
 				<groupId>de.flapdoodle.embed</groupId>
 				<artifactId>de.flapdoodle.embed.mongo</artifactId>
 				<version>${embedded-mongo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.couchbase.mock</groupId>
+				<artifactId>CouchbaseMock</artifactId>
+				<version>${couchbase-mock.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>dom4j</groupId>
