@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Kazuki Shimizu
  */
 public class OAuth2ClientPropertiesRegistrationAdapterTests {
 
@@ -50,6 +51,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		provider.setTokenUri("http://example.com/token");
 		provider.setUserInfoUri("http://example.com/info");
 		provider.setJwkSetUri("http://example.com/jwk");
+		provider.setUserNameAttribute("username");
 		Registration registration = new Registration();
 		registration.setProvider("provider");
 		registration.setClientId("clientId");
@@ -70,6 +72,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("http://example.com/info");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+			.isEqualTo("username");
 		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
@@ -105,6 +109,10 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo("sub");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
@@ -133,6 +141,9 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setScope(Collections.singleton("scope"));
 		registration.setClientName("clientName");
 		properties.getRegistration().put("registration", registration);
+		Provider provider = new Provider();
+		provider.setUserNameAttribute("name");
+		properties.getProvider().put("google", provider);
 		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
 				.getClientRegistrations(properties);
 		ClientRegistration adapted = registrations.get("registration");
@@ -145,6 +156,10 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo("name");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
@@ -190,6 +205,10 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo("sub");
 		assertThat(adapted.getRegistrationId()).isEqualTo("google");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
