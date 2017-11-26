@@ -47,8 +47,8 @@ public class InfluxDbProperties {
 	private String password;
 
 	/**
-	 * Encapsulates SSL configurations for to-be-configured InfluxDB client. If {@code null},
-	 * then the communication would be performed over plain HTTP.
+	 * Encapsulates SSL configurations for to-be-configured InfluxDB client. If
+	 * {@code null}, then the communication would be performed over plain HTTP.
 	 */
 	@NestedConfigurationProperty
 	private Ssl ssl;
@@ -78,7 +78,7 @@ public class InfluxDbProperties {
 	}
 
 	public Ssl getSsl() {
-		return ssl;
+		return this.ssl;
 	}
 
 	public void setSsl(Ssl ssl) {
@@ -96,13 +96,14 @@ public class InfluxDbProperties {
 		private boolean enabled;
 
 		/**
-		 * File containing the X.509 certificate. The file content is usually a Base64 encoded
-		 * DER certificate, enclosed between "-----BEGIN CERTIFICATE-----" and "-----END CERTIFICATE-----".
+		 * File containing the X.509 certificate. The file content is usually a Base64
+		 * encoded DER certificate, enclosed between "-----BEGIN CERTIFICATE-----" and
+		 * "-----END CERTIFICATE-----".
 		 */
 		private Resource certificate;
 
 		public boolean isEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -110,7 +111,7 @@ public class InfluxDbProperties {
 		}
 
 		public Resource getCertificate() {
-			return certificate;
+			return this.certificate;
 		}
 
 		public void setCertificate(Resource certificate) {
