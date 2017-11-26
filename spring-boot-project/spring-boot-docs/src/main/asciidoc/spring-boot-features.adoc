@@ -4568,12 +4568,12 @@ This sample configuration reuses the `Cluster` that was created via auto-configu
 If Redis is available and configured, a `RedisCacheManager` is auto-configured. It is
 possible to create additional caches on startup by setting the
 `spring.cache.cache-names` property and cache defaults can be configured using
-`spring.redis.cache.*` properties. For instance, the following configuration creates
+`spring.cache.redis.*` properties. For instance, the following configuration creates
 `cache1` and `cache2` caches with a _time to live_ of 10 minutes:
 
 [source,properties,indent=0]
 ----
-    spring.cache.cache-names=cache1,cache2
+	spring.cache.cache-names=cache1,cache2
 	spring.cache.redis.time-to-live=600000
 ----
 
@@ -4603,7 +4603,7 @@ maximum size of 500 and a _time to live_ of 10 minutes
 
 [source,properties,indent=0]
 ----
-    spring.cache.cache-names=cache1,cache2
+	spring.cache.cache-names=cache1,cache2
 	spring.cache.caffeine.spec=maximumSize=500,expireAfterAccess=600s
 ----
 
@@ -4625,7 +4625,7 @@ as follows:
 
 [source,properties,indent=0]
 ----
-    spring.cache.cache-names=cache1,cache2
+	spring.cache.cache-names=cache1,cache2
 ----
 
 If you do so and your application uses a cache not listed, then it fails at runtime when
@@ -6017,7 +6017,7 @@ A list of the auto-configuration that is enabled by `@JsonTest` can be
 ==== Auto-configured Spring MVC Tests
 To test Spring MVC controllers are working as expected, you can use the `@WebMvcTest`
 annotation. `@WebMvcTest` auto-configures the Spring MVC infrastructure and limits
-scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `@Converter`,
+scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`,
 `Filter`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`. Regular `@Component`
 beans are not scanned when using this annotation.
 
@@ -6124,7 +6124,7 @@ A list of the auto-configuration settings that are enabled by `@WebMvcTest` can 
 To test that Spring WebFlux controllers are working as expected, you can use the
 `@WebFluxTest` annotation. `@WebFluxTest` auto-configures the Spring WebFlux
 infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`,
-`@JsonComponent`, `Converter`, and `WebFluxConfigurer`. Regular `@Component` beans are
+`@JsonComponent`, `Converter`, `GenericConverter`, and `WebFluxConfigurer`. Regular `@Component` beans are
 not scanned when the `@WebFluxTest` annotation is used.
 
 TIP: If you need to register extra components such as Jackson `Module`, you can import
