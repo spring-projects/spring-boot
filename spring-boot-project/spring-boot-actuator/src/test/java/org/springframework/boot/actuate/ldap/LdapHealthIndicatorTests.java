@@ -16,13 +16,10 @@
 
 package org.springframework.boot.actuate.ldap;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.ldap.CommunicationException;
 import org.springframework.ldap.core.ContextExecutor;
 import org.springframework.ldap.core.LdapTemplate;
@@ -39,20 +36,6 @@ import static org.mockito.Mockito.verify;
  * @author Eddú Meléndez
  */
 public class LdapHealthIndicatorTests {
-
-	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
 
 	@Test
 	@SuppressWarnings("unchecked")
