@@ -16,15 +16,10 @@
 
 package org.springframework.boot.autoconfigure.data.alt.couchbase;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
-public interface ReactiveCityCouchbaseRepository extends Repository<City, Long> {
-
-	Mono<City> save(City city);
-
-	Mono<City> findById(Long id);
+public interface ReactiveCityCouchbaseRepository extends
+		ReactiveCrudRepository<City, Long> {
 
 }
