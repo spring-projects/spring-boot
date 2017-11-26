@@ -16,21 +16,23 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
-import java.util.concurrent.TimeUnit;
-
 import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
+import org.influxdb.impl.InfluxDBImpl;
 import org.junit.Test;
-import retrofit2.Retrofit;
-
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import retrofit2.Retrofit;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link InfluxDbAutoConfiguration}.
@@ -38,11 +40,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sergey Kuptsov
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Ali Dehghani
  */
 public class InfluxDbAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(InfluxDbAutoConfiguration.class));
+
+	@Test
+	public void ifAnInfluxDbAlreadyRegisteredThenAutoConfigurationShouldBeIgnored() {
+		this.contextRunner.withUserConfiguration(CustomInfluxDb.class)
+				.withPropertyValues("spring.influx.utl=http://localhost")
+				.run(context -> {
+					assertThatThrownBy(() -> context.getBean(InfluxDbAutoConfiguration.class))
+							.isInstanceOf(NoSuchBeanDefinitionException.class);
+				});
+	}
 
 	@Test
 	public void influxDbRequiresUrl() {
@@ -93,6 +106,63 @@ public class InfluxDbAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void whenSslIsEnabledUrlShouldStartsWithHttps() {
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.ssl.enabled=true")
+				.run(context -> {
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("InfluxDB's URL should starts with https when SSL is enabled")
+							.hasRootCauseInstanceOf(IllegalArgumentException.class);
+				});
+	}
+
+	@Test
+	public void whenSslIsEnabledCertificatePathShouldBeProvided() {
+		this.contextRunner.withPropertyValues("spring.influx.url=https://localhost", "spring.influx.ssl.enabled=true")
+				.run(context -> {
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("Since SSL is enabled for InfluxDB, provide the path to certificate file")
+							.hasRootCauseInstanceOf(IllegalArgumentException.class);
+				});
+	}
+
+	@Test
+	public void whenSslIsEnabledCertificatePathShouldBeAValidPath() {
+		this.contextRunner.withPropertyValues("spring.influx.url=https://localhost",
+				"spring.influx.ssl.enabled=true", "spring.influx.ssl.certificate=/foo/invalid")
+				.run(context -> {
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("Couldn't find the InfluxDB certificate file")
+							.hasRootCauseInstanceOf(IllegalArgumentException.class);
+				});
+	}
+
+	@Test
+	public void whenSslIsEnabledCertificateFileShouldBeAValidX509Certificate() {
+		this.contextRunner.withPropertyValues("spring.influx.url=https://localhost",
+				"spring.influx.ssl.enabled=true",
+				"spring.influx.ssl.certificate=classpath:/org/springframework/boot/autoconfigure/influx/influx-invalid.crt")
+				.withClassLoader(Thread.currentThread().getContextClassLoader())
+				.run(context -> {
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("Failed to load the given certificate for InfluxDB")
+							.isInstanceOf(RuntimeException.class);
+				});
+	}
+
+	@Test
+	public void whenSslIsEnabledValidX509CertificateShouldWork() {
+		this.contextRunner.withPropertyValues("spring.influx.url=https://localhost",
+				"spring.influx.ssl.enabled=true",
+				"spring.influx.ssl.certificate=classpath:/org/springframework/boot/autoconfigure/influx/influx-valid.crt")
+				.withClassLoader(Thread.currentThread().getContextClassLoader())
+				.run(context -> {
+					assertThat(context.getStartupFailure()).isNull();
+					assertThat(context.getBean(InfluxDbAutoConfiguration.class)).isNotNull();
+					assertThat(context.getBean(InfluxDB.class)).isNotNull();
+				});
+	}
+
 	private int getReadTimeoutProperty(AssertableApplicationContext context) {
 		InfluxDB influxDB = context.getBean(InfluxDB.class);
 		Retrofit retrofit = (Retrofit) new DirectFieldAccessor(influxDB)
@@ -110,6 +180,15 @@ public class InfluxDbAutoConfigurationTests {
 			return new OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS);
 		}
 
+	}
+
+	@Configuration
+	static class CustomInfluxDb {
+
+		@Bean
+		public InfluxDB influxDB() {
+			return new InfluxDBImpl("http://localhost", "", "", new OkHttpClient.Builder());
+		}
 	}
 
 }

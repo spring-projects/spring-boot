@@ -17,12 +17,15 @@
 package org.springframework.boot.autoconfigure.influx;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for InfluxDB.
  *
  * @author Sergey Kuptsov
  * @author Stephane Nicoll
+ * @author Ali Dehghani
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.influx")
@@ -42,6 +45,13 @@ public class InfluxDbProperties {
 	 * Login password.
 	 */
 	private String password;
+
+	/**
+	 * Encapsulates SSL configurations for to-be-configured InfluxDB client. If {@code null},
+	 * then the communication would be performed over plain HTTP.
+	 */
+	@NestedConfigurationProperty
+	private Ssl ssl;
 
 	public String getUrl() {
 		return this.url;
@@ -67,4 +77,44 @@ public class InfluxDbProperties {
 		this.password = password;
 	}
 
+	public Ssl getSsl() {
+		return ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
+	/**
+	 * Encapsulates SSL configurations for the InfluxDB client.
+	 */
+	public static class Ssl {
+
+		/**
+		 * Determines SSL communication is enabled or not.
+		 */
+		private boolean enabled;
+
+		/**
+		 * File containing the X.509 certificate. The file content is usually a Base64 encoded
+		 * DER certificate, enclosed between "-----BEGIN CERTIFICATE-----" and "-----END CERTIFICATE-----".
+		 */
+		private Resource certificate;
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public Resource getCertificate() {
+			return certificate;
+		}
+
+		public void setCertificate(Resource certificate) {
+			this.certificate = certificate;
+		}
+	}
 }
