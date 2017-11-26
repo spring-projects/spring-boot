@@ -31,7 +31,6 @@ import org.springframework.data.couchbase.repository.config.ReactiveRepositoryOp
  * Configure Spring Data's reactive couchbase support.
  *
  * @author Alex Derkach
- * @since 2.0.0
  */
 @Configuration
 @ConditionalOnMissingBean(AbstractReactiveCouchbaseDataConfiguration.class)
