@@ -78,10 +78,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
+	 * Add {@link NettyServerCustomizer}s that should be applied while building the server.
 	 * @param nettyServerCustomizer the customizers to add
 	 */
-	public void addContextCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
+	public void addNettyServerCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
 		Assert.notNull(nettyServerCustomizer,
 				"NettyWebServerCustomizer must not be null");
 		this.nettyServerCustomizers.addAll(Arrays.asList(nettyServerCustomizer));
