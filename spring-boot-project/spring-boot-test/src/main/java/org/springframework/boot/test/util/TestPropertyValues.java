@@ -227,7 +227,7 @@ public final class TestPropertyValues {
 
 		Type(Class<? extends MapPropertySource> sourceClass, String suffix) {
 			this.sourceClass = sourceClass;
-			this.suffix = (suffix == null ? null : "-" + suffix);
+			this.suffix = suffix;
 		}
 
 		public Class<? extends MapPropertySource> getSourceClass() {
