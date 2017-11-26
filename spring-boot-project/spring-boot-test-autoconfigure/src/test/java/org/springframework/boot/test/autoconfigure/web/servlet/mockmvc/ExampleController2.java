@@ -32,13 +32,13 @@ public class ExampleController2 {
 
 	@GetMapping("/two")
 	@ResponseBody
-	public String one(ExampleArgument argument) {
+	public String two(ExampleArgument argument) {
 		return argument + "two";
 	}
 
 	@GetMapping("/two/{id}")
 	@ResponseBody
-	public String one(@PathVariable ExampleId id) {
+	public String two(@PathVariable ExampleId id) {
 		return id.getId() + "two";
 	}
 

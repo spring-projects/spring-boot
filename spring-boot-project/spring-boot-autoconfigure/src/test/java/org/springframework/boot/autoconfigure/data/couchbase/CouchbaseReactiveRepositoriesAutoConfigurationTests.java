@@ -80,7 +80,7 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		load(CouchbaseReactiveRepositoriesAutoConfigurationTests.CustomizedConfiguration.class);
+		load(CustomizedConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityCouchbaseRepository.class))
 				.isEmpty();
 	}
