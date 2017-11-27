@@ -23,6 +23,8 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import reactor.core.publisher.Mono;
@@ -40,6 +42,8 @@ import org.springframework.util.Base64Utils;
 class ReactiveTokenValidator {
 
 	private final ReactiveCloudFoundrySecurityService securityService;
+
+	private Map<String, String> cachedTokenKeys = new ConcurrentHashMap<>();
 
 	ReactiveTokenValidator(ReactiveCloudFoundrySecurityService securityService) {
 		this.securityService = securityService;
@@ -67,11 +71,17 @@ class ReactiveTokenValidator {
 
 	private Mono<Void> validateKeyIdAndSignature(Token token) {
 		String keyId = token.getKeyId();
-		return this.securityService.fetchTokenKeys()
+		return Mono.just(this.cachedTokenKeys)
 				.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
-				.switchIfEmpty(Mono.error(
-						new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
-								"Key Id present in token header does not match")))
+				.switchIfEmpty(this.securityService.fetchTokenKeys()
+						.doOnSuccess(fetchedTokenKeys -> {
+							this.cachedTokenKeys.clear();
+							this.cachedTokenKeys.putAll(fetchedTokenKeys);
+						})
+						.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
+						.switchIfEmpty((Mono.error(
+								new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
+										"Key Id present in token header does not match")))))
 				.filter((tokenKeys) -> hasValidSignature(token, tokenKeys.get(keyId)))
 				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
 						Reason.INVALID_SIGNATURE, "RSA Signature did not match content")))
