@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
+import org.springframework.boot.autoconfigure.data.alt.couchbase.CityCouchbaseRepository;
 import org.springframework.boot.autoconfigure.data.alt.couchbase.ReactiveCityCouchbaseRepository;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.data.couchbase.city.ReactiveCityRepository;
@@ -31,7 +32,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.couchbase.repository.config.EnableReactiveCouchbaseRepositories;
+import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,7 +82,7 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityCouchbaseRepository.class))
-				.isNotNull();
+				.isEmpty();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -115,8 +116,8 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@TestAutoConfigurationPackage(CouchbaseReactiveRepositoriesAutoConfigurationTests.class)
-	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityCouchbaseRepository.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@EnableCouchbaseRepositories(basePackageClasses = CityCouchbaseRepository.class)
+	@Import(CouchbaseDataAutoConfigurationTests.CustomCouchbaseConfiguration.class)
 	protected static class CustomizedConfiguration {
 
 	}
