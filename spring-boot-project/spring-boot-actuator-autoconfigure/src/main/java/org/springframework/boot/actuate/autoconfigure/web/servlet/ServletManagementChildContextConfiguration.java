@@ -42,6 +42,7 @@ import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerF
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
@@ -78,13 +79,13 @@ class ServletManagementChildContextConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.ANCESTORS)
+	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN, search = SearchStrategy.ANCESTORS)
 	class ServletManagementContextSecurityConfiguration {
 
 		@Bean
 		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
-			return parent.getBean("springSecurityFilterChain", Filter.class);
+			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		}
 
 	}
