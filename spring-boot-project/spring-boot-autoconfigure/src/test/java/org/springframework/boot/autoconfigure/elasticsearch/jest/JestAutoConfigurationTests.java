@@ -34,11 +34,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchNodeTemplate;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +56,8 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
+@RunWith(ModifiedClassPathRunner.class)
+@ClassPathOverrides("org.apache.logging.log4j:log4j-core:2.10.0")
 public class JestAutoConfigurationTests {
 
 	@Before
