@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -181,7 +182,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				.applyTo(this.context);
 		this.context.refresh();
 		FilterChainProxy securityFilterChain = (FilterChainProxy) this.context
-				.getBean("springSecurityFilterChain");
+				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		SecurityFilterChain chain = securityFilterChain.getFilterChains().get(0);
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServletPath("/cloudfoundryapplication/my-path");

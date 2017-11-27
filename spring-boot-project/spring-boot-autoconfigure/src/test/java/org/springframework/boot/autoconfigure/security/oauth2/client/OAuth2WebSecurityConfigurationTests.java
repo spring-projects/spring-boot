@@ -30,6 +30,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
@@ -123,7 +124,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	@SuppressWarnings("unchecked")
 	private List<Filter> getAuthCodeFilters(AssertableApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
-				.getBean("springSecurityFilterChain");
+				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = (List<Filter>) ReflectionTestUtils
 				.getField(filterChains.get(0), "filters");
