@@ -58,7 +58,8 @@ public class TestPropertyValuesTests {
 				Type.SYSTEM_ENVIRONMENT);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
 		assertThat(this.environment.getPropertySources().contains(
-				"test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME));
+				"test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME))
+						.isTrue();
 	}
 
 	@Test
