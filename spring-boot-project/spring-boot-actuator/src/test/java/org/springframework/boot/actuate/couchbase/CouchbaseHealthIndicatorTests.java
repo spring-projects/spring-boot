@@ -56,12 +56,14 @@ public class CouchbaseHealthIndicatorTests {
 	@Test
 	public void couchbaseIsDown() {
 		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
-		given(couchbaseOperations.getCouchbaseClusterInfo()).willThrow(new NullPointerException());
+		given(couchbaseOperations.getCouchbaseClusterInfo()).willThrow(
+				new IllegalStateException("test, expected"));
 		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
 				couchbaseOperations);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error")).contains("null");
+		assertThat((String) health.getDetails().get("error")).contains("test, expected");
 		verify(couchbaseOperations).getCouchbaseClusterInfo();
 	}
+
 }
