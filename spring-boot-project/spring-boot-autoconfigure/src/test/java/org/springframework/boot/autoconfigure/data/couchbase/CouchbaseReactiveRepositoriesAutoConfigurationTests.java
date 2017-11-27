@@ -32,7 +32,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -116,7 +116,8 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@TestAutoConfigurationPackage(CouchbaseReactiveRepositoriesAutoConfigurationTests.class)
-	@EnableMongoRepositories(basePackageClasses = CityCouchbaseRepository.class)
+	@EnableCouchbaseRepositories(basePackageClasses = CityCouchbaseRepository.class)
+	@Import(CouchbaseDataAutoConfigurationTests.CustomCouchbaseConfiguration.class)
 	protected static class CustomizedConfiguration {
 
 	}
