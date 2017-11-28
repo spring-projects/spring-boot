@@ -75,7 +75,7 @@ public class Neo4jHealthIndicatorTests {
 		Map<String, Object> details = health.getDetails();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> results = (Map<String, Object>) details.get("results");
-		
+
 		int nodeCountFromDetails = (int) results.get("nodes");
 		Assert.assertEquals(nodeCount, nodeCountFromDetails);
 	}
