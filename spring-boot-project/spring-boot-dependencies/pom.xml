@@ -108,7 +108,7 @@
 		<kotlin.version>1.1.61</kotlin.version>
 		<lettuce.version>5.0.1.RELEASE</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
-		<log4j2.version>2.9.1</log4j2.version>
+		<log4j2.version>2.10.0</log4j2.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.18</lombok.version>
 		<mariadb.version>2.2.0</mariadb.version>
