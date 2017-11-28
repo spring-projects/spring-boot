@@ -61,7 +61,10 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		names.forEach((name) -> result
 				.add(new PropertyMapping(name, configurationPropertyName)));
 		if (isListShortcutPossible(configurationPropertyName)) {
-			result.addAll(mapListShortcut(propertySource, configurationPropertyName));
+			PropertyMapping propertyMapping = mapListShortcut(propertySource, configurationPropertyName);
+			if (propertyMapping != null) {
+				result.add(propertyMapping);
+			}
 		}
 		return result;
 	}
@@ -71,15 +74,14 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 				&& name.getNumberOfElements() >= 1);
 	}
 
-	private List<PropertyMapping> mapListShortcut(PropertySource<?> propertySource,
+	private PropertyMapping mapListShortcut(PropertySource<?> propertySource,
 			ConfigurationPropertyName name) {
 		String result = convertName(name, name.getNumberOfElements() - 1) + "__";
 		if (propertySource.containsProperty(result)) {
 			int index = Integer.parseInt(name.getLastElement(Form.UNIFORM));
-			return Collections.singletonList(
-					new PropertyMapping(result, name, new ElementExtractor(index)));
+			return new PropertyMapping(result, name, new ElementExtractor(index));
 		}
-		return Collections.emptyList();
+		return null;
 	}
 
 	@Override
@@ -129,7 +131,9 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	private String convertName(ConfigurationPropertyName name, int numberOfElements) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < numberOfElements; i++) {
-			result.append(result.length() == 0 ? "" : "_");
+			if (result.length() > 0) {
+				result.append("_");
+			}
 			result.append(name.getElement(i, Form.UNIFORM).toUpperCase());
 		}
 		return result.toString();
@@ -138,7 +142,9 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	private String convertLegacyName(ConfigurationPropertyName name) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < name.getNumberOfElements(); i++) {
-			result.append(result.length() == 0 ? "" : "_");
+			if (result.length() > 0) {
+				result.append("_");
+			}
 			result.append(convertLegacyNameElement(name.getElement(i, Form.ORIGINAL)));
 		}
 		return result.toString();
