@@ -38,21 +38,12 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  */
 public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 
-	/**
-	 * The Cypher statement used to verify Neo4j is up.
-	 */
-	static String CYPHER = "match (n) return count(n) as nodes";
-
 	private final SessionFactory sessionFactory;
 
 	/**
-	 * Create a new {@link Neo4jHealthIndicator} using the specified
-	 * {@link SessionFactory}.
-	 * @param sessionFactory the SessionFactory
+	 * The Cypher statement used to verify Neo4j is up.
 	 */
-	public Neo4jHealthIndicator(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
+	private final String cypher;
 
 	/**
 	 * Create a new {@link Neo4jHealthIndicator} using the specified
@@ -62,20 +53,20 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public Neo4jHealthIndicator(SessionFactory sessionFactory, String cypher) {
 		this.sessionFactory = sessionFactory;
-		CYPHER = cypher;
+		this.cypher = cypher;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
-		Result result = session.query(CYPHER, Collections.emptyMap());
+		Result result = session.query(this.cypher, Collections.emptyMap());
 		Map<String, Object> details = new HashMap<>();
 
 		for (Map<String, Object> queryResult : result.queryResults()) {
 			details.putAll(queryResult);
 		}
 
-		builder.up().withDetails(details);
+		builder.up().withDetail("results", details);
 	}
 
 }
