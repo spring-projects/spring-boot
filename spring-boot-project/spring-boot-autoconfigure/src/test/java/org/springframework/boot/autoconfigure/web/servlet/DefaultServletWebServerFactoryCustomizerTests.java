@@ -350,14 +350,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
-		embeddedFactory.start();
+		TomcatWebServer server = (TomcatWebServer) factory.getWebServer();
+		server.start();
 		try {
-			assertThat(((AbstractProtocol<?>) embeddedFactory.getTomcat().getConnector()
+			assertThat(((AbstractProtocol<?>) server.getTomcat().getConnector()
 					.getProtocolHandler()).getAcceptCount()).isEqualTo(10);
 		}
 		finally {
-			embeddedFactory.stop();
+			server.stop();
 		}
 	}
 
@@ -368,14 +368,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
-		embeddedFactory.start();
+		TomcatWebServer server = (TomcatWebServer) factory.getWebServer();
+		server.start();
 		try {
-			assertThat(((AbstractProtocol<?>) embeddedFactory.getTomcat().getConnector()
+			assertThat(((AbstractProtocol<?>) server.getTomcat().getConnector()
 					.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
 		}
 		finally {
-			embeddedFactory.stop();
+			server.stop();
 		}
 	}
 
@@ -386,14 +386,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
-		embeddedFactory.start();
+		TomcatWebServer server = (TomcatWebServer) factory.getWebServer();
+		server.start();
 		try {
-			assertThat(embeddedFactory.getTomcat().getConnector().getMaxPostSize())
+			assertThat(server.getTomcat().getConnector().getMaxPostSize())
 					.isEqualTo(10000);
 		}
 		finally {
-			embeddedFactory.stop();
+			server.stop();
 		}
 	}
 
@@ -404,14 +404,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
-		embeddedFactory.start();
+		TomcatWebServer server = (TomcatWebServer) factory.getWebServer();
+		server.start();
 		try {
-			assertThat(embeddedFactory.getTomcat().getConnector().getMaxPostSize())
+			assertThat(server.getTomcat().getConnector().getMaxPostSize())
 					.isEqualTo(-1);
 		}
 		finally {
-			embeddedFactory.stop();
+			server.stop();
 		}
 	}
 
@@ -611,15 +611,15 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
-		embeddedFactory.start();
+		TomcatWebServer server = (TomcatWebServer) factory.getWebServer();
+		server.start();
 		try {
-			Tomcat tomcat = embeddedFactory.getTomcat();
+			Tomcat tomcat = server.getTomcat();
 			Context context = (Context) tomcat.getHost().findChildren()[0];
 			assertThat(context.getResources().getCacheTtl()).isEqualTo(10000L);
 		}
 		finally {
-			embeddedFactory.stop();
+			server.stop();
 		}
 	}
 
