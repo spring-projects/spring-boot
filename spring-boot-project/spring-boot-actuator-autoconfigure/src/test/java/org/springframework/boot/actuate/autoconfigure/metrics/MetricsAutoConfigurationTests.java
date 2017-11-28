@@ -86,7 +86,7 @@ public class MetricsAutoConfigurationTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("custom.name.max.connections")
+					assertThat(registry.find("data.source.max.connections")
 							.tags("name", "dataSource").meter()).isNotPresent();
 				});
 	}
