@@ -156,10 +156,6 @@
 		<spring-security.version>5.0.0.RELEASE</spring-security.version>
 		<spring-session.version>2.0.0.RC2</spring-session.version>
 		<spring-session-data-mongodb.version>2.0.0.RC2</spring-session-data-mongodb.version>
-		<spring-social.version>2.0.0.M4</spring-social.version>
-		<spring-social-facebook.version>3.0.0.M3</spring-social-facebook.version>
-		<spring-social-linkedin.version>2.0.0.M3</spring-social-linkedin.version>
-		<spring-social-twitter.version>2.0.0.M4</spring-social-twitter.version>
 		<spring-ws.version>3.0.0.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.21.0</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
@@ -476,21 +472,6 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-security</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-social-facebook</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-social-linkedin</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-social-twitter</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
@@ -2701,46 +2682,6 @@
 				<groupId>org.springframework.session</groupId>
 				<artifactId>spring-session-jdbc</artifactId>
 				<version>${spring-session.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-config</artifactId>
-				<version>${spring-social.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-core</artifactId>
-				<version>${spring-social.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-security</artifactId>
-				<version>${spring-social.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-web</artifactId>
-				<version>${spring-social.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-facebook</artifactId>
-				<version>${spring-social-facebook.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-facebook-web</artifactId>
-				<version>${spring-social-facebook.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-linkedin</artifactId>
-				<version>${spring-social-linkedin.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-twitter</artifactId>
-				<version>${spring-social-twitter.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
