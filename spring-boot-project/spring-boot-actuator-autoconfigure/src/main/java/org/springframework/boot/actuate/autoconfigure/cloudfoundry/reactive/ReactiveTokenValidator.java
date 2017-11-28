@@ -74,14 +74,13 @@ class ReactiveTokenValidator {
 		return Mono.just(this.cachedTokenKeys)
 				.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
 				.switchIfEmpty(this.securityService.fetchTokenKeys()
-						.doOnSuccess(fetchedTokenKeys -> {
+						.doOnSuccess((fetchedTokenKeys) -> {
 							this.cachedTokenKeys.clear();
 							this.cachedTokenKeys.putAll(fetchedTokenKeys);
-						})
-						.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
-						.switchIfEmpty((Mono.error(
-								new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
-										"Key Id present in token header does not match")))))
+						}).filter((tokenKeys) -> tokenKeys.containsKey(keyId))
+						.switchIfEmpty((Mono.error(new CloudFoundryAuthorizationException(
+								Reason.INVALID_KEY_ID,
+								"Key Id present in token header does not match")))))
 				.filter((tokenKeys) -> hasValidSignature(token, tokenKeys.get(keyId)))
 				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
 						Reason.INVALID_SIGNATURE, "RSA Signature did not match content")))
