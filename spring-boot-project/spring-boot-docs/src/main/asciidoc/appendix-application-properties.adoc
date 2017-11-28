@@ -446,21 +446,6 @@ content into your application. Rather, pick only the properties that you need.
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.
 	spring.session.redis.namespace=spring:session # Namespace for keys used to store sessions.
 
-	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
-	spring.social.auto-connection-views=false # Whether to enable the connection status view for supported providers.
-
-	# SPRING SOCIAL FACEBOOK ({sc-spring-boot-autoconfigure}/social/FacebookAutoConfiguration.{sc-ext}[FacebookAutoConfiguration])
-	spring.social.facebook.app-id= # Your application's Facebook App ID.
-	spring.social.facebook.app-secret= # Your application's Facebook App Secret.
-
-	# SPRING SOCIAL LINKEDIN ({sc-spring-boot-autoconfigure}/social/LinkedInAutoConfiguration.{sc-ext}[LinkedInAutoConfiguration])
-	spring.social.linkedin.app-id= # Your application's LinkedIn App ID.
-	spring.social.linkedin.app-secret= # Your application's LinkedIn App Secret.
-
-	# SPRING SOCIAL TWITTER ({sc-spring-boot-autoconfigure}/social/TwitterAutoConfiguration.{sc-ext}[TwitterAutoConfiguration])
-	spring.social.twitter.app-id= # Your application's Twitter App ID.
-	spring.social.twitter.app-secret= # Your application's Twitter App Secret.
-
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.cache=true # Whether to enable template caching.
 	spring.thymeleaf.check-template=true # Whether to check that the template exists before rendering it.

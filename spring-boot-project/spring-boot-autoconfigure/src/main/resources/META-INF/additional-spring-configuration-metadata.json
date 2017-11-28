@@ -434,12 +434,6 @@
       "defaultValue": "on-save"
     },
     {
-      "name": "spring.social.auto-connection-views",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable the connection status view for supported providers.",
-      "defaultValue": false
-    },
-    {
       "name": "flyway.baseline-description",
       "type": "java.lang.String",
       "deprecation": {

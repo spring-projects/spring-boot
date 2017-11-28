@@ -102,10 +102,6 @@ org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoCon
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration,\
-org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration,\
-org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration,\
-org.springframework.boot.autoconfigure.social.LinkedInAutoConfiguration,\
-org.springframework.boot.autoconfigure.social.TwitterAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration,\
