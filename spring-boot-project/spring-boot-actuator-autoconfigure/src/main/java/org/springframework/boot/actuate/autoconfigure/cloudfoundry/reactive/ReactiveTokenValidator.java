@@ -23,6 +23,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +72,8 @@ class ReactiveTokenValidator {
 
 	private Mono<Void> validateKeyIdAndSignature(Token token) {
 		String keyId = token.getKeyId();
-		return Mono.just(this.cachedTokenKeys)
+		Map<String, String> localCachedTokenKeys = new HashMap<>(this.cachedTokenKeys);
+		return Mono.just(localCachedTokenKeys)
 				.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
 				.switchIfEmpty(this.securityService.fetchTokenKeys()
 						.doOnSuccess((fetchedTokenKeys) -> {
