@@ -171,9 +171,9 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * @see #refresh()
 	 */
 	public final void register(Class<?>... annotatedClasses) {
-		this.annotatedClasses = annotatedClasses;
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
+		this.annotatedClasses = annotatedClasses;
 	}
 
 	/**
@@ -184,8 +184,8 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * @see #refresh()
 	 */
 	public final void scan(String... basePackages) {
-		this.basePackages = basePackages;
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
+		this.basePackages = basePackages;
 	}
 
 	@Override
