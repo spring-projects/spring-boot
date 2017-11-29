@@ -820,11 +820,11 @@ settings show an example of doing so in `application.properties`:
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX Endpoints
 If you do not want to expose endpoints over JMX, you can set the
-`endpoints.default.jmx.enabled` property to `false`, as shown in the following example:
+`management.endpoints.jmx.enabled` property to `false`, as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	endpoints.default.jmx.enabled=false
+	management.endpoints.jmx.enabled=false
 ----
 
 
