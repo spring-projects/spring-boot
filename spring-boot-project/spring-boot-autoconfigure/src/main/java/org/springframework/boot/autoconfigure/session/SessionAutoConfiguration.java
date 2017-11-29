@@ -153,7 +153,7 @@ public class SessionAutoConfiguration {
 	 * Base class for beans used to validate that only one supported implementation is
 	 * available in the classpath when the store-type property is not set.
 	 */
-	static class AbstractSessionRepositoryImplementationValidator {
+	static abstract class AbstractSessionRepositoryImplementationValidator {
 
 		private final List<String> candidates;
 
@@ -233,7 +233,7 @@ public class SessionAutoConfiguration {
 	/**
 	 * Base class for validating that a (reactive) session repository bean exists.
 	 */
-	static class AbstractSessionRepositoryValidator {
+	static abstract class AbstractSessionRepositoryValidator {
 
 		private final SessionProperties sessionProperties;
 
@@ -276,7 +276,7 @@ public class SessionAutoConfiguration {
 	}
 
 	/**
-	 * Bean used to validate that a {@link SessionRepository} exists and provide a
+	 * Bean used to validate that a {@link ReactiveSessionRepository} exists and provide a
 	 * meaningful message if that's not the case.
 	 */
 	static class ReactiveSessionRepositoryValidator

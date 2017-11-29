@@ -1015,7 +1015,7 @@ following information:
 
 [[production-ready-metrics-jdbc]]
 === DataSource metrics
-Auto-configuration will enable the instrumentation of all available `DataSources` with a
+Auto-configuration will enable the instrumentation of all available ``DataSource``s with a
 metric named `data.source`. Data source instrumentation results in gauges representing
 the currently active, maximum allowed, and minimum allowed connections in the pool. Each
 of these gauges has a name which is prefixed by `data.source` by default. The prefix can

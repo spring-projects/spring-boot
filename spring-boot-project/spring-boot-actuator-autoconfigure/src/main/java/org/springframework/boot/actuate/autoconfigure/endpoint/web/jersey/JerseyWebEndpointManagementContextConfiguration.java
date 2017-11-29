@@ -41,7 +41,6 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.0.0
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)

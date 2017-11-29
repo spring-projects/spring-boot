@@ -122,8 +122,8 @@ public class AnnotationConfigServletWebServerApplicationContext
 
 	/**
 	 * Provide a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner}
-	 * , if any.
+	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner},
+	 * if any.
 	 * <p>
 	 * Default is
 	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.

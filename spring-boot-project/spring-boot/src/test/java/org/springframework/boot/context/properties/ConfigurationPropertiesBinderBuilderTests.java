@@ -101,12 +101,12 @@ public class ConfigurationPropertiesBinderBuilderTests {
 
 	@Test
 	public void detectDefaultValidator() {
-		this.applicationContext.registerSingleton("configurationPropertiesValidator",
+		this.applicationContext.registerSingleton(ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME,
 				LocalValidatorFactoryBean.class);
 		ConfigurationPropertiesBinder binder = this.builder
 				.withEnvironment(this.environment).build();
 		assertThat(ReflectionTestUtils.getField(binder, "validator")).isSameAs(
-				this.applicationContext.getBean("configurationPropertiesValidator"));
+				this.applicationContext.getBean(ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME));
 	}
 
 	@Test
