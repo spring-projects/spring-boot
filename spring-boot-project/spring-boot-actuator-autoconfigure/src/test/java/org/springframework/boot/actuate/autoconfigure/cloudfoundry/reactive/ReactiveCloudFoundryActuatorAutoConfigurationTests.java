@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +25,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryHealthWebEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthWebEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.reflect.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -219,6 +224,19 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		assertThat(endpoint.getOperations()).hasSize(1);
 		WebOperation operation = endpoint.getOperations().iterator().next();
 		assertThat(operation.getRequestPredicate().getPath()).isEqualTo("test");
+	}
+
+	@Test
+	public void healthEndpointInvokerShouldBeCloudFoundryWebExtension() throws Exception {
+		setupContextWithCloudEnabled();
+		this.context.register(HealthEndpointAutoConfiguration.class, HealthWebEndpointManagementContextConfiguration.class,
+				CloudFoundryHealthWebEndpointManagementContextConfiguration.class);
+		this.context.refresh();
+		Collection<EndpointInfo<WebOperation>> endpoints = getHandlerMapping().getEndpoints();
+		EndpointInfo endpointInfo = (EndpointInfo) (endpoints.toArray()[0]);
+		WebOperation webOperation = (WebOperation) endpointInfo.getOperations().toArray()[0];
+		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation.getInvoker();
+		assertThat(ReflectionTestUtils.getField(invoker, "target")).isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
 	}
 
 	private void setupContextWithCloudEnabled() {

@@ -18,11 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -72,9 +72,9 @@ public class CloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			RestTemplateBuilder restTemplateBuilder) {
-		WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
+		CloudFoundryWebAnnotationEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebAnnotationEndpointDiscoverer(
 				this.applicationContext, parameterMapper, endpointMediaTypes,
-				EndpointPathResolver.useEndpointId(), null, null);
+				EndpointPathResolver.useEndpointId(), null, null, CloudFoundryHealthEndpointWebExtension.class);
 		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				restTemplateBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebEndpointServletHandlerMapping(

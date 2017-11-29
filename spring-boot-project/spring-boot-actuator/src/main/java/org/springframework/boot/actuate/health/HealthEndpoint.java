@@ -53,4 +53,8 @@ public class HealthEndpoint {
 		return Health.status(health.getStatus()).build();
 	}
 
+	public HealthIndicator getHealthIndicator() {
+		return this.healthIndicator;
+	}
+
 }

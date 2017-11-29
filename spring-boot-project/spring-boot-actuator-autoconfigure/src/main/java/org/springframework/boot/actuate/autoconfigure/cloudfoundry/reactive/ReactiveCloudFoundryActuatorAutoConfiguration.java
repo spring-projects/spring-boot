@@ -21,10 +21,10 @@ import java.util.Collections;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
@@ -68,9 +68,9 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebFluxEndpointHandlerMapping(
 			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			WebClient.Builder webClientBuilder) {
-		WebAnnotationEndpointDiscoverer endpointDiscoverer = new WebAnnotationEndpointDiscoverer(
+		CloudFoundryWebAnnotationEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebAnnotationEndpointDiscoverer(
 				this.applicationContext, parameterMapper, endpointMediaTypes,
-				EndpointPathResolver.useEndpointId(), null, null);
+				EndpointPathResolver.useEndpointId(), null, null, CloudFoundryReactiveHealthEndpointWebExtension.class);
 		ReactiveCloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				webClientBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebFluxEndpointHandlerMapping(

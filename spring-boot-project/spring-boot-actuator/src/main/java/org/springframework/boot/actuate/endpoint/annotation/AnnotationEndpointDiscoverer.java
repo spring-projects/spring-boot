@@ -173,7 +173,7 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		return extensions;
 	}
 
-	private void addExtension(Map<Class<?>, DiscoveredEndpoint> endpoints,
+	protected void addExtension(Map<Class<?>, DiscoveredEndpoint> endpoints,
 			Map<Class<?>, DiscoveredExtension> extensions, String beanName) {
 		Class<?> extensionType = this.applicationContext.getType(beanName);
 		Class<?> endpointType = getEndpointType(extensionType);
@@ -199,7 +199,7 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		}
 	}
 
-	private Class<?> getEndpointType(Class<?> extensionType) {
+	protected Class<?> getEndpointType(Class<?> extensionType) {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(extensionType, EndpointExtension.class);
 		Class<?> endpointType = attributes.getClass("endpoint");

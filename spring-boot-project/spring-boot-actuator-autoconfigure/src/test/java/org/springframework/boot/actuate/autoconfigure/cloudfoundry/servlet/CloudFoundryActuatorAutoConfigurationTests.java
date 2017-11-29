@@ -24,14 +24,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryHealthWebEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthWebEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.reflect.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -239,6 +243,23 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		assertThat(operations).hasSize(1);
 		assertThat(operations.iterator().next().getRequestPredicate().getPath())
 				.isEqualTo("test");
+	}
+
+	@Test
+	public void healthEndpointInvokerShouldBeCloudFoundryWebExtension() throws Exception {
+		TestPropertyValues
+				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:http://my-cloud-controller.com")
+				.applyTo(this.context);
+		this.context.register(HealthEndpointAutoConfiguration.class, HealthWebEndpointManagementContextConfiguration.class,
+				CloudFoundryHealthWebEndpointManagementContextConfiguration.class);
+		this.context.refresh();
+		Collection<EndpointInfo<WebOperation>> endpoints = this.context.getBean("cloudFoundryWebEndpointServletHandlerMapping",
+				CloudFoundryWebEndpointServletHandlerMapping.class).getEndpoints();
+		EndpointInfo endpointInfo = (EndpointInfo) (endpoints.toArray()[0]);
+		WebOperation webOperation = (WebOperation) endpointInfo.getOperations().toArray()[0];
+		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation.getInvoker();
+		assertThat(ReflectionTestUtils.getField(invoker, "target")).isInstanceOf(CloudFoundryHealthEndpointWebExtension.class);
 	}
 
 	private CloudFoundryWebEndpointServletHandlerMapping getHandlerMapping() {
