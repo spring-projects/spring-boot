@@ -152,7 +152,7 @@ public abstract class AbstractTemplateViewResolverProperties
 	 * can be used in a non-web application.
 	 * @param viewResolver the resolver to apply the properties to.
 	 */
-	public void applyToViewResolver(Object viewResolver) {
+	public void applyToMvcViewResolver(Object viewResolver) {
 		Assert.isInstanceOf(AbstractTemplateViewResolver.class, viewResolver,
 				"ViewResolver is not an instance of AbstractTemplateViewResolver :"
 						+ viewResolver);

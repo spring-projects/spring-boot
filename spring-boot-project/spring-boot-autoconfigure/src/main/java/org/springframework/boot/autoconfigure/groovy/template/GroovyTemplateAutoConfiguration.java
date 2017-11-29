@@ -153,7 +153,7 @@ public class GroovyTemplateAutoConfiguration {
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
 		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
 			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
-			this.properties.applyToViewResolver(resolver);
+			this.properties.applyToMvcViewResolver(resolver);
 			return resolver;
 		}
 
