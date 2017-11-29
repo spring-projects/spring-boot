@@ -1,0 +1,49 @@
+= Spring Boot Gradle Plugin Reference Guide
+Andy Wilkinson
+:doctype: book
+:toc: left
+:toclevels: 4
+:source-highlighter: prettify
+:numbered:
+:icons: font
+:hide-uri-scheme:
+:dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
+:dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
+:gradle-userguide: http://www.gradle.org/docs/current/userguide
+:gradle-dsl: https://docs.gradle.org/current/dsl
+:application-plugin: {gradle-userguide}/application_plugin.html
+:groovy-plugin: {gradle-userguide}/groovy_plugin.html
+:java-plugin: {gradle-userguide}/java_plugin.html
+:war-plugin: {gradle-userguide}/war_plugin.html
+:maven-plugin: {gradle-userguide}/maven_plugin.html
+:maven-publish-plugin: {gradle-userguide}/maven_publish_plugin.html
+:software-component: {gradle-userguide}/software_model_extend.html
+:kotlin-plugin: https://kotlinlang.org/docs/reference/using-gradle.html
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/{version}
+:api-documentation: {spring-boot-docs}/gradle-plugin/api
+:spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
+:build-info-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html
+:boot-jar-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html
+:boot-war-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html
+:boot-run-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html
+:github-code: https://github.com/spring-projects/spring-boot/tree/{github-tag}
+
+
+
+[[introduction]]
+== Introduction
+
+The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle],
+allowing you to package executable jar or war archives, run Spring Boot applications, and
+use the dependency management provided by `spring-boot-dependencies`. Spring Boot's
+Gradle plugin requires Gradle 4.0 or later.
+
+In addition to this user guide, {api-documentation}[API documentation] is also available.
+
+include::getting-started.adoc[]
+include::managing-dependencies.adoc[]
+include::packaging.adoc[]
+include::publishing.adoc[]
+include::running.adoc[]
+include::integrating-with-actuator.adoc[]
+include::reacting.adoc[]

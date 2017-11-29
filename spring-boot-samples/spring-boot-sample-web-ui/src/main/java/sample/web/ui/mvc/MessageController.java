@@ -23,10 +23,11 @@ import sample.web.ui.MessageRepository;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -44,23 +45,23 @@ public class MessageController {
 		this.messageRepository = messageRepository;
 	}
 
-	@RequestMapping
+	@GetMapping
 	public ModelAndView list() {
 		Iterable<Message> messages = this.messageRepository.findAll();
 		return new ModelAndView("messages/list", "messages", messages);
 	}
 
-	@RequestMapping("{id}")
+	@GetMapping("{id}")
 	public ModelAndView view(@PathVariable("id") Message message) {
 		return new ModelAndView("messages/view", "message", message);
 	}
 
-	@RequestMapping(params = "form", method = RequestMethod.GET)
+	@GetMapping(params = "form")
 	public String createForm(@ModelAttribute Message message) {
 		return "messages/form";
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public ModelAndView create(@Valid Message message, BindingResult result,
 			RedirectAttributes redirect) {
 		if (result.hasErrors()) {
@@ -76,14 +77,14 @@ public class MessageController {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
-	@RequestMapping(value = "delete/{id}")
+	@GetMapping(value = "delete/{id}")
 	public ModelAndView delete(@PathVariable("id") Long id) {
 		this.messageRepository.deleteMessage(id);
 		Iterable<Message> messages = this.messageRepository.findAll();
 		return new ModelAndView("messages/list", "messages", messages);
 	}
 
-	@RequestMapping(value = "modify/{id}", method = RequestMethod.GET)
+	@GetMapping(value = "modify/{id}")
 	public ModelAndView modifyForm(@PathVariable("id") Message message) {
 		return new ModelAndView("messages/form", "message", message);
 	}

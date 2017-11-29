@@ -1,0 +1,113 @@
+ -----
+ Exclude a dependency
+ -----
+ Stephane Nicoll
+ -----
+ 2014-05-06
+ -----
+
+  By default, both the <<<repackage>>> and the <<<run>>> goals will include any <<<provided>>>
+  dependencies that are defined in the project. A Spring Boot project should consider
+  <<<provided>>> dependencies as <<container>> dependencies that are required to run
+  the application.
+
+  Some of these dependencies may not be required at all and should be excluded from the
+  executable jar. For consistency, they should not be present either when running the
+  application.
+
+  There are three ways one can exclude a dependency from being packaged/used at runtime
+
+    * Exclude a specific artifact identified by <<<groupId>>> and <<<artifactId>>>
+      (optionally with a <<<classifier>>> if needed)
+
+    * Exclude any artifact matching a given <<<artifactId>>>
+
+    * Exclude any artifact belonging to a given <<<groupId>>>
+
+    []
+
+  The following excludes <<<com.foo:bar>>> (and only that artifact)
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <excludes>
+            <exclude>
+              <groupId>com.foo</groupId>
+              <artifactId>bar</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  This example excludes any artifacts having the <<<my-lib>>> or <<<another-lib>>>
+  artifact identifiers
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <excludeArtifactIds>my-lib,another-lib</excludeArtifactIds>
+        </configuration>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  Finally this example excludes any artifact belonging to the <<<com.foo>>> group
+
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <excludeGroupIds>com.foo</excludeGroupIds>
+        </configuration>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+

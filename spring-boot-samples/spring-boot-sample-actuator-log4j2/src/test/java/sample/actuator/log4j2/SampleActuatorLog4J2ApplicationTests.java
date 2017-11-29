@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,45 +16,65 @@
 
 package sample.actuator.log4j2;
 
-import java.util.Map;
+import java.util.Base64;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Basic integration tests for service demo application.
+ * Tests for {@link SampleActuatorLog4J2Application}.
  *
  * @author Dave Syer
+ * @@author Stephane Nicoll
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleActuatorLog4J2Application.class)
-@WebIntegrationTest(randomPort = true)
-@DirtiesContext
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class SampleActuatorLog4J2ApplicationTests {
 
-	@LocalServerPort
-	private int port;
+	private static final Logger logger = LogManager
+			.getLogger(SampleActuatorLog4J2ApplicationTests.class);
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
+
+	@Autowired
+	private MockMvc mvc;
 
 	@Test
-	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + port, Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("message")).isEqualTo("Hello Daniel");
+	public void testLogger() {
+		logger.info("Hello World");
+		this.output.expect(containsString("Hello World"));
+	}
+
+	@Test
+	public void validateLoggersEndpoint() throws Exception {
+		this.mvc.perform(
+				get("/actuator/loggers/org.apache.coyote.http11.Http11NioProtocol")
+						.header("Authorization", "Basic " + getBasicAuth()))
+				.andExpect(status().isOk())
+				.andExpect(content().string(equalTo("{\"configuredLevel\":\"WARN\","
+						+ "\"effectiveLevel\":\"WARN\"}")));
+	}
+
+	private String getBasicAuth() {
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
 	}
 
 }

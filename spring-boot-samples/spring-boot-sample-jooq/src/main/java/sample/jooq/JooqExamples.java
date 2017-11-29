@@ -30,8 +30,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import static sample.jooq.domain.tables.Author.AUTHOR;
-import static sample.jooq.domain.tables.Book.BOOK;
+import static sample.jooq.domain.Author.AUTHOR;
+import static sample.jooq.domain.Book.BOOK;
 
 @Component
 public class JooqExamples implements CommandLineRunner {

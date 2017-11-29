@@ -1,0 +1,25 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+// tag::upload[]
+uploadBootArchives {
+	repositories {
+		mavenDeployer {
+			repository url: 'https://repo.example.com'
+		}
+	}
+}
+// end::upload[]
+
+task deployerRepository {
+	doLast {
+		println uploadBootArchives.repositories.mavenDeployer.repository.url
+	}
+}

@@ -1,0 +1,31 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+bootJar {
+	mainClassName = 'com.example.CustomMain'
+	duplicatesStrategy = "exclude"
+}
+
+configurations {
+	provided
+}
+
+sourceSets.all {
+	compileClasspath += configurations.provided
+	runtimeClasspath += configurations.provided
+}
+
+repositories {
+	maven { url "https://repo.spring.io/libs-snapshot" }
+}
+
+dependencies {
+	compile "org.apache.commons:commons-lang3:3.6"
+	provided "org.apache.commons:commons-lang3:3.6"
+}

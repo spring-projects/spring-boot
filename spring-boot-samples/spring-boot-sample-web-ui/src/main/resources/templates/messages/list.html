@@ -1,37 +1,38 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
-<head>
-<title>Messages : View all</title>
-</head>
-<body>
-	<h1 layout:fragment="header">Messages : View all</h1>
-	<div layout:fragment="content" class="container">
-		<div class="pull-right">
-			<a href="form.html" th:href="@{/(form)}">Create Message</a>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments :: head(title=~{::title/text()})">
+		<title>Messages : View all</title>
+	</head>
+	<body>
+		<div class="container">
+			<div th:replace="fragments :: navbar"></div>
+			<h1>Messages : View all</h1>
+			<div class="container">
+				<div class="pull-right">
+					<a href="form.html" th:href="@{/(form)}">Create Message</a>
+				</div>
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<td>ID</td>
+							<td>Created</td>
+							<td>Summary</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${messages.empty}">
+							<td colspan="3">No messages</td>
+						</tr>
+						<tr th:each="message : ${messages}">
+							<td th:text="${message.id}">1</td>
+							<td th:text="${#calendars.format(message.created)}">July 11,
+								2012 2:17:16 PM CDT</td>
+							<td><a href="view.html" th:href="@{'/' + ${message.id}}"
+								th:text="${message.summary}"> The summary </a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
-		<table class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<td>ID</td>
-					<td>Created</td>
-					<td>Summary</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:if="${messages.empty}">
-					<td colspan="3">No messages</td>
-				</tr>
-				<tr th:each="message : ${messages}">
-					<td th:text="${message.id}">1</td>
-					<td th:text="${#calendars.format(message.created)}">July 11,
-						2012 2:17:16 PM CDT</td>
-					<td><a href="view.html" th:href="@{'/' + ${message.id}}"
-						th:text="${message.summary}"> The summary </a></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-</body>
+	</body>
 </html>

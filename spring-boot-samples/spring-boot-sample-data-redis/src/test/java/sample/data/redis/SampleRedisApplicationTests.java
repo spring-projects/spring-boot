@@ -19,7 +19,7 @@ package sample.data.redis;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.data.redis.RedisConnectionFailureException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +39,7 @@ public class SampleRedisApplicationTests {
 		try {
 			SampleRedisApplication.main(new String[0]);
 		}
-		catch (IllegalStateException ex) {
+		catch (Exception ex) {
 			if (!redisServerRunning(ex)) {
 				return;
 			}

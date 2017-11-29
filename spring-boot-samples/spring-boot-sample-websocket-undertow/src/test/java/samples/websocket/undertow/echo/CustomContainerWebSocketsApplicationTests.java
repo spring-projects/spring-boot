@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import samples.websocket.undertow.SampleUndertowWebSocketsApplication;
@@ -33,41 +32,38 @@ import samples.websocket.undertow.echo.CustomContainerWebSocketsApplicationTests
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration({ SampleUndertowWebSocketsApplication.class,
-		CustomContainerConfiguration.class })
-@WebIntegrationTest
-@DirtiesContext
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = { SampleUndertowWebSocketsApplication.class,
+		CustomContainerConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CustomContainerWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory
 			.getLog(CustomContainerWebSocketsApplicationTests.class);
 
-	private static int PORT = SocketUtils.findAvailableTcpPort();
+	@LocalServerPort
+	private int port;
 
 	@Test
-	@Ignore("UNDERTOW-639")
 	public void echoEndpoint() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + PORT
+						.properties("websocket.uri:ws://localhost:" + this.port
 								+ "/ws/echo/websocket")
 						.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
@@ -83,8 +79,8 @@ public class CustomContainerWebSocketsApplicationTests {
 	public void reverseEndpoint() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-						.properties(
-								"websocket.uri:ws://localhost:" + PORT + "/ws/reverse")
+						.properties("websocket.uri:ws://localhost:" + this.port
+								+ "/ws/reverse")
 						.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
@@ -98,8 +94,8 @@ public class CustomContainerWebSocketsApplicationTests {
 	protected static class CustomContainerConfiguration {
 
 		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new UndertowEmbeddedServletContainerFactory("/ws", PORT);
+		public ServletWebServerFactory webServerFactory() {
+			return new UndertowServletWebServerFactory("/ws", 0);
 		}
 
 	}
@@ -112,7 +108,7 @@ public class CustomContainerWebSocketsApplicationTests {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		private final AtomicReference<String> messagePayload = new AtomicReference<String>();
+		private final AtomicReference<String> messagePayload = new AtomicReference<>();
 
 		@Override
 		public void run(String... args) throws Exception {
