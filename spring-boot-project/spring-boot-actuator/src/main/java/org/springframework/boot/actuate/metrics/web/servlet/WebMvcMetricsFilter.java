@@ -89,7 +89,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private void filterWithMetrics(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain, Object handler)
-					throws IOException, ServletException, NestedServletException {
+					throws IOException, ServletException {
 		this.webMvcMetrics.preHandle(request, handler);
 		try {
 			filterChain.doFilter(request, response);
