@@ -1302,6 +1302,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.metrics.export.prometheus.enabled= # Whether exporting of metrics to Prometheus is enabled.
 	spring.metrics.export.prometheus.step= # Step size (i.e. reporting frequency) to use.
 	spring.metrics.export.simple.enabled=false # Whether exporting of metrics to a simple in-memory store is enabled.
+	spring.metrics.export.simple.mode=cumulative # Counting mode.
 	spring.metrics.export.simple.step=10 # Step size (i.e. reporting frequency) to use.
 	spring.metrics.export.statsd.enabled= # Export metrics to StatsD.
 	spring.metrics.export.statsd.flavor= # StatsD line protocol to use.
