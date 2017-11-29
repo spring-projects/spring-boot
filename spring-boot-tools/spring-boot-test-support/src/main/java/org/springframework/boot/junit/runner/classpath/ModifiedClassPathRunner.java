@@ -171,7 +171,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 				repositorySystem.newLocalRepositoryManager(session, localRepository));
 		CollectRequest collectRequest = new CollectRequest(null,
 				Arrays.asList(new RemoteRepository.Builder("central", "default",
-						"http://central.maven.org/maven2").build()));
+						"https://repo.maven.apache.org/maven2").build()));
 
 		collectRequest.setDependencies(createDependencies(coordinates));
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
