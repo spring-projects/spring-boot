@@ -53,8 +53,8 @@ public @interface ConditionalOnSingleCandidate {
 	 * specified is contained in the {@link ApplicationContext} and a primary candidate
 	 * exists in case of multiple instances.
 	 * <p>
-	 * This attribute may <strong>not</strong> be used in conjunction with {@link #type()}
-	 * , but it may be used instead of {@link #type()}.
+	 * This attribute may <strong>not</strong> be used in conjunction with
+	 * {@link #type()}, but it may be used instead of {@link #type()}.
 	 * @return the class type of the bean to check
 	 */
 	Class<?> value() default Object.class;
