@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.http.codec;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -37,6 +39,7 @@ import org.springframework.util.MimeType;
  * {@link org.springframework.core.codec.Decoder Decoders}.
  *
  * @author Brian Clozel
+ * @author Greg Turnquist
  * @since 2.0.0
  */
 @Configuration
@@ -52,13 +55,15 @@ public class CodecsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ObjectMapper.class)
-		public CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
+		public CodecCustomizer jacksonCodecCustomizer(final List<ObjectMapper> objectMappers) {
 			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
-				defaults.jackson2JsonDecoder(
+				objectMappers.forEach(objectMapper -> {
+					defaults.jackson2JsonDecoder(
 						new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
-				defaults.jackson2JsonEncoder(
+					defaults.jackson2JsonEncoder(
 						new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
+				});
 			};
 		}
 
