@@ -32,9 +32,15 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
+/**
+ * Configuration for FreeMarker when used in a servlet web context.
+ *
+ * @author Brian Clozel
+ * @author Andy Wilkinson
+ */
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass({Servlet.class, FreeMarkerConfigurer.class})
+@ConditionalOnClass({ Servlet.class, FreeMarkerConfigurer.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration {
 

@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 /**
- * Tests for {@link FreeMarkerAutoConfiguration}
+ * Tests for {@link FreeMarkerAutoConfiguration}.
  *
  * @author Andy Wilkinson
  * @author Kazuki Shimizu

@@ -44,7 +44,6 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
 
-
 	@After
 	public void close() {
 		if (this.context != null) {
@@ -58,7 +57,8 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class)).isNotNull();
 		assertThat(this.context.getBean(FreeMarkerConfig.class)).isNotNull();
-		assertThat(this.context.getBean(freemarker.template.Configuration.class)).isNotNull();
+		assertThat(this.context.getBean(freemarker.template.Configuration.class))
+				.isNotNull();
 	}
 
 	@Test
@@ -67,7 +67,8 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		MockServerWebExchange exchange = render("home");
 		String result = exchange.getResponse().getBodyAsString().block();
 		assertThat(result).contains("home");
-		assertThat(exchange.getResponse().getHeaders().getContentType()).isEqualTo(MediaType.TEXT_HTML);
+		assertThat(exchange.getResponse().getHeaders().getContentType())
+				.isEqualTo(MediaType.TEXT_HTML);
 	}
 
 	@Test
@@ -132,4 +133,5 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		view.flatMap(v -> v.render(null, MediaType.TEXT_HTML, exchange)).block();
 		return exchange;
 	}
+
 }

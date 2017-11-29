@@ -26,16 +26,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
-import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for FreeMarker.
@@ -46,10 +42,11 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({freemarker.template.Configuration.class,
-		FreeMarkerConfigurationFactory.class})
+@ConditionalOnClass({ freemarker.template.Configuration.class,
+		FreeMarkerConfigurationFactory.class })
 @EnableConfigurationProperties(FreeMarkerProperties.class)
-@Import({FreeMarkerServletWebConfiguration.class, FreeMarkerReactiveWebConfiguration.class})
+@Import({ FreeMarkerServletWebConfiguration.class,
+		FreeMarkerReactiveWebConfiguration.class, FreeMarkerNonWebConfiguration.class })
 public class FreeMarkerAutoConfiguration {
 
 	private static final Log logger = LogFactory
@@ -85,24 +82,6 @@ public class FreeMarkerAutoConfiguration {
 						+ "spring.freemarker.checkTemplateLocation=false)");
 			}
 		}
-	}
-
-	@Configuration
-	@ConditionalOnNotWebApplication
-	public static class FreeMarkerNonWebConfiguration extends AbstractFreeMarkerConfiguration {
-
-		public FreeMarkerNonWebConfiguration(FreeMarkerProperties properties) {
-			super(properties);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public FreeMarkerConfigurationFactoryBean freeMarkerConfiguration() {
-			FreeMarkerConfigurationFactoryBean freeMarkerFactoryBean = new FreeMarkerConfigurationFactoryBean();
-			applyProperties(freeMarkerFactoryBean);
-			return freeMarkerFactoryBean;
-		}
-
 	}
 
 }

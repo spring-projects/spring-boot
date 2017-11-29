@@ -69,7 +69,8 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class)).isNotNull();
 		assertThat(this.context.getBean(FreeMarkerConfig.class)).isNotNull();
-		assertThat(this.context.getBean(freemarker.template.Configuration.class)).isNotNull();
+		assertThat(this.context.getBean(freemarker.template.Configuration.class))
+				.isNotNull();
 	}
 
 	@Test

@@ -462,9 +462,12 @@ public class ResourceProperties {
 				org.springframework.http.CacheControl cacheControl = createCacheControl();
 				callIfTrue(this.mustRevalidate, cacheControl,
 						org.springframework.http.CacheControl::mustRevalidate);
-				callIfTrue(this.noTransform, cacheControl, org.springframework.http.CacheControl::noTransform);
-				callIfTrue(this.cachePublic, cacheControl, org.springframework.http.CacheControl::cachePublic);
-				callIfTrue(this.cachePrivate, cacheControl, org.springframework.http.CacheControl::cachePrivate);
+				callIfTrue(this.noTransform, cacheControl,
+						org.springframework.http.CacheControl::noTransform);
+				callIfTrue(this.cachePublic, cacheControl,
+						org.springframework.http.CacheControl::cachePublic);
+				callIfTrue(this.cachePrivate, cacheControl,
+						org.springframework.http.CacheControl::cachePrivate);
 				callIfTrue(this.proxyRevalidate, cacheControl,
 						org.springframework.http.CacheControl::proxyRevalidate);
 				if (this.staleWhileRevalidate != null) {
@@ -489,8 +492,8 @@ public class ResourceProperties {
 					return org.springframework.http.CacheControl.noCache();
 				}
 				if (this.maxAge != null) {
-					return org.springframework.http.CacheControl.maxAge(this.maxAge.getSeconds(),
-							TimeUnit.SECONDS);
+					return org.springframework.http.CacheControl
+							.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
 				}
 				return org.springframework.http.CacheControl.empty();
 			}

@@ -20,6 +20,11 @@ import java.util.Properties;
 
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 
+/**
+ * Base class for shared FreeMarker configuration.
+ *
+ * @author Brian Clozel
+ */
 class AbstractFreeMarkerConfiguration {
 
 	private final FreeMarkerProperties properties;
@@ -28,7 +33,7 @@ class AbstractFreeMarkerConfiguration {
 		this.properties = properties;
 	}
 
-	protected FreeMarkerProperties getProperties() {
+	protected final FreeMarkerProperties getProperties() {
 		return this.properties;
 	}
 
@@ -40,4 +45,5 @@ class AbstractFreeMarkerConfiguration {
 		settings.putAll(this.properties.getSettings());
 		factory.setFreemarkerSettings(settings);
 	}
+
 }

@@ -27,6 +27,12 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 
+/**
+ * Configuration for FreeMarker when used in a reactive web context.
+ *
+ * @author Brian Clozel
+ * @author Andy Wilkinson
+ */
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @AutoConfigureAfter(WebFluxAutoConfiguration.class)

@@ -220,17 +220,15 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable throwable) {
-		if (!exchange.getResponse().isCommitted()) {
-			this.errorAttributes.storeErrorInformation(throwable, exchange);
-			ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
-			return getRoutingFunction(this.errorAttributes).route(request)
-					.switchIfEmpty(Mono.error(throwable))
-					.flatMap((handler) -> handler.handle(request))
-					.flatMap((response) -> write(exchange, response));
-		}
-		else {
+		if (exchange.getResponse().isCommitted()) {
 			return Mono.error(throwable);
 		}
+		this.errorAttributes.storeErrorInformation(throwable, exchange);
+		ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
+		return getRoutingFunction(this.errorAttributes).route(request)
+				.switchIfEmpty(Mono.error(throwable))
+				.flatMap((handler) -> handler.handle(request))
+				.flatMap((response) -> write(exchange, response));
 	}
 
 	private Mono<? extends Void> write(ServerWebExchange exchange,

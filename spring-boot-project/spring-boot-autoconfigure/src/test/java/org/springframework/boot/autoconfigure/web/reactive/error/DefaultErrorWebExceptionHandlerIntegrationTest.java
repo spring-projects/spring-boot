@@ -192,11 +192,12 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 	@Test
 	public void responseCommitted() throws Exception {
 		load();
-		this.webTestClient.get().uri("/commit").exchange()
-				.expectStatus().isEqualTo(HttpStatus.OK)
-				.expectBody().isEmpty();
-		this.output.expect(not(containsString("java.lang.UnsupportedOperationException")));
-		this.output.expect(containsString("java.lang.IllegalStateException: already committed!"));
+		this.webTestClient.get().uri("/commit").exchange().expectStatus()
+				.isEqualTo(HttpStatus.OK).expectBody().isEmpty();
+		this.output
+				.expect(not(containsString("java.lang.UnsupportedOperationException")));
+		this.output.expect(
+				containsString("java.lang.IllegalStateException: already committed!"));
 	}
 
 	private void load(String... arguments) {
@@ -248,9 +249,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 
 			@GetMapping("/commit")
 			public Mono<Void> commit(ServerWebExchange exchange) {
-				return exchange
-						.getResponse().writeWith(Mono.empty())
-						.then(Mono.error(new IllegalStateException("already committed!")));
+				return exchange.getResponse().writeWith(Mono.empty()).then(
+						Mono.error(new IllegalStateException("already committed!")));
 			}
 
 			@PostMapping(path = "/bind", produces = "application/json")
