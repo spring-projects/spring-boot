@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
  */
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
 
-	private List<NettyServerCustomizer> nettyServerCustomizers = new ArrayList<>();
+	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
 
 	public NettyReactiveWebServerFactory() {
 	}
@@ -62,29 +62,29 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * applied to the Netty server builder.
 	 * @return the customizers that will be applied
 	 */
-	public Collection<NettyServerCustomizer> getNettyServerCustomizers() {
-		return this.nettyServerCustomizers;
+	public Collection<NettyServerCustomizer> getServerCustomizers() {
+		return this.serverCustomizers;
 	}
 
 	/**
 	 * Set {@link NettyServerCustomizer}s that should be applied to the Netty server
 	 * builder. Calling this method will replace any existing customizers.
-	 * @param nettyServerCustomizers the customizers to set
+	 * @param serverCustomizers the customizers to set
 	 */
-	public void setNettyServerCustomizers(
-			Collection<? extends NettyServerCustomizer> nettyServerCustomizers) {
-		Assert.notNull(nettyServerCustomizers, "NettyServerCustomizers must not be null");
-		this.nettyServerCustomizers = new ArrayList<>(nettyServerCustomizers);
+	public void setServerCustomizers(
+			Collection<? extends NettyServerCustomizer> serverCustomizers) {
+		Assert.notNull(serverCustomizers, "NettyServerCustomizers must not be null");
+		this.serverCustomizers = new ArrayList<>(serverCustomizers);
 	}
 
 	/**
 	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
 	 * @param nettyServerCustomizer the customizers to add
 	 */
-	public void addContextCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
+	public void addServerCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
 		Assert.notNull(nettyServerCustomizer,
 				"NettyWebServerCustomizer must not be null");
-		this.nettyServerCustomizers.addAll(Arrays.asList(nettyServerCustomizer));
+		this.serverCustomizers.addAll(Arrays.asList(nettyServerCustomizer));
 	}
 
 	private HttpServer createHttpServer() {
@@ -107,7 +107,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private void applyCustomizers(Builder options) {
-		this.nettyServerCustomizers
+		this.serverCustomizers
 				.forEach((customizer) -> customizer.customize(options));
 	}
 

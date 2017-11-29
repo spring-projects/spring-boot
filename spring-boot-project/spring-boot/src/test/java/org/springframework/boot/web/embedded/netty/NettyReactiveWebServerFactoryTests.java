@@ -64,7 +64,7 @@ public class NettyReactiveWebServerFactoryTests
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(NettyServerCustomizer.class);
 		}
-		factory.setNettyServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		this.webServer = factory.getWebServer(new EchoHandler());
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (NettyServerCustomizer customizer : customizers) {
