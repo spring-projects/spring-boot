@@ -106,7 +106,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.datasource.initialization-mode:never",
-						"spring.data.mongodb.repositories.enabled:false")
+						"spring.data.mongodb.repositories.type:none")
 				.applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();

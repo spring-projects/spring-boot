@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CouchbaseReactiveAndBlockingRepositoriesAutoConfigurationTests {
+public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -55,12 +55,12 @@ public class CouchbaseReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateInstancesForReactiveAndBlockingRepositories()
+	public void shouldCreateInstancesForReactiveAndImperativeRepositories()
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never")
 				.applyTo(this.context);
-		this.context.register(BlockingAndReactiveConfiguration.class,
+		this.context.register(ImperativeAndReactiveConfiguration.class,
 				BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -71,7 +71,7 @@ public class CouchbaseReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(CouchbaseAutoConfigurationTests.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityRepository.class)
 	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityRepository.class)
-	protected static class BlockingAndReactiveConfiguration {
+	protected static class ImperativeAndReactiveConfiguration {
 
 	}
 

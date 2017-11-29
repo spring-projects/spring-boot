@@ -20,10 +20,9 @@ import java.util.Set;
 
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
@@ -31,7 +30,7 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.city.CityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -47,58 +46,62 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MongoRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		this.context.close();
-	}
+	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
+					MongoDataAutoConfiguration.class,
+					MongoRepositoriesAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
-		prepareApplicationContext(TestConfiguration.class);
-
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo).isInstanceOf(MongoClient.class);
-		MongoMappingContext mappingContext = this.context
-				.getBean(MongoMappingContext.class);
-		@SuppressWarnings("unchecked")
-		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
-		assertThat(entities).hasSize(1);
+		this.runner.withUserConfiguration(TestConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(CityRepository.class);
+			Mongo mongo = context.getBean(Mongo.class);
+			assertThat(mongo).isInstanceOf(MongoClient.class);
+			MongoMappingContext mappingContext = context
+					.getBean(MongoMappingContext.class);
+			@SuppressWarnings("unchecked")
+			Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
+					.getField(mappingContext, "initialEntitySet");
+			assertThat(entities).hasSize(1);
+		});
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
-		prepareApplicationContext(EmptyConfiguration.class);
-
-		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo).isInstanceOf(MongoClient.class);
+		this.runner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Mongo.class);
+			assertThat(context.getBean(Mongo.class)).isInstanceOf(MongoClient.class);
+		});
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		prepareApplicationContext(CustomizedConfiguration.class);
-
-		assertThat(this.context.getBean(CityMongoDbRepository.class)).isNotNull();
+		this.runner.withUserConfiguration(CustomizedConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(CityMongoDbRepository.class));
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
-		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-
-		this.context.getBean(CityRepository.class);
+		this.runner.withUserConfiguration(SortOfInvalidCustomConfiguration.class).run(
+				(context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
-	private void prepareApplicationContext(Class<?>... configurationClasses) {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(configurationClasses);
-		this.context.register(MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
-				MongoRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	@Test
+	public void enablingReactiveRepositoriesDisablesImperativeRepositories() {
+		this.runner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.data.mongodb.repositories.type=reactive")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(CityRepository.class));
+	}
+
+	@Test
+	public void enablingNoRepositoriesDisablesReactiveRepositories() {
+		this.runner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.data.mongodb.repositories.type=none")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(CityRepository.class));
 	}
 
 	@Configuration

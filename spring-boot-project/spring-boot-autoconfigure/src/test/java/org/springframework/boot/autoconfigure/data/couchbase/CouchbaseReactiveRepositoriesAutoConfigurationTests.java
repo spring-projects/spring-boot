@@ -65,10 +65,15 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableReactiveRepository() {
+	public void imperativeRepositories() {
 		load(DefaultConfiguration.class,
-				"spring.data.couchbase.reactiverepositories.enabled=false",
-				"spring.data.couchbase.repositories.enabled=false");
+				"spring.data.couchbase.repositories.type=imperative");
+		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
+	}
+
+	@Test
+	public void disabledRepositories() {
+		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 

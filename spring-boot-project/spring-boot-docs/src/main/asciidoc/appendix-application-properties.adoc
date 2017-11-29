@@ -576,10 +576,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.pool.idle-timeout=120 # Idle timeout before an idle connection is removed. If a duration suffix is not specified, seconds will be used.
 	spring.data.cassandra.pool.max-queue-size=256 # Maximum number of requests that get queued if no connection is available.
 	spring.data.cassandra.pool.pool-timeout=5000ms # Pool timeout when trying to acquire a connection from a host's pool.
-	spring.data.cassandra.reactiverepositories.enabled=true # Whether to enable Cassandra reactive repositories.
 	spring.data.cassandra.read-timeout= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
-	spring.data.cassandra.repositories.enabled= # Enable Cassandra repositories.
+	spring.data.cassandra.repositories.type=auto # Type of Cassandra repositories to enable.
 	spring.data.cassandra.retry-policy= # Class name of the retry policy.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
 	spring.data.cassandra.schema-action=none # Schema action to take at startup.
@@ -589,8 +588,7 @@ content into your application. Rather, pick only the properties that you need.
 	# DATA COUCHBASE ({sc-spring-boot-autoconfigure}/data/couchbase/CouchbaseDataProperties.{sc-ext}[CouchbaseDataProperties])
 	spring.data.couchbase.auto-index=false # Automatically create views and indexes.
 	spring.data.couchbase.consistency=read-your-own-writes # Consistency to apply by default on generated queries.
-	spring.data.couchbase.reactiverepositories.enabled=true # Enable Couchbase reactive repositories.
-	spring.data.couchbase.repositories.enabled=true # Enable Couchbase repositories.
+	spring.data.couchbase.repositories.type=auto # Type of Couchbase repositories to enable.
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/data/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.
@@ -609,8 +607,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.mongodb.host=localhost # Mongo server host. Cannot be set with URI.
 	spring.data.mongodb.password= # Login password of the mongo server. Cannot be set with URI.
 	spring.data.mongodb.port=27017 # Mongo server port. Cannot be set with URI.
-	spring.data.mongodb.reactiverepositories.enabled=true # Whether to enable Mongo reactive repositories.
-	spring.data.mongodb.repositories.enabled=true # Whether to enable Mongo repositories.
+	spring.data.mongodb.repositories.type=true # Type of Mongo repositories to enable.
 	spring.data.mongodb.uri=mongodb://localhost/test # Mongo database URI. Cannot be set with host, port and credentials.
 	spring.data.mongodb.username= # Login user of the mongo server. Cannot be set with URI.
 

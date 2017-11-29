@@ -95,32 +95,40 @@
       "defaultValue": "none"
     },
     {
-      "name": "spring.data.cassandra.reactiverepositories.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Cassandra reactive repositories.",
-      "defaultValue": true
+      "name": "spring.data.cassandra.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Cassandra repositories to enable.",
+      "defaultValue": "auto"
     },
     {
       "name": "spring.data.cassandra.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Cassandra repositories.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.cassandra.repositories.type",
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.couchbase.consistency",
       "defaultValue": "read-your-own-writes"
     },
     {
-      "name": "spring.data.couchbase.reactiverepositories.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Couchbase reactive repositories.",
-      "defaultValue": true
+      "name": "spring.data.couchbase.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Couchbase repositories to enable.",
+      "defaultValue": "auto"
     },
     {
       "name": "spring.data.couchbase.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Couchbase repositories.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.couchbase.repositories.type",
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.elasticsearch.repositories.enabled",
@@ -141,16 +149,20 @@
       "defaultValue": true
     },
     {
-      "name": "spring.data.mongodb.reactiverepositories.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Mongo reactive repositories.",
-      "defaultValue": true
+      "name": "spring.data.mongodb.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Mongo repositories to enable.",
+      "defaultValue": "auto"
     },
     {
       "name": "spring.data.mongodb.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Mongo repositories.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.mongodb.repositories.type",
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.neo4j.open-in-view",
