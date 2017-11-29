@@ -555,7 +555,8 @@ public class PropertiesLauncher extends Launcher {
 		if (path.startsWith("./")) {
 			path = path.substring(2);
 		}
-		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
+		String lowerCasePath = path.toLowerCase();
+		if (lowerCasePath.endsWith(".jar") || lowerCasePath.endsWith(".zip")) {
 			return path;
 		}
 		if (path.endsWith("/*")) {

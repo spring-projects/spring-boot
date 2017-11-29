@@ -73,18 +73,17 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void setServerCustomizers(
 			Collection<? extends NettyServerCustomizer> serverCustomizers) {
-		Assert.notNull(serverCustomizers, "NettyServerCustomizers must not be null");
+		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
 		this.serverCustomizers = new ArrayList<>(serverCustomizers);
 	}
 
 	/**
 	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
-	 * @param nettyServerCustomizer the customizers to add
+	 * @param serverCustomizer the customizers to add
 	 */
-	public void addServerCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
-		Assert.notNull(nettyServerCustomizer,
-				"NettyWebServerCustomizer must not be null");
-		this.serverCustomizers.addAll(Arrays.asList(nettyServerCustomizer));
+	public void addServerCustomizers(NettyServerCustomizer... serverCustomizer) {
+		Assert.notNull(serverCustomizer, "ServerCustomizer must not be null");
+		this.serverCustomizers.addAll(Arrays.asList(serverCustomizer));
 	}
 
 	private HttpServer createHttpServer() {
