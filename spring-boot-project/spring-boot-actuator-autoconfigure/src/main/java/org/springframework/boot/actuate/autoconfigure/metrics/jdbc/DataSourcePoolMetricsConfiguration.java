@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * Configure metrics for all available {@link DataSource datasources}.
@@ -80,7 +81,7 @@ public class DataSourcePoolMetricsConfiguration {
 	 */
 	private String getDataSourceName(String beanName) {
 		if (beanName.length() > DATASOURCE_SUFFIX.length()
-				&& beanName.toLowerCase().endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
+				&& StringUtils.endsWithIgnoreCase(beanName, DATASOURCE_SUFFIX)) {
 			return beanName.substring(0, beanName.length() - DATASOURCE_SUFFIX.length());
 		}
 		return beanName;

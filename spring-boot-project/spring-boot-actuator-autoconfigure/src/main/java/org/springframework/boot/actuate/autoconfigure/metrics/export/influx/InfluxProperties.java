@@ -32,7 +32,7 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	/**
 	 * Tag that will be mapped to "host" when shipping metrics to Influx. Can be
-	 * omitted of host should be omitted on publishing.
+	 * omitted if host should be omitted on publishing.
 	 */
 	private String db;
 

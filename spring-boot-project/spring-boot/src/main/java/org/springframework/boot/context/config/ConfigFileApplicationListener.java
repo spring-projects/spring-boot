@@ -422,8 +422,8 @@ public class ConfigFileApplicationListener
 		}
 
 		private boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
-			return Arrays.stream(loader.getFileExtensions()).map(String::toLowerCase)
-					.anyMatch(name.toLowerCase()::endsWith);
+			return Arrays.stream(loader.getFileExtensions()).anyMatch(
+					fileExtension -> StringUtils.endsWithIgnoreCase(name, fileExtension));
 		}
 
 		private void loadForFileExtension(PropertySourceLoader loader, Profile profile,

@@ -42,13 +42,14 @@ public final class Layouts {
 		if (file == null) {
 			throw new IllegalArgumentException("File must not be null");
 		}
-		if (file.getName().toLowerCase().endsWith(".jar")) {
+		String lowerCaseFileName = file.getName().toLowerCase();
+		if (lowerCaseFileName.endsWith(".jar")) {
 			return new Jar();
 		}
-		if (file.getName().toLowerCase().endsWith(".war")) {
+		if (lowerCaseFileName.endsWith(".war")) {
 			return new War();
 		}
-		if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
+		if (file.isDirectory() || lowerCaseFileName.endsWith(".zip")) {
 			return new Expanded();
 		}
 		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
