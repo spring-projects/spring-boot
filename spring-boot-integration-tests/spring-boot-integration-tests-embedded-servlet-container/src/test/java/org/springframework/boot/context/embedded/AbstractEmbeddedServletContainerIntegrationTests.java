@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.plexus.util.StringUtils;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
@@ -73,7 +73,7 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 					AbstractApplicationLauncher launcher = launcherClass
 							.getDeclaredConstructor(ApplicationBuilder.class)
 							.newInstance(applicationBuilder);
-					String name = StringUtils.capitalise(container) + " " + version + ": "
+					String name = StringUtils.capitalize(container) + " " + version + ": "
 							+ launcher.getDescription(packaging);
 					parameters.add(new Object[] { name, launcher });
 				}
