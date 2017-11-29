@@ -283,7 +283,7 @@ public class ResourceProperties {
 		 * Cache control HTTP headers, only allows valid directive combinations. Overrides
 		 * the 'spring.resources.cache.period' property.
 		 */
-		private final CacheControl cacheControl = new CacheControl();
+		private final Cachecontrol cachecontrol = new Cachecontrol();
 
 		public Duration getPeriod() {
 			return this.period;
@@ -293,14 +293,14 @@ public class ResourceProperties {
 			this.period = period;
 		}
 
-		public CacheControl getCacheControl() {
-			return this.cacheControl;
+		public Cachecontrol getCachecontrol() {
+			return this.cachecontrol;
 		}
 
 		/**
 		 * Cache Control HTTP header configuration.
 		 */
-		public static class CacheControl {
+		public static class Cachecontrol {
 
 			/**
 			 * Maximum time the response should be cached, in seconds if no duration

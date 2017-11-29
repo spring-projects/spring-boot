@@ -307,7 +307,7 @@ public class WebMvcAutoConfiguration {
 				return;
 			}
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
-			CacheControl cacheControl = this.resourceProperties.getCache().getCacheControl()
+			CacheControl cacheControl = this.resourceProperties.getCache().getCachecontrol()
 					.toHttpCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				customizeResourceHandlerRegistration(

@@ -73,14 +73,14 @@ public class ResourcePropertiesTests {
 
 	@Test
 	public void emptyCacheControl() {
-		org.springframework.http.CacheControl cacheControl = this.properties.getCache().getCacheControl()
+		org.springframework.http.CacheControl cacheControl = this.properties.getCache().getCachecontrol()
 				.toHttpCacheControl();
 		assertThat(cacheControl.getHeaderValue()).isNull();
 	}
 
 	@Test
 	public void cacheControlAllPropertiesSet() {
-		Cache.CacheControl properties = this.properties.getCache().getCacheControl();
+		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setCachePrivate(true);
 		properties.setCachePublic(true);
@@ -98,7 +98,7 @@ public class ResourcePropertiesTests {
 
 	@Test
 	public void invalidCacheControlCombination() {
-		Cache.CacheControl properties = this.properties.getCache().getCacheControl();
+		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setNoStore(true);
 		org.springframework.http.CacheControl cacheControl = properties.toHttpCacheControl();
