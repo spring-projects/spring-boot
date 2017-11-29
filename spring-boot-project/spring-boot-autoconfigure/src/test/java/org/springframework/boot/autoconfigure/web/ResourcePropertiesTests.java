@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Cache;
 import org.springframework.boot.testsupport.assertj.Matched;
-import org.springframework.http.CacheControl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -74,14 +73,14 @@ public class ResourcePropertiesTests {
 
 	@Test
 	public void emptyCacheControl() {
-		CacheControl cacheControl = this.properties.getCache().getControl()
+		org.springframework.http.CacheControl cacheControl = this.properties.getCache().getCacheControl()
 				.toHttpCacheControl();
 		assertThat(cacheControl.getHeaderValue()).isNull();
 	}
 
 	@Test
 	public void cacheControlAllPropertiesSet() {
-		Cache.Control properties = this.properties.getCache().getControl();
+		Cache.CacheControl properties = this.properties.getCache().getCacheControl();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setCachePrivate(true);
 		properties.setCachePublic(true);
@@ -91,7 +90,7 @@ public class ResourcePropertiesTests {
 		properties.setSMaxAge(Duration.ofSeconds(5));
 		properties.setStaleIfError(Duration.ofSeconds(6));
 		properties.setStaleWhileRevalidate(Duration.ofSeconds(7));
-		CacheControl cacheControl = properties.toHttpCacheControl();
+		org.springframework.http.CacheControl cacheControl = properties.toHttpCacheControl();
 		assertThat(cacheControl.getHeaderValue()).isEqualTo(
 				"max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
 						+ " s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
@@ -99,10 +98,10 @@ public class ResourcePropertiesTests {
 
 	@Test
 	public void invalidCacheControlCombination() {
-		Cache.Control properties = this.properties.getCache().getControl();
+		Cache.CacheControl properties = this.properties.getCache().getCacheControl();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setNoStore(true);
-		CacheControl cacheControl = properties.toHttpCacheControl();
+		org.springframework.http.CacheControl cacheControl = properties.toHttpCacheControl();
 		assertThat(cacheControl.getHeaderValue()).isEqualTo("no-store");
 	}
 

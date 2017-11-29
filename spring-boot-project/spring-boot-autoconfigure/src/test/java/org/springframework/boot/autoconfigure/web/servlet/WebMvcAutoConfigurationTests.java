@@ -733,8 +733,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void cacheControl() throws Exception {
 		this.contextRunner
-				.withPropertyValues("spring.resources.cache.control.max-age:5",
-						"spring.resources.cache.control.proxy-revalidate:true")
+				.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
+						"spring.resources.cache.cachecontrol.proxy-revalidate:true")
 				.run((context) -> assertCacheControl(context));
 	}
 

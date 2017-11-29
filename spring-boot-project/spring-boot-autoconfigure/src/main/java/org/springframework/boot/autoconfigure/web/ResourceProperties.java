@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
-import org.springframework.http.CacheControl;
 
 /**
  * Properties used to configure resource handling.
@@ -275,7 +274,7 @@ public class ResourceProperties {
 		/**
 		 * Cache period for the resources served by the resource handler. If a duration
 		 * suffix is not specified, seconds will be used. Can be overridden by the
-		 * 'spring.resources.cache.control' properties.
+		 * 'spring.resources.cache.cachecontrol' properties.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration period;
@@ -284,7 +283,7 @@ public class ResourceProperties {
 		 * Cache control HTTP headers, only allows valid directive combinations. Overrides
 		 * the 'spring.resources.cache.period' property.
 		 */
-		private final Control control = new Control();
+		private final CacheControl cacheControl = new CacheControl();
 
 		public Duration getPeriod() {
 			return this.period;
@@ -294,14 +293,14 @@ public class ResourceProperties {
 			this.period = period;
 		}
 
-		public Control getControl() {
-			return this.control;
+		public CacheControl getCacheControl() {
+			return this.cacheControl;
 		}
 
 		/**
 		 * Cache Control HTTP header configuration.
 		 */
-		public static class Control {
+		public static class CacheControl {
 
 			/**
 			 * Maximum time the response should be cached, in seconds if no duration
@@ -459,15 +458,15 @@ public class ResourceProperties {
 				this.sMaxAge = sMaxAge;
 			}
 
-			public CacheControl toHttpCacheControl() {
-				CacheControl cacheControl = createCacheControl();
+			public org.springframework.http.CacheControl toHttpCacheControl() {
+				org.springframework.http.CacheControl cacheControl = createCacheControl();
 				callIfTrue(this.mustRevalidate, cacheControl,
-						CacheControl::mustRevalidate);
-				callIfTrue(this.noTransform, cacheControl, CacheControl::noTransform);
-				callIfTrue(this.cachePublic, cacheControl, CacheControl::cachePublic);
-				callIfTrue(this.cachePrivate, cacheControl, CacheControl::cachePrivate);
+						org.springframework.http.CacheControl::mustRevalidate);
+				callIfTrue(this.noTransform, cacheControl, org.springframework.http.CacheControl::noTransform);
+				callIfTrue(this.cachePublic, cacheControl, org.springframework.http.CacheControl::cachePublic);
+				callIfTrue(this.cachePrivate, cacheControl, org.springframework.http.CacheControl::cachePrivate);
 				callIfTrue(this.proxyRevalidate, cacheControl,
-						CacheControl::proxyRevalidate);
+						org.springframework.http.CacheControl::proxyRevalidate);
 				if (this.staleWhileRevalidate != null) {
 					cacheControl.staleWhileRevalidate(
 							this.staleWhileRevalidate.getSeconds(), TimeUnit.SECONDS);
@@ -482,18 +481,18 @@ public class ResourceProperties {
 				return cacheControl;
 			}
 
-			private CacheControl createCacheControl() {
+			private org.springframework.http.CacheControl createCacheControl() {
 				if (Boolean.TRUE.equals(this.noStore)) {
-					return CacheControl.noStore();
+					return org.springframework.http.CacheControl.noStore();
 				}
 				if (Boolean.TRUE.equals(this.noCache)) {
-					return CacheControl.noCache();
+					return org.springframework.http.CacheControl.noCache();
 				}
 				if (this.maxAge != null) {
-					return CacheControl.maxAge(this.maxAge.getSeconds(),
+					return org.springframework.http.CacheControl.maxAge(this.maxAge.getSeconds(),
 							TimeUnit.SECONDS);
 				}
-				return CacheControl.empty();
+				return org.springframework.http.CacheControl.empty();
 			}
 
 			private <T> void callIfTrue(Boolean property, T instance, Consumer<T> call) {
