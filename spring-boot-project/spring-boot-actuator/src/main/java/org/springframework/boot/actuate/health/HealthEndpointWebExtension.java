@@ -34,20 +34,30 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 public class HealthEndpointWebExtension {
 
-	private final HealthEndpoint delegate;
+	private final HealthIndicator delegate;
 
 	private final HealthStatusHttpMapper statusHttpMapper;
 
-	public HealthEndpointWebExtension(HealthEndpoint delegate,
-			HealthStatusHttpMapper statusHttpMapper) {
+	private final boolean showDetails;
+
+	public HealthEndpointWebExtension(HealthIndicator delegate,
+			HealthStatusHttpMapper statusHttpMapper, boolean showDetails) {
 		this.delegate = delegate;
 		this.statusHttpMapper = statusHttpMapper;
+		this.showDetails = showDetails;
 	}
 
 	@ReadOperation
 	public WebEndpointResponse<Health> getHealth() {
+		return getHealth(this.showDetails);
+	}
+
+	public WebEndpointResponse<Health> getHealth(boolean showDetails) {
 		Health health = this.delegate.health();
 		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
+		if (!showDetails) {
+			health = Health.status(health.getStatus()).build();
+		}
 		return new WebEndpointResponse<>(health, status);
 	}
 

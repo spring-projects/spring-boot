@@ -57,7 +57,7 @@ public class HealthEndpointAutoConfigurationTests {
 					verify(indicator, times(0)).health();
 					Health health = context.getBean(HealthEndpoint.class).health();
 					assertThat(health.getStatus()).isEqualTo(Status.UP);
-					assertThat(health.getDetails()).isEmpty();
+					assertThat(health.getDetails()).isNotEmpty();
 					verify(indicator, times(1)).health();
 				});
 	}

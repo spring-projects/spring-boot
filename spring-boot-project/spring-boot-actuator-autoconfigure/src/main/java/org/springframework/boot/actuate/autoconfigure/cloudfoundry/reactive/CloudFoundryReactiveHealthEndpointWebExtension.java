@@ -25,36 +25,28 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 
 /**
- * Reactive {@link EndpointWebExtension} for the {@link HealthEndpoint}
- * that always exposes full health details.
+ * Reactive {@link EndpointWebExtension} for the {@link HealthEndpoint} that always
+ * exposes full health details.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 @EndpointExtension(filter = CloudFoundryEndpointFilter.class, endpoint = HealthEndpoint.class)
 public class CloudFoundryReactiveHealthEndpointWebExtension {
 
-	private final ReactiveHealthIndicator delegate;
+	private final ReactiveHealthEndpointWebExtension delegate;
 
-	private final HealthStatusHttpMapper statusHttpMapper;
-
-	public CloudFoundryReactiveHealthEndpointWebExtension(ReactiveHealthIndicator delegate,
-			HealthStatusHttpMapper statusHttpMapper) {
+	public CloudFoundryReactiveHealthEndpointWebExtension(
+			ReactiveHealthEndpointWebExtension delegate) {
 		this.delegate = delegate;
-		this.statusHttpMapper = statusHttpMapper;
 	}
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<Health>> health() {
-		return this.delegate.health().map((health) -> {
-			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-			return new WebEndpointResponse<>(health, status);
-		});
+		return this.delegate.health(true);
 	}
 
 }
-
-

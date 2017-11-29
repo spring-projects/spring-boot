@@ -17,9 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -30,34 +30,36 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.context.ApplicationContext;
 
 /**
- *  {@link WebAnnotationEndpointDiscoverer} for Cloud Foundry that uses Cloud Foundry specific
- *  extensions for the {@link HealthEndpoint}.
+ * {@link WebAnnotationEndpointDiscoverer} for Cloud Foundry that uses Cloud Foundry
+ * specific extensions for the {@link HealthEndpoint}.
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryWebAnnotationEndpointDiscoverer extends WebAnnotationEndpointDiscoverer {
-
-	private final ApplicationContext applicationContext;
+public class CloudFoundryWebAnnotationEndpointDiscoverer
+		extends WebAnnotationEndpointDiscoverer {
 
 	private final Class<?> requiredExtensionType;
 
-	public CloudFoundryWebAnnotationEndpointDiscoverer(ApplicationContext applicationContext, ParameterMapper parameterMapper,
-			EndpointMediaTypes endpointMediaTypes, EndpointPathResolver endpointPathResolver,
-			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors, Collection<? extends EndpointFilter<WebOperation>> filters, Class<?> requiredExtensionType) {
-		super(applicationContext, parameterMapper, endpointMediaTypes, endpointPathResolver, invokerAdvisors, filters);
-		this.applicationContext = applicationContext;
+	public CloudFoundryWebAnnotationEndpointDiscoverer(
+			ApplicationContext applicationContext, ParameterMapper parameterMapper,
+			EndpointMediaTypes endpointMediaTypes,
+			EndpointPathResolver endpointPathResolver,
+			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
+			Collection<? extends EndpointFilter<WebOperation>> filters,
+			Class<?> requiredExtensionType) {
+		super(applicationContext, parameterMapper, endpointMediaTypes,
+				endpointPathResolver, invokerAdvisors, filters);
 		this.requiredExtensionType = requiredExtensionType;
 	}
 
 	@Override
-	protected void addExtension(Map<Class<?>, DiscoveredEndpoint> endpoints, Map<Class<?>, DiscoveredExtension> extensions, String beanName) {
-		Class<?> extensionType = this.applicationContext.getType(beanName);
-		Class<?> endpointType = getEndpointType(extensionType);
-		if (HealthEndpoint.class.equals(endpointType) && !this.requiredExtensionType.equals(extensionType)) {
-			return;
+	protected boolean isExtensionExposed(Class<?> endpointType, Class<?> extensionType,
+			EndpointInfo<WebOperation> endpointInfo) {
+		if (HealthEndpoint.class.equals(endpointType)
+				&& !this.requiredExtensionType.equals(extensionType)) {
+			return false;
 		}
-		super.addExtension(endpoints, extensions, beanName);
+		return super.isExtensionExposed(endpointType, extensionType, endpointInfo);
 	}
 
 }
-

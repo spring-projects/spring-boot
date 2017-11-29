@@ -23,13 +23,15 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.Cloud
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +41,9 @@ import org.springframework.context.annotation.Configuration;
  * @author Madhura Bhave
  */
 @Configuration
-@AutoConfigureBefore({ ReactiveCloudFoundryActuatorAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class })
+@ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
+@AutoConfigureBefore({ ReactiveCloudFoundryActuatorAutoConfiguration.class,
+		CloudFoundryActuatorAutoConfiguration.class })
 @AutoConfigureAfter(HealthEndpointAutoConfiguration.class)
 public class CloudFoundryHealthWebEndpointManagementContextConfiguration {
 
@@ -50,11 +54,10 @@ public class CloudFoundryHealthWebEndpointManagementContextConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint
-		@ConditionalOnBean(HealthEndpoint.class)
+		@ConditionalOnBean({ HealthEndpoint.class, HealthEndpointWebExtension.class })
 		public CloudFoundryHealthEndpointWebExtension cloudFoundryHealthEndpointWebExtension(
-				HealthEndpoint healthEndpoint, HealthStatusHttpMapper healthStatusHttpMapper) {
-			HealthEndpoint delegate = new HealthEndpoint(healthEndpoint.getHealthIndicator(), true);
-			return new CloudFoundryHealthEndpointWebExtension(delegate, healthStatusHttpMapper);
+				HealthEndpointWebExtension healthEndpointWebExtension) {
+			return new CloudFoundryHealthEndpointWebExtension(healthEndpointWebExtension);
 		}
 
 	}
@@ -66,12 +69,12 @@ public class CloudFoundryHealthWebEndpointManagementContextConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint
-		@ConditionalOnBean(HealthEndpoint.class)
+		@ConditionalOnBean({ HealthEndpoint.class,
+				ReactiveHealthEndpointWebExtension.class })
 		public CloudFoundryReactiveHealthEndpointWebExtension cloudFoundryReactiveHealthEndpointWebExtension(
-				ReactiveHealthIndicator reactiveHealthIndicator,
-				HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new CloudFoundryReactiveHealthEndpointWebExtension(reactiveHealthIndicator,
-					healthStatusHttpMapper);
+				ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension) {
+			return new CloudFoundryReactiveHealthEndpointWebExtension(
+					reactiveHealthEndpointWebExtension);
 		}
 
 	}

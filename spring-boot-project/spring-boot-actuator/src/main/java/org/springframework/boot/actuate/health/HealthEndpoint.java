@@ -32,29 +32,17 @@ public class HealthEndpoint {
 
 	private final HealthIndicator healthIndicator;
 
-	private final boolean showDetails;
-
 	/**
 	 * Create a new {@link HealthEndpoint} instance.
 	 * @param healthIndicator the health indicator
-	 * @param showDetails if full details should be returned instead of just the status
 	 */
-	public HealthEndpoint(HealthIndicator healthIndicator, boolean showDetails) {
+	public HealthEndpoint(HealthIndicator healthIndicator) {
 		this.healthIndicator = healthIndicator;
-		this.showDetails = showDetails;
 	}
 
 	@ReadOperation
 	public Health health() {
-		Health health = this.healthIndicator.health();
-		if (this.showDetails) {
-			return health;
-		}
-		return Health.status(health.getStatus()).build();
-	}
-
-	public HealthIndicator getHealthIndicator() {
-		return this.healthIndicator;
+		return this.healthIndicator.health();
 	}
 
 }

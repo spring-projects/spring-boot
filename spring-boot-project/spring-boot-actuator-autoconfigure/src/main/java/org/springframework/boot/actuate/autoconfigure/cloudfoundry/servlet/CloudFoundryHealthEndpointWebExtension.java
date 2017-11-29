@@ -23,33 +23,27 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 
 /**
- * {@link EndpointWebExtension} for the {@link HealthEndpoint}
- * that always exposes full health details.
+ * {@link EndpointWebExtension} for the {@link HealthEndpoint} that always exposes full
+ * health details.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 @EndpointExtension(filter = CloudFoundryEndpointFilter.class, endpoint = HealthEndpoint.class)
 public class CloudFoundryHealthEndpointWebExtension {
 
-	private final HealthEndpoint delegate;
+	private final HealthEndpointWebExtension delegate;
 
-	private final HealthStatusHttpMapper statusHttpMapper;
-
-	public CloudFoundryHealthEndpointWebExtension(HealthEndpoint delegate,
-			HealthStatusHttpMapper statusHttpMapper) {
+	public CloudFoundryHealthEndpointWebExtension(HealthEndpointWebExtension delegate) {
 		this.delegate = delegate;
-		this.statusHttpMapper = statusHttpMapper;
 	}
 
 	@ReadOperation
 	public WebEndpointResponse<Health> getHealth() {
-		Health health = this.delegate.health();
-		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-		return new WebEndpointResponse<>(health, status);
+		return this.delegate.getHealth(true);
 	}
 
 }
-

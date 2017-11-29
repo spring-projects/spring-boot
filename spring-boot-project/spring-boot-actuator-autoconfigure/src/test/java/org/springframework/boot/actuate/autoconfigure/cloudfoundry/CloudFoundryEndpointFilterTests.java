@@ -49,20 +49,27 @@ public class CloudFoundryEndpointFilterTests {
 
 	@Test
 	public void matchIfDiscovererCloudFoundryShouldReturnFalse() throws Exception {
-		CloudFoundryWebAnnotationEndpointDiscoverer discoverer = Mockito.mock(CloudFoundryWebAnnotationEndpointDiscoverer.class);
+		CloudFoundryWebAnnotationEndpointDiscoverer discoverer = Mockito
+				.mock(CloudFoundryWebAnnotationEndpointDiscoverer.class);
 		assertThat(this.filter.match(null, discoverer)).isTrue();
 	}
 
 	@Test
 	public void matchIfDiscovererNotCloudFoundryShouldReturnFalse() throws Exception {
-		WebAnnotationEndpointDiscoverer discoverer = Mockito.mock(WebAnnotationEndpointDiscoverer.class);
+		WebAnnotationEndpointDiscoverer discoverer = Mockito
+				.mock(WebAnnotationEndpointDiscoverer.class);
 		assertThat(this.filter.match(null, discoverer)).isFalse();
 	}
 
 	static class TestEndpointDiscoverer extends WebAnnotationEndpointDiscoverer {
 
-		TestEndpointDiscoverer(ApplicationContext applicationContext, ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes, EndpointPathResolver endpointPathResolver, Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors, Collection<? extends EndpointFilter<WebOperation>> filters) {
-			super(applicationContext, parameterMapper, endpointMediaTypes, endpointPathResolver, invokerAdvisors, filters);
+		TestEndpointDiscoverer(ApplicationContext applicationContext,
+				ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
+				EndpointPathResolver endpointPathResolver,
+				Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
+				Collection<? extends EndpointFilter<WebOperation>> filters) {
+			super(applicationContext, parameterMapper, endpointMediaTypes,
+					endpointPathResolver, invokerAdvisors, filters);
 		}
 
 	}

@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -65,7 +66,8 @@ public class HealthWebEndpointManagementContextConfiguration {
 	static class ReactiveWebHealthConfiguration {
 
 		@Bean
-		public ReactiveHealthIndicator reactiveHealthIndicator(ObjectProvider<HealthAggregator> healthAggregator,
+		public ReactiveHealthIndicator reactiveHealthIndicator(
+				ObjectProvider<HealthAggregator> healthAggregator,
 				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
 				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
 			return new CompositeReactiveHealthIndicatorFactory()
@@ -99,8 +101,12 @@ public class HealthWebEndpointManagementContextConfiguration {
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
 		public HealthEndpointWebExtension healthEndpointWebExtension(
-				HealthEndpoint delegate, HealthStatusHttpMapper healthStatusHttpMapper) {
-			return new HealthEndpointWebExtension(delegate, healthStatusHttpMapper);
+				ApplicationContext applicationContext,
+				HealthStatusHttpMapper healthStatusHttpMapper,
+				HealthEndpointProperties properties) {
+			return new HealthEndpointWebExtension(
+					HealthIndicatorBeansComposite.get(applicationContext),
+					healthStatusHttpMapper, properties.isShowDetails());
 		}
 
 	}

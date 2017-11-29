@@ -74,7 +74,7 @@ public class HealthEndpointDocumentationTests extends AbstractEndpointDocumentat
 		@Bean
 		public HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpoint(new CompositeHealthIndicator(
-					new OrderedHealthAggregator(), healthIndicators), true);
+					new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean

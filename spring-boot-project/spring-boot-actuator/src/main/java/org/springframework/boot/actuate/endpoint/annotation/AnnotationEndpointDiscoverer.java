@@ -173,13 +173,13 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		return extensions;
 	}
 
-	protected void addExtension(Map<Class<?>, DiscoveredEndpoint> endpoints,
+	private void addExtension(Map<Class<?>, DiscoveredEndpoint> endpoints,
 			Map<Class<?>, DiscoveredExtension> extensions, String beanName) {
 		Class<?> extensionType = this.applicationContext.getType(beanName);
 		Class<?> endpointType = getEndpointType(extensionType);
 		DiscoveredEndpoint endpoint = getExtendingEndpoint(endpoints, extensionType,
 				endpointType);
-		if (isExtensionExposed(extensionType, endpoint.getInfo())) {
+		if (isExtensionExposed(endpointType, extensionType, endpoint.getInfo())) {
 			Assert.state(endpoint.isExposed() || isEndpointFiltered(endpoint.getInfo()),
 					() -> "Invalid extension " + extensionType.getName() + "': endpoint '"
 							+ endpointType.getName()
@@ -199,7 +199,7 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		}
 	}
 
-	protected Class<?> getEndpointType(Class<?> extensionType) {
+	private Class<?> getEndpointType(Class<?> extensionType) {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(extensionType, EndpointExtension.class);
 		Class<?> endpointType = attributes.getClass("endpoint");
@@ -242,7 +242,14 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		return false;
 	}
 
-	private boolean isExtensionExposed(Class<?> extensionType,
+	/**
+	 * Determines if an extension is exposed.
+	 * @param endpointType the endpoint type
+	 * @param extensionType the extension type
+	 * @param endpointInfo the endpoint info
+	 * @return if the extension is exposed
+	 */
+	protected boolean isExtensionExposed(Class<?> endpointType, Class<?> extensionType,
 			EndpointInfo<T> endpointInfo) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(extensionType, EndpointExtension.class);

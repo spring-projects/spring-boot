@@ -28,7 +28,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HealthEndpointProperties {
 
 	/**
-	 * Whether to show full health details instead of just the status.
+	 * Whether to show full health details instead of just the status when exposed over a
+	 * potentially insecure connection.
 	 */
 	private boolean showDetails;
 

@@ -66,14 +66,16 @@ public class HealthEndpointWebIntegrationTests {
 				Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpoint(
 					new CompositeHealthIndicatorFactory().createHealthIndicator(
-							new OrderedHealthAggregator(), healthIndicators),
-					true);
+							new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean
 		public HealthEndpointWebExtension healthWebEndpointExtension(
-				HealthEndpoint delegate) {
-			return new HealthEndpointWebExtension(delegate, new HealthStatusHttpMapper());
+				Map<String, HealthIndicator> healthIndicators) {
+			return new HealthEndpointWebExtension(
+					new CompositeHealthIndicatorFactory().createHealthIndicator(
+							new OrderedHealthAggregator(), healthIndicators),
+					new HealthStatusHttpMapper(), true);
 		}
 
 		@Bean

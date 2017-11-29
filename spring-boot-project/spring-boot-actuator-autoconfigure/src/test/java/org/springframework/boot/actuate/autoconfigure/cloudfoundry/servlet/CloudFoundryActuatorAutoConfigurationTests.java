@@ -251,15 +251,21 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:http://my-cloud-controller.com")
 				.applyTo(this.context);
-		this.context.register(HealthEndpointAutoConfiguration.class, HealthWebEndpointManagementContextConfiguration.class,
+		this.context.register(HealthEndpointAutoConfiguration.class,
+				HealthWebEndpointManagementContextConfiguration.class,
 				CloudFoundryHealthWebEndpointManagementContextConfiguration.class);
 		this.context.refresh();
-		Collection<EndpointInfo<WebOperation>> endpoints = this.context.getBean("cloudFoundryWebEndpointServletHandlerMapping",
-				CloudFoundryWebEndpointServletHandlerMapping.class).getEndpoints();
+		Collection<EndpointInfo<WebOperation>> endpoints = this.context
+				.getBean("cloudFoundryWebEndpointServletHandlerMapping",
+						CloudFoundryWebEndpointServletHandlerMapping.class)
+				.getEndpoints();
 		EndpointInfo endpointInfo = (EndpointInfo) (endpoints.toArray()[0]);
-		WebOperation webOperation = (WebOperation) endpointInfo.getOperations().toArray()[0];
-		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation.getInvoker();
-		assertThat(ReflectionTestUtils.getField(invoker, "target")).isInstanceOf(CloudFoundryHealthEndpointWebExtension.class);
+		WebOperation webOperation = (WebOperation) endpointInfo.getOperations()
+				.toArray()[0];
+		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation
+				.getInvoker();
+		assertThat(ReflectionTestUtils.getField(invoker, "target"))
+				.isInstanceOf(CloudFoundryHealthEndpointWebExtension.class);
 	}
 
 	private CloudFoundryWebEndpointServletHandlerMapping getHandlerMapping() {

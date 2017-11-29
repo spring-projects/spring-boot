@@ -229,14 +229,19 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	public void healthEndpointInvokerShouldBeCloudFoundryWebExtension() throws Exception {
 		setupContextWithCloudEnabled();
-		this.context.register(HealthEndpointAutoConfiguration.class, HealthWebEndpointManagementContextConfiguration.class,
+		this.context.register(HealthEndpointAutoConfiguration.class,
+				HealthWebEndpointManagementContextConfiguration.class,
 				CloudFoundryHealthWebEndpointManagementContextConfiguration.class);
 		this.context.refresh();
-		Collection<EndpointInfo<WebOperation>> endpoints = getHandlerMapping().getEndpoints();
+		Collection<EndpointInfo<WebOperation>> endpoints = getHandlerMapping()
+				.getEndpoints();
 		EndpointInfo endpointInfo = (EndpointInfo) (endpoints.toArray()[0]);
-		WebOperation webOperation = (WebOperation) endpointInfo.getOperations().toArray()[0];
-		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation.getInvoker();
-		assertThat(ReflectionTestUtils.getField(invoker, "target")).isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
+		WebOperation webOperation = (WebOperation) endpointInfo.getOperations()
+				.toArray()[0];
+		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation
+				.getInvoker();
+		assertThat(ReflectionTestUtils.getField(invoker, "target"))
+				.isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
 	}
 
 	private void setupContextWithCloudEnabled() {

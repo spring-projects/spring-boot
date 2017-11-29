@@ -70,7 +70,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 			WebClient.Builder webClientBuilder) {
 		CloudFoundryWebAnnotationEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebAnnotationEndpointDiscoverer(
 				this.applicationContext, parameterMapper, endpointMediaTypes,
-				EndpointPathResolver.useEndpointId(), null, null, CloudFoundryReactiveHealthEndpointWebExtension.class);
+				EndpointPathResolver.useEndpointId(), null, null,
+				CloudFoundryReactiveHealthEndpointWebExtension.class);
 		ReactiveCloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				webClientBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebFluxEndpointHandlerMapping(

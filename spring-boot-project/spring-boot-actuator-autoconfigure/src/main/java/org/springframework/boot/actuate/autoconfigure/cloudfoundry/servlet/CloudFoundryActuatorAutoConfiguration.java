@@ -74,7 +74,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 			RestTemplateBuilder restTemplateBuilder) {
 		CloudFoundryWebAnnotationEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebAnnotationEndpointDiscoverer(
 				this.applicationContext, parameterMapper, endpointMediaTypes,
-				EndpointPathResolver.useEndpointId(), null, null, CloudFoundryHealthEndpointWebExtension.class);
+				EndpointPathResolver.useEndpointId(), null, null,
+				CloudFoundryHealthEndpointWebExtension.class);
 		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				restTemplateBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebEndpointServletHandlerMapping(
