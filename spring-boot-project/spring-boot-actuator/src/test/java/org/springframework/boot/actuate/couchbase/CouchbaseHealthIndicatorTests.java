@@ -42,8 +42,8 @@ public class CouchbaseHealthIndicatorTests {
 	public void couchbaseIsUp() {
 		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
 		ClusterInfo clusterInfo = mock(ClusterInfo.class);
-		given(clusterInfo.getAllVersions()).willReturn(
-				Arrays.asList(new Version(1, 2, 3)));
+		given(clusterInfo.getAllVersions())
+				.willReturn(Arrays.asList(new Version(1, 2, 3)));
 		given(couchbaseOperations.getCouchbaseClusterInfo()).willReturn(clusterInfo);
 		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
 				couchbaseOperations);
@@ -56,8 +56,8 @@ public class CouchbaseHealthIndicatorTests {
 	@Test
 	public void couchbaseIsDown() {
 		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
-		given(couchbaseOperations.getCouchbaseClusterInfo()).willThrow(
-				new IllegalStateException("test, expected"));
+		given(couchbaseOperations.getCouchbaseClusterInfo())
+				.willThrow(new IllegalStateException("test, expected"));
 		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
 				couchbaseOperations);
 		Health health = healthIndicator.health();

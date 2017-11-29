@@ -30,8 +30,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class GangliaPropertiesConfigAdapter
-		extends PropertiesConfigAdapter<GangliaProperties>
+class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProperties>
 		implements GangliaConfig {
 
 	GangliaPropertiesConfigAdapter(GangliaProperties properties) {

@@ -28,8 +28,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class AtlasPropertiesConfigAdapter extends
-		PropertiesConfigAdapter<AtlasProperties> implements AtlasConfig {
+class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperties>
+		implements AtlasConfig {
 
 	AtlasPropertiesConfigAdapter(AtlasProperties properties) {
 		super(properties);

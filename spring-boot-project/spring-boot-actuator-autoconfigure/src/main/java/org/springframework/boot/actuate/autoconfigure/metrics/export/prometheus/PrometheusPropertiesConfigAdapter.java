@@ -28,9 +28,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class PrometheusPropertiesConfigAdapter
-		extends PropertiesConfigAdapter<PrometheusProperties>
-		implements PrometheusConfig {
+class PrometheusPropertiesConfigAdapter extends
+		PropertiesConfigAdapter<PrometheusProperties> implements PrometheusConfig {
 
 	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
 		super(properties);

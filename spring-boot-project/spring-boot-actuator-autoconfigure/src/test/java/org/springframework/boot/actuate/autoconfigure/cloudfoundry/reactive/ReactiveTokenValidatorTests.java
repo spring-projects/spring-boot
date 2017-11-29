@@ -93,8 +93,10 @@ public class ReactiveTokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationFailsTwiceShouldThrowException() throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
+	public void validateTokenWhenKidValidationFailsTwiceShouldThrowException()
+			throws Exception {
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
+				.of(Mono.just(VALID_KEYS));
 		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys", VALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
 		given(this.securityService.getUaaUrl())
@@ -110,15 +112,19 @@ public class ReactiveTokenValidatorTests {
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_KEY_ID);
 				}).verify();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator, "cachedTokenKeys");
+		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
+				"cachedTokenKeys");
 		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationSucceedsInTheSecondAttempt() throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
-		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys", INVALID_KEYS);
+	public void validateTokenWhenKidValidationSucceedsInTheSecondAttempt()
+			throws Exception {
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
+				.of(Mono.just(VALID_KEYS));
+		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys",
+				INVALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
 		given(this.securityService.getUaaUrl())
 				.willReturn(Mono.just("http://localhost:8080/uaa"));
@@ -128,14 +134,16 @@ public class ReactiveTokenValidatorTests {
 				.create(this.tokenValidator.validate(
 						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.verifyComplete();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator, "cachedTokenKeys");
+		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
+				"cachedTokenKeys");
 		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
 	@Test
 	public void validateTokenWhenCacheIsEmptyShouldFetchTokenKeys() throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
+				.of(Mono.just(VALID_KEYS));
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
 		given(this.securityService.getUaaUrl())
 				.willReturn(Mono.just("http://localhost:8080/uaa"));
@@ -145,14 +153,17 @@ public class ReactiveTokenValidatorTests {
 				.create(this.tokenValidator.validate(
 						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.verifyComplete();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator, "cachedTokenKeys");
+		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
+				"cachedTokenKeys");
 		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
 	@Test
-	public void validateTokenWhenCacheEmptyAndInvalidKeyShouldThrowException() throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
+	public void validateTokenWhenCacheEmptyAndInvalidKeyShouldThrowException()
+			throws Exception {
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
+				.of(Mono.just(VALID_KEYS));
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
 		given(this.securityService.getUaaUrl())
 				.willReturn(Mono.just("http://localhost:8080/uaa"));
@@ -167,7 +178,8 @@ public class ReactiveTokenValidatorTests {
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_KEY_ID);
 				}).verify();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator, "cachedTokenKeys");
+		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
+				"cachedTokenKeys");
 		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
