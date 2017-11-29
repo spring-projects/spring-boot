@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
 public final class RepositoryConfigurationFactory {
 
 	private static final RepositoryConfiguration MAVEN_CENTRAL = new RepositoryConfiguration(
-			"central", URI.create("http://repo1.maven.org/maven2/"), false);
+			"central", URI.create("https://repo.maven.apache.org/maven2/"), false);
 
 	private static final RepositoryConfiguration SPRING_MILESTONE = new RepositoryConfiguration(
 			"spring-milestone", URI.create("http://repo.spring.io/milestone"), false);
