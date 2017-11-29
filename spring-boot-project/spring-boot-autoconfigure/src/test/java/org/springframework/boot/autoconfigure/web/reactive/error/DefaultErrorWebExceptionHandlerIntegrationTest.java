@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -188,6 +189,16 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 				containsString("IllegalStateException")));
 	}
 
+	@Test
+	public void responseCommitted() throws Exception {
+		load();
+		this.webTestClient.get().uri("/commit").exchange()
+				.expectStatus().isEqualTo(HttpStatus.OK)
+				.expectBody().isEmpty();
+		this.output.expect(not(containsString("java.lang.UnsupportedOperationException")));
+		this.output.expect(containsString("java.lang.IllegalStateException: already committed!"));
+	}
+
 	private void load(String... arguments) {
 		List<String> args = new ArrayList<>();
 		args.add("--server.port=0");
@@ -233,6 +244,13 @@ public class DefaultErrorWebExceptionHandlerIntegrationTest {
 			@GetMapping("/badRequest")
 			public Mono<String> badRequest() {
 				return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
+			}
+
+			@GetMapping("/commit")
+			public Mono<Void> commit(ServerWebExchange exchange) {
+				return exchange
+						.getResponse().writeWith(Mono.empty())
+						.then(Mono.error(new IllegalStateException("already committed!")));
 			}
 
 			@PostMapping(path = "/bind", produces = "application/json")
