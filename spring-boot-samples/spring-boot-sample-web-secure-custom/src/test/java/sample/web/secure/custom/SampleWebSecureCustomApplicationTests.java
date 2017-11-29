@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,7 +47,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleWebSecureCustomApplicationTests {
 
 	@Autowired
@@ -83,13 +81,11 @@ public class SampleWebSecureCustomApplicationTests {
 		HttpHeaders headers = getHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "user");
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
-				HttpMethod.POST,
-				new HttpEntity<MultiValueMap<String, String>>(form, headers),
-				String.class);
+				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString())
 				.endsWith(this.port + "/");

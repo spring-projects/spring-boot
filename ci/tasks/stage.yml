@@ -1,0 +1,12 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+outputs:
+- name: stage-git-repo
+- name: distribution-repository
+caches:
+- path: maven
+- path: gradle
+run:
+  path: git-repo/ci/scripts/stage.sh

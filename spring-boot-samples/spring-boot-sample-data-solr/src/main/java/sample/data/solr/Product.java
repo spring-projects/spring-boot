@@ -47,7 +47,6 @@ public class Product {
 	}
 
 	public Product(String id, String name) {
-		super();
 		this.id = id;
 		this.name = name;
 	}

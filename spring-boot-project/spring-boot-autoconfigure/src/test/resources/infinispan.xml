@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan>
+
+	<!-- ************************************** -->
+	<!-- Corresponds to @Cacheable("cache-name") -->
+	<!-- ************************************** -->
+	<cache-container default-cache="default">
+		<local-cache name="default"/>
+		<local-cache name="foo"/>
+		<local-cache name="bar" />
+	</cache-container>
+
+</infinispan>

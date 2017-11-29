@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package sample.groovytemplates;
 
 import java.util.Date;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 public class Message {
 
 	private Long id;
 
-	@NotEmpty(message = "Message is required.")
+	@NotEmpty(message = "Text is required.")
 	private String text;
 
 	@NotEmpty(message = "Summary is required.")
@@ -63,4 +63,5 @@ public class Message {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
+
 }

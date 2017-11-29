@@ -1,0 +1,32 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+	resolutionStrategy {
+		eachDependency {
+			if (it.requested.group == 'org.springframework.boot') {
+				it.useVersion project.bootVersion
+			}
+		}
+	}
+}
+
+// tag::custom-version[]
+ext['slf4j.version'] = '1.7.20'
+// end::custom-version[]
+
+repositories {
+	mavenLocal()
+}
+
+task slf4jVersion {
+	doLast {
+		println dependencyManagement.managedVersions['org.slf4j:slf4j-api']
+	}
+}

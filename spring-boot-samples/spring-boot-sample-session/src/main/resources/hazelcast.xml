@@ -1,0 +1,20 @@
+<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.9.xsd"
+		   xmlns="http://www.hazelcast.com/schema/config"
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<map name="spring:session:sessions">
+		<attributes>
+			<attribute extractor="org.springframework.session.hazelcast.PrincipalNameExtractor">principalName</attribute>
+		</attributes>
+		<indexes>
+			<index>principalName</index>
+		</indexes>
+	</map>
+
+	<network>
+		<join>
+			<multicast enabled="false"/>
+		</join>
+	</network>
+
+</hazelcast>

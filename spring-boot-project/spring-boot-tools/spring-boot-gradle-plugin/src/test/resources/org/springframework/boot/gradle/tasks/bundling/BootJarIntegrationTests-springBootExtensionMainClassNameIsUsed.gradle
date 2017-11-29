@@ -1,0 +1,13 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+
+springBoot {
+	mainClassName = 'com.example.CustomMain'
+}

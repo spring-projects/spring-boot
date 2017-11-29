@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.util.Collections;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.atmosphere.cpr.AtmosphereInitializer;
 import org.atmosphere.cpr.AtmosphereServlet;
+import org.atmosphere.cpr.ContainerInitializer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
@@ -45,10 +45,10 @@ public class SampleAtmosphereApplication {
 	}
 
 	@Bean
-	public ServletRegistrationBean atmosphereServlet() {
+	public ServletRegistrationBean<AtmosphereServlet> atmosphereServlet() {
 		// Dispatcher servlet is mapped to '/home' to allow the AtmosphereServlet
 		// to be mapped to '/chat'
-		ServletRegistrationBean registration = new ServletRegistrationBean(
+		ServletRegistrationBean<AtmosphereServlet> registration = new ServletRegistrationBean<>(
 				new AtmosphereServlet(), "/chat/*");
 		registration.addInitParameter("org.atmosphere.cpr.packages", "sample");
 		registration.addInitParameter("org.atmosphere.interceptor.HeartbeatInterceptor"
@@ -60,7 +60,7 @@ public class SampleAtmosphereApplication {
 	}
 
 	@Configuration
-	static class MvcConfiguration extends WebMvcConfigurerAdapter {
+	static class MvcConfiguration implements WebMvcConfigurer {
 
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
@@ -69,12 +69,12 @@ public class SampleAtmosphereApplication {
 
 	}
 
-	private static class EmbeddedAtmosphereInitializer extends AtmosphereInitializer
+	private static class EmbeddedAtmosphereInitializer extends ContainerInitializer
 			implements ServletContextInitializer {
 
 		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
-			onStartup(Collections.<Class<?>>emptySet(), servletContext);
+			onStartup(Collections.emptySet(), servletContext);
 		}
 
 	}

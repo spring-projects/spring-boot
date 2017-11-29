@@ -10,7 +10,6 @@ abstraction is supported by many caching libraries, including:
 * `Couchbase`
 * `Redis`
 * `Caffeine`
-* `Guava`
 * Simple provider based on `ConcurrentHashMap`
 * Generic provider based on `org.springframework.Cache` bean definition(s)
 
@@ -73,7 +72,7 @@ TIP: Run sample cache application using EhCache with
 
 === Hazelcast
 Both `com.hazelcast:hazelcast` and `com.hazelcast:hazelcast-spring` should be added
-to the project to enable support for Hazelcast.  Since there is a default
+to the project to enable support for Hazelcast. Since there is a default
 `hazelcast.xml` configuration file at the root of the classpath, it is used to
 automatically configure the underlying `HazelcastInstance`.
 
@@ -120,14 +119,3 @@ for Caffeine. You can customize how caches are created in different ways, see
 
 TIP: Run sample cache application using Caffeine with
 `$mvn spring-boot:run -Pcaffeine`.
-
-
-
-=== Guava
-Spring Boot does not provide any dependency management for _Guava_ so you'll have to
-add the `com.google.guava:guava` dependency with a version. You can customize how
-caches are created in different ways, see `application.properties` for an example and
-the documentation for more details.
-
-TIP: Run sample cache application using Guava with
-`$mvn spring-boot:run -Pguava`.
