@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link ConfigurableReactiveWebApplicationContext} that accepts annotated classes as
  * input - in particular
- * {@link org.springframework.context.annotation.Configuration @Configuration} -annotated
+ * {@link org.springframework.context.annotation.Configuration @Configuration}-annotated
  * classes, but also plain {@link Component @Component} classes and JSR-330 compliant
  * classes using {@code javax.inject} annotations. Allows for registering classes one by
  * one (specifying class names as config location) as well as for classpath scanning
@@ -311,7 +311,6 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * with a {@code BeanNameGenerator} or {@code ScopeMetadataResolver} yet.
 	 * @param beanFactory the bean factory to load bean definitions into
 	 * @return the class path bean definition scanner
-	 * @since 4.1.9
 	 * @see #getEnvironment()
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()

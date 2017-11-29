@@ -28,11 +28,12 @@ import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ReactiveWebServerApplicationContext} that accepts annotated classes as input -
  * in particular
- * {@link org.springframework.context.annotation.Configuration @Configuration} -annotated
+ * {@link org.springframework.context.annotation.Configuration @Configuration}-annotated
  * classes, but also plain {@link Component @Component} classes and JSR-330 compliant
  * classes using {@code javax.inject} annotations. Allows for registering classes one by
  * one (specifying class names as config location) as well as for classpath scanning
@@ -124,8 +125,8 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 
 	/**
 	 * Provide a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner}
-	 * , if any.
+	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner},
+	 * if any.
 	 * <p>
 	 * Default is
 	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
@@ -197,10 +198,10 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);
-		if (this.basePackages != null && this.basePackages.length > 0) {
+		if (!ObjectUtils.isEmpty(this.basePackages)) {
 			this.scanner.scan(this.basePackages);
 		}
-		if (this.annotatedClasses != null && this.annotatedClasses.length > 0) {
+		if (!ObjectUtils.isEmpty(this.annotatedClasses)) {
 			this.reader.register(this.annotatedClasses);
 		}
 	}
