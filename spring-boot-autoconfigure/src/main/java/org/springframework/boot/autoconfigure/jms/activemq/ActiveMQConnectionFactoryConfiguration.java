@@ -54,6 +54,7 @@ class ActiveMQConnectionFactoryConfiguration {
 						.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
+	@Configuration
 	@ConditionalOnClass(PooledConnectionFactory.class)
 	static class PooledConnectionFactoryConfiguration {
 

@@ -68,6 +68,7 @@ public class AuditAutoConfiguration {
 		return new AuthorizationAuditListener();
 	}
 
+	@Configuration
 	@ConditionalOnMissingBean(AuditEventRepository.class)
 	protected static class AuditEventRepositoryConfiguration {
 

@@ -107,6 +107,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	/**
 	 * Nested configuration for ignored requests if Spring Security is present.
 	 */
+	@Configuration
 	@ConditionalOnClass(WebSecurity.class)
 	static class CloudFoundryIgnoredRequestConfiguration {
 
