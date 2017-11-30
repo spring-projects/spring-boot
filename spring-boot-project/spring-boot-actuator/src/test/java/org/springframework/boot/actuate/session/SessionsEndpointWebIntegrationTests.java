@@ -82,8 +82,10 @@ public class SessionsEndpointWebIntegrationTests {
 
 	@Test
 	public void sessionForIdNotFound() {
-		client.get().uri((builder) -> builder.path("/actuator/sessions/some-session-id-that-does-not-exist")
-										.build()).exchange().expectStatus().isNotFound();
+		client.get()
+				.uri((builder) -> builder.path(
+						"/actuator/sessions/session-id-not-found").build())
+				.exchange().expectStatus().isNotFound();
 	}
 
 	@Configuration
