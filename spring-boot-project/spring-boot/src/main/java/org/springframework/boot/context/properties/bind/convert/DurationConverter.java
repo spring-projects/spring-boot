@@ -45,6 +45,7 @@ class DurationConverter implements GenericConverter {
 	static {
 		Set<ConvertiblePair> types = new LinkedHashSet<>();
 		types.add(new ConvertiblePair(String.class, Duration.class));
+		types.add(new ConvertiblePair(Integer.class, Duration.class));
 		TYPES = Collections.unmodifiableSet(types);
 	}
 

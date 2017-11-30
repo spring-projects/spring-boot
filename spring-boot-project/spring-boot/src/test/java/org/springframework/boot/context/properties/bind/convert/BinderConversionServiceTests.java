@@ -161,6 +161,13 @@ public class BinderConversionServiceTests {
 		assertThat(converted).isEqualTo(Duration.ofSeconds(10));
 	}
 
+	@Test
+	public void conversionServiceShouldSupportIntegerToDuration() throws Exception {
+		this.service = new BinderConversionService(null);
+		Duration converted = this.service.convert(10, Duration.class);
+		assertThat(converted).isEqualTo(Duration.ofMillis(10));
+	}
+
 	enum TestEnum {
 
 		ONE, TWO
