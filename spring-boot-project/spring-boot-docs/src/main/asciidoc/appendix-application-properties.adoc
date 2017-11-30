@@ -1108,7 +1108,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
 	management.endpoints.web.enabled=true # Whether web endpoints are enabled
-	management.endpoints.web.expose=info,status # Endpoint IDs that should be exposed or '*' for all.
+	management.endpoints.web.expose=info,health # Endpoint IDs that should be exposed or '*' for all.
 	management.endpoints.web.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.web.base-path=/actuator # Base path for Web endpoints. Relative to server.context-path or management.server.context-path if management.server.port is configured.
 	management.endpoints.web.path-mapping= # Mapping between endpoint IDs and the path that should expose them.
