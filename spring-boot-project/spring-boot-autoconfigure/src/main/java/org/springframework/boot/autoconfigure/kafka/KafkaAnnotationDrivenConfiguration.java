@@ -73,6 +73,7 @@ class KafkaAnnotationDrivenConfiguration {
 		return factory;
 	}
 
+	@Configuration
 	@EnableKafka
 	@ConditionalOnMissingBean(name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableKafkaConfiguration {

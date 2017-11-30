@@ -104,6 +104,7 @@ public class JmsAutoConfiguration {
 
 	}
 
+	@Configuration
 	@ConditionalOnClass(JmsMessagingTemplate.class)
 	@Import(JmsTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {

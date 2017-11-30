@@ -82,12 +82,14 @@ class JmsAnnotationDrivenConfiguration {
 		return factory;
 	}
 
+	@Configuration
 	@EnableJms
 	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableJmsConfiguration {
 
 	}
 
+	@Configuration
 	@ConditionalOnJndi
 	protected static class JndiConfiguration {
 
