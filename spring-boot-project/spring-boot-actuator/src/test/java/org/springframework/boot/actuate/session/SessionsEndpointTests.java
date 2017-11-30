@@ -82,6 +82,12 @@ public class SessionsEndpointTests {
 	}
 
 	@Test
+	public void getSessionWithIdNotFound() {
+		given(this.repository.findById("not-found")).willReturn(null);
+		assertThat(this.endpoint.getSession("not-found")).isNull();
+	}
+
+	@Test
 	public void deleteSession() {
 		this.endpoint.deleteSession(session.getId());
 		verify(this.repository).deleteById(session.getId());

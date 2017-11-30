@@ -80,6 +80,14 @@ public class SessionsEndpointWebIntegrationTests {
 				.isEqualTo(new JSONArray().appendElement(session.getId()));
 	}
 
+	@Test
+	public void sessionForIdNotFound() {
+		client.get()
+				.uri((builder) -> builder.path(
+						"/actuator/sessions/session-id-not-found").build())
+				.exchange().expectStatus().isNotFound();
+	}
+
 	@Configuration
 	protected static class TestConfiguration {
 
