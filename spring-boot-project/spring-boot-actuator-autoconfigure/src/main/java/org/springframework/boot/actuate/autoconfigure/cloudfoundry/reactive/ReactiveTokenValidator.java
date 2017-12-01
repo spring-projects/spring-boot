@@ -25,6 +25,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import reactor.core.publisher.Mono;
@@ -43,7 +44,7 @@ class ReactiveTokenValidator {
 
 	private final ReactiveCloudFoundrySecurityService securityService;
 
-	private Map<String, String> cachedTokenKeys = new ConcurrentHashMap<>();
+	private volatile ConcurrentMap<String, String> cachedTokenKeys = new ConcurrentHashMap<>();
 
 	ReactiveTokenValidator(ReactiveCloudFoundrySecurityService securityService) {
 		this.securityService = securityService;
@@ -91,8 +92,7 @@ class ReactiveTokenValidator {
 	}
 
 	private void cacheTokenKeys(Map<String, String> tokenKeys) {
-		this.cachedTokenKeys.clear();
-		this.cachedTokenKeys.putAll(tokenKeys);
+		this.cachedTokenKeys = new ConcurrentHashMap<>(tokenKeys);
 	}
 
 	private boolean hasValidSignature(Token token, String key) {
