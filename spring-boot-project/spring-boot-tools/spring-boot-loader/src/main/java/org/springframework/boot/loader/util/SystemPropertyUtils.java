@@ -24,7 +24,7 @@ import java.util.Set;
  * Helper class for resolving placeholders in texts. Usually applied to file paths.
  * <p>
  * A text may contain {@code $ ...} placeholders, to be resolved as system properties:
- * e.g. {@code $ user.dir} . Default values can be supplied using the ":" separator
+ * e.g. {@code $ user.dir}. Default values can be supplied using the ":" separator
  * between key and value.
  * <p>
  * Adapted from Spring.

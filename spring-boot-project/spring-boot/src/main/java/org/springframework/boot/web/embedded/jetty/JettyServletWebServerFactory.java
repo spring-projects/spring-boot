@@ -416,7 +416,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Factory method called to create the {@link JettyWebServer} . Subclasses can
+	 * Factory method called to create the {@link JettyWebServer}. Subclasses can
 	 * override this method to return a different {@link JettyWebServer} or apply
 	 * additional processing to the Jetty server.
 	 * @param server the Jetty server.
