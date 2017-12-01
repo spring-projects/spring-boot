@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Nakul Mishra
  */
 public class AtomikosPropertiesTests {
 
@@ -58,7 +59,8 @@ public class AtomikosPropertiesTests {
 		this.properties.getRecovery().setDelay(Duration.ofMillis(3000));
 		this.properties.getRecovery().setMaxRetries(10);
 		this.properties.getRecovery().setRetryInterval(Duration.ofMillis(4000));
-		assertThat(this.properties.asProperties().size()).isEqualTo(17);
+		this.properties.setDefaultMaxWaitTimeOnShutdown(20);
+		assertThat(this.properties.asProperties().size()).isEqualTo(18);
 		assertProperty("com.atomikos.icatch.service", "service");
 		assertProperty("com.atomikos.icatch.max_timeout", "1");
 		assertProperty("com.atomikos.icatch.default_jta_timeout", "2");
@@ -76,6 +78,7 @@ public class AtomikosPropertiesTests {
 		assertProperty("com.atomikos.icatch.recovery_delay", "3000");
 		assertProperty("com.atomikos.icatch.oltp_max_retries", "10");
 		assertProperty("com.atomikos.icatch.oltp_retry_interval", "4000");
+		assertProperty("com.atomikos.icatch.default_max_wait_time_on_shutdown", "20");
 	}
 
 	@Test
@@ -94,10 +97,11 @@ public class AtomikosPropertiesTests {
 				"com.atomikos.icatch.threaded_2pc",
 				"com.atomikos.icatch.forget_orphaned_log_entries_delay",
 				"com.atomikos.icatch.oltp_max_retries",
-				"com.atomikos.icatch.oltp_retry_interval"));
+				"com.atomikos.icatch.oltp_retry_interval",
+				"com.atomikos.icatch.default_max_wait_time_on_shutdown"));
 		assertThat(properties).contains(entry("com.atomikos.icatch.recovery_delay",
 				defaultSettings.get("com.atomikos.icatch.default_jta_timeout")));
-		assertThat(properties).hasSize(14);
+		assertThat(properties).hasSize(15);
 	}
 
 	private MapEntry<?, ?>[] defaultOf(Properties defaultSettings, String... keys) {

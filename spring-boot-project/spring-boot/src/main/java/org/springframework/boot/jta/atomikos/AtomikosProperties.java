@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Nakul Mishra
  * @since 1.2.0
  * @see #asProperties()
  */
@@ -106,6 +107,11 @@ public class AtomikosProperties {
 	private boolean threadedTwoPhaseCommit;
 
 	private final Recovery recovery = new Recovery();
+
+	/**
+	 * How long should normal shutdown (no-force) wait for transactions to complete.
+	 */
+	private long defaultMaxWaitTimeOnShutdown = Long.MAX_VALUE;
 
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
@@ -301,6 +307,19 @@ public class AtomikosProperties {
 	}
 
 	/**
+	 * Specifies how long should a normal shutdown (no-force) wait for transactions to complete.
+	 * Defaults to {@literal Long.MAX_VALUE}.
+	 * @param defaultMaxWaitTimeOnShutdown the default max wait time on shutdown
+	 */
+	public void setDefaultMaxWaitTimeOnShutdown(long defaultMaxWaitTimeOnShutdown) {
+		this.defaultMaxWaitTimeOnShutdown = defaultMaxWaitTimeOnShutdown;
+	}
+
+	public long getDefaultMaxWaitTimeOnShutdown() {
+		return this.defaultMaxWaitTimeOnShutdown;
+	}
+
+	/**
 	 * Returns the properties as a {@link Properties} object that can be used with
 	 * Atomikos.
 	 * @return the properties
@@ -326,6 +345,7 @@ public class AtomikosProperties {
 		set(properties, "recovery_delay", recovery.getDelay());
 		set(properties, "oltp_max_retries", recovery.getMaxRetries());
 		set(properties, "oltp_retry_interval", recovery.getRetryInterval());
+		set(properties, "default_max_wait_time_on_shutdown", getDefaultMaxWaitTimeOnShutdown());
 		return properties;
 	}
 
