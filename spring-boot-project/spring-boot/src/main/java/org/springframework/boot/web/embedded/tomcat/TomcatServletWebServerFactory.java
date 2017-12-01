@@ -522,8 +522,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	/**
-	 * Set {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}
-	 * . Calling this method will replace any existing listeners.
+	 * Set {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}.
+	 * Calling this method will replace any existing listeners.
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(
@@ -535,7 +535,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable collection of the {@link LifecycleListener}s that will be applied
-	 * to the Tomcat {@link Context} .
+	 * to the Tomcat {@link Context}.
 	 * @return the context lifecycle listeners that will be applied
 	 */
 	public Collection<LifecycleListener> getContextLifecycleListeners() {
@@ -555,7 +555,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Set {@link TomcatContextCustomizer}s that should be applied to the Tomcat
-	 * {@link Context} . Calling this method will replace any existing customizers.
+	 * {@link Context}. Calling this method will replace any existing customizers.
 	 * @param tomcatContextCustomizers the customizers to set
 	 */
 	public void setTomcatContextCustomizers(
@@ -567,7 +567,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable collection of the {@link TomcatContextCustomizer}s that will be
-	 * applied to the Tomcat {@link Context} .
+	 * applied to the Tomcat {@link Context}.
 	 * @return the listeners that will be applied
 	 */
 	public Collection<TomcatContextCustomizer> getTomcatContextCustomizers() {
@@ -588,7 +588,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Set {@link TomcatConnectorCustomizer}s that should be applied to the Tomcat
-	 * {@link Connector} . Calling this method will replace any existing customizers.
+	 * {@link Connector}. Calling this method will replace any existing customizers.
 	 * @param tomcatConnectorCustomizers the customizers to set
 	 */
 	public void setTomcatConnectorCustomizers(
@@ -612,7 +612,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable collection of the {@link TomcatConnectorCustomizer}s that will be
-	 * applied to the Tomcat {@link Connector} .
+	 * applied to the Tomcat {@link Connector}.
 	 * @return the customizers that will be applied
 	 */
 	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {

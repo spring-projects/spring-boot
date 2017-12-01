@@ -46,9 +46,9 @@ content into your application. Rather, pick only the properties that you need.
 	logging.level.*= # Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`
 	logging.path= # Location of the log file. For instance, `/var/log`
 	logging.pattern.console= # Appender pattern for output to the console. Supported only with the default Logback setup.
+	logging.pattern.dateformat= # Appender pattern for log dateformat (default yyyy-MM-dd HH:mm:ss.SSS). Only supported with the default logback setup.
 	logging.pattern.file= # Appender pattern for output to a file. Supported only with the default Logback setup.
 	logging.pattern.level= # Appender pattern for log level (default: %5p). Supported only with the default Logback setup.
-	logging.pattern.dateformat= # Appender pattern for log dateformat (default yyyy-MM-dd HH:mm:ss.SSS). Only supported with the default logback setup.
 	logging.register-shutdown-hook=false # Register a shutdown hook for the logging system when it is initialized.
 
 	# AOP
@@ -170,7 +170,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.
-	server.http2.enabled=true # Whether to enable HTTP/2 support, if the current environment supports it.
+	server.http2.enabled=false # Whether to enable HTTP/2 support, if the current environment supports it.
 	server.jetty.acceptors= # Number of acceptor threads to use.
 	server.jetty.accesslog.append=false # Append to log.
 	server.jetty.accesslog.date-format=dd/MMM/yyyy:HH:mm:ss Z # Timestamp format of the request log.

@@ -729,7 +729,7 @@ out-of-the-box by JDK8.
 [NOTE]
 ====
 Spring Boot does not support `h2c`, the cleartext version of the HTTP/2 protocol. So you
-must configure <<howto-configure-ssl, configure SSL first>>.
+must <<howto-configure-ssl, configure SSL first>>.
 ====
 
 Currently, only Undertow and Tomcat are supported with this configuration key.

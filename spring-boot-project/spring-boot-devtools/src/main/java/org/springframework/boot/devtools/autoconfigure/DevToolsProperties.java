@@ -40,7 +40,7 @@ public class DevToolsProperties {
 	private Livereload livereload = new Livereload();
 
 	@NestedConfigurationProperty
-	private RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
+	private final RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
 
 	public Restart getRestart() {
 		return this.restart;

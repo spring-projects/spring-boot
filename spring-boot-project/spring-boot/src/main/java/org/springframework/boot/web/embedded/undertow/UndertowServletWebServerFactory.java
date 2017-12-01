@@ -160,7 +160,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	/**
 	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
-	 * applied to the Undertow {@link Builder} .
+	 * applied to the Undertow {@link Builder}.
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
@@ -191,7 +191,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	/**
 	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo} .
+	 * will be applied to the Undertow {@link DeploymentInfo}.
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
