@@ -53,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Nakul Mishra
  * @since 1.2.0
  */
 @Configuration
@@ -72,7 +73,7 @@ class AtomikosJtaConfiguration {
 				.getIfAvailable();
 	}
 
-	@Bean(initMethod = "init", destroyMethod = "shutdownForce")
+	@Bean(initMethod = "init", destroyMethod = "shutdownWait")
 	@ConditionalOnMissingBean(UserTransactionService.class)
 	public UserTransactionServiceImp userTransactionService(
 			AtomikosProperties atomikosProperties) {
