@@ -26,8 +26,8 @@ import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
@@ -80,9 +80,9 @@ public class ReactiveTokenValidatorTests {
 			+ "r3F7aM9YpErzeYLrl0GhQr9BVJxOvXcVd4kmY+XkiCcrkyS1cnghnllh+LCwQu1s\n"
 			+ "YwIDAQAB\n-----END PUBLIC KEY-----";
 
-	private static final Map<String, String> INVALID_KEYS = new LinkedHashMap<>();
+	private static final Map<String, String> INVALID_KEYS = new ConcurrentHashMap<>();
 
-	private static final Map<String, String> VALID_KEYS = new LinkedHashMap<>();
+	private static final Map<String, String> VALID_KEYS = new ConcurrentHashMap<>();
 
 	@Before
 	public void setup() throws Exception {
