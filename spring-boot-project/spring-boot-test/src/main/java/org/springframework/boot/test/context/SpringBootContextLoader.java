@@ -238,7 +238,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	/**
 	 * Detect the default configuration classes for the supplied test class. By default
 	 * simply delegates to
-	 * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses} .
+	 * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses}.
 	 * @param declaringClass the test class that declared {@code @ContextConfiguration}
 	 * @return an array of default configuration classes, potentially empty but never
 	 * {@code null}

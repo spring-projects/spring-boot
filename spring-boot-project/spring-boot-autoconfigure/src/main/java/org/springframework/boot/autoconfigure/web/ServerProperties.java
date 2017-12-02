@@ -74,7 +74,7 @@ public class ServerProperties {
 	private String displayName = "application";
 
 	@NestedConfigurationProperty
-	private ErrorProperties error = new ErrorProperties();
+	private final ErrorProperties error = new ErrorProperties();
 
 	/**
 	 * Whether X-Forwarded-* headers should be applied to the HttpRequest.
@@ -104,10 +104,10 @@ public class ServerProperties {
 	private Ssl ssl;
 
 	@NestedConfigurationProperty
-	private Compression compression = new Compression();
+	private final Compression compression = new Compression();
 
 	@NestedConfigurationProperty
-	private Http2 http2 = new Http2();
+	private final Http2 http2 = new Http2();
 
 	private Servlet servlet = new Servlet();
 
