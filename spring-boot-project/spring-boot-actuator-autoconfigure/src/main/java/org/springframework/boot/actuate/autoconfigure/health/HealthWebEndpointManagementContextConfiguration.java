@@ -65,12 +65,13 @@ public class HealthWebEndpointManagementContextConfiguration {
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	static class ReactiveWebHealthConfiguration {
 
-		@Bean
-		public ReactiveHealthIndicator reactiveHealthIndicator(
+		private final ReactiveHealthIndicator reactiveHealthIndicator;
+
+		ReactiveWebHealthConfiguration(
 				ObjectProvider<HealthAggregator> healthAggregator,
 				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
 				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
-			return new CompositeReactiveHealthIndicatorFactory()
+			this.reactiveHealthIndicator = new CompositeReactiveHealthIndicatorFactory()
 					.createReactiveHealthIndicator(
 							healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
 							reactiveHealthIndicators
@@ -83,10 +84,9 @@ public class HealthWebEndpointManagementContextConfiguration {
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
 		public ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
-				ReactiveHealthIndicator reactiveHealthIndicator,
 				HealthStatusHttpMapper healthStatusHttpMapper,
 				HealthEndpointProperties properties) {
-			return new ReactiveHealthEndpointWebExtension(reactiveHealthIndicator,
+			return new ReactiveHealthEndpointWebExtension(this.reactiveHealthIndicator,
 					healthStatusHttpMapper, properties.isShowDetails());
 		}
 

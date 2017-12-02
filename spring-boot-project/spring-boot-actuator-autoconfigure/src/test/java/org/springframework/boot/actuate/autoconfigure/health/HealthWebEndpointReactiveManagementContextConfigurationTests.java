@@ -19,10 +19,17 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Map;
 
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,6 +77,38 @@ public class HealthWebEndpointReactiveManagementContextConfigurationTests {
 					assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
 					assertThat(statusMappings).containsEntry("CUSTOM", 500);
 				});
+	}
+
+	@Test
+	public void regularAndReactiveHealthIndicatorsMatch() {
+		this.contextRunner
+				.withUserConfiguration(HealthIndicatorsConfiguration.class)
+				.run((context) -> {
+					HealthEndpoint endpoint = context.getBean(HealthEndpoint.class);
+					ReactiveHealthEndpointWebExtension extension = context
+							.getBean(ReactiveHealthEndpointWebExtension.class);
+					Health endpointHealth = endpoint.health();
+					Health extensionHealth = extension.health(true).block().getBody();
+					assertThat(endpointHealth.getDetails())
+							.containsOnlyKeys("application", "first", "second");
+					assertThat(extensionHealth.getDetails())
+							.containsOnlyKeys("application", "first", "second");
+				});
+	}
+
+	@Configuration
+	static class HealthIndicatorsConfiguration {
+
+		@Bean
+		public HealthIndicator firstHealthIndicator() {
+			return () -> Health.up().build();
+		}
+
+		@Bean
+		public ReactiveHealthIndicator secondHealthIndicator() {
+			return () -> Mono.just(Health.up().build());
+		}
+
 	}
 
 }
