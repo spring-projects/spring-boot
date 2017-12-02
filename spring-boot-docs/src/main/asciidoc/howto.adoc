@@ -2030,7 +2030,7 @@ then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean`
 id '`entityManagerFactory`', and set the persistence unit name there.
 
 See
-https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
+{sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
 for the default settings.
 
 
