@@ -28,6 +28,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,17 +37,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link EnvironmentEndpointAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Piotr Betkier
  */
 public class EnvironmentEndpointAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = createContextRunner(
+			EnvironmentEndpointAutoConfiguration.class);
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
-				.run(validateSystemProperties("******", "******"));
+		this.contextRunner
+				.withSystemProperties("dbPassword=123456", "apiKey=123456", "fine=123456")
+				.run(validateSystemProperties("******", "******", "123456"));
 	}
 
 	@Test
@@ -58,13 +61,29 @@ public class EnvironmentEndpointAutoConfigurationTests {
 
 	@Test
 	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
-		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
+		this.contextRunner
+				.withSystemProperties("dbPassword=123456", "apiKey=123456", "fine=123456")
 				.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
-				.run(validateSystemProperties("******", "123456"));
+				.run(validateSystemProperties("******", "123456", "123456"));
+	}
+
+	@Test
+	public void customSanitizationRulesCanBeConfiguredByRegisteringFilters()
+			throws Exception {
+		createContextRunner(EnvironmentEndpointAutoConfiguration.class,
+				EnvironmentEndpointSanitizerConfiguration.class)
+						.withSystemProperties("dbPassword=123456", "apiKey=123456",
+								"fine=123456")
+						.run(validateSystemProperties("******", "******", "******"));
+	}
+
+	private ApplicationContextRunner createContextRunner(Class<?>... configurations) {
+		return new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(configurations));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(
-			String dbPassword, String apiKey) {
+			String dbPassword, String apiKey, String fine) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 			EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
@@ -74,6 +93,7 @@ public class EnvironmentEndpointAutoConfigurationTests {
 			assertThat(systemProperties.get("dbPassword").getValue())
 					.isEqualTo(dbPassword);
 			assertThat(systemProperties.get("apiKey").getValue()).isEqualTo(apiKey);
+			assertThat(systemProperties.get("fine").getValue()).isEqualTo(fine);
 		};
 	}
 
@@ -81,6 +101,16 @@ public class EnvironmentEndpointAutoConfigurationTests {
 			EnvironmentDescriptor descriptor) {
 		return descriptor.getPropertySources().stream()
 				.filter((source) -> name.equals(source.getName())).findFirst().get();
+	}
+
+	@Configuration
+	public static class EnvironmentEndpointSanitizerConfiguration {
+
+		@Bean
+		public EnvironmentEndpoint.SanitizeFilter systemPropertiesSanitizeFilter() {
+			return s -> s.getSource().getName().equals("systemProperties");
+		}
+
 	}
 
 }

@@ -29,6 +29,7 @@ import org.springframework.util.SystemPropertyUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Piotr Betkier
  * @since 2.0.0
  */
 public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver {
@@ -63,16 +64,20 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 		return value;
 	}
 
-	protected String resolvePlaceholder(String placeholder) {
+	private String resolvePlaceholder(String placeholder) {
 		if (this.sources != null) {
 			for (PropertySource<?> source : this.sources) {
 				Object value = source.getProperty(placeholder);
 				if (value != null) {
-					return String.valueOf(value);
+					return convertResolvedValueToString(placeholder, value, source);
 				}
 			}
 		}
 		return null;
+	}
+
+	protected String convertResolvedValueToString(String placeholder, Object value, PropertySource<?> source) {
+		return String.valueOf(value);
 	}
 
 	private static PropertySources getSources(Environment environment) {

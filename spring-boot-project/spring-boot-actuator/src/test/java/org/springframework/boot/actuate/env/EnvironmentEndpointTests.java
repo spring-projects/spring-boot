@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.sanitize.KeyBlacklistSanitizeFilter;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor;
@@ -145,9 +146,12 @@ public class EnvironmentEndpointTests {
 	public void sensitiveKeysMatchingCustomNameHaveTheirValuesSanitized() {
 		TestPropertyValues.of("dbPassword=123456", "apiKey=123456")
 				.applyToSystemProperties(() -> {
+					KeyBlacklistSanitizeFilter filter =
+							KeyBlacklistSanitizeFilter.matchingKeys("key");
 					EnvironmentEndpoint endpoint = new EnvironmentEndpoint(
-							new StandardEnvironment());
-					endpoint.setKeysToSanitize("key");
+							new StandardEnvironment(),
+							Collections.singleton(EnvironmentEndpoint.SanitizeFilter.from(filter))
+					);
 					EnvironmentDescriptor descriptor = endpoint.environment(null);
 					Map<String, PropertyValueDescriptor> systemProperties = propertySources(
 							descriptor).get("systemProperties").getProperties();
@@ -163,9 +167,12 @@ public class EnvironmentEndpointTests {
 	public void sensitiveKeysMatchingCustomPatternHaveTheirValuesSanitized() {
 		TestPropertyValues.of("dbPassword=123456", "apiKey=123456")
 				.applyToSystemProperties(() -> {
+					KeyBlacklistSanitizeFilter filter =
+							KeyBlacklistSanitizeFilter.matchingKeys(".*pass.*");
 					EnvironmentEndpoint endpoint = new EnvironmentEndpoint(
-							new StandardEnvironment());
-					endpoint.setKeysToSanitize(".*pass.*");
+							new StandardEnvironment(),
+							Collections.singleton(EnvironmentEndpoint.SanitizeFilter.from(filter))
+					);
 					EnvironmentDescriptor descriptor = endpoint.environment(null);
 					Map<String, PropertyValueDescriptor> systemProperties = propertySources(
 							descriptor).get("systemProperties").getProperties();

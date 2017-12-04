@@ -16,7 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.env;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.endpoint.sanitize.KeyBlacklistSanitizeFilter;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -32,6 +38,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Piotr Betkier
  * @since 2.0.0
  */
 @Configuration
@@ -48,13 +55,19 @@ public class EnvironmentEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public EnvironmentEndpoint environmentEndpoint(Environment environment) {
-		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment);
+	public EnvironmentEndpoint environmentEndpoint(Environment environment,
+			ObjectProvider<Collection<EnvironmentEndpoint.SanitizeFilter>> customFilters) {
+
 		String[] keysToSanitize = this.properties.getKeysToSanitize();
-		if (keysToSanitize != null) {
-			endpoint.setKeysToSanitize(keysToSanitize);
-		}
-		return endpoint;
+		KeyBlacklistSanitizeFilter keyMatchFilter = (keysToSanitize != null)
+				? KeyBlacklistSanitizeFilter.matchingKeys(keysToSanitize)
+				: KeyBlacklistSanitizeFilter.matchingDefaultKeys();
+
+		Collection<EnvironmentEndpoint.SanitizeFilter> filters = new ArrayList<>();
+		filters.add(EnvironmentEndpoint.SanitizeFilter.from(keyMatchFilter));
+		Optional.ofNullable(customFilters.getIfAvailable()).ifPresent(filters::addAll);
+
+		return new EnvironmentEndpoint(environment, filters);
 	}
 
 	@Bean

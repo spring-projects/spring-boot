@@ -14,58 +14,60 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.sanitize;
 
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
 
 /**
- * Strategy that should be used by endpoint implementations to sanitize potentially
- * sensitive keys.
+ * Sanitize filter operating on String keys. Matches if the given key contains any of the
+ * configured words. Supports basic regex syntax.
  *
- * @author Christian Dupuis
- * @author Toshiaki Maki
- * @author Phillip Webb
- * @author Nicolas Lejeune
- * @author Stephane Nicoll
+ * @author Piotr Betkier
  * @since 2.0.0
  */
-public class Sanitizer {
+public final class KeyBlacklistSanitizeFilter implements Sanitizer.Filter<String> {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
-	private Pattern[] keysToSanitize;
+	private final Pattern[] keysToSanitize;
 
-	public Sanitizer() {
-		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services");
-	}
-
-	public Sanitizer(String... keysToSanitize) {
-		setKeysToSanitize(keysToSanitize);
+	private KeyBlacklistSanitizeFilter(Pattern[] patterns) {
+		this.keysToSanitize = patterns;
 	}
 
 	/**
-	 * Keys that should be sanitized. Keys can be simple strings that the property ends
-	 * with or regular expressions.
-	 * @param keysToSanitize the keys to sanitize
+	 * Creates the filter based on the default blacklist.
+	 * @return a new filter instance
 	 */
-	public void setKeysToSanitize(String... keysToSanitize) {
-		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
-		this.keysToSanitize = new Pattern[keysToSanitize.length];
-		for (int i = 0; i < keysToSanitize.length; i++) {
-			this.keysToSanitize[i] = getPattern(keysToSanitize[i]);
-		}
+	public static KeyBlacklistSanitizeFilter matchingDefaultKeys() {
+		return KeyBlacklistSanitizeFilter.matchingKeys("password", "secret", "key",
+				"token", ".*credentials.*", "vcap_services");
 	}
 
-	private Pattern getPattern(String value) {
+	/**
+	 * Creates the filter based on the given blacklist.
+	 * @param keysToSanitize keys to match
+	 * @return a new filter instance
+	 */
+	public static KeyBlacklistSanitizeFilter matchingKeys(String... keysToSanitize) {
+		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
+		Pattern[] patterns = new Pattern[keysToSanitize.length];
+		for (int i = 0; i < keysToSanitize.length; i++) {
+			patterns[i] = getPattern(keysToSanitize[i]);
+		}
+		return new KeyBlacklistSanitizeFilter(patterns);
+	}
+
+	private static Pattern getPattern(String value) {
 		if (isRegex(value)) {
 			return Pattern.compile(value, Pattern.CASE_INSENSITIVE);
 		}
 		return Pattern.compile(".*" + value + "$", Pattern.CASE_INSENSITIVE);
 	}
 
-	private boolean isRegex(String value) {
+	private static boolean isRegex(String value) {
 		for (String part : REGEX_PARTS) {
 			if (value.contains(part)) {
 				return true;
@@ -74,22 +76,13 @@ public class Sanitizer {
 		return false;
 	}
 
-	/**
-	 * Sanitize the given value if necessary.
-	 * @param key the key to sanitize
-	 * @param value the value
-	 * @return the potentially sanitized value
-	 */
-	public Object sanitize(String key, Object value) {
-		if (value == null) {
-			return null;
-		}
+	@Override
+	public boolean match(String key) {
 		for (Pattern pattern : this.keysToSanitize) {
 			if (pattern.matcher(key).matches()) {
-				return "******";
+				return true;
 			}
 		}
-		return value;
+		return false;
 	}
-
 }

@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Piotr Betkier
  * @since 2.0.0
  */
 @Configuration
@@ -47,12 +48,11 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
-		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
 		String[] keysToSanitize = this.properties.getKeysToSanitize();
 		if (keysToSanitize != null) {
-			endpoint.setKeysToSanitize(keysToSanitize);
+			return new ConfigurationPropertiesReportEndpoint(keysToSanitize);
 		}
-		return endpoint;
+		return new ConfigurationPropertiesReportEndpoint();
 	}
 
 }

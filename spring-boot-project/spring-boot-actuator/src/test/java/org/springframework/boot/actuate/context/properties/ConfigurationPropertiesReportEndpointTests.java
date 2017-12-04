@@ -175,12 +175,10 @@ public class ConfigurationPropertiesReportEndpointTests {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(Config.class);
 		contextRunner.run((context) -> {
-			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			if (!CollectionUtils.isEmpty(keysToSanitize)) {
-				endpoint.setKeysToSanitize(
-						keysToSanitize.toArray(new String[keysToSanitize.size()]));
-			}
+			ConfigurationPropertiesReportEndpointFactory endpointFactory = context
+					.getBean(ConfigurationPropertiesReportEndpointFactory.class);
+			ConfigurationPropertiesReportEndpoint endpoint = endpointFactory
+					.create(context, keysToSanitize);
 			properties.accept(context, endpoint.configurationProperties());
 		});
 	}
@@ -196,13 +194,31 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	}
 
+	private static class ConfigurationPropertiesReportEndpointFactory {
+
+		ConfigurationPropertiesReportEndpoint create(ApplicationContext context,
+				List<String> keysToSanitize) {
+			ConfigurationPropertiesReportEndpoint endpoint;
+			if (!CollectionUtils.isEmpty(keysToSanitize)) {
+				endpoint = new ConfigurationPropertiesReportEndpoint(
+						keysToSanitize.toArray(new String[keysToSanitize.size()]));
+			}
+			else {
+				endpoint = new ConfigurationPropertiesReportEndpoint();
+			}
+			endpoint.setApplicationContext(context);
+			return endpoint;
+		}
+
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+		public ConfigurationPropertiesReportEndpointFactory factory() {
+			return new ConfigurationPropertiesReportEndpointFactory();
 		}
 
 		@Bean

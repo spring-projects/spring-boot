@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Collections;
+
 import org.junit.Test;
+
+import org.springframework.boot.actuate.endpoint.sanitize.Sanitizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,12 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Piotr Betkier
  */
 public class SanitizerTests {
 
 	@Test
 	public void defaults() throws Exception {
-		Sanitizer sanitizer = new Sanitizer();
+		Sanitizer<String> sanitizer = Sanitizer.keyBlacklistSanitizer();
 		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
@@ -43,9 +48,30 @@ public class SanitizerTests {
 
 	@Test
 	public void regex() throws Exception {
-		Sanitizer sanitizer = new Sanitizer(".*lock.*");
+		Sanitizer<String> sanitizer = Sanitizer.keyBlacklistSanitizer(".*lock.*");
 		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("veryokish", "secret")).isEqualTo("secret");
 	}
 
+	@Test
+	public void customFilter() throws Exception {
+		Sanitizer.Filter<CustomSource> secretSourceFilter = s -> s.data
+				.contains("secret");
+		Sanitizer<CustomSource> sanitizer = Sanitizer
+				.customRulesSanitizer(Collections.singleton(secretSourceFilter));
+
+		assertThat(sanitizer.sanitize(new CustomSource("secretSource"),
+				"should-be-sanitized")).isEqualTo("******");
+		assertThat(sanitizer.sanitize(new CustomSource("ordinarySource"),
+				"should-not-be-sanitized")).isEqualTo("should-not-be-sanitized");
+	}
+
+	private static final class CustomSource {
+
+		private final String data;
+
+		private CustomSource(String data) {
+			this.data = data;
+		}
+	}
 }

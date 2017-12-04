@@ -44,9 +44,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.sanitize.Sanitizer;
 import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -74,7 +74,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private static final String CONFIGURATION_PROPERTIES_FILTER_ID = "configurationPropertiesFilter";
 
-	private final Sanitizer sanitizer = new Sanitizer();
+	private final Sanitizer<String> sanitizer;
 
 	private ApplicationContext context;
 
@@ -83,8 +83,12 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		this.context = context;
 	}
 
-	public void setKeysToSanitize(String... keysToSanitize) {
-		this.sanitizer.setKeysToSanitize(keysToSanitize);
+	public ConfigurationPropertiesReportEndpoint() {
+		this.sanitizer = Sanitizer.keyBlacklistSanitizer();
+	}
+
+	public ConfigurationPropertiesReportEndpoint(String... keysToSanitize) {
+		this.sanitizer = Sanitizer.keyBlacklistSanitizer(keysToSanitize);
 	}
 
 	@ReadOperation
