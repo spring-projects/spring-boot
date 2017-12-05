@@ -1244,7 +1244,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 	# METRICS
-	spring.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
+	spring.metrics.binders.jvmmemory.enabled=true # Whether to enable JVM memory metrics.
+	spring.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
+	spring.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
+	spring.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
 	spring.metrics.export.atlas.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
 	spring.metrics.export.atlas.config-refresh-frequency= # Frequency for refreshing config settings from the LWC service.
 	spring.metrics.export.atlas.config-time-to-live= # Time to live for subscriptions from the LWC service.
@@ -1311,6 +1314,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
 	spring.metrics.jdbc.datasource-metric-name=data.source # Name of the metric for data source usage.
 	spring.metrics.jdbc.instrument-datasource=true # Instrument all available data sources.
+	spring.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
 	spring.metrics.web.client.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	spring.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
 	spring.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
