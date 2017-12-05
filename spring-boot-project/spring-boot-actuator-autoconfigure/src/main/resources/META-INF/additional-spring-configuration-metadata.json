@@ -186,6 +186,30 @@
       "defaultValue": true
     },
     {
+      "name": "spring.metrics.binders.jvmmemory.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JVM memory metrics.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.metrics.binders.logback.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Logback metrics.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.metrics.binders.processor.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable processor metrics.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.metrics.binders.uptime.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable uptime metrics.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.metrics.jdbc.instrument-datasource",
       "type": "java.lang.Boolean",
       "description": "Instrument all available data sources.",
