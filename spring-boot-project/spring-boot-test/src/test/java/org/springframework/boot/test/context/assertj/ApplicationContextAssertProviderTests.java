@@ -197,8 +197,8 @@ public class ApplicationContextAssertProviderTests {
 				this.mockContextSupplier);
 		assertThat(context.toString())
 				.startsWith(
-						"Started application org.springframework.context.ConfigurableApplicationContext$MockitoMock")
-				.endsWith("[id=<null>,applicationName=<null>,beanDefinitionCount=0]");
+						"Started application [ConfigurableApplicationContext.MockitoMock")
+				.endsWith("id = [null], applicationName = [null], beanDefinitionCount = 0]");
 	}
 
 	@Test
