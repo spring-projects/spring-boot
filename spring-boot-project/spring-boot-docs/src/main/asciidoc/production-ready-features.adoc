@@ -923,6 +923,7 @@ monitoring systems:
 - https://graphiteapp.org[Graphite]
 - https://www.influxdata.com[Influx]
 - https://prometheus.io[Prometheus]
+- https://aws.amazon.com/cloudwatch/[CloudWatch]
 
 Micrometer provides a separate module for each supported monitoring system. Depending on
 one (or more) of these modules is sufficient to get started with Micrometer in your
