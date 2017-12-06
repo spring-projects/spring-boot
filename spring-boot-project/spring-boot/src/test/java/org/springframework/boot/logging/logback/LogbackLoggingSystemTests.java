@@ -363,6 +363,22 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void testMaxFileSizePropertyWithXmlConfiguration() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.max-size", "100MB");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext,
+				"classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
+				.toString()).isEqualTo("100 MB");
+	}
+
+	@Test
 	public void testMaxHistoryProperty() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-history", "30");
@@ -371,6 +387,21 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
 		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().getMaxHistory()).isEqualTo(30);
+	}
+
+	@Test
+	public void testMaxHistoryPropertyWithXmlConfiguration() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.max-history", "30");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext,
+				"classpath:logback-include-base.xml", logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(getRollingPolicy().getMaxHistory()).isEqualTo(30);
