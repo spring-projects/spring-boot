@@ -1312,6 +1312,13 @@ content into your application. Rather, pick only the properties that you need.
 	spring.metrics.export.statsd.polling-frequency=10s # How often gauges will be polled. When a gauge is polled, its value is recalculated and if the value has changed, it is sent to the StatsD server.
 	spring.metrics.export.statsd.port=8125 # Port of the StatsD server to receive exported metrics.
 	spring.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
+	spring.metrics.export.cloudwatch.namespace= # AWS CloudWatch namespace.
+    spring.metrics.export.cloudwatch.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made. Max 20.
+    spring.metrics.export.cloudwatch.connect-timeout= # Connection timeout for requests to the backend.
+    spring.metrics.export.cloudwatch.enabled= # Whether exporting of metrics to this backend is enabled.
+    spring.metrics.export.cloudwatch.num-threads= # Number of threads to use with the metrics publishing scheduler.
+    spring.metrics.export.cloudwatch.read-timeout= # Read timeout for requests to the backend.
+    spring.metrics.export.cloudwatch.step=1m # Step size (i.e. reporting frequency) to use.
 	spring.metrics.jdbc.datasource-metric-name=data.source # Name of the metric for data source usage.
 	spring.metrics.jdbc.instrument-datasource=true # Instrument all available data sources.
 	spring.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.

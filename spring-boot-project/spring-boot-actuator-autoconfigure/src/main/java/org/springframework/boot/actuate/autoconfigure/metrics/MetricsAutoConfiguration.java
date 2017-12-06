@@ -29,6 +29,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasExportConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.cloudwatch.CloudWatchExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.GangliaExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.graphite.GraphiteExportConfiguration;
@@ -72,7 +73,8 @@ import org.springframework.integration.support.management.IntegrationManagementC
 		DatadogExportConfiguration.class, GangliaExportConfiguration.class,
 		GraphiteExportConfiguration.class, InfluxExportConfiguration.class,
 		JmxExportConfiguration.class, PrometheusExportConfiguration.class,
-		SimpleExportConfiguration.class, StatsdExportConfiguration.class })
+		SimpleExportConfiguration.class, StatsdExportConfiguration.class,
+		CloudWatchExportConfiguration.class})
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MetricsAutoConfiguration {
 

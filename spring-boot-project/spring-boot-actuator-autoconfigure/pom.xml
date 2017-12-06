@@ -128,6 +128,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-cloudwatch</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.searchbox</groupId>
 			<artifactId>jest</artifactId>
 			<optional>true</optional>
