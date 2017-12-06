@@ -49,6 +49,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
@@ -390,7 +391,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	public void customExceptionConversionWord() throws Exception {
-		System.setProperty("LOG_EXCEPTION_CONVERSION_WORD", "%ex");
+		System.setProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD, "%ex");
 		try {
 			this.loggingSystem.beforeInitialize();
 			this.logger.info("Hidden");
@@ -407,7 +408,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			assertThat(fileContents).is(Matched.by(expectedOutput));
 		}
 		finally {
-			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
+			System.clearProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD);
 		}
 	}
 
@@ -419,7 +420,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:logback-nondefault.xml", logFile);
-		assertThat(System.getProperty("LOG_FILE")).endsWith("example.log");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
+				.endsWith("example.log");
 	}
 
 	@Test

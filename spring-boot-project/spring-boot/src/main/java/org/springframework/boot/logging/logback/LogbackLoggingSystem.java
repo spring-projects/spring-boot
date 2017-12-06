@@ -42,6 +42,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -127,10 +128,12 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		stopAndReset(context);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		Environment environment = initializationContext.getEnvironment();
-		context.putProperty("LOG_LEVEL_PATTERN", environment.resolvePlaceholders(
-				"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
-		context.putProperty("LOG_DATEFORMAT_PATTERN", environment.resolvePlaceholders(
-				"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
+		context.putProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN,
+				environment.resolvePlaceholders(
+						"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
+		context.putProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN,
+				environment.resolvePlaceholders(
+						"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
 		context.setPackagingDataEnabled(true);

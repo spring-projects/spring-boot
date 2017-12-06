@@ -108,7 +108,7 @@ class StartupInfoLogger {
 	}
 
 	private String getPid() {
-		return getValue(" with PID ", () -> System.getProperty("PID"));
+		return getValue(" with PID ", () -> new ApplicationPid().toString());
 	}
 
 	private String getContext() {

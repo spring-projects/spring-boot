@@ -34,6 +34,7 @@ import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -117,7 +118,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	public void testSystemPropertyInitializesFormat() throws Exception {
-		System.setProperty("PID", "1234");
+		System.setProperty(LoggingSystemProperties.PID_KEY, "1234");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, "classpath:" + ClassUtils
 				.addResourcePathToPackagePath(getClass(), "logging.properties"), null);

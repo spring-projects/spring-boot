@@ -49,6 +49,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -117,13 +118,13 @@ public class LoggingApplicationListenerTests {
 		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
 		loggingSystem.cleanUp();
 		System.clearProperty(LoggingSystem.class.getName());
-		System.clearProperty("LOG_FILE");
-		System.clearProperty("LOG_PATH");
-		System.clearProperty("PID");
-		System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
-		System.clearProperty("CONSOLE_LOG_PATTERN");
-		System.clearProperty("FILE_LOG_PATTERN");
-		System.clearProperty("LOG_LEVEL_PATTERN");
+		System.clearProperty(LoggingSystemProperties.LOG_FILE);
+		System.clearProperty(LoggingSystemProperties.LOG_PATH);
+		System.clearProperty(LoggingSystemProperties.PID_KEY);
+		System.clearProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD);
+		System.clearProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN);
+		System.clearProperty(LoggingSystemProperties.FILE_LOG_PATTERN);
+		System.clearProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN);
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 		if (this.context != null) {
 			this.context.close();
@@ -481,14 +482,19 @@ public class LoggingApplicationListenerTests {
 				"logging.pattern.file=file", "logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console");
-		assertThat(System.getProperty("FILE_LOG_PATTERN")).isEqualTo("file");
-		assertThat(System.getProperty("LOG_EXCEPTION_CONVERSION_WORD"))
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console");
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN))
+				.isEqualTo("file");
+		assertThat(System.getProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD))
 				.isEqualTo("conversion");
-		assertThat(System.getProperty("LOG_FILE")).isEqualTo("target/log");
-		assertThat(System.getProperty("LOG_LEVEL_PATTERN")).isEqualTo("level");
-		assertThat(System.getProperty("LOG_PATH")).isEqualTo("path");
-		assertThat(System.getProperty("PID")).isNotNull();
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("target/log");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN))
+				.isEqualTo("level");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("path");
+		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
 	}
 
 	@Test
@@ -498,7 +504,8 @@ public class LoggingApplicationListenerTests {
 				"logging.pattern.console=console ${pid}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console ${pid}");
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console ${pid}");
 	}
 
 	@Test
@@ -507,7 +514,7 @@ public class LoggingApplicationListenerTests {
 				"logging.file=target/${PID}.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty("LOG_FILE"))
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
 				.isEqualTo("target/" + new ApplicationPid().toString() + ".log");
 	}
 
