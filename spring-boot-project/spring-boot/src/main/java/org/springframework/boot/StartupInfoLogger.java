@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -108,7 +109,7 @@ class StartupInfoLogger {
 	}
 
 	private String getPid() {
-		return getValue(" with PID ", () -> System.getProperty("PID"));
+		return getValue(" with PID ", () -> System.getProperty(LoggingSystemProperties.PID_KEY));
 	}
 
 	private String getContext() {
