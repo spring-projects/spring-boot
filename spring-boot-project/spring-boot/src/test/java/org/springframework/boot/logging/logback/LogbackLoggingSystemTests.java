@@ -420,7 +420,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:logback-nondefault.xml", logFile);
-		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE)).endsWith("example.log");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
+				.endsWith("example.log");
 	}
 
 	@Test

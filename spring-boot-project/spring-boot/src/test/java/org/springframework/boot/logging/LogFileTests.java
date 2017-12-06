@@ -51,7 +51,8 @@ public class LogFileTests {
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile.toString()).isEqualTo("log.file");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("log.file");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isNull();
 	}
 
@@ -62,8 +63,10 @@ public class LogFileTests {
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile.toString()).isEqualTo("logpath/spring.log");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("logpath/spring.log");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("logpath");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("logpath/spring.log");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("logpath");
 	}
 
 	@Test
@@ -73,8 +76,10 @@ public class LogFileTests {
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile.toString()).isEqualTo("log.file");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("log.file");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("logpath");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("logpath");
 	}
 
 	private PropertyResolver getPropertyResolver(String file, String path) {

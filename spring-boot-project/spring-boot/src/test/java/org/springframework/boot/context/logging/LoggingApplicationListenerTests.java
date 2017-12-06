@@ -482,13 +482,18 @@ public class LoggingApplicationListenerTests {
 				"logging.pattern.file=file", "logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).isEqualTo("console");
-		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).isEqualTo("file");
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console");
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN))
+				.isEqualTo("file");
 		assertThat(System.getProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD))
 				.isEqualTo("conversion");
-		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("target/log");
-		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN)).isEqualTo("level");
-		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("path");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("target/log");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN))
+				.isEqualTo("level");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("path");
 		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
 	}
 
@@ -499,7 +504,8 @@ public class LoggingApplicationListenerTests {
 				"logging.pattern.console=console ${pid}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).isEqualTo("console ${pid}");
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console ${pid}");
 	}
 
 	@Test
