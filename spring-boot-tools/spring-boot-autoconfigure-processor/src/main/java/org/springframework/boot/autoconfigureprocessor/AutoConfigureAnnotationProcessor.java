@@ -166,15 +166,22 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				Object value = entry.getValue().getValue();
 				if (value instanceof List) {
 					for (AnnotationValue annotationValue : (List<AnnotationValue>) value) {
-						result.add(annotationValue.getValue());
+						result.add(processValue(annotationValue.getValue()));
 					}
 				}
 				else {
-					result.add(value);
+					result.add(processValue(value));
 				}
 			}
 		}
 		return result;
+	}
+
+	private Object processValue(Object value)  {
+		if (value instanceof DeclaredType) {
+			return getQualifiedName(((DeclaredType) value).asElement());
+		}
+		return value;
 	}
 
 	private String getQualifiedName(Element element) {

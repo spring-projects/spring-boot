@@ -16,15 +16,13 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import java.io.OutputStream;
-
 /**
  * Test configuration with an annotated class.
  *
  * @author Madhura Bhave
  */
 @TestConfiguration
-@TestConditionalOnClass(name = "java.io.InputStream", value = OutputStream.class)
+@TestConditionalOnClass(name = "java.io.InputStream", value = TestClassConfiguration.Nested.class)
 public class TestClassConfiguration {
 
 	@TestAutoConfigureOrder
