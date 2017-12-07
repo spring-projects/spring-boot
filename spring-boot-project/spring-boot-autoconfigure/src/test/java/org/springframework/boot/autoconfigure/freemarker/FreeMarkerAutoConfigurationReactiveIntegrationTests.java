@@ -130,7 +130,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		Mono<View> view = resolver.resolveViewName(viewName, Locale.UK);
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/path"));
-		view.flatMap(v -> v.render(null, MediaType.TEXT_HTML, exchange)).block();
+		view.flatMap((v) -> v.render(null, MediaType.TEXT_HTML, exchange)).block();
 		return exchange;
 	}
 

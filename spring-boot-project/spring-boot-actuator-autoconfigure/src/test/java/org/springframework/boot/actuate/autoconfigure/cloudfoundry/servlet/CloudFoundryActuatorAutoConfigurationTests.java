@@ -259,9 +259,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				.getBean("cloudFoundryWebEndpointServletHandlerMapping",
 						CloudFoundryWebEndpointServletHandlerMapping.class)
 				.getEndpoints();
-		EndpointInfo endpointInfo = (EndpointInfo) (endpoints.toArray()[0]);
-		WebOperation webOperation = (WebOperation) endpointInfo.getOperations()
-				.toArray()[0];
+		EndpointInfo<WebOperation> endpointInfo = endpoints.iterator().next();
+		WebOperation webOperation = endpointInfo.getOperations().iterator().next();
 		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation
 				.getInvoker();
 		assertThat(ReflectionTestUtils.getField(invoker, "target"))

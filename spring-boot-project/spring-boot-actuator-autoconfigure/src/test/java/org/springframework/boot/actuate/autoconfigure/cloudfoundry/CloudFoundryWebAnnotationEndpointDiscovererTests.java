@@ -49,7 +49,7 @@ public class CloudFoundryWebAnnotationEndpointDiscovererTests {
 
 	@Test
 	public void discovererShouldAddSuppliedExtensionForHealthEndpoint() throws Exception {
-		load(TestConfiguration.class, endpointDiscoverer -> {
+		load(TestConfiguration.class, (endpointDiscoverer) -> {
 			Collection<EndpointInfo<WebOperation>> endpoints = endpointDiscoverer
 					.discoverEndpoints();
 			assertThat(endpoints.size()).isEqualTo(2);
