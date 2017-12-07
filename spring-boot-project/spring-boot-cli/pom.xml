@@ -267,6 +267,9 @@
 						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<tarLongFileMode>posix</tarLongFileMode>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
