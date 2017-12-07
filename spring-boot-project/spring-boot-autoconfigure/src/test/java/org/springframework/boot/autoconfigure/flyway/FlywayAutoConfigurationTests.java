@@ -26,7 +26,6 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
-import org.flywaydb.core.internal.callback.SqlScriptFlywayCallback;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -285,11 +284,9 @@ public class FlywayAutoConfigurationTests {
 							FlywayCallback.class);
 					FlywayCallback callbackTwo = context.getBean("callbackTwo",
 							FlywayCallback.class);
-					assertThat(flyway.getCallbacks()).hasSize(3);
-					assertThat(flyway.getCallbacks()).startsWith(callbackTwo,
+					assertThat(flyway.getCallbacks()).hasSize(2);
+					assertThat(flyway.getCallbacks()).containsExactly(callbackTwo,
 							callbackOne);
-					assertThat(flyway.getCallbacks()[2])
-							.isInstanceOf(SqlScriptFlywayCallback.class);
 					InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
 					orderedCallbacks.verify(callbackTwo)
 							.beforeMigrate(any(Connection.class));
