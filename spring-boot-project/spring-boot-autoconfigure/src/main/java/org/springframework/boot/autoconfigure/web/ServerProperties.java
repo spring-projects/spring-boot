@@ -568,10 +568,8 @@ public class ServerProperties {
 		private File basedir;
 
 		/**
-		 * <<<<<<< HEAD Delay between the invocation of backgroundProcess methods. If a
-		 * duration suffix is not specified, seconds will be used. ======= Delay, in
-		 * seconds, between the invocation of backgroundProcess methods. >>>>>>> Align
-		 * edits with code
+		 * Delay between the invocation of backgroundProcess methods. If a
+		 * duration suffix is not specified, seconds will be used.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(30);
@@ -914,9 +912,7 @@ public class ServerProperties {
 		public static class Resource {
 
 			/**
-			 * <<<<<<< HEAD Time-to-live of the static resource cache. =======
-			 * Time-to-live, in milliseconds, of the static resource cache. >>>>>>> Align
-			 * edits with code
+			 * Time-to-live of the static resource cache.
 			 */
 			private Duration cacheTtl;
 
