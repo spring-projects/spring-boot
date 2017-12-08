@@ -118,7 +118,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	@Override
-	public URL findResource(final String name) {
+	public URL findResource(String name) {
 		final ClassLoaderFile file = this.updatedFiles.getFile(name);
 		if (file == null) {
 			return super.findResource(name);
@@ -154,7 +154,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	@Override
-	protected Class<?> findClass(final String name) throws ClassNotFoundException {
+	protected Class<?> findClass(String name) throws ClassNotFoundException {
 		String path = name.replace('.', '/').concat(".class");
 		final ClassLoaderFile file = this.updatedFiles.getFile(path);
 		if (file == null) {

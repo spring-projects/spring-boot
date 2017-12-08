@@ -1306,7 +1306,7 @@ public class JsonContentAssertTests {
 
 	}
 
-	private AssertProvider<JsonContentAssert> forJson(final String json) {
+	private AssertProvider<JsonContentAssert> forJson(String json) {
 		return () -> new JsonContentAssert(JsonContentAssertTests.class, json);
 	}
 

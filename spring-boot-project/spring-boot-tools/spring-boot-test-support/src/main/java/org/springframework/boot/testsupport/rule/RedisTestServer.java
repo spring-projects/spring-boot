@@ -48,7 +48,7 @@ public class RedisTestServer implements TestRule {
 	private RedisConnectionFactory connectionFactory;
 
 	@Override
-	public Statement apply(final Statement base, Description description) {
+	public Statement apply(Statement base, Description description) {
 		try {
 			this.connectionFactory = createConnectionFactory();
 			return new RedisStatement(base, this.connectionFactory);

@@ -100,7 +100,7 @@ public class CliTester implements TestRule {
 		return getOutput();
 	}
 
-	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command,
+	private <T extends OptionParsingCommand> Future<T> submitCommand(T command,
 			String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
@@ -165,7 +165,7 @@ public class CliTester implements TestRule {
 	}
 
 	@Override
-	public Statement apply(final Statement base, final Description description) {
+	public Statement apply(Statement base, Description description) {
 		final Statement statement = CliTester.this.outputCapture
 				.apply(new RunLauncherStatement(base), description);
 		return new Statement() {

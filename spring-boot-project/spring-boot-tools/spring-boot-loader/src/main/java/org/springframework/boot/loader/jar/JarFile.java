@@ -228,7 +228,7 @@ public class JarFile extends java.util.jar.JarFile {
 	 * @return a {@link JarFile} for the entry
 	 * @throws IOException if the nested jar file cannot be read
 	 */
-	public synchronized JarFile getNestedJarFile(final ZipEntry entry)
+	public synchronized JarFile getNestedJarFile(ZipEntry entry)
 			throws IOException {
 		return getNestedJarFile((JarEntry) entry);
 	}
