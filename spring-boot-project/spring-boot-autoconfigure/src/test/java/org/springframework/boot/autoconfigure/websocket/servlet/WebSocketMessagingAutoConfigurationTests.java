@@ -139,7 +139,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 				.getField(compositeDefaultConverter, "converters");
 	}
 
-	private Object performStompSubscription(final String topic) throws Throwable {
+	private Object performStompSubscription(String topic) throws Throwable {
 		TestPropertyValues
 				.of("server.port:0", "spring.jackson.serialization.indent-output:true")
 				.applyTo(this.context);

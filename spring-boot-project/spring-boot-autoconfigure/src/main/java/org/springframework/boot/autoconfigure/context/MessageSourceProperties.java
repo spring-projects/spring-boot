@@ -110,7 +110,7 @@ public class MessageSourceProperties {
 		return this.useCodeAsDefaultMessage;
 	}
 
-	public void setUseCodeAsDefaultMessage(final boolean useCodeAsDefaultMessage) {
+	public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
 	}
 

@@ -348,7 +348,7 @@ public class PropertiesLauncherTests {
 		assertThat(timeout).as("Timed out waiting for (" + value + ")").isTrue();
 	}
 
-	private Condition<Archive> endingWith(final String value) {
+	private Condition<Archive> endingWith(String value) {
 		return new Condition<Archive>() {
 
 			@Override

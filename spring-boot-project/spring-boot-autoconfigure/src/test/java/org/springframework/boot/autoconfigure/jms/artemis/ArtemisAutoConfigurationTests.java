@@ -335,7 +335,7 @@ public class ArtemisAutoConfigurationTests {
 			checkDestination(name, true, shouldExist);
 		}
 
-		public void checkDestination(final String name, final boolean pubSub,
+		public void checkDestination(String name, final boolean pubSub,
 				final boolean shouldExist) {
 			this.jmsTemplate.execute((SessionCallback<Void>) (session) -> {
 				try {

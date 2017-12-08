@@ -72,7 +72,7 @@ public class ObjectContentAssertTests {
 		assertThat(forObject(SOURCE)).asMap();
 	}
 
-	private AssertProvider<ObjectContentAssert<Object>> forObject(final Object source) {
+	private AssertProvider<ObjectContentAssert<Object>> forObject(Object source) {
 		return () -> new ObjectContentAssert<>(source);
 	}
 

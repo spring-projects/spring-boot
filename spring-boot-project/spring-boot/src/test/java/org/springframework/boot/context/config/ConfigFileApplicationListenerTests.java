@@ -100,7 +100,7 @@ public class ConfigFileApplicationListenerTests {
 	public void loadCustomResource() throws Exception {
 		this.application.setResourceLoader(new ResourceLoader() {
 			@Override
-			public Resource getResource(final String location) {
+			public Resource getResource(String location) {
 				if (location.equals("classpath:/custom.properties")) {
 					return new ByteArrayResource("the.property: fromcustom".getBytes(),
 							location) {
@@ -885,7 +885,7 @@ public class ConfigFileApplicationListenerTests {
 		};
 	}
 
-	private Condition<ConfigurableEnvironment> matchingProfile(final String profile) {
+	private Condition<ConfigurableEnvironment> matchingProfile(String profile) {
 		return new Condition<ConfigurableEnvironment>("accepts profile " + profile) {
 
 			@Override
