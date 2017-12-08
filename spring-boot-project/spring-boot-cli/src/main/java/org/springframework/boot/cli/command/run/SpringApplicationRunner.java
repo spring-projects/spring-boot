@@ -65,7 +65,7 @@ public class SpringApplicationRunner {
 	 * @param sources the files to compile/watch
 	 * @param args input arguments
 	 */
-	SpringApplicationRunner(final SpringApplicationRunnerConfiguration configuration,
+	SpringApplicationRunner(SpringApplicationRunnerConfiguration configuration,
 			String[] sources, String... args) {
 		this.configuration = configuration;
 		this.sources = sources.clone();

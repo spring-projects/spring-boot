@@ -317,7 +317,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 			}
 
 			@Override
-			public Object invokeExplosively(final Object target, final Object... params)
+			public Object invokeExplosively(Object target, Object... params)
 					throws Throwable {
 				return doWithModifiedClassPathThreadContextClassLoader(
 						() -> ModifiedClassPathFrameworkMethod.super.invokeExplosively(

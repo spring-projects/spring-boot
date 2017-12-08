@@ -99,7 +99,7 @@ class StartupInfoLogger {
 				: "application");
 	}
 
-	private String getVersion(final Class<?> source) {
+	private String getVersion(Class<?> source) {
 		return getValue(" v", () -> source.getPackage().getImplementationVersion(), "");
 	}
 

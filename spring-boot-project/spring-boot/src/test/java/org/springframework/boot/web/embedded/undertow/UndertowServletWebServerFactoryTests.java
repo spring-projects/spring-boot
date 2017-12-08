@@ -202,7 +202,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Override
-	protected void addConnector(final int port, AbstractServletWebServerFactory factory) {
+	protected void addConnector(int port, AbstractServletWebServerFactory factory) {
 		((UndertowServletWebServerFactory) factory).addBuilderCustomizers(
 				(builder) -> builder.addHttpListener(port, "0.0.0.0"));
 	}

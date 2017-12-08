@@ -179,7 +179,7 @@ public class WebFluxAutoConfiguration {
 		}
 
 		@Override
-		public void addFormatters(final FormatterRegistry registry) {
+		public void addFormatters(FormatterRegistry registry) {
 			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
 				registry.addConverter(converter);
 			}

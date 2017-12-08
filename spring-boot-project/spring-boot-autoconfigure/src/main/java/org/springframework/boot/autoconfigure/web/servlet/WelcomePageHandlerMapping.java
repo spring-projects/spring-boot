@@ -66,7 +66,7 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 				applicationContext) != null;
 	}
 
-	private void setRootViewName(final String viewName) {
+	private void setRootViewName(String viewName) {
 		ParameterizableViewController controller = new ParameterizableViewController();
 		controller.setViewName(viewName);
 		setRootHandler(controller);
