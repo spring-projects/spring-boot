@@ -101,8 +101,8 @@ public class ExitCodeGeneratorsTests {
 		return generator;
 	}
 
-	private ExitCodeExceptionMapper mockMapper(final Class<?> exceptionType,
-			final int exitCode) {
+	private ExitCodeExceptionMapper mockMapper(Class<?> exceptionType,
+			int exitCode) {
 		return (exception) -> {
 			if (exceptionType.isInstance(exception)) {
 				return exitCode;

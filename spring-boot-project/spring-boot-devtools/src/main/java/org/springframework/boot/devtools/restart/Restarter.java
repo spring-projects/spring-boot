@@ -240,7 +240,7 @@ public class Restarter {
 	 * Restart the running application.
 	 * @param failureHandler a failure handler to deal with application that doesn't start
 	 */
-	public void restart(final FailureHandler failureHandler) {
+	public void restart(FailureHandler failureHandler) {
 		if (!this.enabled) {
 			this.logger.debug("Application restart is disabled");
 			return;
@@ -382,7 +382,7 @@ public class Restarter {
 				memory.add(new long[102400]);
 			}
 		}
-		catch (final OutOfMemoryError ex) {
+		catch (OutOfMemoryError ex) {
 			// Expected
 		}
 	}
@@ -439,7 +439,7 @@ public class Restarter {
 		}
 	}
 
-	public Object getOrAddAttribute(final String name,
+	public Object getOrAddAttribute(String name,
 			final ObjectFactory<?> objectFactory) {
 		synchronized (this.attributes) {
 			if (!this.attributes.containsKey(name)) {
@@ -630,7 +630,7 @@ public class Restarter {
 	private class LeakSafeThreadFactory implements ThreadFactory {
 
 		@Override
-		public Thread newThread(final Runnable runnable) {
+		public Thread newThread(Runnable runnable) {
 			return getLeakSafeThread().callAndWait(() -> {
 				Thread thread = new Thread(runnable);
 				thread.setContextClassLoader(Restarter.this.applicationClassLoader);

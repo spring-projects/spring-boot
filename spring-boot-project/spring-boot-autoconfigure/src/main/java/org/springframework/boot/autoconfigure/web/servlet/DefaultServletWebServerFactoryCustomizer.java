@@ -411,7 +411,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	private static class UndertowCustomizer {
 
-		protected static void customizeUndertow(final ServerProperties serverProperties,
+		protected static void customizeUndertow(ServerProperties serverProperties,
 				Environment environment, UndertowServletWebServerFactory factory) {
 
 			ServerProperties.Undertow undertowProperties = serverProperties.getUndertow();
@@ -478,7 +478,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	private static class JettyCustomizer {
 
-		public static void customizeJetty(final ServerProperties serverProperties,
+		public static void customizeJetty(ServerProperties serverProperties,
 				Environment environment, JettyServletWebServerFactory factory) {
 			ServerProperties.Jetty jettyProperties = serverProperties.getJetty();
 			factory.setUseForwardHeaders(

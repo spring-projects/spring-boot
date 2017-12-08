@@ -126,7 +126,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private void definePackage(final String className, final String packageName) {
+	private void definePackage(String className, String packageName) {
 		try {
 			AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
 				String packageEntryName = packageName.replace('.', '/') + "/";
