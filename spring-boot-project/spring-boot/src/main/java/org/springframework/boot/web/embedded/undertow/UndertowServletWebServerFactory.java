@@ -292,7 +292,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		int sessionTimeout = (getSessionTimeout() == null || getSessionTimeout().isZero()
 				|| getSessionTimeout().isNegative() ? -1
-						: (int) getSessionTimeout().toMinutes());
+						: (int) getSessionTimeout().getSeconds());
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
 	}
