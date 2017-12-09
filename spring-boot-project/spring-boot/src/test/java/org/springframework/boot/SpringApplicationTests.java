@@ -1277,7 +1277,7 @@ public class SpringApplicationTests {
 
 	}
 
-	static class AbstractTestRunner implements ApplicationContextAware, Ordered {
+	static abstract class AbstractTestRunner implements ApplicationContextAware, Ordered {
 
 		private final String[] expectedBefore;
 

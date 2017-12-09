@@ -43,7 +43,7 @@ import org.springframework.util.FileCopyUtils;
  *
  * @author Andy Wilkinson
  */
-public class AbstractExecutableArchiveLauncherTests {
+public abstract class AbstractExecutableArchiveLauncherTests {
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();

@@ -25,7 +25,7 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
  *
  * @author Brian Clozel
  */
-class AbstractFreeMarkerConfiguration {
+abstract class AbstractFreeMarkerConfiguration {
 
 	private final FreeMarkerProperties properties;
 
