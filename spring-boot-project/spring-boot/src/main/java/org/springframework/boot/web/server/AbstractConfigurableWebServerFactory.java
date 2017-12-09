@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class AbstractConfigurableWebServerFactory
+public abstract class AbstractConfigurableWebServerFactory
 		implements ConfigurableWebServerFactory {
 
 	private int port = 8080;

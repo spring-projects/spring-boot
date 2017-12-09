@@ -88,7 +88,7 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 		assertThat(this.value).isEqualTo(123);
 	}
 
-	protected static class AbstractConfig {
+	protected static abstract class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;
