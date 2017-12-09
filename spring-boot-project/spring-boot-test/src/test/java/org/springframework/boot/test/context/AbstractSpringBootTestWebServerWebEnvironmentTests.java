@@ -92,7 +92,7 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
-	protected static class AbstractConfig {
+	protected static abstract class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;
