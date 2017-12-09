@@ -35,7 +35,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  */
-class AbstractSessionCondition extends SpringBootCondition {
+abstract class AbstractSessionCondition extends SpringBootCondition {
 
 	private final WebApplicationType webApplicationType;
 
