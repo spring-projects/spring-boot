@@ -77,7 +77,7 @@ public class JsonTestersAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
-	private static class JacksonJsonTestersConfiguration {
+	static class JacksonJsonTestersConfiguration {
 
 		@Bean
 		@Scope("prototype")
@@ -91,7 +91,7 @@ public class JsonTestersAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(Gson.class)
-	private static class GsonJsonTestersConfiguration {
+	static class GsonJsonTestersConfiguration {
 
 		@Bean
 		@Scope("prototype")
@@ -104,7 +104,7 @@ public class JsonTestersAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(Jsonb.class)
-	private static class JsonbJsonTesterConfiguration {
+	static class JsonbJsonTesterConfiguration {
 
 		@Bean
 		@Scope("prototype")
