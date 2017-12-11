@@ -17,17 +17,24 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.reactive.DispatcherHandler;
 
 /**
  * {@link ManagementContextConfiguration} for Reactive {@link Endpoint} concerns.
@@ -38,18 +45,44 @@ import org.springframework.context.annotation.Bean;
  */
 @ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.REACTIVE)
+@ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnBean(WebAnnotationEndpointDiscoverer.class)
+@EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebFluxEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(
 			WebAnnotationEndpointDiscoverer endpointDiscoverer,
-			EndpointMediaTypes endpointMediaTypes,
+			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
 		return new WebFluxEndpointHandlerMapping(
 				new EndpointMapping(webEndpointProperties.getBasePath()),
-				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes);
+				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes, getCorsConfiguration(corsProperties));
+	}
+
+	private CorsConfiguration getCorsConfiguration(CorsEndpointProperties properties) {
+		if (CollectionUtils.isEmpty(properties.getAllowedOrigins())) {
+			return null;
+		}
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(properties.getAllowedOrigins());
+		if (!CollectionUtils.isEmpty(properties.getAllowedHeaders())) {
+			configuration.setAllowedHeaders(properties.getAllowedHeaders());
+		}
+		if (!CollectionUtils.isEmpty(properties.getAllowedMethods())) {
+			configuration.setAllowedMethods(properties.getAllowedMethods());
+		}
+		if (!CollectionUtils.isEmpty(properties.getExposedHeaders())) {
+			configuration.setExposedHeaders(properties.getExposedHeaders());
+		}
+		if (properties.getMaxAge() != null) {
+			configuration.setMaxAge(properties.getMaxAge().getSeconds());
+		}
+		if (properties.getAllowCredentials() != null) {
+			configuration.setAllowCredentials(properties.getAllowCredentials());
+		}
+		return configuration;
 	}
 
 }
