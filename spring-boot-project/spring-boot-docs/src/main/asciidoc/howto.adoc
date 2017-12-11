@@ -2249,67 +2249,18 @@ of how to register handlers in the servlet container.
 
 [[howto-switch-off-spring-boot-security-configuration]]
 === Switch off the Spring Boot Security Configuration
-If you define a `@Configuration` with `@EnableWebSecurity` anywhere in your application,
-it switches off the default webapp security settings in Spring Boot (but leaves the
-Actuator's security enabled). To tweak the defaults try setting properties in
-`+security.*+` (see
-{sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
-for details of available settings) and the `SECURITY` section of
-"`<<common-application-properties-security,Common Application Properties>>`".
-
+If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` in your application,
+it switches off the default webapp security settings in Spring Boot.
 
 
 [[howto-change-the-authenticationmanager-and-add-user-accounts]]
 === Change the AuthenticationManager and Add User Accounts
-If you provide a `@Bean` of type `AuthenticationManager`, the default one is not
+If you provide a `@Bean` of type `AuthenticationManager`, `AuthenticationProvider`
+or `UserDetailsService`, the default `@Bean` for `InMemoryUserDetailsManager` is not
 created, so you have the full feature set of Spring Security available (such as
 http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-authentication[various authentication options]).
 
-Spring Security also provides a convenient `AuthenticationManagerBuilder`, which can be
-used to build an `AuthenticationManager` with common options. The recommended way to
-use this in a webapp is to inject it into a void method in a
-`WebSecurityConfigurerAdapter`, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Configuration
-	public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Autowired
-		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-				auth.inMemoryAuthentication()
-					.withUser("barry").password("password").roles("USER"); // ... etc.
-		}
-
-		// ... other stuff for application security
-
-	}
-----
-
-You get the best results if you put this in a nested class or a standalone class
-(that is, not mixed in with a lot of other `@Beans` that might be allowed to influence the
-order of instantiation). The {github-code}/spring-boot-samples/spring-boot-sample-web-secure[secure web sample]
-is a useful template to follow.
-
-If you experience instantiation issues (for example, when using JDBC or JPA for the user detail store),
-it might be worth extracting the `AuthenticationManagerBuilder` callback into a
-`GlobalAuthenticationConfigurerAdapter` (in the `init()` method so that it happens before the
-authentication manager is needed elsewhere), as shown in the following example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Configuration
-	public class AuthenticationManagerConfiguration extends
-			GlobalAuthenticationConfigurerAdapter {
-
-		@Override
-		public void init(AuthenticationManagerBuilder auth) {
-			auth.inMemoryAuthentication() // ... etc.
-		}
-
-	}
-----
-
+The easiest way to add user accounts is to provide your own `UserDetailsService` bean.
 
 
 [[howto-enable-https]]
@@ -2333,10 +2284,23 @@ by adding some entries to `application.properties`, as shown in the following ex
 (The presence of either of those properties switches on the valve. Alternatively, you can
 add the `RemoteIpValve` yourself by adding a `TomcatServletWebServerFactory` bean.)
 
-Spring Security can also be configured to require a secure channel for all (or some)
-requests. To switch that on in a Spring Boot application, set
-`security.require_ssl` to `true` in `application.properties`.
+To configure Spring Security to require a secure channel for all (or some)
+requests, consider adding your own `WebSecurityConfigurerAdapter` that adds the following
+`HttpSecurity` configuration:
 
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Configuration
+	public class SslWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			// Customize the application security
+			http.requiresChannel().anyRequest().requiresSecure();
+		}
+
+	}
+----
 
 
 [[howto-hotswapping]]
