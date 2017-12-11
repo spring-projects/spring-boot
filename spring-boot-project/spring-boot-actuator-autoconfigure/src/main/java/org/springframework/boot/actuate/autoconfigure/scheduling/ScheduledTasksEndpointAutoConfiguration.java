@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.config.ScheduledTaskHolder;
 
 /**
@@ -33,6 +34,7 @@ import org.springframework.scheduling.config.ScheduledTaskHolder;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@Configuration
 public class ScheduledTasksEndpointAutoConfiguration {
 
 	@Bean
