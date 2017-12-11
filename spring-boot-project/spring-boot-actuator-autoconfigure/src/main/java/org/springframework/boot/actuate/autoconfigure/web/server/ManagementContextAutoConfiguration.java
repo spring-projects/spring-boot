@@ -106,6 +106,7 @@ public class ManagementContextAutoConfiguration {
 					});
 		}
 
+		@Configuration
 		@EnableManagementContext(ManagementContextType.SAME)
 		static class EnableSameManagementContextConfiguration {
 

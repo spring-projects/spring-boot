@@ -68,16 +68,16 @@ class GsonHttpMessageConvertersConfiguration {
 
 		}
 
-		@Conditional(JacksonAndJsonbUnavailable.class)
+		@Conditional(JacksonAndJsonbUnavailableCondition.class)
 		static class JacksonJsonbUnavailable {
 
 		}
 
 	}
 
-	private static class JacksonAndJsonbUnavailable extends NoneNestedConditions {
+	private static class JacksonAndJsonbUnavailableCondition extends NoneNestedConditions {
 
-		JacksonAndJsonbUnavailable() {
+		JacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 

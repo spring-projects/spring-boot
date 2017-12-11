@@ -75,6 +75,7 @@ public class JsonTestersAutoConfiguration {
 				null);
 	}
 
+	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
 	private static class JacksonJsonTestersConfiguration {
 
@@ -88,6 +89,7 @@ public class JsonTestersAutoConfiguration {
 
 	}
 
+	@Configuration
 	@ConditionalOnClass(Gson.class)
 	private static class GsonJsonTestersConfiguration {
 
@@ -100,6 +102,7 @@ public class JsonTestersAutoConfiguration {
 
 	}
 
+	@Configuration
 	@ConditionalOnClass(Jsonb.class)
 	private static class JsonbJsonTesterConfiguration {
 
