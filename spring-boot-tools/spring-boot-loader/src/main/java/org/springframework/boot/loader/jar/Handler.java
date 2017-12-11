@@ -159,7 +159,7 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected void parseURL(URL context, String spec, int start, int limit) {
-		if (spec.toLowerCase().startsWith(JAR_PROTOCOL)) {
+		if (spec.regionMatches(true, 0, JAR_PROTOCOL, 0, JAR_PROTOCOL.length())) {
 			setFile(context, getFileFromSpec(spec.substring(start, limit)));
 		}
 		else {
