@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.reactive;
 
-import java.util.UUID;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +25,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -54,20 +55,24 @@ class ReactiveAuthenticationManagerConfiguration {
 			.getLog(ReactiveAuthenticationManagerConfiguration.class);
 
 	@Bean
-	public MapReactiveUserDetailsService reactiveUserDetailsService(
+	public MapReactiveUserDetailsService reactiveUserDetailsService(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
-		String password = UUID.randomUUID().toString();
-		logger.info(String.format("%n%nUsing default security password: %s%n", password));
-		UserDetails userDetails = getUserDetails(password, passwordEncoder);
+		SecurityProperties.User user = properties.getUser();
+		if (user.isPasswordGenerated()) {
+			logger.info(String.format("%n%nUsing default security password: %s%n", user.getPassword()));
+		}
+		UserDetails userDetails = getUserDetails(user, passwordEncoder);
 		return new MapReactiveUserDetailsService(userDetails);
 	}
 
-	private UserDetails getUserDetails(String password,
+	private UserDetails getUserDetails(SecurityProperties.User user,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		String encodedPassword = passwordEncoder
 				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
-				.encode(password);
-		return User.withUsername("user").password(encodedPassword).roles().build();
+				.encode(user.getPassword());
+		List<String> roles = user.getRoles();
+		return User.withUsername(user.getName()).password(encodedPassword)
+				.roles(roles.toArray(new String[roles.size()])).build();
 	}
 
 }

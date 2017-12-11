@@ -83,7 +83,7 @@ public class SampleWebSecureCustomApplicationTests {
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
-		form.set("password", "user");
+		form.set("password", "password");
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
 				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);

@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.security.reactive;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -35,6 +37,7 @@ import org.springframework.security.web.reactive.result.method.annotation.Authen
 @Configuration
 @ConditionalOnClass({ EnableWebFluxSecurity.class,
 		AuthenticationPrincipalArgumentResolver.class })
+@EnableConfigurationProperties(SecurityProperties.class)
 @Import({ WebFluxSecurityConfiguration.class,
 		ReactiveAuthenticationManagerConfiguration.class })
 public class ReactiveSecurityAutoConfiguration {

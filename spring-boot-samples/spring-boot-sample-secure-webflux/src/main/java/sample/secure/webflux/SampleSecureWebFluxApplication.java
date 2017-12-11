@@ -19,9 +19,6 @@ package sample.secure.webflux;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -38,12 +35,6 @@ public class SampleSecureWebFluxApplication {
 	@Bean
 	public RouterFunction<ServerResponse> monoRouterFunction(EchoHandler echoHandler) {
 		return route(POST("/echo"), echoHandler::echo);
-	}
-
-	@Bean
-	public ReactiveUserDetailsService userDetailsService() {
-		return new MapReactiveUserDetailsService(User.withDefaultPasswordEncoder()
-				.username("foo").password("password").roles("USER").build());
 	}
 
 }

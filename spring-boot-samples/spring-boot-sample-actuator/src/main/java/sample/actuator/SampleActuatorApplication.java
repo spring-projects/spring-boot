@@ -22,8 +22,6 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootApplication
 @EnableConfigurationProperties(ServiceProperties.class)
@@ -31,12 +29,6 @@ public class SampleActuatorApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleActuatorApplication.class, args);
-	}
-
-	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
-				.username("user").password("password").roles("USER").build());
 	}
 
 	@Bean

@@ -150,7 +150,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		UserDetailsService manager = this.context.getBean(UserDetailsService.class);
 		assertThat(this.outputCapture.toString())
-				.contains("Using default security password:");
+				.contains("Using generated security password:");
 		assertThat(manager.loadUserByUsername("user")).isNotNull();
 	}
 
@@ -167,7 +167,7 @@ public class SecurityAutoConfigurationTests {
 		assertThat(manager).isEqualTo(this.context.getBean(
 				TestAuthenticationManagerConfiguration.class).authenticationManager);
 		assertThat(this.outputCapture.toString())
-				.doesNotContain("Using default security password: ");
+				.doesNotContain("Using generated security password: ");
 		TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 		assertThat(manager.authenticate(token)).isNotNull();
 	}

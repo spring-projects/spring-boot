@@ -56,7 +56,7 @@ public class SampleSecureWebFluxApplicationTests {
 	public void userDefinedMappingsAccessibleOnLogin() {
 		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", "basic " + getBasicAuth()).exchange()
-				.expectBody(String.class).isEqualTo("Hello foo");
+				.expectBody(String.class).isEqualTo("Hello user");
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class SampleSecureWebFluxApplicationTests {
 	}
 
 	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("foo:password").getBytes()));
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
 	}
 
 }

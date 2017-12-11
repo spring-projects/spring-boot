@@ -22,12 +22,9 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.StaticResourceRequest;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,15 +71,6 @@ public class SampleWebSecureApplication implements WebMvcConfigurer {
 					.and()
 				.logout().permitAll();
 			// @formatter:on
-		}
-
-		@Bean
-		public InMemoryUserDetailsManager InMemoryUserDetailsManager() {
-			return new InMemoryUserDetailsManager(
-					User.withDefaultPasswordEncoder().username("admin").password("admin")
-							.roles("ADMIN", "USER").build(),
-					User.withDefaultPasswordEncoder().username("user").password("user")
-							.roles("USER").build());
 		}
 
 	}

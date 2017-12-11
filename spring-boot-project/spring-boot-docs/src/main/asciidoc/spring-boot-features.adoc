@@ -2852,12 +2852,15 @@ the following example:
 
 [indent=0]
 ----
-	Using default security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
+	Using generated security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
 ----
 
 NOTE: If you fine-tune your logging configuration, ensure that the
 `org.springframework.boot.autoconfigure.security` category is set to log `INFO`-level
 messages. Otherwise, the default password is not printed.
+
+You can change the username and password by providing a `spring.security.user.name` and
+`spring.security.user.password`.
 
 The default security configuration is implemented in `SecurityAutoConfiguration` and in
 the classes imported from there (`SpringBootWebSecurityConfiguration` for web security
@@ -2874,7 +2877,7 @@ Boot samples] to get you started with common use cases.
 The basic features you get by default in a web application are:
 
 * A `UserDetailsService` bean with in-memory store and a single user with a generated
-  password.
+  password (see `SecurityProperties.User` for the properties of the user).
 * Form-based login or HTTP Basic security (depending on Content-Type) for the entire
   application (including actuator endpoints if actuator is on the classpath).
 

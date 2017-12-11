@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import java.util.UUID;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,15 +57,19 @@ public class AuthenticationManagerConfiguration {
 			.getLog(AuthenticationManagerConfiguration.class);
 
 	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) throws Exception {
-		String password = UUID.randomUUID().toString();
-		logger.info(String.format("%n%nUsing default security password: %s%n", password));
+		SecurityProperties.User user = properties.getUser();
+		if (user.isPasswordGenerated()) {
+			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
+		}
 		String encodedPassword = passwordEncoder
 				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
-				.encode(password);
+				.encode(user.getPassword());
+		List<String> roles = user.getRoles();
 		return new InMemoryUserDetailsManager(
-				User.withUsername("user").password(encodedPassword).roles().build());
+				User.withUsername(user.getName()).password(encodedPassword)
+						.roles(roles.toArray(new String[roles.size()])).build());
 	}
 
 }
