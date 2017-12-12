@@ -482,6 +482,9 @@ content into your application. Rather, pick only the properties that you need.
 	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
 	spring.security.filter.order=0 # Security filter chain order.
 	spring.security.filter.dispatcher-types=ASYNC,ERROR,REQUEST # Security filter chain dispatcher types.
+	spring.security.user.name=user # Default user name.
+	spring.security.user.password= # Password for the default user name.
+	spring.security.user.roles= # Granted roles for the default user name.
 
 	# SECURITY OAUTH2 CLIENT ({sc-spring-boot-autoconfigure}/security/oauth2/client/OAuth2ClientProperties.{sc-ext}[OAuth2ClientProperties])
 	spring.security.oauth2.client.provider.*= # OAuth provider details.

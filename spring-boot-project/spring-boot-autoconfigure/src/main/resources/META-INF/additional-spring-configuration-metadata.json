@@ -930,7 +930,7 @@
       "description": "Default user name.",
       "defaultValue": "user",
       "deprecation": {
-        "reason": "The default user is no longer customizable. You can, for instance, define a bean of type UserDetailsService.",
+        "replacement": "spring.security.user.name",
         "level": "error"
       }
     },
@@ -939,7 +939,7 @@
       "type": "java.lang.String",
       "description": "Password for the default user name.",
       "deprecation": {
-        "reason": "The default user is no longer customizable. You can, for instance, define a bean of type UserDetailsService.",
+        "replacement": "spring.security.user.password",
         "level": "error"
       }
     },
@@ -948,7 +948,7 @@
       "type": "java.util.List<java.lang.String>",
       "description": "Granted roles for the default user name.",
       "deprecation": {
-        "reason": "The default user is no longer customizable. You can, for instance, define a bean of type UserDetailsService.",
+        "replacement": "spring.security.user.roles",
         "level": "error"
       }
     },
