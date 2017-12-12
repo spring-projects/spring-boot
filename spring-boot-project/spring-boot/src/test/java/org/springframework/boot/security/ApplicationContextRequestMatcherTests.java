@@ -41,23 +41,21 @@ public class ApplicationContextRequestMatcherTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenContextClassIsNullShouldThrowException() throws Exception {
+	public void createWhenContextClassIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Context class must not be null");
 		new TestApplicationContextRequestMatcher<>(null);
 	}
 
 	@Test
-	public void matchesWhenContextClassIsApplicationContextShouldProvideContext()
-			throws Exception {
+	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
 				.callMatchesAndReturnProvidedContext(context)).isEqualTo(context);
 	}
 
 	@Test
-	public void matchesWhenContextClassIsExistingBeanShouldProvideBean()
-			throws Exception {
+	public void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
@@ -66,7 +64,7 @@ public class ApplicationContextRequestMatcherTests {
 	}
 
 	@Test
-	public void matchesWhenContextClassIsNewBeanShouldProvideBean() throws Exception {
+	public void matchesWhenContextClassIsNewBeanShouldProvideBean() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(NewBean.class)

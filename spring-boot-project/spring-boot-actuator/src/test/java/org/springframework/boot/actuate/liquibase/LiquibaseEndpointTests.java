@@ -45,7 +45,7 @@ public class LiquibaseEndpointTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void liquibaseReportIsReturned() throws Exception {
+	public void liquibaseReportIsReturned() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.run((context) -> assertThat(
 						context.getBean(LiquibaseEndpoint.class).liquibaseReports())
@@ -53,7 +53,7 @@ public class LiquibaseEndpointTests {
 	}
 
 	@Test
-	public void invokeWithCustomSchema() throws Exception {
+	public void invokeWithCustomSchema() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA",
 						"spring.datasource.schema=classpath:/db/create-custom-schema.sql")

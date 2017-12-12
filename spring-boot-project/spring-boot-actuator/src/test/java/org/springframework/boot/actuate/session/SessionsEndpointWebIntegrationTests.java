@@ -51,13 +51,13 @@ public class SessionsEndpointWebIntegrationTests {
 	private static WebTestClient client;
 
 	@Test
-	public void sessionsForUsernameWithoutUsernameParam() throws Exception {
+	public void sessionsForUsernameWithoutUsernameParam() {
 		client.get().uri((builder) -> builder.path("/actuator/sessions").build())
 				.exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
-	public void sessionsForUsernameNoResults() throws Exception {
+	public void sessionsForUsernameNoResults() {
 		given(repository.findByIndexNameAndIndexValue(
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
 						.willReturn(Collections.emptyMap());
@@ -69,7 +69,7 @@ public class SessionsEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void sessionsForUsernameFound() throws Exception {
+	public void sessionsForUsernameFound() {
 		given(repository.findByIndexNameAndIndexValue(
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
 						.willReturn(Collections.singletonMap(session.getId(), session));

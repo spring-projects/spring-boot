@@ -46,7 +46,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	}
 
 	@Test
-	public void propertyPlaceholders() throws Exception {
+	public void propertyPlaceholders() {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);
@@ -56,7 +56,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	}
 
 	@Test
-	public void propertyPlaceholdersOverride() throws Exception {
+	public void propertyPlaceholdersOverride() {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class, PlaceholdersOverride.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);

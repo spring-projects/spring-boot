@@ -57,7 +57,7 @@ public class RemappedErrorViewIntegrationTests {
 	private TestRestTemplate template = new TestRestTemplate();
 
 	@Test
-	public void directAccessToErrorPage() throws Exception {
+	public void directAccessToErrorPage() {
 		String content = this.template.getForObject(
 				"http://localhost:" + this.port + "/spring/error", String.class);
 		assertThat(content).contains("error");
@@ -65,7 +65,7 @@ public class RemappedErrorViewIntegrationTests {
 	}
 
 	@Test
-	public void forwardToErrorPage() throws Exception {
+	public void forwardToErrorPage() {
 		String content = this.template
 				.getForObject("http://localhost:" + this.port + "/spring/", String.class);
 		assertThat(content).contains("error");

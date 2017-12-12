@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
@@ -199,7 +198,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void pooledConnectionFactoryConfiguration() throws JMSException {
+	public void pooledConnectionFactoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled:true")
 				.run((context) -> {

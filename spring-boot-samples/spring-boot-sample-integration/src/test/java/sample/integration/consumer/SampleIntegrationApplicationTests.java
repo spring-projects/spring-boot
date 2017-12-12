@@ -56,7 +56,7 @@ public class SampleIntegrationApplicationTests {
 		deleteIfExists(new File("target/output"));
 	}
 
-	private void deleteIfExists(File directory) throws InterruptedException {
+	private void deleteIfExists(File directory) {
 		if (directory.exists()) {
 			assertThat(FileSystemUtils.deleteRecursively(directory)).isTrue();
 		}

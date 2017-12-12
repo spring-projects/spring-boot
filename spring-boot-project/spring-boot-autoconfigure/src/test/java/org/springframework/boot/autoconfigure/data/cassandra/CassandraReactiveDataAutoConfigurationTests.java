@@ -64,7 +64,7 @@ public class CassandraReactiveDataAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() throws Exception {
+	public void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);
@@ -74,7 +74,7 @@ public class CassandraReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() throws Exception {
+	public void userTypeResolverShouldBeSet() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);

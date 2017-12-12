@@ -152,7 +152,7 @@ public class CouchbaseAutoConfigurationTests
 		}
 
 		@Override
-		public Cluster couchbaseCluster() throws Exception {
+		public Cluster couchbaseCluster() {
 			return mock(Cluster.class);
 		}
 

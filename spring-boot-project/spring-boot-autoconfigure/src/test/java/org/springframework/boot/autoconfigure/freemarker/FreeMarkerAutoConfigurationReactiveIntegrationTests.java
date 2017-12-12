@@ -124,7 +124,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		return "Hello World";
 	}
 
-	private MockServerWebExchange render(String viewName) throws Exception {
+	private MockServerWebExchange render(String viewName) {
 		FreeMarkerViewResolver resolver = this.context
 				.getBean(FreeMarkerViewResolver.class);
 		Mono<View> view = resolver.resolveViewName(viewName, Locale.UK);

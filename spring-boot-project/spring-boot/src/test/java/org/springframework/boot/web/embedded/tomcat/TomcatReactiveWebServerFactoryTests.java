@@ -49,7 +49,7 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void tomcatCustomizers() throws Exception {
+	public void tomcatCustomizers() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
 		for (int i = 0; i < listeners.length; i++) {
@@ -65,14 +65,14 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void defaultTomcatListeners() throws Exception {
+	public void defaultTomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
 				.isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test
-	public void tomcatListeners() throws Exception {
+	public void tomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		LifecycleListener[] listeners = new LifecycleListener[4];
 		for (int i = 0; i < listeners.length; i++) {
@@ -104,7 +104,7 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void tomcatConnectorCustomizersShouldBeInvoked() throws Exception {
+	public void tomcatConnectorCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];

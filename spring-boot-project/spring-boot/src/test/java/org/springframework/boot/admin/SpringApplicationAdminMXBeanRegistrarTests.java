@@ -59,7 +59,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	private ConfigurableApplicationContext context;
 
 	@Before
-	public void setup() throws MalformedObjectNameException {
+	public void setup() {
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
 	}
 

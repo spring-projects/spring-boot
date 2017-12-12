@@ -43,19 +43,19 @@ public class CloudFoundryEndpointFilterTests {
 	private CloudFoundryEndpointFilter filter;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		this.filter = new CloudFoundryEndpointFilter();
 	}
 
 	@Test
-	public void matchIfDiscovererCloudFoundryShouldReturnFalse() throws Exception {
+	public void matchIfDiscovererCloudFoundryShouldReturnFalse() {
 		CloudFoundryWebAnnotationEndpointDiscoverer discoverer = Mockito
 				.mock(CloudFoundryWebAnnotationEndpointDiscoverer.class);
 		assertThat(this.filter.match(null, discoverer)).isTrue();
 	}
 
 	@Test
-	public void matchIfDiscovererNotCloudFoundryShouldReturnFalse() throws Exception {
+	public void matchIfDiscovererNotCloudFoundryShouldReturnFalse() {
 		WebAnnotationEndpointDiscoverer discoverer = Mockito
 				.mock(WebAnnotationEndpointDiscoverer.class);
 		assertThat(this.filter.match(null, discoverer)).isFalse();

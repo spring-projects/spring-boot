@@ -57,7 +57,7 @@ public class WebTestClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeClientCodecs() throws Exception {
+	public void shouldCustomizeClientCodecs() {
 		load(CodecConfiguration.class);
 		WebTestClient webTestClient = this.context.getBean(WebTestClient.class);
 		CodecCustomizer codecCustomizer = this.context.getBean(CodecCustomizer.class);
@@ -66,7 +66,7 @@ public class WebTestClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeTimeout() throws Exception {
+	public void shouldCustomizeTimeout() {
 		PropertySource<?> propertySource = new MapPropertySource("test", Collections
 				.singletonMap("spring.test.webtestclient.timeout", (Object) "PT15M"));
 		load(propertySource, BaseConfiguration.class);

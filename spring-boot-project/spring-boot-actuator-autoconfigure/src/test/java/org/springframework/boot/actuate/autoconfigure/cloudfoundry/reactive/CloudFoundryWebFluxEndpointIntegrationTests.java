@@ -78,7 +78,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 			ReactiveCloudFoundrySecurityService.class);
 
 	@Test
-	public void operationWithSecurityInterceptorForbidden() throws Exception {
+	public void operationWithSecurityInterceptorForbidden() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id")))
 				.willReturn(Mono.just(AccessLevel.RESTRICTED));
@@ -90,7 +90,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() throws Exception {
+	public void operationWithSecurityInterceptorSuccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id")))
 				.willReturn(Mono.just(AccessLevel.FULL));

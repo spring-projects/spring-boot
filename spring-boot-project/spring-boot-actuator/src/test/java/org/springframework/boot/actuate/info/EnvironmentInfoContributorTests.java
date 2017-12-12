@@ -55,7 +55,7 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void propertiesFromEnvironmentShouldBindCorrectly() throws Exception {
+	public void propertiesFromEnvironmentShouldBindCorrectly() {
 		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment,
 				Type.SYSTEM_ENVIRONMENT);
 		Info actual = contributeFrom(this.environment);

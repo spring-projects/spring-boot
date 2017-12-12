@@ -53,7 +53,7 @@ public class TypeExcludeFilterTests {
 	}
 
 	@Test
-	public void loadsTypeExcludeFilters() throws Exception {
+	public void loadsTypeExcludeFilters() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.getBeanFactory().registerSingleton("filter1",
 				new WithoutMatchOverrideFilter());

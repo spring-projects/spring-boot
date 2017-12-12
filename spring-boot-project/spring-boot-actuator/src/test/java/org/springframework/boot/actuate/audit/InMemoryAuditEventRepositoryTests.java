@@ -41,7 +41,7 @@ public class InMemoryAuditEventRepositoryTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void lessThanCapacity() throws Exception {
+	public void lessThanCapacity() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("dave", "b"));
@@ -52,7 +52,7 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void capacity() throws Exception {
+	public void capacity() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository(2);
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("dave", "b"));
@@ -64,7 +64,7 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void addNullAuditEvent() throws Exception {
+	public void addNullAuditEvent() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("AuditEvent must not be null");
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
@@ -72,7 +72,7 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void findByPrincipal() throws Exception {
+	public void findByPrincipal() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("phil", "b"));
@@ -85,7 +85,7 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void findByPrincipalAndType() throws Exception {
+	public void findByPrincipalAndType() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("phil", "b"));
@@ -98,7 +98,7 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void findByDate() throws Exception {
+	public void findByDate() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2000, 1, 1, 0, 0, 0);
 		calendar.set(Calendar.MILLISECOND, 0);

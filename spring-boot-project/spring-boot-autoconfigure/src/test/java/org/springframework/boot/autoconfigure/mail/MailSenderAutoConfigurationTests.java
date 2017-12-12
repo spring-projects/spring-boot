@@ -172,7 +172,7 @@ public class MailSenderAutoConfigurationTests {
 	}
 
 	@Test
-	public void jndiSessionNotAvailableWithJndiName() throws NamingException {
+	public void jndiSessionNotAvailableWithJndiName() {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Unable to find Session in JNDI location foo");
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
@@ -195,7 +195,7 @@ public class MailSenderAutoConfigurationTests {
 	}
 
 	private Session configureJndiSession(String name)
-			throws IllegalStateException, NamingException {
+			throws IllegalStateException {
 		Properties properties = new Properties();
 		Session session = Session.getDefaultInstance(properties);
 		TestableInitialContextFactory.bind(name, session);

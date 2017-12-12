@@ -16,8 +16,6 @@
 
 package sample.activemq;
 
-import javax.jms.JMSException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +43,7 @@ public class SampleActiveMqTests {
 	private Producer producer;
 
 	@Test
-	public void sendSimpleMessage() throws InterruptedException, JMSException {
+	public void sendSimpleMessage() throws InterruptedException {
 		this.producer.send("Test message");
 		Thread.sleep(1000L);
 		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();

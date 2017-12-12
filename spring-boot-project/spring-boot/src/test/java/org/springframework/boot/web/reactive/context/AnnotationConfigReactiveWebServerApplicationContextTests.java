@@ -37,7 +37,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	private AnnotationConfigReactiveWebServerApplicationContext context;
 
 	@Test
-	public void createFromScan() throws Exception {
+	public void createFromScan() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				ExampleReactiveWebServerApplicationConfiguration.class.getPackage()
 						.getName());
@@ -45,14 +45,14 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void createFromConfigClass() throws Exception {
+	public void createFromConfigClass() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				ExampleReactiveWebServerApplicationConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void registerAndRefresh() throws Exception {
+	public void registerAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
 		this.context.refresh();
@@ -60,7 +60,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void scanAndRefresh() throws Exception {
+	public void scanAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class
 				.getPackage().getName());

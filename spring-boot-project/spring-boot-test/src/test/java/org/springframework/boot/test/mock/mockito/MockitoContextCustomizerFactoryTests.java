@@ -39,22 +39,21 @@ public class MockitoContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void getContextCustomizerWithoutAnnotationReturnsCustomizer()
-			throws Exception {
+	public void getContextCustomizerWithoutAnnotationReturnsCustomizer() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(NoMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void getContextCustomizerWithAnnotationReturnsCustomizer() throws Exception {
+	public void getContextCustomizerWithAnnotationReturnsCustomizer() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void getContextCustomizerUsesMocksAsCacheKey() throws Exception {
+	public void getContextCustomizerUsesMocksAsCacheKey() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();

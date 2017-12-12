@@ -56,14 +56,14 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
-	public void createWhenDiscovererTypeIsNullShouldThrowException() throws Exception {
+	public void createWhenDiscovererTypeIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Discoverer Type must not be null");
 		new ExposeExcludePropertyEndpointFilter<>(null, this.environment, "foo");
 	}
 
 	@Test
-	public void createWhenEnvironmentIsNullShouldThrowException() throws Exception {
+	public void createWhenEnvironmentIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		new ExposeExcludePropertyEndpointFilter<>(TestEndpointDiscoverer.class, null,
@@ -71,7 +71,7 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
-	public void createWhenPrefixIsNullShouldThrowException() throws Exception {
+	public void createWhenPrefixIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
 		new ExposeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
@@ -79,7 +79,7 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
-	public void createWhenPrefixIsEmptyShouldThrowException() throws Exception {
+	public void createWhenPrefixIsEmptyShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
 		new ExposeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
@@ -87,53 +87,49 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
-	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndInDefaultShouldMatch()
-			throws Exception {
+	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndInDefaultShouldMatch() {
 		setupFilter("", "");
 		assertThat(match("def")).isTrue();
 	}
 
 	@Test
-	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndNotInDefaultShouldNotMatch()
-			throws Exception {
+	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndNotInDefaultShouldNotMatch() {
 		setupFilter("", "");
 		assertThat(match("bar")).isFalse();
 	}
 
 	@Test
-	public void matchWhenExposeMatchesAndExcludeIsEmptyShouldMatch() throws Exception {
+	public void matchWhenExposeMatchesAndExcludeIsEmptyShouldMatch() {
 		setupFilter("bar", "");
 		assertThat(match("bar")).isTrue();
 	}
 
 	@Test
-	public void matchWhenExposeDoesNotMatchAndExcludeIsEmptyShouldNotMatch()
-			throws Exception {
+	public void matchWhenExposeDoesNotMatchAndExcludeIsEmptyShouldNotMatch() {
 		setupFilter("bar", "");
 		assertThat(match("baz")).isFalse();
 	}
 
 	@Test
-	public void matchWhenExposeMatchesAndExcludeMatchesShouldNotMatch() throws Exception {
+	public void matchWhenExposeMatchesAndExcludeMatchesShouldNotMatch() {
 		setupFilter("bar,baz", "baz");
 		assertThat(match("baz")).isFalse();
 	}
 
 	@Test
-	public void matchWhenExposeMatchesAndExcludeDoesNotMatchShouldMatch()
-			throws Exception {
+	public void matchWhenExposeMatchesAndExcludeDoesNotMatchShouldMatch() {
 		setupFilter("bar,baz", "buz");
 		assertThat(match("baz")).isTrue();
 	}
 
 	@Test
-	public void matchWhenExposeMatchesWithDifferentCaseShouldMatch() throws Exception {
+	public void matchWhenExposeMatchesWithDifferentCaseShouldMatch() {
 		setupFilter("bar", "");
 		assertThat(match("bAr")).isTrue();
 	}
 
 	@Test
-	public void matchWhenDiscovererDoesNotMatchShouldMatch() throws Exception {
+	public void matchWhenDiscovererDoesNotMatchShouldMatch() {
 		this.environment.setProperty("foo.expose", "bar");
 		this.environment.setProperty("foo.exclude", "");
 		this.filter = new ExposeExcludePropertyEndpointFilter<>(
@@ -142,7 +138,7 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
-	public void matchWhenIncludeIsAsteriskShouldMatchAll() throws Exception {
+	public void matchWhenIncludeIsAsteriskShouldMatchAll() {
 		setupFilter("*", "buz");
 		assertThat(match("bar")).isTrue();
 		assertThat(match("baz")).isTrue();
@@ -150,7 +146,7 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
-	public void matchWhenExcludeIsAsteriskShouldMatchNone() throws Exception {
+	public void matchWhenExcludeIsAsteriskShouldMatchNone() {
 		setupFilter("bar,baz,buz", "*");
 		assertThat(match("bar")).isFalse();
 		assertThat(match("baz")).isFalse();

@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
-	public void configurationPropertiesAreReturned() throws Exception {
+	public void configurationPropertiesAreReturned() {
 		load((context, properties) -> {
 			assertThat(properties.getContextId()).isEqualTo(context.getId());
 			assertThat(properties.getBeans().size()).isGreaterThan(0);
@@ -69,7 +69,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void defaultKeySanitization() throws Exception {
+	public void defaultKeySanitization() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -80,7 +80,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customKeySanitization() throws Exception {
+	public void customKeySanitization() {
 		load("property", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -91,7 +91,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customPatternKeySanitization() throws Exception {
+	public void customPatternKeySanitization() {
 		load(".*pass.*", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -103,7 +103,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void keySanitizationWithCustomPatternUsingCompositeKeys() throws Exception {
+	public void keySanitizationWithCustomPatternUsingCompositeKeys() {
 		// gh-4415
 		load(Arrays.asList(".*\\.secrets\\..*", ".*\\.hidden\\..*"),
 				(context, properties) -> {
@@ -121,7 +121,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void mixedBoolean() throws Exception {
+	public void mixedBoolean() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -131,7 +131,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void listsAreSanitized() throws Exception {
+	public void listsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -145,7 +145,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void listsOfListsAreSanitized() throws Exception {
+	public void listsOfListsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();

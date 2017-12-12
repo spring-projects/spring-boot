@@ -66,7 +66,7 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Test
-	public void boundsTests() throws Exception {
+	public void boundsTests() {
 		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.NINE, JavaVersion.EIGHT, true);
 		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.EIGHT, true);
 		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.NINE, false);
@@ -76,7 +76,7 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Test
-	public void equalOrNewerMessage() throws Exception {
+	public void equalOrNewerMessage() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER,
 				JavaVersion.NINE, JavaVersion.EIGHT);
 		assertThat(outcome.getMessage())
@@ -84,7 +84,7 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Test
-	public void olderThanMessage() throws Exception {
+	public void olderThanMessage() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN,
 				JavaVersion.NINE, JavaVersion.EIGHT);
 		assertThat(outcome.getMessage())

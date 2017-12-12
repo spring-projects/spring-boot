@@ -48,7 +48,7 @@ public class OnInitializedRestarterConditionTests {
 	}
 
 	@Test
-	public void noInstance() throws Exception {
+	public void noInstance() {
 		Restarter.clearInstance();
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);
@@ -57,7 +57,7 @@ public class OnInitializedRestarterConditionTests {
 	}
 
 	@Test
-	public void noInitialization() throws Exception {
+	public void noInitialization() {
 		Restarter.initialize(new String[0], false, RestartInitializer.NONE);
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);

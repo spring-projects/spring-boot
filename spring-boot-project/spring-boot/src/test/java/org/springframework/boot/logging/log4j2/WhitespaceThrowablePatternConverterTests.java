@@ -37,7 +37,7 @@ public class WhitespaceThrowablePatternConverterTests {
 			.newInstance(new DefaultConfiguration(), new String[] {});
 
 	@Test
-	public void noStackTrace() throws Exception {
+	public void noStackTrace() {
 		LogEvent event = Log4jLogEvent.newBuilder().build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
@@ -45,7 +45,7 @@ public class WhitespaceThrowablePatternConverterTests {
 	}
 
 	@Test
-	public void withStackTrace() throws Exception {
+	public void withStackTrace() {
 		LogEvent event = Log4jLogEvent.newBuilder().setThrown(new Exception()).build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);

@@ -518,7 +518,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableRabbitAutomatically() throws Exception {
+	public void enableRabbitAutomatically() {
 		this.contextRunner.withUserConfiguration(NoEnableRabbitConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasBean(
@@ -595,7 +595,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithInvalidKeystoreTypeShouldFail() throws Exception {
+	public void enableSslWithInvalidKeystoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=foo",
@@ -609,7 +609,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithInvalidTrustStoreTypeShouldFail() throws Exception {
+	public void enableSslWithInvalidTrustStoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.trustStore=bar",
@@ -623,7 +623,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() throws Exception {
+	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",

@@ -85,7 +85,7 @@ public class ReactiveTokenValidatorTests {
 	private static final Map<String, String> VALID_KEYS = new ConcurrentHashMap<>();
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		VALID_KEYS.put("valid-key", VALID_KEY);
 		INVALID_KEYS.put("invalid-key", INVALID_KEY);

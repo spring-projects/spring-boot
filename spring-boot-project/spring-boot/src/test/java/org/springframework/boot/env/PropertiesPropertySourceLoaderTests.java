@@ -34,7 +34,7 @@ public class PropertiesPropertySourceLoaderTests {
 	private PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
 
 	@Test
-	public void getFileExtensions() throws Exception {
+	public void getFileExtensions() {
 		assertThat(this.loader.getFileExtensions())
 				.isEqualTo(new String[] { "properties", "xml" });
 	}

@@ -42,7 +42,7 @@ public class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 	private SimpleExampleStringGenericService spy;
 
 	@Test
-	public void testSpying() throws Exception {
+	public void testSpying() {
 		MockingDetails mockingDetails = Mockito.mockingDetails(this.spy);
 		assertThat(mockingDetails.isSpy()).isTrue();
 		assertThat(mockingDetails.getMockCreationSettings().getMockName().toString())

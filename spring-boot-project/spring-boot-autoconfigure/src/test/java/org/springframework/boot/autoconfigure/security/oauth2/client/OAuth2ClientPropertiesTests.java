@@ -33,7 +33,7 @@ public class OAuth2ClientPropertiesTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void clientIdAbsentThrowsException() throws Exception {
+	public void clientIdAbsentThrowsException() {
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setClientSecret("secret");
 		registration.setProvider("google");
@@ -44,7 +44,7 @@ public class OAuth2ClientPropertiesTests {
 	}
 
 	@Test
-	public void clientSecretAbsentThrowsException() throws Exception {
+	public void clientSecretAbsentThrowsException() {
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setClientId("foo");
 		registration.setProvider("google");

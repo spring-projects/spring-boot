@@ -42,13 +42,13 @@ public class AuditEventsEndpointWebIntegrationTests {
 	private static WebTestClient client;
 
 	@Test
-	public void eventsWithoutParams() throws Exception {
+	public void eventsWithoutParams() {
 		client.get().uri((builder) -> builder.path("/actuator/auditevents").build())
 				.exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
-	public void eventsWithDateAfter() throws Exception {
+	public void eventsWithDateAfter() {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
@@ -57,7 +57,7 @@ public class AuditEventsEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void eventsWithPrincipalAndDateAfter() throws Exception {
+	public void eventsWithPrincipalAndDateAfter() {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T10:00:00%2B00:00")
@@ -68,7 +68,7 @@ public class AuditEventsEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void eventsWithPrincipalDateAfterAndType() throws Exception {
+	public void eventsWithPrincipalDateAfterAndType() {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T10:00:00%2B00:00")

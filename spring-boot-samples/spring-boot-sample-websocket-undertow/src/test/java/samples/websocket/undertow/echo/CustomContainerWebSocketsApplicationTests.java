@@ -60,7 +60,7 @@ public class CustomContainerWebSocketsApplicationTests {
 	private int port;
 
 	@Test
-	public void echoEndpoint() throws Exception {
+	public void echoEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
@@ -76,7 +76,7 @@ public class CustomContainerWebSocketsApplicationTests {
 	}
 
 	@Test
-	public void reverseEndpoint() throws Exception {
+	public void reverseEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port

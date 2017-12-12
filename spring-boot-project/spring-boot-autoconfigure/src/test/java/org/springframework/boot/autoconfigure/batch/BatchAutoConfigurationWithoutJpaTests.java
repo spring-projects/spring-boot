@@ -54,7 +54,7 @@ public class BatchAutoConfigurationWithoutJpaTests {
 					TransactionAutoConfiguration.class));
 
 	@Test
-	public void jdbcWithDefaultSettings() throws Exception {
+	public void jdbcWithDefaultSettings() {
 		this.contextRunner
 				.withUserConfiguration(DefaultConfiguration.class,
 						EmbeddedDataSourceConfiguration.class)
@@ -80,7 +80,7 @@ public class BatchAutoConfigurationWithoutJpaTests {
 	}
 
 	@Test
-	public void jdbcWithCustomPrefix() throws Exception {
+	public void jdbcWithCustomPrefix() {
 		this.contextRunner
 				.withUserConfiguration(DefaultConfiguration.class,
 						EmbeddedDataSourceConfiguration.class)

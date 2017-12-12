@@ -55,7 +55,7 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 	private WebClient.Builder builder;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		this.server = new MockWebServer();
 		this.builder = WebClient.builder().baseUrl(this.server.url("/").toString());
 		this.securityService = new ReactiveCloudFoundrySecurityService(this.builder,

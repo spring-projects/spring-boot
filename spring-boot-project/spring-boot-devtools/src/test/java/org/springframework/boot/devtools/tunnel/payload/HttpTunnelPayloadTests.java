@@ -52,21 +52,21 @@ public class HttpTunnelPayloadTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void sequenceMustBePositive() throws Exception {
+	public void sequenceMustBePositive() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Sequence must be positive");
 		new HttpTunnelPayload(0, ByteBuffer.allocate(1));
 	}
 
 	@Test
-	public void dataMustNotBeNull() throws Exception {
+	public void dataMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Data must not be null");
 		new HttpTunnelPayload(1, null);
 	}
 
 	@Test
-	public void getSequence() throws Exception {
+	public void getSequence() {
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, ByteBuffer.allocate(1));
 		assertThat(payload.getSequence()).isEqualTo(1L);
 	}

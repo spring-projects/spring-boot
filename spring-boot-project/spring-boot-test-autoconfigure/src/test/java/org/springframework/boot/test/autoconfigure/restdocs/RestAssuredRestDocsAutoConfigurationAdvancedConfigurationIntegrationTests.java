@@ -64,7 +64,7 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 	private RequestSpecification documentationSpec;
 
 	@Test
-	public void snippetGeneration() throws Exception {
+	public void snippetGeneration() {
 		given(this.documentationSpec)
 				.filter(document("default-snippets",
 						preprocessRequest(modifyUris().scheme("https")

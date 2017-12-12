@@ -68,7 +68,7 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 	}
 
 	@Test
-	public void testHello() throws Exception {
+	public void testHello() {
 		assertThat(this.ports.getHttpsPort()).isEqualTo(this.port);
 		assertThat(this.ports.getHttpPort()).isNotEqualTo(this.port);
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(

@@ -118,7 +118,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleWithAnUnknownStartIsNotAnalyzed() throws IOException {
+	public void cycleWithAnUnknownStartIsNotAnalyzed() {
 		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test")))
 				.isNull();
 	}

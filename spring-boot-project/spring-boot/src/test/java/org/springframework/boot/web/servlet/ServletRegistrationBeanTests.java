@@ -152,14 +152,14 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void createServletMustNotBeNull() throws Exception {
+	public void createServletMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Servlet must not be null");
 		new ServletRegistrationBean<MockServlet>(null);
 	}
 
 	@Test
-	public void setMappingMustNotBeNull() throws Exception {
+	public void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
 		this.thrown.expect(IllegalArgumentException.class);
@@ -168,14 +168,14 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void createMappingMustNotBeNull() throws Exception {
+	public void createMappingMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UrlMappings must not be null");
 		new ServletRegistrationBean<>(this.servlet, (String[]) null);
 	}
 
 	@Test
-	public void addMappingMustNotBeNull() throws Exception {
+	public void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
 		this.thrown.expect(IllegalArgumentException.class);

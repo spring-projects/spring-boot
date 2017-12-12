@@ -79,14 +79,14 @@ public class BinderTests {
 	}
 
 	@Test
-	public void createWhenSourcesIsNullShouldThrowException() throws Exception {
+	public void createWhenSourcesIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Sources must not be null");
 		new Binder((Iterable<ConfigurationPropertySource>) null);
 	}
 
 	@Test
-	public void bindWhenNameIsNullShouldThrowException() throws Exception {
+	public void bindWhenNameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Name must not be null");
 		this.binder.bind((ConfigurationPropertyName) null, Bindable.of(String.class),
@@ -94,28 +94,28 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindWhenTargetIsNullShouldThrowException() throws Exception {
+	public void bindWhenTargetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Target must not be null");
 		this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT);
 	}
 
 	@Test
-	public void bindToValueWhenPropertyIsMissingShouldReturnUnbound() throws Exception {
+	public void bindToValueWhenPropertyIsMissingShouldReturnUnbound() {
 		this.sources.add(new MockConfigurationPropertySource());
 		BindResult<String> result = this.binder.bind("foo", Bindable.of(String.class));
 		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
-	public void bindToValueShouldReturnPropertyValue() throws Exception {
+	public void bindToValueShouldReturnPropertyValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
 		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
-	public void bindToValueShouldReturnPropertyValueFromSecondSource() throws Exception {
+	public void bindToValueShouldReturnPropertyValueFromSecondSource() {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		this.sources.add(new MockConfigurationPropertySource("bar", 234));
 		BindResult<Integer> result = this.binder.bind("bar", Bindable.of(Integer.class));
@@ -123,14 +123,14 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueShouldReturnConvertedPropertyValue() throws Exception {
+	public void bindToValueShouldReturnConvertedPropertyValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "123"));
 		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
 		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
-	public void bindToValueWhenMultipleCandidatesShouldReturnFirst() throws Exception {
+	public void bindToValueWhenMultipleCandidatesShouldReturnFirst() {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		this.sources.add(new MockConfigurationPropertySource("foo", 234));
 		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
@@ -138,7 +138,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueWithPlaceholdersShouldResolve() throws Exception {
+	public void bindToValueWithPlaceholdersShouldResolve() {
 		StandardEnvironment environment = new StandardEnvironment();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "bar=23");
 		this.sources.add(new MockConfigurationPropertySource("foo", "1${bar}"));
@@ -149,8 +149,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueWithMissingPlaceholdersShouldThrowException()
-			throws Exception {
+	public void bindToValueWithMissingPlaceholdersShouldThrowException() {
 		StandardEnvironment environment = new StandardEnvironment();
 		this.sources.add(new MockConfigurationPropertySource("foo", "${bar}"));
 		this.binder = new Binder(this.sources,
@@ -162,7 +161,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueShouldTriggerOnSuccess() throws Exception {
+	public void bindToValueShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1", "line1"));
 		BindHandler handler = mock(BindHandler.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
@@ -174,15 +173,14 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToJavaBeanShouldReturnPopulatedBean() throws Exception {
+	public void bindToJavaBeanShouldReturnPopulatedBean() {
 		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar"));
 		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class)).get();
 		assertThat(result.getValue()).isEqualTo("bar");
 	}
 
 	@Test
-	public void bindToJavaBeanWhenNonIterableShouldReturnPopulatedBean()
-			throws Exception {
+	public void bindToJavaBeanWhenNonIterableShouldReturnPopulatedBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource(
 				"foo.value", "bar");
 		this.sources.add(source.nonIterable());
@@ -191,8 +189,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToJavaBeanWhenHasPropertyWithSameNameShouldStillBind()
-			throws Exception {
+	public void bindToJavaBeanWhenHasPropertyWithSameNameShouldStillBind() {
 		// gh-10945
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "boom");
@@ -203,7 +200,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToJavaBeanShouldTriggerOnSuccess() throws Exception {
+	public void bindToJavaBeanShouldTriggerOnSuccess() {
 		this.sources
 				.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
 		BindHandler handler = mock(BindHandler.class,
@@ -218,7 +215,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindWhenHasMalformedDateShouldThrowException() throws Exception {
+	public void bindWhenHasMalformedDateShouldThrowException() {
 		this.thrown.expectCause(instanceOf(ConversionFailedException.class));
 		this.sources.add(new MockConfigurationPropertySource("foo",
 				"2014-04-01T01:30:00.000-05:00"));
@@ -226,7 +223,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindWhenHasAnnotationsShouldChangeConvertedValue() throws Exception {
+	public void bindWhenHasAnnotationsShouldChangeConvertedValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo",
 				"2014-04-01T01:30:00.000-05:00"));
 		DateTimeFormat annotation = AnnotationUtils.synthesizeAnnotation(
@@ -239,8 +236,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty()
-			throws Exception {
+	public void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "hello");
 		source.put("foo.items", "bar,baz");
@@ -277,7 +273,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToBeanWithCycle() throws Exception {
+	public void bindToBeanWithCycle() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source.nonIterable());
 		Bindable<CycleBean1> target = Bindable.of(CycleBean1.class);

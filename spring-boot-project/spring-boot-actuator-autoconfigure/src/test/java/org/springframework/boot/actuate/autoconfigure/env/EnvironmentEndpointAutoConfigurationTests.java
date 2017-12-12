@@ -49,15 +49,14 @@ public class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(EnvironmentEndpoint.class));
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
+	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
 				.run(validateSystemProperties("******", "123456"));

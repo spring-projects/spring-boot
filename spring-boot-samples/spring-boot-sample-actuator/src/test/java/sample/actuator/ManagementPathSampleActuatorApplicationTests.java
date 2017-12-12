@@ -45,7 +45,7 @@ public class ManagementPathSampleActuatorApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHealth() throws Exception {
+	public void testHealth() {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/admin/health", String.class);
@@ -54,7 +54,7 @@ public class ManagementPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHomeIsSecure() throws Exception {
+	public void testHomeIsSecure() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

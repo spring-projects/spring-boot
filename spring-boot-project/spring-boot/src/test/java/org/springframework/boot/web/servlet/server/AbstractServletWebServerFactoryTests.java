@@ -177,7 +177,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void stopCalledTwice() throws Exception {
+	public void stopCalledTwice() {
 		AbstractServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
@@ -186,7 +186,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void emptyServerWhenPortIsMinusOne() throws Exception {
+	public void emptyServerWhenPortIsMinusOne() {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setPort(-1);
 		this.webServer = factory.getWebServer(exampleServletRegistration());
@@ -217,7 +217,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void startBlocksUntilReadyToServe() throws Exception {
+	public void startBlocksUntilReadyToServe() {
 		AbstractServletWebServerFactory factory = getFactory();
 		final Date[] date = new Date[1];
 		this.webServer = factory.getWebServer((servletContext) -> {
@@ -234,7 +234,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void loadOnStartAfterContextIsInitialized() throws Exception {
+	public void loadOnStartAfterContextIsInitialized() {
 		AbstractServletWebServerFactory factory = getFactory();
 		final InitCountingServlet servlet = new InitCountingServlet();
 		this.webServer = factory.getWebServer((servletContext) -> servletContext
@@ -276,21 +276,21 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void contextPathMustStartWithSlash() throws Exception {
+	public void contextPathMustStartWithSlash() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ContextPath must start with '/' and not end with '/'");
 		getFactory().setContextPath("missingslash");
 	}
 
 	@Test
-	public void contextPathMustNotEndWithSlash() throws Exception {
+	public void contextPathMustNotEndWithSlash() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ContextPath must start with '/' and not end with '/'");
 		getFactory().setContextPath("extraslash/");
 	}
 
 	@Test
-	public void contextRootPathMustNotBeSlash() throws Exception {
+	public void contextRootPathMustNotBeSlash() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage(
 				"Root ContextPath must be specified using an empty string");
@@ -712,7 +712,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void defaultSessionTimeout() throws Exception {
+	public void defaultSessionTimeout() {
 		assertThat(getFactory().getSessionTimeout()).isEqualTo(Duration.ofMinutes(30));
 	}
 
@@ -749,7 +749,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void getValidSessionStoreWhenSessionStoreNotSet() throws Exception {
+	public void getValidSessionStoreWhenSessionStoreNotSet() {
 		AbstractServletWebServerFactory factory = getFactory();
 		File dir = factory.getValidSessionStoreDir(false);
 		assertThat(dir.getName()).isEqualTo("servlet-sessions");
@@ -757,7 +757,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void getValidSessionStoreWhenSessionStoreIsRelative() throws Exception {
+	public void getValidSessionStoreWhenSessionStoreIsRelative() {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setSessionStoreDir(new File("sessions"));
 		File dir = factory.getValidSessionStoreDir(false);
@@ -820,7 +820,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void mimeMappingsAreCorrectlyConfigured() throws Exception {
+	public void mimeMappingsAreCorrectlyConfigured() {
 		AbstractServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
 		Map<String, String> configuredMimeMappings = getActualMimeMappings();
@@ -838,7 +838,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void rootServletContextResource() throws Exception {
+	public void rootServletContextResource() {
 		AbstractServletWebServerFactory factory = getFactory();
 		final AtomicReference<URL> rootResource = new AtomicReference<>();
 		this.webServer = factory.getWebServer((servletContext) -> {
@@ -910,7 +910,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void localeCharsetMappingsAreConfigured() throws Exception {
+	public void localeCharsetMappingsAreConfigured() {
 		AbstractServletWebServerFactory factory = getFactory();
 		Map<Locale, Charset> mappings = new HashMap<>();
 		mappings.put(Locale.GERMAN, StandardCharsets.UTF_8);
@@ -944,7 +944,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void faultyFilterCausesStartFailure() throws Exception {
+	public void faultyFilterCausesStartFailure() {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.addInitializers(
 				(servletContext) -> servletContext.addFilter("faulty", new Filter() {
@@ -997,7 +997,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	private String setUpFactoryForCompression(int contentSize, String[] mimeTypes,
-			String[] excludedUserAgents) throws Exception {
+			String[] excludedUserAgents) {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		String testContent = new String(chars);
@@ -1017,7 +1017,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 					@Override
 					protected void service(HttpServletRequest req,
 							HttpServletResponse resp)
-									throws ServletException, IOException {
+									throws IOException {
 						resp.setContentType("text/plain");
 						resp.setContentLength(testContent.length());
 						resp.getWriter().write(testContent);
@@ -1140,8 +1140,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				new ExampleServlet() {
 
 					@Override
-					public void service(ServletRequest request, ServletResponse response)
-							throws ServletException, IOException {
+					public void service(ServletRequest request, ServletResponse response) {
 						throw new RuntimeException("Planned");
 					}
 
@@ -1156,7 +1155,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 					@Override
 					public void service(ServletRequest request, ServletResponse response)
-							throws ServletException, IOException {
+							throws IOException {
 						HttpSession session = ((HttpServletRequest) request)
 								.getSession(true);
 						long value = System.currentTimeMillis();
@@ -1226,13 +1225,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 		private int initCount;
 
 		@Override
-		public void init() throws ServletException {
+		public void init() {
 			this.initCount++;
 		}
 
 		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
+		public void service(ServletRequest req, ServletResponse res) {
 		}
 
 		public int getInitCount() {

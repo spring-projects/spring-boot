@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointParentTests {
 
 	@Test
-	public void configurationPropertiesClass() throws Exception {
+	public void configurationPropertiesClass() {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class)
 				.run((parent) -> {
 					new ApplicationContextRunner()
@@ -56,7 +56,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 	}
 
 	@Test
-	public void configurationPropertiesBeanMethod() throws Exception {
+	public void configurationPropertiesBeanMethod() {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class)
 				.run((parent) -> {
 					new ApplicationContextRunner()

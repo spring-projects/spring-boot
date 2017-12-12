@@ -44,7 +44,7 @@ public class DelegatingApplicationContextInitializerTests {
 	private final DelegatingApplicationContextInitializer initializer = new DelegatingApplicationContextInitializer();
 
 	@Test
-	public void orderedInitialize() throws Exception {
+	public void orderedInitialize() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + MockInitB.class.getName() + ","
@@ -55,13 +55,13 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void noInitializers() throws Exception {
+	public void noInitializers() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		this.initializer.initialize(context);
 	}
 
 	@Test
-	public void emptyInitializers() throws Exception {
+	public void emptyInitializers() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes:");
@@ -69,7 +69,7 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void noSuchInitializerClass() throws Exception {
+	public void noSuchInitializerClass() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=missing.madeup.class");
@@ -78,7 +78,7 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void notAnInitializerClass() throws Exception {
+	public void notAnInitializerClass() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + Object.class.getName());
@@ -87,7 +87,7 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void genericNotSuitable() throws Exception {
+	public void genericNotSuitable() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());

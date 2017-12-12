@@ -83,7 +83,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClient() throws Exception {
+	public void testErrorForMachineClient() {
 		load();
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=true"), Map.class);
@@ -94,7 +94,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientTraceParamStacktrace() throws Exception {
+	public void testErrorForMachineClientTraceParamStacktrace() {
 		load("--server.error.include-exception=true",
 				"--server.error.include-stacktrace=on-trace-param");
 		ResponseEntity<Map> entity = new TestRestTemplate()
@@ -106,7 +106,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientNoStacktrace() throws Exception {
+	public void testErrorForMachineClientNoStacktrace() {
 		load("--server.error.include-stacktrace=never");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=true"), Map.class);
@@ -117,7 +117,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientAlwaysStacktrace() throws Exception {
+	public void testErrorForMachineClientAlwaysStacktrace() {
 		load("--server.error.include-stacktrace=always");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=false"), Map.class);
@@ -128,7 +128,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForAnnotatedException() throws Exception {
+	public void testErrorForAnnotatedException() {
 		load("--server.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("/annotated"), Map.class);
@@ -139,7 +139,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForAnnotatedNoReasonException() throws Exception {
+	public void testErrorForAnnotatedNoReasonException() {
 		load("--server.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("/annotatedNoReason"), Map.class);
@@ -150,7 +150,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testBindingExceptionForMachineClient() throws Exception {
+	public void testBindingExceptionForMachineClient() {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind")))
 				.accept(MediaType.APPLICATION_JSON).build();
@@ -164,7 +164,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testRequestBodyValidationForMachineClient() throws Exception {
+	public void testRequestBodyValidationForMachineClient() {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity
 				.post(URI.create(createUrl("/bodyValidation")))
@@ -179,7 +179,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testNoExceptionByDefaultForMachineClient() throws Exception {
+	public void testNoExceptionByDefaultForMachineClient() {
 		load();
 		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind")))
 				.accept(MediaType.APPLICATION_JSON).build();
@@ -189,7 +189,7 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	public void testConventionTemplateMapping() throws Exception {
+	public void testConventionTemplateMapping() {
 		load();
 		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage")))
 				.accept(MediaType.TEXT_HTML).build();

@@ -57,7 +57,7 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void registrationProperties() throws Exception {
+	public void registrationProperties() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
@@ -69,7 +69,7 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void registrationNonServletBean() throws Exception {
+	public void registrationNonServletBean() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(NonServletConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
@@ -84,7 +84,7 @@ public class DispatcherServletAutoConfigurationTests {
 	// If a DispatcherServlet instance is registered with a name different
 	// from the default one, we're registering one anyway
 	@Test
-	public void registrationOverrideWithDispatcherServletWrongName() throws Exception {
+	public void registrationOverrideWithDispatcherServletWrongName() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(CustomDispatcherServletWrongName.class,
 				DispatcherServletAutoConfiguration.class);
@@ -99,7 +99,7 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void registrationOverrideWithAutowiredServlet() throws Exception {
+	public void registrationOverrideWithAutowiredServlet() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(CustomAutowiredRegistration.class,
 				DispatcherServletAutoConfiguration.class);
@@ -114,7 +114,7 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void servletPath() throws Exception {
+	public void servletPath() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(DispatcherServletAutoConfiguration.class);
@@ -128,7 +128,7 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void multipartConfig() throws Exception {
+	public void multipartConfig() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(MultipartConfiguration.class,
@@ -140,7 +140,7 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void renamesMultipartResolver() throws Exception {
+	public void renamesMultipartResolver() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(MultipartResolverConfiguration.class,

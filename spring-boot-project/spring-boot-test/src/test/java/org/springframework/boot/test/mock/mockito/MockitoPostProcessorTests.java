@@ -140,7 +140,7 @@ public class MockitoPostProcessorTests {
 	static class TestFactoryBean implements FactoryBean<Object> {
 
 		@Override
-		public Object getObject() throws Exception {
+		public Object getObject() {
 			return new TestBean();
 		}
 

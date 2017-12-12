@@ -46,7 +46,7 @@ public class SpringBootTestContextBootstrapperWithInitializersTests {
 	private ApplicationContext context;
 
 	@Test
-	public void foundConfiguration() throws Exception {
+	public void foundConfiguration() {
 		Object bean = this.context
 				.getBean(SpringBootTestContextBootstrapperExampleConfig.class);
 		assertThat(bean).isNotNull();

@@ -73,7 +73,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 			CloudFoundrySecurityService.class);
 
 	@Test
-	public void operationWithSecurityInterceptorForbidden() throws Exception {
+	public void operationWithSecurityInterceptorForbidden() {
 		given(securityService.getAccessLevel(any(), eq("app-id")))
 				.willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
@@ -84,7 +84,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() throws Exception {
+	public void operationWithSecurityInterceptorSuccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id")))
 				.willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,

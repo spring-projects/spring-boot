@@ -16,8 +16,6 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.io.UnsupportedEncodingException;
-
 import org.junit.Test;
 
 import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
@@ -49,8 +47,7 @@ public class JarEntryNameTests {
 	}
 
 	@Test
-	public void nameWithMixtureOfEncodedAndUnencodedDoubleByteCharacters()
-			throws UnsupportedEncodingException {
+	public void nameWithMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
 		assertThat(new JarEntryName("%c3%a1/b/\u00c7.class").toString())
 				.isEqualTo("\u00e1/b/\u00c7.class");
 	}

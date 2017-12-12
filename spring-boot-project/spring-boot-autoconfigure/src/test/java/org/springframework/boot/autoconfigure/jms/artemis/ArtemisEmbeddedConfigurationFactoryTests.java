@@ -52,7 +52,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void generatedClusterPassword() throws Exception {
+	public void generatedClusterPassword() {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
@@ -60,7 +60,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void specificClusterPassword() throws Exception {
+	public void specificClusterPassword() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setClusterPassword("password");
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)

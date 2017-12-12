@@ -46,12 +46,12 @@ public class SpringBootTestContextBootstrapperWithContextConfigurationTests {
 	private SpringBootTestContextBootstrapperExampleConfig config;
 
 	@Test
-	public void findConfigAutomatically() throws Exception {
+	public void findConfigAutomatically() {
 		assertThat(this.config).isNotNull();
 	}
 
 	@Test
-	public void contextWasCreatedViaSpringApplication() throws Exception {
+	public void contextWasCreatedViaSpringApplication() {
 		assertThat(this.context.getId()).startsWith("application:");
 	}
 

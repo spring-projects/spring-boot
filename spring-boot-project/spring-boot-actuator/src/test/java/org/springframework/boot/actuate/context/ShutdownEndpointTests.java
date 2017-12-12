@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ShutdownEndpointTests {
 
 	@Test
-	public void shutdown() throws Exception {
+	public void shutdown() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfig.class);
 		contextRunner.run((context) -> {

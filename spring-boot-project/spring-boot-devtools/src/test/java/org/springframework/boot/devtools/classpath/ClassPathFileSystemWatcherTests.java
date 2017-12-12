@@ -56,7 +56,7 @@ public class ClassPathFileSystemWatcherTests {
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
-	public void urlsMustNotBeNull() throws Exception {
+	public void urlsMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Urls must not be null");
 		URL[] urls = null;

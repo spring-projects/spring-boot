@@ -61,7 +61,7 @@ public class DefaultErrorAttributesTests {
 			.getReaders();
 
 	@Test
-	public void missingExceptionAttribute() throws Exception {
+	public void missingExceptionAttribute() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Missing exception attribute in ServerWebExchange");
 		MockServerWebExchange exchange = MockServerWebExchange
@@ -71,7 +71,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeTimeStamp() throws Exception {
+	public void includeTimeStamp() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(buildServerRequest(request, NOT_FOUND), false);
@@ -79,7 +79,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void defaultStatusCode() throws Exception {
+	public void defaultStatusCode() {
 		Error error = new OutOfMemoryError("Test error");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes
@@ -90,7 +90,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeStatusCode() throws Exception {
+	public void includeStatusCode() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(buildServerRequest(request, NOT_FOUND), false);
@@ -100,7 +100,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void getError() throws Exception {
+	public void getError() {
 		Error error = new OutOfMemoryError("Test error");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
@@ -112,7 +112,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeException() throws Exception {
+	public void includeException() {
 		RuntimeException error = new RuntimeException("Test");
 		this.errorAttributes = new DefaultErrorAttributes(true);
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
@@ -126,7 +126,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void notIncludeTrace() throws Exception {
+	public void notIncludeTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes
@@ -135,7 +135,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeTrace() throws Exception {
+	public void includeTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes
@@ -144,7 +144,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includePath() throws Exception {
+	public void includePath() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(buildServerRequest(request, NOT_FOUND), false);

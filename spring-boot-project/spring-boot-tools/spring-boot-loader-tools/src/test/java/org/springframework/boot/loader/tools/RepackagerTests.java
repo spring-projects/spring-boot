@@ -86,19 +86,19 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void nullSource() throws Exception {
+	public void nullSource() {
 		this.thrown.expect(IllegalArgumentException.class);
 		new Repackager(null);
 	}
 
 	@Test
-	public void missingSource() throws Exception {
+	public void missingSource() {
 		this.thrown.expect(IllegalArgumentException.class);
 		new Repackager(new File("missing"));
 	}
 
 	@Test
-	public void directorySource() throws Exception {
+	public void directorySource() {
 		this.thrown.expect(IllegalArgumentException.class);
 		new Repackager(this.temporaryFolder.getRoot());
 	}

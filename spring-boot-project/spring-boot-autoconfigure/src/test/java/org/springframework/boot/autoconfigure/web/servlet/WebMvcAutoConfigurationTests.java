@@ -162,7 +162,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceHandlerMappingOverrideWebjars() throws Exception {
+	public void resourceHandlerMappingOverrideWebjars() {
 		this.contextRunner.withUserConfiguration(WebJars.class).run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/webjars/**")).hasSize(1);
@@ -172,7 +172,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceHandlerMappingOverrideAll() throws Exception {
+	public void resourceHandlerMappingOverrideAll() {
 		this.contextRunner.withUserConfiguration(AllResources.class).run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/**")).hasSize(1);
@@ -182,7 +182,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceHandlerMappingDisabled() throws Exception {
+	public void resourceHandlerMappingDisabled() {
 		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
 				.run((context) -> {
 					Map<String, List<Resource>> locations = getResourceMappingLocations(
@@ -192,7 +192,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceHandlerChainEnabled() throws Exception {
+	public void resourceHandlerChainEnabled() {
 		this.contextRunner.withPropertyValues("spring.resources.chain.enabled:true")
 				.run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(2);
@@ -209,7 +209,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceHandlerFixedStrategyEnabled() throws Exception {
+	public void resourceHandlerFixedStrategyEnabled() {
 		this.contextRunner
 				.withPropertyValues("spring.resources.chain.strategy.fixed.enabled:true",
 						"spring.resources.chain.strategy.fixed.version:test",
@@ -235,7 +235,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceHandlerContentStrategyEnabled() throws Exception {
+	public void resourceHandlerContentStrategyEnabled() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.resources.chain.strategy.content.enabled:true",
@@ -294,13 +294,13 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void noLocaleResolver() throws Exception {
+	public void noLocaleResolver() {
 		this.contextRunner.run(
 				(context) -> assertThat(context).doesNotHaveBean(LocaleResolver.class));
 	}
 
 	@Test
-	public void overrideLocale() throws Exception {
+	public void overrideLocale() {
 		this.contextRunner.withPropertyValues("spring.mvc.locale:en_UK",
 				"spring.mvc.locale-resolver=fixed").run((loader) -> {
 					// mock request and set user preferred locale
@@ -413,7 +413,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void customContentNegotiatingViewResolver() throws Exception {
+	public void customContentNegotiatingViewResolver() {
 		this.contextRunner
 				.withUserConfiguration(CustomContentNegotiatingViewResolver.class)
 				.run((context) -> assertThat(context)
@@ -443,7 +443,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void faviconMappingDisabled() throws IllegalAccessException {
+	public void faviconMappingDisabled() {
 		this.contextRunner.withPropertyValues("spring.mvc.favicon.enabled:false")
 				.run((context) -> {
 					assertThat(context).getBeans(ResourceHttpRequestHandler.class)
@@ -454,14 +454,14 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultAsyncRequestTimeout() throws Exception {
+	public void defaultAsyncRequestTimeout() {
 		this.contextRunner.run((context) -> assertThat(ReflectionTestUtils.getField(
 				context.getBean(RequestMappingHandlerAdapter.class),
 				"asyncRequestTimeout")).isNull());
 	}
 
 	@Test
-	public void customAsyncRequestTimeout() throws Exception {
+	public void customAsyncRequestTimeout() {
 		this.contextRunner.withPropertyValues("spring.mvc.async.request-timeout:12345")
 				.run((context) -> assertThat(ReflectionTestUtils.getField(
 						context.getBean(RequestMappingHandlerAdapter.class),
@@ -469,7 +469,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void customMediaTypes() throws Exception {
+	public void customMediaTypes() {
 		this.contextRunner.withPropertyValues("spring.mvc.mediaTypes.yaml:text/yaml")
 				.run((context) -> {
 					RequestMappingHandlerAdapter adapter = context
@@ -498,7 +498,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void httpPutFormContentFilterCanBeDisabled() throws Exception {
+	public void httpPutFormContentFilterCanBeDisabled() {
 		this.contextRunner
 				.withPropertyValues("spring.mvc.formcontent.putfilter.enabled=false")
 				.run((context) -> assertThat(context)
@@ -710,7 +710,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void cachePeriod() throws Exception {
+	public void cachePeriod() {
 		this.contextRunner.withPropertyValues("spring.resources.cache.period:5")
 				.run((context) -> assertCachePeriod(context));
 	}
@@ -731,7 +731,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void cacheControl() throws Exception {
+	public void cacheControl() {
 		this.contextRunner
 				.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
 						"spring.resources.cache.cachecontrol.proxy-revalidate:true")
@@ -760,7 +760,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	protected Map<String, List<Resource>> getResourceMappingLocations(
-			ApplicationContext context) throws IllegalAccessException {
+			ApplicationContext context) {
 		return getMappingLocations(
 				context.getBean("resourceHandlerMapping", HandlerMapping.class));
 	}
@@ -877,7 +877,7 @@ public class WebMvcAutoConfigurationTests {
 	private static class MyViewResolver implements ViewResolver {
 
 		@Override
-		public View resolveViewName(String viewName, Locale locale) throws Exception {
+		public View resolveViewName(String viewName, Locale locale) {
 			return null;
 		}
 

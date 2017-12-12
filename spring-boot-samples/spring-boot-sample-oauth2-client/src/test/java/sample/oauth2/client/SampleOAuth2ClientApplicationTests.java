@@ -43,7 +43,7 @@ public class SampleOAuth2ClientApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void everythingShouldRedirectToLogin() throws Exception {
+	public void everythingShouldRedirectToLogin() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation())
@@ -51,7 +51,7 @@ public class SampleOAuth2ClientApplicationTests {
 	}
 
 	@Test
-	public void loginShouldHaveBothOAuthClientsToChooseFrom() throws Exception {
+	public void loginShouldHaveBothOAuthClientsToChooseFrom() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

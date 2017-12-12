@@ -45,7 +45,7 @@ public class UserRepositoryTests {
 	private UserRepository repository;
 
 	@Test
-	public void findByUsernameShouldReturnUser() throws Exception {
+	public void findByUsernameShouldReturnUser() {
 		this.entityManager.persist(new User("sboot", VIN));
 		User user = this.repository.findByUsername("sboot");
 		assertThat(user.getUsername()).isEqualTo("sboot");
@@ -53,7 +53,7 @@ public class UserRepositoryTests {
 	}
 
 	@Test
-	public void findByUsernameWhenNoUserShouldReturnNull() throws Exception {
+	public void findByUsernameWhenNoUserShouldReturnNull() {
 		this.entityManager.persist(new User("sboot", VIN));
 		User user = this.repository.findByUsername("mmouse");
 		assertThat(user).isNull();

@@ -42,14 +42,14 @@ public class HealthEndpointWebIntegrationTests {
 	private static ConfigurableApplicationContext context;
 
 	@Test
-	public void whenHealthIsUp200ResponseIsReturned() throws Exception {
+	public void whenHealthIsUp200ResponseIsReturned() {
 		client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
 				.jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
 				.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP");
 	}
 
 	@Test
-	public void whenHealthIsDown503ResponseIsReturned() throws Exception {
+	public void whenHealthIsDown503ResponseIsReturned() {
 		context.getBean("alphaHealthIndicator", TestHealthIndicator.class)
 				.setHealth(Health.down().build());
 		client.get().uri("/actuator/health").exchange().expectStatus()

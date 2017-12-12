@@ -94,28 +94,28 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void fileNotNull() throws Exception {
+	public void fileNotNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("File must not be null");
 		new RandomAccessDataFile(null);
 	}
 
 	@Test
-	public void fileExists() throws Exception {
+	public void fileExists() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("File must exist");
 		new RandomAccessDataFile(new File("/does/not/exist"));
 	}
 
 	@Test
-	public void fileNotNullWithConcurrentReads() throws Exception {
+	public void fileNotNullWithConcurrentReads() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("File must not be null");
 		new RandomAccessDataFile(null, 1);
 	}
 
 	@Test
-	public void fileExistsWithConcurrentReads() throws Exception {
+	public void fileExistsWithConcurrentReads() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("File must exist");
 		new RandomAccessDataFile(new File("/does/not/exist"), 1);
@@ -206,13 +206,13 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void subsectionNegativeOffset() throws Exception {
+	public void subsectionNegativeOffset() {
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(-1, 1);
 	}
 
 	@Test
-	public void subsectionNegativeLength() throws Exception {
+	public void subsectionNegativeLength() {
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(0, -1);
 	}
@@ -225,14 +225,14 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void subsectionTooBig() throws Exception {
+	public void subsectionTooBig() {
 		this.file.getSubsection(0, 256);
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(0, 257);
 	}
 
 	@Test
-	public void subsectionTooBigWithOffset() throws Exception {
+	public void subsectionTooBigWithOffset() {
 		this.file.getSubsection(1, 255);
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(1, 256);
@@ -278,7 +278,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void getFile() throws Exception {
+	public void getFile() {
 		assertThat(this.file.getFile()).isEqualTo(this.tempFile);
 	}
 

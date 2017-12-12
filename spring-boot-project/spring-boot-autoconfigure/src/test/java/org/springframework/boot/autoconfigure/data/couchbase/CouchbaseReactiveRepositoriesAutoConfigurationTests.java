@@ -53,13 +53,13 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void couchbaseNotAvailable() throws Exception {
+	public void couchbaseNotAvailable() {
 		load(null);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void defaultRepository() throws Exception {
+	public void defaultRepository() {
 		load(DefaultConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(1);
 	}
@@ -78,7 +78,7 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void noRepositoryAvailable() throws Exception {
+	public void noRepositoryAvailable() {
 		load(NoRepositoryConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}

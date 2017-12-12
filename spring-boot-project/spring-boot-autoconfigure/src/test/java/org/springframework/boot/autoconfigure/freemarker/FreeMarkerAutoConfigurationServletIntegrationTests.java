@@ -151,15 +151,14 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
+	public void registerResourceHandlingFilterDisabledByDefault() {
 		registerAndRefreshContext();
 		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
 				.isEmpty();
 	}
 
 	@Test
-	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
-			throws Exception {
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() {
 		registerAndRefreshContext("spring.resources.chain.enabled:true");
 		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}

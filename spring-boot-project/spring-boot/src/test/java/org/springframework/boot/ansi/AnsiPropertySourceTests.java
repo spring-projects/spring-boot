@@ -38,42 +38,42 @@ public class AnsiPropertySourceTests {
 	}
 
 	@Test
-	public void getAnsiStyle() throws Exception {
+	public void getAnsiStyle() {
 		assertThat(this.source.getProperty("AnsiStyle.BOLD")).isEqualTo(AnsiStyle.BOLD);
 	}
 
 	@Test
-	public void getAnsiColor() throws Exception {
+	public void getAnsiColor() {
 		assertThat(this.source.getProperty("AnsiColor.RED")).isEqualTo(AnsiColor.RED);
 	}
 
 	@Test
-	public void getAnsiBackground() throws Exception {
+	public void getAnsiBackground() {
 		assertThat(this.source.getProperty("AnsiBackground.GREEN"))
 				.isEqualTo(AnsiBackground.GREEN);
 	}
 
 	@Test
-	public void getAnsi() throws Exception {
+	public void getAnsi() {
 		assertThat(this.source.getProperty("Ansi.BOLD")).isEqualTo(AnsiStyle.BOLD);
 		assertThat(this.source.getProperty("Ansi.RED")).isEqualTo(AnsiColor.RED);
 		assertThat(this.source.getProperty("Ansi.BG_RED")).isEqualTo(AnsiBackground.RED);
 	}
 
 	@Test
-	public void getMissing() throws Exception {
+	public void getMissing() {
 		assertThat(this.source.getProperty("AnsiStyle.NOPE")).isNull();
 	}
 
 	@Test
-	public void encodeEnabled() throws Exception {
+	public void encodeEnabled() {
 		AnsiOutput.setEnabled(Enabled.ALWAYS);
 		AnsiPropertySource source = new AnsiPropertySource("ansi", true);
 		assertThat(source.getProperty("Ansi.RED")).isEqualTo("\033[31m");
 	}
 
 	@Test
-	public void encodeDisabled() throws Exception {
+	public void encodeDisabled() {
 		AnsiOutput.setEnabled(Enabled.NEVER);
 		AnsiPropertySource source = new AnsiPropertySource("ansi", true);
 		assertThat(source.getProperty("Ansi.RED")).isEqualTo("");

@@ -59,12 +59,12 @@ public class LogFileWebEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void getRequestProduces404ResponseWhenLogFileNotFound() throws Exception {
+	public void getRequestProduces404ResponseWhenLogFileNotFound() {
 		client.get().uri("/actuator/logfile").exchange().expectStatus().isNotFound();
 	}
 
 	@Test
-	public void getRequestProducesResponseWithLogFile() throws Exception {
+	public void getRequestProducesResponseWithLogFile() {
 		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
 				.applyTo(context);
 		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()

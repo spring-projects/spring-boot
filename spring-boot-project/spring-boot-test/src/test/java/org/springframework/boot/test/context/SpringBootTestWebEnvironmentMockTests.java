@@ -59,7 +59,7 @@ public class SpringBootTestWebEnvironmentMockTests {
 	private ServletContext servletContext;
 
 	@Test
-	public void annotationAttributesOverridePropertiesFile() throws Exception {
+	public void annotationAttributesOverridePropertiesFile() {
 		assertThat(this.value).isEqualTo(123);
 	}
 
@@ -71,13 +71,13 @@ public class SpringBootTestWebEnvironmentMockTests {
 	}
 
 	@Test
-	public void setsRequestContextHolder() throws Exception {
+	public void setsRequestContextHolder() {
 		RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
 		assertThat(attributes).isNotNull();
 	}
 
 	@Test
-	public void resourcePath() throws Exception {
+	public void resourcePath() {
 		assertThat(ReflectionTestUtils.getField(this.servletContext, "resourceBasePath"))
 				.isEqualTo("src/main/webapp");
 	}

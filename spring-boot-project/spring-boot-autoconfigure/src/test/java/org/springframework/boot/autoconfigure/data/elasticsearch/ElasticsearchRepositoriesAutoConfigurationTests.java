@@ -55,7 +55,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
 			load(TestConfiguration.class, node);
 			assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -65,7 +65,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() throws Exception {
+	public void testNoRepositoryConfiguration() {
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
 			load(EmptyConfiguration.class, node);
 			assertThat(this.context.getBean(Client.class)).isNotNull();

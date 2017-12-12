@@ -55,14 +55,14 @@ public class TraceWebFilterAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideTraceFilter() throws Exception {
+	public void overrideTraceFilter() {
 		load(CustomTraceFilterConfig.class);
 		WebRequestTraceFilter filter = this.context.getBean(WebRequestTraceFilter.class);
 		assertThat(filter).isInstanceOf(TestWebRequestTraceFilter.class);
 	}
 
 	@Test
-	public void skipsFilterIfPropertyDisabled() throws Exception {
+	public void skipsFilterIfPropertyDisabled() {
 		load("management.trace.filter.enabled:false");
 		assertThat(this.context.getBeansOfType(WebRequestTraceFilter.class).size())
 				.isEqualTo(0);

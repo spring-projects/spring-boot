@@ -221,7 +221,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedWithPersistentMode() throws IOException, JMSException {
+	public void embeddedWithPersistentMode() throws IOException {
 		File dataFolder = this.folder.newFolder();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue

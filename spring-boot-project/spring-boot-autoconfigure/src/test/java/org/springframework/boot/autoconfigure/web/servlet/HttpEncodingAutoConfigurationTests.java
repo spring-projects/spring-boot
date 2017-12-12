@@ -98,7 +98,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceRequest() throws Exception {
+	public void forceRequest() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force-request:false");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
@@ -106,7 +106,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceResponse() throws Exception {
+	public void forceResponse() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force-response:true");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
@@ -114,7 +114,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceRequestOverridesForce() throws Exception {
+	public void forceRequestOverridesForce() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
 				"spring.http.encoding.force-request:false");
 		CharacterEncodingFilter filter = this.context
@@ -123,7 +123,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceResponseOverridesForce() throws Exception {
+	public void forceResponseOverridesForce() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
 				"spring.http.encoding.force-response:false");
 		CharacterEncodingFilter filter = this.context
@@ -132,7 +132,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void filterIsOrderedHighest() throws Exception {
+	public void filterIsOrderedHighest() {
 		load(OrderedConfiguration.class);
 		List<Filter> beans = new ArrayList<>(
 				this.context.getBeansOfType(Filter.class).values());

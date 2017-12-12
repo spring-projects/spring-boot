@@ -52,7 +52,7 @@ public class SampleActuatorApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHomeIsSecure() throws Exception {
+	public void testHomeIsSecure() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -63,7 +63,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetricsIsSecure() throws Exception {
+	public void testMetricsIsSecure() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics",
 				Map.class);
@@ -77,7 +77,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/", Map.class);
@@ -103,7 +103,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testEnv() throws Exception {
+	public void testEnv() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
@@ -115,7 +115,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
+	public void testHealth() {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/actuator/health", String.class);
@@ -125,7 +125,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testInfo() throws Exception {
+	public void testInfo() {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/actuator/info", String.class);
@@ -140,7 +140,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPage() throws Exception {
+	public void testErrorPage() {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/foo", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -149,7 +149,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHtmlErrorPage() throws Exception {
+	public void testHtmlErrorPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
@@ -164,7 +164,7 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testTrace() throws Exception {
+	public void testTrace() {
 		this.restTemplate.getForEntity("/health", String.class);
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
@@ -181,7 +181,7 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void traceWithParameterMap() throws Exception {
+	public void traceWithParameterMap() {
 		this.restTemplate.withBasicAuth("user", getPassword())
 				.getForEntity("/actuator/health?param1=value1", String.class);
 		@SuppressWarnings("rawtypes")
@@ -198,7 +198,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPageDirectAccess() throws Exception {
+	public void testErrorPageDirectAccess() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/error", Map.class);
@@ -211,7 +211,7 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testBeans() throws Exception {
+	public void testBeans() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
@@ -224,7 +224,7 @@ public class SampleActuatorApplicationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testConfigProps() throws Exception {
+	public void testConfigProps() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())

@@ -75,7 +75,7 @@ public class WebFluxAutoConfigurationTests {
 	private AnnotationConfigReactiveWebApplicationContext context;
 
 	@Test
-	public void shouldNotProcessIfExistingWebReactiveConfiguration() throws Exception {
+	public void shouldNotProcessIfExistingWebReactiveConfiguration() {
 		load(WebFluxConfigurationSupport.class);
 		assertThat(this.context.getBeansOfType(RequestMappingHandlerMapping.class).size())
 				.isEqualTo(1);
@@ -84,7 +84,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateDefaultBeans() throws Exception {
+	public void shouldCreateDefaultBeans() {
 		load();
 		assertThat(this.context.getBeansOfType(RequestMappingHandlerMapping.class).size())
 				.isEqualTo(1);
@@ -98,7 +98,7 @@ public class WebFluxAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldRegisterCustomHandlerMethodArgumentResolver() throws Exception {
+	public void shouldRegisterCustomHandlerMethodArgumentResolver() {
 		load(CustomArgumentResolvers.class);
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
@@ -112,7 +112,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeCodecs() throws Exception {
+	public void shouldCustomizeCodecs() {
 		load(CustomCodecCustomizers.class);
 		CodecCustomizer codecCustomizer = this.context.getBean("firstCodecCustomizer",
 				CodecCustomizer.class);
@@ -121,7 +121,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldRegisterResourceHandlerMapping() throws Exception {
+	public void shouldRegisterResourceHandlerMapping() {
 		load();
 		SimpleUrlHandlerMapping hm = this.context.getBean("resourceHandlerMapping",
 				SimpleUrlHandlerMapping.class);
@@ -138,7 +138,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldMapResourcesToCustomPath() throws Exception {
+	public void shouldMapResourcesToCustomPath() {
 		load("spring.webflux.static-path-pattern:/static/**");
 		SimpleUrlHandlerMapping hm = this.context.getBean("resourceHandlerMapping",
 				SimpleUrlHandlerMapping.class);
@@ -150,14 +150,14 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotMapResourcesWhenDisabled() throws Exception {
+	public void shouldNotMapResourcesWhenDisabled() {
 		load("spring.resources.add-mappings:false");
 		assertThat(this.context.getBean("resourceHandlerMapping"))
 				.isNotInstanceOf(SimpleUrlHandlerMapping.class);
 	}
 
 	@Test
-	public void resourceHandlerChainEnabled() throws Exception {
+	public void resourceHandlerChainEnabled() {
 		load("spring.resources.chain.enabled:true");
 		SimpleUrlHandlerMapping hm = this.context.getBean("resourceHandlerMapping",
 				SimpleUrlHandlerMapping.class);
@@ -170,7 +170,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldRegisterViewResolvers() throws Exception {
+	public void shouldRegisterViewResolvers() {
 		load(ViewResolvers.class);
 		ViewResolutionResultHandler resultHandler = this.context
 				.getBean(ViewResolutionResultHandler.class);

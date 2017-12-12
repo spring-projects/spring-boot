@@ -58,7 +58,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeClientCodecs() throws Exception {
+	public void shouldCustomizeClientCodecs() {
 		load(CodecConfiguration.class);
 		WebClient.Builder builder = this.context.getBean(WebClient.Builder.class);
 		CodecCustomizer codecCustomizer = this.context.getBean(CodecCustomizer.class);
@@ -70,7 +70,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void webClientShouldApplyCustomizers() throws Exception {
+	public void webClientShouldApplyCustomizers() {
 		load(WebClientCustomizerConfig.class);
 		WebClient.Builder builder = this.context.getBean(WebClient.Builder.class);
 		WebClientCustomizer customizer = this.context.getBean(WebClientCustomizer.class);
@@ -79,7 +79,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldGetPrototypeScopedBean() throws Exception {
+	public void shouldGetPrototypeScopedBean() {
 		load(WebClientCustomizerConfig.class);
 		ClientHttpResponse response = mock(ClientHttpResponse.class);
 		ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
@@ -105,7 +105,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotCreateClientBuilderIfAlreadyPresent() throws Exception {
+	public void shouldNotCreateClientBuilderIfAlreadyPresent() {
 		load(WebClientCustomizerConfig.class, CustomWebClientBuilderConfig.class);
 		WebClient.Builder builder = this.context.getBean(WebClient.Builder.class);
 		assertThat(builder).isInstanceOf(MyWebClientBuilder.class);

@@ -63,7 +63,7 @@ public class CouchbaseAutoConfigurationIntegrationTests
 	static class CustomConfiguration {
 
 		@Bean
-		public Cluster myCustomCouchbaseCluster() throws Exception {
+		public Cluster myCustomCouchbaseCluster() {
 			return mock(Cluster.class);
 		}
 

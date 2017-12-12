@@ -61,8 +61,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties()
-			throws Exception {
+	public void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		get().withSystemProperties(key + "=value")
@@ -72,8 +71,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithSystemPropertiesShouldRestoreOriginalProperties()
-			throws Exception {
+	public void runWithSystemPropertiesShouldRestoreOriginalProperties() {
 		String key = "test." + UUID.randomUUID();
 		System.setProperty(key, "value");
 		try {
@@ -89,8 +87,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithSystemPropertiesWhenValueIsNullShouldRemoveProperty()
-			throws Exception {
+	public void runWithSystemPropertiesWhenValueIsNullShouldRemoveProperty() {
 		String key = "test." + UUID.randomUUID();
 		System.setProperty(key, "value");
 		try {
@@ -106,7 +103,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithMultiplePropertyValuesShouldAllAllValues() throws Exception {
+	public void runWithMultiplePropertyValuesShouldAllAllValues() {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.bar=2")
 				.run((context) -> {
 					Environment environment = context.getEnvironment();
@@ -116,8 +113,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithPropertyValuesWhenHasExistingShouldReplaceValue()
-			throws Exception {
+	public void runWithPropertyValuesWhenHasExistingShouldReplaceValue() {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.foo=2")
 				.run((context) -> {
 					Environment environment = context.getEnvironment();
@@ -126,28 +122,26 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithConfigurationsShouldRegisterConfigurations() throws Exception {
+	public void runWithConfigurationsShouldRegisterConfigurations() {
 		get().withUserConfiguration(FooConfig.class)
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void runWithMultipleConfigurationsShouldRegisterAllConfigurations()
-			throws Exception {
+	public void runWithMultipleConfigurationsShouldRegisterAllConfigurations() {
 		get().withUserConfiguration(FooConfig.class)
 				.withConfiguration(UserConfigurations.of(BarConfig.class))
 				.run((context) -> assertThat(context).hasBean("foo").hasBean("bar"));
 	}
 
 	@Test
-	public void runWithFailedContextShouldReturnFailedAssertableContext()
-			throws Exception {
+	public void runWithFailedContextShouldReturnFailedAssertableContext() {
 		get().withUserConfiguration(FailingConfig.class)
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	public void runWithClassLoaderShouldSetClassLoader() throws Exception {
+	public void runWithClassLoaderShouldSetClassLoader() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> {
 					try {

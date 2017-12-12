@@ -38,14 +38,14 @@ public class SpringBootConfigurationFinderTests {
 	private SpringBootConfigurationFinder finder = new SpringBootConfigurationFinder();
 
 	@Test
-	public void findFromClassWhenSourceIsNullShouldThrowException() throws Exception {
+	public void findFromClassWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Source must not be null");
 		this.finder.findFromClass((Class<?>) null);
 	}
 
 	@Test
-	public void findFromPackageWhenSourceIsNullShouldThrowException() throws Exception {
+	public void findFromPackageWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Source must not be null");
 		this.finder.findFromPackage((String) null);

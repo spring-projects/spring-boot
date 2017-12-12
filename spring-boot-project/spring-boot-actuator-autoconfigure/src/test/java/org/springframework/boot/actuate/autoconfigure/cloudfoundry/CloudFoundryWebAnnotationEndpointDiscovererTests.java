@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CloudFoundryWebAnnotationEndpointDiscovererTests {
 
 	@Test
-	public void discovererShouldAddSuppliedExtensionForHealthEndpoint() throws Exception {
+	public void discovererShouldAddSuppliedExtensionForHealthEndpoint() {
 		load(TestConfiguration.class, (endpointDiscoverer) -> {
 			Collection<EndpointInfo<WebOperation>> endpoints = endpointDiscoverer
 					.discoverEndpoints();

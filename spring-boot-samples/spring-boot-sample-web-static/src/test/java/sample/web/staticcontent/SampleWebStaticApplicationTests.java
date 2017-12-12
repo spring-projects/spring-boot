@@ -43,14 +43,14 @@ public class SampleWebStaticApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Static");
 	}
 
 	@Test
-	public void testCss() throws Exception {
+	public void testCss() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"/webjars/bootstrap/3.0.3/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

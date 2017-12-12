@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 public class XADataSourceAutoConfigurationTests {
 
 	@Test
-	public void wrapExistingXaDataSource() throws Exception {
+	public void wrapExistingXaDataSource() {
 		ApplicationContext context = createContext(WrapExisting.class);
 		context.getBean(DataSource.class);
 		XADataSource source = context.getBean(XADataSource.class);
@@ -49,7 +49,7 @@ public class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromUrl() throws Exception {
+	public void createFromUrl() {
 		ApplicationContext context = createContext(FromProperties.class,
 				"spring.datasource.url:jdbc:hsqldb:mem:test",
 				"spring.datasource.username:un");

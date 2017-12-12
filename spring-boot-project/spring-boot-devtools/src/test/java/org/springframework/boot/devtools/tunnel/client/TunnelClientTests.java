@@ -47,14 +47,14 @@ public class TunnelClientTests {
 	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test
-	public void listenPortMustNotBeNegative() throws Exception {
+	public void listenPortMustNotBeNegative() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ListenPort must be greater than or equal to 0");
 		new TunnelClient(-5, this.tunnelConnection);
 	}
 
 	@Test
-	public void tunnelConnectionMustNotBeNull() throws Exception {
+	public void tunnelConnectionMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TunnelConnection must not be null");
 		new TunnelClient(1, null);
@@ -123,7 +123,7 @@ public class TunnelClientTests {
 
 		@Override
 		public WritableByteChannel open(WritableByteChannel incomingChannel,
-				Closeable closeable) throws Exception {
+				Closeable closeable) {
 			this.openedTimes++;
 			this.open = true;
 			return new TunnelChannel(incomingChannel, closeable);

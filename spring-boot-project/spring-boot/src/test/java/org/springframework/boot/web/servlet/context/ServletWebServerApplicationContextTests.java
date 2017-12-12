@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.Properties;
@@ -27,7 +26,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -108,7 +106,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void startRegistrations() throws Exception {
+	public void startRegistrations() {
 		addWebServerFactoryBean();
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
@@ -142,7 +140,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void ServletWebServerInitializedEventPublished() throws Exception {
+	public void ServletWebServerInitializedEventPublished() {
 		addWebServerFactoryBean();
 		this.context.registerBeanDefinition("listener",
 				new RootBeanDefinition(MockListener.class));
@@ -155,7 +153,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void localPortIsAvailable() throws Exception {
+	public void localPortIsAvailable() {
 		addWebServerFactoryBean();
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
@@ -165,7 +163,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void stopOnClose() throws Exception {
+	public void stopOnClose() {
 		addWebServerFactoryBean();
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
@@ -174,7 +172,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void cannotSecondRefresh() throws Exception {
+	public void cannotSecondRefresh() {
 		addWebServerFactoryBean();
 		this.context.refresh();
 		this.thrown.expect(IllegalStateException.class);
@@ -182,7 +180,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void servletContextAwareBeansAreInjected() throws Exception {
+	public void servletContextAwareBeansAreInjected() {
 		addWebServerFactoryBean();
 		ServletContextAware bean = mock(ServletContextAware.class);
 		this.context.registerBeanDefinition("bean", beanDefinition(bean));
@@ -191,7 +189,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void missingServletWebServerFactory() throws Exception {
+	public void missingServletWebServerFactory() {
 		this.thrown.expect(ApplicationContextException.class);
 		this.thrown.expectMessage(
 				"Unable to start ServletWebServerApplicationContext due to missing "
@@ -200,7 +198,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void tooManyWebServerFactories() throws Exception {
+	public void tooManyWebServerFactories() {
 		addWebServerFactoryBean();
 		this.context.registerBeanDefinition("webServerFactory2",
 				new RootBeanDefinition(MockServletWebServerFactory.class));
@@ -213,7 +211,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void singleServletBean() throws Exception {
+	public void singleServletBean() {
 		addWebServerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
@@ -224,7 +222,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void orderedBeanInsertedCorrectly() throws Exception {
+	public void orderedBeanInsertedCorrectly() {
 		addWebServerFactoryBean();
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
@@ -241,7 +239,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void multipleServletBeans() throws Exception {
+	public void multipleServletBeans() {
 		addWebServerFactoryBean();
 		Servlet servlet1 = mock(Servlet.class,
 				withSettings().extraInterfaces(Ordered.class));
@@ -264,7 +262,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void multipleServletBeansWithMainDispatcher() throws Exception {
+	public void multipleServletBeansWithMainDispatcher() {
 		addWebServerFactoryBean();
 		Servlet servlet1 = mock(Servlet.class,
 				withSettings().extraInterfaces(Ordered.class));
@@ -287,7 +285,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void servletAndFilterBeans() throws Exception {
+	public void servletAndFilterBeans() {
 		addWebServerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		Filter filter1 = mock(Filter.class,
@@ -334,7 +332,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void servletContextListenerBeans() throws Exception {
+	public void servletContextListenerBeans() {
 		addWebServerFactoryBean();
 		ServletContextListener initializer = mock(ServletContextListener.class);
 		this.context.registerBeanDefinition("initializerBean",
@@ -378,8 +376,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void servletContextInitializerBeansSkipsRegisteredServletsAndFilters()
-			throws Exception {
+	public void servletContextInitializerBeansSkipsRegisteredServletsAndFilters() {
 		addWebServerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
@@ -396,7 +393,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void filterRegistrationBeansSkipsRegisteredFilters() throws Exception {
+	public void filterRegistrationBeansSkipsRegisteredFilters() {
 		addWebServerFactoryBean();
 		Filter filter = mock(Filter.class);
 		FilterRegistrationBean<Filter> initializer = new FilterRegistrationBean<>(filter);
@@ -434,7 +431,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void postProcessWebServerFactory() throws Exception {
+	public void postProcessWebServerFactory() {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
 				MockServletWebServerFactory.class);
 		MutablePropertyValues pv = new MutablePropertyValues();
@@ -452,7 +449,7 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void doesNotReplaceExistingScopes() throws Exception { // gh-2082
+	public void doesNotReplaceExistingScopes() { // gh-2082
 		Scope scope = mock(Scope.class);
 		ConfigurableListableBeanFactory factory = this.context.getBeanFactory();
 		factory.registerScope(WebApplicationContext.SCOPE_REQUEST, scope);
@@ -512,7 +509,7 @@ public class ServletWebServerApplicationContextTests {
 
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) throws IOException, ServletException {
+				FilterChain chain) {
 		}
 
 	}

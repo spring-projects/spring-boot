@@ -55,7 +55,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		prepareApplicationContext(TestConfiguration.class);
 
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -64,7 +64,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOverrideRepositoryConfiguration() throws Exception {
+	public void testOverrideRepositoryConfiguration() {
 		prepareApplicationContext(CustomConfiguration.class);
 		assertThat(this.context.getBean(
 				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class))

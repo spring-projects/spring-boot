@@ -48,32 +48,31 @@ public class DefaultEndpointPathProviderTests {
 	}
 
 	@Test
-	public void getPathsShouldReturnAllPaths() throws Exception {
+	public void getPathsShouldReturnAllPaths() {
 		DefaultEndpointPathProvider provider = createProvider("");
 		assertThat(provider.getPaths()).containsOnly("/foo", "/bar");
 	}
 
 	@Test
-	public void getPathsWhenHasContextPathShouldReturnAllPathsWithContext()
-			throws Exception {
+	public void getPathsWhenHasContextPathShouldReturnAllPathsWithContext() {
 		DefaultEndpointPathProvider provider = createProvider("/actuator");
 		assertThat(provider.getPaths()).containsOnly("/actuator/foo", "/actuator/bar");
 	}
 
 	@Test
-	public void getPathWhenEndpointIdIsKnownShouldReturnPath() throws Exception {
+	public void getPathWhenEndpointIdIsKnownShouldReturnPath() {
 		DefaultEndpointPathProvider provider = createProvider("");
 		assertThat(provider.getPath("foo")).isEqualTo("/foo");
 	}
 
 	@Test
-	public void getPathWhenEndpointIdIsUnknownShouldReturnNull() throws Exception {
+	public void getPathWhenEndpointIdIsUnknownShouldReturnNull() {
 		DefaultEndpointPathProvider provider = createProvider("");
 		assertThat(provider.getPath("baz")).isNull();
 	}
 
 	@Test
-	public void getPathWhenHasContextPathReturnPath() throws Exception {
+	public void getPathWhenHasContextPathReturnPath() {
 		DefaultEndpointPathProvider provider = createProvider("/actuator");
 		assertThat(provider.getPath("foo")).isEqualTo("/actuator/foo");
 	}

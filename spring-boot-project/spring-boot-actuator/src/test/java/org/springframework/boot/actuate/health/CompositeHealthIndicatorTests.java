@@ -62,7 +62,7 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWithIndicators() throws Exception {
+	public void createWithIndicators() {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
@@ -77,7 +77,7 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWithIndicatorsAndAdd() throws Exception {
+	public void createWithIndicatorsAndAdd() {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
@@ -95,7 +95,7 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWithoutAndAdd() throws Exception {
+	public void createWithoutAndAdd() {
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
 				this.healthAggregator);
 		composite.addHealthIndicator("one", this.one);

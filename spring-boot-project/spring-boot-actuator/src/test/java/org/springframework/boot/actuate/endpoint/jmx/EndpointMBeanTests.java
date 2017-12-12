@@ -266,8 +266,7 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeWithParameterMappingExceptionMapsToIllegalArgumentException()
-			throws Exception {
+	public void invokeWithParameterMappingExceptionMapsToIllegalArgumentException() {
 		load(FooEndpoint.class, (discoverer) -> {
 			ObjectName objectName = registerEndpoint(discoverer, "foo");
 			try {
@@ -285,8 +284,7 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeWithMissingRequiredParameterExceptionMapsToIllegalArgumentException()
-			throws Exception {
+	public void invokeWithMissingRequiredParameterExceptionMapsToIllegalArgumentException() {
 		load(RequiredParametersEndpoint.class, (discoverer) -> {
 			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
 			try {
@@ -304,7 +302,7 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeWithMissingNullableParameter() throws Exception {
+	public void invokeWithMissingNullableParameter() {
 		load(RequiredParametersEndpoint.class, (discoverer) -> {
 			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
 			try {

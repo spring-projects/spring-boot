@@ -146,7 +146,7 @@ public class ConfigurationPropertiesBinderTests {
 	}
 
 	@Test
-	public void bindToRelaxedPropertyNamesSame() throws Exception {
+	public void bindToRelaxedPropertyNamesSame() {
 		testRelaxedPropertyNames("test.FOO_BAR=test1", "test.FOO_BAR=test2",
 				"test.BAR-B-A-Z=testa", "test.BAR-B-A-Z=testb");
 	}

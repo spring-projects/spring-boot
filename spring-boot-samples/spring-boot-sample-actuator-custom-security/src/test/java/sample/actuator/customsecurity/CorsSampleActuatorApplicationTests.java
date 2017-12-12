@@ -54,7 +54,7 @@ public class CorsSampleActuatorApplicationTests {
 	private ApplicationContext applicationContext;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		RestTemplate restTemplate = new RestTemplate();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				this.applicationContext.getEnvironment(), "http");
@@ -64,7 +64,7 @@ public class CorsSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void endpointShouldReturnUnauthorized() throws Exception {
+	public void endpointShouldReturnUnauthorized() {
 		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

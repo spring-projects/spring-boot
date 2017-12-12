@@ -48,14 +48,14 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceExists() throws Exception {
+	public void testDataSourceExists() {
 		load();
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(HikariDataSource.class)).hasSize(1);
 	}
 
 	@Test
-	public void testDataSourcePropertiesOverridden() throws Exception {
+	public void testDataSourcePropertiesOverridden() {
 		load("spring.datasource.hikari.jdbc-url=jdbc:foo//bar/spam",
 				"spring.datasource.hikari.max-lifetime=1234");
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
@@ -65,7 +65,7 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceGenericPropertiesOverridden() throws Exception {
+	public void testDataSourceGenericPropertiesOverridden() {
 		load("spring.datasource.hikari.data-source-properties.dataSourceClassName=org.h2.JDBCDataSource");
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
@@ -73,7 +73,7 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceDefaultsPreserved() throws Exception {
+	public void testDataSourceDefaultsPreserved() {
 		load();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertThat(ds.getMaxLifetime()).isEqualTo(1800000);

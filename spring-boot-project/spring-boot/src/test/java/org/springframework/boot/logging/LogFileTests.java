@@ -38,14 +38,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LogFileTests {
 
 	@Test
-	public void noProperties() throws Exception {
+	public void noProperties() {
 		PropertyResolver resolver = getPropertyResolver(null, null);
 		LogFile logFile = LogFile.get(resolver);
 		assertThat(logFile).isNull();
 	}
 
 	@Test
-	public void loggingFile() throws Exception {
+	public void loggingFile() {
 		PropertyResolver resolver = getPropertyResolver("log.file", null);
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
@@ -57,7 +57,7 @@ public class LogFileTests {
 	}
 
 	@Test
-	public void loggingPath() throws Exception {
+	public void loggingPath() {
 		PropertyResolver resolver = getPropertyResolver(null, "logpath");
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
@@ -70,7 +70,7 @@ public class LogFileTests {
 	}
 
 	@Test
-	public void loggingFileAndPath() throws Exception {
+	public void loggingFileAndPath() {
 		PropertyResolver resolver = getPropertyResolver("log.file", "logpath");
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();

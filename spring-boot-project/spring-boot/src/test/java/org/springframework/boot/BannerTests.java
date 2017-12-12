@@ -70,7 +70,7 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testDefaultBanner() throws Exception {
+	public void testDefaultBanner() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
@@ -78,7 +78,7 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testDefaultBannerInLog() throws Exception {
+	public void testDefaultBannerInLog() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
@@ -86,7 +86,7 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testCustomBanner() throws Exception {
+	public void testCustomBanner() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setBanner(new DummyBanner());
@@ -95,7 +95,7 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testBannerInContext() throws Exception {
+	public void testBannerInContext() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
@@ -103,7 +103,7 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testCustomBannerInContext() throws Exception {
+	public void testCustomBannerInContext() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		Banner banner = mock(Banner.class);
@@ -121,7 +121,7 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testDisableBannerInContext() throws Exception {
+	public void testDisableBannerInContext() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setBannerMode(Mode.OFF);
 		application.setWebApplicationType(WebApplicationType.NONE);

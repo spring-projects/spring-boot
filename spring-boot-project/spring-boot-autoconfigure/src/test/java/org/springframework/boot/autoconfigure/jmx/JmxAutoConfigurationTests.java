@@ -117,7 +117,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testParentContext() throws Exception {
+	public void testParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();

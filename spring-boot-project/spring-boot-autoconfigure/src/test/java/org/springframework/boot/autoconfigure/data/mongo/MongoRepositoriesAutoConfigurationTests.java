@@ -53,7 +53,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 					PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		this.runner.withUserConfiguration(TestConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CityRepository.class);
 			Mongo mongo = context.getBean(Mongo.class);
@@ -68,7 +68,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() throws Exception {
+	public void testNoRepositoryConfiguration() {
 		this.runner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Mongo.class);
 			assertThat(context.getBean(Mongo.class)).isInstanceOf(MongoClient.class);

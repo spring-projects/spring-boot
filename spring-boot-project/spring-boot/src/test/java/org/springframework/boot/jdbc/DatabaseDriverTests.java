@@ -68,7 +68,7 @@ public class DatabaseDriverTests {
 	}
 
 	@Test
-	public void databaseProductNameLookups() throws Exception {
+	public void databaseProductNameLookups() {
 		assertThat(DatabaseDriver.fromProductName("newone"))
 				.isEqualTo(DatabaseDriver.UNKNOWN);
 		assertThat(DatabaseDriver.fromProductName("Apache Derby"))

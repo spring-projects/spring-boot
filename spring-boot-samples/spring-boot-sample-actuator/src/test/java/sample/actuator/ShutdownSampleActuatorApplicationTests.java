@@ -45,7 +45,7 @@ public class ShutdownSampleActuatorApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/", Map.class);
@@ -57,7 +57,7 @@ public class ShutdownSampleActuatorApplicationTests {
 
 	@Test
 	@DirtiesContext
-	public void testShutdown() throws Exception {
+	public void testShutdown() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())

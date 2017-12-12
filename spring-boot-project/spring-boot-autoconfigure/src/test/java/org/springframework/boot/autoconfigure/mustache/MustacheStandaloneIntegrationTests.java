@@ -48,26 +48,26 @@ public class MustacheStandaloneIntegrationTests {
 	private Mustache.Compiler compiler;
 
 	@Test
-	public void directCompilation() throws Exception {
+	public void directCompilation() {
 		assertThat(this.compiler.compile("Hello: {{world}}")
 				.execute(Collections.singletonMap("world", "World")))
 						.isEqualTo("Hello: World");
 	}
 
 	@Test
-	public void environmentCollectorCompoundKey() throws Exception {
+	public void environmentCollectorCompoundKey() {
 		assertThat(this.compiler.compile("Hello: {{env.foo}}").execute(new Object()))
 				.isEqualTo("Hello: There");
 	}
 
 	@Test
-	public void environmentCollectorCompoundKeyStandard() throws Exception {
+	public void environmentCollectorCompoundKeyStandard() {
 		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}")
 				.execute(new Object())).isEqualTo("Hello: There");
 	}
 
 	@Test
-	public void environmentCollectorSimpleKey() throws Exception {
+	public void environmentCollectorSimpleKey() {
 		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object()))
 				.isEqualTo("Hello: World");
 	}

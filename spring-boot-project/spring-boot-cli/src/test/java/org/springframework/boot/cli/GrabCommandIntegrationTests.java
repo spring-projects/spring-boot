@@ -63,8 +63,7 @@ public class GrabCommandIntegrationTests {
 	}
 
 	@Test
-	public void duplicateDependencyManagementBomAnnotationsProducesAnError()
-			throws Exception {
+	public void duplicateDependencyManagementBomAnnotationsProducesAnError() {
 		try {
 			this.cli.grab("duplicateDependencyManagementBom.groovy");
 			fail();

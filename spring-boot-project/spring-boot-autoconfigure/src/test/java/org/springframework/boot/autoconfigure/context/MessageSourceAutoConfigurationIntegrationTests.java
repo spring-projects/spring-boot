@@ -47,7 +47,7 @@ public class MessageSourceAutoConfigurationIntegrationTests {
 	private ApplicationContext context;
 
 	@Test
-	public void testMessageSourceFromPropertySourceAnnotation() throws Exception {
+	public void testMessageSourceFromPropertySourceAnnotation() {
 		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
 				.isEqualTo("bar");
 	}

@@ -412,7 +412,7 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableJmsAutomatically() throws Exception {
+	public void enableJmsAutomatically() {
 		this.contextRunner.withUserConfiguration(NoEnableJmsConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasBean(

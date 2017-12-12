@@ -53,7 +53,7 @@ public class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 	private DateService dateService;
 
 	@Test(expected = UnfinishedVerificationException.class)
-	public void verifyShouldUseProxyTarget() throws Exception {
+	public void verifyShouldUseProxyTarget() {
 		this.dateService.getDate(false);
 		verify(this.dateService, times(1)).getDate(false);
 		verify(this.dateService, times(1)).getDate(eq(false));

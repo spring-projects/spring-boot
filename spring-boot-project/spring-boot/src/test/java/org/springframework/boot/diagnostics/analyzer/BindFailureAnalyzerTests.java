@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BindFailureAnalyzerTests {
 
 	@Test
-	public void analysisForUnboundElementsIsNull() throws Exception {
+	public void analysisForUnboundElementsIsNull() {
 		FailureAnalysis analysis = performAnalysis(
 				UnboundElementsFailureConfiguration.class, "test.foo.listValue[0]=hello",
 				"test.foo.listValue[2]=world");
@@ -52,14 +52,14 @@ public class BindFailureAnalyzerTests {
 	}
 
 	@Test
-	public void analysisForValidationExceptionIsNull() throws Exception {
+	public void analysisForValidationExceptionIsNull() {
 		FailureAnalysis analysis = performAnalysis(
 				FieldValidationFailureConfiguration.class, "test.foo.value=1");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void bindExceptionDueToOtherFailure() throws Exception {
+	public void bindExceptionDueToOtherFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
 				"test.foo.value=${BAR}");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "${BAR}",

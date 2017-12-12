@@ -51,12 +51,12 @@ public class SampleUndertowApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		assertOkResponse("/", "Hello World");
 	}
 
 	@Test
-	public void testAsync() throws Exception {
+	public void testAsync() {
 		assertOkResponse("/async", "async: Hello World");
 	}
 

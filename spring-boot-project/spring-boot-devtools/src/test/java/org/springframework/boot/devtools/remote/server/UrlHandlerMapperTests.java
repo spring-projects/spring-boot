@@ -43,28 +43,28 @@ public class UrlHandlerMapperTests {
 	private Handler handler = mock(Handler.class);
 
 	@Test
-	public void requestUriMustNotBeNull() throws Exception {
+	public void requestUriMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must not be empty");
 		new UrlHandlerMapper(null, this.handler);
 	}
 
 	@Test
-	public void requestUriMustNotBeEmpty() throws Exception {
+	public void requestUriMustNotBeEmpty() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must not be empty");
 		new UrlHandlerMapper("", this.handler);
 	}
 
 	@Test
-	public void requestUrlMustStartWithSlash() throws Exception {
+	public void requestUrlMustStartWithSlash() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must start with '/'");
 		new UrlHandlerMapper("tunnel", this.handler);
 	}
 
 	@Test
-	public void handlesMatchedUrl() throws Exception {
+	public void handlesMatchedUrl() {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
@@ -72,7 +72,7 @@ public class UrlHandlerMapperTests {
 	}
 
 	@Test
-	public void ignoresDifferentUrl() throws Exception {
+	public void ignoresDifferentUrl() {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET",
 				"/tunnel/other");

@@ -65,7 +65,7 @@ public class PropertiesLauncherTests {
 	private ClassLoader contextClassLoader;
 
 	@Before
-	public void setup() throws IOException {
+	public void setup() {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		MockitoAnnotations.initMocks(this);
 		System.setProperty("loader.home",
@@ -102,7 +102,7 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	public void testNonExistentHome() throws Exception {
+	public void testNonExistentHome() {
 		System.setProperty("loader.home", "src/test/resources/nonexistent");
 		this.expected.expectMessage("Invalid source folder");
 		PropertiesLauncher launcher = new PropertiesLauncher();
@@ -134,7 +134,7 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	public void testUserSpecifiedDotPath() throws Exception {
+	public void testUserSpecifiedDotPath() {
 		System.setProperty("loader.path", ".");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString())
@@ -299,7 +299,7 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	public void testSystemPropertiesSet() throws Exception {
+	public void testSystemPropertiesSet() {
 		System.setProperty("loader.system", "true");
 		new PropertiesLauncher();
 		assertThat(System.getProperty("loader.main")).isEqualTo("demo.Application");

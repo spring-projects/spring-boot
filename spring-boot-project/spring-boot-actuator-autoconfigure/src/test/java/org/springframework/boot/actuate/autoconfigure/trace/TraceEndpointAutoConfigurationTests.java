@@ -42,8 +42,7 @@ public class TraceEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.trace.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(TraceEndpoint.class));

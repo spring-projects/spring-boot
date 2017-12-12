@@ -39,7 +39,7 @@ public class AuditEventTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void nowEvent() throws Exception {
+	public void nowEvent() {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN",
 				Collections.singletonMap("a", (Object) "b"));
 		assertThat(event.getData().get("a")).isEqualTo("b");
@@ -49,7 +49,7 @@ public class AuditEventTests {
 	}
 
 	@Test
-	public void convertStringsToData() throws Exception {
+	public void convertStringsToData() {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN", "a=b", "c=d");
 		assertThat(event.getData().get("a")).isEqualTo("b");
 		assertThat(event.getData().get("c")).isEqualTo("d");
@@ -63,7 +63,7 @@ public class AuditEventTests {
 	}
 
 	@Test
-	public void nullTimestamp() throws Exception {
+	public void nullTimestamp() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Timestamp must not be null");
 		new AuditEvent(null, "phil", "UNKNOWN",
@@ -71,7 +71,7 @@ public class AuditEventTests {
 	}
 
 	@Test
-	public void nullType() throws Exception {
+	public void nullType() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
 		new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b"));

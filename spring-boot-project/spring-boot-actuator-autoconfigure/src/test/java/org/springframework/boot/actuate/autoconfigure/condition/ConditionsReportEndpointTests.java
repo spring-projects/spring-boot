@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 public class ConditionsReportEndpointTests {
 
 	@Test
-	public void invoke() throws Exception {
+	public void invoke() {
 		new ApplicationContextRunner().withUserConfiguration(Config.class)
 				.run((context) -> {
 					Report report = context.getBean(ConditionsReportEndpoint.class)

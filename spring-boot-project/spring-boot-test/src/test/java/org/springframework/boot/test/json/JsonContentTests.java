@@ -40,48 +40,48 @@ public class JsonContentTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenResourceLoadClassIsNullShouldThrowException() throws Exception {
+	public void createWhenResourceLoadClassIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ResourceLoadClass must not be null");
 		new JsonContent<ExampleObject>(null, TYPE, JSON);
 	}
 
 	@Test
-	public void createWhenJsonIsNullShouldThrowException() throws Exception {
+	public void createWhenJsonIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("JSON must not be null");
 		new JsonContent<ExampleObject>(getClass(), TYPE, null);
 	}
 
 	@Test
-	public void createWhenTypeIsNullShouldCreateContent() throws Exception {
+	public void createWhenTypeIsNullShouldCreateContent() {
 		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), null, JSON);
 		assertThat(content).isNotNull();
 	}
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void assertThatShouldReturnJsonContentAssert() throws Exception {
+	public void assertThatShouldReturnJsonContentAssert() {
 		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON);
 		assertThat(content.assertThat()).isInstanceOf(JsonContentAssert.class);
 	}
 
 	@Test
-	public void getJsonShouldReturnJson() throws Exception {
+	public void getJsonShouldReturnJson() {
 		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON);
 		assertThat(content.getJson()).isEqualTo(JSON);
 
 	}
 
 	@Test
-	public void toStringWhenHasTypeShouldReturnString() throws Exception {
+	public void toStringWhenHasTypeShouldReturnString() {
 		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON);
 		assertThat(content.toString())
 				.isEqualTo("JsonContent " + JSON + " created from " + TYPE);
 	}
 
 	@Test
-	public void toStringWhenHasNoTypeShouldReturnString() throws Exception {
+	public void toStringWhenHasNoTypeShouldReturnString() {
 		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), null, JSON);
 		assertThat(content.toString()).isEqualTo("JsonContent " + JSON);
 	}

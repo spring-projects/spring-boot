@@ -32,14 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IsoOffsetDateTimeConverterTests {
 
 	@Test
-	public void convertShouldConvertIsoDate() throws Exception {
+	public void convertShouldConvertIsoDate() {
 		IsoOffsetDateTimeConverter converter = new IsoOffsetDateTimeConverter();
 		Date date = converter.convert("2011-12-03T10:15:30+01:00");
 		assertThat(date).isNotNull();
 	}
 
 	@Test
-	public void registerConverterShouldRegister() throws Exception {
+	public void registerConverterShouldRegister() {
 		DefaultConversionService service = new DefaultConversionService();
 		IsoOffsetDateTimeConverter.registerConverter(service);
 		Date date = service.convert("2011-12-03T10:15:30+01:00", Date.class);

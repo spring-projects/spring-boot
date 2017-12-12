@@ -42,44 +42,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EndpointRequestTests {
 
 	@Test
-	public void toAnyEndpointShouldMatchEndpointPath() throws Exception {
+	public void toAnyEndpointShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher).matches("/actuator/foo");
 		assertMatcher(matcher).matches("/actuator/bar");
 	}
 
 	@Test
-	public void toAnyEndpointShouldNotMatchOtherPath() throws Exception {
+	public void toAnyEndpointShouldNotMatchOtherPath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher).doesNotMatch("/actuator/baz");
 	}
 
 	@Test
-	public void toEndpointClassShouldMatchEndpointPath() throws Exception {
+	public void toEndpointClassShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class);
 		assertMatcher(matcher).matches("/actuator/foo");
 	}
 
 	@Test
-	public void toEndpointClassShouldNotMatchOtherPath() throws Exception {
+	public void toEndpointClassShouldNotMatchOtherPath() {
 		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class);
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
 	}
 
 	@Test
-	public void toEndpointIdShouldMatchEndpointPath() throws Exception {
+	public void toEndpointIdShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.to("foo");
 		assertMatcher(matcher).matches("/actuator/foo");
 	}
 
 	@Test
-	public void toEndpointIdShouldNotMatchOtherPath() throws Exception {
+	public void toEndpointIdShouldNotMatchOtherPath() {
 		RequestMatcher matcher = EndpointRequest.to("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
 	}
 
 	@Test
-	public void excludeByClassShouldNotMatchExcluded() throws Exception {
+	public void excludeByClassShouldNotMatchExcluded() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint()
 				.excluding(FooEndpoint.class);
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
@@ -87,7 +87,7 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void excludeByIdShouldNotMatchExcluded() throws Exception {
+	public void excludeByIdShouldNotMatchExcluded() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).matches("/actuator/bar");

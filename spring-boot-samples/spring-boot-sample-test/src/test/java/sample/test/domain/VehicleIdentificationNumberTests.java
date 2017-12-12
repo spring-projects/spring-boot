@@ -38,34 +38,34 @@ public class VehicleIdentificationNumberTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenVinIsNullShouldThrowException() throws Exception {
+	public void createWhenVinIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("VIN must not be null");
 		new VehicleIdentificationNumber(null);
 	}
 
 	@Test
-	public void createWhenVinIsMoreThan17CharsShouldThrowException() throws Exception {
+	public void createWhenVinIsMoreThan17CharsShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("VIN must be exactly 17 characters");
 		new VehicleIdentificationNumber("012345678901234567");
 	}
 
 	@Test
-	public void createWhenVinIsLessThan17CharsShouldThrowException() throws Exception {
+	public void createWhenVinIsLessThan17CharsShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("VIN must be exactly 17 characters");
 		new VehicleIdentificationNumber("0123456789012345");
 	}
 
 	@Test
-	public void toStringShouldReturnVin() throws Exception {
+	public void toStringShouldReturnVin() {
 		VehicleIdentificationNumber vin = new VehicleIdentificationNumber(SAMPLE_VIN);
 		assertThat(vin.toString()).isEqualTo(SAMPLE_VIN);
 	}
 
 	@Test
-	public void equalsAndHashCodeShouldBeBasedOnVin() throws Exception {
+	public void equalsAndHashCodeShouldBeBasedOnVin() {
 		VehicleIdentificationNumber vin1 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin2 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber(

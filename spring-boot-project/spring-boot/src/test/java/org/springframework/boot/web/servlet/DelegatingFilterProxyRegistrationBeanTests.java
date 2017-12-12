@@ -16,11 +16,8 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.io.IOException;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -54,27 +51,27 @@ public class DelegatingFilterProxyRegistrationBeanTests
 			new MockServletContext());
 
 	@Test
-	public void targetBeanNameMustNotBeNull() throws Exception {
+	public void targetBeanNameMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TargetBeanName must not be null or empty");
 		new DelegatingFilterProxyRegistrationBean(null);
 	}
 
 	@Test
-	public void targetBeanNameMustNotBeEmpty() throws Exception {
+	public void targetBeanNameMustNotBeEmpty() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TargetBeanName must not be null or empty");
 		new DelegatingFilterProxyRegistrationBean("");
 	}
 
 	@Test
-	public void nameDefaultsToTargetBeanName() throws Exception {
+	public void nameDefaultsToTargetBeanName() {
 		assertThat(new DelegatingFilterProxyRegistrationBean("myFilter")
 				.getOrDeduceName(null)).isEqualTo("myFilter");
 	}
 
 	@Test
-	public void getFilterUsesDelegatingFilterProxy() throws Exception {
+	public void getFilterUsesDelegatingFilterProxy() {
 		DelegatingFilterProxyRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
 		assertThat(filter).isInstanceOf(DelegatingFilterProxy.class);
@@ -98,7 +95,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 	}
 
 	@Test
-	public void createServletRegistrationBeanMustNotBeNull() throws Exception {
+	public void createServletRegistrationBeanMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletRegistrationBeans must not be null");
 		new DelegatingFilterProxyRegistrationBean("mockFilter",
@@ -127,7 +124,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) throws IOException, ServletException {
+				FilterChain chain) {
 		}
 
 	}

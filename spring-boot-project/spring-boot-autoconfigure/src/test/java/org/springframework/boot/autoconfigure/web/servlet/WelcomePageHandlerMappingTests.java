@@ -96,7 +96,7 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void handlesRequestWithEmptyAcceptHeader() throws Exception {
+	public void handlesRequestWithEmptyAcceptHeader() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
 						.perform(get("/").header(HttpHeaders.ACCEPT, ""))

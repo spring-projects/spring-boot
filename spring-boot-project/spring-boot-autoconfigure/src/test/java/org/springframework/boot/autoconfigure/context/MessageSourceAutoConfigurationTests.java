@@ -128,7 +128,7 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testFormatMessageOn() throws Exception {
+	public void testFormatMessageOn() {
 		this.contextRunner
 				.withPropertyValues("spring.messages.basename:test/messages",
 						"spring.messages.always-use-message-format:true")

@@ -118,7 +118,7 @@ public class JacksonAutoConfigurationTests {
 	 */
 
 	@Test
-	public void noCustomDateFormat() throws Exception {
+	public void noCustomDateFormat() {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
@@ -126,7 +126,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void customDateFormat() throws Exception {
+	public void customDateFormat() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.date-format:yyyyMMddHHmmss")
 				.applyTo(this.context);
@@ -155,7 +155,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void customDateFormatClass() throws Exception {
+	public void customDateFormatClass() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues
 				.of("spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat")
@@ -166,7 +166,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void noCustomPropertyNamingStrategy() throws Exception {
+	public void noCustomPropertyNamingStrategy() {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
@@ -174,7 +174,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPropertyNamingStrategyField() throws Exception {
+	public void customPropertyNamingStrategyField() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.property-naming-strategy:SNAKE_CASE")
 				.applyTo(this.context);
@@ -185,7 +185,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPropertyNamingStrategyClass() throws Exception {
+	public void customPropertyNamingStrategyClass() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues
 				.of("spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy")
@@ -197,7 +197,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSerializationFeature() throws Exception {
+	public void enableSerializationFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.serialization.indent_output:true")
 				.applyTo(this.context);
@@ -210,7 +210,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableSerializationFeature() throws Exception {
+	public void disableSerializationFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues
 				.of("spring.jackson.serialization.write_dates_as_timestamps:false")
@@ -224,7 +224,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableDeserializationFeature() throws Exception {
+	public void enableDeserializationFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues
 				.of("spring.jackson.deserialization.use_big_decimal_for_floats:true")
@@ -238,7 +238,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableDeserializationFeature() throws Exception {
+	public void disableDeserializationFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues
 				.of("spring.jackson.deserialization.fail-on-unknown-properties:false")
@@ -252,7 +252,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableMapperFeature() throws Exception {
+	public void enableMapperFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.mapper.require_setters_for_getters:true")
 				.applyTo(this.context);
@@ -269,7 +269,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableMapperFeature() throws Exception {
+	public void disableMapperFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.mapper.use_annotations:false")
 				.applyTo(this.context);
@@ -283,7 +283,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableParserFeature() throws Exception {
+	public void enableParserFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.parser.allow_single_quotes:true")
 				.applyTo(this.context);
@@ -295,7 +295,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableParserFeature() throws Exception {
+	public void disableParserFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.parser.auto_close_source:false")
 				.applyTo(this.context);
@@ -307,7 +307,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableGeneratorFeature() throws Exception {
+	public void enableGeneratorFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.generator.write_numbers_as_strings:true")
 				.applyTo(this.context);
@@ -320,7 +320,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableGeneratorFeature() throws Exception {
+	public void disableGeneratorFeature() {
 		this.context.register(JacksonAutoConfiguration.class);
 		TestPropertyValues.of("spring.jackson.generator.auto_close_target:false")
 				.applyTo(this.context);
@@ -332,7 +332,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultObjectMapperBuilder() throws Exception {
+	public void defaultObjectMapperBuilder() {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		Jackson2ObjectMapperBuilder builder = this.context
@@ -430,7 +430,7 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void additionalJacksonBuilderCustomization() throws Exception {
+	public void additionalJacksonBuilderCustomization() {
 		this.context.register(JacksonAutoConfiguration.class,
 				ObjectMapperBuilderCustomConfig.class);
 		this.context.refresh();
@@ -594,7 +594,7 @@ public class JacksonAutoConfigurationTests {
 
 		@Override
 		protected void serializeObject(Baz value, JsonGenerator jgen,
-				SerializerProvider provider) throws IOException {
+				SerializerProvider provider) {
 		}
 
 	}

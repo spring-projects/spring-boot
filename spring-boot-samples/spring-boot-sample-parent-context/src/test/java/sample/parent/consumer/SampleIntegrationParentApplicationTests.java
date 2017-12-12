@@ -44,7 +44,7 @@ public class SampleIntegrationParentApplicationTests {
 	private static ConfigurableApplicationContext context;
 
 	@BeforeClass
-	public static void start() throws Exception {
+	public static void start() {
 		context = SpringApplication.run(SampleParentContextApplication.class);
 	}
 

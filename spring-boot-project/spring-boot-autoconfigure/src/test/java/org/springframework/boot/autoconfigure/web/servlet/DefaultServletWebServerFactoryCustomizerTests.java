@@ -83,7 +83,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	private ArgumentCaptor<ServletContextInitializer[]> initializersCaptor;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.customizer = new DefaultServletWebServerFactoryCustomizer(this.properties);
 	}
@@ -153,7 +153,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void redirectContextRootCanBeConfigured() throws Exception {
+	public void redirectContextRootCanBeConfigured() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.redirect-context-root", "false");
 		bindProperties(map);
@@ -185,7 +185,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeTomcat() throws Exception {
+	public void testCustomizeTomcat() {
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -193,7 +193,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testDefaultDisplayName() throws Exception {
+	public void testDefaultDisplayName() {
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -201,7 +201,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeDisplayName() throws Exception {
+	public void testCustomizeDisplayName() {
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
 		this.properties.setDisplayName("TestName");
@@ -242,7 +242,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeTomcatPort() throws Exception {
+	public void testCustomizeTomcatPort() {
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
 		this.properties.setPort(8080);
@@ -251,7 +251,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customizeTomcatDisplayName() throws Exception {
+	public void customizeTomcatDisplayName() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.display-name", "MyBootApp");
 		bindProperties(map);
@@ -261,7 +261,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void disableTomcatRemoteIpValve() throws Exception {
+	public void disableTomcatRemoteIpValve() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.remote-ip-header", "");
 		map.put("server.tomcat.protocol-header", "");
@@ -272,7 +272,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultTomcatBackgroundProcessorDelay() throws Exception {
+	public void defaultTomcatBackgroundProcessorDelay() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
 		TomcatWebServer webServer = (TomcatWebServer) factory.getWebServer();
@@ -282,7 +282,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customTomcatBackgroundProcessorDelay() throws Exception {
+	public void customTomcatBackgroundProcessorDelay() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.background-processor-delay", "5");
 		bindProperties(map);
@@ -295,7 +295,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultTomcatRemoteIpValve() throws Exception {
+	public void defaultTomcatRemoteIpValve() {
 		Map<String, String> map = new HashMap<>();
 		// Since 1.1.7 you need to specify at least the protocol
 		map.put("server.tomcat.protocol-header", "X-Forwarded-Proto");
@@ -305,14 +305,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void setUseForwardHeadersTomcat() throws Exception {
+	public void setUseForwardHeadersTomcat() {
 		// Since 1.3.0 no need to explicitly set header names if use-forward-header=true
 		this.properties.setUseForwardHeaders(true);
 		testRemoteIpValveConfigured();
 	}
 
 	@Test
-	public void deduceUseForwardHeadersTomcat() throws Exception {
+	public void deduceUseForwardHeadersTomcat() {
 		this.customizer.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
 		testRemoteIpValveConfigured();
 	}
@@ -338,7 +338,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customTomcatRemoteIpValve() throws Exception {
+	public void customTomcatRemoteIpValve() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.remote-ip-header", "x-my-remote-ip-header");
 		map.put("server.tomcat.protocol-header", "x-my-protocol-header");
@@ -453,7 +453,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeTomcatMinSpareThreads() throws Exception {
+	public void testCustomizeTomcatMinSpareThreads() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.min-spare-threads", "10");
 		bindProperties(map);
@@ -486,7 +486,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultUseForwardHeadersUndertow() throws Exception {
+	public void defaultUseForwardHeadersUndertow() {
 		UndertowServletWebServerFactory factory = spy(
 				new UndertowServletWebServerFactory());
 		this.customizer.customize(factory);
@@ -494,7 +494,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void setUseForwardHeadersUndertow() throws Exception {
+	public void setUseForwardHeadersUndertow() {
 		this.properties.setUseForwardHeaders(true);
 		UndertowServletWebServerFactory factory = spy(
 				new UndertowServletWebServerFactory());
@@ -503,7 +503,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeadersUndertow() throws Exception {
+	public void deduceUseForwardHeadersUndertow() {
 		this.customizer.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
 		UndertowServletWebServerFactory factory = spy(
 				new UndertowServletWebServerFactory());
@@ -512,14 +512,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultUseForwardHeadersJetty() throws Exception {
+	public void defaultUseForwardHeadersJetty() {
 		JettyServletWebServerFactory factory = spy(new JettyServletWebServerFactory());
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
 
 	@Test
-	public void setUseForwardHeadersJetty() throws Exception {
+	public void setUseForwardHeadersJetty() {
 		this.properties.setUseForwardHeaders(true);
 		JettyServletWebServerFactory factory = spy(new JettyServletWebServerFactory());
 		this.customizer.customize(factory);
@@ -527,7 +527,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeadersJetty() throws Exception {
+	public void deduceUseForwardHeadersJetty() {
 		this.customizer.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
 		JettyServletWebServerFactory factory = spy(new JettyServletWebServerFactory());
 		this.customizer.customize(factory);
@@ -535,7 +535,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void sessionStoreDir() throws Exception {
+	public void sessionStoreDir() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.session.store-dir", "myfolder");
 		bindProperties(map);
@@ -613,7 +613,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void skipNullElementsForUndertow() throws Exception {
+	public void skipNullElementsForUndertow() {
 		UndertowServletWebServerFactory factory = mock(
 				UndertowServletWebServerFactory.class);
 		this.customizer.customize(factory);

@@ -57,7 +57,7 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceExists() throws Exception {
+	public void testDataSourceExists() {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
@@ -103,7 +103,7 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceDefaultsPreserved() throws Exception {
+	public void testDataSourceDefaultsPreserved() {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();

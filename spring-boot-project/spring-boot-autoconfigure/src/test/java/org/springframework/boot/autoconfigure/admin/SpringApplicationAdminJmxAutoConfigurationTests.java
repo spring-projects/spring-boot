@@ -69,8 +69,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 							SpringApplicationAdminJmxAutoConfiguration.class));
 
 	@Test
-	public void notRegisteredByDefault()
-			throws MalformedObjectNameException, InstanceNotFoundException {
+	public void notRegisteredByDefault() {
 		this.contextRunner.run((context) -> {
 			this.thrown.expect(InstanceNotFoundException.class);
 			this.server.getObjectInstance(createDefaultObjectName());
@@ -78,7 +77,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void registeredWithProperty() throws Exception {
+	public void registeredWithProperty() {
 		this.contextRunner.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
 			ObjectName objectName = createDefaultObjectName();
 			ObjectInstance objectInstance = this.server.getObjectInstance(objectName);
@@ -88,7 +87,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerWithCustomJmxName() throws InstanceNotFoundException {
+	public void registerWithCustomJmxName() {
 		String customJmxName = "org.acme:name=FooBar";
 		this.contextRunner
 				.withSystemProperties(
@@ -125,7 +124,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void onlyRegisteredOnceWhenThereIsAChildContext() throws Exception {
+	public void onlyRegisteredOnceWhenThereIsAChildContext() {
 		SpringApplicationBuilder parentBuilder = new SpringApplicationBuilder()
 				.web(WebApplicationType.NONE)
 				.sources(MultipleMBeanExportersConfiguration.class,

@@ -73,7 +73,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected abstract AbstractReactiveWebServerFactory getFactory();
 
 	@Test
-	public void specificPort() throws Exception {
+	public void specificPort() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
@@ -97,7 +97,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		testBasicSslWithKeyStore("src/test/resources/test.jks");
 	}
 
-	protected final void testBasicSslWithKeyStore(String keyStore) throws Exception {
+	protected final void testBasicSslWithKeyStore(String keyStore) {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore(keyStore);

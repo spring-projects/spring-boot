@@ -82,7 +82,7 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	}
 
 	@Test
-	public void annotationAttributesOverridePropertiesFile() throws Exception {
+	public void annotationAttributesOverridePropertiesFile() {
 		assertThat(this.value).isEqualTo(123);
 	}
 

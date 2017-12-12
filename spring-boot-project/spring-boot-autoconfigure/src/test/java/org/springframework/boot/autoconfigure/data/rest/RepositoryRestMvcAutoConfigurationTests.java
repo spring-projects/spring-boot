@@ -69,14 +69,14 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
 				.isNotNull();
 	}
 
 	@Test
-	public void testWithCustomBasePath() throws Exception {
+	public void testWithCustomBasePath() {
 		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
 		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
 				.isNotNull();
@@ -91,7 +91,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void testWithCustomSettings() throws Exception {
+	public void testWithCustomSettings() {
 		load(TestConfiguration.class, "spring.data.rest.default-page-size:42",
 				"spring.data.rest.max-page-size:78",
 				"spring.data.rest.page-param-name:_page",

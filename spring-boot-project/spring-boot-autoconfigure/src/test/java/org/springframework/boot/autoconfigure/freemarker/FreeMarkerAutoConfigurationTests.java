@@ -66,7 +66,7 @@ public class FreeMarkerAutoConfigurationTests {
 	}
 
 	@Test
-	public void nonExistentTemplateLocation() throws Exception {
+	public void nonExistentTemplateLocation() {
 		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
 				+ "classpath:/does-not-exist/,classpath:/also-does-not-exist");
 		this.output.expect(containsString("Cannot find template location"));

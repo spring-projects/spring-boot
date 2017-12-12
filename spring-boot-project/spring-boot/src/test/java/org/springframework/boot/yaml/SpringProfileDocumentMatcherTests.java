@@ -121,7 +121,7 @@ public class SpringProfileDocumentMatcherTests {
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.NOT_FOUND);
 	}
 
-	private Properties getProperties(String values) throws IOException {
+	private Properties getProperties(String values) {
 		YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
 		ByteArrayResource resource = new ByteArrayResource(values.getBytes());
 		yamlPropertiesFactoryBean.setResources(resource);

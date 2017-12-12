@@ -37,8 +37,7 @@ public class TestPropertyValuesTests {
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void applyToEnvironmentShouldAttachConfigurationPropertySource()
-			throws Exception {
+	public void applyToEnvironmentShouldAttachConfigurationPropertySource() {
 		TestPropertyValues.of("foo.bar=baz").applyTo(this.environment);
 		PropertySource<?> source = this.environment.getPropertySources()
 				.get("configurationProperties");
@@ -46,14 +45,14 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToDefaultPropertySource() throws Exception {
+	public void applyToDefaultPropertySource() {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 	}
 
 	@Test
-	public void applyToSystemPropertySource() throws Exception {
+	public void applyToSystemPropertySource() {
 		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment,
 				Type.SYSTEM_ENVIRONMENT);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
@@ -63,15 +62,14 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToWithSpecificName() throws Exception {
+	public void applyToWithSpecificName() {
 		TestPropertyValues.of("foo.bar=baz").applyTo(this.environment, Type.MAP, "other");
 		assertThat(this.environment.getPropertySources().get("other")).isNotNull();
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 	}
 
 	@Test
-	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne()
-			throws Exception {
+	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne() {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
 				Type.MAP, "other");
 		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment,
@@ -83,7 +81,7 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToExistingNameAndSameTypeShouldMerge() throws Exception {
+	public void applyToExistingNameAndSameTypeShouldMerge() {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
 				Type.MAP);
 		TestPropertyValues.of("foo.bar=new").applyTo(this.environment, Type.MAP);
@@ -92,7 +90,7 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void andShouldChainAndAddSingleKeyValue() throws Exception {
+	public void andShouldChainAndAddSingleKeyValue() {
 		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing")
 				.applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
@@ -101,7 +99,7 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToSystemPropertiesShouldSetSystemProperties() throws Exception {
+	public void applyToSystemPropertiesShouldSetSystemProperties() {
 		TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
 			assertThat(System.getProperty("foo")).isEqualTo("bar");
 			return null;
@@ -109,7 +107,7 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToSystemPropertiesShouldRestoreSystemProperties() throws Exception {
+	public void applyToSystemPropertiesShouldRestoreSystemProperties() {
 		System.setProperty("foo", "bar1");
 		System.clearProperty("baz");
 		try {
@@ -127,8 +125,7 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToSystemPropertiesWhenValueIsNullShouldRemoveProperty()
-			throws Exception {
+	public void applyToSystemPropertiesWhenValueIsNullShouldRemoveProperty() {
 		System.setProperty("foo", "bar1");
 		try {
 			TestPropertyValues.of("foo").applyToSystemProperties(() -> {

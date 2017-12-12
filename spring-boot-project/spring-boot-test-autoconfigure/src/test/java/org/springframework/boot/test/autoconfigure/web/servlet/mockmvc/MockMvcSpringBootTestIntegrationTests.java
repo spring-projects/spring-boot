@@ -80,7 +80,7 @@ public class MockMvcSpringBootTestIntegrationTests {
 	}
 
 	@Test
-	public void shouldHaveRealService() throws Exception {
+	public void shouldHaveRealService() {
 		assertThat(this.applicationContext.getBean(ExampleRealService.class)).isNotNull();
 	}
 

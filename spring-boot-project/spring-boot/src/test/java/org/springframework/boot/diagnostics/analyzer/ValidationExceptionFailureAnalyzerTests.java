@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 public class ValidationExceptionFailureAnalyzerTests {
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		try {
 			new AnnotationConfigApplicationContext(TestConfiguration.class).close();
 			fail("Expected failure did not occur");

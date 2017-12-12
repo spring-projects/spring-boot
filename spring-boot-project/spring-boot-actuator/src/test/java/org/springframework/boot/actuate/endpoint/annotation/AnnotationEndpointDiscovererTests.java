@@ -193,7 +193,7 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	@Test
-	public void specializedEndpointsAreFilteredFromRegular() throws Exception {
+	public void specializedEndpointsAreFilteredFromRegular() {
 		load(TestEndpointsConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
 					new TestAnnotationEndpointDiscoverer(context).discoverEndpoints());
@@ -202,7 +202,7 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	@Test
-	public void specializedEndpointsAreNotFilteredFromSpecialized() throws Exception {
+	public void specializedEndpointsAreNotFilteredFromSpecialized() {
 		load(TestEndpointsConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<SpecializedTestEndpointOperation>> endpoints = mapEndpoints(
 					new SpecializedTestAnnotationEndpointDiscoverer(context)
@@ -212,7 +212,7 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	@Test
-	public void extensionsAreApplied() throws Exception {
+	public void extensionsAreApplied() {
 		load(TestEndpointsConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<SpecializedTestEndpointOperation>> endpoints = mapEndpoints(
 					new SpecializedTestAnnotationEndpointDiscoverer(context)
@@ -225,7 +225,7 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	@Test
-	public void filtersAreApplied() throws Exception {
+	public void filtersAreApplied() {
 		load(TestEndpointsConfiguration.class, (context) -> {
 			EndpointFilter<SpecializedTestEndpointOperation> filter = (info,
 					discoverer) -> !(info.getId().equals("specialized"));

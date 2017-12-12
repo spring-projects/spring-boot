@@ -207,7 +207,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFlywayMigrationInitializer() throws Exception {
+	public void customFlywayMigrationInitializer() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				CustomFlywayMigrationInitializer.class).run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);

@@ -60,7 +60,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void corsIsDisabledByDefault() throws Exception {
+	public void corsIsDisabledByDefault() {
 		WebTestClient client = createWebTestClient();
 		System.out.println(new ConditionEvaluationReportMessage(
 				this.context.getBean(ConditionEvaluationReport.class)));
@@ -106,7 +106,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void requestsWithDisallowedHeadersAreRejected() throws Exception {
+	public void requestsWithDisallowedHeadersAreRejected() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.applyTo(this.context);
@@ -120,7 +120,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void allowedHeadersCanBeConfigured() throws Exception {
+	public void allowedHeadersCanBeConfigured() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allowed-headers:Alpha,Bravo")
@@ -136,7 +136,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void requestsWithDisallowedMethodsAreRejected() throws Exception {
+	public void requestsWithDisallowedMethodsAreRejected() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.applyTo(this.context);
@@ -149,7 +149,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void allowedMethodsCanBeConfigured() throws Exception {
+	public void allowedMethodsCanBeConfigured() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allowed-methods:GET,HEAD")
@@ -190,7 +190,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 				.configureClient().baseUrl("https://spring.example.org").build();
 	}
 
-	private WebTestClient.ResponseSpec performAcceptedCorsRequest(String url) throws Exception {
+	private WebTestClient.ResponseSpec performAcceptedCorsRequest(String url) {
 		return createWebTestClient()
 				.options().uri(url)
 				.header(HttpHeaders.ORIGIN, "spring.example.org")

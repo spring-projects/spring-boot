@@ -43,49 +43,49 @@ public class ConfigurationPropertyNameTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void ofNameShouldNotBeNull() throws Exception {
+	public void ofNameShouldNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Name must not be null");
 		ConfigurationPropertyName.of(null);
 	}
 
 	@Test
-	public void ofNameShouldNotStartWithNumber() throws Exception {
+	public void ofNameShouldNotStartWithNumber() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("1foo");
 	}
 
 	@Test
-	public void ofNameShouldNotStartWithDash() throws Exception {
+	public void ofNameShouldNotStartWithDash() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("-foo");
 	}
 
 	@Test
-	public void ofNameShouldNotStartWithDot() throws Exception {
+	public void ofNameShouldNotStartWithDot() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of(".foo");
 	}
 
 	@Test
-	public void ofNameShouldNotEndWithDot() throws Exception {
+	public void ofNameShouldNotEndWithDot() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("foo.");
 	}
 
 	@Test
-	public void ofNameShouldNotContainUppercase() throws Exception {
+	public void ofNameShouldNotContainUppercase() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("fOo");
 	}
 
 	@Test
-	public void ofNameShouldNotContainInvalidChars() throws Exception {
+	public void ofNameShouldNotContainInvalidChars() {
 		String invalid = "_@$%*+=':;";
 		for (char c : invalid.toCharArray()) {
 			try {
@@ -99,7 +99,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWhenSimple() throws Exception {
+	public void ofNameWhenSimple() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("name");
 		assertThat(name.toString()).isEqualTo("name");
 		assertThat(name.getNumberOfElements()).isEqualTo(1);
@@ -108,7 +108,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWhenRunOnAssociative() throws Exception {
+	public void ofNameWhenRunOnAssociative() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo[bar]");
 		assertThat(name.toString()).isEqualTo("foo[bar]");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -118,7 +118,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWhenDotOnAssociative() throws Exception {
+	public void ofNameWhenDotOnAssociative() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar");
 		assertThat(name.toString()).isEqualTo("foo.bar");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -128,7 +128,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWhenDotAndAssociative() throws Exception {
+	public void ofNameWhenDotAndAssociative() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.[bar]");
 		assertThat(name.toString()).isEqualTo("foo[bar]");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -138,7 +138,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWhenDoubleRunOnAndAssociative() throws Exception {
+	public void ofNameWhenDoubleRunOnAndAssociative() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo[bar]baz");
 		assertThat(name.toString()).isEqualTo("foo[bar].baz");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -150,7 +150,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWhenDoubleDotAndAssociative() throws Exception {
+	public void ofNameWhenDoubleDotAndAssociative() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.[bar].baz");
 		assertThat(name.toString()).isEqualTo("foo[bar].baz");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -162,28 +162,28 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWhenMissingCloseBracket() throws Exception {
+	public void ofNameWhenMissingCloseBracket() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("[bar");
 	}
 
 	@Test
-	public void ofNameWhenMissingOpenBracket() throws Exception {
+	public void ofNameWhenMissingOpenBracket() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("bar]");
 	}
 
 	@Test
-	public void ofNameWhenMultipleMismatchedBrackets() throws Exception {
+	public void ofNameWhenMultipleMismatchedBrackets() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("[a[[[b]ar]");
 	}
 
 	@Test
-	public void ofNameWhenNestedBrackets() throws Exception {
+	public void ofNameWhenNestedBrackets() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo[a[c][[b]ar]]");
 		assertThat(name.toString()).isEqualTo("foo[a[c][[b]ar]]");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -191,14 +191,14 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWithWhitespaceInName() throws Exception {
+	public void ofNameWithWhitespaceInName() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
 		ConfigurationPropertyName.of("foo. bar");
 	}
 
 	@Test
-	public void ofNameWithWhitespaceInAssociativeElement() throws Exception {
+	public void ofNameWithWhitespaceInAssociativeElement() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo[b a r]");
 		assertThat(name.toString()).isEqualTo("foo[b a r]");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -208,7 +208,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameWithUppercaseInAssociativeElement() throws Exception {
+	public void ofNameWithUppercaseInAssociativeElement() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo[BAR]");
 		assertThat(name.toString()).isEqualTo("foo[BAR]");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
@@ -218,29 +218,28 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofWhenNameIsEmptyShouldReturnEmptyName() throws Exception {
+	public void ofWhenNameIsEmptyShouldReturnEmptyName() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("");
 		assertThat(name.toString()).isEqualTo("");
 		assertThat(name.append("foo").toString()).isEqualTo("foo");
 	}
 
 	@Test
-	public void adaptWhenNameIsNullShouldThrowException() throws Exception {
+	public void adaptWhenNameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Name must not be null");
 		ConfigurationPropertyName.adapt(null, '.');
 	}
 
 	@Test
-	public void adaptWhenElementValueProcessorIsNullShouldThrowException()
-			throws Exception {
+	public void adaptWhenElementValueProcessorIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ElementValueProcessor must not be null");
 		ConfigurationPropertyName.adapt("foo", '.', null);
 	}
 
 	@Test
-	public void adaptShouldCreateName() throws Exception {
+	public void adaptShouldCreateName() {
 		ConfigurationPropertyName expected = ConfigurationPropertyName.of("foo.bar.baz");
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo.bar.baz",
 				'.');
@@ -248,7 +247,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void adaptShouldStripInvalidChars() throws Exception {
+	public void adaptShouldStripInvalidChars() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("f@@.b%r", '.');
 		assertThat(name.getElement(0, Form.UNIFORM)).isEqualTo("f");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("f");
@@ -258,7 +257,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void adaptShouldSupportUnderscore() throws Exception {
+	public void adaptShouldSupportUnderscore() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("f-_o.b_r", '.');
 		assertThat(name.getElement(0, Form.UNIFORM)).isEqualTo("fo");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("f-_o");
@@ -268,7 +267,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void adaptShouldSupportMixedCase() throws Exception {
+	public void adaptShouldSupportMixedCase() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("fOo.bAr", '.');
 		assertThat(name.getElement(0, Form.UNIFORM)).isEqualTo("foo");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("fOo");
@@ -278,14 +277,14 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void adaptShouldUseElementValueProcessor() throws Exception {
+	public void adaptShouldUseElementValueProcessor() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("FOO_THE-BAR",
 				'_', (c) -> c.toString().replace("-", ""));
 		assertThat(name.toString()).isEqualTo("foo.thebar");
 	}
 
 	@Test
-	public void adaptShouldSupportIndexedElements() throws Exception {
+	public void adaptShouldSupportIndexedElements() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo", '.');
 		assertThat(name.toString()).isEqualTo("foo");
 		assertThat(name.getNumberOfElements()).isEqualTo(1);
@@ -304,23 +303,23 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isEmptyWhenEmptyShouldReturnTrue() throws Exception {
+	public void isEmptyWhenEmptyShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.of("").isEmpty()).isTrue();
 	}
 
 	@Test
-	public void isEmptyWhenNotEmptyShouldReturnFalse() throws Exception {
+	public void isEmptyWhenNotEmptyShouldReturnFalse() {
 		assertThat(ConfigurationPropertyName.of("x").isEmpty()).isFalse();
 	}
 
 	@Test
-	public void isLastElementIndexedWhenIndexedShouldReturnTrue() throws Exception {
+	public void isLastElementIndexedWhenIndexedShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.of("foo[0]").isLastElementIndexed())
 				.isTrue();
 	}
 
 	@Test
-	public void isLastElementIndexedWhenNotIndexedShouldReturnFalse() throws Exception {
+	public void isLastElementIndexedWhenNotIndexedShouldReturnFalse() {
 		assertThat(ConfigurationPropertyName.of("foo.bar").isLastElementIndexed())
 				.isFalse();
 		assertThat(ConfigurationPropertyName.of("foo[0].bar").isLastElementIndexed())
@@ -328,35 +327,35 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void getLastElementShouldGetLastElement() throws Exception {
+	public void getLastElementShouldGetLastElement() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo.bAr", '.');
 		assertThat(name.getLastElement(Form.ORIGINAL)).isEqualTo("bAr");
 		assertThat(name.getLastElement(Form.UNIFORM)).isEqualTo("bar");
 	}
 
 	@Test
-	public void getLastElementWhenEmptyShouldReturnEmptyString() throws Exception {
+	public void getLastElementWhenEmptyShouldReturnEmptyString() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.EMPTY;
 		assertThat(name.getLastElement(Form.ORIGINAL)).isEqualTo("");
 		assertThat(name.getLastElement(Form.UNIFORM)).isEqualTo("");
 	}
 
 	@Test
-	public void getElementShouldNotIncludeAngleBrackets() throws Exception {
+	public void getElementShouldNotIncludeAngleBrackets() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("[foo]");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
 		assertThat(name.getElement(0, Form.UNIFORM)).isEqualTo("foo");
 	}
 
 	@Test
-	public void getElementInUniformFormShouldNotIncludeDashes() throws Exception {
+	public void getElementInUniformFormShouldNotIncludeDashes() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("f-o-o");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("f-o-o");
 		assertThat(name.getElement(0, Form.UNIFORM)).isEqualTo("foo");
 	}
 
 	@Test
-	public void getElementInOriginalFormShouldReturnElement() throws Exception {
+	public void getElementInOriginalFormShouldReturnElement() {
 		assertThat(getElements("foo.bar", Form.ORIGINAL)).containsExactly("foo", "bar");
 		assertThat(getElements("foo[0]", Form.ORIGINAL)).containsExactly("foo", "0");
 		assertThat(getElements("foo.[0]", Form.ORIGINAL)).containsExactly("foo", "0");
@@ -371,7 +370,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void getElementInUniformFormShouldReturnElement() throws Exception {
+	public void getElementInUniformFormShouldReturnElement() {
 		assertThat(getElements("foo.bar", Form.UNIFORM)).containsExactly("foo", "bar");
 		assertThat(getElements("foo[0]", Form.UNIFORM)).containsExactly("foo", "0");
 		assertThat(getElements("foo.[0]", Form.UNIFORM)).containsExactly("foo", "0");
@@ -395,7 +394,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void getNumberOfElementsShouldReturnNumberOfElement() throws Exception {
+	public void getNumberOfElementsShouldReturnNumberOfElement() {
 		assertThat(ConfigurationPropertyName.of("").getNumberOfElements()).isEqualTo(0);
 		assertThat(ConfigurationPropertyName.of("x").getNumberOfElements()).isEqualTo(1);
 		assertThat(ConfigurationPropertyName.of("x.y").getNumberOfElements())
@@ -405,13 +404,13 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void appendWhenNotIndexedShouldAppendWithDot() throws Exception {
+	public void appendWhenNotIndexedShouldAppendWithDot() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		assertThat(name.append("bar").toString()).isEqualTo("foo.bar");
 	}
 
 	@Test
-	public void appendWhenIndexedShouldAppendWithBrackets() throws Exception {
+	public void appendWhenIndexedShouldAppendWithBrackets() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo")
 				.append("[bar]");
 		assertThat(name.isLastElementIndexed()).isTrue();
@@ -419,52 +418,52 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void appendWhenElementNameIsNotValidShouldThrowException() throws Exception {
+	public void appendWhenElementNameIsNotValidShouldThrowException() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("Configuration property name '1bar' is not valid");
 		ConfigurationPropertyName.of("foo").append("1bar");
 	}
 
 	@Test
-	public void appendWhenElementNameMultiDotShouldThrowException() throws Exception {
+	public void appendWhenElementNameMultiDotShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Element value 'bar.baz' must be a single item");
 		ConfigurationPropertyName.of("foo").append("bar.baz");
 	}
 
 	@Test
-	public void appendWhenElementNameIsNullShouldReturnName() throws Exception {
+	public void appendWhenElementNameIsNullShouldReturnName() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		assertThat((Object) name.append((String) null)).isSameAs(name);
 	}
 
 	@Test
-	public void chopWhenLessThenSizeShouldReturnChopped() throws Exception {
+	public void chopWhenLessThenSizeShouldReturnChopped() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.chop(1).toString()).isEqualTo("foo");
 		assertThat(name.chop(2).toString()).isEqualTo("foo.bar");
 	}
 
 	@Test
-	public void chopWhenGreaterThanSizeShouldReturnExisting() throws Exception {
+	public void chopWhenGreaterThanSizeShouldReturnExisting() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.chop(4)).isEqualTo(name);
 	}
 
 	@Test
-	public void chopWhenEqualToSizeShouldReturnExisting() throws Exception {
+	public void chopWhenEqualToSizeShouldReturnExisting() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.chop(3)).isEqualTo(name);
 	}
 
 	@Test
-	public void isParentOfWhenSameShouldReturnFalse() throws Exception {
+	public void isParentOfWhenSameShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		assertThat(name.isParentOf(name)).isFalse();
 	}
 
 	@Test
-	public void isParentOfWhenParentShouldReturnTrue() throws Exception {
+	public void isParentOfWhenParentShouldReturnTrue() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName child = ConfigurationPropertyName.of("foo.bar");
 		assertThat(name.isParentOf(child)).isTrue();
@@ -472,7 +471,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isParentOfWhenGrandparentShouldReturnFalse() throws Exception {
+	public void isParentOfWhenGrandparentShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName grandchild = ConfigurationPropertyName
 				.of("foo.bar.baz");
@@ -481,7 +480,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isParentOfWhenRootReturnTrue() throws Exception {
+	public void isParentOfWhenRootReturnTrue() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("");
 		ConfigurationPropertyName child = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName grandchild = ConfigurationPropertyName.of("foo.bar");
@@ -491,13 +490,13 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isAncestorOfWhenSameShouldReturnFalse() throws Exception {
+	public void isAncestorOfWhenSameShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		assertThat(name.isAncestorOf(name)).isFalse();
 	}
 
 	@Test
-	public void isAncestorOfWhenParentShouldReturnTrue() throws Exception {
+	public void isAncestorOfWhenParentShouldReturnTrue() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName child = ConfigurationPropertyName.of("foo.bar");
 		assertThat(name.isAncestorOf(child)).isTrue();
@@ -505,7 +504,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isAncestorOfWhenGrandparentShouldReturnTrue() throws Exception {
+	public void isAncestorOfWhenGrandparentShouldReturnTrue() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName grandchild = ConfigurationPropertyName
 				.of("foo.bar.baz");
@@ -514,7 +513,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isAncestorOfWhenRootShouldReturnTrue() throws Exception {
+	public void isAncestorOfWhenRootShouldReturnTrue() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("");
 		ConfigurationPropertyName grandchild = ConfigurationPropertyName
 				.of("foo.bar.baz");
@@ -523,7 +522,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void compareShouldSortNames() throws Exception {
+	public void compareShouldSortNames() {
 		List<ConfigurationPropertyName> names = new ArrayList<>();
 		names.add(ConfigurationPropertyName.of("foo[10]"));
 		names.add(ConfigurationPropertyName.of("foo.bard"));
@@ -538,14 +537,14 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void toStringShouldBeLowerCaseDashed() throws Exception {
+	public void toStringShouldBeLowerCaseDashed() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("fOO.b_-a-r",
 				'.');
 		assertThat(name.toString()).isEqualTo("foo.b-a-r");
 	}
 
 	@Test
-	public void equalsAndHashCode() throws Exception {
+	public void equalsAndHashCode() {
 		ConfigurationPropertyName n01 = ConfigurationPropertyName.of("foo[bar]");
 		ConfigurationPropertyName n02 = ConfigurationPropertyName.of("foo[bar]");
 		ConfigurationPropertyName n03 = ConfigurationPropertyName.of("foo.bar");
@@ -576,7 +575,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isValidWhenValidShouldReturnTrue() throws Exception {
+	public void isValidWhenValidShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo.bar")).isTrue();
@@ -588,7 +587,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void isValidWhenNotValidShouldReturnFalse() throws Exception {
+	public void isValidWhenNotValidShouldReturnFalse() {
 		assertThat(ConfigurationPropertyName.isValid(null)).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("1foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();

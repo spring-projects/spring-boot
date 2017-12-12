@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointProxyTests {
 
 	@Test
-	public void testWithProxyClass() throws Exception {
+	public void testWithProxyClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(Config.class, SqlExecutor.class);
 		contextRunner.run((context) -> {

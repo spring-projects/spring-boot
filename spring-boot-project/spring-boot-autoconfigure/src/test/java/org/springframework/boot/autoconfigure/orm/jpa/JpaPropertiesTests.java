@@ -61,7 +61,7 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void noCustomNamingStrategy() throws Exception {
+	public void noCustomNamingStrategy() {
 		JpaProperties properties = load();
 		Map<String, Object> hibernateProperties = properties
 				.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
@@ -76,7 +76,7 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void hibernate5CustomNamingStrategies() throws Exception {
+	public void hibernate5CustomNamingStrategies() {
 		JpaProperties properties = load(
 				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
 				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical");
@@ -90,7 +90,7 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void namingStrategyInstancesCanBeUsed() throws Exception {
+	public void namingStrategyInstancesCanBeUsed() {
 		JpaProperties properties = load();
 		ImplicitNamingStrategy implicitStrategy = mock(ImplicitNamingStrategy.class);
 		PhysicalNamingStrategy physicalStrategy = mock(PhysicalNamingStrategy.class);
@@ -106,8 +106,7 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void namingStrategyInstancesTakePrecedenceOverNamingStrategyProperties()
-			throws Exception {
+	public void namingStrategyInstancesTakePrecedenceOverNamingStrategyProperties() {
 		JpaProperties properties = load(
 				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
 				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical");
@@ -125,7 +124,7 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void hibernate5CustomNamingStrategiesViaJpaProperties() throws Exception {
+	public void hibernate5CustomNamingStrategiesViaJpaProperties() {
 		JpaProperties properties = load(
 				"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
 				"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical");
@@ -140,7 +139,7 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void useNewIdGeneratorMappingsDefault() throws Exception {
+	public void useNewIdGeneratorMappingsDefault() {
 		JpaProperties properties = load();
 		Map<String, Object> hibernateProperties = properties
 				.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
@@ -149,7 +148,7 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void useNewIdGeneratorMappingsFalse() throws Exception {
+	public void useNewIdGeneratorMappingsFalse() {
 		JpaProperties properties = load(
 				"spring.jpa.hibernate.use-new-id-generator-mappings:false");
 		Map<String, Object> hibernateProperties = properties

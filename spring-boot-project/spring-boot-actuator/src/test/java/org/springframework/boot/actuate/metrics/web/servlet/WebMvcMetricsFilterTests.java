@@ -152,7 +152,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void unhandledError() throws Exception {
+	public void unhandledError() {
 		assertThatCode(() -> this.mvc.perform(get("/api/c1/unhandledError/10"))
 				.andExpect(status().isOk()))
 						.hasRootCauseInstanceOf(RuntimeException.class);

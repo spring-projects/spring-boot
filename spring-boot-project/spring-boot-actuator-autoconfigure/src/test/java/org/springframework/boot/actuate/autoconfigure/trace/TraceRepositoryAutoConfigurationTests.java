@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 public class TraceRepositoryAutoConfigurationTests {
 
 	@Test
-	public void configuresInMemoryTraceRepository() throws Exception {
+	public void configuresInMemoryTraceRepository() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				TraceRepositoryAutoConfiguration.class);
 		assertThat(context.getBean(InMemoryTraceRepository.class)).isNotNull();
@@ -43,7 +43,7 @@ public class TraceRepositoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void skipsIfRepositoryExists() throws Exception {
+	public void skipsIfRepositoryExists() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, TraceRepositoryAutoConfiguration.class);
 		assertThat(context.getBeansOfType(InMemoryTraceRepository.class)).isEmpty();

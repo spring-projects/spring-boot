@@ -55,13 +55,13 @@ public class RestartApplicationListenerTests {
 	}
 
 	@Test
-	public void isHighestPriority() throws Exception {
+	public void isHighestPriority() {
 		assertThat(new RestartApplicationListener().getOrder())
 				.isEqualTo(Ordered.HIGHEST_PRECEDENCE);
 	}
 
 	@Test
-	public void initializeWithReady() throws Exception {
+	public void initializeWithReady() {
 		testInitialize(false);
 		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
 				.isEqualTo(ARGS);
@@ -71,7 +71,7 @@ public class RestartApplicationListenerTests {
 	}
 
 	@Test
-	public void initializeWithFail() throws Exception {
+	public void initializeWithFail() {
 		testInitialize(true);
 		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
 				.isEqualTo(ARGS);
@@ -81,7 +81,7 @@ public class RestartApplicationListenerTests {
 	}
 
 	@Test
-	public void disableWithSystemProperty() throws Exception {
+	public void disableWithSystemProperty() {
 		System.setProperty(ENABLED_PROPERTY, "false");
 		testInitialize(false);
 		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "enabled"))

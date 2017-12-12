@@ -87,7 +87,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldValidateNestedProperties() throws Exception {
+	public void bindShouldValidateNestedProperties() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", 4));
 		this.thrown.expect(BindException.class);
 		this.thrown.expectCause(instanceOf(BindValidationException.class));
@@ -106,7 +106,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailWithAccessToBoundProperties() throws Exception {
+	public void bindShouldFailWithAccessToBoundProperties() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.name", "baz");
 		source.put("foo.nested.age", "4");
@@ -122,7 +122,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailWithAccessToName() throws Exception {
+	public void bindShouldFailWithAccessToName() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(
 				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
@@ -132,7 +132,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailIfExistingValueIsInvalid() throws Exception {
+	public void bindShouldFailIfExistingValueIsInvalid() {
 		ExampleValidatedBean existingValue = new ExampleValidatedBean();
 		BindValidationException cause = bindAndExpectValidationError(
 				() -> this.binder.bind(ConfigurationPropertyName.of("foo"), Bindable
@@ -144,7 +144,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldNotValidateWithoutAnnotation() throws Exception {
+	public void bindShouldNotValidateWithoutAnnotation() {
 		ExampleNonValidatedBean existingValue = new ExampleNonValidatedBean();
 		this.binder.bind(ConfigurationPropertyName.of("foo"), Bindable
 				.of(ExampleNonValidatedBean.class).withExistingValue(existingValue),

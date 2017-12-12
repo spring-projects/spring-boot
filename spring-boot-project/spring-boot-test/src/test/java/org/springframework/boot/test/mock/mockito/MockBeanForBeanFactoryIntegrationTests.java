@@ -70,7 +70,7 @@ public class MockBeanForBeanFactoryIntegrationTests {
 	static class TestFactoryBean implements FactoryBean<TestBean> {
 
 		@Override
-		public TestBean getObject() throws Exception {
+		public TestBean getObject() {
 			return () -> "normal";
 		}
 

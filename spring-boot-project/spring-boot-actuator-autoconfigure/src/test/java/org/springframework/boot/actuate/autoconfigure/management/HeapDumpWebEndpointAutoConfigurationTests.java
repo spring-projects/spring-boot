@@ -36,13 +36,13 @@ public class HeapDumpWebEndpointAutoConfigurationTests {
 					HeapDumpWebEndpointAutoConfiguration.class);
 
 	@Test
-	public void runShouldCreateIndicator() throws Exception {
+	public void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(HeapDumpWebEndpoint.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
+	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.heapdump.enabled:false")
 				.run((context) -> assertThat(context)

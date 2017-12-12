@@ -60,7 +60,7 @@ public class JettyReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void jettyCustomizersShouldBeInvoked() throws Exception {
+	public void jettyCustomizersShouldBeInvoked() {
 		HttpHandler handler = mock(HttpHandler.class);
 		JettyReactiveWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];

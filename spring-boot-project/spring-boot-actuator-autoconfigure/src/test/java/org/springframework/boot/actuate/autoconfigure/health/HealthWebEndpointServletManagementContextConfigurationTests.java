@@ -43,21 +43,20 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 					HealthWebEndpointManagementContextConfiguration.class);
 
 	@Test
-	public void runShouldCreateExtensionBeans() throws Exception {
+	public void runShouldCreateExtensionBeans() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
-	public void runWhenHealthEndpointIsDisabledShouldNotCreateExtensionBeans()
-			throws Exception {
+	public void runWhenHealthEndpointIsDisabledShouldNotCreateExtensionBeans() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
-	public void runWithCustomHealthMappingShouldMapStatusCode() throws Exception {
+	public void runWithCustomHealthMappingShouldMapStatusCode() {
 		this.contextRunner
 				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.run((context) -> {

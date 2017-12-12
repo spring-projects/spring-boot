@@ -64,7 +64,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanAttributes() throws Exception {
+	public void parseMockBeanAttributes() {
 		this.parser.parse(MockBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		MockDefinition definition = getMockDefinition(0);
@@ -79,7 +79,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanOnClassAndField() throws Exception {
+	public void parseMockBeanOnClassAndField() {
 		this.parser.parse(MockBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		MockDefinition classDefinition = getMockDefinition(0);
@@ -95,7 +95,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanInferClassToMock() throws Exception {
+	public void parseMockBeanInferClassToMock() {
 		this.parser.parse(MockBeanInferClassToMock.class);
 		assertThat(getDefinitions()).hasSize(1);
 		assertThat(getMockDefinition(0).getTypeToMock().resolve())
@@ -103,14 +103,14 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanMissingClassToMock() throws Exception {
+	public void parseMockBeanMissingClassToMock() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to deduce type to mock");
 		this.parser.parse(MockBeanMissingClassToMock.class);
 	}
 
 	@Test
-	public void parseMockBeanMultipleClasses() throws Exception {
+	public void parseMockBeanMultipleClasses() {
 		this.parser.parse(MockBeanMultipleClasses.class);
 		assertThat(getDefinitions()).hasSize(2);
 		assertThat(getMockDefinition(0).getTypeToMock().resolve())
@@ -120,7 +120,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanMultipleClassesWithName() throws Exception {
+	public void parseMockBeanMultipleClassesWithName() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage(
 				"The name attribute can only be used when mocking a single class");
@@ -146,7 +146,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanAttributes() throws Exception {
+	public void parseSpyBeanAttributes() {
 		this.parser.parse(SpyBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		SpyDefinition definition = getSpyDefinition(0);
@@ -158,7 +158,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanOnClassAndField() throws Exception {
+	public void parseSpyBeanOnClassAndField() {
 		this.parser.parse(SpyBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		SpyDefinition classDefinition = getSpyDefinition(0);
@@ -174,7 +174,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanInferClassToMock() throws Exception {
+	public void parseSpyBeanInferClassToMock() {
 		this.parser.parse(SpyBeanInferClassToMock.class);
 		assertThat(getDefinitions()).hasSize(1);
 		assertThat(getSpyDefinition(0).getTypeToSpy().resolve())
@@ -182,14 +182,14 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanMissingClassToMock() throws Exception {
+	public void parseSpyBeanMissingClassToMock() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to deduce type to spy");
 		this.parser.parse(SpyBeanMissingClassToMock.class);
 	}
 
 	@Test
-	public void parseSpyBeanMultipleClasses() throws Exception {
+	public void parseSpyBeanMultipleClasses() {
 		this.parser.parse(SpyBeanMultipleClasses.class);
 		assertThat(getDefinitions()).hasSize(2);
 		assertThat(getSpyDefinition(0).getTypeToSpy().resolve())
@@ -199,7 +199,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanMultipleClassesWithName() throws Exception {
+	public void parseSpyBeanMultipleClassesWithName() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage(
 				"The name attribute can only be used when spying a single class");

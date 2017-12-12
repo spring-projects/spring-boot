@@ -34,7 +34,7 @@ public class WebApplicationContextRunnerTests extends
 		AbstractApplicationContextRunnerTests<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
 	@Test
-	public void contextShouldHaveMockServletContext() throws Exception {
+	public void contextShouldHaveMockServletContext() {
 		get().run((context) -> assertThat(context.getServletContext())
 				.isInstanceOf(MockServletContext.class));
 	}

@@ -273,14 +273,13 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse()
-			throws Exception {
+	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() {
 		load(RequiredParameterEndpointConfiguration.class, (client) -> client.get()
 				.uri("/requiredparameters").exchange().expectStatus().isBadRequest());
 	}
 
 	@Test
-	public void readOperationWithMissingNullableParametersIsOk() throws Exception {
+	public void readOperationWithMissingNullableParametersIsOk() {
 		load(RequiredParameterEndpointConfiguration.class, (client) -> client.get()
 				.uri("/requiredparameters?foo=hello").exchange().expectStatus().isOk());
 	}

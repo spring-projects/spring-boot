@@ -41,8 +41,7 @@ public class ReactiveManagementContextFactoryTests {
 	private AnnotationConfigReactiveWebServerApplicationContext parent = new AnnotationConfigReactiveWebServerApplicationContext();
 
 	@Test
-	public void createManagementContextShouldCreateChildContextWithConfigClasses()
-			throws Exception {
+	public void createManagementContextShouldCreateChildContextWithConfigClasses() {
 		this.parent.register(ParentConfiguration.class);
 		this.parent.refresh();
 		AnnotationConfigReactiveWebServerApplicationContext childContext = (AnnotationConfigReactiveWebServerApplicationContext) this.factory

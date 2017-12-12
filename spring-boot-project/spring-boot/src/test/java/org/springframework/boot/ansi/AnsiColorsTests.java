@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AnsiColorsTests {
 
 	@Test
-	public void getClosestWhenExactMatchShouldReturnAnsiColor() throws Exception {
+	public void getClosestWhenExactMatchShouldReturnAnsiColor() {
 		assertThat(getClosest(0x000000)).isEqualTo(AnsiColor.BLACK);
 		assertThat(getClosest(0xAA0000)).isEqualTo(AnsiColor.RED);
 		assertThat(getClosest(0x00AA00)).isEqualTo(AnsiColor.GREEN);
@@ -50,7 +50,7 @@ public class AnsiColorsTests {
 	}
 
 	@Test
-	public void getClosestWhenCloseShouldReturnAnsiColor() throws Exception {
+	public void getClosestWhenCloseShouldReturnAnsiColor() {
 		assertThat(getClosest(0x292424)).isEqualTo(AnsiColor.BLACK);
 		assertThat(getClosest(0x8C1919)).isEqualTo(AnsiColor.RED);
 		assertThat(getClosest(0x0BA10B)).isEqualTo(AnsiColor.GREEN);

@@ -41,13 +41,12 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	private ConfigurableEnvironment environment;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		this.environment = new StandardEnvironment();
 	}
 
 	@Test
-	public void postProcessShouldReplaceSystemEnvironmentPropertySource()
-			throws Exception {
+	public void postProcessShouldReplaceSystemEnvironmentPropertySource() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(this.environment, null);
 		PropertySource<?> replaced = this.environment.getPropertySources()
@@ -58,7 +57,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void replacedPropertySourceShouldBeOriginAware() throws Exception {
+	public void replacedPropertySourceShouldBeOriginAware() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		PropertySource<?> original = this.environment.getPropertySources()
 				.get("systemEnvironment");
@@ -76,8 +75,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void replacedPropertySourceWhenPropertyAbsentShouldReturnNullOrigin()
-			throws Exception {
+	public void replacedPropertySourceWhenPropertyAbsentShouldReturnNullOrigin() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(this.environment, null);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
@@ -86,7 +84,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void replacedPropertySourceShouldResolveProperty() throws Exception {
+	public void replacedPropertySourceShouldResolveProperty() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		Map<String, Object> source = Collections.singletonMap("FOO_BAR_BAZ", "hello");
 		this.environment.getPropertySources().replace("systemEnvironment",

@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertySourcesTests {
 
 	@Test
-	public void attachShouldAddAdapterAtBeginning() throws Exception {
+	public void attachShouldAddAdapterAtBeginning() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system",
@@ -57,13 +57,13 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void getWhenNotAttachedShouldReturnAdapted() throws Exception {
+	public void getWhenNotAttachedShouldReturnAdapted() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		assertThat(ConfigurationPropertySources.get(environment)).isNotEmpty();
 	}
 
 	@Test
-	public void getWhenAttachedShouldReturnAttached() throws Exception {
+	public void getWhenAttachedShouldReturnAttached() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.addFirst(
@@ -74,7 +74,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void environmentPropertyExpansionShouldWorkWhenAttached() throws Exception {
+	public void environmentPropertyExpansionShouldWorkWhenAttached() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
@@ -86,8 +86,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void fromPropertySourceShouldReturnSpringConfigurationPropertySource()
-			throws Exception {
+	public void fromPropertySourceShouldReturnSpringConfigurationPropertySource() {
 		PropertySource<?> source = new MapPropertySource("foo",
 				Collections.singletonMap("foo", "bar"));
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySources
@@ -97,7 +96,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void fromPropertySourceShouldFlattenPropertySources() throws Exception {
+	public void fromPropertySourceShouldFlattenPropertySources() {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(
 				new MapPropertySource("foo", Collections.singletonMap("foo", "bar")));

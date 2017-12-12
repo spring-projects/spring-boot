@@ -64,14 +64,14 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void createWhenEntityManagerIsNullShouldThrowException() throws Exception {
+	public void createWhenEntityManagerIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("EntityManagerFactory must not be null");
 		new TestEntityManager(null);
 	}
 
 	@Test
-	public void persistAndGetIdShouldPersistAndGetId() throws Exception {
+	public void persistAndGetIdShouldPersistAndGetId() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
@@ -81,7 +81,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void persistAndGetIdForTypeShouldPersistAndGetId() throws Exception {
+	public void persistAndGetIdForTypeShouldPersistAndGetId() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
@@ -91,7 +91,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void persistShouldPersist() throws Exception {
+	public void persistShouldPersist() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity result = this.testEntityManager.persist(entity);
@@ -100,7 +100,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void persistAndFlushShouldPersistAndFlush() throws Exception {
+	public void persistAndFlushShouldPersistAndFlush() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity result = this.testEntityManager.persistAndFlush(entity);
@@ -110,7 +110,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void persistFlushFindShouldPersistAndFlushAndFind() throws Exception {
+	public void persistFlushFindShouldPersistAndFlushAndFind() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity found = new TestEntity();
@@ -123,7 +123,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void mergeShouldMerge() throws Exception {
+	public void mergeShouldMerge() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		given(this.entityManager.merge(entity)).willReturn(entity);
@@ -133,7 +133,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void removeShouldRemove() throws Exception {
+	public void removeShouldRemove() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.remove(entity);
@@ -141,7 +141,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void findShouldFind() throws Exception {
+	public void findShouldFind() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		given(this.entityManager.find(TestEntity.class, 123)).willReturn(entity);
@@ -150,14 +150,14 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void flushShouldFlush() throws Exception {
+	public void flushShouldFlush() {
 		bindEntityManager();
 		this.testEntityManager.flush();
 		verify(this.entityManager).flush();
 	}
 
 	@Test
-	public void refreshShouldRefresh() throws Exception {
+	public void refreshShouldRefresh() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.refresh(entity);
@@ -165,14 +165,14 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void clearShouldClear() throws Exception {
+	public void clearShouldClear() {
 		bindEntityManager();
 		this.testEntityManager.clear();
 		verify(this.entityManager).clear();
 	}
 
 	@Test
-	public void detachShouldDetach() throws Exception {
+	public void detachShouldDetach() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.detach(entity);
@@ -180,7 +180,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void getIdForTypeShouldGetId() throws Exception {
+	public void getIdForTypeShouldGetId() {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Integer result = this.testEntityManager.getId(entity, Integer.class);
@@ -188,7 +188,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void getIdForTypeWhenTypeIsWrongShouldThrowException() throws Exception {
+	public void getIdForTypeWhenTypeIsWrongShouldThrowException() {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		this.thrown.expectMessage("ID mismatch: Object of class [java.lang.Integer] "
@@ -197,7 +197,7 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void getIdShouldGetId() throws Exception {
+	public void getIdShouldGetId() {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Object result = this.testEntityManager.getId(entity);
@@ -205,14 +205,14 @@ public class TestEntityManagerTests {
 	}
 
 	@Test
-	public void getEntityManagerShouldGetEntityManager() throws Exception {
+	public void getEntityManagerShouldGetEntityManager() {
 		bindEntityManager();
 		assertThat(this.testEntityManager.getEntityManager())
 				.isEqualTo(this.entityManager);
 	}
 
 	@Test
-	public void getEntityManagerWhenNotSetShouldThrowException() throws Exception {
+	public void getEntityManagerWhenNotSetShouldThrowException() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("No transactional EntityManager found");
 		this.testEntityManager.getEntityManager();

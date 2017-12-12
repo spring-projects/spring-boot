@@ -49,14 +49,14 @@ public class SampleActuatorUiApplicationPortTests {
 	private int managementPort = 9011;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
+	public void testMetrics() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/actuator/metrics",
@@ -65,7 +65,7 @@ public class SampleActuatorUiApplicationPortTests {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
+	public void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword()).getForEntity(
 						"http://localhost:" + this.managementPort + "/actuator/health",

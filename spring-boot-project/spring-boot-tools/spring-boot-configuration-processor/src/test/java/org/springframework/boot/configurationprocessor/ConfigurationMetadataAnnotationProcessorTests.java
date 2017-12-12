@@ -891,7 +891,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
 	}
 
-	private ConfigurationMetadata compile(Class<?>... types) throws IOException {
+	private ConfigurationMetadata compile(Class<?>... types) {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);

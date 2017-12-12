@@ -45,7 +45,7 @@ public class SampleElasticsearchApplicationTests {
 	public static SkipOnWindows skipOnWindows = new SkipOnWindows();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		try {
 			new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
 		}

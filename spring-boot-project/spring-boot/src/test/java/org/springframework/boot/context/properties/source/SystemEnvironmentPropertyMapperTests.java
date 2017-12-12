@@ -42,7 +42,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	}
 
 	@Test
-	public void mapFromStringShouldReturnBestGuess() throws Exception {
+	public void mapFromStringShouldReturnBestGuess() {
 		assertThat(namesFromString("SERVER")).containsExactly("server");
 		assertThat(namesFromString("SERVER_PORT")).containsExactly("server.port");
 		assertThat(namesFromString("HOST_0")).containsExactly("host[0]");
@@ -57,7 +57,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	}
 
 	@Test
-	public void mapFromConfigurationShouldReturnBestGuess() throws Exception {
+	public void mapFromConfigurationShouldReturnBestGuess() {
 		assertThat(namesFromConfiguration("server")).containsExactly("SERVER");
 		assertThat(namesFromConfiguration("server.port")).containsExactly("SERVER_PORT");
 		assertThat(namesFromConfiguration("host[0]")).containsExactly("HOST_0");
@@ -70,7 +70,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	}
 
 	@Test
-	public void mapFromStringWhenListShortcutShouldExtractValues() throws Exception {
+	public void mapFromStringWhenListShortcutShouldExtractValues() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("SERVER__", "foo,bar,baz");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -85,8 +85,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	}
 
 	@Test
-	public void mapFromConfigurationShouldIncludeShortcutAndExtractValues()
-			throws Exception {
+	public void mapFromConfigurationShouldIncludeShortcutAndExtractValues() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("SERVER__", "foo,bar,baz");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -104,7 +103,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	}
 
 	@Test
-	public void underscoreShouldNotMapToEmptyString() throws Exception {
+	public void underscoreShouldNotMapToEmptyString() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
 		List<PropertyMapping> mappings = getMapper().map(propertySource, "_");
@@ -116,7 +115,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	}
 
 	@Test
-	public void underscoreWithWhitespaceShouldNotMapToEmptyString() throws Exception {
+	public void underscoreWithWhitespaceShouldNotMapToEmptyString() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
 		List<PropertyMapping> mappings = getMapper().map(propertySource, "  _");

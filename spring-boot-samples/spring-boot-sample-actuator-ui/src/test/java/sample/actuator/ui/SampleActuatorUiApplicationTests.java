@@ -49,7 +49,7 @@ public class SampleActuatorUiApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate
@@ -60,7 +60,7 @@ public class SampleActuatorUiApplicationTests {
 	}
 
 	@Test
-	public void testCss() throws Exception {
+	public void testCss() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -68,7 +68,7 @@ public class SampleActuatorUiApplicationTests {
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
+	public void testMetrics() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/metrics",
 				Map.class);
@@ -76,7 +76,7 @@ public class SampleActuatorUiApplicationTests {
 	}
 
 	@Test
-	public void testError() throws Exception {
+	public void testError() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate

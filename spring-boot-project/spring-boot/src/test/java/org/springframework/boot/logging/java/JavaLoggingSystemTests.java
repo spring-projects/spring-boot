@@ -18,7 +18,6 @@ package org.springframework.boot.logging.java;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
@@ -64,7 +63,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	private Locale defaultLocale;
 
 	@Before
-	public void init() throws SecurityException, IOException {
+	public void init() throws SecurityException {
 		this.defaultLocale = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
 		this.logger = Logger.getLogger(getClass().getName());
@@ -81,7 +80,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void noFile() throws Exception {
+	public void noFile() {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
 		this.loggingSystem.initialize(null, null, null);
@@ -92,7 +91,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void withFile() throws Exception {
+	public void withFile() {
 		File temp = new File(tmpDir());
 		File[] logFiles = temp.listFiles(SPRING_LOG_FILTER);
 		for (File file : logFiles) {
@@ -108,7 +107,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testCustomFormatter() throws Exception {
+	public void testCustomFormatter() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
@@ -117,7 +116,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testSystemPropertyInitializesFormat() throws Exception {
+	public void testSystemPropertyInitializesFormat() {
 		System.setProperty(LoggingSystemProperties.PID_KEY, "1234");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, "classpath:" + ClassUtils
@@ -129,7 +128,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testNonDefaultConfigLocation() throws Exception {
+	public void testNonDefaultConfigLocation() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, "classpath:logging-nondefault.properties",
 				null);
@@ -139,7 +138,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testNonexistentConfigLocation() throws Exception {
+	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties",
 				null);
@@ -153,7 +152,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void setLevel() throws Exception {
+	public void setLevel() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.fine("Hello");
@@ -164,7 +163,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void setLevelToNull() throws Exception {
+	public void setLevelToNull() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.fine("Hello");
@@ -177,7 +176,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void getLoggingConfigurations() throws Exception {
+	public void getLoggingConfigurations() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
@@ -189,7 +188,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void getLoggingConfiguration() throws Exception {
+	public void getLoggingConfiguration() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);

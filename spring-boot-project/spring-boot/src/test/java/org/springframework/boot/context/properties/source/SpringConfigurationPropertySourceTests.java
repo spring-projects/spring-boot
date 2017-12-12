@@ -43,21 +43,21 @@ public class SpringConfigurationPropertySourceTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenPropertySourceIsNullShouldThrowException() throws Exception {
+	public void createWhenPropertySourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PropertySource must not be null");
 		new SpringConfigurationPropertySource(null, mock(PropertyMapper.class), null);
 	}
 
 	@Test
-	public void createWhenMapperIsNullShouldThrowException() throws Exception {
+	public void createWhenMapperIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Mapper must not be null");
 		new SpringConfigurationPropertySource(mock(PropertySource.class), null, null);
 	}
 
 	@Test
-	public void getValueShouldUseDirectMapping() throws Exception {
+	public void getValueShouldUseDirectMapping() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -72,7 +72,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseExtractor() throws Exception {
+	public void getValueShouldUseExtractor() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -86,7 +86,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueOrigin() throws Exception {
+	public void getValueOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -100,7 +100,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() throws Exception {
+	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		PropertySource<?> propertySource = new OriginCapablePropertySource<>(
@@ -115,7 +115,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfShouldReturnEmpty() throws Exception {
+	public void containsDescendantOfShouldReturnEmpty() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("foo.bar", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -126,14 +126,14 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void fromWhenPropertySourceIsNullShouldThrowException() throws Exception {
+	public void fromWhenPropertySourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Source must not be null");
 		SpringConfigurationPropertySource.from(null);
 	}
 
 	@Test
-	public void fromWhenNonEnumerableShouldReturnNonIterable() throws Exception {
+	public void fromWhenNonEnumerableShouldReturnNonIterable() {
 		PropertySource<?> propertySource = new PropertySource<Object>("test",
 				new Object()) {
 
@@ -149,8 +149,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void fromWhenEnumerableButRestrictedShouldReturnNonIterable()
-			throws Exception {
+	public void fromWhenEnumerableButRestrictedShouldReturnNonIterable() {
 		Map<String, Object> source = new LinkedHashMap<String, Object>() {
 
 			@Override
@@ -165,7 +164,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getWhenEnumerableShouldBeIterable() throws Exception {
+	public void getWhenEnumerableShouldBeIterable() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
 		source.put("barBaz", "Boot");

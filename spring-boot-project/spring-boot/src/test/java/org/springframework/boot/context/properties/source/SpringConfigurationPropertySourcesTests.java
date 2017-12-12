@@ -44,14 +44,14 @@ public class SpringConfigurationPropertySourcesTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenPropertySourcesIsNullShouldThrowException() throws Exception {
+	public void createWhenPropertySourcesIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Sources must not be null");
 		new SpringConfigurationPropertySources(null);
 	}
 
 	@Test
-	public void shouldAdaptPropertySource() throws Exception {
+	public void shouldAdaptPropertySource() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addFirst(
 				new MapPropertySource("test", Collections.singletonMap("a", "b")));
@@ -64,7 +64,7 @@ public class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void shouldAdaptSystemEnvironmentPropertySource() throws Exception {
+	public void shouldAdaptSystemEnvironmentPropertySource() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
@@ -78,7 +78,7 @@ public class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void shouldExtendedAdaptSystemEnvironmentPropertySource() throws Exception {
+	public void shouldExtendedAdaptSystemEnvironmentPropertySource() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource(
 				"test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
@@ -92,7 +92,7 @@ public class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void shouldNotAdaptSystemEnvironmentPropertyOverrideSource() throws Exception {
+	public void shouldNotAdaptSystemEnvironmentPropertyOverrideSource() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("override",
 				Collections.singletonMap("server.port", "1234")));
@@ -105,7 +105,7 @@ public class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void shouldAdaptMultiplePropertySources() throws Exception {
+	public void shouldAdaptMultiplePropertySources() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system",
 				Collections.singletonMap("SERVER_PORT", "1234")));
@@ -127,7 +127,7 @@ public class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void shouldFlattenEnvironment() throws Exception {
+	public void shouldFlattenEnvironment() {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(
 				new MapPropertySource("foo", Collections.singletonMap("foo", "bar")));
@@ -150,7 +150,7 @@ public class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void shouldTrackChanges() throws Exception {
+	public void shouldTrackChanges() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addLast(
 				new MapPropertySource("test1", Collections.singletonMap("a", "b")));

@@ -46,7 +46,7 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testCustomErrorPath() throws Exception {
+	public void testCustomErrorPath() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/oops", Map.class);
@@ -58,7 +58,7 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testCustomContextPath() throws Exception {
+	public void testCustomContextPath() {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/admin/health", String.class);

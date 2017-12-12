@@ -47,7 +47,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadClass() throws Exception {
+	public void loadClass() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponent.class);
 		assertThat(loader.load()).isEqualTo(1);
@@ -55,7 +55,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadXmlResource() throws Exception {
+	public void loadXmlResource() {
 		ClassPathResource resource = new ClassPathResource("sample-beans.xml",
 				getClass());
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
@@ -65,7 +65,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadGroovyResource() throws Exception {
+	public void loadGroovyResource() {
 		ClassPathResource resource = new ClassPathResource("sample-beans.groovy",
 				getClass());
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
@@ -75,7 +75,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadGroovyResourceWithNamespace() throws Exception {
+	public void loadGroovyResourceWithNamespace() {
 		ClassPathResource resource = new ClassPathResource("sample-namespace.groovy",
 				getClass());
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
@@ -85,7 +85,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadPackage() throws Exception {
+	public void loadPackage() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponent.class.getPackage());
 		assertThat(loader.load()).isEqualTo(1);
@@ -93,7 +93,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadClassName() throws Exception {
+	public void loadClassName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponent.class.getName());
 		assertThat(loader.load()).isEqualTo(1);
@@ -101,7 +101,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadResourceName() throws Exception {
+	public void loadResourceName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				"classpath:org/springframework/boot/sample-beans.xml");
 		assertThat(loader.load()).isEqualTo(1);
@@ -109,7 +109,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadGroovyName() throws Exception {
+	public void loadGroovyName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				"classpath:org/springframework/boot/sample-beans.groovy");
 		assertThat(loader.load()).isEqualTo(1);
@@ -117,7 +117,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadPackageName() throws Exception {
+	public void loadPackageName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponent.class.getPackage().getName());
 		assertThat(loader.load()).isEqualTo(1);
@@ -125,7 +125,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadPackageNameWithoutDot() throws Exception {
+	public void loadPackageNameWithoutDot() {
 		// See gh-6126
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponentInPackageWithoutDot.class.getPackage().getName());
@@ -135,7 +135,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadPackageAndClassDoesNotDoubleAdd() throws Exception {
+	public void loadPackageAndClassDoesNotDoubleAdd() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponent.class.getPackage(), MyComponent.class);
 		assertThat(loader.load()).isEqualTo(1);

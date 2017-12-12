@@ -54,7 +54,7 @@ public class SampleAtmosphereApplicationTests {
 	private int port = 1234;
 
 	@Test
-	public void chatEndpoint() throws Exception {
+	public void chatEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port

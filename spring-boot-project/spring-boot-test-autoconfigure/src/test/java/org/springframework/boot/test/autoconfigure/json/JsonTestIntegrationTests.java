@@ -65,7 +65,7 @@ public class JsonTestIntegrationTests {
 	private JsonbTester<ExampleBasicObject> jsonbJson;
 
 	@Test
-	public void basicJson() throws Exception {
+	public void basicJson() {
 		assertThat(this.basicJson.from("{\"a\":\"b\"}")).hasJsonPathStringValue("@.a");
 	}
 

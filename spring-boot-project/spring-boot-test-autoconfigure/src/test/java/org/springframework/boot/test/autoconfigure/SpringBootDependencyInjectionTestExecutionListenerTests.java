@@ -53,8 +53,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 	private SpringBootDependencyInjectionTestExecutionListener reportListener = new SpringBootDependencyInjectionTestExecutionListener();
 
 	@Test
-	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener()
-			throws Exception {
+	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener() {
 		Ordered injectionListener = new DependencyInjectionTestExecutionListener();
 		assertThat(this.reportListener.getOrder())
 				.isEqualTo(injectionListener.getOrder());

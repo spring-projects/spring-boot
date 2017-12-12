@@ -41,8 +41,7 @@ public class ConditionsReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.conditions.enabled:false")
 				.run((context) -> assertThat(context)

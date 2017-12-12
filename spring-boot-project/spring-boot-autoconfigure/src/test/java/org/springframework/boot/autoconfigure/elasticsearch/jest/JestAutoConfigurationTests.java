@@ -116,7 +116,7 @@ public class JestAutoConfigurationTests {
 	}
 
 	@Test
-	public void jestCanCommunicateWithElasticsearchInstance() throws IOException {
+	public void jestCanCommunicateWithElasticsearchInstance() {
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
 			load("spring.elasticsearch.jest.uris=http://localhost:" + node.getHttpPort());
 			JestClient client = this.context.getBean(JestClient.class);

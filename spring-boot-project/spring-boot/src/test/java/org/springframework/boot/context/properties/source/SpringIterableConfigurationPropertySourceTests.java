@@ -44,14 +44,14 @@ public class SpringIterableConfigurationPropertySourceTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenPropertySourceIsNullShouldThrowException() throws Exception {
+	public void createWhenPropertySourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PropertySource must not be null");
 		new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class));
 	}
 
 	@Test
-	public void createWhenMapperIsNullShouldThrowException() throws Exception {
+	public void createWhenMapperIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Mapper must not be null");
 		new SpringIterableConfigurationPropertySource(
@@ -59,7 +59,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void iteratorShouldAdaptNames() throws Exception {
+	public void iteratorShouldAdaptNames() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -78,7 +78,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseDirectMapping() throws Exception {
+	public void getValueShouldUseDirectMapping() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -94,7 +94,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseEnumerableMapping() throws Exception {
+	public void getValueShouldUseEnumerableMapping() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -111,7 +111,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseExtractor() throws Exception {
+	public void getValueShouldUseExtractor() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
@@ -126,7 +126,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueOrigin() throws Exception {
+	public void getValueOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
@@ -141,7 +141,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() throws Exception {
+	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		EnumerablePropertySource<?> propertySource = new OriginCapablePropertySource<>(
@@ -156,7 +156,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfShouldCheckSourceNames() throws Exception {
+	public void containsDescendantOfShouldCheckSourceNames() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("foo.bar", "value");
 		source.put("faf", "value");

@@ -42,7 +42,7 @@ public class SampleTraditionalApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHomeJsp() throws Exception {
+	public void testHomeJsp() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String body = entity.getBody();
@@ -50,7 +50,7 @@ public class SampleTraditionalApplicationTests {
 	}
 
 	@Test
-	public void testStaticPage() throws Exception {
+	public void testStaticPage() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/index.html",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

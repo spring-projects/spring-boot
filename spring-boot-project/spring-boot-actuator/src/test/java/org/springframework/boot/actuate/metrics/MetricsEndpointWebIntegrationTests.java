@@ -63,7 +63,7 @@ public class MetricsEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void selectByName() throws IOException {
+	public void selectByName() {
 		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		client.get().uri("/actuator/metrics/jvm.memory.used").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("$.name").isEqualTo("jvm.memory.used");

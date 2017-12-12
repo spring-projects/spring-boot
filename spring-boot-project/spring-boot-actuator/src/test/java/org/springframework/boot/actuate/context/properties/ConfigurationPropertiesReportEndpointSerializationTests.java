@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.entry;
 public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
-	public void testNaming() throws Exception {
+	public void testNaming() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(FooConfig.class)
 				.withPropertyValues("foo.name:foo");
@@ -69,7 +69,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testNestedNaming() throws Exception {
+	public void testNestedNaming() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(FooConfig.class)
 				.withPropertyValues("foo.bar.name:foo");
@@ -90,7 +90,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testSelfReferentialProperty() throws Exception {
+	public void testSelfReferentialProperty() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(SelfReferentialConfig.class)
 				.withPropertyValues("foo.name:foo");
@@ -133,7 +133,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testMap() throws Exception {
+	public void testMap() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(MapConfig.class)
 				.withPropertyValues("foo.map.name:foo");
@@ -155,7 +155,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	}
 
 	@Test
-	public void testEmptyMapIsNotAdded() throws Exception {
+	public void testEmptyMapIsNotAdded() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(MapConfig.class);
 		contextRunner.run((context) -> {
@@ -175,7 +175,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testList() throws Exception {
+	public void testList() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(ListConfig.class)
 				.withPropertyValues("foo.list[0]:foo");
@@ -195,7 +195,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	}
 
 	@Test
-	public void testInetAddress() throws Exception {
+	public void testInetAddress() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(AddressedConfig.class)
 				.withPropertyValues("foo.address:192.168.1.10");
@@ -216,7 +216,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testInitializedMapAndList() throws Exception {
+	public void testInitializedMapAndList() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(InitializedMapAndListPropertiesConfig.class)
 				.withPropertyValues("foo.map.entryOne:true", "foo.list[0]:abc");

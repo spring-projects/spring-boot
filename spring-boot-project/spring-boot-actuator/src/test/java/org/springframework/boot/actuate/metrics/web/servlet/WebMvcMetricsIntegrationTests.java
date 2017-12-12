@@ -89,7 +89,7 @@ public class WebMvcMetricsIntegrationTests {
 	}
 
 	@Test
-	public void rethrownExceptionIsRecordedInMetricTag() throws Exception {
+	public void rethrownExceptionIsRecordedInMetricTag() {
 		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError"))
 				.andExpect(status().is5xxServerError()));
 		this.clock.add(SimpleConfig.DEFAULT_STEP);
@@ -163,14 +163,14 @@ public class WebMvcMetricsIntegrationTests {
 		WebMvcMetrics metrics;
 
 		@ExceptionHandler
-		ResponseEntity<String> handleError(Exception1 ex) throws Throwable {
+		ResponseEntity<String> handleError(Exception1 ex) {
 			this.metrics.tagWithException(ex);
 			return new ResponseEntity<>("this is a custom exception body",
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		@ExceptionHandler
-		ResponseEntity<String> rethrowError(Exception2 ex) throws Throwable {
+		ResponseEntity<String> rethrowError(Exception2 ex) {
 			throw ex;
 		}
 

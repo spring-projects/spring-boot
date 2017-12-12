@@ -44,7 +44,7 @@ public class DurationConverterTests {
 	private DurationConverter converter = new DurationConverter();
 
 	@Test
-	public void convertWhenIso8601ShouldReturnDuration() throws Exception {
+	public void convertWhenIso8601ShouldReturnDuration() {
 		assertThat(convert("PT20.345S")).isEqualTo(Duration.parse("PT20.345S"));
 		assertThat(convert("PT15M")).isEqualTo(Duration.parse("PT15M"));
 		assertThat(convert("+PT15M")).isEqualTo(Duration.parse("PT15M"));
@@ -105,29 +105,28 @@ public class DurationConverterTests {
 	}
 
 	@Test
-	public void convertWhenSimpleWithoutSuffixShouldReturnDuration() throws Exception {
+	public void convertWhenSimpleWithoutSuffixShouldReturnDuration() {
 		assertThat(convert("10")).isEqualTo(Duration.ofMillis(10));
 		assertThat(convert("+10")).isEqualTo(Duration.ofMillis(10));
 		assertThat(convert("-10")).isEqualTo(Duration.ofMillis(-10));
 	}
 
 	@Test
-	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration()
-			throws Exception {
+	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration() {
 		assertThat(convert("10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
 		assertThat(convert("+10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
 		assertThat(convert("-10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(-10));
 	}
 
 	@Test
-	public void convertWhenBadFormatShouldThrowException() throws Exception {
+	public void convertWhenBadFormatShouldThrowException() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("'10foo' is not a valid duration");
 		convert("10foo");
 	}
 
 	@Test
-	public void convertWhenEmptyShouldReturnNull() throws Exception {
+	public void convertWhenEmptyShouldReturnNull() {
 		assertThat(convert("")).isNull();
 	}
 

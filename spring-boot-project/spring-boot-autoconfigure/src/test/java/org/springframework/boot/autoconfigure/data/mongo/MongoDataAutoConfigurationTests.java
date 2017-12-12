@@ -89,7 +89,7 @@ public class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConversions() throws Exception {
+	public void customConversions() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomConversionsConfig.class);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
@@ -137,7 +137,7 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() throws Exception {
+	public void entityScanShouldSetInitialEntitySet() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EntityScanConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,

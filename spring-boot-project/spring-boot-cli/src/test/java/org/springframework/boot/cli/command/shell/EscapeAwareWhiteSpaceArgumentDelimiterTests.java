@@ -31,7 +31,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	private final EscapeAwareWhiteSpaceArgumentDelimiter delimiter = new EscapeAwareWhiteSpaceArgumentDelimiter();
 
 	@Test
-	public void simple() throws Exception {
+	public void simple() {
 		String s = "one two";
 		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("one",
 				"two");
@@ -42,7 +42,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	}
 
 	@Test
-	public void escaped() throws Exception {
+	public void escaped() {
 		String s = "o\\ ne two";
 		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("o\\ ne",
 				"two");
@@ -54,7 +54,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	}
 
 	@Test
-	public void quoted() throws Exception {
+	public void quoted() {
 		String s = "'o ne' 't w o'";
 		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("'o ne'",
 				"'t w o'");
@@ -62,7 +62,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	}
 
 	@Test
-	public void doubleQuoted() throws Exception {
+	public void doubleQuoted() {
 		String s = "\"o ne\" \"t w o\"";
 		assertThat(this.delimiter.delimit(s, 0).getArguments())
 				.containsExactly("\"o ne\"", "\"t w o\"");
@@ -70,7 +70,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	}
 
 	@Test
-	public void nestedQuotes() throws Exception {
+	public void nestedQuotes() {
 		String s = "\"o 'n''e\" 't \"w o'";
 		assertThat(this.delimiter.delimit(s, 0).getArguments())
 				.containsExactly("\"o 'n''e\"", "'t \"w o'");
@@ -79,7 +79,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	}
 
 	@Test
-	public void escapedQuotes() throws Exception {
+	public void escapedQuotes() {
 		String s = "\\'a b";
 		ArgumentList argumentList = this.delimiter.delimit(s, 0);
 		assertThat(argumentList.getArguments()).isEqualTo(new String[] { "\\'a", "b" });
@@ -87,7 +87,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	}
 
 	@Test
-	public void escapes() throws Exception {
+	public void escapes() {
 		String s = "\\ \\\\.\\\\\\t";
 		assertThat(this.delimiter.parseArguments(s)).containsExactly(" \\.\\\t");
 	}

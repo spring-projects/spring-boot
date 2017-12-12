@@ -56,7 +56,7 @@ public class SampleWebSecureJdbcApplicationTests {
 	private int port;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
@@ -67,7 +67,7 @@ public class SampleWebSecureJdbcApplicationTests {
 	}
 
 	@Test
-	public void testLoginPage() throws Exception {
+	public void testLoginPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
@@ -77,7 +77,7 @@ public class SampleWebSecureJdbcApplicationTests {
 	}
 
 	@Test
-	public void testLogin() throws Exception {
+	public void testLogin() {
 		HttpHeaders headers = getHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -107,7 +107,7 @@ public class SampleWebSecureJdbcApplicationTests {
 	}
 
 	@Test
-	public void testCss() throws Exception {
+	public void testCss() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

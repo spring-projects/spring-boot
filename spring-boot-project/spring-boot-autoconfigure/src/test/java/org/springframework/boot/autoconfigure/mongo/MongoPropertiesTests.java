@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
 import java.util.List;
 
 import com.mongodb.MongoClient;
@@ -114,7 +113,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void uriOverridesHostAndPort() throws UnknownHostException {
+	public void uriOverridesHostAndPort() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("localhost");
 		properties.setPort(27017);
@@ -127,7 +126,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void onlyHostAndPortSetShouldUseThat() throws UnknownHostException {
+	public void onlyHostAndPortSetShouldUseThat() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("localhost");
 		properties.setPort(27017);
@@ -139,7 +138,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void onlyUriSetShouldUseThat() throws UnknownHostException {
+	public void onlyUriSetShouldUseThat() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo1.example.com:12345");
 		MongoClient client = new MongoClientFactory(properties, null)
@@ -150,7 +149,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void noCustomAddressAndNoUriUsesDefaultUri() throws UnknownHostException {
+	public void noCustomAddressAndNoUriUsesDefaultUri() {
 		MongoProperties properties = new MongoProperties();
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);

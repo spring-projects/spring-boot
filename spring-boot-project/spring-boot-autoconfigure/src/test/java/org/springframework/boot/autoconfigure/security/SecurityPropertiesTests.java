@@ -40,7 +40,7 @@ public class SecurityPropertiesTests {
 	private MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		this.binder = new Binder(this.source);
 	}
 
@@ -52,7 +52,7 @@ public class SecurityPropertiesTests {
 	}
 
 	@Test
-	public void userWhenNotConfiguredShouldUseDefaultNameAndGeneratedPassword() throws Exception {
+	public void userWhenNotConfiguredShouldUseDefaultNameAndGeneratedPassword() {
 		SecurityProperties.User user = this.security.getUser();
 		assertThat(user.getName()).isEqualTo("user");
 		assertThat(user.getPassword()).isNotNull();
@@ -61,7 +61,7 @@ public class SecurityPropertiesTests {
 	}
 
 	@Test
-	public void userShouldBindProperly() throws Exception {
+	public void userShouldBindProperly() {
 		this.source.put("spring.security.user.name", "foo");
 		this.source.put("spring.security.user.password", "password");
 		this.source.put("spring.security.user.roles", "ADMIN,USER");

@@ -46,7 +46,7 @@ public class ConversionServiceParameterMapperTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void mapParameterShouldDelegateToConversionService() throws Exception {
+	public void mapParameterShouldDelegateToConversionService() {
 		DefaultFormattingConversionService conversionService = spy(
 				new DefaultFormattingConversionService());
 		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper(
@@ -57,8 +57,7 @@ public class ConversionServiceParameterMapperTests {
 	}
 
 	@Test
-	public void mapParameterWhenConversionServiceFailsShouldThrowParameterMappingException()
-			throws Exception {
+	public void mapParameterWhenConversionServiceFailsShouldThrowParameterMappingException() {
 		ConversionService conversionService = mock(ConversionService.class);
 		RuntimeException error = new RuntimeException();
 		given(conversionService.convert(any(), any())).willThrow(error);
@@ -76,15 +75,14 @@ public class ConversionServiceParameterMapperTests {
 	}
 
 	@Test
-	public void createShouldRegisterIsoOffsetDateTimeConverter() throws Exception {
+	public void createShouldRegisterIsoOffsetDateTimeConverter() {
 		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper();
 		Date mapped = mapper.mapParameter("2011-12-03T10:15:30+01:00", Date.class);
 		assertThat(mapped).isNotNull();
 	}
 
 	@Test
-	public void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter()
-			throws Exception {
+	public void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter() {
 		ConversionService conversionService = new DefaultConversionService();
 		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper(
 				conversionService);

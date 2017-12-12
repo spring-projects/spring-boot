@@ -72,42 +72,42 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void green() throws Exception {
+	public void green() {
 		StringBuilder output = new StringBuilder();
 		newConverter("green").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[32min\033[0;39m");
 	}
 
 	@Test
-	public void yellow() throws Exception {
+	public void yellow() {
 		StringBuilder output = new StringBuilder();
 		newConverter("yellow").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[33min\033[0;39m");
 	}
 
 	@Test
-	public void blue() throws Exception {
+	public void blue() {
 		StringBuilder output = new StringBuilder();
 		newConverter("blue").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[34min\033[0;39m");
 	}
 
 	@Test
-	public void magenta() throws Exception {
+	public void magenta() {
 		StringBuilder output = new StringBuilder();
 		newConverter("magenta").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[35min\033[0;39m");
 	}
 
 	@Test
-	public void cyan() throws Exception {
+	public void cyan() {
 		StringBuilder output = new StringBuilder();
 		newConverter("cyan").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[36min\033[0;39m");
 	}
 
 	@Test
-	public void highlightFatal() throws Exception {
+	public void highlightFatal() {
 		this.event.setLevel(Level.FATAL);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -115,7 +115,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightError() throws Exception {
+	public void highlightError() {
 		this.event.setLevel(Level.ERROR);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -123,7 +123,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightWarn() throws Exception {
+	public void highlightWarn() {
 		this.event.setLevel(Level.WARN);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -131,7 +131,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightDebug() throws Exception {
+	public void highlightDebug() {
 		this.event.setLevel(Level.DEBUG);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -139,7 +139,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightTrace() throws Exception {
+	public void highlightTrace() {
 		this.event.setLevel(Level.TRACE);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);

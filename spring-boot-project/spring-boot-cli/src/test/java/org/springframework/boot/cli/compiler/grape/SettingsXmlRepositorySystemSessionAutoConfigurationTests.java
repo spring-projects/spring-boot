@@ -19,7 +19,6 @@ package org.springframework.boot.cli.compiler.grape;
 import java.io.File;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
@@ -56,17 +55,17 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	}
 
 	@Test
-	public void basicSessionCustomization() throws SettingsBuildingException {
+	public void basicSessionCustomization() {
 		assertSessionCustomization("src/test/resources/maven-settings/basic");
 	}
 
 	@Test
-	public void encryptedSettingsSessionCustomization() throws SettingsBuildingException {
+	public void encryptedSettingsSessionCustomization() {
 		assertSessionCustomization("src/test/resources/maven-settings/encrypted");
 	}
 
 	@Test
-	public void propertyInterpolation() throws SettingsBuildingException {
+	public void propertyInterpolation() {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
 				.newSession();
 		given(this.repositorySystem.newLocalRepositoryManager(eq(session),

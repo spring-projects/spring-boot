@@ -42,12 +42,12 @@ public class ApplicationPidTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
-	public void toStringWithPid() throws Exception {
+	public void toStringWithPid() {
 		assertThat(new ApplicationPid("123").toString()).isEqualTo("123");
 	}
 
 	@Test
-	public void toStringWithoutPid() throws Exception {
+	public void toStringWithoutPid() {
 		assertThat(new ApplicationPid(null).toString()).isEqualTo("???");
 	}
 
@@ -80,7 +80,7 @@ public class ApplicationPidTests {
 	}
 
 	@Test
-	public void getPidFromJvm() throws Exception {
+	public void getPidFromJvm() {
 		assertThat(new ApplicationPid().toString()).isNotEmpty();
 	}
 

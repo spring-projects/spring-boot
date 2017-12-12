@@ -51,14 +51,14 @@ public class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanT
 	}
 
 	@Test
-	public void constructFilterMustNotBeNull() throws Exception {
+	public void constructFilterMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Filter must not be null");
 		new FilterRegistrationBean<>(null);
 	}
 
 	@Test
-	public void createServletRegistrationBeanMustNotBeNull() throws Exception {
+	public void createServletRegistrationBeanMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletRegistrationBeans must not be null");
 		new FilterRegistrationBean<>(this.filter, (ServletRegistrationBean[]) null);

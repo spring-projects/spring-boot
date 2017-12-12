@@ -54,7 +54,7 @@ public class SpringBootTestWebEnvironmentContextHierarchyTests {
 	private ApplicationContext context;
 
 	@Test
-	public void testShouldOnlyStartSingleServer() throws Exception {
+	public void testShouldOnlyStartSingleServer() {
 		ApplicationContext parent = this.context.getParent();
 		assertThat(this.context).isInstanceOf(WebApplicationContext.class);
 		assertThat(parent).isNotInstanceOf(WebApplicationContext.class);

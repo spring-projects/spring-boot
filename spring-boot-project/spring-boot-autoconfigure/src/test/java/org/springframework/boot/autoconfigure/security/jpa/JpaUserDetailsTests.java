@@ -45,10 +45,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class JpaUserDetailsTests {
 
 	@Test
-	public void contextLoads() throws Exception {
+	public void contextLoads() {
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(Main.class, args);
 	}
 

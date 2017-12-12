@@ -16,8 +16,6 @@
 
 package org.springframework.boot.type.classreading;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 import org.springframework.core.io.Resource;
@@ -63,7 +61,7 @@ public class ConcurrentReferenceCachingMetadataReaderFactoryTests {
 			extends ConcurrentReferenceCachingMetadataReaderFactory {
 
 		@Override
-		public MetadataReader createMetadataReader(Resource resource) throws IOException {
+		public MetadataReader createMetadataReader(Resource resource) {
 			return mock(MetadataReader.class);
 		}
 

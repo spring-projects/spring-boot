@@ -50,7 +50,7 @@ public class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
 	private ExampleGenericServiceCaller caller;
 
 	@Test
-	public void testSpying() throws Exception {
+	public void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say 123 simple");
 		verify(this.exampleService).greeting();
 	}

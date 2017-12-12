@@ -55,7 +55,7 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	public void testOverrideRedisConfiguration() throws Exception {
+	public void testOverrideRedisConfiguration() {
 		load("spring.redis.host:foo", "spring.redis.database:1");
 		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
@@ -65,14 +65,14 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	public void testCustomizeRedisConfiguration() throws Exception {
+	public void testCustomizeRedisConfiguration() {
 		load(CustomConfiguration.class);
 		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
 		assertThat(cf.isUseSsl()).isTrue();
 	}
 
 	@Test
-	public void testRedisUrlConfiguration() throws Exception {
+	public void testRedisUrlConfiguration() {
 		load("spring.redis.host:foo",
 				"spring.redis.url:redis://user:password@example:33");
 		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
@@ -83,7 +83,7 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	public void testOverrideUrlRedisConfiguration() throws Exception {
+	public void testOverrideUrlRedisConfiguration() {
 		load("spring.redis.host:foo", "spring.redis.password:xyz",
 				"spring.redis.port:1000", "spring.redis.ssl:false",
 				"spring.redis.url:rediss://user:password@example:33");
@@ -95,7 +95,7 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithPool() throws Exception {
+	public void testRedisConfigurationWithPool() {
 		load("spring.redis.host:foo", "spring.redis.jedis.pool.min-idle:1",
 				"spring.redis.jedis.pool.max-idle:4",
 				"spring.redis.jedis.pool.max-active:16",
@@ -109,7 +109,7 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithTimeout() throws Exception {
+	public void testRedisConfigurationWithTimeout() {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
 		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
@@ -117,7 +117,7 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithSentinel() throws Exception {
+	public void testRedisConfigurationWithSentinel() {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
 		load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
 				+ StringUtils.collectionToCommaDelimitedString(sentinels));
@@ -137,7 +137,7 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithCluster() throws Exception {
+	public void testRedisConfigurationWithCluster() {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
 		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));

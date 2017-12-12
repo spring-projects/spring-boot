@@ -48,7 +48,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	private int managementPort = 9011;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -56,7 +56,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testSecureActuator() throws Exception {
+	public void testSecureActuator() {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/management/actuator/env",
 				String.class);
@@ -64,7 +64,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testInsecureActuator() throws Exception {
+	public void testInsecureActuator() {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/management/actuator/health",
 				String.class);
@@ -73,7 +73,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMissing() throws Exception {
+	public void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
 				.getForEntity("http://localhost:" + this.managementPort
 						+ "/management/actuator/missing", String.class);

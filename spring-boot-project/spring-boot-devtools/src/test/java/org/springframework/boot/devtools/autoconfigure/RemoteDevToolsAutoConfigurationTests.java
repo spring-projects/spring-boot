@@ -16,8 +16,6 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
-import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,7 +86,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void disabledIfRemoteSecretIsMissing() throws Exception {
+	public void disabledIfRemoteSecretIsMissing() {
 		loadContext("a:b");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(DispatcherFilter.class);
@@ -145,7 +143,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableRestart() throws Exception {
+	public void disableRestart() {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -211,8 +209,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		}
 
 		@Override
-		public void handle(ServerHttpRequest request, ServerHttpResponse response)
-				throws IOException {
+		public void handle(ServerHttpRequest request, ServerHttpResponse response) {
 		}
 
 	}
@@ -229,8 +226,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		}
 
 		@Override
-		public void handle(ServerHttpRequest request, ServerHttpResponse response)
-				throws IOException {
+		public void handle(ServerHttpRequest request, ServerHttpResponse response) {
 			this.invoked = true;
 		}
 

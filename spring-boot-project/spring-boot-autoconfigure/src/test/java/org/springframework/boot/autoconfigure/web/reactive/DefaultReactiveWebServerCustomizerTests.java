@@ -39,12 +39,12 @@ public class DefaultReactiveWebServerCustomizerTests {
 	private DefaultReactiveWebServerCustomizer customizer;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		this.customizer = new DefaultReactiveWebServerCustomizer(this.properties);
 	}
 
 	@Test
-	public void testCustomizeServerPort() throws Exception {
+	public void testCustomizeServerPort() {
 		ConfigurableReactiveWebServerFactory factory = mock(
 				ConfigurableReactiveWebServerFactory.class);
 		this.properties.setPort(9000);
@@ -53,7 +53,7 @@ public class DefaultReactiveWebServerCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeServerAddress() throws Exception {
+	public void testCustomizeServerAddress() {
 		ConfigurableReactiveWebServerFactory factory = mock(
 				ConfigurableReactiveWebServerFactory.class);
 		InetAddress address = mock(InetAddress.class);

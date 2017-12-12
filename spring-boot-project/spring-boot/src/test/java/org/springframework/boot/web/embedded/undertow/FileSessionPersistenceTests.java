@@ -55,14 +55,14 @@ public class FileSessionPersistenceTests {
 	}
 
 	@Test
-	public void loadsNullForMissingFile() throws Exception {
+	public void loadsNullForMissingFile() {
 		Map<String, PersistentSession> attributes = this.persistence
 				.loadSessionAttributes("test", this.classLoader);
 		assertThat(attributes).isNull();
 	}
 
 	@Test
-	public void persistAndLoad() throws Exception {
+	public void persistAndLoad() {
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("spring", "boot");
@@ -77,7 +77,7 @@ public class FileSessionPersistenceTests {
 	}
 
 	@Test
-	public void dontRestoreExpired() throws Exception {
+	public void dontRestoreExpired() {
 		Date expired = new Date(System.currentTimeMillis() - 1000);
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		Map<String, Object> data = new LinkedHashMap<>();
@@ -92,7 +92,7 @@ public class FileSessionPersistenceTests {
 	}
 
 	@Test
-	public void deleteFileOnClear() throws Exception {
+	public void deleteFileOnClear() {
 		File sessionFile = new File(this.dir, "test.session");
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		this.persistence.persistSessions("test", sessionData);

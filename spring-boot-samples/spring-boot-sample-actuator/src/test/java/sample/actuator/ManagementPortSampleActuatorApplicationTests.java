@@ -49,7 +49,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	private int managementPort = 9011;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port, Map.class);
@@ -70,7 +70,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
+	public void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword()).getForEntity(
 						"http://localhost:" + this.managementPort + "/actuator/health",
@@ -80,7 +80,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPage() throws Exception {
+	public void testErrorPage() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.managementPort + "/error",

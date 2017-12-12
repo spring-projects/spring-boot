@@ -49,19 +49,19 @@ public class DependencyManagementArtifactCoordinatesResolverTests {
 	}
 
 	@Test
-	public void getGroupIdForBootArtifact() throws Exception {
+	public void getGroupIdForBootArtifact() {
 		assertThat(this.resolver.getGroupId("spring-boot-something"))
 				.isEqualTo("org.springframework.boot");
 		verify(this.dependencyManagement, never()).find(anyString());
 	}
 
 	@Test
-	public void getGroupIdFound() throws Exception {
+	public void getGroupIdFound() {
 		assertThat(this.resolver.getGroupId("a1")).isEqualTo("g1");
 	}
 
 	@Test
-	public void getGroupIdNotFound() throws Exception {
+	public void getGroupIdNotFound() {
 		assertThat(this.resolver.getGroupId("a2")).isNull();
 	}
 

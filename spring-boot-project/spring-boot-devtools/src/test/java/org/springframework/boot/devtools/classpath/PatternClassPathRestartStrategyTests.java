@@ -34,19 +34,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PatternClassPathRestartStrategyTests {
 
 	@Test
-	public void nullPattern() throws Exception {
+	public void nullPattern() {
 		ClassPathRestartStrategy strategy = createStrategy(null);
 		assertRestartRequired(strategy, "a/b.txt", true);
 	}
 
 	@Test
-	public void emptyPattern() throws Exception {
+	public void emptyPattern() {
 		ClassPathRestartStrategy strategy = createStrategy("");
 		assertRestartRequired(strategy, "a/b.txt", true);
 	}
 
 	@Test
-	public void singlePattern() throws Exception {
+	public void singlePattern() {
 		ClassPathRestartStrategy strategy = createStrategy("static/**");
 		assertRestartRequired(strategy, "static/file.txt", false);
 		assertRestartRequired(strategy, "static/folder/file.txt", false);
@@ -55,7 +55,7 @@ public class PatternClassPathRestartStrategyTests {
 	}
 
 	@Test
-	public void multiplePatterns() throws Exception {
+	public void multiplePatterns() {
 		ClassPathRestartStrategy strategy = createStrategy("static/**,public/**");
 		assertRestartRequired(strategy, "static/file.txt", false);
 		assertRestartRequired(strategy, "static/folder/file.txt", false);
@@ -66,7 +66,7 @@ public class PatternClassPathRestartStrategyTests {
 	}
 
 	@Test
-	public void pomChange() throws Exception {
+	public void pomChange() {
 		ClassPathRestartStrategy strategy = createStrategy("META-INF/maven/**");
 		assertRestartRequired(strategy, "pom.xml", true);
 		String mavenFolder = "META-INF/maven/org.springframework.boot/spring-boot-devtools";

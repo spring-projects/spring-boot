@@ -117,7 +117,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerShouldRenderGradient() throws Exception {
+	public void printBannerShouldRenderGradient() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("gradient.gif", "banner.image.width=10",
 				"banner.image.margin=0");
@@ -125,20 +125,20 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerShouldCalculateHeight() throws Exception {
+	public void printBannerShouldCalculateHeight() {
 		String banner = printBanner("large.gif", "banner.image.width=20");
 		assertThat(getBannerHeight(banner)).isEqualTo(10);
 	}
 
 	@Test
-	public void printBannerWhenHasHeightPropertyShouldSetHeight() throws Exception {
+	public void printBannerWhenHasHeightPropertyShouldSetHeight() {
 		String banner = printBanner("large.gif", "banner.image.width=20",
 				"banner.image.height=30");
 		assertThat(getBannerHeight(banner)).isEqualTo(30);
 	}
 
 	@Test
-	public void printBannerShouldCapWidthAndCalculateHeight() throws Exception {
+	public void printBannerShouldCapWidthAndCalculateHeight() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif", "banner.image.margin=0");
 		assertThat(getBannerWidth(banner)).isEqualTo(76);
@@ -146,7 +146,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerShouldPrintMargin() throws Exception {
+	public void printBannerShouldPrintMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif");
 		String[] lines = banner.split(NEW_LINE);
@@ -156,8 +156,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin()
-			throws Exception {
+	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif", "banner.image.margin=4");
 		String[] lines = banner.split(NEW_LINE);

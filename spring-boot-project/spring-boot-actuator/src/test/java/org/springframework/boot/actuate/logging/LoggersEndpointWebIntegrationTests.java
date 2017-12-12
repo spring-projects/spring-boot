@@ -72,7 +72,7 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void getLoggerShouldReturnAllLoggerConfigurations() throws Exception {
+	public void getLoggerShouldReturnAllLoggerConfigurations() {
 		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
 		client.get().uri("/actuator/loggers").exchange().expectStatus().isOk()
@@ -86,7 +86,7 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void getLoggerShouldReturnLogLevels() throws Exception {
+	public void getLoggerShouldReturnLogLevels() {
 		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
 		client.get().uri("/actuator/loggers/ROOT").exchange().expectStatus().isOk()
@@ -96,13 +96,13 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void getLoggersWhenLoggerNotFoundShouldReturnNotFound() throws Exception {
+	public void getLoggersWhenLoggerNotFoundShouldReturnNotFound() {
 		client.get().uri("/actuator/loggers/com.does.not.exist").exchange().expectStatus()
 				.isNotFound();
 	}
 
 	@Test
-	public void setLoggerUsingApplicationJsonShouldSetLogLevel() throws Exception {
+	public void setLoggerUsingApplicationJsonShouldSetLogLevel() {
 		client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.APPLICATION_JSON)
 				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange()
@@ -111,7 +111,7 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() throws Exception {
+	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() {
 		client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange()
@@ -120,7 +120,7 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void setLoggerWithWrongLogLevelResultInBadRequestResponse() throws Exception {
+	public void setLoggerWithWrongLogLevelResultInBadRequestResponse() {
 		client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.APPLICATION_JSON)
 				.syncBody(Collections.singletonMap("configuredLevel", "other")).exchange()
@@ -129,7 +129,7 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void setLoggerWithNullLogLevel() throws Exception {
+	public void setLoggerWithNullLogLevel() {
 		client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.singletonMap("configuredLevel", null)).exchange()
@@ -138,7 +138,7 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void setLoggerWithNoLogLevel() throws Exception {
+	public void setLoggerWithNoLogLevel() {
 		client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.emptyMap()).exchange().expectStatus().isNoContent();
@@ -146,8 +146,7 @@ public class LoggersEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void logLevelForLoggerWithNameThatCouldBeMistakenForAPathExtension()
-			throws Exception {
+	public void logLevelForLoggerWithNameThatCouldBeMistakenForAPathExtension() {
 		given(this.loggingSystem.getLoggerConfiguration("com.png"))
 				.willReturn(new LoggerConfiguration("com.png", null, LogLevel.DEBUG));
 		client.get().uri("/actuator/loggers/com.png").exchange().expectStatus().isOk()

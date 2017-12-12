@@ -48,7 +48,7 @@ public class CompositeHandlerExceptionResolverTests {
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
-	public void resolverShouldDelegateToOtherResolversInContext() throws Exception {
+	public void resolverShouldDelegateToOtherResolversInContext() {
 		load(TestConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
@@ -58,7 +58,7 @@ public class CompositeHandlerExceptionResolverTests {
 	}
 
 	@Test
-	public void resolverShouldAddDefaultResolverIfNonePresent() throws Exception {
+	public void resolverShouldAddDefaultResolverIfNonePresent() {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);

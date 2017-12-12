@@ -42,8 +42,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt()
-			throws Exception {
+	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Provider provider = new Provider();
 		provider.setAuthorizationUri("http://example.com/auth");
@@ -85,8 +84,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUsingCommonProviderShouldAdapt()
-			throws Exception {
+	public void getClientRegistrationsWhenUsingCommonProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setProvider("google");
@@ -120,8 +118,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUsingCommonProviderWithOverrideShouldAdapt()
-			throws Exception {
+	public void getClientRegistrationsWhenUsingCommonProviderWithOverrideShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setProvider("google");
@@ -159,8 +156,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUnknownProviderShouldThrowException()
-			throws Exception {
+	public void getClientRegistrationsWhenUnknownProviderShouldThrowException() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setProvider("missing");
@@ -171,8 +167,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenProviderNotSpecifiedShouldUseRegistrationId()
-			throws Exception {
+	public void getClientRegistrationsWhenProviderNotSpecifiedShouldUseRegistrationId() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setClientId("clientId");
@@ -205,8 +200,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenProviderNotSpecifiedAndUnknownProviderShouldThrowException()
-			throws Exception {
+	public void getClientRegistrationsWhenProviderNotSpecifiedAndUnknownProviderShouldThrowException() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		properties.getRegistration().put("missing", registration);

@@ -81,7 +81,7 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void jettyCustomizations() throws Exception {
+	public void jettyCustomizations() {
 		JettyServletWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
 		for (int i = 0; i < configurations.length; i++) {
@@ -97,21 +97,21 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void sessionTimeout() throws Exception {
+	public void sessionTimeout() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setSessionTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 10);
 	}
 
 	@Test
-	public void sessionTimeoutInMins() throws Exception {
+	public void sessionTimeoutInMins() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setSessionTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 60);
 	}
 
 	@Test
-	public void sslCiphersConfiguration() throws Exception {
+	public void sslCiphersConfiguration() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStorePassword("secret");
@@ -136,7 +136,7 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void stopCalledWithoutStart() throws Exception {
+	public void stopCalledWithoutStart() {
 		JettyServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.stop();
@@ -154,7 +154,7 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void sslEnabledMultiProtocolsConfiguration() throws Exception {
+	public void sslEnabledMultiProtocolsConfiguration() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStorePassword("secret");
@@ -179,7 +179,7 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void sslEnabledProtocolsConfiguration() throws Exception {
+	public void sslEnabledProtocolsConfiguration() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStorePassword("secret");
@@ -242,7 +242,7 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void defaultThreadPool() throws Exception {
+	public void defaultThreadPool() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setThreadPool(null);
 		assertThat(factory.getThreadPool()).isNull();
@@ -252,7 +252,7 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void customThreadPool() throws Exception {
+	public void customThreadPool() {
 		JettyServletWebServerFactory factory = getFactory();
 		ThreadPool threadPool = mock(ThreadPool.class);
 		factory.setThreadPool(threadPool);
@@ -262,7 +262,7 @@ public class JettyServletWebServerFactoryTests
 	}
 
 	@Test
-	public void startFailsWhenThreadPoolIsTooSmall() throws Exception {
+	public void startFailsWhenThreadPoolIsTooSmall() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.addServerCustomizers((server) -> {
 			QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);

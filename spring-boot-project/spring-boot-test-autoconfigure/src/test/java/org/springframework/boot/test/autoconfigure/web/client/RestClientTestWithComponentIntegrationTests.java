@@ -44,7 +44,7 @@ public class RestClientTestWithComponentIntegrationTests {
 	private ExampleRestClient client;
 
 	@Test
-	public void mockServerCall() throws Exception {
+	public void mockServerCall() {
 		this.server.expect(requestTo("/test"))
 				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("hello");

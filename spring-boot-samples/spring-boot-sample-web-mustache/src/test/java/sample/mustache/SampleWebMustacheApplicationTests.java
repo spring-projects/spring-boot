@@ -49,14 +49,14 @@ public class SampleWebMustacheApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testMustacheTemplate() throws Exception {
+	public void testMustacheTemplate() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("Hello, Andy");
 	}
 
 	@Test
-	public void testMustacheErrorTemplate() throws Exception {
+	public void testMustacheErrorTemplate() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
@@ -68,7 +68,7 @@ public class SampleWebMustacheApplicationTests {
 	}
 
 	@Test
-	public void test503HtmlResource() throws Exception {
+	public void test503HtmlResource() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
@@ -79,7 +79,7 @@ public class SampleWebMustacheApplicationTests {
 	}
 
 	@Test
-	public void test5xxHtmlResource() throws Exception {
+	public void test5xxHtmlResource() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
@@ -90,7 +90,7 @@ public class SampleWebMustacheApplicationTests {
 	}
 
 	@Test
-	public void test507Template() throws Exception {
+	public void test507Template() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);

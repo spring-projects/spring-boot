@@ -89,8 +89,7 @@ public class SpringBootContextLoaderTests {
 		assertKey(config, "variables", "foo=FOO\n bar=BAR");
 	}
 
-	private Map<String, Object> getEnvironmentProperties(Class<?> testClass)
-			throws Exception {
+	private Map<String, Object> getEnvironmentProperties(Class<?> testClass) {
 		TestContext context = new ExposedTestContextManager(testClass)
 				.getExposedTestContext();
 		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils

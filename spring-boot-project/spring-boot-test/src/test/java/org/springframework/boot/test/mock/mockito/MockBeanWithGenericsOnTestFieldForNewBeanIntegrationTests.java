@@ -47,7 +47,7 @@ public class MockBeanWithGenericsOnTestFieldForNewBeanIntegrationTests {
 	private ExampleGenericServiceCaller caller;
 
 	@Test
-	public void testMocking() throws Exception {
+	public void testMocking() {
 		given(this.exampleIntegerService.greeting()).willReturn(200);
 		given(this.exampleStringService.greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say 200 Boot");

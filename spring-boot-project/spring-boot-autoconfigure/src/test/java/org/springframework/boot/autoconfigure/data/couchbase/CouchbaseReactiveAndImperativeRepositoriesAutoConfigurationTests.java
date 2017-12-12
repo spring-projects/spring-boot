@@ -55,8 +55,7 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateInstancesForReactiveAndImperativeRepositories()
-			throws Exception {
+	public void shouldCreateInstancesForReactiveAndImperativeRepositories() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never")
 				.applyTo(this.context);

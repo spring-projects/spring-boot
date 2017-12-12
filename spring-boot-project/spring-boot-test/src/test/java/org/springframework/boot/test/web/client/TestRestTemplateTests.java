@@ -113,7 +113,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void options() throws Exception {
+	public void options() {
 		TestRestTemplate template = new TestRestTemplate(
 				HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
@@ -123,7 +123,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void restOperationsAreAvailable() throws Exception {
+	public void restOperationsAreAvailable() {
 		RestTemplate delegate = mock(RestTemplate.class);
 		given(delegate.getUriTemplateHandler())
 				.willReturn(new DefaultUriBuilderFactory());
@@ -132,7 +132,7 @@ public class TestRestTemplateTests {
 
 			@Override
 			public void doWith(Method method)
-					throws IllegalArgumentException, IllegalAccessException {
+					throws IllegalArgumentException {
 				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
 						method.getName(), method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();
@@ -223,7 +223,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void withBasicAuthDoesNotResetErrorHandler() throws Exception {
+	public void withBasicAuthDoesNotResetErrorHandler() {
 		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);

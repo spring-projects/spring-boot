@@ -41,7 +41,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void homeIsSecure() throws Exception {
+	public void homeIsSecure() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -52,7 +52,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 	}
 
 	@Test
-	public void testInsecureApplicationPath() throws Exception {
+	public void testInsecureApplicationPath() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/foo", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -63,7 +63,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 	}
 
 	@Test
-	public void testInsecureStaticResources() throws Exception {
+	public void testInsecureStaticResources() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -71,7 +71,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 	}
 
 	@Test
-	public void insecureActuator() throws Exception {
+	public void insecureActuator() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/health",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -79,7 +79,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 	}
 
 	@Test
-	public void secureActuator() throws Exception {
+	public void secureActuator() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/env",
 				Map.class);

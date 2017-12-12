@@ -95,7 +95,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void builderCustomizers() throws Exception {
+	public void builderCustomizers() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
 		for (int i = 0; i < customizers.length; i++) {
@@ -127,7 +127,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void deploymentInfo() throws Exception {
+	public void deploymentInfo() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowDeploymentInfoCustomizer[] customizers = new UndertowDeploymentInfoCustomizer[4];
 		for (int i = 0; i < customizers.length; i++) {
@@ -149,7 +149,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void defaultContextPath() throws Exception {
+	public void defaultContextPath() {
 		UndertowServletWebServerFactory factory = getFactory();
 		final AtomicReference<String> contextPath = new AtomicReference<>();
 		factory.addDeploymentInfoCustomizers(

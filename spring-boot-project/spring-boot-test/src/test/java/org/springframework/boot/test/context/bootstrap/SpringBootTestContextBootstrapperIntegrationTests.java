@@ -48,23 +48,22 @@ public class SpringBootTestContextBootstrapperIntegrationTests {
 	boolean defaultTestExecutionListenersPostProcessorCalled = false;
 
 	@Test
-	public void findConfigAutomatically() throws Exception {
+	public void findConfigAutomatically() {
 		assertThat(this.config).isNotNull();
 	}
 
 	@Test
-	public void contextWasCreatedViaSpringApplication() throws Exception {
+	public void contextWasCreatedViaSpringApplication() {
 		assertThat(this.context.getId()).startsWith("application:");
 	}
 
 	@Test
-	public void testConfigurationWasApplied() throws Exception {
+	public void testConfigurationWasApplied() {
 		assertThat(this.context.getBean(ExampleBean.class)).isNotNull();
 	}
 
 	@Test
-	public void defaultTestExecutionListenersPostProcessorShouldBeCalled()
-			throws Exception {
+	public void defaultTestExecutionListenersPostProcessorShouldBeCalled() {
 		assertThat(this.defaultTestExecutionListenersPostProcessorCalled).isTrue();
 	}
 

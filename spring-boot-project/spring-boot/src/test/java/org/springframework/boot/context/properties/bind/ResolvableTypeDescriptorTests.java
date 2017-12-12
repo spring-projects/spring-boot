@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ResolvableTypeDescriptorTests {
 
 	@Test
-	public void forBindableShouldIncludeType() throws Exception {
+	public void forBindableShouldIncludeType() {
 		ResolvableType type = ResolvableType.forClassWithGenerics(List.class,
 				String.class);
 		Bindable<?> bindable = Bindable.of(type);
@@ -44,7 +44,7 @@ public class ResolvableTypeDescriptorTests {
 	}
 
 	@Test
-	public void forBindableShouldIncludeAnnotations() throws Exception {
+	public void forBindableShouldIncludeAnnotations() {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
 		Bindable<?> bindable = Bindable.of(String.class).withAnnotations(annotation);
 		TypeDescriptor descriptor = ResolvableTypeDescriptor.forBindable(bindable);
@@ -52,7 +52,7 @@ public class ResolvableTypeDescriptorTests {
 	}
 
 	@Test
-	public void forTypeShouldIncludeType() throws Exception {
+	public void forTypeShouldIncludeType() {
 		ResolvableType type = ResolvableType.forClassWithGenerics(List.class,
 				String.class);
 		TypeDescriptor descriptor = ResolvableTypeDescriptor.forType(type);

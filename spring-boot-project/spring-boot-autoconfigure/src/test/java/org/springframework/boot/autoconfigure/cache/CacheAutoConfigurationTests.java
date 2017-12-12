@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -123,7 +122,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void cacheResolverFromSupportBackOff() throws Exception {
+	public void cacheResolverFromSupportBackOff() {
 		this.contextRunner
 				.withUserConfiguration(CustomCacheResolverFromSupportConfiguration.class)
 				.run((context) -> assertThat(context)
@@ -131,7 +130,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void customCacheResolverCanBeDefined() throws Exception {
+	public void customCacheResolverCanBeDefined() {
 		this.contextRunner.withUserConfiguration(SpecificCacheResolverConfiguration.class)
 				.withPropertyValues("spring.cache.type=simple").run((context) -> {
 					getCacheManager(context, ConcurrentMapCacheManager.class);
@@ -515,7 +514,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void ehcache3AsJCacheWithConfig() throws IOException {
+	public void ehcache3AsJCacheWithConfig() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
@@ -571,7 +570,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastCacheWithHazelcastAutoConfiguration() throws IOException {
+	public void hazelcastCacheWithHazelcastAutoConfiguration() {
 		String hazelcastConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		this.contextRunner
 				.withConfiguration(
@@ -616,7 +615,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastAsJCacheWithConfig() throws IOException {
+	public void hazelcastAsJCacheWithConfig() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		try {
 			String configLocation = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
@@ -639,7 +638,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastAsJCacheWithExistingHazelcastInstance() throws IOException {
+	public void hazelcastAsJCacheWithExistingHazelcastInstance() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		this.contextRunner
 				.withConfiguration(
@@ -722,7 +721,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void infinispanAsJCacheWithConfig() throws IOException {
+	public void infinispanAsJCacheWithConfig() {
 		String cachingProviderClassName = JCachingProvider.class.getName();
 		String configLocation = "infinispan.xml";
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)

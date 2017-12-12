@@ -74,7 +74,7 @@ public class BindValidationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void bindExceptionWithOriginDueToValidationFailure() throws Exception {
+	public void bindExceptionWithOriginDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(
 				FieldValidationFailureConfiguration.class, "test.foo.value=4");
 		assertThat(analysis.getDescription())
@@ -82,7 +82,7 @@ public class BindValidationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void bindExceptionWithObjectErrorsDueToValidationFailure() throws Exception {
+	public void bindExceptionWithObjectErrorsDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(
 				ObjectValidationFailureConfiguration.class);
 		assertThat(analysis.getDescription())
@@ -90,7 +90,7 @@ public class BindValidationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void otherBindExceptionShouldReturnAnalysis() throws Exception {
+	public void otherBindExceptionShouldReturnAnalysis() {
 		BindException cause = new BindException(new FieldValidationFailureProperties(),
 				"fieldValidationFailureProperties");
 		cause.addError(new FieldError("test", "value", "must not be null"));

@@ -32,13 +32,13 @@ public class OutputCaptureTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void toStringShouldReturnAllCapturedOutput() throws Exception {
+	public void toStringShouldReturnAllCapturedOutput() {
 		System.out.println("Hello World");
 		assertThat(this.outputCapture.toString()).contains("Hello World");
 	}
 
 	@Test
-	public void reset() throws Exception {
+	public void reset() {
 		System.out.println("Hello");
 		this.outputCapture.reset();
 		System.out.println("World");

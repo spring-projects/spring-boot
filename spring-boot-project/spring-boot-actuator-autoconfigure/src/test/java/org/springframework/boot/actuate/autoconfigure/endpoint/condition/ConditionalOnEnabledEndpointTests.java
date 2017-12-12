@@ -41,7 +41,7 @@ public class ConditionalOnEnabledEndpointTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void outcomeWhenEndpointEnabledPropertyIsTrueShouldMatch() throws Exception {
+	public void outcomeWhenEndpointEnabledPropertyIsTrueShouldMatch() {
 		this.contextRunner.withPropertyValues("management.endpoint.foo.enabled=true")
 				.withUserConfiguration(
 						FooEndpointEnabledByDefaultFalseConfiguration.class)
@@ -49,16 +49,14 @@ public class ConditionalOnEnabledEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenEndpointEnabledPropertyIsFalseShouldNotMatch()
-			throws Exception {
+	public void outcomeWhenEndpointEnabledPropertyIsFalseShouldNotMatch() {
 		this.contextRunner.withPropertyValues("management.endpoint.foo.enabled=false")
 				.withUserConfiguration(FooEndpointEnabledByDefaultTrueConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void outcomeWhenNoEndpointPropertyAndUserDefinedDefaultIsTrueShouldMatch()
-			throws Exception {
+	public void outcomeWhenNoEndpointPropertyAndUserDefinedDefaultIsTrueShouldMatch() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.enabled-by-default=true")
 				.withUserConfiguration(
@@ -67,8 +65,7 @@ public class ConditionalOnEnabledEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenNoEndpointPropertyAndUserDefinedDefaultIsFalseShouldNotMatch()
-			throws Exception {
+	public void outcomeWhenNoEndpointPropertyAndUserDefinedDefaultIsFalseShouldNotMatch() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.enabled-by-default=false")
 				.withUserConfiguration(FooEndpointEnabledByDefaultTrueConfiguration.class)
@@ -76,16 +73,14 @@ public class ConditionalOnEnabledEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenNoPropertiesAndAnnotationIsEnabledByDefaultShouldMatch()
-			throws Exception {
+	public void outcomeWhenNoPropertiesAndAnnotationIsEnabledByDefaultShouldMatch() {
 		this.contextRunner
 				.withUserConfiguration(FooEndpointEnabledByDefaultTrueConfiguration.class)
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void outcomeWhenNoPropertiesAndAnnotationIsNotEnabledByDefaultShouldNotMatch()
-			throws Exception {
+	public void outcomeWhenNoPropertiesAndAnnotationIsNotEnabledByDefaultShouldNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(
 						FooEndpointEnabledByDefaultFalseConfiguration.class)
@@ -93,8 +88,7 @@ public class ConditionalOnEnabledEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenNoPropertiesAndExtensionAnnotationIsEnabledByDefaultShouldMatch()
-			throws Exception {
+	public void outcomeWhenNoPropertiesAndExtensionAnnotationIsEnabledByDefaultShouldMatch() {
 		this.contextRunner
 				.withUserConfiguration(
 						FooEndpointAndExtensionEnabledByDefaultTrueConfiguration.class)
@@ -102,8 +96,7 @@ public class ConditionalOnEnabledEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenNoPropertiesAndExtensionAnnotationIsNotEnabledByDefaultShouldNotMatch()
-			throws Exception {
+	public void outcomeWhenNoPropertiesAndExtensionAnnotationIsNotEnabledByDefaultShouldNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(
 						FooEndpointAndExtensionEnabledByDefaultFalseConfiguration.class)

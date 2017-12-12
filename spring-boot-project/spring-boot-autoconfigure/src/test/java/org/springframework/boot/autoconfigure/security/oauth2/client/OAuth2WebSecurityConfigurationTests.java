@@ -58,7 +58,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void securityConfigurerConfiguresOAuth2Login() throws Exception {
+	public void securityConfigurerConfiguresOAuth2Login() {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					ClientRegistrationRepository expected = context
@@ -74,8 +74,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void securityConfigurerBacksOffWhenClientRegistrationBeanAbsent()
-			throws Exception {
+	public void securityConfigurerBacksOffWhenClientRegistrationBeanAbsent() {
 		this.contextRunner
 				.withUserConfiguration(TestConfig.class,
 						OAuth2WebSecurityConfiguration.class)
@@ -83,7 +82,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void configurationRegistersAuthorizedClientServiceBean() throws Exception {
+	public void configurationRegistersAuthorizedClientServiceBean() {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					OAuth2AuthorizedClientService bean = context
@@ -96,8 +95,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent()
-			throws Exception {
+	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent() {
 		this.contextRunner.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					assertThat(getAuthCodeFilters(context)).isEmpty();
@@ -107,7 +105,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientServiceBeanIsConditionalOnMissingBean() throws Exception {
+	public void authorizedClientServiceBeanIsConditionalOnMissingBean() {
 		this.contextRunner
 				.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)

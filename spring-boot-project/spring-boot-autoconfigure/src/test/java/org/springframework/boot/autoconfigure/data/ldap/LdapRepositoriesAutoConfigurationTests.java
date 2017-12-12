@@ -50,13 +50,13 @@ public class LdapRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() throws Exception {
+	public void testNoRepositoryConfiguration() {
 		load(EmptyConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(PersonRepository.class)).isEmpty();
 	}

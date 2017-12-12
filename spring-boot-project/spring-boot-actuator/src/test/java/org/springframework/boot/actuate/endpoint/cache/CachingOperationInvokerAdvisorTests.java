@@ -58,14 +58,14 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWhenOperationIsNotReadShouldNotAddAdvise() throws Exception {
+	public void applyWhenOperationIsNotReadShouldNotAddAdvise() {
 		OperationMethodInfo info = mockInfo(OperationType.WRITE, "get");
 		OperationInvoker advised = this.advisor.apply("foo", info, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
 	}
 
 	@Test
-	public void applyWhenHasParametersShouldNotAddAdvise() throws Exception {
+	public void applyWhenHasParametersShouldNotAddAdvise() {
 		OperationMethodInfo info = mockInfo(OperationType.READ, "getWithParameter",
 				String.class);
 		OperationInvoker advised = this.advisor.apply("foo", info, this.invoker);
@@ -73,7 +73,7 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWhenTimeToLiveReturnsNullShouldNotAddAdvise() throws Exception {
+	public void applyWhenTimeToLiveReturnsNullShouldNotAddAdvise() {
 		OperationMethodInfo info = mockInfo(OperationType.READ, "get");
 		given(this.timeToLive.apply(any())).willReturn(null);
 		OperationInvoker advised = this.advisor.apply("foo", info, this.invoker);
@@ -82,7 +82,7 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWhenTimeToLiveIsZeroShouldNotAddAdvise() throws Exception {
+	public void applyWhenTimeToLiveIsZeroShouldNotAddAdvise() {
 		OperationMethodInfo info = mockInfo(OperationType.READ, "get");
 		given(this.timeToLive.apply(any())).willReturn(0L);
 		OperationInvoker advised = this.advisor.apply("foo", info, this.invoker);
@@ -91,7 +91,7 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyShouldAddCacheAdvise() throws Exception {
+	public void applyShouldAddCacheAdvise() {
 		OperationMethodInfo info = mockInfo(OperationType.READ, "get");
 		given(this.timeToLive.apply(any())).willReturn(100L);
 		OperationInvoker advised = this.advisor.apply("foo", info, this.invoker);
