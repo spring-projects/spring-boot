@@ -703,6 +703,16 @@ public class RabbitProperties {
 		 */
 		private Long replyTimeout;
 
+		/**
+		 * Name of the default exchange to use for send operations.
+		 */
+		private String exchange = "";
+
+		/**
+		 * Value of a default routing key to use for send operations.
+		 */
+		private String routingKey = "";
+
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -729,6 +739,22 @@ public class RabbitProperties {
 
 		public void setReplyTimeout(Long replyTimeout) {
 			this.replyTimeout = replyTimeout;
+		}
+
+		public String getExchange() {
+			return this.exchange;
+		}
+
+		public void setExchange(String exchange) {
+			this.exchange = exchange;
+		}
+
+		public String getRoutingKey() {
+			return this.routingKey;
+		}
+
+		public void setRoutingKey(String routingKey) {
+			this.routingKey = routingKey;
 		}
 
 	}
