@@ -37,6 +37,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
  * {@link ClientRegistration}.
  *
  * @author Phillip Webb
+ * @author Thiago Hirata
  * @since 2.0.0
  */
 final class OAuth2ClientPropertiesRegistrationAdapter {
@@ -98,6 +99,7 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 		copyIfNotNull(provider::getTokenUri, builder::tokenUri);
 		copyIfNotNull(provider::getUserInfoUri, builder::userInfoUri);
 		copyIfNotNull(provider::getJwkSetUri, builder::jwkSetUri);
+		copyIfNotNull(provider::getUserNameAttribute, builder::userNameAttributeName);
 		return builder;
 	}
 

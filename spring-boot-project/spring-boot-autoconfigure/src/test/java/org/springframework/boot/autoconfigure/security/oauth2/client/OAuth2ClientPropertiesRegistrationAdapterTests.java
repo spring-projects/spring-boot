@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Thiago Hirata
  */
 public class OAuth2ClientPropertiesRegistrationAdapterTests {
 
@@ -48,6 +50,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		provider.setAuthorizationUri("http://example.com/auth");
 		provider.setTokenUri("http://example.com/token");
 		provider.setUserInfoUri("http://example.com/info");
+		provider.setUserNameAttribute("sub");
 		provider.setJwkSetUri("http://example.com/jwk");
 		Registration registration = new Registration();
 		registration.setProvider("provider");
@@ -69,6 +72,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("http://example.com/info");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo("sub");
 		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
@@ -101,6 +106,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo(IdTokenClaimNames.SUB);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
@@ -140,6 +147,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo(IdTokenClaimNames.SUB);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
