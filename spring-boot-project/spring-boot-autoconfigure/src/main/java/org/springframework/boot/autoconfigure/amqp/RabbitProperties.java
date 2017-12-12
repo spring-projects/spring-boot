@@ -713,11 +713,6 @@ public class RabbitProperties {
 		 */
 		private String routingKey = "";
 
-		/**
-		 * Enable transactional channels.
-		 */
-		private boolean channelTransacted;
-
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -760,14 +755,6 @@ public class RabbitProperties {
 
 		public void setRoutingKey(String routingKey) {
 			this.routingKey = routingKey;
-		}
-
-		public boolean isChannelTransacted() {
-			return this.channelTransacted;
-		}
-
-		public void setChannelTransacted(boolean channelTransacted) {
-			this.channelTransacted = channelTransacted;
 		}
 
 	}
