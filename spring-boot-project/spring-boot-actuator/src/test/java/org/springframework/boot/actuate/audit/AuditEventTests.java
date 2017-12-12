@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @author Nakul Mishra
  */
 public class AuditEventTests {
 
@@ -64,10 +65,9 @@ public class AuditEventTests {
 	}
 
 	@Test
-	public void nullPrincipal() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Principal must not be null");
-		new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
+	public void nullPrincipal() {
+		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
+		assertThat(auditEvent.getPrincipal()).isEmpty();
 	}
 
 	@Test
