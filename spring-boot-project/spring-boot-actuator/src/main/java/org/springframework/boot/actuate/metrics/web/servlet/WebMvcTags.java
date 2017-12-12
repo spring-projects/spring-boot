@@ -68,11 +68,11 @@ public final class WebMvcTags {
 	 */
 	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
 		if (response != null) {
-			HttpStatus status = HttpStatus.valueOf(response.getStatus());
-			if (status.is3xxRedirection()) {
+			HttpStatus status = extractStatus(response);
+			if (status != null && status.is3xxRedirection()) {
 				return Tag.of("uri", "REDIRECTION");
 			}
-			if (status.equals(HttpStatus.NOT_FOUND)) {
+			if (HttpStatus.NOT_FOUND.equals(status)) {
 				return Tag.of("uri", "NOT_FOUND");
 			}
 		}
@@ -85,6 +85,15 @@ public final class WebMvcTags {
 			uri = "/";
 		}
 		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
+	}
+
+	private static HttpStatus extractStatus(HttpServletResponse response) {
+		try {
+			return HttpStatus.valueOf(response.getStatus());
+		}
+		catch (IllegalArgumentException ex) {
+			return null;
+		}
 	}
 
 	/**
