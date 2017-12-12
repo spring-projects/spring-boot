@@ -85,10 +85,9 @@ public class AuditEvent implements Serializable {
 	public AuditEvent(Date timestamp, String principal, String type,
 			Map<String, Object> data) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
-		Assert.notNull(principal, "Principal must not be null");
 		Assert.notNull(type, "Type must not be null");
 		this.timestamp = timestamp;
-		this.principal = principal;
+		this.principal = principal != null ? principal : "";
 		this.type = type;
 		this.data = Collections.unmodifiableMap(data);
 	}
@@ -117,7 +116,8 @@ public class AuditEvent implements Serializable {
 	}
 
 	/**
-	 * Returns the user principal responsible for the event.
+	 * Returns the user principal responsible for the event or an empty String if the
+	 * principal is not available.
 	 * @return the principal
 	 */
 	public String getPrincipal() {
