@@ -79,8 +79,11 @@ public class MetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(MeterRegistry.class)
 	public CompositeMeterRegistry compositeMeterRegistry(
-			ObjectProvider<Collection<MetricsExporter>> exporters) {
+			ObjectProvider<Collection<MetricsExporter>> exporters,
+			ObjectProvider<Collection<MeterRegistryConfigurer>> configurers) {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		configurers.getIfAvailable(Collections::emptyList)
+				.forEach((configurer) -> configurer.configureRegistry(composite));
 		exporters.getIfAvailable(Collections::emptyList).stream()
 				.map(MetricsExporter::registry).forEach(composite::add);
 		return composite;
@@ -119,11 +122,8 @@ public class MetricsAutoConfiguration {
 	static class MeterRegistryConfigurationSupport {
 
 		MeterRegistryConfigurationSupport(MeterRegistry registry,
-				ObjectProvider<Collection<MeterRegistryConfigurer>> configurers,
 				MetricsProperties config,
 				ObjectProvider<Collection<MeterBinder>> binders) {
-			configurers.getIfAvailable(Collections::emptyList)
-					.forEach((configurer) -> configurer.configureRegistry(registry));
 			binders.getIfAvailable(Collections::emptyList)
 					.forEach((binder) -> binder.bindTo(registry));
 			if (config.isUseGlobalRegistry()) {
