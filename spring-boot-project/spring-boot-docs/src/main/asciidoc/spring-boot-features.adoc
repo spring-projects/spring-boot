@@ -7101,6 +7101,66 @@ result of a {spring-reference}core.html#expressions[SpEL expression].
 
 
 
+[[boot-features-test-autoconfig]]
+=== Testing your auto-configuration
+An auto-configuration can be affected by many factors: user configuration (`@Bean`
+definition and `Environment` customization), condition evaluation (presence of a
+particular library), etc. Concretely, each test should create a well-defined
+`ApplicationContext` that represents a combination of those customizations and
+`ApplicationContextRunner` provides a great way to achieve that.
+
+`ApplicationContextRunner` is usually defined as a field of the test class to gather the
+base, common configuration. The following makes sure that `UserServiceAutoConfiguration`
+is always invoked:
+
+[source,java,indent=0]
+----
+include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=runner]
+----
+
+TIP: If multiple auto-configurations have to be defined, there is no need to order their
+declarations as they will be invoked in the exact same order as when running the
+application.
+
+Each test can use the runner to represents a particular use case. For instance, the sample
+below invokes a user configuration (`UserConfiguration`) and checks that the
+auto-configuration backs off properly. Invoking `run` provides a callback context that can
+be used with `Assert4J`:
+
+[source,java,indent=0]
+----
+include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-user-config]
+----
+
+It is also possible to easily customize the `Environment`:
+
+[source,java,indent=0]
+----
+include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-env]
+----
+
+
+
+==== Simulating a web context
+If you need to test an auto-configuration that only operates in a Servlet or Reactive web
+application context, use the `WebApplicationContextRunner` or
+`ReactiveWebApplicationContextRunner` respectively.
+
+
+
+==== Overriding the classpath
+It is also possible to test what happens when a particular class and/or package is not
+present at runtime. Spring Boot ships with a `FilteredClassLoader` that can easily be used
+by the runner. In the example below, we assert that if `UserService` is not present, the
+auto-configuration will be properly disabled:
+
+[source,java,indent=0]
+----
+include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-classloader]
+----
+
+
+
 [[boot-features-custom-starter]]
 === Creating Your Own Starter
 A full Spring Boot starter for a library may contain the following components:
