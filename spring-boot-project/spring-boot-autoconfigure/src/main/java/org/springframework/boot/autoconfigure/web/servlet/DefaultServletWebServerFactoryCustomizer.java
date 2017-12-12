@@ -256,6 +256,10 @@ public class DefaultServletWebServerFactoryCustomizer
 				customizeRedirectContextRoot(factory,
 						tomcatProperties.getRedirectContextRoot());
 			}
+			if (tomcatProperties.getUseRelativeRedirects() != null) {
+				customizeUseRelativeRedirects(factory,
+						tomcatProperties.getUseRelativeRedirects());
+			}
 			if (tomcatProperties.getMaxConnections() > 0) {
 				customizeMaxConnections(factory, tomcatProperties.getMaxConnections());
 			}
@@ -390,6 +394,13 @@ public class DefaultServletWebServerFactoryCustomizer
 				final boolean redirectContextRoot) {
 			factory.addContextCustomizers((context) -> context
 					.setMapperContextRootRedirectEnabled(redirectContextRoot));
+		}
+
+		private static void customizeUseRelativeRedirects(
+				TomcatServletWebServerFactory factory,
+				final boolean useRelativeRedirects) {
+			factory.addContextCustomizers((context) -> context
+					.setUseRelativeRedirects(useRelativeRedirects));
 		}
 
 		private static void customizeStaticResources(Resource resource,

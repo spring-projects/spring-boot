@@ -169,6 +169,22 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void useRelativeRedirectsCanBeConfigured() {
+		Map<String, String> map = new HashMap<>();
+		map.put("server.tomcat.use-relative-redirects", "true");
+		bindProperties(map);
+		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
+		assertThat(tomcat.getUseRelativeRedirects()).isTrue();
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+		this.customizer.customize(factory);
+		Context context = mock(Context.class);
+		for (TomcatContextCustomizer customizer : factory.getTomcatContextCustomizers()) {
+			customizer.customize(context);
+		}
+		verify(context).setUseRelativeRedirects(true);
+	}
+
+	@Test
 	public void testCustomizeTomcat() throws Exception {
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
