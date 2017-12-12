@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
@@ -49,6 +50,8 @@ public class Handler extends URLStreamHandler {
 	private static final String SEPARATOR = "!/";
 
 	private static final String CURRENT_DIR = "/./";
+
+	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR);
 
 	private static final String PARENT_DIR = "/../";
 
@@ -237,7 +240,7 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private String replaceCurrentDir(String file) {
-		return file.replace(CURRENT_DIR, "/");
+		return CURRENT_DIR_PATTERN.matcher(file).replaceAll("/");
 	}
 
 	@Override
