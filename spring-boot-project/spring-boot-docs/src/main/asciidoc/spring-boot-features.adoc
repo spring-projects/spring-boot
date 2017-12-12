@@ -573,7 +573,7 @@ following:
 . `classpath:custom-config/`
 
 Alternatively, when custom config locations are configured by using
-`spring.config.addition-location`, they are used in addition to the default locations.
+`spring.config.additional-location`, they are used in addition to the default locations.
 Additional locations are searched before the default locations. For example, if
 additional locations of `classpath:/custom-config/,file:./custom-config/` are configured,
 the search order becomes the following:
