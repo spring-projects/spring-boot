@@ -83,6 +83,11 @@ public class AtomikosProperties {
 	private boolean forceShutdownOnVmExit;
 
 	/**
+	 * How long should normal shutdown (no-force) wait for transactions to complete.
+	 */
+	private long defaultMaxWaitTimeOnShutdown = Long.MAX_VALUE;
+
+	/**
 	 * Transactions log file base name.
 	 */
 	private String logBaseName = "tmlog";
@@ -106,6 +111,7 @@ public class AtomikosProperties {
 	private boolean threadedTwoPhaseCommit;
 
 	private final Recovery recovery = new Recovery();
+
 
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
@@ -237,6 +243,19 @@ public class AtomikosProperties {
 	}
 
 	/**
+	 * Specifies how long should a normal shutdown (no-force) wait for transactions to complete.
+	 * Defaults to {@literal Long.MAX_VALUE}.
+	 * @param defaultMaxWaitTimeOnShutdown the default max wait time on shutdown
+	 */
+	public void setDefaultMaxWaitTimeOnShutdown(long defaultMaxWaitTimeOnShutdown) {
+		this.defaultMaxWaitTimeOnShutdown = defaultMaxWaitTimeOnShutdown;
+	}
+
+	public long getDefaultMaxWaitTimeOnShutdown() {
+		return this.defaultMaxWaitTimeOnShutdown;
+	}
+
+	/**
 	 * Specifies the transactions log file base name. Defaults to {@literal tmlog}. The
 	 * transactions logs are stored in files using this name appended with a number and
 	 * the extension {@literal .log}. At checkpoint, a new transactions log file is
@@ -316,6 +335,8 @@ public class AtomikosProperties {
 		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
 		set(properties, "allow_subtransactions", isAllowSubTransactions());
 		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
+		set(properties, "default_max_wait_time_on_shutdown",
+				getDefaultMaxWaitTimeOnShutdown());
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());

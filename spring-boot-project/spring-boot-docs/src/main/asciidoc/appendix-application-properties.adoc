@@ -749,6 +749,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.atomikos.properties.allow-sub-transactions=true # Specify whether sub-transactions are allowed.
 	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints, in milliseconds.
 	spring.jta.atomikos.properties.default-jta-timeout=10000 # Default timeout for JTA transactions, in milliseconds.
+	spring.jta.atomikos.properties.default-max-wait-time-on-shutdown=9223372036854775807 # How long should normal shutdown (no-force) wait for transactions to complete.
 	spring.jta.atomikos.properties.enable-logging=true # Whether to enable disk logging.
 	spring.jta.atomikos.properties.force-shutdown-on-vm-exit=false # Whether a VM shutdown should trigger forced shutdown of the transaction core.
 	spring.jta.atomikos.properties.log-base-dir= # Directory in which the log files should be stored.
