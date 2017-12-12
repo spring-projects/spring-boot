@@ -33,7 +33,6 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @author Nakul Mishra
  */
 public class AtomikosPropertiesTests {
 
@@ -50,6 +49,7 @@ public class AtomikosPropertiesTests {
 		this.properties.setSerialJtaTransactions(true);
 		this.properties.setAllowSubTransactions(false);
 		this.properties.setForceShutdownOnVmExit(true);
+		this.properties.setDefaultMaxWaitTimeOnShutdown(20);
 		this.properties.setLogBaseName("logBaseName");
 		this.properties.setLogBaseDir("logBaseDir");
 		this.properties.setCheckpointInterval(4);
@@ -59,7 +59,6 @@ public class AtomikosPropertiesTests {
 		this.properties.getRecovery().setDelay(Duration.ofMillis(3000));
 		this.properties.getRecovery().setMaxRetries(10);
 		this.properties.getRecovery().setRetryInterval(Duration.ofMillis(4000));
-		this.properties.setDefaultMaxWaitTimeOnShutdown(20);
 		assertThat(this.properties.asProperties().size()).isEqualTo(18);
 		assertProperty("com.atomikos.icatch.service", "service");
 		assertProperty("com.atomikos.icatch.max_timeout", "1");
@@ -70,6 +69,7 @@ public class AtomikosPropertiesTests {
 		assertProperty("com.atomikos.icatch.serial_jta_transactions", "true");
 		assertProperty("com.atomikos.icatch.allow_subtransactions", "false");
 		assertProperty("com.atomikos.icatch.force_shutdown_on_vm_exit", "true");
+		assertProperty("com.atomikos.icatch.default_max_wait_time_on_shutdown", "20");
 		assertProperty("com.atomikos.icatch.log_base_name", "logBaseName");
 		assertProperty("com.atomikos.icatch.log_base_dir", "logBaseDir");
 		assertProperty("com.atomikos.icatch.checkpoint_interval", "4");
@@ -78,7 +78,6 @@ public class AtomikosPropertiesTests {
 		assertProperty("com.atomikos.icatch.recovery_delay", "3000");
 		assertProperty("com.atomikos.icatch.oltp_max_retries", "10");
 		assertProperty("com.atomikos.icatch.oltp_retry_interval", "4000");
-		assertProperty("com.atomikos.icatch.default_max_wait_time_on_shutdown", "20");
 	}
 
 	@Test
@@ -92,13 +91,13 @@ public class AtomikosPropertiesTests {
 				"com.atomikos.icatch.serial_jta_transactions",
 				"com.atomikos.icatch.allow_subtransactions",
 				"com.atomikos.icatch.force_shutdown_on_vm_exit",
+				"com.atomikos.icatch.default_max_wait_time_on_shutdown",
 				"com.atomikos.icatch.log_base_name",
 				"com.atomikos.icatch.checkpoint_interval",
 				"com.atomikos.icatch.threaded_2pc",
 				"com.atomikos.icatch.forget_orphaned_log_entries_delay",
 				"com.atomikos.icatch.oltp_max_retries",
-				"com.atomikos.icatch.oltp_retry_interval",
-				"com.atomikos.icatch.default_max_wait_time_on_shutdown"));
+				"com.atomikos.icatch.oltp_retry_interval"));
 		assertThat(properties).contains(entry("com.atomikos.icatch.recovery_delay",
 				defaultSettings.get("com.atomikos.icatch.default_jta_timeout")));
 		assertThat(properties).hasSize(15);

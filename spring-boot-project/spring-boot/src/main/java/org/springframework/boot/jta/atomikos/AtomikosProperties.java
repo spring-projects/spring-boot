@@ -29,7 +29,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @author Nakul Mishra
  * @since 1.2.0
  * @see #asProperties()
  */
@@ -84,6 +83,11 @@ public class AtomikosProperties {
 	private boolean forceShutdownOnVmExit;
 
 	/**
+	 * How long should normal shutdown (no-force) wait for transactions to complete.
+	 */
+	private long defaultMaxWaitTimeOnShutdown = Long.MAX_VALUE;
+
+	/**
 	 * Transactions log file base name.
 	 */
 	private String logBaseName = "tmlog";
@@ -108,10 +112,6 @@ public class AtomikosProperties {
 
 	private final Recovery recovery = new Recovery();
 
-	/**
-	 * How long should normal shutdown (no-force) wait for transactions to complete.
-	 */
-	private long defaultMaxWaitTimeOnShutdown = Long.MAX_VALUE;
 
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
@@ -243,6 +243,19 @@ public class AtomikosProperties {
 	}
 
 	/**
+	 * Specifies how long should a normal shutdown (no-force) wait for transactions to complete.
+	 * Defaults to {@literal Long.MAX_VALUE}.
+	 * @param defaultMaxWaitTimeOnShutdown the default max wait time on shutdown
+	 */
+	public void setDefaultMaxWaitTimeOnShutdown(long defaultMaxWaitTimeOnShutdown) {
+		this.defaultMaxWaitTimeOnShutdown = defaultMaxWaitTimeOnShutdown;
+	}
+
+	public long getDefaultMaxWaitTimeOnShutdown() {
+		return this.defaultMaxWaitTimeOnShutdown;
+	}
+
+	/**
 	 * Specifies the transactions log file base name. Defaults to {@literal tmlog}. The
 	 * transactions logs are stored in files using this name appended with a number and
 	 * the extension {@literal .log}. At checkpoint, a new transactions log file is
@@ -307,19 +320,6 @@ public class AtomikosProperties {
 	}
 
 	/**
-	 * Specifies how long should a normal shutdown (no-force) wait for transactions to complete.
-	 * Defaults to {@literal Long.MAX_VALUE}.
-	 * @param defaultMaxWaitTimeOnShutdown the default max wait time on shutdown
-	 */
-	public void setDefaultMaxWaitTimeOnShutdown(long defaultMaxWaitTimeOnShutdown) {
-		this.defaultMaxWaitTimeOnShutdown = defaultMaxWaitTimeOnShutdown;
-	}
-
-	public long getDefaultMaxWaitTimeOnShutdown() {
-		return this.defaultMaxWaitTimeOnShutdown;
-	}
-
-	/**
 	 * Returns the properties as a {@link Properties} object that can be used with
 	 * Atomikos.
 	 * @return the properties
@@ -335,6 +335,8 @@ public class AtomikosProperties {
 		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
 		set(properties, "allow_subtransactions", isAllowSubTransactions());
 		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
+		set(properties, "default_max_wait_time_on_shutdown",
+				getDefaultMaxWaitTimeOnShutdown());
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());
@@ -345,7 +347,6 @@ public class AtomikosProperties {
 		set(properties, "recovery_delay", recovery.getDelay());
 		set(properties, "oltp_max_retries", recovery.getMaxRetries());
 		set(properties, "oltp_retry_interval", recovery.getRetryInterval());
-		set(properties, "default_max_wait_time_on_shutdown", getDefaultMaxWaitTimeOnShutdown());
 		return properties;
 	}
 
