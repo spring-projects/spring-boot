@@ -41,7 +41,6 @@ import org.springframework.util.Assert;
  * (wrappers for AuditEvent).
  *
  * @author Dave Syer
- * @author Nakul Mishra
  * @see AuditEventRepository
  */
 @JsonInclude(Include.NON_EMPTY)
@@ -117,7 +116,8 @@ public class AuditEvent implements Serializable {
 	}
 
 	/**
-	 * Returns the user principal responsible for the event.
+	 * Returns the user principal responsible for the event or an empty String if the
+	 * principal is not available.
 	 * @return the principal
 	 */
 	public String getPrincipal() {

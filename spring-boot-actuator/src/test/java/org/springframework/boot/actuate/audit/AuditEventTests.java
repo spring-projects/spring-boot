@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Vedran Pavic
- * @author Nakul Mishra
  */
 public class AuditEventTests {
 
@@ -57,17 +56,18 @@ public class AuditEventTests {
 	}
 
 	@Test
+	public void nullPrincipalIsMappedToEmptyString() {
+		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN",
+				Collections.singletonMap("a", (Object) "b"));
+		assertThat(auditEvent.getPrincipal()).isEmpty();
+	}
+
+	@Test
 	public void nullTimestamp() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Timestamp must not be null");
 		new AuditEvent(null, "phil", "UNKNOWN",
 				Collections.singletonMap("a", (Object) "b"));
-	}
-
-	@Test
-	public void nullPrincipal() {
-		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
-		assertThat(auditEvent.getPrincipal()).isEmpty();
 	}
 
 	@Test
