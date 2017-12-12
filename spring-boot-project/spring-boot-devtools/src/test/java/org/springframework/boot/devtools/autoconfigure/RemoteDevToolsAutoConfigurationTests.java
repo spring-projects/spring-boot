@@ -28,8 +28,6 @@ import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.server.HttpRestartServer;
 import org.springframework.boot.devtools.restart.server.SourceFolderUrlFilter;
-import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer;
-import org.springframework.boot.devtools.tunnel.server.TargetServerConnection;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -195,21 +193,6 @@ public class RemoteDevToolsAutoConfigurationTests {
 			SourceFolderUrlFilter sourceFolderUrlFilter = mock(
 					SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
-		}
-
-	}
-
-	/**
-	 * Mock {@link HttpTunnelServer} implementation.
-	 */
-	static class MockHttpTunnelServer extends HttpTunnelServer {
-
-		MockHttpTunnelServer(TargetServerConnection serverConnection) {
-			super(serverConnection);
-		}
-
-		@Override
-		public void handle(ServerHttpRequest request, ServerHttpResponse response) {
 		}
 
 	}
