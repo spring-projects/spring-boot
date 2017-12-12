@@ -120,7 +120,7 @@ public class ScheduledTasksEndpoint {
 					(task) -> describeTriggerTask((TriggerTask) task));
 		}
 
-		private TaskType type;
+		private final TaskType type;
 
 		private final RunnableDescription runnable;
 
@@ -226,7 +226,7 @@ public class ScheduledTasksEndpoint {
 	}
 
 	/**
-	 * A description of an {@link CronTask} or a {@link TriggerTask} with a
+	 * A description of a {@link CronTask} or a {@link TriggerTask} with a
 	 * {@link CronTrigger}.
 	 */
 	public static final class CronTaskDescription extends TaskDescription {

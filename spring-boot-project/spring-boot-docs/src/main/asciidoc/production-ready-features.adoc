@@ -67,12 +67,12 @@ The following technology-agnostic endpoints are available:
 |`auditevents`
 |Exposes audit events information for the current application.
 
+|`beans`
+|Displays a complete list of all the Spring beans in your application.
+
 |`conditions`
 |Showing the conditions that were evaluated on configuration and auto-configuration
  classes and the reasons why they did or did not match.
-
-|`beans`
-|Displays a complete list of all the Spring beans in your application.
 
 |`configprops`
 |Displays a collated list of all `@ConfigurationProperties`.
@@ -281,7 +281,7 @@ Here's an example that remaps `/actuator/health` to `/healthcheck`:
 [source,properties,indent=0]
 ----
 	management.endpoints.web.base-path=/
-	management.endpoints.path-mapping.health=healthcheck
+	management.endpoints.web.path-mapping.health=healthcheck
 ----
 
 
