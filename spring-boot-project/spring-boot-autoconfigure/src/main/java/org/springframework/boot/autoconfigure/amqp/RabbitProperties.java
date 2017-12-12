@@ -703,6 +703,21 @@ public class RabbitProperties {
 		 */
 		private Long replyTimeout;
 
+		/**
+		 * Name of the default exchange to use for send operations.
+		 */
+		private String exchange = "";
+
+		/**
+		 * Value of a default routing key to use for send operations.
+		 */
+		private String routingKey = "";
+
+		/**
+		 * Enable transactional channels.
+		 */
+		private boolean channelTransacted;
+
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -729,6 +744,30 @@ public class RabbitProperties {
 
 		public void setReplyTimeout(Long replyTimeout) {
 			this.replyTimeout = replyTimeout;
+		}
+
+		public String getExchange() {
+			return this.exchange;
+		}
+
+		public void setExchange(String exchange) {
+			this.exchange = exchange;
+		}
+
+		public String getRoutingKey() {
+			return this.routingKey;
+		}
+
+		public void setRoutingKey(String routingKey) {
+			this.routingKey = routingKey;
+		}
+
+		public boolean isChannelTransacted() {
+			return this.channelTransacted;
+		}
+
+		public void setChannelTransacted(boolean channelTransacted) {
+			this.channelTransacted = channelTransacted;
 		}
 
 	}
