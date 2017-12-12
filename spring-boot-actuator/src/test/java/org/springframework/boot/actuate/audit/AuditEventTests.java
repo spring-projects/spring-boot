@@ -56,18 +56,18 @@ public class AuditEventTests {
 	}
 
 	@Test
+	public void nullPrincipalIsMappedToEmptyString() {
+		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN",
+				Collections.singletonMap("a", (Object) "b"));
+		assertThat(auditEvent.getPrincipal()).isEmpty();
+	}
+
+	@Test
 	public void nullTimestamp() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Timestamp must not be null");
 		new AuditEvent(null, "phil", "UNKNOWN",
 				Collections.singletonMap("a", (Object) "b"));
-	}
-
-	@Test
-	public void nullPrincipal() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Principal must not be null");
-		new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
 	}
 
 	@Test
