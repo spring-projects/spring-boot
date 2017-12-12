@@ -25,7 +25,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -89,7 +88,7 @@ public class AuditEvent implements Serializable {
 		Assert.notNull(timestamp, "Timestamp must not be null");
 		Assert.notNull(type, "Type must not be null");
 		this.timestamp = timestamp;
-		this.principal = principal == null ? StringUtils.EMPTY : principal;
+		this.principal = principal != null ? principal : "";
 		this.type = type;
 		this.data = Collections.unmodifiableMap(data);
 	}
