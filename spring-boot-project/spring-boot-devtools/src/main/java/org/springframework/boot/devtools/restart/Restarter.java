@@ -46,6 +46,7 @@ import org.springframework.boot.devtools.restart.FailureHandler.Outcome;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.cglib.core.ClassNameReader;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -338,7 +339,9 @@ public class Restarter {
 		clear(ReflectionUtils.class, "declaredMethodsCache");
 		clear(AnnotationUtils.class, "findAnnotationCache");
 		clear(AnnotationUtils.class, "annotatedInterfaceCache");
-		clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+		if (!JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.NINE)) {
+			clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+		}
 	}
 
 	private void clear(String className, String fieldName) {
