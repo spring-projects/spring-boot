@@ -154,6 +154,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		public boolean isPasswordGenerated() {
 			return this.passwordGenerated;
 		}
+
 	}
 
 }

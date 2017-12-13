@@ -112,7 +112,6 @@ public class AtomikosProperties {
 
 	private final Recovery recovery = new Recovery();
 
-
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
 	 * no default value and this must be set. Generally,
@@ -243,8 +242,8 @@ public class AtomikosProperties {
 	}
 
 	/**
-	 * Specifies how long should a normal shutdown (no-force) wait for transactions to complete.
-	 * Defaults to {@literal Long.MAX_VALUE}.
+	 * Specifies how long should a normal shutdown (no-force) wait for transactions to
+	 * complete. Defaults to {@literal Long.MAX_VALUE}.
 	 * @param defaultMaxWaitTimeOnShutdown the default max wait time on shutdown
 	 */
 	public void setDefaultMaxWaitTimeOnShutdown(long defaultMaxWaitTimeOnShutdown) {

@@ -57,12 +57,12 @@ public class Binder {
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
 			.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
 
-	private static final List<BeanBinder> beanBinders;
+	private static final List<BeanBinder> BEAN_BINDERS;
 
 	static {
 		List<BeanBinder> binders = new ArrayList<>();
 		binders.add(new JavaBeanBinder());
-		beanBinders = Collections.unmodifiableList(binders);
+		BEAN_BINDERS = Collections.unmodifiableList(binders);
 	}
 
 	private final Iterable<ConfigurationPropertySource> sources;
@@ -317,7 +317,7 @@ public class Binder {
 			return null;
 		}
 		return context.withBean(type, () -> {
-			Stream<?> boundBeans = beanBinders.stream()
+			Stream<?> boundBeans = BEAN_BINDERS.stream()
 					.map((b) -> b.bind(name, target, context, propertyBinder));
 			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
 		});

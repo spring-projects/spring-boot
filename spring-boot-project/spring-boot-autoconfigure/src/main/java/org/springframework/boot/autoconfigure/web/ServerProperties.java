@@ -568,8 +568,8 @@ public class ServerProperties {
 		private File basedir;
 
 		/**
-		 * Delay between the invocation of backgroundProcess methods. If a
-		 * duration suffix is not specified, seconds will be used.
+		 * Delay between the invocation of backgroundProcess methods. If a duration suffix
+		 * is not specified, seconds will be used.
 		 */
 		@DefaultDurationUnit(ChronoUnit.SECONDS)
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(30);

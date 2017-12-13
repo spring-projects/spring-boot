@@ -423,8 +423,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		TomcatWebServer server = (TomcatWebServer) factory.getWebServer();
 		server.start();
 		try {
-			assertThat(server.getTomcat().getConnector().getMaxPostSize())
-					.isEqualTo(-1);
+			assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1);
 		}
 		finally {
 			server.stop();

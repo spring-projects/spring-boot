@@ -218,8 +218,8 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 	}
 
 	public static String newItemMetadataPrefix(String prefix, String suffix) {
-		return prefix.toLowerCase(Locale.ENGLISH) +
-				ConfigurationMetadata.toDashedCase(suffix);
+		return prefix.toLowerCase(Locale.ENGLISH)
+				+ ConfigurationMetadata.toDashedCase(suffix);
 	}
 
 	/**

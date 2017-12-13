@@ -55,11 +55,13 @@ class ReactiveAuthenticationManagerConfiguration {
 			.getLog(ReactiveAuthenticationManagerConfiguration.class);
 
 	@Bean
-	public MapReactiveUserDetailsService reactiveUserDetailsService(SecurityProperties properties,
+	public MapReactiveUserDetailsService reactiveUserDetailsService(
+			SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing default security password: %s%n", user.getPassword()));
+			logger.info(String.format("%n%nUsing default security password: %s%n",
+					user.getPassword()));
 		}
 		UserDetails userDetails = getUserDetails(user, passwordEncoder);
 		return new MapReactiveUserDetailsService(userDetails);

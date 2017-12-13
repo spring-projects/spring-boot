@@ -636,9 +636,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
 			String endpointSuffix, Boolean defaultValue) {
-		return Metadata.withEnabledFlag("management.endpoint." + endpointSuffix
-				+ ".enabled").withDefaultValue(defaultValue).withDescription(
-				String.format("Whether to enable the %s endpoint.", endpointId));
+		return Metadata
+				.withEnabledFlag("management.endpoint." + endpointSuffix + ".enabled")
+				.withDefaultValue(defaultValue).withDescription(
+						String.format("Whether to enable the %s endpoint.", endpointId));
 	}
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,

@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
  */
 public class ImageBanner implements Banner {
 
-	private static final String BANNER_IMAGE_PREFIX = "spring.banner.image.";
+	private static final String PROPERTY_PREFIX = "spring.banner.image.";
 
 	private static final Log logger = LogFactory.getLog(ImageBanner.class);
 
@@ -100,14 +100,10 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(Environment environment, PrintStream out)
 			throws IOException {
-		int width = environment.getProperty(BANNER_IMAGE_PREFIX + "width",
-				Integer.class, 76);
-		int height = environment.getProperty(BANNER_IMAGE_PREFIX + "height",
-				Integer.class, 0);
-		int margin = environment.getProperty(BANNER_IMAGE_PREFIX + "margin",
-				Integer.class, 2);
-		boolean invert = environment.getProperty(BANNER_IMAGE_PREFIX + "invert",
-				Boolean.class, false);
+		int width = getProperty(environment, "width", Integer.class, 76);
+		int height = getProperty(environment, "height", Integer.class, 0);
+		int margin = getProperty(environment, "margin", Integer.class, 2);
+		boolean invert = getProperty(environment, "invert", Boolean.class, false);
 		Frame[] frames = readFrames(width, height);
 		for (int i = 0; i < frames.length; i++) {
 			if (i > 0) {
@@ -116,6 +112,11 @@ public class ImageBanner implements Banner {
 			printBanner(frames[i].getImage(), margin, invert, out);
 			sleep(frames[i].getDelayTime());
 		}
+	}
+
+	private <T> T getProperty(Environment environment, String name, Class<T> targetType,
+			T defaultValue) {
+		return environment.getProperty(PROPERTY_PREFIX + name, targetType, defaultValue);
 	}
 
 	private Frame[] readFrames(int width, int height) throws IOException {

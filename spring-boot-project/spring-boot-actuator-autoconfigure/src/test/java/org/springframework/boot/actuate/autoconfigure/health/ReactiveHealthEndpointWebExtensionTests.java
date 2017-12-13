@@ -78,8 +78,7 @@ public class ReactiveHealthEndpointWebExtensionTests {
 
 	@Test
 	public void regularAndReactiveHealthIndicatorsMatch() {
-		this.contextRunner
-				.withUserConfiguration(HealthIndicatorsConfiguration.class)
+		this.contextRunner.withUserConfiguration(HealthIndicatorsConfiguration.class)
 				.run((context) -> {
 					HealthEndpoint endpoint = context.getBean(HealthEndpoint.class);
 					ReactiveHealthEndpointWebExtension extension = context

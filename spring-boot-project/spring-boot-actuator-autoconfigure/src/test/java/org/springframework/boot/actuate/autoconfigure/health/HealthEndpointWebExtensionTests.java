@@ -39,9 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HealthEndpointWebExtensionTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					HealthIndicatorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class));
+			.withConfiguration(
+					AutoConfigurations.of(HealthIndicatorAutoConfiguration.class,
+							HealthEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateExtensionBeans() {

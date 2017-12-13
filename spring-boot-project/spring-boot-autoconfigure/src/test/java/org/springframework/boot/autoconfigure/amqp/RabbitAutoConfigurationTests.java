@@ -245,7 +245,8 @@ public class RabbitAutoConfigurationTests {
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 					assertThat(rabbitTemplate.getExchange()).isEqualTo("my-exchange");
-					assertThat(rabbitTemplate.getRoutingKey()).isEqualTo("my-routing-key");
+					assertThat(rabbitTemplate.getRoutingKey())
+							.isEqualTo("my-routing-key");
 				});
 	}
 

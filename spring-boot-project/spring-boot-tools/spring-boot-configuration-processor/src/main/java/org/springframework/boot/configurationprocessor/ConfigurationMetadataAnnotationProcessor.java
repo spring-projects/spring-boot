@@ -416,14 +416,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (endpointId == null || "".equals(endpointId)) {
 			return; // Can't process that endpoint
 		}
-		String endpointKey = ItemMetadata.newItemMetadataPrefix(
-				"management.endpoint.", endpointId);
+		String endpointKey = ItemMetadata.newItemMetadataPrefix("management.endpoint.",
+				endpointId);
 		Boolean enabledByDefault = (Boolean) elementValues.get("enableByDefault");
 		String type = this.typeUtils.getQualifiedName(element);
-		this.metadataCollector
-				.add(ItemMetadata.newGroup(endpointKey, type, type, null));
-		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
-				"enabled", Boolean.class.getName(), type, null,
+		this.metadataCollector.add(ItemMetadata.newGroup(endpointKey, type, type, null));
+		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey, "enabled",
+				Boolean.class.getName(), type, null,
 				String.format("Whether to enable the %s endpoint.", endpointId),
 				(enabledByDefault == null ? true : enabledByDefault), null));
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,

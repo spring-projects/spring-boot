@@ -192,7 +192,8 @@ public class ApplicationContextAssertProviderTests {
 		assertThat(context.toString())
 				.startsWith(
 						"Started application [ConfigurableApplicationContext.MockitoMock")
-				.endsWith("id = [null], applicationName = [null], beanDefinitionCount = 0]");
+				.endsWith(
+						"id = [null], applicationName = [null], beanDefinitionCount = 0]");
 	}
 
 	@Test

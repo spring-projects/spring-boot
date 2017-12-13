@@ -30,9 +30,9 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 
 /**
- * Annotation that can be applied to a test class to configure a test
- * {@link CacheManager} if none has been defined yet. By default this
- * annotation installs a {@link NoOpCacheManager}.
+ * Annotation that can be applied to a test class to configure a test {@link CacheManager}
+ * if none has been defined yet. By default this annotation installs a
+ * {@link NoOpCacheManager}.
  *
  * @author Phillip Webb
  * @since 1.4.0

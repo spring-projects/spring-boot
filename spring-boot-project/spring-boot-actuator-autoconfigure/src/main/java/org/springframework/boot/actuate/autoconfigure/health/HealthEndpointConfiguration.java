@@ -35,8 +35,7 @@ class HealthEndpointConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
 	public HealthEndpoint healthEndpoint(ApplicationContext applicationContext) {
-		return new HealthEndpoint(HealthIndicatorBeansComposite.get(
-				applicationContext));
+		return new HealthEndpoint(HealthIndicatorBeansComposite.get(applicationContext));
 	}
 
 }

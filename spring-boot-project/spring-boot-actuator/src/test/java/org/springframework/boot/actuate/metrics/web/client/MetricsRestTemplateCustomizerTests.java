@@ -70,8 +70,8 @@ public class MetricsRestTemplateCustomizerTests {
 		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.client.requests")
 				.meters()).anySatisfy((m) -> assertThat(
-				StreamSupport.stream(m.getId().getTags().spliterator(), false)
-						.map(Tag::getKey)).doesNotContain("bucket"));
+						StreamSupport.stream(m.getId().getTags().spliterator(), false)
+								.map(Tag::getKey)).doesNotContain("bucket"));
 		assertThat(this.registry.find("http.client.requests")
 				.tags("method", "GET", "uri", "/test/{id}", "status", "200")
 				.value(Statistic.Count, 1.0).timer()).isPresent();

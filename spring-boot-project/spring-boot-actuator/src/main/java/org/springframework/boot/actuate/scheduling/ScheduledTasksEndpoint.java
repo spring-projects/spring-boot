@@ -107,16 +107,16 @@ public class ScheduledTasksEndpoint {
 	 */
 	public static abstract class TaskDescription {
 
-		private static final Map<Class<? extends Task>, Function<Task, TaskDescription>> describers = new LinkedHashMap<>();
+		private static final Map<Class<? extends Task>, Function<Task, TaskDescription>> DESCRIBERS = new LinkedHashMap<>();
 
 		static {
-			describers.put(FixedRateTask.class,
+			DESCRIBERS.put(FixedRateTask.class,
 					(task) -> new FixedRateTaskDescription((FixedRateTask) task));
-			describers.put(FixedDelayTask.class,
+			DESCRIBERS.put(FixedDelayTask.class,
 					(task) -> new FixedDelayTaskDescription((FixedDelayTask) task));
-			describers.put(CronTask.class,
+			DESCRIBERS.put(CronTask.class,
 					(task) -> new CronTaskDescription((CronTask) task));
-			describers.put(TriggerTask.class,
+			DESCRIBERS.put(TriggerTask.class,
 					(task) -> describeTriggerTask((TriggerTask) task));
 		}
 
@@ -125,7 +125,7 @@ public class ScheduledTasksEndpoint {
 		private final RunnableDescription runnable;
 
 		private static TaskDescription of(Task task) {
-			return describers.entrySet().stream()
+			return DESCRIBERS.entrySet().stream()
 					.filter((entry) -> entry.getKey().isInstance(task))
 					.map((entry) -> entry.getValue().apply(task)).findFirst()
 					.orElse(null);

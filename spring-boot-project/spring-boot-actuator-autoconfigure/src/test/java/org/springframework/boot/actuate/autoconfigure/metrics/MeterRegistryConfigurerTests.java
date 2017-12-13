@@ -43,7 +43,7 @@ public class MeterRegistryConfigurerTests {
 				.withPropertyValues("metrics.use-global-registry=false")
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.find("jvm.memory.used").tags("region", "us-east-1").gauge())
-						.isPresent());
+								.isPresent());
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class MeterRegistryConfigurerTests {
 				.withPropertyValues("metrics.use-global-registry=false")
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.find("my.thing").tags("region", "us-east-1").gauge())
-						.isPresent());
+								.isPresent());
 	}
 
 	static class MeterRegistryConfigurerConfiguration {
@@ -64,7 +64,6 @@ public class MeterRegistryConfigurerTests {
 		public MeterRegistryConfigurer registryConfigurer() {
 			return (registry) -> registry.config().commonTags("region", "us-east-1");
 		}
-
 
 		@Bean
 		public MyThing myThing(MeterRegistry registry) {

@@ -19,8 +19,10 @@ package org.springframework.boot.jdbc;
 import java.io.IOException;
 import java.sql.Driver;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.sql.XADataSource;
 
@@ -41,9 +43,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(Parameterized.class)
 public class DatabaseDriverClassNameTests {
 
-	private static final EnumSet<DatabaseDriver> excludedDrivers = EnumSet.of(
-			DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE, DatabaseDriver.DB2,
-			DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX, DatabaseDriver.TERADATA);
+	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections
+			.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE,
+					DatabaseDriver.DB2, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
+					DatabaseDriver.TERADATA));
 
 	private final String className;
 
@@ -54,7 +57,7 @@ public class DatabaseDriverClassNameTests {
 		DatabaseDriver[] databaseDrivers = DatabaseDriver.values();
 		List<Object[]> parameters = new ArrayList<>();
 		for (DatabaseDriver databaseDriver : databaseDrivers) {
-			if (excludedDrivers.contains(databaseDriver)) {
+			if (EXCLUDED_DRIVERS.contains(databaseDriver)) {
 				continue;
 			}
 			parameters.add(new Object[] { databaseDriver,

@@ -361,10 +361,15 @@ public class Restarter {
 			((Set<?>) instance).clear();
 		}
 		if (instance instanceof Map) {
-			Map<?, ?> map = ((Map<?, ?>) instance);
-			map.keySet().removeIf(value -> value instanceof Class && ((Class<?>) value)
-					.getClassLoader() instanceof RestartClassLoader);
+			((Map<?, ?>) instance).keySet().removeIf(this::isFromRestartClassLoader);
 		}
+	}
+
+	private boolean isFromRestartClassLoader(Object object) {
+		if (object instanceof Class) {
+			return ((Class<?>) object).getClassLoader() instanceof RestartClassLoader;
+		}
+		return false;
 	}
 
 	/**
@@ -434,8 +439,7 @@ public class Restarter {
 		}
 	}
 
-	public Object getOrAddAttribute(String name,
-			final ObjectFactory<?> objectFactory) {
+	public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
 		synchronized (this.attributes) {
 			if (!this.attributes.containsKey(name)) {
 				this.attributes.put(name, objectFactory.getObject());

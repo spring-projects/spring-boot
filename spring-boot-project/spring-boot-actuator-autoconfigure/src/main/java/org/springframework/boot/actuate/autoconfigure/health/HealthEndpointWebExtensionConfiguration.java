@@ -65,8 +65,7 @@ class HealthEndpointWebExtensionConfiguration {
 
 		private final ReactiveHealthIndicator reactiveHealthIndicator;
 
-		ReactiveWebHealthConfiguration(
-				ObjectProvider<HealthAggregator> healthAggregator,
+		ReactiveWebHealthConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
 				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
 				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
 			this.reactiveHealthIndicator = new CompositeReactiveHealthIndicatorFactory()
