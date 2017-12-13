@@ -416,21 +416,19 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (endpointId == null || "".equals(endpointId)) {
 			return; // Can't process that endpoint
 		}
+		String endpointKey = ItemMetadata.newItemMetadataPrefix(
+				"management.endpoint.", endpointId);
 		Boolean enabledByDefault = (Boolean) elementValues.get("enableByDefault");
 		String type = this.typeUtils.getQualifiedName(element);
 		this.metadataCollector
-				.add(ItemMetadata.newGroup(endpointKey(endpointId), type, type, null));
-		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
+				.add(ItemMetadata.newGroup(endpointKey, type, type, null));
+		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
 				"enabled", Boolean.class.getName(), type, null,
 				String.format("Whether to enable the %s endpoint.", endpointId),
 				(enabledByDefault == null ? true : enabledByDefault), null));
-		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
+		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
 				"cache.time-to-live", Duration.class.getName(), type, null,
 				"Maximum time that a response can be cached.", 0, null));
-	}
-
-	private String endpointKey(String suffix) {
-		return "management.endpoint." + suffix;
 	}
 
 	private boolean isNested(Element returnType, VariableElement field,

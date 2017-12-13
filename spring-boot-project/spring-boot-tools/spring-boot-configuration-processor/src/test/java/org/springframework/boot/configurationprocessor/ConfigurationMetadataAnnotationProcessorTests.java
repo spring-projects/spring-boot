@@ -37,6 +37,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationprocessor.metadata.TestJsonConverter;
+import org.springframework.boot.configurationsample.endpoint.CamelCaseEndpoint;
 import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEndpoint;
 import org.springframework.boot.configurationsample.endpoint.DisabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
@@ -584,6 +585,16 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void camelCaseEndpoint() {
+		ConfigurationMetadata metadata = compile(CamelCaseEndpoint.class);
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.pascal-case")
+				.fromSource(CamelCaseEndpoint.class));
+		assertThat(metadata).has(enabledFlag("PascalCase", "pascal-case", true));
+		assertThat(metadata).has(cacheTtl("pascal-case"));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
 	public void incrementalEndpointBuildChangeGeneralEnabledFlag() throws Exception {
 		TestProject project = new TestProject(this.temporaryFolder,
 				IncrementalEndpoint.class);
@@ -624,10 +635,15 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
+			String endpointSuffix, Boolean defaultValue) {
+		return Metadata.withEnabledFlag("management.endpoint." + endpointSuffix
+				+ ".enabled").withDefaultValue(defaultValue).withDescription(
+				String.format("Whether to enable the %s endpoint.", endpointId));
+	}
+
+	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
 			Boolean defaultValue) {
-		return Metadata.withEnabledFlag("management.endpoint." + endpointId + ".enabled")
-				.withDefaultValue(defaultValue).withDescription(
-						String.format("Whether to enable the %s endpoint.", endpointId));
+		return enabledFlag(endpointId, endpointId, defaultValue);
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
