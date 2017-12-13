@@ -130,7 +130,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected boolean isTraceEnabled(ServerRequest request) {
 		String parameter = request.queryParam("trace").orElse("false");
-		return !"false".equals(parameter.toLowerCase());
+		return !"false".equalsIgnoreCase(parameter);
 	}
 
 	/**
