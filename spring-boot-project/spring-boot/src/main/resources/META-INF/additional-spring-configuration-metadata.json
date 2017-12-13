@@ -7,40 +7,40 @@
   ],
   "properties": [
     {
-      "name": "banner.charset",
+      "name": "spring.banner.charset",
       "type": "java.nio.charset.Charset",
       "description": "Banner file encoding.",
       "defaultValue": "UTF-8"
     },
     {
-      "name": "banner.location",
+      "name": "spring.banner.location",
       "type": "org.springframework.core.io.Resource",
       "description": "Banner text resource location.",
       "defaultValue": "classpath:banner.txt"
     },
     {
-      "name": "banner.image.location",
+      "name": "spring.banner.image.location",
       "type": "org.springframework.core.io.Resource",
       "description": "Banner image file location (jpg or png can also be used).",
       "defaultValue": "banner.gif"
     },
     {
-      "name": "banner.image.width",
+      "name": "spring.banner.image.width",
       "type": "java.lang.Integer",
       "description": "Banner image width (in chars)."
     },
     {
-      "name": "banner.image.height",
+      "name": "spring.banner.image.height",
       "type": "java.lang.Integer",
       "description": "Banner image height (in chars)."
     },
     {
-      "name": "banner.image.margin",
+      "name": "spring.banner.image.margin",
       "type": "java.lang.Integer",
       "description": "Left hand image margin (in chars)."
     },
     {
-      "name": "banner.image.invert",
+      "name": "spring.banner.image.invert",
       "type": "java.lang.Boolean",
       "description": "Whether images should be inverted for dark terminal themes.",
       "defaultValue": false
@@ -254,6 +254,73 @@
       "description": "Enable trace logs.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": false
+    },
+    {
+      "name": "banner.charset",
+      "type": "java.nio.charset.Charset",
+      "description": "Banner file encoding.",
+      "defaultValue": "UTF-8",
+      "deprecation": {
+        "replacement": "spring.banner.charset",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.height",
+      "type": "java.lang.Integer",
+      "description": "Banner image height (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.height",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.invert",
+      "type": "java.lang.Boolean",
+      "description": "Invert images for dark console themes.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.banner.image.invert",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner image file location (jpg/png can also be used).",
+      "defaultValue": "banner.gif",
+      "deprecation": {
+        "replacement": "spring.banner.image.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.margin",
+      "type": "java.lang.Integer",
+      "description": "Left hand image margin (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.margin",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.width",
+      "type": "java.lang.Integer",
+      "description": "Banner image width (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.width",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner text resource location.",
+      "defaultValue": "classpath:banner.txt",
+      "deprecation": {
+        "replacement": "spring.banner.location",
+        "level": "error"
+      }
     }
   ],
   "hints": [

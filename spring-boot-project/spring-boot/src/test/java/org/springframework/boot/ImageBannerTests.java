@@ -48,7 +48,7 @@ public class ImageBannerTests {
 
 	private static final char LOW_LUMINANCE_CHARACTER = '@';
 
-	private static final String INVERT_TRUE = "banner.image.invert=true";
+	private static final String INVERT_TRUE = "spring.banner.image.invert=true";
 
 	@Before
 	public void setup() {
@@ -119,28 +119,28 @@ public class ImageBannerTests {
 	@Test
 	public void printBannerShouldRenderGradient() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner("gradient.gif", "banner.image.width=10",
-				"banner.image.margin=0");
+		String banner = printBanner("gradient.gif", "spring.banner.image.width=10",
+				"spring.banner.image.margin=0");
 		assertThat(banner).contains("@#8&o:*.  ");
 	}
 
 	@Test
 	public void printBannerShouldCalculateHeight() {
-		String banner = printBanner("large.gif", "banner.image.width=20");
+		String banner = printBanner("large.gif", "spring.banner.image.width=20");
 		assertThat(getBannerHeight(banner)).isEqualTo(10);
 	}
 
 	@Test
 	public void printBannerWhenHasHeightPropertyShouldSetHeight() {
-		String banner = printBanner("large.gif", "banner.image.width=20",
-				"banner.image.height=30");
+		String banner = printBanner("large.gif", "spring.banner.image.width=20",
+				"spring.banner.image.height=30");
 		assertThat(getBannerHeight(banner)).isEqualTo(30);
 	}
 
 	@Test
 	public void printBannerShouldCapWidthAndCalculateHeight() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner("large.gif", "banner.image.margin=0");
+		String banner = printBanner("large.gif", "spring.banner.image.margin=0");
 		assertThat(getBannerWidth(banner)).isEqualTo(76);
 		assertThat(getBannerHeight(banner)).isEqualTo(37);
 	}
@@ -158,7 +158,7 @@ public class ImageBannerTests {
 	@Test
 	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner("large.gif", "banner.image.margin=4");
+		String banner = printBanner("large.gif", "spring.banner.image.margin=4");
 		String[] lines = banner.split(NEW_LINE);
 		for (int i = 2; i < lines.length - 1; i++) {
 			assertThat(lines[i]).startsWith("    @");

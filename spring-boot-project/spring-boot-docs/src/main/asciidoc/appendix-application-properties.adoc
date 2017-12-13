@@ -28,15 +28,6 @@ content into your application. Rather, pick only the properties that you need.
 	# CORE PROPERTIES
 	# ----------------------------------------
 
-	# BANNER
-	banner.charset=UTF-8 # Banner file encoding.
-	banner.location=classpath:banner.txt # Banner file location.
-	banner.image.location=classpath:banner.gif # Banner image file location (jpg or png can also be used).
-	banner.image.width= # Width of the banner image in chars (default 76)
-	banner.image.height= # Height of the banner image in chars (default based on image height)
-	banner.image.margin= # Left hand image margin in chars (default 2)
-	banner.image.invert= # Whether images should be inverted for dark terminal themes (default false)
-
 	# LOGGING
 	logging.config= # Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback
 	logging.exception-conversion-word=%wEx # Conversion word used when logging exceptions.
@@ -65,6 +56,15 @@ content into your application. Rather, pick only the properties that you need.
 
 	# AUTO-CONFIGURATION
 	spring.autoconfigure.exclude= # Auto-configuration classes to exclude.
+
+	# BANNER
+	spring.banner.charset=UTF-8 # Banner file encoding.
+	spring.banner.location=classpath:banner.txt # Banner file location.
+	spring.banner.image.location=classpath:banner.gif # Banner image file location (jpg or png can also be used).
+	spring.banner.image.width= # Width of the banner image in chars (default 76)
+	spring.banner.image.height= # Height of the banner image in chars (default based on image height)
+	spring.banner.image.margin= # Left hand image margin in chars (default 2)
+	spring.banner.image.invert= # Whether images should be inverted for dark terminal themes (default false)
 
 	# SPRING CORE
 	spring.beaninfo.ignore=true # Whether to skip search of BeanInfo classes.

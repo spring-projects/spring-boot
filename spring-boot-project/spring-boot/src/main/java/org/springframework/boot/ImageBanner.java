@@ -55,6 +55,8 @@ import org.springframework.util.Assert;
  */
 public class ImageBanner implements Banner {
 
+	private static final String BANNER_IMAGE_PREFIX = "spring.banner.image.";
+
 	private static final Log logger = LogFactory.getLog(ImageBanner.class);
 
 	private static final double[] RGB_WEIGHT = { 0.2126d, 0.7152d, 0.0722d };
@@ -98,11 +100,14 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(Environment environment, PrintStream out)
 			throws IOException {
-		int width = environment.getProperty("banner.image.width", Integer.class, 76);
-		int height = environment.getProperty("banner.image.height", Integer.class, 0);
-		int margin = environment.getProperty("banner.image.margin", Integer.class, 2);
-		boolean invert = environment.getProperty("banner.image.invert", Boolean.class,
-				false);
+		int width = environment.getProperty(BANNER_IMAGE_PREFIX + "width",
+				Integer.class, 76);
+		int height = environment.getProperty(BANNER_IMAGE_PREFIX + "height",
+				Integer.class, 0);
+		int margin = environment.getProperty(BANNER_IMAGE_PREFIX + "margin",
+				Integer.class, 2);
+		boolean invert = environment.getProperty(BANNER_IMAGE_PREFIX + "invert",
+				Boolean.class, false);
 		Frame[] frames = readFrames(width, height);
 		for (int i = 0; i < frames.length; i++) {
 			if (i > 0) {
