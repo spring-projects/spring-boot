@@ -35,19 +35,17 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HealthWebEndpointManagementContextConfiguration} in a reactive
- * environment.
+ * Tests for {@link HealthEndpointAutoConfiguration} in a reactive environment.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class HealthWebEndpointReactiveManagementContextConfigurationTests {
+public class ReactiveHealthEndpointWebExtensionTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withUserConfiguration(HealthIndicatorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class,
-					HealthWebEndpointManagementContextConfiguration.class);
+					HealthEndpointAutoConfiguration.class);
 
 	@Test
 	public void runShouldCreateExtensionBeans() {

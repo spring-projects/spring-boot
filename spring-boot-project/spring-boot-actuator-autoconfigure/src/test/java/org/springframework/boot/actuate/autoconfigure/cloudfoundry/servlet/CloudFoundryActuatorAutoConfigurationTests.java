@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryH
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthWebEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
@@ -250,7 +249,6 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 						"vcap.application.cf_api:http://my-cloud-controller.com")
 				.applyTo(this.context);
 		this.context.register(HealthEndpointAutoConfiguration.class,
-				HealthWebEndpointManagementContextConfiguration.class,
 				CloudFoundryHealthWebEndpointManagementContextConfiguration.class);
 		this.context.refresh();
 		Collection<EndpointInfo<WebOperation>> endpoints = this.context

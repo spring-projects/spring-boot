@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicatorFactory;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -41,14 +40,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link ManagementContextConfiguration} for health endpoints.
+ * Configuration for health endpoint web extensions.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-@ManagementContextConfiguration
+@Configuration
 @EnableConfigurationProperties(HealthIndicatorProperties.class)
-public class HealthWebEndpointManagementContextConfiguration {
+class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

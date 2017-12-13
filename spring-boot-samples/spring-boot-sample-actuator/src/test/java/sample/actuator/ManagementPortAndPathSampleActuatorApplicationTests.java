@@ -75,7 +75,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 				.getForEntity("http://localhost:" + this.managementPort + "/admin/health",
 						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\"}");
 	}
 
 	@Test

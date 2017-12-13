@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0" })
+		"management.server.port=0", "management.endpoint.health.show-details=true" })
 public class ManagementPortSampleActuatorApplicationTests {
 
 	@LocalServerPort
@@ -77,6 +77,8 @@ public class ManagementPortSampleActuatorApplicationTests {
 						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		assertThat(entity.getBody()).contains("\"example\"");
+		assertThat(entity.getBody()).contains("\"counter\":42");
 	}
 
 	@Test

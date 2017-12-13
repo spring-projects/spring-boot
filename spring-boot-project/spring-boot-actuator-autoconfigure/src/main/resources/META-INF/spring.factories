@@ -50,7 +50,6 @@ org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguratio
 org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey.JerseyWebEndpointManagementContextConfiguration,\
-org.springframework.boot.actuate.autoconfigure.health.HealthWebEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyManagementChildContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration,\
