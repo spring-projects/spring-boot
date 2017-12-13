@@ -107,13 +107,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void notAnnotated() throws Exception {
+	public void notAnnotated() {
 		ConfigurationMetadata metadata = compile(NotAnnotated.class);
 		assertThat(metadata.getItems()).isEmpty();
 	}
 
 	@Test
-	public void simpleProperties() throws Exception {
+	public void simpleProperties() {
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata)
 				.has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
@@ -130,7 +130,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void simplePrefixValueProperties() throws Exception {
+	public void simplePrefixValueProperties() {
 		ConfigurationMetadata metadata = compile(SimplePrefixValueProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("simple")
 				.fromSource(SimplePrefixValueProperties.class));
@@ -139,7 +139,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void simpleTypeProperties() throws Exception {
+	public void simpleTypeProperties() {
 		ConfigurationMetadata metadata = compile(SimpleTypeProperties.class);
 		assertThat(metadata).has(
 				Metadata.withGroup("simple.type").fromSource(SimpleTypeProperties.class));
@@ -186,7 +186,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void hierarchicalProperties() throws Exception {
+	public void hierarchicalProperties() {
 		ConfigurationMetadata metadata = compile(HierarchicalProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("hierarchical")
 				.fromSource(HierarchicalProperties.class));
@@ -201,7 +201,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void deprecatedProperties() throws Exception {
+	public void deprecatedProperties() {
 		Class<?> type = org.springframework.boot.configurationsample.simple.DeprecatedProperties.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("deprecated").fromSource(type));
@@ -213,7 +213,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void singleDeprecatedProperty() throws Exception {
+	public void singleDeprecatedProperty() {
 		Class<?> type = DeprecatedSingleProperty.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("singledeprecated").fromSource(type));
@@ -226,7 +226,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void deprecatedOnUnrelatedSetter() throws Exception {
+	public void deprecatedOnUnrelatedSetter() {
 		Class<?> type = DeprecatedUnrelatedMethodPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
@@ -239,7 +239,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void boxingOnSetter() throws IOException {
+	public void boxingOnSetter() {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("boxing").fromSource(type));
@@ -250,7 +250,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void parseCollectionConfig() throws Exception {
+	public void parseCollectionConfig() {
 		ConfigurationMetadata metadata = compile(SimpleCollectionProperties.class);
 		// getter and setter
 		assertThat(metadata).has(Metadata.withProperty("collection.integers-to-names",
@@ -269,7 +269,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void simpleMethodConfig() throws Exception {
+	public void simpleMethodConfig() {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
 		assertThat(metadata)
 				.has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
@@ -280,7 +280,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void invalidMethodConfig() throws Exception {
+	public void invalidMethodConfig() {
 		ConfigurationMetadata metadata = compile(InvalidMethodConfig.class);
 		assertThat(metadata).has(Metadata.withProperty("something.name", String.class)
 				.fromSource(InvalidMethodConfig.class));
@@ -288,7 +288,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void methodAndClassConfig() throws Exception {
+	public void methodAndClassConfig() {
 		ConfigurationMetadata metadata = compile(MethodAndClassConfig.class);
 		assertThat(metadata).has(Metadata.withProperty("conflict.name", String.class)
 				.fromSource(MethodAndClassConfig.Foo.class));
@@ -299,13 +299,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void emptyTypeMethodConfig() throws Exception {
+	public void emptyTypeMethodConfig() {
 		ConfigurationMetadata metadata = compile(EmptyTypeMethodConfig.class);
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("something.foo"));
 	}
 
 	@Test
-	public void deprecatedMethodConfig() throws Exception {
+	public void deprecatedMethodConfig() {
 		Class<DeprecatedMethodConfig> type = DeprecatedMethodConfig.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
@@ -319,7 +319,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void deprecatedMethodConfigOnClass() throws Exception {
+	public void deprecatedMethodConfigOnClass() {
 		Class<?> type = org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
@@ -335,13 +335,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void innerClassRootConfig() throws Exception {
+	public void innerClassRootConfig() {
 		ConfigurationMetadata metadata = compile(InnerClassRootConfig.class);
 		assertThat(metadata).has(Metadata.withProperty("config.name"));
 	}
 
 	@Test
-	public void innerClassProperties() throws Exception {
+	public void innerClassProperties() {
 		ConfigurationMetadata metadata = compile(InnerClassProperties.class);
 		assertThat(metadata)
 				.has(Metadata.withGroup("config").fromSource(InnerClassProperties.class));
@@ -363,7 +363,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void innerClassPropertiesHierarchical() throws Exception {
+	public void innerClassPropertiesHierarchical() {
 		ConfigurationMetadata metadata = compile(InnerClassHierarchicalProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config.foo")
 				.ofType(InnerClassHierarchicalProperties.Foo.class));
@@ -376,7 +376,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void innerClassAnnotatedGetterConfig() throws Exception {
+	public void innerClassAnnotatedGetterConfig() {
 		ConfigurationMetadata metadata = compile(InnerClassAnnotatedGetterConfig.class);
 		assertThat(metadata).has(Metadata.withProperty("specific.value"));
 		assertThat(metadata).has(Metadata.withProperty("foo.name"));
@@ -384,7 +384,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void nestedClassChildProperties() throws Exception {
+	public void nestedClassChildProperties() {
 		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("nestedChildProps")
 				.fromSource(ClassWithNestedProperties.NestedChildClass.class));
@@ -403,13 +403,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void builderPojo() throws IOException {
+	public void builderPojo() {
 		ConfigurationMetadata metadata = compile(BuilderPojo.class);
 		assertThat(metadata).has(Metadata.withProperty("builder.name"));
 	}
 
 	@Test
-	public void excludedTypesPojo() throws IOException {
+	public void excludedTypesPojo() {
 		ConfigurationMetadata metadata = compile(ExcludedTypesPojo.class);
 		assertThat(metadata).has(Metadata.withProperty("excluded.name"));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("excluded.class-loader"));
@@ -420,14 +420,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void invalidAccessor() throws IOException {
+	public void invalidAccessor() {
 		ConfigurationMetadata metadata = compile(InvalidAccessorProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config"));
 		assertThat(metadata.getItems()).hasSize(1);
 	}
 
 	@Test
-	public void doubleRegistration() throws IOException {
+	public void doubleRegistration() {
 		ConfigurationMetadata metadata = compile(DoubleRegistrationProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("one"));
 		assertThat(metadata).has(Metadata.withGroup("two"));
@@ -437,14 +437,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void invalidDoubleRegistration() throws IOException {
+	public void invalidDoubleRegistration() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Compilation failed");
 		compile(InvalidDoubleRegistrationProperties.class);
 	}
 
 	@Test
-	public void genericTypes() throws IOException {
+	public void genericTypes() {
 		ConfigurationMetadata metadata = compile(GenericConfig.class);
 		assertThat(metadata).has(Metadata.withGroup("generic").ofType(
 				"org.springframework.boot.configurationsample.specific.GenericConfig"));
@@ -470,26 +470,26 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void lombokDataProperties() throws Exception {
+	public void lombokDataProperties() {
 		ConfigurationMetadata metadata = compile(LombokSimpleDataProperties.class);
 		assertSimpleLombokProperties(metadata, LombokSimpleDataProperties.class, "data");
 	}
 
 	@Test
-	public void lombokSimpleProperties() throws Exception {
+	public void lombokSimpleProperties() {
 		ConfigurationMetadata metadata = compile(LombokSimpleProperties.class);
 		assertSimpleLombokProperties(metadata, LombokSimpleProperties.class, "simple");
 	}
 
 	@Test
-	public void lombokExplicitProperties() throws Exception {
+	public void lombokExplicitProperties() {
 		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
 		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class,
 				"explicit");
 	}
 
 	@Test
-	public void lombokInnerClassProperties() throws Exception {
+	public void lombokInnerClassProperties() {
 		ConfigurationMetadata metadata = compile(LombokInnerClassProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config")
 				.fromSource(LombokInnerClassProperties.class));
@@ -517,7 +517,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void lombokInnerClassWithGetterProperties() throws IOException {
+	public void lombokInnerClassWithGetterProperties() {
 		ConfigurationMetadata metadata = compile(
 				LombokInnerClassWithGetterProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config")
@@ -531,7 +531,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void simpleEndpoint() throws IOException {
+	public void simpleEndpoint() {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple")
 				.fromSource(SimpleEndpoint.class));
@@ -541,7 +541,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void disableEndpoint() throws IOException {
+	public void disableEndpoint() {
 		ConfigurationMetadata metadata = compile(DisabledEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled")
 				.fromSource(DisabledEndpoint.class));
@@ -551,7 +551,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void enabledEndpoint() throws IOException {
+	public void enabledEndpoint() {
 		ConfigurationMetadata metadata = compile(EnabledEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled")
 				.fromSource(EnabledEndpoint.class));
@@ -561,7 +561,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void customPropertiesEndpoint() throws IOException {
+	public void customPropertiesEndpoint() {
 		ConfigurationMetadata metadata = compile(CustomPropertiesEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.customprops")
 				.fromSource(CustomPropertiesEndpoint.class));
@@ -574,7 +574,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void specificEndpoint() throws IOException {
+	public void specificEndpoint() {
 		ConfigurationMetadata metadata = compile(SpecificEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
 				.fromSource(SpecificEndpoint.class));

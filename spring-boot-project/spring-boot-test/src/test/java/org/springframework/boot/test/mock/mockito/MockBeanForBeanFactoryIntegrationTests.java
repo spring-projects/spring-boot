@@ -48,7 +48,7 @@ public class MockBeanForBeanFactoryIntegrationTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void testName() throws Exception {
+	public void testName() {
 		TestBean testBean = mock(TestBean.class);
 		given(testBean.hello()).willReturn("amock");
 		given(this.testFactoryBean.getObjectType()).willReturn((Class) TestBean.class);
