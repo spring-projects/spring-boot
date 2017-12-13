@@ -52,6 +52,9 @@ public class ReactiveManagementContextFactoryTests {
 		assertThat(childContext.getBean(TestConfiguration2.class)).isNotNull();
 		assertThat(childContext.getBean(ReactiveWebServerAutoConfiguration.class))
 				.isNotNull();
+
+		childContext.close();
+		this.parent.close();
 	}
 
 	@Configuration
