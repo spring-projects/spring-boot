@@ -51,7 +51,7 @@ public class SampleIntegrationApplicationTests {
 	private ConfigurableApplicationContext context;
 
 	@Before
-	public void deleteInputAndOutput() throws InterruptedException {
+	public void deleteInputAndOutput() {
 		deleteIfExists(new File("target/input"));
 		deleteIfExists(new File("target/output"));
 	}

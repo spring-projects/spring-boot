@@ -56,7 +56,7 @@ public class NoManagementSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetricsNotAvailable() throws Exception {
+	public void testMetricsNotAvailable() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate

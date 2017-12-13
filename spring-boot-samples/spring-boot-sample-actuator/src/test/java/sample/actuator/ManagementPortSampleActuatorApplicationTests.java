@@ -60,7 +60,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
+	public void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(

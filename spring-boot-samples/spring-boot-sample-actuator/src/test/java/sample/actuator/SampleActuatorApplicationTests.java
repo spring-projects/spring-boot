@@ -89,7 +89,7 @@ public class SampleActuatorApplicationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testMetrics() throws Exception {
+	public void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
