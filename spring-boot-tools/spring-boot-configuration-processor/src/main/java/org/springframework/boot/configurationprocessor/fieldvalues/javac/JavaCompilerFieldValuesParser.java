@@ -76,7 +76,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			WRAPPER_TYPES = Collections.unmodifiableMap(types);
 		}
 
-		private static final Map<Class<?>, Object> defaultTypeValues;
+		private static final Map<Class<?>, Object> DEFAULT_TYPE_VALUES;
 
 		static {
 			Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
@@ -85,16 +85,16 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			values.put(Short.class, (short) 0);
 			values.put(Integer.class, 0);
 			values.put(Long.class, (long) 0);
-			defaultTypeValues = Collections.unmodifiableMap(values);
+			DEFAULT_TYPE_VALUES = Collections.unmodifiableMap(values);
 		}
 
-		private static final Map<String, Object> wellKnownStaticFinals;
+		private static final Map<String, Object> WELL_KNOWN_STATIC_FINALS;
 
 		static {
 			Map<String, Object> values = new HashMap<String, Object>();
 			values.put("Boolean.TRUE", true);
 			values.put("Boolean.FALSE", false);
-			wellKnownStaticFinals = Collections.unmodifiableMap(values);
+			WELL_KNOWN_STATIC_FINALS = Collections.unmodifiableMap(values);
 		}
 
 		private final Map<String, Object> fieldValues = new HashMap<String, Object>();
@@ -115,7 +115,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		private Object getValue(VariableTree variable) throws Exception {
 			ExpressionTree initializer = variable.getInitializer();
 			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
-			Object defaultValue = defaultTypeValues.get(wrapperType);
+			Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
 			if (initializer != null) {
 				return getValue(initializer, defaultValue);
 			}
@@ -148,7 +148,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				return this.staticFinals.get(expression.toString());
 			}
 			if (expression.getKind().equals("MEMBER_SELECT")) {
-				return wellKnownStaticFinals.get(expression.toString());
+				return WELL_KNOWN_STATIC_FINALS.get(expression.toString());
 			}
 			return defaultValue;
 		}

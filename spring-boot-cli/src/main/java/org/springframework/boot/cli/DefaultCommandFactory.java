@@ -16,8 +16,9 @@
 
 package org.springframework.boot.cli;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.cli.command.Command;
@@ -39,14 +40,25 @@ import org.springframework.boot.cli.command.test.TestCommand;
  */
 public class DefaultCommandFactory implements CommandFactory {
 
-	private static final List<Command> defaultCommands = Arrays.<Command>asList(
-			new VersionCommand(), new RunCommand(), new TestCommand(), new GrabCommand(),
-			new JarCommand(), new WarCommand(), new InstallCommand(),
-			new UninstallCommand(), new InitCommand());
+	private static final List<Command> DEFAULT_COMMANDS;
+
+	static {
+		ArrayList<Command> defaultCommands = new ArrayList<Command>();
+		defaultCommands.add(new VersionCommand());
+		defaultCommands.add(new RunCommand());
+		defaultCommands.add(new TestCommand());
+		defaultCommands.add(new GrabCommand());
+		defaultCommands.add(new JarCommand());
+		defaultCommands.add(new WarCommand());
+		defaultCommands.add(new InstallCommand());
+		defaultCommands.add(new UninstallCommand());
+		defaultCommands.add(new InitCommand());
+		DEFAULT_COMMANDS = Collections.unmodifiableList(defaultCommands);
+	}
 
 	@Override
 	public Collection<Command> getCommands() {
-		return defaultCommands;
+		return DEFAULT_COMMANDS;
 	}
 
 }
