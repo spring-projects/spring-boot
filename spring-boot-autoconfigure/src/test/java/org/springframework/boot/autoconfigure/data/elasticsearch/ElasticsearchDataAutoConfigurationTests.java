@@ -68,7 +68,7 @@ public class ElasticsearchDataAutoConfigurationTests {
 				"spring.data.elasticsearch.properties.path.logs:target/logs");
 		assertThat(
 				this.context.getBeanNamesForType(SimpleElasticsearchMappingContext.class))
-				.hasSize(1);
+						.hasSize(1);
 	}
 
 	@Test
@@ -80,13 +80,13 @@ public class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	private void load(String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
-		ctx.register(PropertyPlaceholderAutoConfiguration.class,
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, environment);
+		context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		context.refresh();
+		this.context = context;
 	}
 
 }

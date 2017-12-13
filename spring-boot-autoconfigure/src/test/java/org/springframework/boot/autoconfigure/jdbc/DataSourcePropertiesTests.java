@@ -65,8 +65,8 @@ public class DataSourcePropertiesTests {
 	@Test
 	public void determineUrlWithNoEmbeddedSupport() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
-		properties.setBeanClassLoader(new HidePackagesClassLoader("org.h2",
-				"org.apache.derby", "org.hsqldb"));
+		properties.setBeanClassLoader(
+				new HidePackagesClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
 		properties.afterPropertiesSet();
 		this.thrown.expect(DataSourceProperties.DataSourceBeanCreationException.class);
 		this.thrown.expectMessage("Cannot determine embedded database url");

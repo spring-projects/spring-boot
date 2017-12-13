@@ -87,7 +87,7 @@ public class AuditEvent implements Serializable {
 		Assert.notNull(timestamp, "Timestamp must not be null");
 		Assert.notNull(type, "Type must not be null");
 		this.timestamp = timestamp;
-		this.principal = principal != null ? principal : "";
+		this.principal = (principal != null ? principal : "");
 		this.type = type;
 		this.data = Collections.unmodifiableMap(data);
 	}

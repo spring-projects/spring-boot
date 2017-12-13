@@ -183,7 +183,8 @@ public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 	static class DocsConfiguration {
 
 		@Bean
-		public DocsMvcEndpoint testDocsMvcEndpoint(ManagementServletContext managementServletContext) {
+		public DocsMvcEndpoint testDocsMvcEndpoint(
+				ManagementServletContext managementServletContext) {
 			return new TestDocsMvcEndpoint(managementServletContext);
 		}
 
@@ -193,7 +194,8 @@ public class EndpointWebMvcHypermediaManagementContextConfigurationTests {
 	static class HalJsonConfiguration {
 
 		@Bean
-		public HalJsonMvcEndpoint testHalJsonMvcEndpoint(ManagementServletContext managementServletContext) {
+		public HalJsonMvcEndpoint testHalJsonMvcEndpoint(
+				ManagementServletContext managementServletContext) {
 			return new TestHalJsonMvcEndpoint(managementServletContext);
 		}
 

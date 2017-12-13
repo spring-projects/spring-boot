@@ -111,13 +111,15 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 	public void envMvcEndpointIsConditionalOnMissingBean() throws Exception {
 		this.context.register(EnvConfiguration.class, TestEndpointConfiguration.class);
 		this.context.refresh();
-		EnvironmentMvcEndpoint mvcEndpoint = this.context.getBean(EnvironmentMvcEndpoint.class);
+		EnvironmentMvcEndpoint mvcEndpoint = this.context
+				.getBean(EnvironmentMvcEndpoint.class);
 		assertThat(mvcEndpoint).isInstanceOf(TestEnvMvcEndpoint.class);
 	}
 
 	@Test
 	public void metricsMvcEndpointIsConditionalOnMissingBean() throws Exception {
-		this.context.register(MetricsConfiguration.class, TestEndpointConfiguration.class);
+		this.context.register(MetricsConfiguration.class,
+				TestEndpointConfiguration.class);
 		this.context.refresh();
 		MetricsMvcEndpoint mvcEndpoint = this.context.getBean(MetricsMvcEndpoint.class);
 		assertThat(mvcEndpoint).isInstanceOf(TestMetricsMvcEndpoint.class);
@@ -125,7 +127,8 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 
 	@Test
 	public void logFileMvcEndpointIsConditionalOnMissingBean() throws Exception {
-		this.context.register(LogFileConfiguration.class, TestEndpointConfiguration.class);
+		this.context.register(LogFileConfiguration.class,
+				TestEndpointConfiguration.class);
 		this.context.refresh();
 		LogFileMvcEndpoint mvcEndpoint = this.context.getBean(LogFileMvcEndpoint.class);
 		assertThat(mvcEndpoint).isInstanceOf(TestLogFileMvcEndpoint.class);
@@ -133,7 +136,8 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 
 	@Test
 	public void shutdownEndpointIsConditionalOnMissingBean() throws Exception {
-		this.context.register(ShutdownConfiguration.class, TestEndpointConfiguration.class);
+		this.context.register(ShutdownConfiguration.class,
+				TestEndpointConfiguration.class);
 		this.context.refresh();
 		ShutdownMvcEndpoint mvcEndpoint = this.context.getBean(ShutdownMvcEndpoint.class);
 		assertThat(mvcEndpoint).isInstanceOf(TestShutdownMvcEndpoint.class);
@@ -141,15 +145,18 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 
 	@Test
 	public void auditEventsMvcEndpointIsConditionalOnMissingBean() throws Exception {
-		this.context.register(AuditEventsConfiguration.class, TestEndpointConfiguration.class);
+		this.context.register(AuditEventsConfiguration.class,
+				TestEndpointConfiguration.class);
 		this.context.refresh();
-		AuditEventsMvcEndpoint mvcEndpoint = this.context.getBean(AuditEventsMvcEndpoint.class);
+		AuditEventsMvcEndpoint mvcEndpoint = this.context
+				.getBean(AuditEventsMvcEndpoint.class);
 		assertThat(mvcEndpoint).isInstanceOf(TestAuditEventsMvcEndpoint.class);
 	}
 
 	@Test
 	public void loggersMvcEndpointIsConditionalOnMissingBean() throws Exception {
-		this.context.register(LoggersConfiguration.class, TestEndpointConfiguration.class);
+		this.context.register(LoggersConfiguration.class,
+				TestEndpointConfiguration.class);
 		this.context.refresh();
 		LoggersMvcEndpoint mvcEndpoint = this.context.getBean(LoggersMvcEndpoint.class);
 		assertThat(mvcEndpoint).isInstanceOf(TestLoggersMvcEndpoint.class);
@@ -157,7 +164,8 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 
 	@Test
 	public void heapdumpMvcEndpointIsConditionalOnMissingBean() throws Exception {
-		this.context.register(HeapdumpConfiguration.class, TestEndpointConfiguration.class);
+		this.context.register(HeapdumpConfiguration.class,
+				TestEndpointConfiguration.class);
 		this.context.refresh();
 		HeapdumpMvcEndpoint mvcEndpoint = this.context.getBean(HeapdumpMvcEndpoint.class);
 		assertThat(mvcEndpoint).isInstanceOf(TestHeapdumpMvcEndpoint.class);
@@ -171,11 +179,10 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 	@Configuration
 	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class,
-			WebClientAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, WebClientAutoConfiguration.class,
 			EndpointWebMvcManagementContextConfiguration.class })
 	static class TestEndpointConfiguration {
 
@@ -194,7 +201,8 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 	static class EnvConfiguration {
 
 		@Bean
-		public EnvironmentMvcEndpoint testEnvironmentMvcEndpoint(EnvironmentEndpoint endpoint) {
+		public EnvironmentMvcEndpoint testEnvironmentMvcEndpoint(
+				EnvironmentEndpoint endpoint) {
 			return new TestEnvMvcEndpoint(endpoint);
 		}
 
@@ -245,7 +253,8 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 		}
 
 		@Bean
-		public AuditEventsMvcEndpoint testAuditEventsMvcEndpoint(AuditEventRepository repository) {
+		public AuditEventsMvcEndpoint testAuditEventsMvcEndpoint(
+				AuditEventRepository repository) {
 			return new TestAuditEventsMvcEndpoint(repository);
 		}
 
