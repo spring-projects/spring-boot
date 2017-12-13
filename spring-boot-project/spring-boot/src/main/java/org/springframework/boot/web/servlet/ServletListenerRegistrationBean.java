@@ -19,6 +19,7 @@ package org.springframework.boot.web.servlet;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -102,6 +103,75 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 		Assert.notNull(listener, "Listener must not be null");
 		Assert.isTrue(isSupportedType(listener), "Listener is not of a supported type");
 		this.listener = listener;
+	}
+
+	/**
+	 * Set the name of this registration. If not specified the bean name will be used.
+	 * @param name the name of the registration
+	 * @deprecated as of 1.5 since not applicable to listeners
+	 */
+	@Override
+	@Deprecated
+	public void setName(String name) {
+		super.setName(name);
+	}
+
+	/**
+	 * Sets if asynchronous operations are support for this registration. If not specified
+	 * defaults to {@code true}.
+	 * @param asyncSupported if async is supported
+	 * @deprecated as of 1.5 since not applicable to listeners
+	 */
+	@Override
+	@Deprecated
+	public void setAsyncSupported(boolean asyncSupported) {
+		super.setAsyncSupported(asyncSupported);
+	}
+
+	/**
+	 * Returns if asynchronous operations are support for this registration.
+	 * @return if async is supported
+	 * @deprecated as of 1.5 since not applicable to listeners
+	 */
+	@Override
+	@Deprecated
+	public boolean isAsyncSupported() {
+		return super.isAsyncSupported();
+	}
+
+	/**
+	 * Set init-parameters for this registration. Calling this method will replace any
+	 * existing init-parameters.
+	 * @param initParameters the init parameters
+	 * @deprecated as of 1.5 since not applicable to listeners
+	 */
+	@Override
+	@Deprecated
+	public void setInitParameters(Map<String, String> initParameters) {
+		super.setInitParameters(initParameters);
+	}
+
+	/**
+	 * Returns a mutable Map of the registration init-parameters.
+	 * @return the init parameters
+	 * @deprecated as of 1.5 since not applicable to listeners
+	 */
+	@Override
+	@Deprecated
+	public Map<String, String> getInitParameters() {
+		return super.getInitParameters();
+	}
+
+	/**
+	 * Add a single init-parameter, replacing any existing parameter with the same name.
+	 * @param name the init-parameter name
+	 * @param value the init-parameter value
+	 * @deprecated as of 1.5 since not applicable to listeners
+	 */
+	@Override
+	@Deprecated
+	public void addInitParameter(String name, String value) {
+		super.addInitParameter(name, value);
 	}
 
 	@Override

@@ -177,7 +177,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return result;
 	}
 
-	private Object processValue(Object value)  {
+	private Object processValue(Object value) {
 		if (value instanceof DeclaredType) {
 			return getQualifiedName(((DeclaredType) value).asElement());
 		}
