@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
@@ -460,16 +459,21 @@ public class ResourceProperties {
 
 			public org.springframework.http.CacheControl toHttpCacheControl() {
 				org.springframework.http.CacheControl cacheControl = createCacheControl();
-				callIfTrue(this.mustRevalidate, cacheControl,
-						org.springframework.http.CacheControl::mustRevalidate);
-				callIfTrue(this.noTransform, cacheControl,
-						org.springframework.http.CacheControl::noTransform);
-				callIfTrue(this.cachePublic, cacheControl,
-						org.springframework.http.CacheControl::cachePublic);
-				callIfTrue(this.cachePrivate, cacheControl,
-						org.springframework.http.CacheControl::cachePrivate);
-				callIfTrue(this.proxyRevalidate, cacheControl,
-						org.springframework.http.CacheControl::proxyRevalidate);
+				if (Boolean.TRUE.equals(this.mustRevalidate)) {
+					cacheControl.mustRevalidate();
+				}
+				if (Boolean.TRUE.equals(this.noTransform)) {
+					cacheControl.noTransform();
+				}
+				if (Boolean.TRUE.equals(this.cachePublic)) {
+					cacheControl.cachePublic();
+				}
+				if (Boolean.TRUE.equals(this.cachePrivate)) {
+					cacheControl.cachePrivate();
+				}
+				if (Boolean.TRUE.equals(this.proxyRevalidate)) {
+					cacheControl.proxyRevalidate();
+				}
 				if (this.staleWhileRevalidate != null) {
 					cacheControl.staleWhileRevalidate(
 							this.staleWhileRevalidate.getSeconds(), TimeUnit.SECONDS);
@@ -496,12 +500,6 @@ public class ResourceProperties {
 							.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
 				}
 				return org.springframework.http.CacheControl.empty();
-			}
-
-			private <T> void callIfTrue(Boolean property, T instance, Consumer<T> call) {
-				if (Boolean.TRUE.equals(property)) {
-					call.accept(instance);
-				}
 			}
 
 		}
