@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBException;
+import org.influxdb.dto.Pong;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
@@ -39,26 +40,29 @@ import static org.mockito.Mockito.verify;
 public class InfluxDbHealthIndicatorTests {
 
 	@Test
-	public void influxdbIsUp() {
+	public void influxDbIsUp() {
+		Pong pong = mock(Pong.class);
+		given(pong.getVersion()).willReturn("0.9");
 		InfluxDB influxDB = mock(InfluxDB.class);
-		given(influxDB.version()).willReturn("0.9");
+		given(influxDB.ping()).willReturn(pong);
 		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("0.9");
-		verify(influxDB).version();
+		verify(influxDB).ping();
 	}
 
 	@Test
-	public void influxdbIsDown() {
+	public void influxDbIsDown() {
 		InfluxDB influxDB = mock(InfluxDB.class);
-		given(influxDB.version()).willThrow(
+		given(influxDB.ping()).willThrow(
 				new InfluxDBException(new IOException("Connection failed")));
 		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error"))
 				.contains("Connection failed");
-		verify(influxDB).version();
+		verify(influxDB).ping();
 	}
+
 }

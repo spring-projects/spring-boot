@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.infux;
 
 import org.influxdb.InfluxDB;
+import org.influxdb.dto.Pong;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -39,9 +40,9 @@ public class InfluxDbHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		String version = this.influxDb.version();
-		builder.up().withDetail("version", version);
+	protected void doHealthCheck(Health.Builder builder) {
+		Pong pong = this.influxDb.ping();
+		builder.up().withDetail("version", pong.getVersion());
 	}
 
 }

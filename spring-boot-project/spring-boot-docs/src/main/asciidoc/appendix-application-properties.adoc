@@ -1224,6 +1224,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.elasticsearch.indices= # Comma-separated index names.
 	management.health.elasticsearch.response-timeout=100ms # The time to wait for a response from the cluster.
 	management.health.jms.enabled=true # Whether to enable JMS health check.
+	management.health.influxdb.enabled=true # Whether to enable InfluxDB health check.
 	management.health.ldap.enabled=true # Whether to enable LDAP health check.
 	management.health.mail.enabled=true # Whether to enable Mail health check.
 	management.health.mongo.enabled=true # Whether to enable MongoDB health check.

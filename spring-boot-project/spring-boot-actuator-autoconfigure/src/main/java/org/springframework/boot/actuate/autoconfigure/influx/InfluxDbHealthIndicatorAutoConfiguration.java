@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link InfluxDbHealthIndicator}.
- * 
+ *
  * @author Eddú Meléndez
  * @since 2.0.0
  */
@@ -57,8 +57,9 @@ public class InfluxDbHealthIndicatorAutoConfiguration extends
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "influxdbHealthIndicator")
-	public HealthIndicator influxdbHealthIndicator() {
+	@ConditionalOnMissingBean(name = "influxDbHealthIndicator")
+	public HealthIndicator influxDbHealthIndicator() {
 		return createHealthIndicator(this.influxDbs);
 	}
+
 }

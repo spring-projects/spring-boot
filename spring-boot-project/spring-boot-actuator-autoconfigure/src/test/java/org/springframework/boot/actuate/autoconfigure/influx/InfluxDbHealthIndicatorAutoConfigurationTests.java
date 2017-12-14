@@ -23,7 +23,6 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAuto
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.infux.InfluxDbHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,35 +32,35 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link InfluxDbHealthIndicatorAutoConfiguration}.
- * 
+ *
  * @author Eddú Meléndez
  */
-public class InfluxDbHealthIndicatorAutonConfigurationTests {
+public class InfluxDbHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(InfluxDbConfiguration.class,
+			.withUserConfiguration(InfluxDbConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(
 					InfluxDbHealthIndicatorAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() throws Exception {
+	public void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(InfluxDbHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
+	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner
 				.withPropertyValues("management.health.influxdb.enabled:false").run(
-						(context) -> assertThat(context)
-								.doesNotHaveBean(InfluxDbHealthIndicator.class)
-								.hasSingleBean(ApplicationHealthIndicator.class));
+				(context) -> assertThat(context)
+						.doesNotHaveBean(InfluxDbHealthIndicator.class)
+						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 
 	@Configuration
-	@AutoConfigureBefore(InfluxDbHealthIndicatorAutoConfiguration.class)
-	protected static class InfluxDbConfiguration {
+	static class InfluxDbConfiguration {
 
 		@Bean
 		public InfluxDB influxdb() {
