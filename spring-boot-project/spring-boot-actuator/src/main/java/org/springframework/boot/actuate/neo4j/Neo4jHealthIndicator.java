@@ -55,6 +55,16 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
+		extractResult(session, builder);
+	}
+
+	/**
+	 * Provide health details using the specified {@link Session} and
+	 * {@link Health.Builder Builder}.
+	 * @param session the session to use to execute a cypher statement
+	 * @param builder the builder to add details to
+	 */
+	protected void extractResult(Session session, Health.Builder builder) {
 		Result result = session.query(CYPHER, Collections.emptyMap());
 		builder.up().withDetail("nodes",
 				result.queryResults().iterator().next().get("nodes"));
