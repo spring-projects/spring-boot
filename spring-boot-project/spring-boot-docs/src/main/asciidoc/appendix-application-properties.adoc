@@ -416,9 +416,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.resources.chain.enabled= # Whether to enable the Spring Resource Handling chain. By default, disabled unless at least one strategy has been enabled.
 	spring.resources.chain.gzipped=false # Whether to enable resolution of already gzipped resources.
 	spring.resources.chain.html-application-cache=false # Whether to enable HTML5 application cache manifest rewriting.
-	spring.resources.chain.strategy.content.enabled=false # Enable the content Version Strategy.
-	spring.resources.chain.strategy.content.paths=/** # Comma-separated list of patterns to apply to the content Version Strategy.
 	spring.resources.chain.strategy.content.enabled=false # Whether to enable the content Version Strategy.
+	spring.resources.chain.strategy.content.paths=/** # Comma-separated list of patterns to apply to the content Version Strategy.
 	spring.resources.chain.strategy.fixed.enabled=false # Whether to enable the fixed Version Strategy.
 	spring.resources.chain.strategy.fixed.paths=/** # Comma-separated list of patterns to apply to the fixed Version Strategy.
 	spring.resources.chain.strategy.fixed.version= # Version string to use for the fixed Version Strategy.
