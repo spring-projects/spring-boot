@@ -57,8 +57,8 @@ public class DatadogProperties extends StepRegistryProperties {
 		return this.hostTag;
 	}
 
-	public void setHostKey(String hostKey) {
-		this.hostTag = hostKey;
+	public void setHostTag(String hostTag) {
+		this.hostTag = hostTag;
 	}
 
 	public String getUri() {
