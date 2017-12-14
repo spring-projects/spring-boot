@@ -1045,7 +1045,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.simple.retry.stateless=true # Whether or not retry is stateless or stateful.
 	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed in a transaction. That is, the number of messages between acks. For best results, it should be less than or equal to the prefetch count.
 	spring.rabbitmq.listener.type=simple # Listener container type.
-	spring.rabbitmq.password= # Login to authenticate against the broker.
+	spring.rabbitmq.password=guest # Login to authenticate against the broker.
 	spring.rabbitmq.port=5672 # RabbitMQ port.
 	spring.rabbitmq.publisher-confirms=false # Whether to enable publisher confirms.
 	spring.rabbitmq.publisher-returns=false # Whether to enable publisher returns.
@@ -1068,7 +1068,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.template.retry.max-interval=10000 # Maximum number of attempts to publish a message.
 	spring.rabbitmq.template.retry.multiplier=1.0 # Multiplier to apply to the previous publishing retry interval.
 	spring.rabbitmq.template.routing-key= # Value of a default routing key to use for send operations.
-	spring.rabbitmq.username= # Login user to authenticate to the broker.
+	spring.rabbitmq.username=guest # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
 
 

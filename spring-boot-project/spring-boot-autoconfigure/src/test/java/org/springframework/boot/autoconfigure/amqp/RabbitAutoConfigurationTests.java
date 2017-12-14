@@ -117,6 +117,20 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDefaultConnectionFactoryConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					RabbitProperties properties = new RabbitProperties();
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					assertThat(rabbitConnectionFactory.getUsername())
+							.isEqualTo(properties.getUsername());
+					assertThat(rabbitConnectionFactory.getPassword())
+							.isEqualTo(properties.getPassword());
+				});
+	}
+
+	@Test
 	public void testConnectionFactoryWithOverrides() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.host:remote-server",
