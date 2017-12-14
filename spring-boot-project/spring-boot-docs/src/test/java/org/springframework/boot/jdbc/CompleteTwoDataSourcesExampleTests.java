@@ -48,12 +48,12 @@ public class CompleteTwoDataSourcesExampleTests {
 	public void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(2);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(this.context.getBean("fooDataSource")).isSameAs(dataSource);
+		assertThat(this.context.getBean("firstDataSource")).isSameAs(dataSource);
 		assertThat(dataSource.getConnection().getMetaData().getURL())
 				.startsWith("jdbc:h2:mem:");
-		DataSource barDataSource = this.context.getBean("barDataSource",
+		DataSource secondDataSource = this.context.getBean("secondDataSource",
 				DataSource.class);
-		assertThat(barDataSource.getConnection().getMetaData().getURL())
+		assertThat(secondDataSource.getConnection().getMetaData().getURL())
 				.startsWith("jdbc:h2:mem:");
 	}
 
