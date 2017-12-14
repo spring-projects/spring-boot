@@ -48,21 +48,16 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		try {
-			Select select = QueryBuilder.select("release_version").from("system",
-					"local");
-			ResultSet results = this.cassandraOperations.getCqlOperations()
-					.queryForResultSet(select);
-			if (results.isExhausted()) {
-				builder.up();
-				return;
-			}
-			String version = results.one().getString(0);
-			builder.up().withDetail("version", version);
+		Select select = QueryBuilder.select("release_version").from("system",
+				"local");
+		ResultSet results = this.cassandraOperations.getCqlOperations()
+				.queryForResultSet(select);
+		if (results.isExhausted()) {
+			builder.up();
+			return;
 		}
-		catch (Exception ex) {
-			builder.down(ex);
-		}
+		String version = results.one().getString(0);
+		builder.up().withDetail("version", version);
 	}
 
 }
