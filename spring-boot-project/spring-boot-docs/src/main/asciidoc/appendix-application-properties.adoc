@@ -1228,6 +1228,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.mail.enabled=true # Whether to enable Mail health check.
 	management.health.mongo.enabled=true # Whether to enable MongoDB health check.
 	management.health.neo4j.enabled=true # Whether to enable Neo4j health check.
+	management.health.neo4j.cypher=match (n) return count(n) as nodes # The default Cypher validation statement.
 	management.health.rabbit.enabled=true # Whether to enable RabbitMQ health check.
 	management.health.redis.enabled=true # Whether to enable Redis health check.
 	management.health.solr.enabled=true # Whether to enable Solr health check.

@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.neo4j;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
@@ -36,28 +38,35 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  */
 public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 
-	/**
-	 * The Cypher statement used to verify Neo4j is up.
-	 */
-	static final String CYPHER = "match (n) return count(n) as nodes";
-
 	private final SessionFactory sessionFactory;
 
 	/**
-	 * Create a new {@link Neo4jHealthIndicator} using the specified
-	 * {@link SessionFactory}.
-	 * @param sessionFactory the SessionFactory
+	 * The Cypher statement used to verify Neo4j is up.
 	 */
-	public Neo4jHealthIndicator(SessionFactory sessionFactory) {
+	private final String cypher;
+
+	/**
+	 * Create a new {@link Neo4jHealthIndicator} using the specified
+	 * {@link SessionFactory} and a custom Cypher validation query.
+	 * @param sessionFactory the SessionFactory
+	 * @param cypher the Cypher validation statement
+	 */
+	public Neo4jHealthIndicator(SessionFactory sessionFactory, String cypher) {
 		this.sessionFactory = sessionFactory;
+		this.cypher = cypher;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Session session = this.sessionFactory.openSession();
-		Result result = session.query(CYPHER, Collections.emptyMap());
-		builder.up().withDetail("nodes",
-				result.queryResults().iterator().next().get("nodes"));
+		Result result = session.query(this.cypher, Collections.emptyMap());
+		Map<String, Object> details = new HashMap<>();
+
+		for (Map<String, Object> queryResult : result.queryResults()) {
+			details.putAll(queryResult);
+		}
+
+		builder.up().withDetail("results", details);
 	}
 
 }

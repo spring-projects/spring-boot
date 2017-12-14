@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -48,20 +49,34 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnEnabledHealthIndicator("neo4j")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
+@EnableConfigurationProperties(Neo4jHealthIndicatorProperties.class)
 public class Neo4jHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<Neo4jHealthIndicator, SessionFactory> {
+
+	private final Neo4jHealthIndicatorProperties properties;
 
 	private final Map<String, SessionFactory> sessionFactories;
 
 	public Neo4jHealthIndicatorAutoConfiguration(
-			Map<String, SessionFactory> sessionFactories) {
+			Map<String, SessionFactory> sessionFactories, Neo4jHealthIndicatorProperties properties) {
 		this.sessionFactories = sessionFactories;
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "neo4jHealthIndicator")
 	public HealthIndicator neo4jHealthIndicator() {
 		return createHealthIndicator(this.sessionFactories);
+	}
+
+	@Override
+	protected Neo4jHealthIndicator createHealthIndicator(SessionFactory sessionFactory) {
+		return new Neo4jHealthIndicator(sessionFactory, this.properties.getCypher());
+	}
+
+	@Bean
+	public Neo4jHealthIndicatorProperties neo4jHealthIndicatorProperties() {
+		return new Neo4jHealthIndicatorProperties();
 	}
 
 }
