@@ -1953,7 +1953,7 @@ include::{code-examples}/elasticsearch/HibernateSearchElasticsearchExample.java[
 
 
 
-[[howto-configure-a-component-that-is-used-by-JPA]]
+[[howto-configure-jOOQ-with-multiple-datasources]]
 === Configure jOOQ with Two DataSources
 If you need to use jOOQ with multiple data sources, you should create your own
 `DSLContext` for each, refer to
