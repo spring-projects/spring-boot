@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 class MeterBindersConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.binders.jvmmemory.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.jvmmemory.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean(JvmMemoryMetrics.class)
 	public JvmMemoryMetrics jvmMemoryMetrics() {
 		return new JvmMemoryMetrics();
@@ -45,21 +45,21 @@ class MeterBindersConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(LogbackMetrics.class)
-	@ConditionalOnProperty(value = "spring.metrics.binders.logback.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
 	@ConditionalOnClass(name = "ch.qos.logback.classic.Logger")
 	public LogbackMetrics logbackMetrics() {
 		return new LogbackMetrics();
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.binders.uptime.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean(UptimeMetrics.class)
 	public UptimeMetrics uptimeMetrics() {
 		return new UptimeMetrics();
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.binders.processor.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean(ProcessorMetrics.class)
 	public ProcessorMetrics processorMetrics() {
 		return new ProcessorMetrics();

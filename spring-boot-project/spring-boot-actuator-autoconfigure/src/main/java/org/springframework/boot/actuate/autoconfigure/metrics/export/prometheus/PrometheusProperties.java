@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.metrics.export.prometheus")
+@ConfigurationProperties(prefix = "management.metrics.export.prometheus")
 public class PrometheusProperties {
 
 	/**

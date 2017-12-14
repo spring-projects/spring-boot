@@ -186,31 +186,31 @@
       "defaultValue": true
     },
     {
-      "name": "spring.metrics.binders.jvmmemory.enabled",
+      "name": "management.metrics.binders.jvmmemory.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JVM memory metrics.",
       "defaultValue": true
     },
     {
-      "name": "spring.metrics.binders.logback.enabled",
+      "name": "management.metrics.binders.logback.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Logback metrics.",
       "defaultValue": true
     },
     {
-      "name": "spring.metrics.binders.processor.enabled",
+      "name": "management.metrics.binders.processor.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable processor metrics.",
       "defaultValue": true
     },
     {
-      "name": "spring.metrics.binders.uptime.enabled",
+      "name": "management.metrics.binders.uptime.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable uptime metrics.",
       "defaultValue": true
     },
     {
-      "name": "spring.metrics.jdbc.instrument-datasource",
+      "name": "management.metrics.jdbc.instrument-datasource",
       "type": "java.lang.Boolean",
       "description": "Instrument all available data sources.",
       "defaultValue": true
@@ -1516,7 +1516,6 @@
       "description": "Key for redis repository export (if active). Should be globally unique for a\n system sharing a redis repository across multiple processes.",
       "defaultValue": "keys.spring.metrics",
       "deprecation": {
-        "replacement": "spring.sendgrid.api-key",
         "reason": "Metrics support is now using Micrometer.",
         "level": "error"
       }
@@ -1537,6 +1536,25 @@
       "description": "Flag to switch off any available optimizations based on not exporting unchanged\n metric values.",
       "deprecation": {
         "reason": "Metrics support is now using Micrometer.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.metrics.export.statsd.host",
+      "type": "java.lang.String",
+      "description": "Host of a statsd server to receive exported metrics.",
+      "deprecation": {
+        "replacement": "management.metrics.export.statsd.host",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.metrics.export.statsd.port",
+      "type": "java.lang.Integer",
+      "description": "Port of a statsd server to receive exported metrics.",
+      "defaultValue": 8125,
+      "deprecation": {
+        "replacement": "management.metrics.export.statsd.port",
         "level": "error"
       }
     },

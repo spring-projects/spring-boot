@@ -67,7 +67,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsAutoConfigurationIntegrationTests.MetricsApp.class)
-@TestPropertySource(properties = "spring.metrics.use-global-registry=false")
+@TestPropertySource(properties = "management.metrics.use-global-registry=false")
 public class MetricsAutoConfigurationIntegrationTests {
 
 	@Autowired

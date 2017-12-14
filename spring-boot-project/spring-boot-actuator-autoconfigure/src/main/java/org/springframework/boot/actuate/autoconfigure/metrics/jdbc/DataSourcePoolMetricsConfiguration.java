@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnBean({ DataSource.class, DataSourcePoolMetadataProvider.class })
-@ConditionalOnProperty(value = "spring.metrics.jdbc.instrument-datasource", matchIfMissing = true)
+@ConditionalOnProperty(value = "management.metrics.jdbc.instrument-datasource", matchIfMissing = true)
 @EnableConfigurationProperties(JdbcMetricsProperties.class)
 public class DataSourcePoolMetricsConfiguration {
 

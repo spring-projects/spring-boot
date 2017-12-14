@@ -49,7 +49,7 @@ public class PrometheusExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.export.prometheus.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.export.prometheus.enabled", matchIfMissing = true)
 	public MetricsExporter prometheusExporter(PrometheusConfig prometheusConfig,
 			CollectorRegistry collectorRegistry, Clock clock) {
 		return () -> new PrometheusMeterRegistry(prometheusConfig, collectorRegistry,

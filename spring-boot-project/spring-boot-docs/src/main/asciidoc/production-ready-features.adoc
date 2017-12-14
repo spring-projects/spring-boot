@@ -934,12 +934,12 @@ its https://micrometer.io/docs[reference documentation].
 [[production-ready-metrics-spring-mvc]]
 === Spring MVC Metrics
 Auto-configuration enables the instrumentation of requests handled by Spring MVC. When
-`spring.metrics.web.server.auto-time-requests` is `true`, this instrumentation occurs for
-all requests. Alternatively, when set to `false`, you can enable instrumentation by
+`management.metrics.web.server.auto-time-requests` is `true`, this instrumentation occurs
+for all requests. Alternatively, when set to `false`, you can enable instrumentation by
 adding `@Timed` to a request-handling method.
 
 By default, metrics are generated with the name, `http.server.requests`. The name can be
-customized by setting the `spring.metrics.web.server.requests-metrics-name` property.
+customized by setting the `management.metrics.web.server.requests-metrics-name` property.
 
 
 
@@ -962,7 +962,7 @@ controllers. You can also use a helper class, `RouterFunctionMetrics`, to instru
 applications that use WebFlux's functional programming model.
 
 By default, metrics are generated with the name `http.server.requests`. You can customize
-the name by setting the `spring.metrics.web.server.requests-metrics-name` property.
+the name by setting the `management.metrics.web.server.requests-metrics-name` property.
 
 
 
@@ -997,7 +997,7 @@ instrumentation of its requests. `MetricsRestTemplateCustomizer` can be used to 
 your own `RestTemplate` instances.
 
 By default, metrics are generated with the name, `http.client.requests`. The name can be
-customized by setting the `spring.metrics.web.client.requests-metrics-name` property.
+customized by setting the `management.metrics.web.client.requests-metrics-name` property.
 
 
 
@@ -1019,7 +1019,7 @@ Auto-configuration will enable the instrumentation of all available ``DataSource
 metric named `data.source`. Data source instrumentation results in gauges representing
 the currently active, maximum allowed, and minimum allowed connections in the pool. Each
 of these gauges has a name which is prefixed by `data.source` by default. The prefix can
-be customized by using the `spring.metrics.jdbc.datasource-metric-name` property.
+be customized by using the `management.metrics.jdbc.datasource-metric-name` property.
 
 Metrics will also be tagged by the name of the `DataSource` computed based on the bean
 name.

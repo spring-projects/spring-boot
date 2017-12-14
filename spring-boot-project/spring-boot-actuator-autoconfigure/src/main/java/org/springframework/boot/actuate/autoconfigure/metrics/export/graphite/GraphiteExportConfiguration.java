@@ -47,7 +47,7 @@ public class GraphiteExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.export.graphite.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.export.graphite.enabled", matchIfMissing = true)
 	public MetricsExporter graphiteExporter(GraphiteConfig graphiteConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {
 		return () -> new GraphiteMeterRegistry(graphiteConfig, nameMapper, clock);
