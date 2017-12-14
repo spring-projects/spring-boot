@@ -666,7 +666,7 @@ content into your application; rather pick only the properties that you need.
 	spring.h2.console.settings.trace=false # Enable trace output.
 	spring.h2.console.settings.web-allow-others=false # Enable remote access.
 
-	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
+	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqProperties.{sc-ext}[JooqProperties])
 	spring.jooq.sql-dialect= # SQLDialect JOOQ used when communicating with the configured datasource. For instance `POSTGRES`
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
