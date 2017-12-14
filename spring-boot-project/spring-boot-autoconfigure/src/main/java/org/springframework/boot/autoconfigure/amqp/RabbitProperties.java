@@ -54,12 +54,12 @@ public class RabbitProperties {
 	/**
 	 * Login user to authenticate to the broker.
 	 */
-	private String username;
+	private String username = "guest";
 
 	/**
 	 * Login to authenticate against the broker.
 	 */
-	private String password;
+	private String password = "guest";
 
 	/**
 	 * SSL configuration.
