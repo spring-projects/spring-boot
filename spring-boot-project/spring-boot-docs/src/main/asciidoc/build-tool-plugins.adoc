@@ -256,7 +256,7 @@ of the application.
 [source,xml,indent=0]
 ----
 	<spring-boot:exejar destfile="target/my-application.jar"
-			classes="target/classes" start-class="com.foo.MyApplication">
+			classes="target/classes" start-class="com.example.MyApplication">
 		<resources>
 			<fileset dir="src/main/resources" />
 		</resources>
@@ -318,7 +318,7 @@ attributes are supported:
 .Override and set
 [source,xml,indent=0]
 ----
-	<findmainclass mainclass="com.foo.MainClass" property="main-class" />
+	<findmainclass mainclass="com.example.MainClass" property="main-class" />
 ----
 
 

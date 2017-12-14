@@ -1666,7 +1666,7 @@ on the primary data source:
 include::{code-examples}/jdbc/SimpleTwoDataSourcesExample.java[tag=configuration]
 ----
 
-TIP: `fooDataSourceProperties` has to be flagged as `@Primary` so that the database
+TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database
 initializer feature uses your copy (if you use the initializer).
 
 Both data sources are also bound for advanced customizations. For instance, you could
@@ -1674,13 +1674,13 @@ configure them as follows:
 
 [source,properties,indent=0]
 ----
-	app.datasource.foo.type=com.zaxxer.hikari.HikariDataSource
-	app.datasource.foo.maximum-pool-size=30
+	app.datasource.first.type=com.zaxxer.hikari.HikariDataSource
+	app.datasource.first.maximum-pool-size=30
 
-	app.datasource.bar.url=jdbc:mysql://localhost/test
-	app.datasource.bar.username=dbuser
-	app.datasource.bar.password=dbpass
-	app.datasource.bar.max-total=30
+	app.datasource.second.url=jdbc:mysql://localhost/test
+	app.datasource.second.username=dbuser
+	app.datasource.second.password=dbpass
+	app.datasource.second.max-total=30
 ----
 
 You can apply the same concept to the secondary `DataSource` as well, as shown in the
@@ -2453,7 +2453,7 @@ Additional properties can be added by using the DSL, as shown in the following e
 	springBoot  {
 		buildInfo {
 			additionalProperties = [
-				'foo': 'bar'
+				'acme': 'test'
 			]
 		}
 	}

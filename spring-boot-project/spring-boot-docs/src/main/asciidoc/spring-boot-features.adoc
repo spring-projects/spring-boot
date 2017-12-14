@@ -452,22 +452,22 @@ environment variable. For example, you could use the following line in a UN{aste
 shell:
 
 ----
-$ SPRING_APPLICATION_JSON='{"foo":{"bar":"spam"}}' java -jar myapp.jar
+$ SPRING_APPLICATION_JSON='{"acme":{"name":"test"}}' java -jar myapp.jar
 ----
 
-In the preceding example, you end up with `foo.bar=spam` in the Spring `Environment`. You
-can also supply the JSON as `spring.application.json` in a System property, as shown in
-the following example:
+In the preceding example, you end up with `acme.name=test` in the Spring `Environment`.
+You can also supply the JSON as `spring.application.json` in a System property, as shown
+in the following example:
 
 ----
-$ java -Dspring.application.json='{"foo":"bar"}' -jar myapp.jar
+$ java -Dspring.application.json='{"name":"test"}' -jar myapp.jar
 ----
 
 You can also supply the JSON by using a command line argument, as shown in the following
 example:
 
 ----
-$ java -jar myapp.jar --spring.application.json='{"foo":"bar"}'
+$ java -jar myapp.jar --spring.application.json='{"name":"test"}'
 ----
 
 You can also supply the JSON as a JNDI variable, as follows:
@@ -666,10 +666,10 @@ For example, consider the following YAML document:
 ----
 	environments:
 		dev:
-			url: http://dev.bar.com
+			url: http://dev.example.com
 			name: Developer Setup
 		prod:
-			url: http://foo.bar.com
+			url: http://another.example.com
 			name: My Cool App
 ----
 
@@ -677,9 +677,9 @@ The preceding example would be transformed into the following properties:
 
 [source,properties,indent=0]
 ----
-	environments.dev.url=http://dev.bar.com
+	environments.dev.url=http://dev.example.com
 	environments.dev.name=Developer Setup
-	environments.prod.url=http://foo.bar.com
+	environments.prod.url=http://another.example.com
 	environments.prod.name=My Cool App
 ----
 
@@ -690,16 +690,16 @@ consider the following YAML:
 ----
 	 my:
 		servers:
-			- dev.bar.com
-			- foo.bar.com
+			- dev.example.com
+			- another.example.com
 ----
 
 The preceding example would be transformed into these properties:
 
 [source,properties,indent=0]
 ----
-	my.servers[0]=dev.bar.com
-	my.servers[1]=foo.bar.com
+	my.servers[0]=dev.example.com
+	my.servers[1]=another.example.com
 ----
 
 To bind to properties like that by using the Spring `DataBinder` utilities (which is what
@@ -816,12 +816,12 @@ ultimately transformed to properties. That process may be counter-intuitive when
 overriding "`list`" properties through a profile.
 
 For example, assume a `MyPojo` object with `name` and `description` attributes that are
-`null` by default. The following example exposes a list of `MyPojo` from `FooProperties`:
+`null` by default. The following example exposes a list of `MyPojo` from `AcmeProperties`:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties("foo")
-	public class FooProperties {
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
 
 		private final List<MyPojo> list = new ArrayList<>();
 
@@ -836,19 +836,19 @@ Consider the following configuration:
 
 [source,yaml,indent=0]
 ----
-	foo:
+	acme:
 	  list:
 	    - name: my name
 	      description: my description
 	---
 	spring:
 	  profiles: dev
-	foo:
+	acme:
 	  list:
         - name: my another name
 ----
 
-If the `dev` profile is not active, `FooProperties.list` contains one `MyPojo` entry
+If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry
 as defined above. If the `dev` profile is enabled however, the `list` _still_
 contains only one entry (with a name of "`my another name`" and a description of `null`).
 This configuration _does not_ add a second `MyPojo` instance to the list, and it does not
@@ -859,7 +859,7 @@ When a collection is specified in multiple profiles, the one with the highest pr
 
 [source,yaml,indent=0]
 ----
-	foo:
+	acme:
 	  list:
 		- name: my name
 		  description: my description
@@ -868,12 +868,12 @@ When a collection is specified in multiple profiles, the one with the highest pr
 	---
 	spring:
 	  profiles: dev
-	foo:
+	acme:
 	  list:
 		 - name: my another name
 ----
 
-In the preceding example, if the `dev` profile is active, `FooProperties.list` contains
+In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains
 _one_ `MyPojo` entry (with a name of "`my another name`" and a description of `null`).
 
 
@@ -897,8 +897,8 @@ your application, as shown in the following example:
 
 	import org.springframework.boot.context.properties.ConfigurationProperties;
 
-	@ConfigurationProperties("foo")
-	public class FooProperties {
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
 
 		private boolean enabled;
 
@@ -942,13 +942,13 @@ your application, as shown in the following example:
 
 The preceding POJO defines the following properties:
 
-* `foo.enabled`, `false` by default.
-* `foo.remote-address`, with a type that can be coerced from `String`.
-* `foo.security.username`, with a nested "security" object whose name is determined by
+* `acme.enabled`, `false` by default.
+* `acme.remote-address`, with a type that can be coerced from `String`.
+* `acme.security.username`, with a nested "security" object whose name is determined by
 the name of the property. In particular, the return type is not used at all there and
 could have been `SecurityProperties`.
-* `foo.security.password`.
-* `foo.security.roles`, with a collection of `String`.
+* `acme.security.password`.
+* `acme.security.roles`, with a collection of `String`.
 
 [NOTE]
 ====
@@ -980,7 +980,7 @@ You also need to list the properties classes to register in the
 [source,java,indent=0]
 ----
 	@Configuration
-	@EnableConfigurationProperties(FooProperties.class)
+	@EnableConfigurationProperties(AcmeProperties.class)
 	public class MyConfiguration {
 	}
 ----
@@ -993,22 +993,22 @@ specified in the `@ConfigurationProperties` annotation and `<fqn>` the fully qua
 name of the bean. If the annotation does not provide any prefix, only the fully qualified
 name of the bean is used.
 
-The bean name in the example above is `foo-com.example.FooProperties`.
+The bean name in the example above is `acme-com.example.AcmeProperties`.
 ====
 
-Even if the preceding configuration creates a regular bean for `FooProperties`, we
+Even if the preceding configuration creates a regular bean for `AcmeProperties`, we
 recommend that `@ConfigurationProperties` only deal with the environment and, in
 particular, does not inject other beans from the context. Having said that, the
 `@EnableConfigurationProperties` annotation is _also_ automatically applied to your
 project so that any _existing_ bean annotated with `@ConfigurationProperties` is
 configured from the `Environment`. You could shortcut `MyConfiguration` by making sure
-`FooProperties` is already a bean, as shown in the following example:
+`AcmeProperties` is already a bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
 	@Component
-	@ConfigurationProperties(prefix="foo")
-	public class FooProperties {
+	@ConfigurationProperties(prefix="acme")
+	public class AcmeProperties {
 
 		// ... see the preceding example
 
@@ -1022,10 +1022,10 @@ YAML configuration, as shown in the following example:
 ----
 	# application.yml
 
-	foo:
+	acme:
 		remote-address: 192.168.1.1
 		security:
-			username: foo
+			username: admin
 			roles:
 			  - USER
 			  - ADMIN
@@ -1041,10 +1041,10 @@ as any other bean, as shown in the following example:
 	@Service
 	public class MyService {
 
-		private final FooProperties properties;
+		private final AcmeProperties properties;
 
 		@Autowired
-		public MyService(FooProperties properties) {
+		public MyService(AcmeProperties properties) {
 		    this.properties = properties;
 		}
 
@@ -1076,15 +1076,15 @@ its bean registration, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix = "bar")
+	@ConfigurationProperties(prefix = "another")
 	@Bean
-	public BarComponent barComponent() {
+	public AnotherComponent anotherComponent() {
 		...
 	}
 ----
 
-Any property defined with the `bar` prefix is mapped onto that `BarComponent` bean in a
-similar manner as the preceding `FooProperties` example.
+Any property defined with the `another` prefix is mapped onto that `AnotherComponent` bean
+in a similar manner as the preceding `AcmeProperties` example.
 
 
 
@@ -1157,7 +1157,7 @@ separated by `-`, i.e. `acme.my-project.person`).
 |Environment Variables
 |Upper case format with underscore as the delimiter. `_` should not be used within a
 property name
-|Numeric values surrounded by underscores, such as `MY_FOO_1_BAR = my.foo[1].bar`
+|Numeric values surrounded by underscores, such as `MY_ACME_1_OTHER = my.acme[1].other`
 
 |System properties
 |Camel case, kebab case, or underscore notation
@@ -1165,7 +1165,7 @@ property name
 |===
 
 TIP: We recommend that, when possible, properties are stored in lower-case kebab format,
-such as `my.property-name=foo`.
+such as `my.property-name=acme`.
 
 
 [[boot-features-external-config-conversion]]
@@ -1194,9 +1194,9 @@ to your fields, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix="foo")
+	@ConfigurationProperties(prefix="acme")
 	@Validated
-	public class FooProperties {
+	public class AcmeProperties {
 
 		@NotNull
 		private InetAddress remoteAddress;
@@ -1208,13 +1208,13 @@ to your fields, as shown in the following example:
 
 In order to validate the values of nested properties, you must annotate the associated
 field as `@Valid` to trigger its validation. The following example builds on the
-preceding `FooProperties` example:
+preceding `AcmeProperties` example:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix="connection")
+	@ConfigurationProperties(prefix="acme")
 	@Validated
-	public class FooProperties {
+	public class AcmeProperties {
 
 		@NotNull
 		private InetAddress remoteAddress;
@@ -2100,8 +2100,8 @@ following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@ControllerAdvice(basePackageClasses = FooController.class)
-	public class FooControllerAdvice extends ResponseEntityExceptionHandler {
+	@ControllerAdvice(basePackageClasses = AcmeController.class)
+	public class AcmeControllerAdvice extends ResponseEntityExceptionHandler {
 
 		@ExceptionHandler(YourException.class)
 		@ResponseBody
@@ -2122,7 +2122,7 @@ following example:
 ----
 
 In the preceding example, if `YourException` is thrown by a controller defined in the
-same package as `FooController`, a JSON representation of the `CustomErrorType` POJO is
+same package as `AcmeController`, a JSON representation of the `CustomErrorType` POJO is
 used instead of the `ErrorAttributes` representation.
 
 
@@ -5145,14 +5145,14 @@ properties that are not directly supported, use the following properties:
 
 [source,properties,indent=0]
 ----
-	spring.kafka.properties.foo.bar=baz
-	spring.kafka.consumer.properties.fiz.buz=qux
-	spring,kafka.producer.properties.baz.qux=fiz
+	spring.kafka.properties.prop.one=first
+	spring.kafka.consumer.properties.prop.two=second
+	spring,kafka.producer.properties.prop.three=third
 ----
 
-This sets the common `foo.bar` Kafka property to `baz` (applies to both producers and
-consumers), the consumer `fiz.buz` property to `qux` and the `baz.qux` producer property
-to `fiz`.
+This sets the common `prop.one` Kafka property to `first` (applies to both producers and
+consumers), the consumer `prop.two` property to `second` and the `prop.three` producer
+property to `third`.
 
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot
 explicitly supports.

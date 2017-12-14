@@ -65,8 +65,8 @@ filtering].
 https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and
 http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml`
-including profile-specific files (for example, `application-foo.properties` and
-`application-foo.yml`)
+including profile-specific files (for example, `application-dev.properties` and
+`application-dev.yml`)
 
 Note that, since the `application.properties` and `application.yml` files accept Spring
 style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.

@@ -236,13 +236,13 @@ should no longer be used. If no reason and replacement are available, an empty
 
 Deprecation can also be specified declaratively in code by adding the
 `@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated
-property. For instance, assume that the `app.foo.target` property was confusing and
-was renamed to `app.foo.name`. The following example shows how to handle that situation:
+property. For instance, assume that the `app.acme.target` property was confusing and
+was renamed to `app.acme.name`. The following example shows how to handle that situation:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties("app.foo")
-	public class FooProperties {
+	@ConfigurationProperties("app.acme")
+	public class AcmeProperties {
 
 		private String name;
 
@@ -250,7 +250,7 @@ was renamed to `app.foo.name`. The following example shows how to handle that si
 
 		public void setName(String name) { ... }
 
-		@DeprecatedConfigurationProperty(replacement = "app.foo.name")
+		@DeprecatedConfigurationProperty(replacement = "app.acme.name")
 		@Deprecated
 		public String getTarget() {
 			return getName();

@@ -43,21 +43,21 @@ public class SimpleTwoDataSourcesExample {
 		// tag::configuration[]
 		@Bean
 		@Primary
-		@ConfigurationProperties("app.datasource.foo")
-		public DataSourceProperties fooDataSourceProperties() {
+		@ConfigurationProperties("app.datasource.first")
+		public DataSourceProperties firstDataSourceProperties() {
 			return new DataSourceProperties();
 		}
 
 		@Bean
 		@Primary
-		@ConfigurationProperties("app.datasource.foo")
-		public DataSource fooDataSource() {
-			return fooDataSourceProperties().initializeDataSourceBuilder().build();
+		@ConfigurationProperties("app.datasource.first")
+		public DataSource firstDataSource() {
+			return firstDataSourceProperties().initializeDataSourceBuilder().build();
 		}
 
 		@Bean
-		@ConfigurationProperties("app.datasource.bar")
-		public BasicDataSource barDataSource() {
+		@ConfigurationProperties("app.datasource.second")
+		public BasicDataSource secondDataSource() {
 			return DataSourceBuilder.create().type(BasicDataSource.class).build();
 		}
 		// end::configuration[]
