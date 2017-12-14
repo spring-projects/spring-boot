@@ -123,7 +123,7 @@ public class WebMvcMetrics {
 	void record(HttpServletRequest request, HttpServletResponse response, Throwable ex) {
 		Object handler = request.getAttribute(HANDLER_REQUEST_ATTRIBUTE);
 		Long startTime = (Long) request.getAttribute(TIMING_REQUEST_ATTRIBUTE);
-		long endTime = System.nanoTime();
+		long endTime = this.registry.config().clock().monotonicTime();
 		completeLongTimerTasks(request, handler);
 		Throwable thrown = (ex != null ? ex
 				: (Throwable) request.getAttribute(EXCEPTION_ATTRIBUTE));

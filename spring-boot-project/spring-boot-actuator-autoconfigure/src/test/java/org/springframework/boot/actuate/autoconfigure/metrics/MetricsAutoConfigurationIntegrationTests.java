@@ -16,9 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CyclicBarrier;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
@@ -39,6 +43,7 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -52,6 +57,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -70,6 +76,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsAutoConfigurationIntegrationTests.MetricsApp.class)
 @TestPropertySource(properties = "management.metrics.use-global-registry=false")
+@AutoConfigureWebTestClient
 public class MetricsAutoConfigurationIntegrationTests {
 
 	@Autowired
@@ -83,6 +90,12 @@ public class MetricsAutoConfigurationIntegrationTests {
 
 	@Autowired
 	private MeterRegistry registry;
+
+	@Autowired
+	private CyclicBarrier cyclicBarrier;
+
+	@Autowired
+	private WebTestClient webTestClient;
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -103,6 +116,29 @@ public class MetricsAutoConfigurationIntegrationTests {
 		this.loopback.getForObject("/api/people", Set.class);
 		assertThat(this.registry.find("http.server.requests").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
+	}
+
+	@Test
+	public void asyncRequestMappingIsInstrumented() throws InterruptedException, BrokenBarrierException {
+		Duration methodDuration = Duration.ofSeconds(2);
+
+		Thread backgroundRequest = new Thread(() -> this.webTestClient.get()
+				.uri("/api/async")
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody().returnResult());
+		backgroundRequest.start();
+		this.cyclicBarrier.await();
+		MockClock.clock(this.registry).add(methodDuration);
+		this.cyclicBarrier.await();
+		backgroundRequest.join();
+
+		assertThat(this.registry.find("http.server.requests")
+				.tags("uri", "/api/async")
+				.value(Statistic.Count, 1.0)
+				.value(Statistic.TotalTime, methodDuration.getSeconds())
+				.timer())
+				.isPresent();
 	}
 
 	@Test
@@ -131,14 +167,39 @@ public class MetricsAutoConfigurationIntegrationTests {
 			return restTemplateBuilder.build();
 		}
 
+		@Bean
+		public CyclicBarrier cyclicBarrier() {
+			return new CyclicBarrier(2);
+		}
+
 	}
 
 	@RestController
 	static class PersonController {
 
+		private final CyclicBarrier cyclicBarrier;
+
+		PersonController(CyclicBarrier cyclicBarrier) {
+			this.cyclicBarrier = cyclicBarrier;
+		}
+
 		@GetMapping("/api/people")
 		Set<String> personName() {
 			return Collections.singleton("Jon");
+		}
+
+		@GetMapping("/api/async")
+		CompletableFuture<Set<String>> asyncHello() throws BrokenBarrierException, InterruptedException {
+			this.cyclicBarrier.await();
+			return CompletableFuture.supplyAsync(() -> {
+				try {
+					this.cyclicBarrier.await();
+				}
+				catch (InterruptedException | BrokenBarrierException e) {
+					throw new RuntimeException(e);
+				}
+				return Collections.singleton("async-hello");
+			});
 		}
 
 	}

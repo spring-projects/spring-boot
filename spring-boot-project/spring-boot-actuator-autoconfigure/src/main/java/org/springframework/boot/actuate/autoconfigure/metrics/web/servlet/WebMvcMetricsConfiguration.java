@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
 
+import javax.servlet.DispatcherType;
+
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
@@ -27,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,8 +63,11 @@ public class WebMvcMetricsConfiguration {
 	}
 
 	@Bean
-	public WebMvcMetricsFilter webMetricsFilter(ApplicationContext context) {
-		return new WebMvcMetricsFilter(context);
+	public FilterRegistrationBean<WebMvcMetricsFilter> webMetricsFilter(ApplicationContext context) {
+		FilterRegistrationBean<WebMvcMetricsFilter> registrationBean = new FilterRegistrationBean<>(
+				new WebMvcMetricsFilter(context));
+		registrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+		return registrationBean;
 	}
 
 }
