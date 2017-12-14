@@ -166,7 +166,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerWhenAnimatesShouldPrintAllFrames() throws Exception {
+	public void printBannerWhenAnimatesShouldPrintAllFrames() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("animated.gif");
 		String[] lines = banner.split(NEW_LINE);
