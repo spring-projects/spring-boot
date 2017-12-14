@@ -698,7 +698,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.influx.url= # URL of the InfluxDB instance to which to connect.
 	spring.influx.user= # Login user.
 
-	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
+	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqProperties.{sc-ext}[JooqProperties])
 	spring.jooq.sql-dialect= # SQL dialect to use. Auto-detected by default.
 
 	# JDBC ({sc-spring-boot-autoconfigure}/jdbc/JdbcProperties.{sc-ext}[JdbcProperties])
