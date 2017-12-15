@@ -56,7 +56,7 @@ public class CassandraProperties {
 	private String clusterName;
 
 	/**
-	 * Comma-separated list of cluster node addresses.
+	 * Cluster node addresses.
 	 */
 	private final List<String> contactPoints = new ArrayList<>(
 			Collections.singleton("localhost"));

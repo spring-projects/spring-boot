@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.couchbase;
 
-import java.util.List;
-
 import com.couchbase.client.java.bucket.BucketInfo;
-import com.couchbase.client.java.util.features.Version;
+import com.couchbase.client.java.cluster.ClusterInfo;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -37,24 +35,21 @@ import org.springframework.util.StringUtils;
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
-	private CouchbaseOperations couchbaseOperations;
+	private CouchbaseOperations operations;
 
 	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
 		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
-		this.couchbaseOperations = couchbaseOperations;
+		this.operations = couchbaseOperations;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
-				.getAllVersions();
-		BucketInfo bucketInfo = this.couchbaseOperations.getCouchbaseBucket()
-				.bucketManager().info();
-		builder.up()
-				.withDetail("versions", StringUtils.collectionToCommaDelimitedString(
-						versions))
-				.withDetail("nodes", StringUtils.collectionToCommaDelimitedString(
-						bucketInfo.nodeList()));
+		ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();
+		BucketInfo bucket = this.operations.getCouchbaseBucket().bucketManager().info();
+		String versions = StringUtils
+				.collectionToCommaDelimitedString(cluster.getAllVersions());
+		String nodes = StringUtils.collectionToCommaDelimitedString(bucket.nodeList());
+		builder.up().withDetail("versions", versions).withDetail("nodes", nodes);
 	}
 
 }

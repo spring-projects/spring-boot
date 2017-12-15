@@ -47,8 +47,8 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnEnabledHealthIndicator("influxdb")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(InfluxDbAutoConfiguration.class)
-public class InfluxDbHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<InfluxDbHealthIndicator, InfluxDB> {
+public class InfluxDbHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<InfluxDbHealthIndicator, InfluxDB> {
 
 	private final Map<String, InfluxDB> influxDbs;
 

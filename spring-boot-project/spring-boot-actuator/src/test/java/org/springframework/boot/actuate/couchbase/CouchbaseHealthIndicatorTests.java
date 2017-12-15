@@ -48,8 +48,8 @@ public class CouchbaseHealthIndicatorTests {
 	@Test
 	public void couchbaseIsUp() throws UnknownHostException {
 		BucketInfo bucketInfo = mock(BucketInfo.class);
-		given(bucketInfo.nodeList()).willReturn(Collections.singletonList(
-				InetAddress.getByName("127.0.0.1")));
+		given(bucketInfo.nodeList()).willReturn(
+				Collections.singletonList(InetAddress.getByName("127.0.0.1")));
 		BucketManager bucketManager = mock(BucketManager.class);
 		given(bucketManager.info()).willReturn(bucketInfo);
 		Bucket bucket = mock(Bucket.class);

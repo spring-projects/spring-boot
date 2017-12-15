@@ -42,10 +42,9 @@ import static org.mockito.Mockito.mock;
 public class Neo4jHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(Neo4jConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(
-					Neo4jHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+			.withUserConfiguration(Neo4jConfiguration.class).withConfiguration(
+					AutoConfigurations.of(Neo4jHealthIndicatorAutoConfiguration.class,
+							HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
@@ -64,9 +63,8 @@ public class Neo4jHealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void defaultIndicatorCanBeReplaced() {
-		this.contextRunner
-				.withUserConfiguration(CustomIndicatorConfiguration.class).run(
-				(context) -> {
+		this.contextRunner.withUserConfiguration(CustomIndicatorConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Neo4jHealthIndicator.class);
 					assertThat(context).doesNotHaveBean(ApplicationHealthIndicator.class);
 					Health health = context.getBean(Neo4jHealthIndicator.class).health();
@@ -90,12 +88,15 @@ public class Neo4jHealthIndicatorAutoConfigurationTests {
 		@Bean
 		public Neo4jHealthIndicator neo4jHealthIndicator(SessionFactory sessionFactory) {
 			return new Neo4jHealthIndicator(sessionFactory) {
+
 				@Override
 				protected void extractResult(Session session, Health.Builder builder) {
 					builder.up().withDetail("test", true);
 				}
+
 			};
 		}
+
 	}
 
 }
