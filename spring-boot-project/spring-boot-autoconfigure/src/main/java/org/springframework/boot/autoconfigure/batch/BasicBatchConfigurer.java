@@ -27,9 +27,9 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.util.StringUtils;
 
 /**
  * Basic {@link BatchConfigurer} implementation.
@@ -103,14 +103,13 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	}
 
 	protected JobExplorer createJobExplorer() throws Exception {
-		JobExplorerFactoryBean jobExplorerFactoryBean = new JobExplorerFactoryBean();
-		jobExplorerFactoryBean.setDataSource(this.dataSource);
-		String tablePrefix = this.properties.getTablePrefix();
-		if (StringUtils.hasText(tablePrefix)) {
-			jobExplorerFactoryBean.setTablePrefix(tablePrefix);
-		}
-		jobExplorerFactoryBean.afterPropertiesSet();
-		return jobExplorerFactoryBean.getObject();
+		PropertyMapper map = PropertyMapper.get();
+		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
+		factory.setDataSource(this.dataSource);
+		map.from(this.properties::getTablePrefix).whenHasText()
+				.to(factory::setTablePrefix);
+		factory.afterPropertiesSet();
+		return factory.getObject();
 	}
 
 	protected JobLauncher createJobLauncher() throws Exception {
@@ -122,16 +121,13 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 
 	protected JobRepository createJobRepository() throws Exception {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
-		factory.setDataSource(this.dataSource);
-		String isolationLevel = determineIsolationLevel();
-		if (isolationLevel != null) {
-			factory.setIsolationLevelForCreate(isolationLevel);
-		}
-		String tablePrefix = this.properties.getTablePrefix();
-		if (StringUtils.hasText(tablePrefix)) {
-			factory.setTablePrefix(tablePrefix);
-		}
-		factory.setTransactionManager(getTransactionManager());
+		PropertyMapper map = PropertyMapper.get();
+		map.from(() -> this.dataSource).to(factory::setDataSource);
+		map.from(this::determineIsolationLevel).whenNonNull()
+				.to(factory::setIsolationLevelForCreate);
+		map.from(this.properties::getTablePrefix).whenHasText()
+				.to(factory::setTablePrefix);
+		map.from(this::getTransactionManager).to(factory::setTransactionManager);
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}

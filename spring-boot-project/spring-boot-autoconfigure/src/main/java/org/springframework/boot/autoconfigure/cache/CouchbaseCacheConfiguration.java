@@ -23,9 +23,11 @@ import com.couchbase.client.java.Bucket;
 import com.couchbase.client.spring.cache.CacheBuilder;
 import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 
+import org.springframework.boot.autoconfigure.cache.CacheProperties.Couchbase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -61,10 +63,9 @@ public class CouchbaseCacheConfiguration {
 	public CouchbaseCacheManager cacheManager() {
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		CacheBuilder builder = CacheBuilder.newInstance(this.bucket);
-		Duration expiration = this.cacheProperties.getCouchbase().getExpiration();
-		if (expiration != null) {
-			builder = builder.withExpiration((int) expiration.getSeconds());
-		}
+		Couchbase couchbase = this.cacheProperties.getCouchbase();
+		PropertyMapper.get().from(couchbase::getExpiration).whenNonNull()
+				.asInt(Duration::getSeconds).to(builder::withExpiration);
 		String[] names = cacheNames.toArray(new String[cacheNames.size()]);
 		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(builder, names);
 		return this.customizers.customize(cacheManager);

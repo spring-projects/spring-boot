@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.web;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 /**
@@ -459,29 +459,23 @@ public class ResourceProperties {
 			}
 
 			public org.springframework.http.CacheControl toHttpCacheControl() {
-				org.springframework.http.CacheControl cacheControl = createCacheControl();
-				callIfTrue(this.mustRevalidate, cacheControl,
-						org.springframework.http.CacheControl::mustRevalidate);
-				callIfTrue(this.noTransform, cacheControl,
-						org.springframework.http.CacheControl::noTransform);
-				callIfTrue(this.cachePublic, cacheControl,
-						org.springframework.http.CacheControl::cachePublic);
-				callIfTrue(this.cachePrivate, cacheControl,
-						org.springframework.http.CacheControl::cachePrivate);
-				callIfTrue(this.proxyRevalidate, cacheControl,
-						org.springframework.http.CacheControl::proxyRevalidate);
-				if (this.staleWhileRevalidate != null) {
-					cacheControl.staleWhileRevalidate(
-							this.staleWhileRevalidate.getSeconds(), TimeUnit.SECONDS);
-				}
-				if (this.staleIfError != null) {
-					cacheControl.staleIfError(this.staleIfError.getSeconds(),
-							TimeUnit.SECONDS);
-				}
-				if (this.sMaxAge != null) {
-					cacheControl.sMaxAge(this.sMaxAge.getSeconds(), TimeUnit.SECONDS);
-				}
-				return cacheControl;
+				PropertyMapper map = PropertyMapper.get();
+				org.springframework.http.CacheControl control = createCacheControl();
+				map.from(this::getMustRevalidate).whenTrue()
+						.toCall(control::mustRevalidate);
+				map.from(this::getNoTransform).whenTrue().toCall(control::noTransform);
+				map.from(this::getCachePublic).whenTrue().toCall(control::cachePublic);
+				map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
+				map.from(this::getProxyRevalidate).whenTrue()
+						.toCall(control::proxyRevalidate);
+				map.from(this::getStaleWhileRevalidate).whenNonNull().to(
+						(duration) -> control.staleWhileRevalidate(duration.getSeconds(),
+								TimeUnit.SECONDS));
+				map.from(this::getStaleIfError).whenNonNull().to((duration) -> control
+						.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
+				map.from(this::getSMaxAge).whenNonNull().to((duration) -> control
+						.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+				return control;
 			}
 
 			private org.springframework.http.CacheControl createCacheControl() {
@@ -496,12 +490,6 @@ public class ResourceProperties {
 							.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
 				}
 				return org.springframework.http.CacheControl.empty();
-			}
-
-			private <T> void callIfTrue(Boolean property, T instance, Consumer<T> call) {
-				if (Boolean.TRUE.equals(property)) {
-					call.accept(instance);
-				}
 			}
 
 		}
