@@ -90,7 +90,7 @@ class DurationConverter implements GenericConverter {
 				return Duration.parse(source);
 			}
 			Matcher matcher = SIMPLE.matcher(source);
-			Assert.state(matcher.matches(), "'" + source + "' is not a valid duration");
+			Assert.state(matcher.matches(), () -> "'" + source + "' is not a valid duration");
 			long amount = Long.parseLong(matcher.group(1));
 			ChronoUnit unit = getUnit(matcher.group(2), defaultUnit);
 			return Duration.of(amount, unit);
@@ -106,7 +106,7 @@ class DurationConverter implements GenericConverter {
 			return (defaultUnit != null ? defaultUnit.value() : ChronoUnit.MILLIS);
 		}
 		ChronoUnit unit = UNITS.get(value.toLowerCase());
-		Assert.state(unit != null, "Unknown unit '" + value + "'");
+		Assert.state(unit != null, () -> "Unknown unit '" + value + "'");
 		return unit;
 	}
 
