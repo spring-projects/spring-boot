@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
 public class WebEndpointProperties {
 
 	/**
-	 * Base path for Web endpoints. Relative to server.context-path or
+	 * Base path for Web endpoints. Relative to server.servlet.context-path or
 	 * management.server.context-path if management.server.port is configured.
 	 */
 	private String basePath = "/actuator";
