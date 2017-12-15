@@ -18,6 +18,9 @@ package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ProtocolOptions;
@@ -55,7 +58,8 @@ public class CassandraProperties {
 	/**
 	 * Comma-separated list of cluster node addresses.
 	 */
-	private String contactPoints = "localhost";
+	private final List<String> contactPoints = new ArrayList<>(
+			Collections.singleton("localhost"));
 
 	/**
 	 * Port of the Cassandra server.
@@ -148,12 +152,8 @@ public class CassandraProperties {
 		this.clusterName = clusterName;
 	}
 
-	public String getContactPoints() {
+	public List<String> getContactPoints() {
 		return this.contactPoints;
-	}
-
-	public void setContactPoints(String contactPoints) {
-		this.contactPoints = contactPoints;
 	}
 
 	public int getPort() {

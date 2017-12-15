@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Cassandra.
@@ -91,8 +90,7 @@ public class CassandraAutoConfiguration {
 			builder.withSSL();
 		}
 		builder.withPoolingOptions(getPoolingOptions());
-		String points = properties.getContactPoints();
-		builder.addContactPoints(StringUtils.commaDelimitedListToStringArray(points));
+		builder.addContactPoints(properties.getContactPoints().toArray(new String[0]));
 
 		customize(builder);
 		return builder.build();

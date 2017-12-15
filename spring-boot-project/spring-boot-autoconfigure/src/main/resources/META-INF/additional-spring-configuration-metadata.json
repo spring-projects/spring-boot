@@ -91,6 +91,12 @@
       "defaultValue": "embedded"
     },
     {
+      "name": "spring.data.cassandra.contact-points",
+      "defaultValue": [
+        "localhost"
+      ]
+    },
+    {
       "name": "spring.data.cassandra.compression",
       "defaultValue": "none"
     },
