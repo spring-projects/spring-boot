@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.couchbase;
 
 import java.util.List;
 
+import com.couchbase.client.java.bucket.BucketInfo;
 import com.couchbase.client.java.util.features.Version;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
@@ -31,6 +32,7 @@ import org.springframework.util.StringUtils;
  * {@link HealthIndicator} for Couchbase.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
@@ -46,8 +48,13 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
 				.getAllVersions();
-		builder.up().withDetail("versions",
-				StringUtils.collectionToCommaDelimitedString(versions));
+		BucketInfo bucketInfo = this.couchbaseOperations.getCouchbaseBucket()
+				.bucketManager().info();
+		builder.up()
+				.withDetail("versions", StringUtils.collectionToCommaDelimitedString(
+						versions))
+				.withDetail("nodes", StringUtils.collectionToCommaDelimitedString(
+						bucketInfo.nodeList()));
 	}
 
 }
