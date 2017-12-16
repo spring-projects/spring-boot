@@ -104,7 +104,7 @@
       "defaultValue": true
     },
     {
-      "name": "management.influxdb.jms.enabled",
+      "name": "management.health.influxdb.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable InfluxDB health check.",
       "defaultValue": true
