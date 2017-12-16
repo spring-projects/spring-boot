@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.actuate.infux.InfluxDbHealthIndicator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -33,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link InfluxDbHealthIndicator}
+ * Tests for {@link InfluxDbHealthIndicator}.
  *
  * @author Eddú Meléndez
  */

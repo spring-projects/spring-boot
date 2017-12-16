@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.infux;
+package org.springframework.boot.actuate.influx;
 
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Pong;
@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.util.Assert;
 
 /**
- * {@link HealthIndicator} for InfluxDb.
+ * {@link HealthIndicator} for InfluxDB.
  *
  * @author Eddú Meléndez
  * @since 2.0.0
