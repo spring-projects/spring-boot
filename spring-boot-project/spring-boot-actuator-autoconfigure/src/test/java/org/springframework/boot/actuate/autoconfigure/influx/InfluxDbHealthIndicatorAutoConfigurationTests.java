@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
-import org.springframework.boot.actuate.infux.InfluxDbHealthIndicator;
+import org.springframework.boot.actuate.influx.InfluxDbHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
