@@ -210,6 +210,9 @@ public class Binder {
 			result = handler.onSuccess(name, target, context, result);
 			result = convert(result, target);
 		}
+		else {
+			result = handler.onNull(name, target, context);
+		}
 		handler.onFinish(name, target, context, result);
 		return convert(result, target);
 	}
@@ -235,11 +238,8 @@ public class Binder {
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, boolean allowRecursiveBinding)
-					throws Exception {
+			throws Exception {
 		ConfigurationProperty property = findProperty(name, context);
-		if (property == null && containsNoDescendantOf(context.streamSources(), name)) {
-			return null;
-		}
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
 		if (aggregateBinder != null) {
 			return bindAggregate(name, target, handler, context, aggregateBinder);
@@ -306,8 +306,7 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context, boolean allowRecursiveBinding) {
-		if (containsNoDescendantOf(context.streamSources(), name)
-				|| isUnbindableBean(name, target, context)) {
+		if (isUnbindableBean(name, target, context)) {
 			return null;
 		}
 		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
@@ -336,12 +335,6 @@ public class Binder {
 		}
 		String packageName = ClassUtils.getPackageName(resolved);
 		return packageName.startsWith("java.");
-	}
-
-	private boolean containsNoDescendantOf(Stream<ConfigurationPropertySource> sources,
-			ConfigurationPropertyName name) {
-		return sources.allMatch(
-				(s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.ABSENT);
 	}
 
 	/**

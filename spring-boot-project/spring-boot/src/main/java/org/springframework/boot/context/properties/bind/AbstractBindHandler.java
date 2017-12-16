@@ -70,4 +70,9 @@ public abstract class AbstractBindHandler implements BindHandler {
 		this.parent.onFinish(name, target, context, result);
 	}
 
+	@Override
+	public Object onNull(ConfigurationPropertyName name, Bindable<?> target,
+			BindContext context) {
+		return this.parent.onNull(name, target, context);
+	}
 }

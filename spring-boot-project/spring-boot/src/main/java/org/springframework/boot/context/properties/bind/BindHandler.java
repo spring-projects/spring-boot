@@ -89,4 +89,16 @@ public interface BindHandler {
 			BindContext context, Object result) throws Exception {
 	}
 
+	/**
+	 * Called when binding resolves to null.
+	 * @param name the name of the element being bound
+	 * @param target the item being bound
+	 * @param context the bind context
+	 * @return the actual result that should be used instead of the null value.
+	 */
+	default Object onNull(ConfigurationPropertyName name, Bindable<?> target,
+			BindContext context) {
+		return null;
+	}
+
 }

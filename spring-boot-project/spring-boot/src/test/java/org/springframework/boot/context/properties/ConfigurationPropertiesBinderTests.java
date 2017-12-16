@@ -254,6 +254,85 @@ public class ConfigurationPropertiesBinderTests {
 		verify(validator, times(0)).validate(eq(target), any(Errors.class));
 	}
 
+	@Test
+	public void propertyWithFallback() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"test.bar=fallbackValue");
+		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
+				this.environment.getPropertySources(), null, null);
+		PropertyWithFallback target = new PropertyWithFallback();
+		bind(binder, target);
+		assertThat(target.getFoo()).isEqualTo("fallbackValue");
+		assertThat(target.getBaz()).isEqualTo("fallbackValue");
+	}
+
+	@Test
+	public void propertyWithFallbackFromDifferentNamespace() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"test.bar=fallbackValue");
+		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
+				this.environment.getPropertySources(), null, null);
+		PropertyWithFallbackFromDifferentNamespace target = new PropertyWithFallbackFromDifferentNamespace();
+		bind(binder, target);
+		assertThat(target.getFoo()).isEqualTo("fallbackValue");
+	}
+
+	@Test
+	public void propertyWithNonExistingFallback() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"foo=bar");
+		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
+				this.environment.getPropertySources(), null, null);
+		PropertyWithFallbackFromDifferentNamespace target = new PropertyWithFallbackFromDifferentNamespace();
+		bind(binder, target);
+		assertThat(target.getFoo()).isNull();
+	}
+
+	@Test
+	public void invalidMethodAnnotated() throws Exception {
+		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
+				this.environment.getPropertySources(), null, null);
+		InvalidMethodAnnotated target = new InvalidMethodAnnotated();
+		try {
+			bind(binder, target);
+			fail("Expected exception");
+		}
+		catch (ConfigurationPropertiesBindingException ex) {
+			assertThat(ex.getRootCause())
+					.isInstanceOf(ConfigurationPropertyValueBindingException.class);
+		}
+	}
+
+	@Test
+	public void fieldAndAccessorAnnotated() throws Exception {
+		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
+				this.environment.getPropertySources(), null, null);
+		FieldAndGetterAnnotated target = new FieldAndGetterAnnotated();
+		try {
+			bind(binder, target);
+			fail("Expected exception");
+		}
+		catch (ConfigurationPropertiesBindingException ex) {
+			assertThat(ex.getRootCause())
+					.isInstanceOf(ConfigurationPropertyValueBindingException.class);
+		}
+	}
+
+	@Test
+	public void getterAndSetterAnnotated() throws Exception {
+		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
+				this.environment.getPropertySources(), null, null);
+		GetterAndSetterAnnotated target = new GetterAndSetterAnnotated();
+		try {
+			bind(binder, target);
+			fail("Expected exception");
+		}
+		catch (ConfigurationPropertiesBindingException ex) {
+			assertThat(ex.getRootCause())
+					.isInstanceOf(ConfigurationPropertyValueBindingException.class);
+		}
+	}
+
 	private ValidationErrors bindWithValidationErrors(
 			ConfigurationPropertiesBinder binder, Object target) {
 		try {
@@ -477,6 +556,97 @@ public class ConfigurationPropertiesBinderTests {
 			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
 		}
 
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertyWithFallback {
+
+		@ConfigurationPropertyValue(fallback = "test.bar")
+		private String foo;
+
+		private String bar;
+
+		private String baz;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+
+		public String getBar() {
+			return this.bar;
+		}
+
+		public void setBar(String bar) {
+			this.bar = bar;
+		}
+
+		@ConfigurationPropertyValue(fallback = "test.bar")
+		public String getBaz() {
+			return this.baz;
+		}
+
+		public void setBaz(String baz) {
+			this.baz = baz;
+		}
+	}
+
+	@ConfigurationProperties(prefix = "different-namespace")
+	public static class PropertyWithFallbackFromDifferentNamespace {
+
+		@ConfigurationPropertyValue(fallback = "test.bar")
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String value) {
+			this.foo = value;
+		}
+	}
+
+	@ConfigurationProperties
+	public static class InvalidMethodAnnotated {
+
+		@ConfigurationPropertyValue
+		public void doStuff() {
+		}
+	}
+
+	@ConfigurationProperties
+	public static class FieldAndGetterAnnotated {
+
+		@ConfigurationPropertyValue
+		private String value;
+
+		@ConfigurationPropertyValue
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+
+	@ConfigurationProperties
+	public static class GetterAndSetterAnnotated {
+
+		private String value;
+
+		@ConfigurationPropertyValue
+		public String getValue() {
+			return this.value;
+		}
+
+		@ConfigurationPropertyValue
+		public void setValue(String value) {
+			this.value = value;
+		}
 	}
 
 }

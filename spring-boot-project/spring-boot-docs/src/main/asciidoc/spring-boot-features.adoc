@@ -904,6 +904,9 @@ your application, as shown in the following example:
 
 		private InetAddress remoteAddress;
 
+		@ConfigurationPropertyValue(fallback="acmeCorp.companyName")
+		private String companyName;
+
 		private final Security security = new Security();
 
 		public boolean isEnabled() { ... }
@@ -913,6 +916,10 @@ your application, as shown in the following example:
 		public InetAddress getRemoteAddress() { ... }
 
 		public void setRemoteAddress(InetAddress remoteAddress) { ... }
+
+		public String getCompanyName() { ... }
+
+		public void setCompanyName(String companyName) { ... }
 
 		public Security getSecurity() { ... }
 
@@ -944,6 +951,8 @@ The preceding POJO defines the following properties:
 
 * `acme.enabled`, `false` by default.
 * `acme.remote-address`, with a type that can be coerced from `String`.
+* `acme.companyName`, with a `String` value that is read from the property `acmeCorp.companyName` if
+  `acme.companyName` has not been set
 * `acme.security.username`, with a nested "security" object whose name is determined by
 the name of the property. In particular, the return type is not used at all there and
 could have been `SecurityProperties`.
