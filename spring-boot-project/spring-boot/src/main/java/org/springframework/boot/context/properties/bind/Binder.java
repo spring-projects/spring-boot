@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.context.properties.bind.handler.FallbackBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -306,6 +307,12 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context, boolean allowRecursiveBinding) {
+		// if we want to handle fallback properties, we need to be able to look into other
+		// namespaces, so we don't check descendants
+		if (!(handler instanceof FallbackBindHandler)
+				&& containsNoDescendantOf(context.streamSources(), name)) {
+			return null;
+		}
 		if (isUnbindableBean(name, target, context)) {
 			return null;
 		}
@@ -335,6 +342,12 @@ public class Binder {
 		}
 		String packageName = ClassUtils.getPackageName(resolved);
 		return packageName.startsWith("java.");
+	}
+
+	private boolean containsNoDescendantOf(Stream<ConfigurationPropertySource> sources,
+			ConfigurationPropertyName name) {
+		return sources.allMatch(
+				(s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.ABSENT);
 	}
 
 	/**
