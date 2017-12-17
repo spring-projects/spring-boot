@@ -132,7 +132,7 @@ Once the build has been prepared, you can run a full build using the following c
 
 [indent=0]
 ----
-	$ ./mvnw -s ./settings.xml -f spring-boot-full-build -P full clean install
+	$ ./mvnw -f spring-boot-project/pom.xml clean install -U -Dfull
 ----
 
 NOTE: As for the standard build, you may need to increase the amount of memory available
