@@ -34,7 +34,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  * Configuration for HTTP Message converters that use JSON-B.
  *
  * @author Eddú Meléndez
- * @author 2.0.0
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(Jsonb.class)
