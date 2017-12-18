@@ -39,7 +39,6 @@ public class Link {
 	public Link(String href) {
 		this.href = href;
 		this.templated = href.contains("{");
-
 	}
 
 	/**
