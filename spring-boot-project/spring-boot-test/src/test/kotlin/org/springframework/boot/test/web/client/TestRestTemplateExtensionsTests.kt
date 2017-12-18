@@ -72,7 +72,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `getForEntity with reified type parameters, String and URI`() {
+	fun `getForEntity with reified type parameters and URI`() {
 		val url = URI("https://spring.io")
 		template.getForEntity<Foo>(url)
 		verify(template, times(1)).getForEntity(url, Foo::class.java)
@@ -88,7 +88,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `getForEntity with reified type parameters and Map`() {
+	fun `getForEntity with reified type parameters, String and Map`() {
 		val url = "https://spring.io"
 		val vars = mapOf(Pair("key1", "value1"), Pair("key2", "value2"))
 		template.getForEntity<Foo>(url, vars)
@@ -96,7 +96,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `patchForObject with reified type parameters, String and varargs`() {
+	fun `patchForObject with reified type parameters, String, Any and varargs`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		val var1 = "var1"
@@ -106,7 +106,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `patchForObject with reified type parameters, String and Map`() {
+	fun `patchForObject with reified type parameters, String, Any and Map`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		val vars = mapOf(Pair("key1", "value1"), Pair("key2", "value2"))
@@ -115,7 +115,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `patchForObject with reified type parameters`() {
+	fun `patchForObject with reified type parameters, String and Any`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		template.patchForObject<Foo>(url, body)
@@ -123,7 +123,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `postForObject with reified type parameters, String and varargs`() {
+	fun `postForObject with reified type parameters, String, Any and varargs`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		val var1 = "var1"
@@ -133,7 +133,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `postForObject with reified type parameters, String and Map`() {
+	fun `postForObject with reified type parameters, String, Any and Map`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		val vars = mapOf(Pair("key1", "value1"), Pair("key2", "value2"))
@@ -142,7 +142,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `postForObject with reified type parameters`() {
+	fun `postForObject with reified type parameters, String and Any`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		template.postForObject<Foo>(url, body)
@@ -150,7 +150,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `postForEntity with reified type parameters, String and varargs`() {
+	fun `postForEntity with reified type parameters, String, Any and varargs`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		val var1 = "var1"
@@ -160,7 +160,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `postForEntity with reified type parameters, String and Map`() {
+	fun `postForEntity with reified type parameters, String, Any and Map`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		val vars = mapOf(Pair("key1", "value1"), Pair("key2", "value2"))
@@ -169,7 +169,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `postForEntity with reified type parameters`() {
+	fun `postForEntity with reified type parameters, String and Any`() {
 		val url = "https://spring.io"
 		val body: Any = "body"
 		template.postForEntity<Foo>(url, body)
@@ -210,7 +210,7 @@ class TestRestTemplateExtensionsTests {
 	}
 
 	@Test
-	fun `exchange with reified type parameters, String, HttpEntity`() {
+	fun `exchange with reified type parameters and HttpEntity`() {
 		val entity = mock<RequestEntity<Foo>>()
 		template.exchange<List<Foo>>(entity)
 		verify(template, times(1)).exchange(entity,

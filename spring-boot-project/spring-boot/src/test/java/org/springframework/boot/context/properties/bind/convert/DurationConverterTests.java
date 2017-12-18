@@ -51,7 +51,6 @@ public class DurationConverterTests {
 		assertThat(convert("PT10H")).isEqualTo(Duration.parse("PT10H"));
 		assertThat(convert("P2D")).isEqualTo(Duration.parse("P2D"));
 		assertThat(convert("P2DT3H4M")).isEqualTo(Duration.parse("P2DT3H4M"));
-		assertThat(convert("P2DT3H4M")).isEqualTo(Duration.parse("P2DT3H4M"));
 		assertThat(convert("-PT6H3M")).isEqualTo(Duration.parse("-PT6H3M"));
 		assertThat(convert("-PT-6H+3M")).isEqualTo(Duration.parse("-PT-6H+3M"));
 	}

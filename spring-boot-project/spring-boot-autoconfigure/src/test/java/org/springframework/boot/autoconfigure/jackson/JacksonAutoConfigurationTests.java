@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TimeZone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
@@ -457,7 +456,7 @@ public class JacksonAutoConfigurationTests {
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
 		String expected = FormatConfig.DEFAULT_DATETIME_PRINTER.rawFormatter()
-				.withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")))
+				.withZone(DateTimeZone.UTC)
 				.print(dateTime);
 		assertThat(mapper.writeValueAsString(dateTime)).isEqualTo("\"" + expected + "\"");
 	}

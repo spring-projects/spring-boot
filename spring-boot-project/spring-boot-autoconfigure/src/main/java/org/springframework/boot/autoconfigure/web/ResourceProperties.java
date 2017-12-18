@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.http.CacheControl;
 
 /**
  * Properties used to configure resource handling.
@@ -458,9 +459,9 @@ public class ResourceProperties {
 				this.sMaxAge = sMaxAge;
 			}
 
-			public org.springframework.http.CacheControl toHttpCacheControl() {
+			public CacheControl toHttpCacheControl() {
 				PropertyMapper map = PropertyMapper.get();
-				org.springframework.http.CacheControl control = createCacheControl();
+				CacheControl control = createCacheControl();
 				map.from(this::getMustRevalidate).whenTrue()
 						.toCall(control::mustRevalidate);
 				map.from(this::getNoTransform).whenTrue().toCall(control::noTransform);
@@ -478,18 +479,18 @@ public class ResourceProperties {
 				return control;
 			}
 
-			private org.springframework.http.CacheControl createCacheControl() {
+			private CacheControl createCacheControl() {
 				if (Boolean.TRUE.equals(this.noStore)) {
-					return org.springframework.http.CacheControl.noStore();
+					return CacheControl.noStore();
 				}
 				if (Boolean.TRUE.equals(this.noCache)) {
-					return org.springframework.http.CacheControl.noCache();
+					return CacheControl.noCache();
 				}
 				if (this.maxAge != null) {
-					return org.springframework.http.CacheControl
+					return CacheControl
 							.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
 				}
-				return org.springframework.http.CacheControl.empty();
+				return CacheControl.empty();
 			}
 
 		}
