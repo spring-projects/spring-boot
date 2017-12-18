@@ -49,9 +49,9 @@ class DurationConverter implements GenericConverter {
 		TYPES = Collections.unmodifiableSet(types);
 	}
 
-	private static Pattern ISO8601 = Pattern.compile("^[\\+\\-]?P.*$");
+	private static final Pattern ISO8601 = Pattern.compile("^[\\+\\-]?P.*$");
 
-	private static Pattern SIMPLE = Pattern.compile("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$");
+	private static final Pattern SIMPLE = Pattern.compile("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$");
 
 	private static final Map<String, ChronoUnit> UNITS;
 
