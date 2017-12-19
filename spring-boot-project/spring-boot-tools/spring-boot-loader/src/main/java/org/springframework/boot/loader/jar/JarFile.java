@@ -191,6 +191,10 @@ public class JarFile extends java.util.jar.JarFile {
 		};
 	}
 
+	public JarEntry getJarEntry(CharSequence name) {
+		return this.entries.getEntry(name);
+	}
+
 	@Override
 	public JarEntry getJarEntry(String name) {
 		return (JarEntry) getEntry(name);
@@ -228,8 +232,7 @@ public class JarFile extends java.util.jar.JarFile {
 	 * @return a {@link JarFile} for the entry
 	 * @throws IOException if the nested jar file cannot be read
 	 */
-	public synchronized JarFile getNestedJarFile(ZipEntry entry)
-			throws IOException {
+	public synchronized JarFile getNestedJarFile(ZipEntry entry) throws IOException {
 		return getNestedJarFile((JarEntry) entry);
 	}
 
@@ -257,16 +260,16 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
-		final AsciiBytes sourceName = new AsciiBytes(entry.getName());
-		JarEntryFilter filter = (name) -> {
-			if (name.startsWith(sourceName) && !name.equals(sourceName)) {
-				return name.substring(sourceName.length());
+		AsciiBytes name = entry.getAsciiBytesName();
+		JarEntryFilter filter = (candidate) -> {
+			if (candidate.startsWith(name) && !candidate.equals(name)) {
+				return candidate.substring(name.length());
 			}
 			return null;
 		};
 		return new JarFile(this.rootFile,
 				this.pathFromRoot + "!/"
-						+ entry.getName().substring(0, sourceName.length() - 1),
+						+ entry.getName().substring(0, name.length() - 1),
 				this.data, filter, JarFileType.NESTED_DIRECTORY);
 	}
 

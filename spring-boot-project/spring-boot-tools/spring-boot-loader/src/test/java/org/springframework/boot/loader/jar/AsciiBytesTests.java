@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AsciiBytesTests {
 
+	private static final char NO_SUFFIX = 0;
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -107,22 +109,6 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void appendString() {
-		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
-		AsciiBytes appended = bc.append("D");
-		assertThat(bc.toString()).isEqualTo("BC");
-		assertThat(appended.toString()).isEqualTo("BCD");
-	}
-
-	@Test
-	public void appendBytes() {
-		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
-		AsciiBytes appended = bc.append(new byte[] { 68 });
-		assertThat(bc.toString()).isEqualTo("BC");
-		assertThat(appended.toString()).isEqualTo("BCD");
-	}
-
-	@Test
 	public void hashCodeAndEquals() {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 66, 67 });
@@ -163,4 +149,42 @@ public class AsciiBytesTests {
 		assertThat(new AsciiBytes(input).hashCode()).isEqualTo(input.hashCode());
 	}
 
+	@Test
+	public void matchesSameAsString() {
+		matchesSameAsString("abcABC123xyz!");
+	}
+
+	@Test
+	public void matchesSameAsStringWithSpecial() {
+		matchesSameAsString("special/\u00EB.dat");
+	}
+
+	@Test
+	public void matchesSameAsStringWithCyrillicCharacters() {
+		matchesSameAsString("\u0432\u0435\u0441\u043D\u0430");
+	}
+
+	@Test
+	public void matchesDifferentLengths() {
+		assertThat(new AsciiBytes("abc").matches("ab", NO_SUFFIX)).isFalse();
+		assertThat(new AsciiBytes("abc").matches("abcd", NO_SUFFIX)).isFalse();
+		assertThat(new AsciiBytes("abc").matches("abc", NO_SUFFIX)).isTrue();
+		assertThat(new AsciiBytes("abc").matches("a", 'b')).isFalse();
+		assertThat(new AsciiBytes("abc").matches("abc", 'd')).isFalse();
+		assertThat(new AsciiBytes("abc").matches("ab", 'c')).isTrue();
+	}
+
+	@Test
+	public void matchesSuffix() {
+		assertThat(new AsciiBytes("ab").matches("a", 'b')).isTrue();
+	}
+
+	@Test
+	public void matchesSameAsStringWithEmoji() {
+		matchesSameAsString("\ud83d\udca9");
+	}
+
+	private void matchesSameAsString(String input) {
+		assertThat(new AsciiBytes(input).matches(input, NO_SUFFIX)).isTrue();
+	}
 }

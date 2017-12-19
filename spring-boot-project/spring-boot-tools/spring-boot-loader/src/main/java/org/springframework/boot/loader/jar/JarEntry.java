@@ -31,6 +31,8 @@ import java.util.jar.Manifest;
  */
 class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
+	private final AsciiBytes name;
+
 	private Certificate[] certificates;
 
 	private CodeSigner[] codeSigners;
@@ -41,6 +43,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	JarEntry(JarFile jarFile, CentralDirectoryFileHeader header) {
 		super(header.getName().toString());
+		this.name = header.getName();
 		this.jarFile = jarFile;
 		this.localHeaderOffset = header.getLocalHeaderOffset();
 		setCompressedSize(header.getCompressedSize());
@@ -53,10 +56,13 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 		setTime(header.getTime());
 	}
 
+	AsciiBytes getAsciiBytesName() {
+		return this.name;
+	}
+
 	@Override
-	public boolean hasName(String name, String suffix) {
-		return getName().length() == name.length() + suffix.length()
-				&& getName().startsWith(name) && getName().endsWith(suffix);
+	public boolean hasName(CharSequence name, char suffix) {
+		return this.name.matches(name, suffix);
 	}
 
 	/**

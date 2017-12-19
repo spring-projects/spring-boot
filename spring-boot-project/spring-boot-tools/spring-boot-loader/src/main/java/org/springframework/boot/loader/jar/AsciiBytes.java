@@ -27,6 +27,8 @@ import java.nio.charset.StandardCharsets;
  */
 final class AsciiBytes {
 
+	private static final int[] EXCESS = { 0x0, 0x1080, 0x96, 0x1c82080 };
+
 	private final byte[] bytes;
 
 	private final int offset;
@@ -118,36 +120,56 @@ final class AsciiBytes {
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
 	}
 
-	public AsciiBytes append(String string) {
-		if (string == null || string.isEmpty()) {
-			return this;
-		}
-		return append(string.getBytes(StandardCharsets.UTF_8));
-	}
-
-	public AsciiBytes append(AsciiBytes asciiBytes) {
-		if (asciiBytes == null || asciiBytes.length() == 0) {
-			return this;
-		}
-		return append(asciiBytes.bytes);
-	}
-
-	public AsciiBytes append(byte[] bytes) {
-		if (bytes == null || bytes.length == 0) {
-			return this;
-		}
-		byte[] combined = new byte[this.length + bytes.length];
-		System.arraycopy(this.bytes, this.offset, combined, 0, this.length);
-		System.arraycopy(bytes, 0, combined, this.length, bytes.length);
-		return new AsciiBytes(combined);
-	}
-
 	@Override
 	public String toString() {
 		if (this.string == null) {
-			this.string = new String(this.bytes, this.offset, this.length, StandardCharsets.UTF_8);
+			this.string = new String(this.bytes, this.offset, this.length,
+					StandardCharsets.UTF_8);
 		}
 		return this.string;
+	}
+
+	public boolean matches(CharSequence name, char suffix) {
+		int charIndex = 0;
+		int nameLen = name.length();
+		int totalLen = (nameLen + (suffix == 0 ? 0 : 1));
+		for (int i = this.offset; i < this.offset + this.length; i++) {
+			int b = this.bytes[i];
+			if (b < 0) {
+				b = b & 0x7F;
+				int limit = getRemainingUtfBytes(b);
+				for (int j = 0; j < limit; j++) {
+					b = (b << 6) + (this.bytes[++i] & 0xFF);
+				}
+				b -= EXCESS[limit];
+			}
+			char c = getChar(name, suffix, charIndex++);
+			if (b <= 0xFFFF) {
+				if (c != b) {
+					return false;
+				}
+			}
+			else {
+				if (c != ((b >> 0xA) + 0xD7C0)) {
+					return false;
+				}
+				c = getChar(name, suffix, charIndex++);
+				if (c != ((b & 0x3FF) + 0xDC00)) {
+					return false;
+				}
+			}
+		}
+		return charIndex == totalLen;
+	}
+
+	private char getChar(CharSequence name, char suffix, int index) {
+		if (index < name.length()) {
+			return name.charAt(index);
+		}
+		if (index == name.length()) {
+			return suffix;
+		}
+		return 0;
 	}
 
 	@Override
@@ -158,24 +180,11 @@ final class AsciiBytes {
 				int b = this.bytes[i];
 				if (b < 0) {
 					b = b & 0x7F;
-					int limit;
-					int excess = 0x80;
-					if (b < 96) {
-						limit = 1;
-						excess += 0x40 << 6;
-					}
-					else if (b < 112) {
-						limit = 2;
-						excess += (0x60 << 12) + (0x80 << 6);
-					}
-					else {
-						limit = 3;
-						excess += (0x70 << 18) + (0x80 << 12) + (0x80 << 6);
-					}
+					int limit = getRemainingUtfBytes(b);
 					for (int j = 0; j < limit; j++) {
 						b = (b << 6) + (this.bytes[++i] & 0xFF);
 					}
-					b -= excess;
+					b -= EXCESS[limit];
 				}
 				if (b <= 0xFFFF) {
 					hash = 31 * hash + b;
@@ -188,6 +197,10 @@ final class AsciiBytes {
 			this.hash = hash;
 		}
 		return hash;
+	}
+
+	private int getRemainingUtfBytes(int b) {
+		return (b < 96 ? 1 : (b < 112 ? 2 : 3));
 	}
 
 	@Override
@@ -216,16 +229,17 @@ final class AsciiBytes {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public static int hashCode(String string) {
-		// We're compatible with String's hashCode().
-		return string.hashCode();
+	public static int hashCode(CharSequence charSequence) {
+		// We're compatible with String's hashCode()
+		if (charSequence instanceof StringSequence) {
+			// ... but save making an unnecessary String for StringSequence
+			return charSequence.hashCode();
+		}
+		return charSequence.toString().hashCode();
 	}
 
-	public static int hashCode(int hash, String string) {
-		for (int i = 0; i < string.length(); i++) {
-			hash = 31 * hash + string.charAt(i);
-		}
-		return hash;
+	public static int hashCode(int hash, char suffix) {
+		return (suffix == 0 ? hash : (31 * hash + suffix));
 	}
 
 }
