@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.reactive;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,6 @@ import org.springframework.security.core.userdetails.MapReactiveUserDetailsServi
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -51,6 +51,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 class ReactiveAuthenticationManagerConfiguration {
 
+	private final Pattern pattern = Pattern.compile("^\\{.+}.*$");
+
+	private static final String NOOP_PREFIX = "{noop}";
+
 	private static final Log logger = LogFactory
 			.getLog(ReactiveAuthenticationManagerConfiguration.class);
 
@@ -63,17 +67,23 @@ class ReactiveAuthenticationManagerConfiguration {
 			logger.info(String.format("%n%nUsing default security password: %s%n",
 					user.getPassword()));
 		}
-		UserDetails userDetails = getUserDetails(user, passwordEncoder);
+		String password = deducePassword(passwordEncoder, user.getPassword());
+		UserDetails userDetails = getUserDetails(user, password);
 		return new MapReactiveUserDetailsService(userDetails);
 	}
 
+	private String deducePassword(ObjectProvider<PasswordEncoder> passwordEncoder, String password) {
+		if (passwordEncoder.getIfAvailable() == null &&
+				!this.pattern.matcher(password).matches()) {
+			return NOOP_PREFIX + password;
+		}
+		return password;
+	}
+
 	private UserDetails getUserDetails(SecurityProperties.User user,
-			ObjectProvider<PasswordEncoder> passwordEncoder) {
-		String encodedPassword = passwordEncoder
-				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
-				.encode(user.getPassword());
+			String password) {
 		List<String> roles = user.getRoles();
-		return User.withUsername(user.getName()).password(encodedPassword)
+		return User.withUsername(user.getName()).password(password)
 				.roles(roles.toArray(new String[roles.size()])).build();
 	}
 
