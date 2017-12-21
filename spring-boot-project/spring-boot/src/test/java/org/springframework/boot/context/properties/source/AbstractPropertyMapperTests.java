@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -34,7 +35,7 @@ public abstract class AbstractPropertyMapperTests {
 	}
 
 	protected final Iterator<String> namesFromString(String name, Object value) {
-		return getMapper().map(name).stream()
+		return Arrays.stream(getMapper().map(name))
 				.map((mapping) -> mapping.getConfigurationPropertyName().toString())
 				.iterator();
 	}
@@ -44,7 +45,7 @@ public abstract class AbstractPropertyMapperTests {
 	}
 
 	protected final Iterator<String> namesFromConfiguration(String name, String value) {
-		return getMapper().map(ConfigurationPropertyName.of(name)).stream()
+		return Arrays.stream(getMapper().map(ConfigurationPropertyName.of(name)))
 				.map(PropertyMapping::getPropertySourceName).iterator();
 	}
 

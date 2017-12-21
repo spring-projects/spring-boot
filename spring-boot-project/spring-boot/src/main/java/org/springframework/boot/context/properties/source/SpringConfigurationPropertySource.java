@@ -16,10 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -85,7 +82,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
-		List<PropertyMapping> mappings = getMapper().map(name);
+		PropertyMapping[] mappings = getMapper().map(name);
 		return find(mappings, name);
 	}
 
@@ -100,10 +97,17 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		return this.propertySource;
 	}
 
-	protected final ConfigurationProperty find(List<PropertyMapping> mappings,
+	protected final ConfigurationProperty find(PropertyMapping[] mappings,
 			ConfigurationPropertyName name) {
-		return mappings.stream().filter((m) -> m.isApplicable(name)).map(this::find)
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		for (PropertyMapping candidate : mappings) {
+			if (candidate.isApplicable(name)) {
+				ConfigurationProperty result = find(candidate);
+				if (result != null) {
+					return result;
+				}
+			}
+		}
+		return null;
 	}
 
 	private ConfigurationProperty find(PropertyMapping mapping) {
@@ -214,23 +218,23 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		}
 
 		@Override
-		public List<PropertyMapping> map(
+		public PropertyMapping[] map(
 				ConfigurationPropertyName configurationPropertyName) {
 			try {
 				return this.mapper.map(configurationPropertyName);
 			}
 			catch (Exception ex) {
-				return Collections.emptyList();
+				return NO_MAPPINGS;
 			}
 		}
 
 		@Override
-		public List<PropertyMapping> map(String propertySourceName) {
+		public PropertyMapping[] map(String propertySourceName) {
 			try {
 				return this.mapper.map(propertySourceName);
 			}
 			catch (Exception ex) {
-				return Collections.emptyList();
+				return NO_MAPPINGS;
 			}
 		}
 

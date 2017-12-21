@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +59,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 
 	@Test
 	public void underscoreShouldNotMapToEmptyString() {
-		List<PropertyMapping> mappings = getMapper().map("_");
+		PropertyMapping[] mappings = getMapper().map("_");
 		boolean applicable = false;
 		for (PropertyMapping mapping : mappings) {
 			applicable = mapping.isApplicable(ConfigurationPropertyName.of(""));
@@ -71,7 +69,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 
 	@Test
 	public void underscoreWithWhitespaceShouldNotMapToEmptyString() {
-		List<PropertyMapping> mappings = getMapper().map("  _");
+		PropertyMapping[] mappings = getMapper().map("  _");
 		boolean applicable = false;
 		for (PropertyMapping mapping : mappings) {
 			applicable = mapping.isApplicable(ConfigurationPropertyName.of(""));

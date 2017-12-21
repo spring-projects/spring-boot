@@ -16,11 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -31,10 +26,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  * "{@code .}". For example, "{@code SERVER_PORT}" is mapped to "{@code server.port}". In
  * addition, numeric elements are mapped to indexes (e.g. "{@code HOST_0}" is mapped to
  * "{@code host[0]}").
- * <p>
- * List shortcuts (names that end with double underscore) are also supported by this
- * mapper. For example, "{@code MY_LIST__=a,b,c}" is mapped to "{@code my.list[0]=a}",
- * "{@code my.list[1]=b}", "{@code my.list[2]=c}".
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -45,28 +36,26 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
 
-	private SystemEnvironmentPropertyMapper() {
+	@Override
+	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
+		String name = convertName(configurationPropertyName);
+		String legacyName = convertLegacyName(configurationPropertyName);
+		if (name.equals(legacyName)) {
+			return new PropertyMapping[] {
+					new PropertyMapping(name, configurationPropertyName) };
+		}
+		return new PropertyMapping[] {
+				new PropertyMapping(name, configurationPropertyName),
+				new PropertyMapping(legacyName, configurationPropertyName), };
 	}
 
 	@Override
-	public List<PropertyMapping> map(
-			ConfigurationPropertyName configurationPropertyName) {
-		Set<String> names = new LinkedHashSet<>();
-		names.add(convertName(configurationPropertyName));
-		names.add(convertLegacyName(configurationPropertyName));
-		List<PropertyMapping> result = new ArrayList<>();
-		names.forEach((name) -> result
-				.add(new PropertyMapping(name, configurationPropertyName)));
-		return result;
-	}
-
-	@Override
-	public List<PropertyMapping> map(String propertySourceName) {
+	public PropertyMapping[] map(String propertySourceName) {
 		ConfigurationPropertyName name = convertName(propertySourceName);
 		if (name == null || name.isEmpty()) {
-			return Collections.emptyList();
+			return NO_MAPPINGS;
 		}
-		return Collections.singletonList(new PropertyMapping(propertySourceName, name));
+		return new PropertyMapping[] { new PropertyMapping(propertySourceName, name) };
 	}
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {
