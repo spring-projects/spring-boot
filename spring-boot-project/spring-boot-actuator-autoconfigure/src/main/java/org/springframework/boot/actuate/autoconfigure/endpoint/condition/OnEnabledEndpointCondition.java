@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
+import java.util.Optional;
+
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -25,10 +27,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * A condition that checks if an endpoint is enabled.
@@ -42,22 +46,23 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 	private static final String ENABLED_BY_DEFAULT_KEY = "management.endpoints.enabled-by-default";
 
+	private static final ConcurrentReferenceHashMap<Environment, Optional<Boolean>> enabledByDefaultCache = new ConcurrentReferenceHashMap<>();
+
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
+		Environment environment = context.getEnvironment();
 		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
 		String id = attributes.getString("id");
 		String key = "management.endpoint." + id + ".enabled";
-		Boolean userDefinedEnabled = context.getEnvironment().getProperty(key,
-				Boolean.class);
+		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
 		if (userDefinedEnabled != null) {
 			return new ConditionOutcome(userDefinedEnabled,
 					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
 							.because("found property " + key + " with value "
 									+ userDefinedEnabled));
 		}
-		Boolean userDefinedDefault = context.getEnvironment()
-				.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class);
+		Boolean userDefinedDefault = isEnabledByDefault(environment);
 		if (userDefinedDefault != null) {
 			return new ConditionOutcome(userDefinedDefault,
 					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
@@ -69,6 +74,16 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		return new ConditionOutcome(endpointDefault,
 				ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class).because(
 						"no property " + key + " found so using endpoint default"));
+	}
+
+	private Boolean isEnabledByDefault(Environment environment) {
+		Optional<Boolean> enabledByDefault = enabledByDefaultCache.get(environment);
+		if (enabledByDefault == null) {
+			enabledByDefault = Optional.ofNullable(
+					environment.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class));
+			enabledByDefaultCache.put(environment, enabledByDefault);
+		}
+		return enabledByDefault.orElse(null);
 	}
 
 	private AnnotationAttributes getEndpointAttributes(ConditionContext context,
