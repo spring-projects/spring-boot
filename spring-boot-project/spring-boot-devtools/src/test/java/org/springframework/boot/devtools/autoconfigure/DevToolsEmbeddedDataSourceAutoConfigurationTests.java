@@ -46,7 +46,7 @@ public class DevToolsEmbeddedDataSourceAutoConfigurationTests
 	public void autoConfiguredDataSourceIsNotShutdown() throws SQLException {
 		ConfigurableApplicationContext context = createContext(
 				DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class);
-		Statement statement = configureDataSourceBehaviour(
+		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
 		verify(statement, times(0)).execute("SHUTDOWN");
