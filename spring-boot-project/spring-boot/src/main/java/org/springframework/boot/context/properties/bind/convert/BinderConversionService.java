@@ -38,9 +38,11 @@ import org.springframework.format.support.DefaultFormattingConversionService;
  */
 public class BinderConversionService implements ConversionService {
 
-	private final ConversionService conversionService;
+	private static final ConversionService additionalConversionService = createAdditionalConversionService();
 
-	private final ConversionService additionalConversionService;
+	private static final ConversionService defaultConversionService = new DefaultFormattingConversionService();
+
+	private final ConversionService conversionService;
 
 	/**
 	 * Create a new {@link BinderConversionService} instance.
@@ -48,22 +50,21 @@ public class BinderConversionService implements ConversionService {
 	 */
 	public BinderConversionService(ConversionService conversionService) {
 		this.conversionService = (conversionService != null ? conversionService
-				: new DefaultFormattingConversionService());
-		this.additionalConversionService = createAdditionalConversionService();
+				: defaultConversionService);
 	}
 
 	@Override
 	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
 		return (this.conversionService != null
 				&& this.conversionService.canConvert(sourceType, targetType))
-				|| this.additionalConversionService.canConvert(sourceType, targetType);
+				|| additionalConversionService.canConvert(sourceType, targetType);
 	}
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return (this.conversionService != null
 				&& this.conversionService.canConvert(sourceType, targetType))
-				|| this.additionalConversionService.canConvert(sourceType, targetType);
+				|| additionalConversionService.canConvert(sourceType, targetType);
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class BinderConversionService implements ConversionService {
 	private <T> T callAdditionalConversionService(Function<ConversionService, T> call,
 			RuntimeException cause) {
 		try {
-			return call.apply(this.additionalConversionService);
+			return call.apply(additionalConversionService);
 		}
 		catch (ConverterNotFoundException ex) {
 			throw (cause != null ? cause : ex);
