@@ -55,7 +55,6 @@ public class ValidationExceptionFailureAnalyzerTests {
 	static class TestConfiguration {
 
 		TestConfiguration(TestProperties testProperties) {
-
 		}
 
 	}

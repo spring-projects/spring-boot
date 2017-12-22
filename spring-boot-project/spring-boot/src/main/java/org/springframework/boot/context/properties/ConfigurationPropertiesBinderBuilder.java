@@ -147,7 +147,7 @@ class ConfigurationPropertiesBinderBuilder {
 			return defaultValidator;
 		}
 		if (isJsr303Present()) {
-			return new ValidatedLocalValidatorFactoryBean(this.applicationContext);
+			return new Jsr303ConfigurationPropertiesValidator(this.applicationContext);
 		}
 		return null;
 	}
