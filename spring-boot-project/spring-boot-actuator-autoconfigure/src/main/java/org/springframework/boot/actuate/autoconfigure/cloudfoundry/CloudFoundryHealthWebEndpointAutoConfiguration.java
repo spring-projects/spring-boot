@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,7 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for Cloud Foundry Health endpoint extensions.
+ * {@link EnableAutoConfiguration Auto-configuration} for Cloud Foundry Health endpoint extensions.
  *
  * @author Madhura Bhave
  */
@@ -45,7 +46,7 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore({ ReactiveCloudFoundryActuatorAutoConfiguration.class,
 		CloudFoundryActuatorAutoConfiguration.class })
 @AutoConfigureAfter(HealthEndpointAutoConfiguration.class)
-public class CloudFoundryHealthWebEndpointManagementContextConfiguration {
+public class CloudFoundryHealthWebEndpointAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
