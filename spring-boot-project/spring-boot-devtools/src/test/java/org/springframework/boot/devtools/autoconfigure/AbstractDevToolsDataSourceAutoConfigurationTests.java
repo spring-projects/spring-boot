@@ -56,7 +56,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 				DataSourcePropertiesConfiguration.class,
 				SingleDataSourceConfiguration.class);
 		DataSource dataSource = context.getBean(DataSource.class);
-		Statement statement = configureDataSourceBehaviour(dataSource);
+		Statement statement = configureDataSourceBehavior(dataSource);
 		verify(statement, times(0)).execute("SHUTDOWN");
 	}
 
@@ -68,7 +68,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class)
 				.values();
 		for (DataSource dataSource : dataSources) {
-			Statement statement = configureDataSourceBehaviour(dataSource);
+			Statement statement = configureDataSourceBehavior(dataSource);
 			verify(statement, times(0)).execute("SHUTDOWN");
 		}
 	}
@@ -86,7 +86,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		context.close();
 	}
 
-	protected final Statement configureDataSourceBehaviour(DataSource dataSource)
+	protected final Statement configureDataSourceBehavior(DataSource dataSource)
 			throws SQLException {
 		Connection connection = mock(Connection.class);
 		Statement statement = mock(Statement.class);

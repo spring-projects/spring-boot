@@ -81,7 +81,7 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 				message.append("\t" + jsonObject + "\n");
 			}
 			message.append("\nYou may wish to exclude one of them to ensure"
-					+ " predictable runtime behaviour\n");
+					+ " predictable runtime behavior\n");
 			this.logger.warn(message);
 		}
 
