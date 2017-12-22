@@ -59,7 +59,7 @@ class WebDriverContextCustomizerFactory implements ContextCustomizerFactory {
 			if (obj == this) {
 				return true;
 			}
-			if (obj == null || !obj.getClass().equals(getClass())) {
+			if (obj == null || obj.getClass() != getClass()) {
 				return false;
 			}
 			return true;

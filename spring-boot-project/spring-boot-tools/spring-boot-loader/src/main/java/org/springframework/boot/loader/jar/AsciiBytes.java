@@ -211,7 +211,7 @@ final class AsciiBytes {
 		if (this == obj) {
 			return true;
 		}
-		if (obj.getClass().equals(AsciiBytes.class)) {
+		if (obj.getClass() == AsciiBytes.class) {
 			AsciiBytes other = (AsciiBytes) obj;
 			if (this.length == other.length) {
 				for (int i = 0; i < this.length; i++) {
