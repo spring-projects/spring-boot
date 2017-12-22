@@ -89,7 +89,7 @@ public class SpringDataWebProperties {
 		}
 
 		public boolean isOneIndexedParameters() {
-			return oneIndexedParameters;
+			return this.oneIndexedParameters;
 		}
 
 		public void setOneIndexedParameters(final boolean oneIndexedParameters) {
