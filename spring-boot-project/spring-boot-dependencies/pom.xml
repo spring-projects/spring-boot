@@ -77,6 +77,7 @@
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-jms.version>2.0.1</javax-jms.version>
 		<javax-mail.version>1.6.0</javax-mail.version>
+		<javax-money.version>1.0.1</javax-money.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<javax-validation.version>2.0.0.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
@@ -973,6 +974,11 @@
 				<version>${javax-mail.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>javax.money</groupId>
+				<artifactId>money-api</artifactId>
+				<version>${javax-money.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>${servlet-api.version}</version>
@@ -1237,8 +1243,8 @@
 				<version>${artemis.version}</version>
 				<exclusions>
 					<exclusion>
-          				<groupId>commons-logging</groupId>
-          				<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
