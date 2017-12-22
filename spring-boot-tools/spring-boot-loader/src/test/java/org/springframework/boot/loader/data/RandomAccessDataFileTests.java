@@ -106,7 +106,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void fileExists() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must exist");
+		this.thrown.expectMessage("File /does/not/exist must exist");
 		new RandomAccessDataFile(new File("/does/not/exist"));
 	}
 
@@ -120,7 +120,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void fileExistsWithConcurrentReads() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must exist");
+		this.thrown.expectMessage("File /does/not/exist must exist");
 		new RandomAccessDataFile(new File("/does/not/exist"), 1);
 	}
 
