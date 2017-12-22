@@ -648,6 +648,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.web.pageable.default-page-size=20 # Default page size.
 	spring.data.web.pageable.page-parameter=page # Page index parameter name.
 	spring.data.web.pageable.size-parameter=size # Page size parameter name.
+	spring.data.web.pageable.one-indexed-parameters=false # Use one indexed parameters.
 	spring.data.web.sort.sort-parameter=sort # Sort parameter name.
 
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])

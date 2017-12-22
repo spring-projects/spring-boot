@@ -59,6 +59,11 @@ public class SpringDataWebProperties {
 		 */
 		private int defaultPageSize = 20;
 
+		/**
+		 * Use one indexed parameters.
+		 */
+		private boolean oneIndexedParameters = false;
+
 		public String getPageParameter() {
 			return this.pageParameter;
 		}
@@ -81,6 +86,14 @@ public class SpringDataWebProperties {
 
 		public void setDefaultPageSize(int defaultPageSize) {
 			this.defaultPageSize = defaultPageSize;
+		}
+
+		public boolean isOneIndexedParameters() {
+			return oneIndexedParameters;
+		}
+
+		public void setOneIndexedParameters(final boolean oneIndexedParameters) {
+			this.oneIndexedParameters = oneIndexedParameters;
 		}
 	}
 
