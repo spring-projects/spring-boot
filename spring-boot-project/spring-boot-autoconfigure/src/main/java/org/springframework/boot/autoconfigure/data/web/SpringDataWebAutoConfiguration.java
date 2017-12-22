@@ -69,6 +69,10 @@ public class SpringDataWebAutoConfiguration {
 					PageRequest.of(0, pageable.getDefaultPageSize()));
 			resolver.setPageParameterName(pageable.getPageParameter());
 			resolver.setSizeParameterName(pageable.getSizeParameter());
+			resolver.setPrefix(pageable.getPrefix());
+			resolver.setQualifierDelimiter(pageable.getQualifierDelimiter());
+			resolver.setMaxPageSize(pageable.getMaxPageSize());
+			resolver.setOneIndexedParameters(pageable.isOneIndexedParameters());
 		};
 	}
 

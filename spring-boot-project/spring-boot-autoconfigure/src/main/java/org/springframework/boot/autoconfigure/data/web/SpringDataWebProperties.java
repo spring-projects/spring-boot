@@ -59,6 +59,28 @@ public class SpringDataWebProperties {
 		 */
 		private int defaultPageSize = 20;
 
+		/**
+		 * Configures a general prefix to be prepended to the page number and page size parameters.
+		 */
+		private String prefix;
+
+		/**
+		 * Configures the delimiter to be used between the qualifier and the actual page number and size properties.
+		 */
+		private String qualifierDelimiter;
+
+		/**
+		 * Configures the maximum page size to be accepted.
+		 */
+		private int maxPageSize = 2000;
+
+		/**
+		 * Whether to expose and assume 1-based page number indexes in the request parameters.
+		 * Defaults to {@literal false}, meaning a page number of 0 in the request equals the first page.
+		 * If this is set to {@literal true}, a page number of 1 in the request will be considered the first page.
+		 */
+		private boolean oneIndexedParameters = false;
+
 		public String getPageParameter() {
 			return this.pageParameter;
 		}
@@ -81,6 +103,38 @@ public class SpringDataWebProperties {
 
 		public void setDefaultPageSize(int defaultPageSize) {
 			this.defaultPageSize = defaultPageSize;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+		public void setPrefix(final String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getQualifierDelimiter() {
+			return qualifierDelimiter;
+		}
+
+		public void setQualifierDelimiter(final String qualifierDelimiter) {
+			this.qualifierDelimiter = qualifierDelimiter;
+		}
+
+		public int getMaxPageSize() {
+			return maxPageSize;
+		}
+
+		public void setMaxPageSize(final int maxPageSize) {
+			this.maxPageSize = maxPageSize;
+		}
+
+		public boolean isOneIndexedParameters() {
+			return this.oneIndexedParameters;
+		}
+
+		public void setOneIndexedParameters(final boolean oneIndexedParameters) {
+			this.oneIndexedParameters = oneIndexedParameters;
 		}
 	}
 
