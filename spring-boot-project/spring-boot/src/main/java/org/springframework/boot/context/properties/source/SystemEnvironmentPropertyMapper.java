@@ -21,12 +21,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
-import org.springframework.core.env.PropertySource;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link PropertyMapper} for system environment variables. Names are mapped by removing
@@ -52,7 +49,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
+	public List<PropertyMapping> map(
 			ConfigurationPropertyName configurationPropertyName) {
 		Set<String> names = new LinkedHashSet<>();
 		names.add(convertName(configurationPropertyName));
@@ -60,38 +57,14 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		List<PropertyMapping> result = new ArrayList<>();
 		names.forEach((name) -> result
 				.add(new PropertyMapping(name, configurationPropertyName)));
-		if (isListShortcutPossible(configurationPropertyName)) {
-			result.addAll(mapListShortcut(propertySource, configurationPropertyName));
-		}
 		return result;
 	}
 
-	private boolean isListShortcutPossible(ConfigurationPropertyName name) {
-		return (name.isLastElementIndexed() && isNumber(name.getLastElement(Form.UNIFORM))
-				&& name.getNumberOfElements() >= 1);
-	}
-
-	private List<PropertyMapping> mapListShortcut(PropertySource<?> propertySource,
-			ConfigurationPropertyName name) {
-		String result = convertName(name, name.getNumberOfElements() - 1) + "__";
-		if (propertySource.containsProperty(result)) {
-			int index = Integer.parseInt(name.getLastElement(Form.UNIFORM));
-			return Collections.singletonList(
-					new PropertyMapping(result, name, new ElementExtractor(index)));
-		}
-		return Collections.emptyList();
-	}
-
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
-			String propertySourceName) {
+	public List<PropertyMapping> map(String propertySourceName) {
 		ConfigurationPropertyName name = convertName(propertySourceName);
 		if (name == null || name.isEmpty()) {
 			return Collections.emptyList();
-		}
-		if (propertySourceName.endsWith("__")) {
-			return expandListShortcut(propertySourceName, name,
-					propertySource.getProperty(propertySourceName));
 		}
 		return Collections.singletonList(new PropertyMapping(propertySourceName, name));
 	}
@@ -104,22 +77,6 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		catch (Exception ex) {
 			return null;
 		}
-	}
-
-	private List<PropertyMapping> expandListShortcut(String propertySourceName,
-			ConfigurationPropertyName rootName, Object value) {
-		if (value == null) {
-			return Collections.emptyList();
-		}
-		List<PropertyMapping> mappings = new ArrayList<>();
-		String[] elements = StringUtils
-				.commaDelimitedListToStringArray(String.valueOf(value));
-		for (int i = 0; i < elements.length; i++) {
-			ConfigurationPropertyName name = rootName.append("[" + i + "]");
-			mappings.add(new PropertyMapping(propertySourceName, name,
-					new ElementExtractor(i)));
-		}
-		return mappings;
 	}
 
 	private String convertName(ConfigurationPropertyName name) {
@@ -157,28 +114,6 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		IntStream nonDigits = string.chars().filter((c) -> !Character.isDigit(c));
 		boolean hasNonDigit = nonDigits.findFirst().isPresent();
 		return !hasNonDigit;
-	}
-
-	/**
-	 * Function used to extract an element from a comma list.
-	 */
-	private static class ElementExtractor implements Function<Object, Object> {
-
-		private final int index;
-
-		ElementExtractor(int index) {
-			this.index = index;
-		}
-
-		@Override
-		public Object apply(Object value) {
-			if (value == null) {
-				return null;
-			}
-			return StringUtils
-					.commaDelimitedListToStringArray(value.toString())[this.index];
-		}
-
 	}
 
 }

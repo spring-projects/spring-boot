@@ -43,20 +43,16 @@ interface PropertyMapper {
 	/**
 	 * Provide mappings from a {@link ConfigurationPropertySource}
 	 * {@link ConfigurationPropertyName}.
-	 * @param propertySource the property source
 	 * @param configurationPropertyName the name to map
 	 * @return a stream of mappings or {@code Stream#empty()}
 	 */
-	List<PropertyMapping> map(PropertySource<?> propertySource,
-			ConfigurationPropertyName configurationPropertyName);
+	List<PropertyMapping> map(ConfigurationPropertyName configurationPropertyName);
 
 	/**
 	 * Provide mappings from a {@link PropertySource} property name.
-	 * @param propertySource the property source
 	 * @param propertySourceName the name to map
 	 * @return a stream of mappings or {@code Stream#empty()}
 	 */
-	List<PropertyMapping> map(PropertySource<?> propertySource,
-			String propertySourceName);
+	List<PropertyMapping> map(String propertySourceName);
 
 }

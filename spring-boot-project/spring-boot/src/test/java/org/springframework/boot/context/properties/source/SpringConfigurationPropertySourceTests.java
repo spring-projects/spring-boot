@@ -72,20 +72,6 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseExtractor() {
-		Map<String, Object> source = new LinkedHashMap<>();
-		source.put("key", "value");
-		PropertySource<?> propertySource = new MapPropertySource("test", source);
-		TestPropertyMapper mapper = new TestPropertyMapper();
-		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
-		mapper.addFromConfigurationProperty(name, "key",
-				(value) -> value.toString().replace("ue", "let"));
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(
-				propertySource, mapper, null);
-		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("vallet");
-	}
-
-	@Test
 	public void getValueOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");

@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
  * <p>
  * Each {@link ConfigurationPropertySource#getConfigurationProperty
  * getConfigurationProperty} call attempts to
- * {@link PropertyMapper#map(PropertySource, ConfigurationPropertyName) map} the
+ * {@link PropertyMapper#map(ConfigurationPropertyName) map} the
  * {@link ConfigurationPropertyName} to one or more {@code String} based names. This
  * allows fast property resolution for well formed property sources.
  * <p>
@@ -85,7 +85,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
-		List<PropertyMapping> mappings = getMapper().map(getPropertySource(), name);
+		List<PropertyMapping> mappings = getMapper().map(name);
 		return find(mappings, name);
 	}
 
@@ -112,7 +112,6 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		if (value == null) {
 			return null;
 		}
-		value = mapping.getValueExtractor().apply(value);
 		ConfigurationPropertyName configurationPropertyName = mapping
 				.getConfigurationPropertyName();
 		Origin origin = PropertySourceOrigin.get(this.propertySource, propertySourceName);
@@ -215,10 +214,10 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		}
 
 		@Override
-		public List<PropertyMapping> map(PropertySource<?> propertySource,
+		public List<PropertyMapping> map(
 				ConfigurationPropertyName configurationPropertyName) {
 			try {
-				return this.mapper.map(propertySource, configurationPropertyName);
+				return this.mapper.map(configurationPropertyName);
 			}
 			catch (Exception ex) {
 				return Collections.emptyList();
@@ -226,10 +225,9 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		}
 
 		@Override
-		public List<PropertyMapping> map(PropertySource<?> propertySource,
-				String propertySourceName) {
+		public List<PropertyMapping> map(String propertySourceName) {
 			try {
-				return this.mapper.map(propertySource, propertySourceName);
+				return this.mapper.map(propertySourceName);
 			}
 			catch (Exception ex) {
 				return Collections.emptyList();

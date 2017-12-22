@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-import org.springframework.core.env.PropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -53,13 +52,12 @@ class TestPropertyMapper implements PropertyMapper {
 	}
 
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
-			String propertySourceName) {
+	public List<PropertyMapping> map(String propertySourceName) {
 		return this.fromSource.getOrDefault(propertySourceName, Collections.emptyList());
 	}
 
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
+	public List<PropertyMapping> map(
 			ConfigurationPropertyName configurationPropertyName) {
 		return this.fromConfig.getOrDefault(configurationPropertyName,
 				Collections.emptyList());

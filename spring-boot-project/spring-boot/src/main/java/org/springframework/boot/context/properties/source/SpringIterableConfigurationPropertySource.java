@@ -119,7 +119,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		String[] names = getPropertySource().getPropertyNames();
 		mappings = new ArrayList<>(names.length);
 		for (String name : names) {
-			mappings.addAll(getMapper().map(getPropertySource(), name));
+			mappings.addAll(getMapper().map(name));
 		}
 		mappings = Collections.unmodifiableList(mappings);
 		if (cache != null) {

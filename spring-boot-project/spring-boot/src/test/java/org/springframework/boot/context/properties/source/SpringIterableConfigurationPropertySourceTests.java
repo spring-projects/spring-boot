@@ -111,21 +111,6 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseExtractor() {
-		Map<String, Object> source = new LinkedHashMap<>();
-		source.put("key", "value");
-		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
-				source);
-		TestPropertyMapper mapper = new TestPropertyMapper();
-		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
-		mapper.addFromConfigurationProperty(name, "key",
-				(value) -> value.toString().replace("ue", "let"));
-		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
-				propertySource, mapper);
-		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("vallet");
-	}
-
-	@Test
 	public void getValueOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");

@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.core.env.PropertySource;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -44,7 +43,7 @@ final class DefaultPropertyMapper implements PropertyMapper {
 	}
 
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
+	public List<PropertyMapping> map(
 			ConfigurationPropertyName configurationPropertyName) {
 		// Use a local copy in case another thread changes things
 		LastMapping<ConfigurationPropertyName> last = this.lastMappedConfigurationPropertyName;
@@ -60,8 +59,7 @@ final class DefaultPropertyMapper implements PropertyMapper {
 	}
 
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
-			String propertySourceName) {
+	public List<PropertyMapping> map(String propertySourceName) {
 		// Use a local copy in case another thread changes things
 		LastMapping<String> last = this.lastMappedPropertyName;
 		if (last != null && last.isFrom(propertySourceName)) {
