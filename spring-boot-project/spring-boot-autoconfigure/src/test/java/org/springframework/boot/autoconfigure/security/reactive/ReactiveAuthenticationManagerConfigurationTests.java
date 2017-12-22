@@ -41,22 +41,29 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() throws Exception {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class,
-				ReactiveAuthenticationManagerConfiguration.class).run((context -> {
-			MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);
-			String password = userDetailsService.findByUsername("user").block().getPassword();
-			assertThat(password).startsWith("{noop}");
-		}));
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword()
+			throws Exception {
+		this.contextRunner
+				.withUserConfiguration(TestSecurityConfiguration.class,
+						ReactiveAuthenticationManagerConfiguration.class)
+				.run((context -> {
+					MapReactiveUserDetailsService userDetailsService = context
+							.getBean(MapReactiveUserDetailsService.class);
+					String password = userDetailsService.findByUsername("user").block()
+							.getPassword();
+					assertThat(password).startsWith("{noop}");
+				}));
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword() throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword()
+			throws Exception {
 		testPasswordEncoding(TestSecurityConfiguration.class, "secret", "{noop}secret");
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword() throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword()
+			throws Exception {
 		String password = "{bcrypt}$2a$10$sCBi9fy9814vUPf2ZRbtp.fR5/VgRk2iBFZ.ypu5IyZ28bZgxrVDa";
 		testPasswordEncoding(TestSecurityConfiguration.class, password, password);
 	}
@@ -66,14 +73,19 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "secret");
 	}
 
-	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
-		this.contextRunner.withUserConfiguration(configClass,
-				ReactiveAuthenticationManagerConfiguration.class)
-				.withPropertyValues("spring.security.user.password=" + providedPassword).run((context -> {
-			MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);
-			String password = userDetailsService.findByUsername("user").block().getPassword();
-			assertThat(password).isEqualTo(expectedPassword);
-		}));
+	private void testPasswordEncoding(Class<?> configClass, String providedPassword,
+			String expectedPassword) {
+		this.contextRunner
+				.withUserConfiguration(configClass,
+						ReactiveAuthenticationManagerConfiguration.class)
+				.withPropertyValues("spring.security.user.password=" + providedPassword)
+				.run((context -> {
+					MapReactiveUserDetailsService userDetailsService = context
+							.getBean(MapReactiveUserDetailsService.class);
+					String password = userDetailsService.findByUsername("user").block()
+							.getPassword();
+					assertThat(password).isEqualTo(expectedPassword);
+				}));
 	}
 
 	@Configuration

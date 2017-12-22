@@ -51,33 +51,38 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 		UserDetailsService.class })
 public class AuthenticationManagerConfiguration {
 
-	private final Pattern pattern = Pattern.compile("^\\{.+}.*$");
+	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
+
+	private static final Pattern PASSWORD_ALGORITHM_PATTERN = Pattern
+			.compile("^\\{.+}.*$");
 
 	private static final Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
 
-	private static final String NOOP_PREFIX = "{noop}";
-
 	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
+			SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) throws Exception {
 		SecurityProperties.User user = properties.getUser();
-		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
-		}
-		String password = deducePassword(passwordEncoder, user.getPassword());
 		List<String> roles = user.getRoles();
 		return new InMemoryUserDetailsManager(
-				User.withUsername(user.getName()).password(password)
-						.roles(roles.toArray(new String[roles.size()])).build());
+				User.withUsername(user.getName())
+						.password(getOrDeducePassword(user,
+								passwordEncoder.getIfAvailable()))
+				.roles(roles.toArray(new String[roles.size()])).build());
 	}
 
-	private String deducePassword(ObjectProvider<PasswordEncoder> passwordEncoder, String password) {
-		if (passwordEncoder.getIfAvailable() == null &&
-				!this.pattern.matcher(password).matches()) {
-			return NOOP_PREFIX + password;
+	public String getOrDeducePassword(SecurityProperties.User user,
+			PasswordEncoder encoder) {
+		String password = user.getPassword();
+		if (user.isPasswordGenerated()) {
+			logger.info(String.format("%n%nUsing generated security password: %s%n",
+					user.getPassword()));
 		}
-		return password;
+		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
+			return password;
+		}
+		return NOOP_PASSWORD_PREFIX + password;
 	}
 
 }

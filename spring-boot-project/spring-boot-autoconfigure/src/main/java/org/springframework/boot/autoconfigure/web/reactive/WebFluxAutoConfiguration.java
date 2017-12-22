@@ -223,7 +223,8 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		@Override
 		public FormattingConversionService webFluxConversionService() {
-			WebConversionService conversionService = new WebConversionService(this.webFluxProperties.getDateFormat());
+			WebConversionService conversionService = new WebConversionService(
+					this.webFluxProperties.getDateFormat());
 			addFormatters(conversionService);
 			return conversionService;
 		}

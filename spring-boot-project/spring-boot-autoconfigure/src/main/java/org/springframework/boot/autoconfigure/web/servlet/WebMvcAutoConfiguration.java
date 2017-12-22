@@ -301,8 +301,8 @@ public class WebMvcAutoConfiguration {
 				return;
 			}
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
-			CacheControl cacheControl = this.resourceProperties.getCache().getCachecontrol()
-					.toHttpCacheControl();
+			CacheControl cacheControl = this.resourceProperties.getCache()
+					.getCachecontrol().toHttpCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				customizeResourceHandlerRegistration(
 						registry.addResourceHandler("/webjars/**")
@@ -475,7 +475,8 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@Override
 		public FormattingConversionService mvcConversionService() {
-			WebConversionService conversionService = new WebConversionService(this.mvcProperties.getDateFormat());
+			WebConversionService conversionService = new WebConversionService(
+					this.mvcProperties.getDateFormat());
 			addFormatters(conversionService);
 			return conversionService;
 		}

@@ -40,22 +40,27 @@ public class AuthenticationManagerConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword()
+			throws Exception {
 		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class,
 				AuthenticationManagerConfiguration.class).run((context -> {
-			InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
-			String password = userDetailsService.loadUserByUsername("user").getPassword();
-			assertThat(password).startsWith("{noop}");
-		}));
+					InMemoryUserDetailsManager userDetailsService = context
+							.getBean(InMemoryUserDetailsManager.class);
+					String password = userDetailsService.loadUserByUsername("user")
+							.getPassword();
+					assertThat(password).startsWith("{noop}");
+				}));
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword() throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword()
+			throws Exception {
 		testPasswordEncoding(TestSecurityConfiguration.class, "secret", "{noop}secret");
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword() throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword()
+			throws Exception {
 		String password = "{bcrypt}$2a$10$sCBi9fy9814vUPf2ZRbtp.fR5/VgRk2iBFZ.ypu5IyZ28bZgxrVDa";
 		testPasswordEncoding(TestSecurityConfiguration.class, password, password);
 	}
@@ -65,14 +70,19 @@ public class AuthenticationManagerConfigurationTests {
 		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "secret");
 	}
 
-	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
-		this.contextRunner.withUserConfiguration(configClass,
-				AuthenticationManagerConfiguration.class)
-				.withPropertyValues("spring.security.user.password=" + providedPassword).run((context -> {
-			InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
-			String password = userDetailsService.loadUserByUsername("user").getPassword();
-			assertThat(password).isEqualTo(expectedPassword);
-		}));
+	private void testPasswordEncoding(Class<?> configClass, String providedPassword,
+			String expectedPassword) {
+		this.contextRunner
+				.withUserConfiguration(configClass,
+						AuthenticationManagerConfiguration.class)
+				.withPropertyValues("spring.security.user.password=" + providedPassword)
+				.run((context -> {
+					InMemoryUserDetailsManager userDetailsService = context
+							.getBean(InMemoryUserDetailsManager.class);
+					String password = userDetailsService.loadUserByUsername("user")
+							.getPassword();
+					assertThat(password).isEqualTo(expectedPassword);
+				}));
 	}
 
 	@Configuration
@@ -92,4 +102,5 @@ public class AuthenticationManagerConfigurationTests {
 		}
 
 	}
+
 }
