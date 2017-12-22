@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -54,6 +53,7 @@ import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
+import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
@@ -73,7 +73,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.format.datetime.DateFormatter;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -264,12 +264,6 @@ public class WebMvcAutoConfiguration {
 			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
 			localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
 			return localeResolver;
-		}
-
-		@Bean
-		@ConditionalOnProperty(prefix = "spring.mvc", name = "date-format")
-		public Formatter<Date> dateFormatter() {
-			return new DateFormatter(this.mvcProperties.getDateFormat());
 		}
 
 		@Override
@@ -476,6 +470,14 @@ public class WebMvcAutoConfiguration {
 		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 			// Must be @Primary for MvcUriComponentsBuilder to work
 			return super.requestMappingHandlerMapping();
+		}
+
+		@Bean
+		@Override
+		public FormattingConversionService mvcConversionService() {
+			WebConversionService conversionService = new WebConversionService(this.mvcProperties.getDateFormat());
+			addFormatters(conversionService);
+			return conversionService;
 		}
 
 		@Bean

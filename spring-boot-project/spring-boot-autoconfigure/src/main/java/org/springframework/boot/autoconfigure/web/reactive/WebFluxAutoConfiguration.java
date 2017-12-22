@@ -34,9 +34,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +50,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
@@ -84,7 +87,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
 @AutoConfigureAfter({ ReactiveWebServerAutoConfiguration.class,
-		CodecsAutoConfiguration.class })
+		CodecsAutoConfiguration.class, ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
@@ -211,8 +214,22 @@ public class WebFluxAutoConfiguration {
 	public static class EnableWebFluxConfiguration
 			extends DelegatingWebFluxConfiguration {
 
-		@Override
+		private final WebFluxProperties webFluxProperties;
+
+		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties) {
+			this.webFluxProperties = webFluxProperties;
+		}
+
 		@Bean
+		@Override
+		public FormattingConversionService webFluxConversionService() {
+			WebConversionService conversionService = new WebConversionService(this.webFluxProperties.getDateFormat());
+			addFormatters(conversionService);
+			return conversionService;
+		}
+
+		@Bean
+		@Override
 		public Validator webFluxValidator() {
 			if (!ClassUtils.isPresent("javax.validation.Validator",
 					getClass().getClassLoader())) {

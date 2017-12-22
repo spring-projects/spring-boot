@@ -465,7 +465,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.
 	spring.thymeleaf.view-names= # Comma-separated list of view names that can be resolved.
 
-	# SPRING WEB FLUX ({sc-spring-boot-autoconfigure}/web/reactive/WebFluxProperties.{sc-ext}[WebFluxProperties])
+	# SPRING WEBFLUX ({sc-spring-boot-autoconfigure}/web/reactive/WebFluxProperties.{sc-ext}[WebFluxProperties])
+	spring.webflux.date-format= # Date format to use. For instance, `dd/MM/yyyy`.
 	spring.webflux.static-path-pattern=/** # Path pattern used for static resources.
 
 	# SPRING WEB SERVICES ({sc-spring-boot-autoconfigure}/webservices/WebServicesProperties.{sc-ext}[WebServicesProperties])
