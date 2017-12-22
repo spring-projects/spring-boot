@@ -95,7 +95,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	/**
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
 	 * is deemed to be the "main" servlet and is automatically given a mapping of "/" by
-	 * default. To change the default behaviour you can use a
+	 * default. To change the default behavior you can use a
 	 * {@link ServletRegistrationBean} or a different bean name.
 	 */
 	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
