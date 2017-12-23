@@ -97,7 +97,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void enablingNoRepositoriesDisablesReactiveRepositories() {
+	public void enablingNoRepositoriesDisablesImperativeRepositories() {
 		this.runner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.mongodb.repositories.type=none")
 				.run((context) -> assertThat(context)

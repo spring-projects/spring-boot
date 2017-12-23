@@ -46,9 +46,11 @@ class ConditionEvaluationDeltaLoggingListener
 			if (!delta.getConditionAndOutcomesBySource().isEmpty()
 					|| !delta.getExclusions().isEmpty()
 					|| !delta.getUnconditionalClasses().isEmpty()) {
-				this.logger.info("Condition evaluation delta:"
-						+ new ConditionEvaluationReportMessage(delta,
-								"CONDITION EVALUATION DELTA"));
+				if (this.logger.isInfoEnabled()) {
+					this.logger.info("Condition evaluation delta:"
+							+ new ConditionEvaluationReportMessage(delta,
+									"CONDITION EVALUATION DELTA"));
+				}
 			}
 			else {
 				this.logger.info("Condition evaluation unchanged");

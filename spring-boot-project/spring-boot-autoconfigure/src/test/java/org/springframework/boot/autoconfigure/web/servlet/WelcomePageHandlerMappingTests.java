@@ -75,7 +75,7 @@ public class WelcomePageHandlerMappingTests {
 	public void handlesRequestForStaticPageThatAcceptsAll() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
-						.perform(get("/").accept("*/*")).andExpect(status().isOk())
+						.perform(get("/").accept(MediaType.ALL)).andExpect(status().isOk())
 						.andExpect(forwardedUrl("index.html")));
 	}
 

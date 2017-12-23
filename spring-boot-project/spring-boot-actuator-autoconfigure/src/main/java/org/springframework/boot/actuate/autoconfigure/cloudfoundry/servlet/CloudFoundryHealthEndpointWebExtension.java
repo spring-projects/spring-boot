@@ -20,13 +20,12 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryE
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 
 /**
- * {@link EndpointWebExtension} for the {@link HealthEndpoint} that always exposes full
+ * {@link EndpointExtension} for the {@link HealthEndpoint} that always exposes full
  * health details.
  *
  * @author Madhura Bhave

@@ -59,7 +59,7 @@ public class StringSequenceTests {
 	}
 
 	@Test
-	public void creatFromString() {
+	public void createFromString() {
 		assertThat(new StringSequence("test").toString()).isEqualTo("test");
 	}
 
