@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 /**
  * Utility that can be used to map values from a supplied source to a destination.
  * Primarily intended to be help when mapping from
- * {@link ConfigurationProperties @ConfigrationProperties} to third-party classes.
+ * {@link ConfigurationProperties @ConfigurationProperties} to third-party classes.
  * <p>
  * Can filter values based on predicates and adapt values if needed. For example:
  * <pre class="code">
@@ -176,7 +176,7 @@ public final class PropertyMapper {
 		private final Predicate<T> predicate;
 
 		private Source(Supplier<T> supplier, Predicate<T> predicate) {
-			Assert.notNull(predicate, "Arse");
+			Assert.notNull(predicate, "Predicate must not be null");
 			this.supplier = supplier;
 			this.predicate = predicate;
 		}
