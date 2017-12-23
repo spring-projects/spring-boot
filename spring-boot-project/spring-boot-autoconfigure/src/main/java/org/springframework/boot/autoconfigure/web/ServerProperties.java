@@ -303,8 +303,9 @@ public class ServerProperties {
 
 		public String getServletPrefix() {
 			String result = this.path;
-			if (result.contains("*")) {
-				result = result.substring(0, result.indexOf("*"));
+			int index = result.indexOf("*");
+			if (index != -1) {
+				result = result.substring(0, index);
 			}
 			if (result.endsWith("/")) {
 				result = result.substring(0, result.length() - 1);
