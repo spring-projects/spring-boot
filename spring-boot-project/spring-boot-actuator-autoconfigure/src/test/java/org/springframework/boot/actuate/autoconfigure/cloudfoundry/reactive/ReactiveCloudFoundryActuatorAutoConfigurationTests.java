@@ -25,7 +25,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryHealthWebEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryHealthWebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
@@ -227,7 +227,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	public void healthEndpointInvokerShouldBeCloudFoundryWebExtension() {
 		setupContextWithCloudEnabled();
 		this.context.register(HealthEndpointAutoConfiguration.class,
-				CloudFoundryHealthWebEndpointManagementContextConfiguration.class);
+				CloudFoundryHealthWebEndpointAutoConfiguration.class);
 		this.context.refresh();
 		Collection<EndpointInfo<WebOperation>> endpoints = getHandlerMapping()
 				.getEndpoints();
