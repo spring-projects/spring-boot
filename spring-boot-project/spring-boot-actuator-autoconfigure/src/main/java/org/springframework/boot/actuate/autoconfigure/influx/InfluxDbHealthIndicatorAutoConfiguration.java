@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndi
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.infux.InfluxDbHealthIndicator;
+import org.springframework.boot.actuate.influx.InfluxDbHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
