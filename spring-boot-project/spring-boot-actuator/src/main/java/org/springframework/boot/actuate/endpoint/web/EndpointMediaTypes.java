@@ -41,8 +41,8 @@ public class EndpointMediaTypes {
 	 * @param consumed the default media types that are consumed by an endpoint. Must not
 	 */
 	public EndpointMediaTypes(List<String> produced, List<String> consumed) {
-		Assert.notNull(produced, () -> "Produced must not be null");
-		Assert.notNull(consumed, () -> "Consumed must not be null");
+		Assert.notNull(produced, "Produced must not be null");
+		Assert.notNull(consumed, "Consumed must not be null");
 		this.produced = Collections.unmodifiableList(produced);
 		this.consumed = Collections.unmodifiableList(consumed);
 	}

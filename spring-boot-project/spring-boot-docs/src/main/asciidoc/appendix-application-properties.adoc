@@ -1140,12 +1140,12 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.conditions.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.conditions.enabled= # Whether to enable the conditions endpoint.
 
-	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint])
+	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint], {sc-spring-boot-actuator-autoconfigure}/context/properties/ConfigurationPropertiesReportEndpointProperties.{sc-ext}[ConfigurationPropertiesReportEndpointProperties])
 	management.endpoint.configprops.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.configprops.enabled= # Whether to enable the configprops endpoint.
 	management.endpoint.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
-	# ENVIRONMENT ENDPOINT  ({sc-spring-boot-actuator}/env/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint])
+	# ENVIRONMENT ENDPOINT ({sc-spring-boot-actuator}/env/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint], {sc-spring-boot-actuator-autoconfigure}/env/EnvironmentEndpointProperties.{sc-ext}[EnvironmentEndpointProperties])
 	management.endpoint.env.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.env.enabled= # Whether to enable the env endpoint.
 	management.endpoint.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
@@ -1154,10 +1154,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.flyway.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.flyway.enabled= # Whether to enable the flyway endpoint.
 
-	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint])
+	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint], {sc-spring-boot-actuator-autoconfigure}/health/HealthEndpointProperties.{sc-ext}[HealthEndpointProperties])
 	management.endpoint.health.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.health.enabled= # Whether to enable the health endpoint.
-	management.endpoint.health.show-details= # Whether to show full health details
+	management.endpoint.health.show-details=false # Whether to show full health details instead of just the status when exposed over a potentially insecure connection.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
 	management.endpoint.heapdump.cache.time-to-live=0ms # Maximum time that a response can be cached.
@@ -1171,7 +1171,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.liquibase.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.liquibase.enabled= # Whether to enable the liquibase endpoint.
 
-	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logging/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint])
+	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logging/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint], {sc-spring-boot-actuator-autoconfigure}/logging/LogFileWebEndpointProperties.{sc-ext}[LogFileWebEndpointProperties])
 	management.endpoint.logfile.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.logfile.enabled= # Whether to enable the logfile endpoint.
 	management.endpoint.logfile.external-file= # External Logfile to be accessed. Can be used if the logfile is written by output redirect and not by the logging system itself.
@@ -1223,8 +1223,8 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.elasticsearch.enabled=true # Whether to enable Elasticsearch health check.
 	management.health.elasticsearch.indices= # Comma-separated index names.
 	management.health.elasticsearch.response-timeout=100ms # The time to wait for a response from the cluster.
-	management.health.jms.enabled=true # Whether to enable JMS health check.
 	management.health.influxdb.enabled=true # Whether to enable InfluxDB health check.
+	management.health.jms.enabled=true # Whether to enable JMS health check.
 	management.health.ldap.enabled=true # Whether to enable LDAP health check.
 	management.health.mail.enabled=true # Whether to enable Mail health check.
 	management.health.mongo.enabled=true # Whether to enable MongoDB health check.
