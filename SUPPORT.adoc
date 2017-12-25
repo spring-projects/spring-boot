@@ -25,3 +25,4 @@ https://gitter.im/spring-projects/spring-boot[#spring-boot room on Gitter].
 == Pivotal Open Source Software Support
 If you are interested in more dedicated support, Pivotal provides
 https://pivotal.io/support/oss[premium support] for Spring Boot.
+
