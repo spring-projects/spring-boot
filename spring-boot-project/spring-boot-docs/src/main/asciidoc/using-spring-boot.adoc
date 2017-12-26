@@ -30,7 +30,7 @@ systems (Ant, for example), but they are not particularly well supported.
 === Dependency Management
 Each release of Spring Boot provides a curated list of dependencies that it supports. In
 practice, you do not need to provide a version for any of these dependencies in your
-build configuration, as Spring Boot is managing that for you. When you upgrade Spring
+build configuration, as Spring Boot manages that for you. When you upgrade Spring
 Boot itself, these dependencies are upgraded as well in a consistent way.
 
 NOTE: You can still specify a version and override Spring Boot's recommendations if you
@@ -76,8 +76,8 @@ style placeholders (`${...}`), the Maven filtering is changed to use `@..@` plac
 
 [[using-boot-maven-parent-pom]]
 ==== Inheriting the Starter Parent
-To configure your project to inherit from the `spring-boot-starter-parent` set the
-`parent`, as follows:
+To configure your project to inherit from the `spring-boot-starter-parent`, set the
+`parent` as follows:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -273,7 +273,7 @@ _<<howto.adoc#howto-build-an-executable-archive-with-ant>>_ "`How-to`" .
 [[using-boot-starter]]
 === Starters
 Starters are a set of convenient dependency descriptors that you can include in your
-application. You get a one-stop shop for all the Spring and related technology that you
+application. You get a one-stop shop for all the Spring and related technologies that you
 need without having to hunt through sample code and copy-paste loads of dependency
 descriptors. For example, if you want to get started using Spring and JPA for database
 access, include the `spring-boot-starter-data-jpa` dependency in your project.
@@ -285,9 +285,9 @@ running quickly and with a consistent, supported set of managed transitive depen
 ****
 All **official** starters follow a similar naming pattern; `+spring-boot-starter-*+`,
 where `+*+` is a particular type of application. This naming structure is intended to
-help when you need to find a starter. The Maven integration in many IDEs allow you to
+help when you need to find a starter. The Maven integration in many IDEs lets you
 search dependencies by name. For example, with the appropriate Eclipse or STS plugin
-installed, you can simply hit `ctrl-space` in the POM editor and type
+installed, you can press `ctrl-space` in the POM editor and type
 "`spring-boot-starter`" for a complete list.
 
 As explained in the "`<<spring-boot-features#boot-features-custom-starter,Creating Your
@@ -636,6 +636,7 @@ following example:
 === Using the Maven Plugin
 The Spring Boot Maven plugin includes a `run` goal that can be used to quickly compile
 and run your application. Applications run in an exploded form, as they do in your IDE.
+The following example shows a typical Maven command to run a Spring Boot application:
 
 [indent=0,subs="attributes"]
 ----
@@ -682,7 +683,7 @@ http://zeroturnaround.com/software/jrebel/[JRebel] can be used.
 
 The
 `spring-boot-devtools` module also includes support for quick application restarts.
-See the <<using-boot-devtools>> section below and the
+See the <<using-boot-devtools>> section later in this chapter and the
 <<howto.adoc#howto-hotswapping, Hot swapping "`How-to`">> for details.
 
 
@@ -716,10 +717,10 @@ listings for Maven and Gradle:
 ----
 
 NOTE: Developer tools are automatically disabled when running a fully packaged
-application. If your application is launched using `java -jar` or if it is started from a
+application. If your application is launched from `java -jar` or if it is started from a
 special classloader, then it is considered a "`production application`". Flagging the
 dependency as optional is a best practice that prevents devtools from being transitively
-applied to other modules using your project. Gradle does not support `optional`
+applied to other modules that use your project. Gradle does not support `optional`
 dependencies out-of-the-box, so you may want to have a look at the
 {propdeps-plugin}[`propdeps-plugin`].
 
@@ -852,7 +853,7 @@ You may want your application to be restarted or reloaded when you make changes 
 that are not on the classpath. To do so, use the
 `spring.devtools.restart.additional-paths` property to configure additional paths to
 watch for changes. You can use the `spring.devtools.restart.exclude` property
-<<using-boot-devtools-restart-exclude, described above>> to control whether changes
+<<using-boot-devtools-restart-exclude, described earlier>> to control whether changes
 beneath the additional paths trigger a full restart or a
 <<using-boot-devtools-livereload, live reload>>.
 
@@ -865,7 +866,7 @@ If you do not want to use the restart feature, you can disable it by using the
 your `application.properties` (doing so still initializes the restart classloader, but it
 does not watch for file changes).
 
-If you need to _completely_ disable restart support (for example, because it doesn't work
+If you need to _completely_ disable restart support (for example, because it does not work
 with a specific library), you need to set the `spring.devtools.restart.enabled` `System`
 property to `false` before calling `SpringApplication.run(...)`, as shown in the
 following example:
@@ -885,7 +886,7 @@ following example:
 If you work with an IDE that continuously compiles changed files, you might prefer to
 trigger restarts only at specific times. To do so, you can use a "`trigger file`", which
 is a special file that must be modified when you want to actually trigger a restart
-check. Changing the file only triggers the check and the restart will only occur if
+check. Changing the file only triggers the check and the restart only occurs if
 Devtools has detected it has to do something. The trigger file can be updated manually or
 with an IDE plugin.
 
@@ -900,9 +901,9 @@ in the same way.
 
 [[using-boot-devtools-customizing-classload]]
 ==== Customizing the Restart Classloader
-As described in the <<using-spring-boot-restart-vs-reload>> section above, restart
+As described earlier in the <<using-spring-boot-restart-vs-reload>> section, restart
 functionality is implemented by using two classloaders. For most applications, this
-approach works well. However, sometimes it can cause classloading issues.
+approach works well. However, it can sometimes cause classloading issues.
 
 By default, any open project in your IDE is loaded with the "`restart`" classloader, and
 any regular `.jar` file is loaded with the "`base`" classloader. If you work on a
@@ -924,7 +925,7 @@ pattern that is applied to the classpath, as shown in the following example:
 NOTE: All property keys must be unique. As long as a property starts with
 `restart.include.` or `restart.exclude.` it is considered.
 
-TIP: All `META-INF/spring-devtools.properties` from the classpath will be loaded. You can
+TIP: All `META-INF/spring-devtools.properties` from the classpath are loaded. You can
 package files inside your project, or in the libraries that the project consumes.
 
 
@@ -977,7 +978,7 @@ property:
 
 [[using-boot-devtools-remote]]
 === Remote Applications
-The Spring Boot developer tools are not just limited to local development. You can also
+The Spring Boot developer tools are not limited to local development. You can also
 use several features when running applications remotely. Remote support is opt-in. To
 enable it, you need to make sure that `devtools` is included in the repackaged archive,
 as shown in the following listing:

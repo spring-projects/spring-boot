@@ -79,7 +79,7 @@ using, as follows:
 [[cli-run]]
 === Running Applications with the CLI
 You can compile and run Groovy source code by using the `run` command. The Spring Boot CLI
-is completely self-contained, so you don't need any external Groovy installation.
+is completely self-contained, so you do not need any external Groovy installation.
 
 The following example shows a "`hello world`" web application written in Groovy:
 
@@ -97,14 +97,14 @@ The following example shows a "`hello world`" web application written in Groovy:
 	}
 ----
 
-To compile and run the application type the following command:
+To compile and run the application, type the following command:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
 	$ spring run hello.groovy
 ----
 
-To pass command-line arguments to the application, use a `--` to separate the commands
+To pass command-line arguments to the application, use `--` to separate the commands
 from the "`spring`" command arguments, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -186,10 +186,11 @@ in the Spring Boot CLI source code to understand exactly how customizations are 
 ==== Deduced "`grab`" Coordinates
 Spring Boot extends Groovy's standard `@Grab` support by letting you specify a dependency
 without a group or version (for example, `@Grab('freemarker')`). Doing so consults Spring
-Boot's default dependency metadata to deduce the artifact's group and version. Note that
-the default metadata is tied to the version of the CLI that you use – it changes only when
-you move to a new version of the CLI, putting you in control of when the versions of your
-dependencies may change. A table showing the dependencies and their versions that are
+Boot's default dependency metadata to deduce the artifact's group and version.
+
+NOTE: The default metadata is tied to the version of the CLI that you use. it changes only
+when you move to a new version of the CLI, putting you in control of when the versions of
+your dependencies may change. A table showing the dependencies and their versions that are
 included in the default metadata can be found in the <<appendix-dependency-versions,
 appendix>>.
 
@@ -242,8 +243,8 @@ as shown in the following example:
 			"com.example.another-bom:1.0.0"])
 ----
 
-The preceding example indicates that dependency management in `another-bom` overrides the
-dependency management in `custom-bom`.
+The preceding example indicates that the dependency management in `another-bom` overrides
+the dependency management in `custom-bom`.
 
 You can use `@DependencyManagementBom` anywhere that you can use `@Grab`. However, to
 ensure consistent ordering of the dependency management, you can use
@@ -282,10 +283,10 @@ jar file, as shown in the following example:
 
 The resulting jar contains the classes produced by compiling the application and all of
 the application's dependencies so that it can then be run by using `java -jar`. The jar
-file also contains entries from the application's classpath. You can add explicit paths to
-the jar by using `--include` and `--exclude`. Both are comma-separated, and both accept
-prefixes, in the form of "`+`" and "`-`", to signify that they should be removed from the
-defaults. The default includes are as follows:
+file also contains entries from the application's classpath. You can add and remove
+explicit paths to the jar by using `--include` and `--exclude`. Both are comma-separated,
+and both accept prefixes, in the form of "`+`" and "`-`", to signify that they should be
+removed from the defaults. The default includes are as follows:
 
 [indent=0]
 ----
@@ -399,8 +400,8 @@ In addition to installing the artifacts identified by the coordinates you supply
 the artifacts' dependencies are also installed.
 
 To uninstall a dependency, use the `uninstall` command. As with the `install` command, it
-takes one or more sets of artifact coordinates in the format `group:artifact:version`, as
-shown in the following example:
+takes one or more sets of artifact coordinates in the format of `group:artifact:version`,
+as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -462,14 +463,14 @@ The Spring Boot CLI uses Aether, Maven's dependency resolution engine, to resolv
 dependencies. The CLI makes use of the Maven configuration found in `~/.m2/settings.xml`
 to configure Aether. The following configuration settings are honored by the CLI:
 
- * Offline
- * Mirrors
- * Servers
- * Proxies
- * Profiles
- ** Activation
- ** Repositories
- * Active profiles
+* Offline
+* Mirrors
+* Servers
+* Proxies
+* Profiles
+** Activation
+** Repositories
+* Active profiles
 
 See https://maven.apache.org/settings.html[Maven's settings documentation] for further
 information.

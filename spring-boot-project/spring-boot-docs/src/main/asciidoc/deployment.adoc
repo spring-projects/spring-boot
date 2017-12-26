@@ -17,16 +17,16 @@ This section covers some of the more common deployment scenarios.
 Spring Boot's executable jars are ready-made for most popular cloud PaaS
 (Platform-as-a-Service) providers. These providers tend to require that you
 "`bring your own container`". They manage application processes (not Java applications
-specifically), so they need some intermediary layer that adapts _your_ application to the
+specifically), so they need an intermediary layer that adapts _your_ application to the
 _cloud's_ notion of a running process.
 
 Two popular cloud providers, Heroku and Cloud Foundry, employ a "`buildpack`" approach.
-The buildpack wraps your deployed code in whatever is needed to _start_ your application:
-it might be a JDK and a call to `java`, it might be an embedded web server, or it might be
-a full-fledged application server. A buildpack is pluggable, but ideally you should be
-able to get by with as few customizations to it as possible. This reduces the footprint of
-functionality that is not under your control. It minimizes divergence between development
-and production environments.
+The buildpack wraps your deployed code in whatever is needed to _start_ your application.
+It might be a JDK and a call to `java`, an embedded web server, or a full-fledged
+application server. A buildpack is pluggable, but ideally you should be able to get by
+with as few customizations to it as possible. This reduces the footprint of functionality
+that is not under your control. It minimizes divergence between development and production
+environments.
 
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs
 to run packaged within it.
@@ -148,7 +148,7 @@ extracts them and flattens the data into properties that can be accessed through
 
 All Cloud Foundry properties are prefixed with `vcap`. You can use `vcap` properties to
 access application information (such as the public URL of the application) and service
-information (such as database credentials). See
+information (such as database credentials). See the
 {dc-spring-boot}/cloud/CloudFoundryVcapEnvironmentPostProcessor.html['`CloudFoundryVcapEnvironmentPostProcessor`']
 Javadoc for complete details.
 
@@ -175,7 +175,7 @@ shows the `Procfile` for our starter REST application:
 
 Spring Boot makes `-D` arguments available as properties accessible from a Spring
 `Environment` instance. The `server.port` configuration property is fed to the embedded
-Tomcat, Jetty, or Undertow instance which, then uses the port when it starts up. The `$PORT`
+Tomcat, Jetty, or Undertow instance, which then uses the port when it starts up. The `$PORT`
 environment variable is assigned to us by the Heroku PaaS.
 
 This should be everything you need. The most common deployment workflow for Heroku
@@ -234,8 +234,7 @@ https://www.openshift.com/[OpenShift] is the Red Hat public (and enterprise) ext
 the Kubernetes container orchestration platform. Similarly to Kubernetes, OpenShift has
 many options for installing Spring Boot based applications.
 
-OpenShift has many resources describing how to deploy Spring Boot applications, which
-include:
+OpenShift has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
 * https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[Architecture guide]
@@ -255,7 +254,7 @@ server. The options include:
 * AWS Cloud Formation
 * AWS Container Registry
 
-Each has different features and pricing model. In this document, we describe only the
+Each has different features and pricing models. In this document, we describe only the
 simplest option: AWS Elastic Beanstalk.
 
 
@@ -269,8 +268,8 @@ either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
 
 ===== Using the Tomcat Platform
-This option applies to Spring Boot projects that produce a war file. There is no any
-special configuration required. You need only follow the official guide.
+This option applies to Spring Boot projects that produce a war file. No
+special configuration is required. You need only follow the official guide.
 
 
 
@@ -290,7 +289,7 @@ your `application.properties` file:
 .Upload binaries instead of sources
 ====
 By default, Elastic Beanstalk uploads sources and compiles them in AWS. However, it is
-best to upload the binaries instead. To do so, add the following lines to your
+best to upload the binaries instead. To do so, add lines similar to the following to your
 `.elasticbeanstalk/config.yml` file:
 
 
@@ -355,11 +354,11 @@ more options. If there is a https://boxfuse.com/docs/commandline/#configuration
 TIP: By default, Boxfuse activates a Spring profile named `boxfuse` on startup. If your
 executable jar or war contains an
 https://boxfuse.com/docs/payloads/springboot.html#configuration
-[`application-boxfuse.properties`] file, Boxfuse bases its configuration based on the
+[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the
 properties it contains.
 
 At this point, `boxfuse` creates an image for your application, uploads it, and configures
-and starts the necessary resources on AWS resulting in output similar to the following
+and starts the necessary resources on AWS, resulting in output similar to the following
 example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -405,7 +404,7 @@ it empty and then use the https://cloud.google.com/sdk/downloads[Google Cloud SD
 push your Spring Boot app into that slot from the command line or CI build.
 
 App Engine needs you to create an `app.yaml` file to describe the resources your app
-requires. Normally you put this file in `src/main/appengine`, and it should resemble the
+requires. Normally, you put this file in `src/main/appengine`, and it should resemble the
 following file:
 
 [source,yaml,indent=0]
@@ -464,11 +463,11 @@ can be executed like any other executable binary or it can be
 <<deployment-service,registered with `init.d` or `systemd`>>. This makes it very easy to
 install and manage Spring Boot applications in common production environments.
 
-WARNING: Fully executable jars work by embedding an extra script at the front of the file.
+CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
 Currently, some tools do not accept this format, so you may not always be able to use this
 technique. For example, `jar -xf` may silently fail to extract a jar or war that has been
-made fully executable. It is recommended that you only make your jar or war fully
-executable if you intend to execute it directly, rather than running it with `java -jar`
+made fully executable. It is recommended that you make your jar or war fully executable
+only if you intend to execute it directly, rather than running it with `java -jar`
 or deploying it to a servlet container.
 
 To create a '`fully executable`' jar with Maven, use the following plugin configuration:
@@ -516,7 +515,7 @@ Spring Boot application can be easily started as Unix/Linux services by using ei
 If you configured Spring Boot's Maven or Gradle plugin to generate a <<deployment-install,
 fully executable jar>>, and you do not use a custom `embeddedLaunchScript`, your
 application can be used as an `init.d` service. To do so, symlink the jar to `init.d` to
-support the standard `start`, `stop`, `restart` and `status` commands.
+support the standard `start`, `stop`, `restart`, and `status` commands.
 
 The script supports the following features:
 
@@ -533,7 +532,7 @@ Spring Boot application as an `init.d` service, create a symlink, as follows:
 ----
 
 Once installed, you can start and stop the service in the usual way. For example, on a
-Debian based system, you could start it with the following command:
+Debian-based system, you could start it with the following command:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -638,7 +637,7 @@ place it in `/etc/systemd/system` directory. The following script offers an exam
 	WantedBy=multi-user.target
 ----
 
-IMPORTANT: Remember to change the `Description`, `User` and `ExecStart` fields for your
+IMPORTANT: Remember to change the `Description`, `User`, and `ExecStart` fields for your
 application.
 
 NOTE: The `ExecStart` field does not declare the script action command, which means that
@@ -666,7 +665,7 @@ Refer to `man systemctl` for more details.
 The default embedded startup script written by the Maven or Gradle plugin can be
 customized in a number of ways. For most people, using the default script along with a few
 customizations is usually enough. If you find you cannot customize something that you need
-to, you can always use the `embeddedLaunchScript` option to write your own file entirely.
+to, use the `embeddedLaunchScript` option to write your own file entirely.
 
 
 
@@ -785,8 +784,8 @@ The following environment properties are supported with the default script:
 |The name of the log file in the `LOG_FOLDER` (`<appname>.log` by default).
 
 |`APP_NAME`
-|The name of the app. If the jar is run from a symlink, the script guesses the app name if
- it is not a symlink or you want to explicitly set the app name, this can be useful.
+|The name of the app. If the jar is run from a symlink, the script guesses the app name.
+If it is not a symlink or you want to explicitly set the app name, this can be useful.
 
 |`RUN_ARGS`
 |The arguments to pass to the program (the Spring Boot app).
@@ -818,10 +817,11 @@ http://www.freedesktop.org/software/systemd/man/systemd.service.html[service uni
 configuration man page] for more details.
 
 [[deployment-script-customization-conf-file]]
-With the exception of `JARFILE` and `APP_NAME`, the above settings can be configured by
-using a `.conf` file. The file is expected to be next to the jar file and have the same
-name but suffixed with `.conf` rather than `.jar`. For example, a jar named
-`/var/myapp/myapp.jar` uses the configuration file named `/var/myapp/myapp.conf`.
+With the exception of `JARFILE` and `APP_NAME`, the settings listed in the preceding
+section can be configured by using a `.conf` file. The file is expected to be next to the
+jar file and have the same name but suffixed with `.conf` rather than `.jar`. For example,
+a jar named `/var/myapp/myapp.jar` uses the configuration file named
+`/var/myapp/myapp.conf`, as shown in the following example:
 
 .myapp.conf
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -842,7 +842,7 @@ To learn about securing this file appropriately, see
 A Spring Boot application can be started as a Windows service by using
 https://github.com/kohsuke/winsw[`winsw`].
 
-A sample (https://github.com/snicoll-scratches/spring-boot-daemon[maintained separately])
+A (https://github.com/snicoll-scratches/spring-boot-daemon[separately maintained sample])
 describes step-by-step how you can create a Windows service for your Spring Boot
 application.
 
