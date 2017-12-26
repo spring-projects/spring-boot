@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import javax.net.SocketFactory;
 
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import org.junit.After;
@@ -54,7 +53,7 @@ public class MongoAutoConfigurationTests {
 	public void clientExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(Mongo.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(MongoClient.class)).hasSize(1);
 	}
 
 	@Test

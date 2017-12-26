@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.util.Set;
 
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import org.junit.After;
 import org.junit.Test;
@@ -59,8 +58,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 		prepareApplicationContext(TestConfiguration.class);
 
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo).isInstanceOf(MongoClient.class);
+		assertThat(this.context.getBeansOfType(MongoClient.class)).hasSize(1);
 		MongoMappingContext mappingContext = this.context
 				.getBean(MongoMappingContext.class);
 		@SuppressWarnings("unchecked")
@@ -72,9 +70,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(EmptyConfiguration.class);
-
-		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo).isInstanceOf(MongoClient.class);
+		assertThat(this.context.getBeansOfType(MongoClient.class)).hasSize(1);
 	}
 
 	@Test
