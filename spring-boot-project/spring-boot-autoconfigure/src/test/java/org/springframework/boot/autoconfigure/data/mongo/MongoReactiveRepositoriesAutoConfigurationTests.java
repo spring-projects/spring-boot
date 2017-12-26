@@ -60,8 +60,7 @@ public class MongoReactiveRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() {
 		this.runner.withUserConfiguration(TestConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ReactiveCityRepository.class);
-			MongoClient client = context.getBean(MongoClient.class);
-			assertThat(client).isInstanceOf(MongoClient.class);
+			assertThat(context).hasSingleBean(MongoClient.class);
 			MongoMappingContext mappingContext = context
 					.getBean(MongoMappingContext.class);
 			@SuppressWarnings("unchecked")
