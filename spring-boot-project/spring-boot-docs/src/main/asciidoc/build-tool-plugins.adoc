@@ -67,8 +67,9 @@ as the original jar in the `target` directory:
 ----
 
 
-If you do not include the `<execution/>` configuration as shown in the prior example, you
-can run the plugin on its own (but only if the package goal is used as well). For example:
+If you do not include the `<execution/>` configuration, as shown in the prior example, you
+can run the plugin on its own (but only if the package goal is used as well), as shown in
+the following example:
 
 [indent=0]
 ----
@@ -78,7 +79,7 @@ can run the plugin on its own (but only if the package goal is used as well). Fo
 ----
 
 If you use a milestone or snapshot release, you also need to add the appropriate
-`pluginRepository` elements as shown in the following listing:
+`pluginRepository` elements, as shown in the following listing:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -115,7 +116,7 @@ the usual `packaging` element, as shown in the following example:
 ----
 
 Your existing archive is enhanced by Spring Boot during the `package` phase. The main
-class that you want to launch can either be specified by using a configuration option or
+class that you want to launch can be specified either by using a configuration option or
 by adding a `Main-Class` attribute to the manifest in the usual way. If you do not specify
 a main class, the plugin searches for a class with a
 `public static void main(String[] args)` method.
@@ -229,7 +230,7 @@ attributes are supported by the task:
 
 |`start-class`
 |The main application class to run
-|No _(default is first class found declaring a `main` method)_
+|No _(the default is the first class found that declares a `main` method)_
 |====
 
 The following nested elements can be used with the task:
@@ -252,6 +253,9 @@ of the application.
 
 
 ==== Examples
+
+This section shows two examples of Ant tasks.
+
 .Specify +start-class+
 [source,xml,indent=0]
 ----
@@ -280,7 +284,7 @@ of the application.
 [[spring-boot-ant-findmainclass]]
 === `spring-boot:findmainclass`
 The `findmainclass` task is used internally by `exejar` to locate a class declaring a
-`main`. You can also use this task directly in your build, if needed. The following
+`main`. If necessary, you can also use this task directly in your build. The following
 attributes are supported:
 
 [cols="1,2,2"]
@@ -303,6 +307,9 @@ attributes are supported:
 
 
 ==== Examples
+
+This section contains three examples of using `findmainclass`.
+
 .Find and log
 [source,xml,indent=0]
 ----
@@ -367,7 +374,7 @@ candidate is found.
 
 [[build-tool-plugins-repackage-implementation]]
 === Example Repackage Implementation
-The following listing shows a typical example repackage:
+The following example shows a typical repackage implementation:
 
 [source,java,indent=0]
 ----
