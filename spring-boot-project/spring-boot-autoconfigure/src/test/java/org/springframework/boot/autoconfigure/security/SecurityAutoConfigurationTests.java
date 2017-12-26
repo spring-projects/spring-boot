@@ -293,7 +293,7 @@ public class SecurityAutoConfigurationTests {
 	protected static class TestUserDetailsServiceConfiguration {
 
 		@Bean
-		public InMemoryUserDetailsManager myUserDetailsService() {
+		public InMemoryUserDetailsManager myUserDetailsManager() {
 			return new InMemoryUserDetailsManager(
 					User.withUsername("foo").password("bar").roles("USER").build());
 		}

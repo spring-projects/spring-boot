@@ -96,7 +96,7 @@ public class CassandraRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void enablingNoRepositoriesDisablesReactiveRepositories() {
+	public void enablingNoRepositoriesDisablesImperativeRepositories() {
 		this.runner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.cassandra.repositories.type=none")
 				.run((context) -> assertThat(context)

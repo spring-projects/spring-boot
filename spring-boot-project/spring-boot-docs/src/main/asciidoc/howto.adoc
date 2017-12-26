@@ -1904,7 +1904,7 @@ location of your `Repository` interfaces.
 
 There are also flags (`+spring.data.*.repositories.enabled+` and
 `+spring.data.*.repositories.type+`) that you can use to switch the auto-configured
-repositories on and off in external configuration.  Doing so is useful, for instance, in
+repositories on and off in external configuration. Doing so is useful, for instance, in
 case you want to switch off the Mongo repositories and still use the auto-configured
 `MongoTemplate`.
 
@@ -2270,7 +2270,7 @@ it switches off the default webapp security settings in Spring Boot.
 === Change the AuthenticationManager and Add User Accounts
 If you provide a `@Bean` of type `AuthenticationManager`, `AuthenticationProvider`
 or `UserDetailsService`, the default `@Bean` for `InMemoryUserDetailsManager` is not
-created, so you have the full feature set of Spring Security available (such as
+created. So you have the full feature set of Spring Security available (such as
 http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-authentication[various authentication options]).
 
 The easiest way to add user accounts is to provide your own `UserDetailsService` bean.

@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ItemMetadataTests {
 
 	@Test
-	public void newItemMetadataPrefixWithUpperCasePrefix() {
+	public void newItemMetadataPrefixWithCapitalizedPrefix() {
 		assertThat(newItemMetadataPrefix("Prefix.", "value")).isEqualTo("prefix.value");
 	}
 
