@@ -17,7 +17,6 @@
 package org.springframework.boot.test.context.assertj;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -410,17 +409,11 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 			BufferedReader reader = new BufferedReader(new StringReader(input));
 			StringWriter writer = new StringWriter();
 			PrintWriter printer = new PrintWriter(writer);
-			try {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					printer.print(" ");
-					printer.println(line);
-				}
-				return writer.toString();
-			}
-			catch (IOException ex) {
-				return input;
-			}
+			reader.lines().forEach((line) -> {
+				printer.print(" ");
+				printer.println(line);
+			});
+			return writer.toString();
 		}
 
 	}
