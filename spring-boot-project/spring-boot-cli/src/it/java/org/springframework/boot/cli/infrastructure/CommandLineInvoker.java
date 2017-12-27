@@ -28,6 +28,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -159,19 +160,9 @@ public final class CommandLineInvoker {
 		private List<String> getLines(StringBuffer buffer) {
 			BufferedReader reader = new BufferedReader(
 					new StringReader(buffer.toString()));
-			String line;
-			List<String> lines = new ArrayList<>();
-			try {
-				while ((line = reader.readLine()) != null) {
-					if (!line.startsWith("Picked up ")) {
-						lines.add(line);
-					}
-				}
-			}
-			catch (IOException ex) {
-				throw new RuntimeException("Failed to read output");
-			}
-			return lines;
+			return reader.lines()
+					.filter((line) -> !line.startsWith("Picked up "))
+					.collect(Collectors.toList());
 		}
 
 		public int await() throws InterruptedException {

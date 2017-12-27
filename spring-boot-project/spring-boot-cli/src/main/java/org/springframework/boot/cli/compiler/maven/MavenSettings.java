@@ -18,7 +18,6 @@ package org.springframework.boot.cli.compiler.maven;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -174,16 +173,8 @@ public class MavenSettings {
 	private String indentLines(String input, String indent) {
 		StringWriter indented = new StringWriter();
 		PrintWriter writer = new PrintWriter(indented);
-		String line;
 		BufferedReader reader = new BufferedReader(new StringReader(input));
-		try {
-			while ((line = reader.readLine()) != null) {
-				writer.println(indent + line);
-			}
-		}
-		catch (IOException ex) {
-			return input;
-		}
+		reader.lines().forEach((line) -> writer.println(indent + line));
 		return indented.toString();
 	}
 
