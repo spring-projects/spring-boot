@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
@@ -77,7 +76,7 @@ import org.springframework.util.Assert;
 @Configuration
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
 @AutoConfigureBefore(MongoAutoConfiguration.class)
-@ConditionalOnClass({ Mongo.class, MongodStarter.class })
+@ConditionalOnClass({ MongoClient.class, MongodStarter.class })
 public class EmbeddedMongoAutoConfiguration {
 
 	private static final byte[] IP4_LOOPBACK_ADDRESS = { 127, 0, 0, 1 };
