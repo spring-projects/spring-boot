@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import org.junit.After;
 import org.junit.Test;
 
@@ -96,7 +96,7 @@ public class MongoDataAutoConfigurationTests {
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate template = this.context.getBean(MongoTemplate.class);
-		assertThat(template.getConverter().getConversionService().canConvert(Mongo.class,
+		assertThat(template.getConverter().getConversionService().canConvert(MongoClient.class,
 				Boolean.class)).isTrue();
 	}
 
@@ -203,10 +203,10 @@ public class MongoDataAutoConfigurationTests {
 
 	}
 
-	private static class MyConverter implements Converter<Mongo, Boolean> {
+	private static class MyConverter implements Converter<MongoClient, Boolean> {
 
 		@Override
-		public Boolean convert(Mongo source) {
+		public Boolean convert(MongoClient source) {
 			return null;
 		}
 
