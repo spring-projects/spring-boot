@@ -307,7 +307,7 @@ of 1000 milliseconds.
 ==== Auto-configured HealthIndicators
 The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
 
-[cols="1,4"]
+[cols="4,6"]
 |===
 |Name |Description
 
