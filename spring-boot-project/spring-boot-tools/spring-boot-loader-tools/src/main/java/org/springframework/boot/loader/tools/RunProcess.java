@@ -147,17 +147,13 @@ public class RunProcess {
 	}
 
 	private void redirectOutput(Process process) {
-		final BufferedReader reader = new BufferedReader(
-				new InputStreamReader(process.getInputStream()));
 		new Thread(() -> {
-			try {
-				String line = reader.readLine();
-				while (line != null) {
+			try (BufferedReader reader = new BufferedReader(
+					new InputStreamReader(process.getInputStream()))) {
+				reader.lines().forEach((line) -> {
 					System.out.println(line);
-					line = reader.readLine();
 					System.out.flush();
-				}
-				reader.close();
+				});
 			}
 			catch (Exception ex) {
 				// Ignore

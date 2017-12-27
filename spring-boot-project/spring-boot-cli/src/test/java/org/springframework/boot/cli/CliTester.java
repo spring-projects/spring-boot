@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Assume;
 import org.junit.rules.TestRule;
@@ -192,12 +193,7 @@ public class CliTester implements TestRule {
 			InputStream stream = URI.create("http://localhost:" + port + uri).toURL()
 					.openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			String line;
-			StringBuilder result = new StringBuilder();
-			while ((line = reader.readLine()) != null) {
-				result.append(line);
-			}
-			return result.toString();
+			return reader.lines().collect(Collectors.joining());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
