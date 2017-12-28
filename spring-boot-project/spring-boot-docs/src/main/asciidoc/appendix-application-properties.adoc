@@ -646,7 +646,11 @@ content into your application. Rather, pick only the properties that you need.
 
 	# DATA WEB ({sc-spring-boot-autoconfigure}/data/web/SpringDataWebProperties.{sc-ext}[SpringDataWebProperties])
 	spring.data.web.pageable.default-page-size=20 # Default page size.
+	spring.data.web.pageable.max-page-size=2000 # Maximum page size to be accepted.
+	spring.data.web.pageable.one-indexed-parameters=false # Whether to expose and assume 1-based page number indexes.
 	spring.data.web.pageable.page-parameter=page # Page index parameter name.
+	spring.data.web.pageable.prefix= # General prefix to be prepended to the page number and page size parameters.
+	spring.data.web.pageable.qualifier-delimiter=_ # Delimiter to be used between the qualifier and the actual page number and size properties.
 	spring.data.web.pageable.size-parameter=size # Page size parameter name.
 	spring.data.web.sort.sort-parameter=sort # Sort parameter name.
 
