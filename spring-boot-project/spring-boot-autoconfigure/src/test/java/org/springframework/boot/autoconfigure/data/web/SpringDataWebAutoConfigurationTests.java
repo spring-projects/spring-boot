@@ -79,6 +79,9 @@ public class SpringDataWebAutoConfigurationTests {
 		load("spring.data.web.pageable.page-parameter=p",
 				"spring.data.web.pageable.size-parameter=s",
 				"spring.data.web.pageable.default-page-size=10",
+				"spring.data.web.pageable.prefix=abc",
+				"spring.data.web.pageable.qualifier-delimiter=__",
+				"spring.data.web.pageable.max-page-size=100",
 				"spring.data.web.pageable.one-indexed-parameters=true");
 		PageableHandlerMethodArgumentResolver argumentResolver = this.context
 				.getBean(PageableHandlerMethodArgumentResolver.class);
@@ -88,6 +91,12 @@ public class SpringDataWebAutoConfigurationTests {
 				.isEqualTo("s");
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "fallbackPageable"))
 				.isEqualTo(PageRequest.of(0, 10));
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "prefix"))
+				.isEqualTo("abc");
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "qualifierDelimiter"))
+				.isEqualTo("__");
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "maxPageSize"))
+				.isEqualTo(100);
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "oneIndexedParameters"))
 				.isEqualTo(true);
 	}
