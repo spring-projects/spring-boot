@@ -95,11 +95,6 @@ public class ReactiveMongoClientFactory {
 		return createMongoClient(builder);
 	}
 
-	private MongoClient createMongoClient(Builder builder) {
-		customize(builder);
-		return MongoClients.create(builder.build());
-	}
-
 	private MongoClient createNetworkMongoClient(MongoClientSettings settings) {
 		if (hasCustomAddress() || hasCustomCredentials()) {
 			return createCredentialNetworkMongoClient(settings);
@@ -136,6 +131,11 @@ public class ReactiveMongoClientFactory {
 
 	private <T> T getOrDefault(T value, T defaultValue) {
 		return (value == null ? defaultValue : value);
+	}
+
+	private MongoClient createMongoClient(Builder builder) {
+		customize(builder);
+		return MongoClients.create(builder.build());
 	}
 
 	private Builder createBuilder(MongoClientSettings settings,
