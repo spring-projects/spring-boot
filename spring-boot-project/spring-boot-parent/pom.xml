@@ -287,6 +287,8 @@
 					<version>${kotlin.version}</version>
 					<configuration>
 						<jvmTarget>${java.version}</jvmTarget>
+						<apiVersion>1.1</apiVersion>
+						<languageVersion>1.1</languageVersion>
 					</configuration>
 				</plugin>
 				<plugin>
