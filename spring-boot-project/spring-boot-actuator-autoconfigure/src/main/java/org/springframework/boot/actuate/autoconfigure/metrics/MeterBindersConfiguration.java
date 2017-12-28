@@ -40,21 +40,21 @@ class MeterBindersConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
-	@ConditionalOnMissingBean(JvmGcMetrics.class)
+	@ConditionalOnMissingBean
 	public JvmGcMetrics jvmGcMetrics() {
 		return new JvmGcMetrics();
 	}
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
-	@ConditionalOnMissingBean(JvmMemoryMetrics.class)
+	@ConditionalOnMissingBean
 	public JvmMemoryMetrics jvmMemoryMetrics() {
 		return new JvmMemoryMetrics();
 	}
 
 	@Bean
 	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
-	@ConditionalOnMissingBean(JvmThreadMetrics.class)
+	@ConditionalOnMissingBean
 	public JvmThreadMetrics jvmThreadMetrics() {
 		return new JvmThreadMetrics();
 	}
@@ -69,14 +69,14 @@ class MeterBindersConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled", matchIfMissing = true)
-	@ConditionalOnMissingBean(UptimeMetrics.class)
+	@ConditionalOnMissingBean
 	public UptimeMetrics uptimeMetrics() {
 		return new UptimeMetrics();
 	}
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled", matchIfMissing = true)
-	@ConditionalOnMissingBean(ProcessorMetrics.class)
+	@ConditionalOnMissingBean
 	public ProcessorMetrics processorMetrics() {
 		return new ProcessorMetrics();
 	}
