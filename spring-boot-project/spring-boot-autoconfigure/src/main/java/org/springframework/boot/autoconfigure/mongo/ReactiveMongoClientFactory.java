@@ -92,8 +92,7 @@ public class ReactiveMongoClientFactory {
 		ClusterSettings clusterSettings = ClusterSettings.builder()
 				.hosts(Collections.singletonList(new ServerAddress(host, port))).build();
 		builder.clusterSettings(clusterSettings);
-		customize(builder);
-		return MongoClients.create(builder.build());
+		return createMongoClient(builder);
 	}
 
 	private MongoClient createNetworkMongoClient(MongoClientSettings settings) {
@@ -102,7 +101,7 @@ public class ReactiveMongoClientFactory {
 		}
 		ConnectionString connectionString = new ConnectionString(
 				this.properties.determineUri());
-		return MongoClients.create(createBuilder(settings, connectionString).build());
+		return createMongoClient(createBuilder(settings, connectionString));
 	}
 
 	private MongoClient createCredentialNetworkMongoClient(MongoClientSettings settings) {
@@ -117,7 +116,7 @@ public class ReactiveMongoClientFactory {
 		ServerAddress serverAddress = new ServerAddress(host, port);
 		builder.clusterSettings(ClusterSettings.builder()
 				.hosts(Collections.singletonList(serverAddress)).build());
-		return MongoClients.create(builder.build());
+		return createMongoClient(builder);
 	}
 
 	private void applyCredentials(Builder builder) {
@@ -132,6 +131,11 @@ public class ReactiveMongoClientFactory {
 
 	private <T> T getOrDefault(T value, T defaultValue) {
 		return (value == null ? defaultValue : value);
+	}
+
+	private MongoClient createMongoClient(Builder builder) {
+		customize(builder);
+		return MongoClients.create(builder.build());
 	}
 
 	private Builder createBuilder(MongoClientSettings settings,
@@ -155,7 +159,6 @@ public class ReactiveMongoClientFactory {
 		if (connection.getApplicationName() != null) {
 			builder.applicationName(connection.getApplicationName());
 		}
-		customize(builder);
 		return builder;
 	}
 
