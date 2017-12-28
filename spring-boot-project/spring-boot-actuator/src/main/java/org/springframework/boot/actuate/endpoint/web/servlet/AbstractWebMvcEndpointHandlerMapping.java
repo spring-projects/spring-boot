@@ -149,7 +149,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 	private PatternsRequestCondition patternsRequestConditionForPattern(String path) {
 		String[] patterns = new String[] { this.endpointMapping.createSubPath(path) };
-		return new PatternsRequestCondition(patterns, null, null, false, false);
+		return new PatternsRequestCondition(patterns, null, null, false, true);
 	}
 
 	private String[] toStringArray(Collection<String> collection) {

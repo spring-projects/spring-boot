@@ -123,6 +123,13 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	public void operationWithTrailingSlashShouldMatch() {
+		load(TestEndpointConfiguration.class,
+				(client) -> client.get().uri("/test/").exchange().expectStatus().isOk()
+						.expectBody().jsonPath("All").isEqualTo(true));
+	}
+
+	@Test
 	public void readOperationWithSingleQueryParameters() {
 		load(QueryEndpointConfiguration.class,
 				(client) -> client.get().uri("/query?one=1&two=2").exchange()
