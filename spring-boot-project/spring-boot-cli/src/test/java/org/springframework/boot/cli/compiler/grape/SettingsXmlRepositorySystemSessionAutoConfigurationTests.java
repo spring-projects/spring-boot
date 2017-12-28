@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.cli.testutil.SystemProperties;
+import org.springframework.boot.test.util.TestPropertyValues;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,12 +74,13 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 					return new SimpleLocalRepositoryManagerFactory().newInstance(session,
 							localRepository);
 				});
-		SystemProperties.doWithSystemProperties(
-				() -> new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(
-						session,
-						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem),
-				"user.home:src/test/resources/maven-settings/property-interpolation",
-				"foo:bar");
+		TestPropertyValues.of("user.home:src/test/resources/maven-settings/property-interpolation",
+				"foo:bar").applyToSystemProperties(() -> {
+					new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(
+							session,
+							SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+					return null;
+				});
 		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath())
 				.endsWith(File.separatorChar + "bar" + File.separatorChar + "repository");
 	}
@@ -87,11 +88,12 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	private void assertSessionCustomization(String userHome) {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
 				.newSession();
-		SystemProperties.doWithSystemProperties(
-				() -> new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(
-						session,
-						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem),
-				"user.home:" + userHome);
+		TestPropertyValues.of("user.home:" + userHome).applyToSystemProperties(() -> {
+					new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(
+							session,
+							SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+					return null;
+				});
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
 				"http://maven.example.com").build();
 		assertMirrorSelectorConfiguration(session, repository);
