@@ -192,9 +192,9 @@
       "defaultValue": true
     },
     {
-      "name": "management.metrics.binders.jvmmemory.enabled",
+      "name": "management.metrics.binders.jvm.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable JVM memory metrics.",
+      "description": "Whether to enable JVM metrics.",
       "defaultValue": true
     },
     {

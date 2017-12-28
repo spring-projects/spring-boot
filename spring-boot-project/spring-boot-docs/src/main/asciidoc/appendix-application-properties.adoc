@@ -1248,7 +1248,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.jolokia.path=/jolokia # Path at which Jolokia is available.
 
 	# METRICS
-	management.metrics.binders.jvmmemory.enabled=true # Whether to enable JVM memory metrics.
+	management.metrics.binders.jvm.enabled=true # Whether to enable JVM metrics.
 	management.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
 	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.

@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
@@ -37,10 +39,24 @@ import org.springframework.context.annotation.Configuration;
 class MeterBindersConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.binders.jvmmemory.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean(JvmGcMetrics.class)
+	public JvmGcMetrics jvmGcMetrics() {
+		return new JvmGcMetrics();
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean(JvmMemoryMetrics.class)
 	public JvmMemoryMetrics jvmMemoryMetrics() {
 		return new JvmMemoryMetrics();
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean(JvmThreadMetrics.class)
+	public JvmThreadMetrics jvmThreadMetrics() {
+		return new JvmThreadMetrics();
 	}
 
 	@Bean
