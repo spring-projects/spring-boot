@@ -36,7 +36,7 @@ public class WebEndpointProperties {
 
 	/**
 	 * Base path for Web endpoints. Relative to server.servlet.context-path or
-	 * management.server.context-path if management.server.port is configured.
+	 * management.server.servlet.context-path if management.server.port is configured.
 	 */
 	private String basePath = "/actuator";
 

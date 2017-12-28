@@ -1112,7 +1112,7 @@
       "description": "Management endpoint context-path.",
       "defaultValue": "",
       "deprecation": {
-        "replacement": "management.server.context-path",
+        "replacement": "management.server.servlet.context-path",
         "level": "error"
       }
     },

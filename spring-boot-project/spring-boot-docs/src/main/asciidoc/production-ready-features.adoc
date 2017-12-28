@@ -691,7 +691,8 @@ NOTE: Unless the management port has been configured to
 <<production-ready-customizing-management-server-port,expose endpoints using a different
 HTTP port>>, `management.endpoints.web.base-path` is relative to
 `server.servlet.context-path`. If `management.server.port` is configured,
-`management.endpoints.web.base-path` is relative to `management.server.context-path`.
+`management.endpoints.web.base-path` is relative to
+`management.server.servlet.context-path`.
 
 
 

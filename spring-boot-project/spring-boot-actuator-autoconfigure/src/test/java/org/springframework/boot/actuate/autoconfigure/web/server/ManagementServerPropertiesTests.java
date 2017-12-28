@@ -46,7 +46,7 @@ public class ManagementServerPropertiesTests {
 	public void defaultManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort()).isNull();
-		assertThat(properties.getContextPath()).isEqualTo("");
+		assertThat(properties.getServlet().getContextPath()).isEqualTo("");
 		assertThat(properties.getAddApplicationContextHeader()).isEqualTo(false);
 	}
 
@@ -54,23 +54,23 @@ public class ManagementServerPropertiesTests {
 	public void definedManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setPort(123);
-		properties.setContextPath("/foo");
+		properties.getServlet().setContextPath("/foo");
 		assertThat(properties.getPort()).isEqualTo(123);
-		assertThat(properties.getContextPath()).isEqualTo("/foo");
+		assertThat(properties.getServlet().getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void trailingSlashOfContextPathIsRemoved() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		properties.setContextPath("/foo/");
-		assertThat(properties.getContextPath()).isEqualTo("/foo");
+		properties.getServlet().setContextPath("/foo/");
+		assertThat(properties.getServlet().getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void slashOfContextPathIsDefaultValue() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		properties.setContextPath("/");
-		assertThat(properties.getContextPath()).isEqualTo("");
+		properties.getServlet().setContextPath("/");
+		assertThat(properties.getServlet().getContextPath()).isEqualTo("");
 	}
 
 	public ManagementServerProperties load(String... environment) {

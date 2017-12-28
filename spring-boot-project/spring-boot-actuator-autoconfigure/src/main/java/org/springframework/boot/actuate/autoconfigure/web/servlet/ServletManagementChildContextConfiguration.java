@@ -103,7 +103,8 @@ class ServletManagementChildContextConfiguration {
 				ServerProperties serverProperties) {
 			super.customize(webServerFactory, managementServerProperties,
 					serverProperties);
-			webServerFactory.setContextPath(managementServerProperties.getContextPath());
+			webServerFactory.setContextPath(
+					managementServerProperties.getServlet().getContextPath());
 		}
 
 	}
