@@ -60,24 +60,24 @@ public class SpringDataWebProperties {
 		private int defaultPageSize = 20;
 
 		/**
-		 * Configures a general prefix to be prepended to the page number and page size parameters.
+		 * General prefix to be prepended to the page number and page size parameters.
 		 */
 		private String prefix;
 
 		/**
-		 * Configures the delimiter to be used between the qualifier and the actual page number and size properties.
+		 * Delimiter to be used between the qualifier and the actual page number and size properties.
 		 */
 		private String qualifierDelimiter;
 
 		/**
-		 * Configures the maximum page size to be accepted.
+		 * Maximum page size to be accepted.
 		 */
 		private int maxPageSize = 2000;
 
 		/**
 		 * Whether to expose and assume 1-based page number indexes in the request parameters.
-		 * Defaults to {@literal false}, meaning a page number of 0 in the request equals the first page.
-		 * If this is set to {@literal true}, a page number of 1 in the request will be considered the first page.
+		 * Defaults to false, meaning a page number of 0 in the request equals the first page.
+		 * If this is set to true, a page number of 1 in the request will be considered the first page.
 		 */
 		private boolean oneIndexedParameters = false;
 
