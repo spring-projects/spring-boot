@@ -89,16 +89,38 @@ public class SpringDataWebAutoConfigurationTests {
 				.isEqualTo("p");
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "sizeParameterName"))
 				.isEqualTo("s");
-		assertThat(ReflectionTestUtils.getField(argumentResolver, "fallbackPageable"))
-				.isEqualTo(PageRequest.of(0, 10));
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "oneIndexedParameters"))
+				.isEqualTo(true);
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "prefix"))
 				.isEqualTo("abc");
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "qualifierDelimiter"))
 				.isEqualTo("__");
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "fallbackPageable"))
+				.isEqualTo(PageRequest.of(0, 10));
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "maxPageSize"))
 				.isEqualTo(100);
+	}
+
+	@Test
+	public void defaultPageable() {
+		load();
+		PageableHandlerMethodArgumentResolver argumentResolver = this.context
+				.getBean(PageableHandlerMethodArgumentResolver.class);
+		SpringDataWebProperties.Pageable properties = new SpringDataWebProperties().getPageable();
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "pageParameterName"))
+				.isEqualTo(properties.getPageParameter());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "sizeParameterName"))
+				.isEqualTo(properties.getSizeParameter());
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "oneIndexedParameters"))
-				.isEqualTo(true);
+				.isEqualTo(properties.isOneIndexedParameters());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "prefix"))
+				.isEqualTo(properties.getPrefix());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "qualifierDelimiter"))
+				.isEqualTo(properties.getQualifierDelimiter());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "fallbackPageable"))
+				.isEqualTo(PageRequest.of(0, properties.getDefaultPageSize()));
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "maxPageSize"))
+				.isEqualTo(properties.getMaxPageSize());
 	}
 
 	@Test
