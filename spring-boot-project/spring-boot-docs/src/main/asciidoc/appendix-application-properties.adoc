@@ -1261,7 +1261,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.atlas.config-time-to-live= # Time to live for subscriptions from the LWC service.
 	management.metrics.export.atlas.config-uri= # URI for the Atlas LWC endpoint to retrieve current subscriptions.
 	management.metrics.export.atlas.connect-timeout= # Connection timeout for requests to the backend.
-	management.metrics.export.atlas.enabled= # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.atlas.enabled=true # Whether exporting of metrics to this backend is enabled.
 	management.metrics.export.atlas.eval-uri= # URI for the Atlas LWC endpoint to evaluate the data for a subscription.
 	management.metrics.export.atlas.lwc-enabled= # Enable streaming to Atlas LWC.
 	management.metrics.export.atlas.meter-time-to-live= # Time to live for meters that do not have any activity. After this period the meter will be considered expired and will not get reported.
@@ -1272,7 +1272,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.datadog.api-key= # Datadog API key.
 	management.metrics.export.datadog.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.datadog.connect-timeout= # Connection timeout for requests to the backend.
-	management.metrics.export.datadog.enabled= # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.datadog.enabled=true # Whether exporting of metrics to this backend is enabled.
 	management.metrics.export.datadog.host-tag= # Tag that will be mapped to "host" when shipping metrics to Datadog. Can be omitted if host should be omitted on publishing.
 	management.metrics.export.datadog.num-threads= # Number of threads to use with the metrics publishing scheduler.
 	management.metrics.export.datadog.read-timeout= # Read timeout for requests to the backend.
@@ -1280,7 +1280,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.datadog.uri= # URI to ship metrics to. If you need to publish metrics to an internal proxy en-route to Datadog, you can define the location of the proxy with this.
 	management.metrics.export.ganglia.addressing-mode= # UDP addressing mode, either unicast or multicast.
 	management.metrics.export.ganglia.duration-units= # Base time unit used to report durations.
-	management.metrics.export.ganglia.enabled= # Whether exporting of metrics to Ganglia is enabled.
+	management.metrics.export.ganglia.enabled=true # Whether exporting of metrics to Ganglia is enabled.
 	management.metrics.export.ganglia.host= # Host of the Ganglia server to receive exported metrics.
 	management.metrics.export.ganglia.port= # Port of the Ganglia server to receive exported metrics.
 	management.metrics.export.ganglia.protocol-version= # Ganglia protocol version. Must be either 3.1 or 3.0.
@@ -1288,7 +1288,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.ganglia.step= # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.ganglia.time-to-live= # Time to live for metrics on Ganglia.
 	management.metrics.export.graphite.duration-units= # Base time unit used to report durations.
-	management.metrics.export.graphite.enabled= # Whether exporting of metrics to Graphite is enabled.
+	management.metrics.export.graphite.enabled=true # Whether exporting of metrics to Graphite is enabled.
 	management.metrics.export.graphite.host= # Host of the Graphite server to receive exported metrics.
 	management.metrics.export.graphite.port= # Port of the Graphite server to receive exported metrics.
 	management.metrics.export.graphite.protocol= # Protocol to use while shipping data to Graphite.
@@ -1299,7 +1299,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.influx.connect-timeout= # Connection timeout for requests to the backend.
 	management.metrics.export.influx.consistency= # Write consistency for each point.
 	management.metrics.export.influx.db= # Tag that will be mapped to "host" when shipping metrics to Influx. Can be omitted if host should be omitted on publishing.
-	management.metrics.export.influx.enabled= # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.influx.enabled=true # Whether exporting of metrics to this backend is enabled.
 	management.metrics.export.influx.num-threads= # Number of threads to use with the metrics publishing scheduler.
 	management.metrics.export.influx.password= # Login password of the Influx server.
 	management.metrics.export.influx.read-timeout= # Read timeout for requests to the backend.
@@ -1307,13 +1307,14 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.influx.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.influx.uri= # URI of the Influx server.
 	management.metrics.export.influx.user-name= # Login user of the Influx server.
+	management.metrics.export.jmx.enabled=true # Whether exporting of metrics to JMX is enabled.
 	management.metrics.export.prometheus.descriptions= # Enable publishing descriptions as part of the scrape payload to Prometheus. Turn this off to minimize the amount of data sent on each scrape.
-	management.metrics.export.prometheus.enabled= # Whether exporting of metrics to Prometheus is enabled.
+	management.metrics.export.prometheus.enabled=true # Whether exporting of metrics to Prometheus is enabled.
 	management.metrics.export.prometheus.step= # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.simple.enabled=false # Whether exporting of metrics to a simple in-memory store is enabled.
+	management.metrics.export.simple.enabled=true # Whether exporting of metrics to a simple in-memory store is enabled.
 	management.metrics.export.simple.mode=cumulative # Counting mode.
 	management.metrics.export.simple.step=10s # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.statsd.enabled= # Export metrics to StatsD.
+	management.metrics.export.statsd.enabled=true # Export metrics to StatsD.
 	management.metrics.export.statsd.flavor=datadog # StatsD line protocol to use.
 	management.metrics.export.statsd.host=localhost # Host of the StatsD server to receive exported metrics.
 	management.metrics.export.statsd.max-packet-length=1400 # Total length of a single payload should be kept within your network's MTU.
