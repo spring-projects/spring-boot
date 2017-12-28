@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -121,23 +122,19 @@ public class CorsEndpointProperties {
 		if (CollectionUtils.isEmpty(this.allowedOrigins)) {
 			return null;
 		}
+		PropertyMapper map = PropertyMapper.get();
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(this.allowedOrigins);
-		if (!CollectionUtils.isEmpty(this.allowedHeaders)) {
-			configuration.setAllowedHeaders(this.allowedHeaders);
-		}
-		if (!CollectionUtils.isEmpty(this.allowedMethods)) {
-			configuration.setAllowedMethods(this.allowedMethods);
-		}
-		if (!CollectionUtils.isEmpty(this.exposedHeaders)) {
-			configuration.setExposedHeaders(this.exposedHeaders);
-		}
-		if (this.maxAge != null) {
-			configuration.setMaxAge(this.maxAge.getSeconds());
-		}
-		if (this.allowCredentials != null) {
-			configuration.setAllowCredentials(this.allowCredentials);
-		}
+		map.from(this::getAllowedOrigins).to(configuration::setAllowedOrigins);
+		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty)
+				.to(configuration::setAllowedHeaders);
+		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty)
+				.to(configuration::setAllowedMethods);
+		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty)
+				.to(configuration::setExposedHeaders);
+		map.from(this::getMaxAge).whenNonNull().as(Duration::getSeconds)
+				.to(configuration::setMaxAge);
+		map.from(this::getAllowCredentials).whenNonNull()
+				.to(configuration::setAllowCredentials);
 		return configuration;
 	}
 
