@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
 class MeterBindersConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public JvmGcMetrics jvmGcMetrics() {
 		return new JvmGcMetrics();
@@ -53,7 +53,7 @@ class MeterBindersConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public JvmThreadMetrics jvmThreadMetrics() {
 		return new JvmThreadMetrics();
