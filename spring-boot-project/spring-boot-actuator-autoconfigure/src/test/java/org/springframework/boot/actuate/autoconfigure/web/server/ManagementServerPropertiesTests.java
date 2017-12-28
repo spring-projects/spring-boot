@@ -16,12 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import org.junit.After;
 import org.junit.Test;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,15 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class ManagementServerPropertiesTests {
-
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
 
 	@Test
 	public void defaultManagementServerProperties() {
@@ -71,20 +57,6 @@ public class ManagementServerPropertiesTests {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.getServlet().setContextPath("/");
 		assertThat(properties.getServlet().getContextPath()).isEqualTo("");
-	}
-
-	public ManagementServerProperties load(String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(ctx);
-		ctx.register(Config.class);
-		ctx.refresh();
-		this.context = ctx;
-		return this.context.getBean(ManagementServerProperties.class);
-	}
-
-	@EnableConfigurationProperties(ManagementServerProperties.class)
-	protected static class Config {
-
 	}
 
 }
