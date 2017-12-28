@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -22,10 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.cors.CorsConfiguration;
 
 /**
- * Configuration properties for MVC endpoints' CORS support.
+ * Configuration properties for web endpoints' CORS support.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
@@ -113,6 +116,26 @@ public class CorsEndpointProperties {
 
 	public void setMaxAge(Duration maxAge) {
 		this.maxAge = maxAge;
+	}
+
+	public CorsConfiguration toCorsConfiguration() {
+		if (CollectionUtils.isEmpty(this.allowedOrigins)) {
+			return null;
+		}
+		PropertyMapper map = PropertyMapper.get();
+		CorsConfiguration configuration = new CorsConfiguration();
+		map.from(this::getAllowedOrigins).to(configuration::setAllowedOrigins);
+		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty)
+				.to(configuration::setAllowedHeaders);
+		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty)
+				.to(configuration::setAllowedMethods);
+		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty)
+				.to(configuration::setExposedHeaders);
+		map.from(this::getMaxAge).whenNonNull().as(Duration::getSeconds)
+				.to(configuration::setMaxAge);
+		map.from(this::getAllowCredentials).whenNonNull()
+				.to(configuration::setAllowCredentials);
+		return configuration;
 	}
 
 }
