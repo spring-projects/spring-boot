@@ -43,6 +43,20 @@ class MeterBindersConfiguration {
 		return new JvmMemoryMetrics();
 	}
 
+	@Bean	
+	@ConditionalOnProperty(value = "spring.metrics.binders.jvmthreads.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean(JvmThreadMetrics.class)
+	public JvmThreadMetrics jvmThreadMetrics() {
+		return new JvmThreadMetrics();
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.metrics.binders.jvmgc.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean(JvmGcMetrics.class)
+	public JvmGcMetrics jvmGcMetrics() {
+		return new JvmGcMetrics();
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(LogbackMetrics.class)
 	@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
