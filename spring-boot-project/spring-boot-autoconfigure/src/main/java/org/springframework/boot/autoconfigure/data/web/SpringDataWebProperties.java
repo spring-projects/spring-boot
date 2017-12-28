@@ -60,7 +60,9 @@ public class SpringDataWebProperties {
 		private int defaultPageSize = 20;
 
 		/**
-		 * Use one indexed parameters.
+		 * Whether to expose and assume 1-based page number indexes in the request parameters.
+		 * Defaults to {@literal false}, meaning a page number of 0 in the request equals the first page.
+		 * If this is set to {@literal true}, a page number of 1 in the request will be considered the first page.
 		 */
 		private boolean oneIndexedParameters = false;
 
