@@ -100,6 +100,9 @@ do as they were designed before this was clarified.
 | JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
 | http://joinfaces.org
 
+| http://www.liquigraph.org/[Liquigraph]
+| https://github.com/liquigraph/liquigraph
+
 | http://log4jdbc.brunorozendo.com/[Log4jdbc]
 | https://github.com/candrews/log4jdbc-spring-boot-starter
 
