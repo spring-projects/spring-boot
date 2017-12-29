@@ -25,10 +25,8 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -69,12 +67,10 @@ public class WebMvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void corsIsDisabledByDefault() throws Exception {
-		MockMvc mockMvc = createMockMvc();
-		System.out.println(new ConditionEvaluationReportMessage(
-				this.context.getBean(ConditionEvaluationReport.class)));
-		mockMvc.perform(options("/actuator/beans").header("Origin", "foo.example.com")
-				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
-						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+		createMockMvc()
+				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+				.andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
 	}
 
 	@Test

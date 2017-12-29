@@ -165,7 +165,6 @@ content into your application. Rather, pick only the properties that you need.
 	server.compression.min-response-size=2048 # Minimum response size that is required for compression to be performed.
 	server.connection-timeout= # Time that connectors wait for another HTTP request before closing the connection. When not set, the connector's container-specific default is used. Use a value of -1 to indicate no (that is, an infinite) timeout.
 	server.display-name=application # Display name of the application.
-	server.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
 	server.error.include-exception=false # Include the "exception" attribute.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
@@ -186,6 +185,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.jetty.accesslog.time-zone=GMT # Timezone of the request log.
 	server.jetty.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post or put content.
 	server.jetty.selectors= # Number of selector threads to use.
+	server.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
 	server.port=8080 # Server HTTP port.
 	server.server-header= # Value to use for the Server response header (if empty, no header is sent)
 	server.use-forward-headers= # Whether X-Forwarded-* headers should be applied to the HttpRequest.
@@ -1124,7 +1124,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoints.web.base-path=/actuator # Base path for Web endpoints. Relative to server.servlet.context-path or management.server.servlet.context-path if management.server.port is configured.
 	management.endpoints.web.path-mapping= # Mapping between endpoint IDs and the path that should expose them.
 
-	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
+	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
 	management.endpoints.web.cors.allow-credentials= # Whether credentials are supported. When not set, credentials are not supported.
 	management.endpoints.web.cors.allowed-headers= # Comma-separated list of headers to allow in a request. '*' allows all headers.
 	management.endpoints.web.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
