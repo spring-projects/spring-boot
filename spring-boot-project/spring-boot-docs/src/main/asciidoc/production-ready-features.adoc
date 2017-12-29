@@ -303,7 +303,7 @@ configuration permits `GET` and `POST` calls from the `example.com` domain:
 	management.endpoints.web.cors.allowed-methods=GET,POST
 ----
 
-TIP: See {sc-spring-boot-actuator-autoconfigure}/endpoint/web/servlet/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties] for a complete list of options.
+TIP: See {sc-spring-boot-actuator-autoconfigure}/endpoint/web/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties] for a complete list of options.
 
 
 

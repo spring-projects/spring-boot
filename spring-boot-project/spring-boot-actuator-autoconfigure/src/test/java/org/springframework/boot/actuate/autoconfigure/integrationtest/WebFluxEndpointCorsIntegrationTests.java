@@ -25,10 +25,8 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -61,10 +59,8 @@ public class WebFluxEndpointCorsIntegrationTests {
 
 	@Test
 	public void corsIsDisabledByDefault() {
-		WebTestClient client = createWebTestClient();
-		System.out.println(new ConditionEvaluationReportMessage(
-				this.context.getBean(ConditionEvaluationReport.class)));
-		client.options().uri("/actuator/beans")
+		createWebTestClient()
+				.options().uri("/actuator/beans")
 				.header("Origin", "spring.example.org")
 				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 				.exchange()
