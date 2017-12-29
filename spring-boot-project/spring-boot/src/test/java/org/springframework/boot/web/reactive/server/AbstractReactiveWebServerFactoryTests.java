@@ -88,12 +88,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void basicSslFromClassPath() throws Exception {
+	public void basicSslFromClassPath() {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
 
 	@Test
-	public void basicSslFromFileSystem() throws Exception {
+	public void basicSslFromFileSystem() {
 		testBasicSslWithKeyStore("src/test/resources/test.jks");
 	}
 
