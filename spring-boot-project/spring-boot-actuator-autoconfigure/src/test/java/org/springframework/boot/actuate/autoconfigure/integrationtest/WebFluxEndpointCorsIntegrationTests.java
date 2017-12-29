@@ -73,7 +73,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void settingAllowedOriginsEnablesCors() throws Exception {
+	public void settingAllowedOriginsEnablesCors() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.applyTo(this.context);
@@ -87,7 +87,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void maxAgeDefaultsTo30Minutes() throws Exception {
+	public void maxAgeDefaultsTo30Minutes() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.applyTo(this.context);
@@ -96,7 +96,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void maxAgeCanBeConfigured() throws Exception {
+	public void maxAgeCanBeConfigured() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.max-age: 2400")
@@ -164,7 +164,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void credentialsCanBeAllowed() throws Exception {
+	public void credentialsCanBeAllowed() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allow-credentials:true")
@@ -174,7 +174,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void credentialsCanBeDisabled() throws Exception {
+	public void credentialsCanBeDisabled() {
 		TestPropertyValues
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allow-credentials:false")

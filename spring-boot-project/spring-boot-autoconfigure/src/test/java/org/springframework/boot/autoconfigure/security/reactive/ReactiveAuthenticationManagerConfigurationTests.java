@@ -41,8 +41,7 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword()
-			throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
 		this.contextRunner
 				.withUserConfiguration(TestSecurityConfiguration.class,
 						ReactiveAuthenticationManagerConfiguration.class)
@@ -56,20 +55,18 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword()
-			throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword() {
 		testPasswordEncoding(TestSecurityConfiguration.class, "secret", "{noop}secret");
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword()
-			throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword() {
 		String password = "{bcrypt}$2a$10$sCBi9fy9814vUPf2ZRbtp.fR5/VgRk2iBFZ.ypu5IyZ28bZgxrVDa";
 		testPasswordEncoding(TestSecurityConfiguration.class, password, password);
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderBeanPresent() throws Exception {
+	public void userDetailsServiceWhenPasswordEncoderBeanPresent() {
 		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "secret");
 	}
 

@@ -51,28 +51,28 @@ public class EmbeddedServletContainerJarPackagingIntegrationTests
 	}
 
 	@Test
-	public void nestedMetaInfResourceIsAvailableViaHttp() throws Exception {
+	public void nestedMetaInfResourceIsAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void nestedMetaInfResourceIsAvailableViaServletContext() throws Exception {
+	public void nestedMetaInfResourceIsAvailableViaServletContext() {
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/servletContext?/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void nestedJarIsNotAvailableViaHttp() throws Exception {
+	public void nestedJarIsNotAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/BOOT-INF/lib/resources-1.0.jar", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
-	public void applicationClassesAreNotAvailableViaHttp() throws Exception {
+	public void applicationClassesAreNotAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/BOOT-INF/classes/com/example/ResourceHandlingApplication.class",
 				String.class);
@@ -80,7 +80,7 @@ public class EmbeddedServletContainerJarPackagingIntegrationTests
 	}
 
 	@Test
-	public void launcherIsNotAvailableViaHttp() throws Exception {
+	public void launcherIsNotAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/org/springframework/boot/loader/Launcher.class", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

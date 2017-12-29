@@ -17,7 +17,6 @@
 package org.springframework.boot.test.web.htmlunit;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.gargoylesoftware.htmlunit.StringWebResponse;
@@ -91,10 +90,10 @@ public class LocalHostWebClientTests {
 				.isEqualTo(new URL("http://localhost:8181/test"));
 	}
 
-	private WebConnection mockConnection() throws MalformedURLException, IOException {
+	private WebConnection mockConnection() throws IOException {
 		WebConnection connection = mock(WebConnection.class);
 		WebResponse response = new StringWebResponse("test", new URL("http://localhost"));
-		given(connection.getResponse((WebRequest) any())).willReturn(response);
+		given(connection.getResponse(any())).willReturn(response);
 		return connection;
 	}
 

@@ -51,28 +51,28 @@ public class EmbeddedServletContainerWarPackagingIntegrationTests
 	}
 
 	@Test
-	public void nestedMetaInfResourceIsAvailableViaHttp() throws Exception {
+	public void nestedMetaInfResourceIsAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void nestedMetaInfResourceIsAvailableViaServletContext() throws Exception {
+	public void nestedMetaInfResourceIsAvailableViaServletContext() {
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/servletContext?/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void nestedJarIsNotAvailableViaHttp() throws Exception {
+	public void nestedJarIsNotAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/WEB-INF/lib/resources-1.0.jar", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
-	public void applicationClassesAreNotAvailableViaHttp() throws Exception {
+	public void applicationClassesAreNotAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/WEB-INF/classes/com/example/ResourceHandlingApplication.class",
 				String.class);
@@ -80,14 +80,14 @@ public class EmbeddedServletContainerWarPackagingIntegrationTests
 	}
 
 	@Test
-	public void webappResourcesAreAvailableViaHttp() throws Exception {
+	public void webappResourcesAreAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest.getForEntity("/webapp-resource.txt",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void loaderClassesAreNotAvailableViaHttp() throws Exception {
+	public void loaderClassesAreNotAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/org/springframework/boot/loader/Launcher.class", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

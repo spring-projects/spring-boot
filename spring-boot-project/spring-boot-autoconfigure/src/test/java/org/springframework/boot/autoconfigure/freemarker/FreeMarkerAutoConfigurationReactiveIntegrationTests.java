@@ -62,7 +62,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void defaultViewResolution() throws Exception {
+	public void defaultViewResolution() {
 		registerAndRefreshContext();
 		MockServerWebExchange exchange = render("home");
 		String result = exchange.getResponse().getBodyAsString().block();
@@ -72,7 +72,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void customPrefix() throws Exception {
+	public void customPrefix() {
 		registerAndRefreshContext("spring.freemarker.prefix:prefix/");
 		MockServerWebExchange exchange = render("prefixed");
 		String result = exchange.getResponse().getBodyAsString().block();
@@ -80,7 +80,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void customSuffix() throws Exception {
+	public void customSuffix() {
 		registerAndRefreshContext("spring.freemarker.suffix:.freemarker");
 		MockServerWebExchange exchange = render("suffixed");
 		String result = exchange.getResponse().getBodyAsString().block();
@@ -88,7 +88,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void customTemplateLoaderPath() throws Exception {
+	public void customTemplateLoaderPath() {
 		registerAndRefreshContext(
 				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockServerWebExchange exchange = render("custom");

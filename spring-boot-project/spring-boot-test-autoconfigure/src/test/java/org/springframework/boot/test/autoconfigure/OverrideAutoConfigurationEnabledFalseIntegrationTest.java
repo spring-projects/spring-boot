@@ -51,7 +51,7 @@ public class OverrideAutoConfigurationEnabledFalseIntegrationTest {
 	private ApplicationContext context;
 
 	@Test
-	public void disabledAutoConfiguration() throws Exception {
+	public void disabledAutoConfiguration() {
 		ApplicationContext context = this.context;
 		assertThat(context.getBean(ExampleTestConfig.class)).isNotNull();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);

@@ -176,7 +176,7 @@ public class DefaultErrorAttributesTests {
 		return ServerRequest.create(exchange, this.readers);
 	}
 
-	public int method(String firstParam) {
+	public int method() {
 		return 42;
 	}
 

@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
@@ -297,7 +296,7 @@ public class FileSystemWatcherTests {
 		return this.changes.get(0);
 	}
 
-	private File touch(File file) throws FileNotFoundException, IOException {
+	private File touch(File file) throws IOException {
 		file.getParentFile().mkdirs();
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		fileOutputStream.close();
