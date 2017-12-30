@@ -767,7 +767,7 @@ property is `127.0.0.1`. Similarly, if the `production` profile is active, the
 profiles are *not* enabled, then the value for the property is `192.168.1.100`.
 
 If none are explicitly active when the application context starts, the default profiles
-are activated . So, in the following YAML, we set a value for `security.user.password`
+are activated. So, in the following YAML, we set a value for `spring.security.user.password`
 that is *only* available in the "default" profile:
 
 [source,yaml,indent=0]
@@ -777,9 +777,9 @@ that is *only* available in the "default" profile:
 	---
 	spring:
 	  profiles: default
-	security:
-	  user:
-	    password: weak
+	  security:
+	    user:
+	      password: weak
 ----
 
 Whereas, in the following example, the password is always set because it is not attached
@@ -790,9 +790,10 @@ necessary:
 ----
 	server:
 	  port: 8000
-	security:
-	  user:
-	    password: weak
+	spring:
+	  security:
+	    user:
+	      password: weak
 ----
 
 Spring profiles designated by using the "spring.profiles" element may optionally be
@@ -7125,7 +7126,7 @@ application.
 Each test can use the runner to represents a particular use case. For instance, the sample
 below invokes a user configuration (`UserConfiguration`) and checks that the
 auto-configuration backs off properly. Invoking `run` provides a callback context that can
-be used with `Assert4J`:
+be used with AssertJ:
 
 [source,java,indent=0]
 ----

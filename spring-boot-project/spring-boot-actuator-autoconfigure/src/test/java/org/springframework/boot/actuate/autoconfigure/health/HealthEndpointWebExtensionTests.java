@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -30,7 +29,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link EndpointAutoConfiguration} in a servlet environment.
+ * Tests for {@link HealthEndpointAutoConfiguration} in a servlet environment.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

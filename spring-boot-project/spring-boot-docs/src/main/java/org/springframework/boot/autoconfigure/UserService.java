@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 /**
- * Simple service.
+ * Sample service.
  *
  * @author Stephane Nicoll
  */

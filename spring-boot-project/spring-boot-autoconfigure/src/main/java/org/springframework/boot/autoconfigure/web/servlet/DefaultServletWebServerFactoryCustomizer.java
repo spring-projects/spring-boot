@@ -274,7 +274,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeAcceptCount(TomcatServletWebServerFactory factory,
-				final int acceptCount) {
+				int acceptCount) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -285,7 +285,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxConnections(TomcatServletWebServerFactory factory,
-				final int maxConnections) {
+				int maxConnections) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -332,7 +332,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		@SuppressWarnings("rawtypes")
 		private static void customizeMaxThreads(TomcatServletWebServerFactory factory,
-				final int maxThreads) {
+				int maxThreads) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -344,7 +344,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		@SuppressWarnings("rawtypes")
 		private static void customizeMinThreads(TomcatServletWebServerFactory factory,
-				final int minSpareThreads) {
+				int minSpareThreads) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -356,7 +356,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		@SuppressWarnings("rawtypes")
 		private static void customizeMaxHttpHeaderSize(
-				TomcatServletWebServerFactory factory, final int maxHttpHeaderSize) {
+				TomcatServletWebServerFactory factory, int maxHttpHeaderSize) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractHttp11Protocol) {
@@ -367,7 +367,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxHttpPostSize(
-				TomcatServletWebServerFactory factory, final int maxHttpPostSize) {
+				TomcatServletWebServerFactory factory, int maxHttpPostSize) {
 			factory.addConnectorCustomizers(
 					(connector) -> connector.setMaxPostSize(maxHttpPostSize));
 		}
@@ -391,14 +391,14 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		private static void customizeRedirectContextRoot(
 				TomcatServletWebServerFactory factory,
-				final boolean redirectContextRoot) {
+				boolean redirectContextRoot) {
 			factory.addContextCustomizers((context) -> context
 					.setMapperContextRootRedirectEnabled(redirectContextRoot));
 		}
 
 		private static void customizeUseRelativeRedirects(
 				TomcatServletWebServerFactory factory,
-				final boolean useRelativeRedirects) {
+				boolean useRelativeRedirects) {
 			factory.addContextCustomizers(
 					(context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 		}
@@ -474,13 +474,13 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxHttpHeaderSize(
-				UndertowServletWebServerFactory factory, final int maxHttpHeaderSize) {
+				UndertowServletWebServerFactory factory, int maxHttpHeaderSize) {
 			factory.addBuilderCustomizers((builder) -> builder
 					.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
 		}
 
 		private static void customizeMaxHttpPostSize(
-				UndertowServletWebServerFactory factory, final long maxHttpPostSize) {
+				UndertowServletWebServerFactory factory, long maxHttpPostSize) {
 			factory.addBuilderCustomizers((builder) -> builder
 					.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
 		}
@@ -531,7 +531,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxHttpHeaderSize(
-				JettyServletWebServerFactory factory, final int maxHttpHeaderSize) {
+				JettyServletWebServerFactory factory, int maxHttpHeaderSize) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 
 				@Override
@@ -578,7 +578,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxHttpPostSize(JettyServletWebServerFactory factory,
-				final int maxHttpPostSize) {
+				int maxHttpPostSize) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 
 				@Override
@@ -608,7 +608,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeAccessLog(JettyServletWebServerFactory factory,
-				final ServerProperties.Jetty.Accesslog properties) {
+				ServerProperties.Jetty.Accesslog properties) {
 			factory.addServerCustomizers((server) -> {
 				NCSARequestLog log = new NCSARequestLog();
 				if (properties.getFilename() != null) {

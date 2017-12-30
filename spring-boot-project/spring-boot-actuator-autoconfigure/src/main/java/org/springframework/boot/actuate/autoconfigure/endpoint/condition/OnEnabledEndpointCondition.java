@@ -113,17 +113,15 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	protected AnnotationAttributes getEndpointAttributes(Class<?> type) {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.findMergedAnnotationAttributes(type, Endpoint.class, true, true);
-		if (attributes == null) {
-			attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
-					EndpointExtension.class, false, true);
-			if (attributes != null) {
-				return getEndpointAttributes(attributes.getClass("endpoint"));
-			}
+		if (attributes != null) {
+			return attributes;
 		}
+		attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
+				EndpointExtension.class, false, true);
 		Assert.state(attributes != null,
 				"OnEnabledEndpointCondition may only be used on @Bean methods that "
-						+ "return an @Endpoint or and @EndpointExtension");
-		return attributes;
+						+ "return an @Endpoint or @EndpointExtension");
+		return getEndpointAttributes(attributes.getClass("endpoint"));
 	}
 
 }
