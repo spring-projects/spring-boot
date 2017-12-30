@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-		// Logger initialization is deferred in case a ordered
+		// Logger initialization is deferred in case an ordered
 		// LogServletContextInitializer is being used
 		this.logger = LogFactory.getLog(getClass());
 		WebApplicationContext rootAppContext = createRootApplicationContext(
