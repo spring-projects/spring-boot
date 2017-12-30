@@ -135,7 +135,7 @@ public class BackgroundPreinitializer
 
 		@Override
 		public void run() {
-			Validation.byDefaultProvider().configure();
+			Validation.byDefaultProvider().configure().buildValidatorFactory();
 		}
 
 	}

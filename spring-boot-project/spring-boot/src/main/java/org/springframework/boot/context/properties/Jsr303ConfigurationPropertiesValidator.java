@@ -16,18 +16,9 @@
 
 package org.springframework.boot.context.properties;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
@@ -41,41 +32,21 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  */
 class Jsr303ConfigurationPropertiesValidator implements Validator {
 
-	private final Future<Delegate> delegate;
+	private final Delegate delegate;
 
 	Jsr303ConfigurationPropertiesValidator(ApplicationContext applicationContext) {
-		// Creating the delegate is slow so we do it in the background
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		this.delegate = executor.submit(() -> new Delegate(applicationContext));
-		executor.shutdown();
-		if (applicationContext instanceof ConfigurableApplicationContext) {
-			((ConfigurableApplicationContext) applicationContext)
-					.addApplicationListener(new Listener());
-		}
+		this.delegate = new Delegate(applicationContext);
 	}
 
 	@Override
 	public boolean supports(Class<?> type) {
 		return AnnotatedElementUtils.hasAnnotation(type, Validated.class)
-				&& getDelegate().supports(type);
+				&& this.delegate.supports(type);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors) {
-		getDelegate().validate(target, errors);
-	}
-
-	private Delegate getDelegate() {
-		try {
-			return this.delegate.get();
-		}
-		catch (InterruptedException ex) {
-			throw new IllegalStateException(ex);
-		}
-		catch (ExecutionException ex) {
-			ReflectionUtils.rethrowRuntimeException(ex.getCause());
-			return null;
-		}
+		this.delegate.validate(target, errors);
 	}
 
 	private static class Delegate extends LocalValidatorFactoryBean {
@@ -84,15 +55,6 @@ class Jsr303ConfigurationPropertiesValidator implements Validator {
 			setApplicationContext(applicationContext);
 			setMessageInterpolator(new MessageInterpolatorFactory().getObject());
 			afterPropertiesSet();
-		}
-
-	}
-
-	private class Listener implements ApplicationListener<ContextRefreshedEvent> {
-
-		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
-			getDelegate();
 		}
 
 	}
