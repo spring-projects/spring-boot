@@ -1616,13 +1616,13 @@ To help with the customization, some other properties are transferred from the S
 
 |`logging.file.max-size`
 |`LOG_FILE_MAX_SIZE`
-|Maximum log file size (if LOG_FILE enabled). (Only supported with the default logback
+|Maximum log file size (if LOG_FILE enabled). (Only supported with the default Logback
  setup.)
 
 |`logging.file.max-history`
 |`LOG_FILE_MAX_HISTORY`
 |Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with
- the default logback setup.)
+ the default Logback setup.)
 
 |`logging.path`
 |`LOG_PATH`
@@ -1630,18 +1630,22 @@ To help with the customization, some other properties are transferred from the S
 
 |`logging.pattern.console`
 |`CONSOLE_LOG_PATTERN`
-|The log pattern to use on the console (stdout). (Only supported with the default logback
+|The log pattern to use on the console (stdout). (Only supported with the default Logback
 setup.)
+
+|`logging.pattern.dateformat`
+|`LOG_DATEFORMAT_PATTERN`
+|Appender pattern for log date format. (Only supported with the default Logback setup.)
 
 |`logging.pattern.file`
 |`FILE_LOG_PATTERN`
 |The log pattern to use in a file (if `LOG_FILE` is enabled). (Only supported with the
-default logback setup.)
+default Logback setup.)
 
 |`logging.pattern.level`
 |`LOG_LEVEL_PATTERN`
 |The format to use when rendering the log level (default `%5p`). (Only supported with the
-default logback setup.)
+default Logback setup.)
 
 |`PID`
 |`PID`
