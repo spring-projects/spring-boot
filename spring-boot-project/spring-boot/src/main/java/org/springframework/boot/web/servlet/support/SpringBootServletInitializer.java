@@ -81,7 +81,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-		// Logger initialization is deferred in case a ordered
+		// Logger initialization is deferred in case an ordered
 		// LogServletContextInitializer is being used
 		this.logger = LogFactory.getLog(getClass());
 		WebApplicationContext rootAppContext = createRootApplicationContext(

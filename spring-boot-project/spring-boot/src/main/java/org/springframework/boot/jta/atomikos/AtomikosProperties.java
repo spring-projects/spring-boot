@@ -210,7 +210,7 @@ public class AtomikosProperties {
 	 * different but related subtransactions. This setting has no effect on resource
 	 * access within one and the same transaction. If you don't use subtransactions then
 	 * this setting can be ignored.
-	 * @param serialJtaTransactions if serial JTA transaction are supported
+	 * @param serialJtaTransactions if serial JTA transactions are supported
 	 */
 	public void setSerialJtaTransactions(boolean serialJtaTransactions) {
 		this.serialJtaTransactions = serialJtaTransactions;

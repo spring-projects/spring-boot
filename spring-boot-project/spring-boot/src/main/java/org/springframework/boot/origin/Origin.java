@@ -19,7 +19,7 @@ package org.springframework.boot.origin;
 import java.io.File;
 
 /**
- * Interface that uniquely represents the origin of an item. For example, a item loaded
+ * Interface that uniquely represents the origin of an item. For example, an item loaded
  * from a {@link File} may have an origin made up of the file name along with line/column
  * numbers.
  * <p>

@@ -35,7 +35,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link WebServer} that can be used to control a Undertow web server. Usually this class
+ * {@link WebServer} that can be used to control an Undertow web server. Usually this class
  * should be created using the {@link UndertowReactiveWebServerFactory} and not directly.
  *
  * @author Ivan Sopov
