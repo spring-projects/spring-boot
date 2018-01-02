@@ -7230,6 +7230,11 @@ dependencies is high, as you should avoid including dependencies that are unnece
 a typical usage of the library. In other words, you should not include optional
 dependencies.
 
+NOTE: Either way, your starter must reference the core Spring Boot starter
+(`spring-boot-starter`) directly or indirectly (i.e. no need to add it if your starter
+relies on another starter). If a project is created with only your custom starter, Spring
+Boot's core features will be honoured by the presence of the core starter.
+
 
 
 [[boot-features-whats-next]]
