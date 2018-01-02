@@ -340,7 +340,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.15</version>
+					<version>1.16</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
