@@ -27,5 +27,6 @@ under the License.
 
 	<xsl:import href="urn:docbkx:stylesheet"/>
 	<xsl:import href="common.xsl"/>
+	<xsl:variable name="epub.oebps.dir" select="'./'"/>
 
 </xsl:stylesheet>
