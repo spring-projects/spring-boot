@@ -30,7 +30,7 @@ import org.junit.runners.model.InitializationError;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 /**
- * Custom {@link Suite} that runs tests against multiple version of Gradle. Test classes
+ * Custom {@link Suite} that runs tests against multiple versions of Gradle. Test classes
  * using the suite must have a public {@link GradleBuild} field named {@code gradleBuild}
  * and annotated with {@link Rule}.
  *
