@@ -382,6 +382,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 			return null;
 		}
 		holder.start();
+		holder.initialize();
 		return (JspServlet) holder.getServlet();
 	}
 
