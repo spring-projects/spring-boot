@@ -282,6 +282,7 @@ public class JettyServletWebServerFactoryTests
 			return null;
 		}
 		holder.start();
+		holder.initialize();
 		return (JspServlet) holder.getServlet();
 	}
 
