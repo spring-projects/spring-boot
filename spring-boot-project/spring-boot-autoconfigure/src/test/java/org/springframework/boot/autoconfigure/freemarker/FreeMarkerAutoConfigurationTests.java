@@ -19,13 +19,12 @@ package org.springframework.boot.autoconfigure.freemarker;
 import java.io.File;
 import java.io.StringWriter;
 
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -41,24 +40,18 @@ public class FreeMarkerAutoConfigurationTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	private void registerAndRefreshContext(String... env) {
-		TestPropertyValues.of(env).applyTo(this.context);
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
 
 	@Test
-	public void renderNonWebAppTemplate() throws Exception {
-		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext(
-				FreeMarkerAutoConfiguration.class)) {
-			freemarker.template.Configuration freemarker = customContext
+	public void renderNonWebAppTemplate() {
+		this.contextRunner.run(context -> {
+			freemarker.template.Configuration freemarker = context
 					.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
 			freemarker.getTemplate("message.ftl").process(this, writer);
 			assertThat(writer.toString()).contains("Hello World");
-		}
+		});
 	}
 
 	public String getGreeting() {
@@ -67,30 +60,25 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void nonExistentTemplateLocation() {
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/does-not-exist/,classpath:/also-does-not-exist");
-		this.output.expect(containsString("Cannot find template location"));
+		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
+				+ "classpath:/does-not-exist/,classpath:/also-does-not-exist")
+				.run(context -> this.output.expect(containsString("Cannot find template location")));
 	}
 
 	@Test
 	public void emptyTemplateLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/templates/empty-directory/");
+		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
+				+ "classpath:/templates/empty-directory/").run(context -> {
+		});
 	}
 
 	@Test
 	public void nonExistentLocationAndEmptyLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/does-not-exist/,classpath:/templates/empty-directory/");
-	}
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
+				+ "classpath:/does-not-exist/,classpath:/templates/empty-directory/").run(context -> {
+		});
 	}
 
 }
