@@ -10,5 +10,5 @@ apply plugin: 'org.springframework.boot'
 bootJar {
 	mainClassName = 'com.example.Application'
 	preserveFileTimestamps = false
-    reproducibleFileOrder = true
+	reproducibleFileOrder = true
 }
