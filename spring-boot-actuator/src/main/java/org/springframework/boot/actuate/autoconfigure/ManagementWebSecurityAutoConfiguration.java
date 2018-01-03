@@ -86,7 +86,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnWebApplication
-@ConditionalOnClass({ EnableWebSecurity.class })
+@ConditionalOnClass({ EnableWebSecurity.class, RequestMatcher.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @AutoConfigureBefore(FallbackWebSecurityAutoConfiguration.class)
 @EnableConfigurationProperties
