@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
+import org.springframework.boot.actuate.metrics.cache.CacheMetricsRegistrar;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -33,8 +34,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * Configure a {@link CacheMetricsRegistrar} and register all available
- * {@link Cache caches}.
+ * Configure a {@link CacheMetricsRegistrar} and register all available {@link Cache
+ * caches}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
@@ -47,18 +48,18 @@ class CacheMetricsRegistrarConfiguration {
 
 	private final MeterRegistry registry;
 
-	private final CacheMetricsProperties properties;
+	private final Collection<CacheMeterBinderProvider<?>> binderProviders;
 
-	private final Collection<CacheMeterBinderProvider> cacheMeterBinderProviders;
+	private final CacheMetricsProperties properties;
 
 	private final Map<String, CacheManager> cacheManagers;
 
 	CacheMetricsRegistrarConfiguration(MeterRegistry registry,
 			CacheMetricsProperties properties,
-			Collection<CacheMeterBinderProvider> cacheMeterBinderProviders,
+			Collection<CacheMeterBinderProvider<?>> binderProviders,
 			Map<String, CacheManager> cacheManagers) {
 		this.registry = registry;
-		this.cacheMeterBinderProviders = cacheMeterBinderProviders;
+		this.binderProviders = binderProviders;
 		this.properties = properties;
 		this.cacheManagers = cacheManagers;
 	}
@@ -66,14 +67,17 @@ class CacheMetricsRegistrarConfiguration {
 	@Bean
 	public CacheMetricsRegistrar cacheMetricsRegistrar() {
 		return new CacheMetricsRegistrar(this.registry,
-				this.properties.getCacheMetricName(), this.cacheMeterBinderProviders);
+				this.properties.getCacheMetricName(), this.binderProviders);
 	}
 
 	@PostConstruct
 	public void bindCachesToRegistry() {
-		this.cacheManagers.forEach((beanName, cacheManager) -> cacheManager.getCacheNames()
-				.forEach((cacheName) ->
-						bindCacheToRegistry(beanName, cacheManager.getCache(cacheName))));
+		this.cacheManagers.forEach(this::bindCacheManagerToRegistry);
+	}
+
+	private void bindCacheManagerToRegistry(String beanName, CacheManager cacheManager) {
+		cacheManager.getCacheNames().forEach((cacheName) -> bindCacheToRegistry(beanName,
+				cacheManager.getCache(cacheName)));
 	}
 
 	private void bindCacheToRegistry(String beanName, Cache cache) {

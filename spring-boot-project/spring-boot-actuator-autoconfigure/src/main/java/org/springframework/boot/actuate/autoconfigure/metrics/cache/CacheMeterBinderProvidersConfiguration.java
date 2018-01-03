@@ -22,7 +22,10 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import net.sf.ehcache.Ehcache;
 
 import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProviders;
+import org.springframework.boot.actuate.metrics.cache.CaffeineCacheMeterBinderProvider;
+import org.springframework.boot.actuate.metrics.cache.EhCache2CacheMeterBinderProvider;
+import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider;
+import org.springframework.boot.actuate.metrics.cache.JCacheCacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.ehcache.EhCacheCache;
@@ -35,19 +38,19 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  * @since 2.0.0
- * @see CacheMeterBinderProviders
  */
 @Configuration
 @ConditionalOnClass(MeterBinder.class)
 class CacheMeterBinderProvidersConfiguration {
 
 	@Configuration
-	@ConditionalOnClass({ CaffeineCache.class, com.github.benmanes.caffeine.cache.Cache.class })
+	@ConditionalOnClass({ CaffeineCache.class,
+			com.github.benmanes.caffeine.cache.Cache.class })
 	static class CaffeineCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public CacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
-			return new CacheMeterBinderProviders.CaffeineCacheMeterBinderProvider();
+		public CaffeineCacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
+			return new CaffeineCacheMeterBinderProvider();
 		}
 
 	}
@@ -57,8 +60,8 @@ class CacheMeterBinderProvidersConfiguration {
 	static class EhCache2CacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public CacheMeterBinderProvider ehCache2CacheMeterBinderProvider() {
-			return new CacheMeterBinderProviders.EhCache2CacheMeterBinderProvider();
+		public EhCache2CacheMeterBinderProvider ehCache2CacheMeterBinderProvider() {
+			return new EhCache2CacheMeterBinderProvider();
 		}
 
 	}
@@ -68,8 +71,8 @@ class CacheMeterBinderProvidersConfiguration {
 	static class HazelcastCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public CacheMeterBinderProvider hazelcastCacheMeterBinderProvider() {
-			return new CacheMeterBinderProviders.HazelcastCacheMeterBinderProvider();
+		public HazelcastCacheMeterBinderProvider hazelcastCacheMeterBinderProvider() {
+			return new HazelcastCacheMeterBinderProvider();
 		}
 
 	}
@@ -79,8 +82,8 @@ class CacheMeterBinderProvidersConfiguration {
 	static class JCacheCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public CacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
-			return new CacheMeterBinderProviders.JCacheCacheMeterBinderProvider();
+		public JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
+			return new JCacheCacheMeterBinderProvider();
 		}
 
 	}

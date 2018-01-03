@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.cache;
+package org.springframework.boot.actuate.metrics.cache;
 
 import java.util.Collections;
 
@@ -23,7 +23,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProviders;
 import org.springframework.cache.caffeine.CaffeineCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,22 +39,21 @@ public class CacheMetricsRegistrarTests {
 	@Test
 	public void bindToSupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
-				"root", Collections.singleton(
-				new CacheMeterBinderProviders.CaffeineCacheMeterBinderProvider()));
+				"root", Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
 				new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
-		assertThat(this.meterRegistry.find("root.requests")
-				.tags("name", "test").meter()).isPresent();
+		assertThat(this.meterRegistry.find("root.requests").tags("name", "test").meter())
+				.isPresent();
 	}
 
 	@Test
 	public void bindToUnsupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
-				"root", Collections.EMPTY_LIST);
+				"root", Collections.emptyList());
 		assertThat(registrar.bindCacheToRegistry(
 				new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
-		assertThat(this.meterRegistry.find("root.requests")
-				.tags("name", "test").meter()).isNotPresent();
+		assertThat(this.meterRegistry.find("root.requests").tags("name", "test").meter())
+				.isNotPresent();
 	}
 
 }

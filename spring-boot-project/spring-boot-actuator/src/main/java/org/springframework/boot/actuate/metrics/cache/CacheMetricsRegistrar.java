@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.cache;
+package org.springframework.boot.actuate.metrics.cache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +25,11 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.cache.Cache;
+import org.springframework.core.ResolvableType;
 
 /**
  * Register supported {@link Cache} to a {@link MeterRegistry}.
@@ -41,7 +43,7 @@ public class CacheMetricsRegistrar {
 
 	private final String metricName;
 
-	private final Collection<CacheMeterBinderProvider> cacheMeterBinderProviders;
+	private final Collection<CacheMeterBinderProvider<?>> binderProviders;
 
 	/**
 	 * Creates a new registrar.
@@ -51,21 +53,21 @@ public class CacheMetricsRegistrar {
 	 * be used to detect compatible caches
 	 */
 	public CacheMetricsRegistrar(MeterRegistry registry, String metricName,
-			Collection<CacheMeterBinderProvider> binderProviders) {
+			Collection<CacheMeterBinderProvider<?>> binderProviders) {
 		this.registry = registry;
 		this.metricName = metricName;
-		this.cacheMeterBinderProviders = binderProviders;
+		this.binderProviders = binderProviders;
 	}
 
 	/**
-	 * Attempt to bind the specified {@link Cache} to the registry. Return {@code true}
-	 * if the cache is supported and was bound to the registry, {@code false} otherwise.
+	 * Attempt to bind the specified {@link Cache} to the registry. Return {@code true} if
+	 * the cache is supported and was bound to the registry, {@code false} otherwise.
 	 * @param cache the cache to handle
 	 * @param tags the tags to associate with the metrics of that cache
 	 * @return {@code true} if the {@code cache} is supported and was registered
 	 */
 	public boolean bindCacheToRegistry(Cache cache, Tag... tags) {
-		List<Tag> allTags = new ArrayList(Arrays.asList(tags));
+		List<Tag> allTags = new ArrayList<>(Arrays.asList(tags));
 		MeterBinder meterBinder = getMeterBinder(cache, allTags);
 		if (meterBinder != null) {
 			meterBinder.bindTo(this.registry);
@@ -74,14 +76,40 @@ public class CacheMetricsRegistrar {
 		return false;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private MeterBinder getMeterBinder(Cache cache, List<Tag> tags) {
 		tags.addAll(getAdditionalTags(cache));
-		for (CacheMeterBinderProvider binderProvider : this.cacheMeterBinderProviders) {
-			MeterBinder meterBinder = binderProvider.getMeterBinder(cache,
-					this.metricName, tags);
-			if (meterBinder != null) {
-				return meterBinder;
+		for (CacheMeterBinderProvider<?> binderProvider : this.binderProviders) {
+			Class<?> cacheType = ResolvableType
+					.forClass(CacheMeterBinderProvider.class, binderProvider.getClass())
+					.resolveGeneric();
+			if (cacheType.isInstance(cache)) {
+				try {
+					MeterBinder meterBinder = ((CacheMeterBinderProvider) binderProvider)
+							.getMeterBinder(cache, this.metricName, tags);
+					if (meterBinder != null) {
+						return meterBinder;
+					}
+				}
+				catch (ClassCastException ex) {
+					String msg = ex.getMessage();
+					if (msg == null || msg.startsWith(cache.getClass().getName())) {
+						// Possibly a lambda-defined listener which we could not resolve
+						// the generic event type for
+						Log logger = LogFactory.getLog(getClass());
+						if (logger.isDebugEnabled()) {
+							logger.debug(
+									"Non-matching event type for CacheMeterBinderProvider: "
+											+ binderProvider,
+									ex);
+						}
+					}
+					else {
+						throw ex;
+					}
+				}
 			}
+
 		}
 		return null;
 	}
