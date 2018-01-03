@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = "server.session.timeout:1", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = "server.session.timeout:2", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SampleSessionWebFluxApplicationTests {
 
 	@LocalServerPort
@@ -60,7 +60,7 @@ public class SampleSessionWebFluxApplicationTests {
 				.block();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.bodyToMono(String.class).block()).isEqualTo(sessionId);
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
 				.block();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
