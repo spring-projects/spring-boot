@@ -70,7 +70,7 @@ public class ClassPathFileSystemWatcherTests {
 		Map<String, Object> properties = new HashMap<>();
 		File folder = this.temp.newFolder();
 		List<URL> urls = new ArrayList<>();
-		urls.add(new URL("http://spring.io"));
+		urls.add(new URL("https://spring.io"));
 		urls.add(folder.toURI().toURL());
 		properties.put("urls", urls);
 		MapPropertySource propertySource = new MapPropertySource("test", properties);

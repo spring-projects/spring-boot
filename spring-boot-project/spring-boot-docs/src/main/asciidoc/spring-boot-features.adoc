@@ -1383,7 +1383,7 @@ See "<<boot-features-external-config-profile-specific-properties>>" for details.
 Spring Boot uses http://commons.apache.org/logging[Commons Logging] for all internal
 logging but leaves the underlying log implementation open. Default configurations are
 provided for
-http://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html[Java Util
+https://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html[Java Util
 Logging], http://logging.apache.org/log4j/2.x/[Log4J2], and
 http://logback.qos.ch/[Logback]. In each case, loggers are pre-configured to use console
 output with optional file output also available.
@@ -1813,7 +1813,7 @@ The following code shows a typical `@RestController` that serves JSON data:
 
 Spring MVC is part of the core Spring Framework, and detailed information is available in
 the  {spring-reference}web.html#mvc[reference documentation]. There are also several
-guides that cover Spring MVC available at http://spring.io/guides.
+guides that cover Spring MVC available at https://spring.io/guides.
 
 
 
@@ -2117,10 +2117,10 @@ integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- * http://freemarker.org/docs/[FreeMarker]
+ * https://freemarker.org/docs/[FreeMarker]
  * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
  * http://www.thymeleaf.org[Thymeleaf]
- * http://mustache.github.io/[Mustache]
+ * https://mustache.github.io/[Mustache]
 
 TIP: If possible, JSPs should be avoided. There are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded
@@ -2333,9 +2333,9 @@ described earlier.
 [[boot-features-cors]]
 ==== CORS Support
 
-http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
 (CORS) is a http://www.w3.org/TR/cors/[W3C specification] implemented by
-http://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible
+https://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible
 way what kind of cross-domain requests are authorized, instead of using some less secure
 and less powerful approaches such as IFRAME or JSONP.
 
@@ -2373,7 +2373,7 @@ defined by registering a `WebMvcConfigurer` bean with a customized
 Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
 Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous and
 non-blocking, and implements the http://www.reactive-streams.org/[Reactive Streams]
-specification through http://projectreactor.io/[the Reactor project].
+specification through https://projectreactor.io/[the Reactor project].
 
 Spring WebFlux comes in two flavors: functional and annotation-based. The
 annotation-based one is quite close to the Spring MVC model, as shown in the
@@ -3358,9 +3358,9 @@ started. It provides the following key dependencies:
 * Spring ORMs: Core ORM support from the Spring Framework.
 
 TIP: We do not go into too many details of JPA or {spring-data}[Spring Data] here. You can
-follow the http://spring.io/guides/gs/accessing-data-jpa/["`Accessing Data with JPA`"]
-guide from http://spring.io and read the {spring-data-jpa}[Spring Data JPA] and
-http://hibernate.org/orm/documentation/[Hibernate] reference documentation.
+follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing Data with JPA`"]
+guide from https://spring.io and read the {spring-data-jpa}[Spring Data JPA] and
+https://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 
 
 
@@ -3652,19 +3652,19 @@ complete control of the jOOQ configuration.
 == Working with NoSQL Technologies
 Spring Data provides additional projects that help you access a variety of NoSQL
 technologies, including:
-http://projects.spring.io/spring-data-mongodb/[MongoDB],
-http://projects.spring.io/spring-data-neo4j/[Neo4J],
+https://projects.spring.io/spring-data-mongodb/[MongoDB],
+https://projects.spring.io/spring-data-neo4j/[Neo4J],
 https://github.com/spring-projects/spring-data-elasticsearch/[Elasticsearch],
-http://projects.spring.io/spring-data-solr/[Solr],
-http://projects.spring.io/spring-data-redis/[Redis],
-http://projects.spring.io/spring-data-gemfire/[Gemfire],
-http://projects.spring.io/spring-data-cassandra/[Cassandra],
-http://projects.spring.io/spring-data-couchbase/[Couchbase] and
-http://projects.spring.io/spring-data-ldap/[LDAP].
+https://projects.spring.io/spring-data-solr/[Solr],
+https://projects.spring.io/spring-data-redis/[Redis],
+https://projects.spring.io/spring-data-gemfire/[Gemfire],
+https://projects.spring.io/spring-data-cassandra/[Cassandra],
+https://projects.spring.io/spring-data-couchbase/[Couchbase] and
+https://projects.spring.io/spring-data-ldap/[LDAP].
 Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Solr
 Cassandra, Couchbase, and LDAP. You can make use of the other projects, but you must
 configure them yourself. Refer to the appropriate reference documentation at
-http://projects.spring.io/spring-data[projects.spring.io/spring-data].
+https://projects.spring.io/spring-data[projects.spring.io/spring-data].
 
 
 
@@ -3861,7 +3861,7 @@ in the following example:
 TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping
-technologies, refer to its http://projects.spring.io/spring-data-mongodb/[reference
+technologies, refer to its https://projects.spring.io/spring-data-mongodb/[reference
 documentation].
 
 
@@ -4016,7 +4016,7 @@ The following example shows an interface definition for a Neo4j repository:
 ----
 
 TIP: For complete details of Spring Data Neo4j, including its rich object mapping
-technologies, refer to the http://projects.spring.io/spring-data-neo4j/[reference
+technologies, refer to the https://projects.spring.io/spring-data-neo4j/[reference
 documentation].
 
 
@@ -4025,7 +4025,7 @@ documentation].
 === Gemfire
 https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides
 convenient Spring-friendly tools for accessing the
-http://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
+https://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
 platform. There is a `spring-boot-starter-data-gemfire` "`Starter`" for collecting the
 dependencies in a convenient way. There is currently no auto-configuration support for
 Gemfire, but you can enable Spring Data Repositories with a
@@ -4080,7 +4080,7 @@ You could take the JPA example from earlier and, assuming that `City` is now a
 `@SolrDocument` class rather than a JPA `@Entity`, it works in the same way.
 
 TIP: For complete details of Spring Data Solr, refer to the
-http://projects.spring.io/spring-data-solr/[reference documentation].
+https://projects.spring.io/spring-data-solr/[reference documentation].
 
 
 
@@ -4169,7 +4169,7 @@ now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in 
 way.
 
 TIP: For complete details of Spring Data Elasticsearch, refer to the
-http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
+https://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 
 
@@ -4227,7 +4227,7 @@ limited than the JPA repositories discussed earlier and needs to annotate finder
 with `@Query`.
 
 TIP: For complete details of Spring Data Cassandra, refer to the
-http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
+https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
 
@@ -4283,7 +4283,7 @@ Check the `spring.couchbase.env.*` properties for more details.
 ==== Spring Data Couchbase Repositories
 Spring Data includes repository support for Couchbase. For complete details of Spring
 Data Couchbase, refer to the
-http://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference
+https://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference
 documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any
@@ -4379,7 +4379,7 @@ If you need to customize connection settings, you can use the `spring.ldap.base`
 ==== Spring Data LDAP Repositories
 Spring Data includes repository support for LDAP. For complete details of Spring
 Data LDAP, refer to the
-http://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference
+https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference
 documentation].
 
 You can also inject an auto-configured `LdapTemplate` instance as you would with any
@@ -5087,7 +5087,7 @@ See {sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitPropert
 for more of the supported options.
 
 TIP: See
-http://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding
+https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding
 AMQP, the protocol used by RabbitMQ] for more details.
 
 
