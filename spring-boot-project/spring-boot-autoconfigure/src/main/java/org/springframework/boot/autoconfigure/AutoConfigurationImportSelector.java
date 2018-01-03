@@ -217,10 +217,11 @@ public class AutoConfigurationImportSelector
 	private List<String> getExcludeAutoConfigurationsProperty() {
 		if (getEnvironment() instanceof ConfigurableEnvironment) {
 			Binder binder = Binder.get(getEnvironment());
-			return binder.bind(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class).map(Arrays::asList)
-					.orElse(Collections.emptyList());
+			return binder.bind(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class)
+					.map(Arrays::asList).orElse(Collections.emptyList());
 		}
-		String[] excludes = getEnvironment().getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
+		String[] excludes = getEnvironment()
+				.getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
 		return (excludes == null ? Collections.emptyList() : Arrays.asList(excludes));
 	}
 

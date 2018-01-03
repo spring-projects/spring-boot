@@ -160,8 +160,7 @@ public final class CommandLineInvoker {
 		private List<String> getLines(StringBuffer buffer) {
 			BufferedReader reader = new BufferedReader(
 					new StringReader(buffer.toString()));
-			return reader.lines()
-					.filter((line) -> !line.startsWith("Picked up "))
+			return reader.lines().filter((line) -> !line.startsWith("Picked up "))
 					.collect(Collectors.toList());
 		}
 

@@ -153,8 +153,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
 		if (getSsl() != null && getSsl().isEnabled()) {
-			new SslServerCustomizer(port, getSsl(), getSslStoreProvider(),
-					getHttp2()).customize(server);
+			customizeSsl(server, port);
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
@@ -212,6 +211,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
 		}
 		return handler;
+	}
+
+	private void customizeSsl(Server server, int port) {
+		new SslServerCustomizer(port, getSsl(), getSslStoreProvider(), getHttp2())
+				.customize(server);
 	}
 
 	/**
@@ -419,9 +423,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Factory method called to create the {@link JettyWebServer}. Subclasses can
-	 * override this method to return a different {@link JettyWebServer} or apply
-	 * additional processing to the Jetty server.
+	 * Factory method called to create the {@link JettyWebServer}. Subclasses can override
+	 * this method to return a different {@link JettyWebServer} or apply additional
+	 * processing to the Jetty server.
 	 * @param server the Jetty server.
 	 * @return a new {@link JettyWebServer} instance
 	 */

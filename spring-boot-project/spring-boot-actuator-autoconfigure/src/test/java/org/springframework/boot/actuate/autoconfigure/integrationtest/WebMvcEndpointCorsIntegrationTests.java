@@ -70,7 +70,8 @@ public class WebMvcEndpointCorsIntegrationTests {
 		createMockMvc()
 				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-				.andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+				.andExpect(
+						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
 	}
 
 	@Test

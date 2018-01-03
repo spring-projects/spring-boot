@@ -106,7 +106,8 @@ public class SpringDataWebAutoConfigurationTests {
 		load();
 		PageableHandlerMethodArgumentResolver argumentResolver = this.context
 				.getBean(PageableHandlerMethodArgumentResolver.class);
-		SpringDataWebProperties.Pageable properties = new SpringDataWebProperties().getPageable();
+		SpringDataWebProperties.Pageable properties = new SpringDataWebProperties()
+				.getPageable();
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "pageParameterName"))
 				.isEqualTo(properties.getPageParameter());
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "sizeParameterName"))

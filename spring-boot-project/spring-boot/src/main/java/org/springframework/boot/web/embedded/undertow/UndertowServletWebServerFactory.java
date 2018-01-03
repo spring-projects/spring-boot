@@ -248,7 +248,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				.customize(builder);
 		if (getHttp2() != null) {
 			builder.setServerOption(UndertowOptions.ENABLE_HTTP2,
-					getHttp2().getEnabled());
+					getHttp2().isEnabled());
 		}
 	}
 

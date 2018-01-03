@@ -487,8 +487,8 @@ public class ResourceProperties {
 					return CacheControl.noCache();
 				}
 				if (this.maxAge != null) {
-					return CacheControl
-							.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
+					return CacheControl.maxAge(this.maxAge.getSeconds(),
+							TimeUnit.SECONDS);
 				}
 				return CacheControl.empty();
 			}

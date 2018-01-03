@@ -37,9 +37,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Cloud Foundry Health endpoint extensions.
+ * {@link EnableAutoConfiguration Auto-configuration} for Cloud Foundry Health endpoint
+ * extensions.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)

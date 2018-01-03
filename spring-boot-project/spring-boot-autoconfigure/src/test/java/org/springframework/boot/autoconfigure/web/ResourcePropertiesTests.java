@@ -74,8 +74,8 @@ public class ResourcePropertiesTests {
 
 	@Test
 	public void emptyCacheControl() {
-		CacheControl cacheControl = this.properties.getCache()
-				.getCachecontrol().toHttpCacheControl();
+		CacheControl cacheControl = this.properties.getCache().getCachecontrol()
+				.toHttpCacheControl();
 		assertThat(cacheControl.getHeaderValue()).isNull();
 	}
 

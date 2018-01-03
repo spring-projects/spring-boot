@@ -99,8 +99,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		JettyReactiveWebServerFactory.logger
 				.info("Server initialized with port: " + port);
 		if (getSsl() != null && getSsl().isEnabled()) {
-			new SslServerCustomizer(port, getSsl(), getSslStoreProvider(),
-					getHttp2()).customize(server);
+			customizeSsl(server, port);
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
@@ -120,6 +119,11 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			}
 		}
 		return connector;
+	}
+
+	private void customizeSsl(Server server, int port) {
+		new SslServerCustomizer(port, getSsl(), getSslStoreProvider(), getHttp2())
+				.customize(server);
 	}
 
 	/**

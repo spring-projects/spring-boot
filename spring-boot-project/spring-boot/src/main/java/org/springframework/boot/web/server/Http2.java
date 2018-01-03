@@ -29,7 +29,7 @@ public class Http2 {
 	 */
 	private boolean enabled = false;
 
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 

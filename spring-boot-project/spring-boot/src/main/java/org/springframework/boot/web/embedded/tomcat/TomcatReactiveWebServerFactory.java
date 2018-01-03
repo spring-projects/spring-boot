@@ -156,7 +156,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private void customizeSsl(Connector connector) {
 		new SslConnectorCustomizer(getSsl(), getSslStoreProvider()).customize(connector);
-		if (getHttp2() != null && getHttp2().getEnabled()) {
+		if (getHttp2() != null && getHttp2().isEnabled()) {
 			connector.addUpgradeProtocol(new Http2Protocol());
 		}
 	}

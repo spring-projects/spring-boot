@@ -44,14 +44,10 @@ public class FilteredClassLoaderTests {
 
 	@Test
 	public void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
-		FilteredClassLoader classLoader = new FilteredClassLoader(
-				FilteredClassLoaderTests.class);
-		try {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(
+				FilteredClassLoaderTests.class)) {
 			this.thrown.expect(ClassNotFoundException.class);
 			classLoader.loadClass(getClass().getName());
-		}
-		finally {
-			classLoader.close();
 		}
 	}
 

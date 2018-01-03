@@ -390,15 +390,13 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeRedirectContextRoot(
-				TomcatServletWebServerFactory factory,
-				boolean redirectContextRoot) {
+				TomcatServletWebServerFactory factory, boolean redirectContextRoot) {
 			factory.addContextCustomizers((context) -> context
 					.setMapperContextRootRedirectEnabled(redirectContextRoot));
 		}
 
 		private static void customizeUseRelativeRedirects(
-				TomcatServletWebServerFactory factory,
-				boolean useRelativeRedirects) {
+				TomcatServletWebServerFactory factory, boolean useRelativeRedirects) {
 			factory.addContextCustomizers(
 					(context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 		}

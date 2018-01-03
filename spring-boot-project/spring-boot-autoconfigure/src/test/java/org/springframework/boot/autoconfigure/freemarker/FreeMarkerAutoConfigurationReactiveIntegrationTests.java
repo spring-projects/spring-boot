@@ -69,46 +69,53 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	@Test
 	public void customPrefix() {
-		this.contextRunner.withPropertyValues("spring.freemarker.prefix:prefix/").run(context -> {
-			MockServerWebExchange exchange = render(context, "prefixed");
-			String result = exchange.getResponse().getBodyAsString().block();
-			assertThat(result).contains("prefixed");
-		});
+		this.contextRunner.withPropertyValues("spring.freemarker.prefix:prefix/")
+				.run(context -> {
+					MockServerWebExchange exchange = render(context, "prefixed");
+					String result = exchange.getResponse().getBodyAsString().block();
+					assertThat(result).contains("prefixed");
+				});
 	}
 
 	@Test
 	public void customSuffix() {
-		this.contextRunner.withPropertyValues("spring.freemarker.suffix:.freemarker").run(context -> {
-			MockServerWebExchange exchange = render(context, "suffixed");
-			String result = exchange.getResponse().getBodyAsString().block();
-			assertThat(result).contains("suffixed");
-		});
+		this.contextRunner.withPropertyValues("spring.freemarker.suffix:.freemarker")
+				.run(context -> {
+					MockServerWebExchange exchange = render(context, "suffixed");
+					String result = exchange.getResponse().getBodyAsString().block();
+					assertThat(result).contains("suffixed");
+				});
 	}
 
 	@Test
 	public void customTemplateLoaderPath() {
-		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:classpath:/custom-templates/").run(context -> {
-			MockServerWebExchange exchange = render(context, "custom");
-			String result = exchange.getResponse().getBodyAsString().block();
-			assertThat(result).contains("custom");
-		});
+		this.contextRunner
+				.withPropertyValues(
+						"spring.freemarker.templateLoaderPath:classpath:/custom-templates/")
+				.run(context -> {
+					MockServerWebExchange exchange = render(context, "custom");
+					String result = exchange.getResponse().getBodyAsString().block();
+					assertThat(result).contains("custom");
+				});
 	}
 
 	@SuppressWarnings("deprecation")
 	@Test
 	public void customFreeMarkerSettings() {
-		this.contextRunner.withPropertyValues("spring.freemarker.settings.boolean_format:yup,nope")
-				.run(context -> assertThat(context.getBean(FreeMarkerConfigurer.class).getConfiguration()
-						.getSetting("boolean_format")).isEqualTo("yup,nope"));
+		this.contextRunner
+				.withPropertyValues("spring.freemarker.settings.boolean_format:yup,nope")
+				.run(context -> assertThat(context.getBean(FreeMarkerConfigurer.class)
+						.getConfiguration().getSetting("boolean_format"))
+								.isEqualTo("yup,nope"));
 	}
 
 	@Test
 	public void renderTemplate() {
 		this.contextRunner.withPropertyValues().run(context -> {
-			FreeMarkerConfigurer freemarker = context
-					.getBean(FreeMarkerConfigurer.class);
+			FreeMarkerConfigurer freemarker = context.getBean(FreeMarkerConfigurer.class);
 			StringWriter writer = new StringWriter();
-			freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
+			freemarker.getConfiguration().getTemplate("message.ftl").process(this,
+					writer);
 			assertThat(writer.toString()).contains("Hello World");
 		});
 	}
@@ -118,8 +125,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	private MockServerWebExchange render(ApplicationContext context, String viewName) {
-		FreeMarkerViewResolver resolver = context
-				.getBean(FreeMarkerViewResolver.class);
+		FreeMarkerViewResolver resolver = context.getBean(FreeMarkerViewResolver.class);
 		Mono<View> view = resolver.resolveViewName(viewName, Locale.UK);
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/path"));
