@@ -1017,6 +1017,30 @@ following information:
 
 
 
+[[production-ready-metrics-cache]]
+=== Cache metrics
+Auto-configuration will enable the instrumentation of all available ``Cache``s on startup
+with a metric named `cache`. The prefix can be customized by using the
+`management.metrics.cache.cache-metric-name` property. Cache instrumentation is specific
+to each cache library, refer to https://micrometer.io/docs[the micrometer documentation]
+for more details.
+
+The following cache libraries are supported:
+
+* Caffeine
+* EhCache 2
+* Hazelcast
+* Any compliant JCache (JSR-107) implementation
+
+Metrics will also be tagged by the name of the `CacheManager` computed based on the bean
+name.
+
+NOTE: Only caches that are available on startup are bound to the registry. For caches
+created on-the-fly or programmatically after the startup phase, an explicit registration
+is required. A `CacheMetricsRegistrar` bean is made available to make that process easier.
+
+
+
 [[production-ready-metrics-jdbc]]
 === DataSource metrics
 Auto-configuration will enable the instrumentation of all available ``DataSource``s with a

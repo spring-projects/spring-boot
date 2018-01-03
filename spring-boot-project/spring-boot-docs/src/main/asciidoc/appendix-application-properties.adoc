@@ -1256,6 +1256,8 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
 	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
+	management.metrics.cache.cache-metric-name=cache # Name of the metric for cache usage.
+	management.metrics.cache.instrument-cache=true # Instrument all available caches.
 	management.metrics.export.atlas.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.atlas.config-refresh-frequency= # Frequency for refreshing config settings from the LWC service.
 	management.metrics.export.atlas.config-time-to-live= # Time to live for subscriptions from the LWC service.
