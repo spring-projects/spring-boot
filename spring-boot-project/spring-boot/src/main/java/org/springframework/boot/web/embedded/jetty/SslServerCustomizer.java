@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package org.springframework.boot.web.embedded.jetty;
 import java.io.IOException;
 import java.net.URL;
 
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.http2.HTTP2Cipher;
+import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -31,9 +33,12 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 
@@ -41,6 +46,7 @@ import org.springframework.util.ResourceUtils;
  * {@link JettyServerCustomizer} that configures SSL on the given Jetty server instance.
  *
  * @author Brian Clozel
+ * @author Olivier Lamy
  */
 class SslServerCustomizer implements JettyServerCustomizer {
 
@@ -50,35 +56,74 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	private final SslStoreProvider sslStoreProvider;
 
-	SslServerCustomizer(int port, Ssl ssl, SslStoreProvider sslStoreProvider) {
+	private final Http2 http2;
+
+	SslServerCustomizer(int port, Ssl ssl, SslStoreProvider sslStoreProvider, Http2 http2) {
 		this.port = port;
 		this.ssl = ssl;
 		this.sslStoreProvider = sslStoreProvider;
+		this.http2 = http2;
 	}
 
 	@Override
 	public void customize(Server server) {
-		if (this.ssl != null && this.ssl.isEnabled()) {
-			SslContextFactory sslContextFactory = new SslContextFactory();
-			configureSsl(sslContextFactory, this.ssl, this.sslStoreProvider);
-			AbstractConnector connector = createSslConnector(server, sslContextFactory,
-					this.port);
-			server.setConnectors(new Connector[] { connector });
-		}
+		SslContextFactory sslContextFactory = new SslContextFactory();
+		configureSsl(sslContextFactory, this.ssl, this.sslStoreProvider);
+		ServerConnector connector = createConnector(server, sslContextFactory,
+				this.port);
+		server.setConnectors(new Connector[] {connector});
 	}
 
-	private AbstractConnector createSslConnector(Server server,
-			SslContextFactory sslContextFactory, int port) {
+	private ServerConnector createConnector(Server server, SslContextFactory sslContextFactory, int port) {
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSendServerVersion(false);
+		config.setSecureScheme("https");
+		config.setSecurePort(port);
 		config.addCustomizer(new SecureRequestCustomizer());
+		ServerConnector connector;
+		if (this.http2 != null && this.http2.getEnabled()) {
+			final boolean isAlpnPresent = ClassUtils
+					.isPresent("org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory",
+							getClass().getClassLoader());
+			Assert.state(isAlpnPresent,
+					() -> "The 'org.eclipse.jetty:jetty-alpn-server' " +
+							"dependency is required for HTTP/2 support.");
+			final boolean isConscryptPresent = ClassUtils
+					.isPresent("org.conscrypt.Conscrypt", getClass().getClassLoader());
+			Assert.state(isConscryptPresent,
+					() -> "The 'org.eclipse.jetty.http2:http2-server' and Conscrypt " +
+							"dependencies are required for HTTP/2 support.");
+			connector = createHttp2Connector(server, config, sslContextFactory);
+		}
+		else {
+			connector = createSslConnector(server, config, sslContextFactory);
+		}
+		connector.setPort(port);
+		return connector;
+	}
+
+	private ServerConnector createSslConnector(Server server, HttpConfiguration config,
+			SslContextFactory sslContextFactory) {
 		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
 		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
 				sslContextFactory, HttpVersion.HTTP_1_1.asString());
 		ServerConnector serverConnector = new ServerConnector(server,
 				sslConnectionFactory, connectionFactory);
-		serverConnector.setPort(port);
 		return serverConnector;
+	}
+
+	private ServerConnector createHttp2Connector(Server server, HttpConfiguration config,
+			SslContextFactory sslContextFactory) {
+		HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(config);
+		ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
+		alpn.setDefaultProtocol("h2");
+		sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
+		sslContextFactory.setProvider("Conscrypt");
+		SslConnectionFactory ssl = new SslConnectionFactory(
+				sslContextFactory, alpn.getProtocol());
+		ServerConnector http2Connector = new ServerConnector(
+				server, ssl, alpn, h2, new HttpConnectionFactory(config));
+		return http2Connector;
 	}
 
 	/**
