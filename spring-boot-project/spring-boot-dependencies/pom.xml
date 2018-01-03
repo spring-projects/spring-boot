@@ -26,7 +26,7 @@
 		<!-- Dependency versions -->
 		<activemq.version>5.15.2</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.59</appengine-sdk.version>
+		<appengine-sdk.version>1.9.60</appengine-sdk.version>
 		<artemis.version>2.4.0</artemis.version>
 		<aspectj.version>1.8.13</aspectj.version>
 		<assertj.version>3.8.0</assertj.version>
@@ -66,7 +66,7 @@
 		<hsqldb.version>2.4.0</hsqldb.version>
 		<htmlunit.version>2.28</htmlunit.version>
 		<httpasyncclient.version>4.1.3</httpasyncclient.version>
-		<httpclient.version>4.5.3</httpclient.version>
+		<httpclient.version>4.5.4</httpclient.version>
 		<httpcore.version>4.4.8</httpcore.version>
 		<infinispan.version>9.1.3.Final</infinispan.version>
 		<influxdb-java.version>2.7</influxdb-java.version>
@@ -118,7 +118,7 @@
 		<mockito.version>2.13.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.6.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.5.0</mongodb.version>
-		<mysql.version>5.1.44</mysql.version>
+		<mysql.version>5.1.45</mysql.version>
 		<narayana.version>5.7.1.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.0.2</neo4j-ogm.version>
@@ -153,7 +153,7 @@
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.0.RELEASE</spring-restdocs.version>
-		<spring-retry.version>1.2.1.RELEASE</spring-retry.version>
+		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
 		<spring-security.version>5.0.0.RELEASE</spring-security.version>
 		<spring-session.version>2.0.0.RC2</spring-session.version>
 		<spring-session-data-mongodb.version>2.0.0.RC2</spring-session-data-mongodb.version>
@@ -166,7 +166,7 @@
 		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.23</tomcat.version>
+		<tomcat.version>8.5.24</tomcat.version>
 		<undertow.version>1.4.21.Final</undertow.version>
 		<unboundid-ldapsdk.version>4.0.1</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
