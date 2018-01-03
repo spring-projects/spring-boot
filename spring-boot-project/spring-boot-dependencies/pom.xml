@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 	<name>Spring Boot Dependencies</name>
 	<description>Spring Boot Dependencies</description>
-	<url>http://projects.spring.io/spring-boot/</url>
+	<url>https://projects.spring.io/spring-boot/</url>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>

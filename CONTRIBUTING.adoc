@@ -14,8 +14,8 @@ unacceptable behavior to spring-code-of-conduct@pivotal.io.
 
 == Using GitHub issues
 We use GitHub issues to track bugs and enhancements. If you have a general usage question
-please ask on http://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
-broader community monitor the http://stackoverflow.com/tags/spring-boot[`spring-boot`]
+please ask on https://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
+broader community monitor the https://stackoverflow.com/tags/spring-boot[`spring-boot`]
 tag.
 
 If you are reporting a bug, please help to speed up problem diagnosis by providing as much
@@ -73,7 +73,7 @@ should also work without issue.
 
 === Building from source
 To build the source you will need to install
-http://maven.apache.org/run-maven/index.html[Apache Maven] v3.2.3 or above and JDK 1.8.
+https://maven.apache.org/run-maven/index.html[Apache Maven] v3.2.3 or above and JDK 1.8.
 
 
 
