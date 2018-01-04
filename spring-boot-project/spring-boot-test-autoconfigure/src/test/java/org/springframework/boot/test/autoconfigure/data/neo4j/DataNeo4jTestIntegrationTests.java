@@ -16,14 +16,21 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
+import java.util.function.Supplier;
+
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.neo4j.ogm.session.Session;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.HostPortWaitStrategy;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.DockerTestContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -39,9 +46,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataNeo4jTest
 public class DataNeo4jTestIntegrationTests {
 
-	@Rule
-	public Neo4jTestServer server = new Neo4jTestServer(
-			new String[] { "org.springframework.boot.test.autoconfigure.data.neo4j" });
+	@ClassRule
+	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("neo4j:latest")
+			.withFixedExposedPort(7687, 7687)
+			.waitingFor(new AdditionalSleepWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
+
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -69,6 +78,20 @@ public class DataNeo4jTestIntegrationTests {
 	public void didNotInjectExampleService() {
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.applicationContext.getBean(ExampleService.class);
+	}
+
+	static class AdditionalSleepWaitStrategy extends HostPortWaitStrategy {
+
+		@Override
+		protected void waitUntilReady() {
+			super.waitUntilReady();
+			try {
+				Thread.sleep(5000);
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 	}
 
 }

@@ -16,12 +16,13 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testsupport.rule.RedisTestServer;
+import org.springframework.boot.test.autoconfigure.DockerTestContainer;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -37,8 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataRedisTest(includeFilters = @Filter(Service.class))
 public class DataRedisTestWithIncludeFilterIntegrationTests {
 
-	@Rule
-	public RedisTestServer redis = new RedisTestServer();
+	@ClassRule
+	public static DockerTestContainer<FixedHostPortGenericContainer> redis = new DockerTestContainer<>(() ->
+			new FixedHostPortGenericContainer("redis:latest")
+					.withFixedExposedPort(6379, 6379));
 
 	@Autowired
 	private ExampleRepository exampleRepository;

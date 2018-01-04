@@ -16,12 +16,24 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+
+import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import org.junit.After;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.rnorth.ducttape.TimeoutException;
+import org.rnorth.ducttape.unreliables.Unreliables;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.HostPortWaitStrategy;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.DockerTestContainer;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -39,8 +51,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CassandraDataAutoConfigurationIntegrationTests {
 
-	@Rule
-	public final CassandraTestServer cassandra = new CassandraTestServer();
+	@ClassRule
+	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("cassandra:latest")
+			.withFixedExposedPort(9042, 9042)
+			.waitingFor(new ConnectionVerifyingWaitStrategy()));
+
 
 	private AnnotationConfigApplicationContext context;
 
@@ -84,9 +99,38 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		try (Session session = this.cassandra.getCluster().connect()) {
+		Cluster cluster = Cluster.builder().addContactPoint("localhost").build();
+		try (Session session = cluster.connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
+		}
+	}
+
+	static class ConnectionVerifyingWaitStrategy extends HostPortWaitStrategy {
+
+		@Override
+		protected void waitUntilReady() {
+			super.waitUntilReady();
+			Cluster cluster = Cluster.builder().addContactPoint("localhost").build();
+			try {
+				Unreliables.retryUntilTrue((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
+						checkConnection(cluster));
+			}
+			catch (TimeoutException e) {
+				throw new IllegalStateException();
+			}
+		}
+
+		private Callable<Boolean> checkConnection(Cluster cluster) {
+			return () -> {
+				try {
+					cluster.connect();
+					return true;
+				}
+				catch (NoHostAvailableException ex) {
+					return false;
+				}
+			};
 		}
 	}
 

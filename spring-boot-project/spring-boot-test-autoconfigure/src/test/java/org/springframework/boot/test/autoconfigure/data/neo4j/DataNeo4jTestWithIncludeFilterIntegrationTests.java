@@ -16,11 +16,16 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import org.junit.Rule;
+import java.util.function.Supplier;
+
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.DockerTestContainer;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -36,9 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
-	@Rule
-	public Neo4jTestServer server = new Neo4jTestServer(
-			new String[] { "org.springframework.boot.test.autoconfigure.data.neo4j" });
+	@ClassRule
+	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("neo4j:latest")
+			.withFixedExposedPort(7687, 7687)
+			.waitingFor(new DataNeo4jTestIntegrationTests.AdditionalSleepWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
 
 	@Autowired
 	private ExampleService service;

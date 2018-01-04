@@ -16,18 +16,19 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.DockerTestContainer;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.RedisTestServer;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisFlushMode;
@@ -44,8 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReactiveSessionAutoConfigurationRedisTests
 		extends AbstractSessionAutoConfigurationTests {
 
-	@Rule
-	public final RedisTestServer redis = new RedisTestServer();
+	@ClassRule
+	public static DockerTestContainer<FixedHostPortGenericContainer> redis = new DockerTestContainer<>(() ->
+			new FixedHostPortGenericContainer("redis:latest")
+					.withFixedExposedPort(6379, 6379));
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));

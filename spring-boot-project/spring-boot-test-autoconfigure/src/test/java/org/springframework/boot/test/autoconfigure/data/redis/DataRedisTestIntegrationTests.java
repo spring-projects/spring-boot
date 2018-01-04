@@ -19,14 +19,16 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testsupport.rule.RedisTestServer;
+import org.springframework.boot.test.autoconfigure.DockerTestContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
@@ -43,8 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataRedisTest
 public class DataRedisTestIntegrationTests {
 
-	@Rule
-	public RedisTestServer redis = new RedisTestServer();
+	@ClassRule
+	public static DockerTestContainer<FixedHostPortGenericContainer> redis = new DockerTestContainer<>(() ->
+			new FixedHostPortGenericContainer("redis:latest")
+					.withFixedExposedPort(6379, 6379));
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
